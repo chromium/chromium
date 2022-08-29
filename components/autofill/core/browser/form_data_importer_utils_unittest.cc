@@ -6,7 +6,10 @@
 
 #include <vector>
 
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,16 +46,24 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue) {
   EXPECT_TRUE(queue.empty());
 }
 
+TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_MaxSize) {
+  TimestampedSameOriginQueue<IntWrapper> queue{/*max_size=*/1};
+  const url::Origin irrelevant_origin;
+  queue.Push({0}, irrelevant_origin);
+  queue.Push({1}, irrelevant_origin);
+  EXPECT_THAT(queue, testing::ElementsAre(1));
+}
+
 // RemoveOutdatedItems clears the queue if the origin doesn't match.
 TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
   TimestampedSameOriginQueue<IntWrapper> queue;
   auto foo_origin = url::Origin::Create(GURL("http://foo.com"));
   queue.Push({0}, foo_origin);
-  EXPECT_EQ(queue.Origin(), foo_origin);
+  EXPECT_EQ(queue.origin(), foo_origin);
   // The TTL or 1 hour is irrelevant here.
   queue.RemoveOutdatedItems(base::Hours(1),
                             url::Origin::Create(GURL("http://bar.com")));
-  EXPECT_EQ(queue.Origin(), absl::nullopt);
+  EXPECT_EQ(queue.origin(), absl::nullopt);
   EXPECT_TRUE(queue.empty());
 }
 
@@ -80,6 +91,76 @@ TEST(FormDataImporterUtilsTest, GetPredictedCountryCode) {
   EXPECT_EQ(GetPredictedCountryCode(empty_profile, "DE", "de-AT", nullptr),
             "DE");
   EXPECT_EQ(GetPredictedCountryCode(empty_profile, "", "de-AT", nullptr), "AT");
+}
+
+// Each test describes a sequence of submitted forms, where 'a' and 'c' indicate
+// an address and a credit card form, respectively.
+// Using an upper case A or C, forms that are supposed to be part of the
+// association are marked.
+constexpr base::StringPiece kFormAssociatorTestCases[]{
+    // A single address/credit card form is associated with itself.
+    "A",
+    "C",
+    // The credit card form is associated with the address form, and vice-versa.
+    "AC",
+    "CA",
+    // Two address forms are associated with the credit card form.
+    "AAC",
+    // The first address form is not associated to the credit card form.
+    "aAAC",
+    // Only the last credit card form is kept.
+    "AAcC",
+};
+
+class FormAssociatorTest : public testing::TestWithParam<base::StringPiece> {};
+
+INSTANTIATE_TEST_SUITE_P(FormDataImporterUtilsTest,
+                         FormAssociatorTest,
+                         testing::ValuesIn(kFormAssociatorTestCases));
+
+// Tests that all `kFormAssociationTestCases` yield the correct associations.
+TEST_P(FormAssociatorTest, FormAssociator) {
+  FormAssociator form_associator;
+  url::Origin irrelevant_origin;
+  FormStructure::FormAssociations expected_associations;
+  const base::StringPiece& test = GetParam();
+  // Each test verifies the association of the last form. If the last form is
+  // not expected to be included, that's likely a typo.
+  EXPECT_TRUE(!test.empty() && base::IsAsciiUpper(test.back()));
+
+  for (size_t i = 0; i < test.size(); i++) {
+    FormSignature signature{i};
+    auto type = base::ToLowerASCII(test[i]) == 'a'
+                    ? FormAssociator::FormType::kAddressForm
+                    : FormAssociator::FormType::kCreditCardForm;
+    form_associator.TrackFormAssociations(irrelevant_origin, signature, type);
+    // Fill `expected_associations` depending on `type`.
+    if (base::IsAsciiLower(test[i]))
+      continue;
+    if (type == FormAssociator::FormType::kAddressForm) {
+      if (expected_associations.last_address_form_submitted) {
+        // There should be at most two address form associations expected.
+        EXPECT_FALSE(expected_associations.second_last_address_form_submitted);
+        expected_associations.second_last_address_form_submitted =
+            expected_associations.last_address_form_submitted;
+      }
+      expected_associations.last_address_form_submitted = signature;
+    } else {
+      // There should be at most one credit card form association expected.
+      EXPECT_FALSE(expected_associations.last_credit_card_form_submitted);
+      expected_associations.last_credit_card_form_submitted = signature;
+    }
+  }
+
+  auto associations =
+      form_associator.GetFormAssociations(FormSignature{test.size() - 1});
+  EXPECT_TRUE(associations);
+  EXPECT_EQ(expected_associations.last_address_form_submitted,
+            associations->last_address_form_submitted);
+  EXPECT_EQ(expected_associations.second_last_address_form_submitted,
+            associations->second_last_address_form_submitted);
+  EXPECT_EQ(expected_associations.last_credit_card_form_submitted,
+            associations->last_credit_card_form_submitted);
 }
 
 }  // namespace autofill

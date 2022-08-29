@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -386,6 +385,21 @@ bool FormDataImporter::ImportFormData(
       !base::FeatureList::IsEnabled(features::kAutofillDisableAddressImport)) {
     address_import = ImportAddressProfiles(submitted_form,
                                            address_profile_import_candidates);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
+    auto origin = url::Origin::Create(submitted_form.source_url());
+    FormSignature form_signature = submitted_form.form_signature();
+    // TODO(crbug.com/1347795): Associate multiple sections within a single form
+    // with each other.
+    if (address_import) {
+      form_associator_.TrackFormAssociations(
+          origin, form_signature, FormAssociator::FormType::kAddressForm);
+    }
+    if (cc_import) {
+      form_associator_.TrackFormAssociations(
+          origin, form_signature, FormAssociator::FormType::kCreditCardForm);
+    }
   }
 
   if (cc_import || address_import || imported_upi_id->has_value())
@@ -1084,19 +1098,8 @@ bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
 
 void FormDataImporter::OnBrowsingHistoryCleared(
     const history::DeletionInfo& deletion_info) {
-  // Delete all multi-step import candidates when:
-  // - The entire browsing history is cleared, or
-  // - At least one URL from the same origin as `multistep_importer_`
-  //   is deleted.
-  if (deletion_info.IsAllHistory() ||
-      (multistep_importer_.Origin() &&
-       base::Contains(deletion_info.deleted_rows(),
-                      *multistep_importer_.Origin(),
-                      [](const history::URLRow& url_row) {
-                        return url::Origin::Create(url_row.url());
-                      }))) {
-    ClearMultiStepImportCandidates();
-  }
+  multistep_importer_.OnBrowsingHistoryCleared(deletion_info);
+  form_associator_.OnBrowsingHistoryCleared(deletion_info);
 }
 
 }  // namespace autofill

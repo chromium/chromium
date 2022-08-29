@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_data_importer_utils.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -18,6 +19,17 @@ namespace {
 
 using AddressImportRequirement =
     AutofillMetrics::AddressProfileImportRequirementMetric;
+
+bool IsOriginPartOfDeletionInfo(const absl::optional<url::Origin>& origin,
+                                const history::DeletionInfo& deletion_info) {
+  if (!origin)
+    return false;
+  return deletion_info.IsAllHistory() ||
+         base::Contains(deletion_info.deleted_rows(), *origin,
+                        [](const history::URLRow& url_row) {
+                          return url::Origin::Create(url_row.url());
+                        });
+}
 
 }  // anonymous namespace
 
@@ -239,6 +251,69 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
     multistep_candidates_.erase(candidate, multistep_candidates_.end());
     return false;
   }
+}
+
+void MultiStepImportMerger::OnBrowsingHistoryCleared(
+    const history::DeletionInfo& deletion_info) {
+  if (IsOriginPartOfDeletionInfo(multistep_candidates_.origin(), deletion_info))
+    Clear();
+}
+
+FormAssociator::FormAssociator() = default;
+FormAssociator::~FormAssociator() = default;
+
+void FormAssociator::TrackFormAssociations(const url::Origin& origin,
+                                           FormSignature form_signature,
+                                           FormType form_type) {
+  const base::TimeDelta ttl = features::kAutofillAssociateFormsTTL.Get();
+  // This ensures that `recent_address_forms_` and `recent_credit_card_forms`
+  // share the same origin (if they are non-empty).
+  recent_address_forms_.RemoveOutdatedItems(ttl, origin);
+  recent_credit_card_forms_.RemoveOutdatedItems(ttl, origin);
+
+  auto& container = form_type == FormType::kAddressForm
+                        ? recent_address_forms_
+                        : recent_credit_card_forms_;
+  container.Push(form_signature, origin);
+}
+
+absl::optional<FormStructure::FormAssociations>
+FormAssociator::GetFormAssociations(FormSignature form_signature) const {
+  FormStructure::FormAssociations associations;
+  if (!recent_address_forms_.empty())
+    associations.last_address_form_submitted = *recent_address_forms_.begin();
+  if (!recent_credit_card_forms_.empty()) {
+    associations.last_credit_card_form_submitted =
+        *recent_credit_card_forms_.begin();
+  }
+  if (associations.last_address_form_submitted != form_signature &&
+      associations.last_credit_card_form_submitted != form_signature) {
+    return absl::nullopt;
+  }
+  if (recent_address_forms_.size() > 1) {
+    associations.second_last_address_form_submitted =
+        *std::next(recent_address_forms_.begin());
+  }
+  return associations;
+}
+
+const absl::optional<url::Origin>& FormAssociator::origin() const {
+  DCHECK(
+      !recent_address_forms_.origin() || !recent_credit_card_forms_.origin() ||
+      *recent_address_forms_.origin() == *recent_credit_card_forms_.origin());
+  return recent_address_forms_.origin() ? recent_address_forms_.origin()
+                                        : recent_credit_card_forms_.origin();
+}
+
+void FormAssociator::Clear() {
+  recent_address_forms_.Clear();
+  recent_credit_card_forms_.Clear();
+}
+
+void FormAssociator::OnBrowsingHistoryCleared(
+    const history::DeletionInfo& deletion_info) {
+  if (IsOriginPartOfDeletionInfo(origin(), deletion_info))
+    Clear();
 }
 
 }  // namespace autofill

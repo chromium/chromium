@@ -6234,56 +6234,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmittedServerTypes) {
   EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 }
 
-// Test that we are able to save form data after the possible types have been
-// determined. We do two submissions and verify that only at the second
-// submission are the possible types able to be inferred.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FormSubmittedPossibleTypesTwoSubmissions) {
-  // Set up our form data.
-  FormData form;
-  std::vector<ServerFieldTypeSet> expected_types;
-  test::CreateTestAddressFormData(&form, &expected_types);
-  FormsSeen(std::vector<FormData>(1, form));
-
-  // Fill the form.
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
-                                     MakeFrontendId(std::string(), guid),
-                                     &response_page_id, &response_data);
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
-
-  personal_data().ClearProfiles();
-  // The default credit card is a Elvis card. It must be removed because name
-  // fields would be detected. However at least one profile or card is needed to
-  // start the upload process, which is why this other card is created.
-  personal_data().ClearCreditCards();
-  CreditCard credit_card;
-  test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
-                          "4234567890654321",  // Visa
-                          "04", "2999", "1");
-  credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  personal_data().AddCreditCard(credit_card);
-  ASSERT_EQ(0u, personal_data().GetProfiles().size());
-
-  // Simulate form submission. The first submission should not count the data
-  // towards possible types. Therefore we expect all UNKNOWN_TYPE entries.
-  ServerFieldTypeSet type_set;
-  type_set.insert(UNKNOWN_TYPE);
-  std::vector<ServerFieldTypeSet> unknown_types(expected_types.size(),
-                                                type_set);
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes(unknown_types);
-  FormSubmitted(response_data);
-  ASSERT_EQ(1u, personal_data().GetProfiles().size());
-
-  // The second submission should now have data by which to infer types.
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
-  FormSubmitted(response_data);
-  ASSERT_EQ(1u, personal_data().GetProfiles().size());
-}
-
 // Test that the form signature for an uploaded form always matches the form
 // signature from the query.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,

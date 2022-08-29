@@ -450,6 +450,18 @@ class FormStructure {
     return single_username_data_;
   }
 
+  // The signatures of forms recently submitted on the same origin within a
+  // small period of time.
+  struct FormAssociations {
+    absl::optional<FormSignature> last_address_form_submitted;
+    absl::optional<FormSignature> second_last_address_form_submitted;
+    absl::optional<FormSignature> last_credit_card_form_submitted;
+  };
+
+  void set_form_associations(FormAssociations associations) {
+    form_associations_ = associations;
+  }
+
  private:
   friend class FormStructureTestApi;
 
@@ -720,6 +732,11 @@ class FormStructure {
   // Single username details, if applicable.
   absl::optional<AutofillUploadContents::SingleUsernameData>
       single_username_data_;
+
+  // The signatures of forms recently submitted on the same origin within a
+  // small period of time.
+  // Only used for voting-purposes.
+  FormAssociations form_associations_;
 };
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);

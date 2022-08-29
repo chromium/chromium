@@ -225,7 +225,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 42
+// Next available id: 46
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -492,6 +492,13 @@ message AutofillUploadContents {
   // The message contains data on a preceding form with potential username
   // field.
   optional SingleUsernameData single_username_data = 42;
+
+  // The form signature of related forms, which were submitted on the same
+  // origin shortly prior. If set, `last_address_form_submitted` or
+  // `last_credit_card_form_submitted` is equal to `form_signature`.
+  optional fixed64 last_address_form_submitted = 43;
+  optional fixed64 second_last_address_form_submitted = 44;
+  optional fixed64 last_credit_card_form_submitted = 45;
 }
 
 // This proto contains information about the validity of each field in an

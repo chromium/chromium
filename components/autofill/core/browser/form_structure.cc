@@ -446,6 +446,19 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
   if (single_username_data_)
     upload.mutable_single_username_data()->CopyFrom(*single_username_data_);
 
+  if (form_associations_.last_address_form_submitted) {
+    upload.set_last_address_form_submitted(
+        form_associations_.last_address_form_submitted->value());
+  }
+  if (form_associations_.second_last_address_form_submitted) {
+    upload.set_second_last_address_form_submitted(
+        form_associations_.second_last_address_form_submitted->value());
+  }
+  if (form_associations_.last_credit_card_form_submitted) {
+    upload.set_last_credit_card_form_submitted(
+        form_associations_.last_credit_card_form_submitted->value());
+  }
+
   auto triggering_event = (submission_event_ != SubmissionIndicatorEvent::NONE)
                               ? submission_event_
                               : ToSubmissionIndicatorEvent(submission_source_);

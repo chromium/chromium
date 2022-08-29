@@ -84,6 +84,15 @@ const base::Feature kAutofillAllowDuplicateFormSubmissions{
 const base::Feature kAutofillAllowNonHttpActivation{
     "AutofillAllowNonHttpActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the two most recent address forms and the most recent credit card
+// forms, which were submitted on the same origin, are associated with each
+// other. The association only happens if at most `kAutofillAssociateFormsTTL`
+// time passes between all submissions.
+const base::Feature kAutofillAssociateForms{"AutofillAssociateForms",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
+    &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
+
 // If enabled, the country calling code for nationally formatted phone numbers
 // is inferred from the profile's country, if available.
 // TODO(crbug.com/1311937): Cleanup when launched.

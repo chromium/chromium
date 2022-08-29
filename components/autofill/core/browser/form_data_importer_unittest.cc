@@ -4457,6 +4457,32 @@ TEST_P(FormDataImporterTest, MultiStepImportDeleteOnBrowsingHistoryCleared) {
   ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
 }
 
+// Tests that the FormAssociator is correctly integrated in FormDataImporter.
+// The functionality itself is tested in form_data_importer_utils_unittest.cc.
+TEST_P(FormDataImporterTest, FormAssociator) {
+  base::test::ScopedFeatureList form_association_feature;
+  form_association_feature.InitAndEnableFeature(
+      features::kAutofillAssociateForms);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  // Don't use `ImportAddressProfileAndVerifyImportOfDefaultProfile()`, as this
+  // function assumes we know it's an address form already. Form associations
+  // are tracked in `ImportFormData()` instead.
+  EXPECT_TRUE(ImportFormDataAndProcessAddressCandidates(
+      *form_structure, /*profile_autofill_enabled=*/true,
+      /*credit_card_autofill_enabled=*/false,
+      /*should_return_local_card=*/false, nullptr, nullptr));
+
+  auto associations = form_data_importer_->GetFormAssociations(
+      form_structure->form_signature());
+  EXPECT_TRUE(associations);
+  EXPECT_EQ(associations->last_address_form_submitted,
+            form_structure->form_signature());
+  EXPECT_FALSE(associations->second_last_address_form_submitted);
+  EXPECT_FALSE(associations->last_credit_card_form_submitted);
+}
+
 // Runs the suite with the feature `kAutofillEnableSupportForApartmentNumbers`
 // and `kAutofillConsiderVariationCountryCodeForPhoneNumbers` enabled and
 // disabled.

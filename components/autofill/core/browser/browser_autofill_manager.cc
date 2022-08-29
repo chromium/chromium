@@ -766,6 +766,27 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   }
 
   submitted_form->set_submission_source(source);
+
+  // Update Personal Data with the form's submitted data.
+  // Also triggers offering local/upload credit card save, if applicable.
+  if (submitted_form->IsAutofillable() ||
+      ContainsAutofillableValue(*submitted_form)) {
+    FormDataImporter* form_data_importer = client()->GetFormDataImporter();
+    form_data_importer->ImportFormData(*submitted_form,
+                                       IsAutofillProfileEnabled(),
+                                       IsAutofillCreditCardEnabled());
+    // Associate the form signatures of recently submitted address/credit card
+    // forms to `submitted_form`, if it is an address/credit card form itself.
+    // This information is attached to the vote.
+    if (base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
+      if (absl::optional<FormStructure::FormAssociations> associations =
+              form_data_importer->GetFormAssociations(
+                  submitted_form->form_signature())) {
+        submitted_form->set_form_associations(*associations);
+      }
+    }
+  }
+
   MaybeStartVoteUploadProcess(std::move(submitted_form),
                               /*observed_submission=*/true);
 
@@ -785,17 +806,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     credit_card_form_event_logger_->OnFormSubmitted(sync_state_,
                                                     *submitted_form);
   }
-
-  if (!submitted_form->IsAutofillable() &&
-      !ContainsAutofillableValue(*submitted_form)) {
-    return;
-  }
-
-  // Update Personal Data with the form's submitted data.
-  // Also triggers offering local/upload credit card save, if applicable.
-  client()->GetFormDataImporter()->ImportFormData(
-      *submitted_form, IsAutofillProfileEnabled(),
-      IsAutofillCreditCardEnabled());
 }
 
 bool BrowserAutofillManager::MaybeStartVoteUploadProcess(

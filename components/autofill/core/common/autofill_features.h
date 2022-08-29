@@ -45,6 +45,10 @@ extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowNonHttpActivation;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillAssociateForms;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillInferCountryCallingCode;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillComplementCountryCodeOnImport;

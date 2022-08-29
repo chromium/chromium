@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_UTILS_H_
 
 #include <iterator>
+#include <limits>
 #include <list>
 #include <string>
 #include <utility>
@@ -13,8 +14,11 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/signatures.h"
+#include "components/history/core/browser/history_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -36,11 +40,17 @@ class TimestampedSameOriginQueue {
   };
   using const_iterator = typename std::list<value_type>::const_iterator;
 
+  explicit TimestampedSameOriginQueue(
+      size_t max_size = std::numeric_limits<size_t>::max())
+      : max_size_(max_size) {}
+
   // Pushes `item` at the current timestamp.
   void Push(T item, const url::Origin& item_origin) {
     DCHECK(!origin_ || *origin_ == item_origin);
     items_.emplace_front(std::move(item), AutofillClock::Now());
     origin_ = item_origin;
+    if (size() - 1 == max_size_)
+      Pop();
   }
 
   // Removes the oldest element from the queue.
@@ -63,7 +73,7 @@ class TimestampedSameOriginQueue {
 
   // Returns the origin shared by the elements in the queue. Or nullopt, if
   // the queue is currently `Empty()`.
-  const absl::optional<url::Origin>& Origin() const { return origin_; }
+  const absl::optional<url::Origin>& origin() const { return origin_; }
 
   size_t size() const { return items_.size(); }
   bool empty() const { return items_.empty(); }
@@ -85,6 +95,9 @@ class TimestampedSameOriginQueue {
   std::list<value_type> items_;
   // If the queue is not `empty()`, this represents the origin of all `items_`.
   absl::optional<url::Origin> origin_;
+  // The maximum number of elements stored in `items_`. If adding a new item
+  // would exceed the `max_size_`, the oldest existing item is removed.
+  const size_t max_size_;
 };
 
 // Returns true if minimum requirements for import of a given `profile` have
@@ -128,11 +141,13 @@ class MultiStepImportMerger {
                               ProfileImportMetadata& import_metadata,
                               const url::Origin& origin);
 
-  const absl::optional<url::Origin>& Origin() const {
-    return multistep_candidates_.Origin();
+  const absl::optional<url::Origin>& origin() const {
+    return multistep_candidates_.origin();
   }
 
   void Clear() { multistep_candidates_.Clear(); }
+
+  void OnBrowsingHistoryCleared(const history::DeletionInfo& deletion_info);
 
  private:
   // Merges a given `profile` stepwise with `multistep_candidates_` to
@@ -164,6 +179,48 @@ class MultiStepImportMerger {
   };
   TimestampedSameOriginQueue<MultiStepFormProfileCandidate>
       multistep_candidates_;
+};
+
+// Tracks which address and credit card forms were submitted in close temporal
+// proximity.
+class FormAssociator {
+ public:
+  enum class FormType {
+    kAddressForm,
+    kCreditCardForm,
+  };
+
+  FormAssociator();
+  ~FormAssociator();
+
+  // Removes outdated (different `origin` or TTL) form signatures from
+  // `recent_credit_card_forms_` and `recent_address_forms_`. Adds
+  // `form_signature` to the appropriate list (depending on `form_type`).
+  void TrackFormAssociations(const url::Origin& origin,
+                             FormSignature form_signature,
+                             FormType form_type);
+
+  // Returns the form signatures that are associated with `form_signature`, if
+  // any. In particular, the two most recent address and the most recent
+  // submitted credit card form signatures from the same origin are returned.
+  // One of them is the `form_signature` itself.
+  absl::optional<FormStructure::FormAssociations> GetFormAssociations(
+      FormSignature form_signature) const;
+
+  const absl::optional<url::Origin>& origin() const;
+
+  void Clear();
+
+  void OnBrowsingHistoryCleared(const history::DeletionInfo& deletion_info);
+
+ private:
+  // Stores the two most recent address form signatures and the most recent
+  // credit card form signature submitted, within a small TTL and sharing the
+  // same origin.
+  TimestampedSameOriginQueue<FormSignature> recent_address_forms_{
+      /*max_size=*/2u};
+  TimestampedSameOriginQueue<FormSignature> recent_credit_card_forms_{
+      /*max_size=*/1u};
 };
 
 }  // namespace autofill

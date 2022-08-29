@@ -101,6 +101,12 @@ class FormDataImporter : public PersonalDataManagerObserver {
   void OnBrowsingHistoryCleared(
       const history::DeletionInfo& deletion_info) override;
 
+  // See `FormAssociator::GetFormAssociations()`.
+  absl::optional<FormStructure::FormAssociations> GetFormAssociations(
+      FormSignature form_signature) const {
+    return form_associator_.GetFormAssociations(form_signature);
+  }
+
  protected:
   // Exposed for testing.
   void set_credit_card_save_manager(
@@ -300,6 +306,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   // Enables importing from multi-step import flows.
   MultiStepImportMerger multistep_importer_;
+
+  // Enables associating recently submitted forms with each other.
+  FormAssociator form_associator_;
 
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;
