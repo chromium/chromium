@@ -49,6 +49,11 @@ std::vector<IID> GetSideBySideInterfaces();
 // that can only be installed for the active instance of the updater.
 std::vector<IID> GetActiveInterfaces();
 
+// Returns the interfaces ids of all interfaces declared in IDL of the updater
+// that can be installed side-by-side (if `is_internal` is `true`) or for the
+// active instance (if `is_internal` is `false`) .
+std::vector<IID> GetInterfaces(bool is_internal);
+
 // Returns the CLSIDs of servers that can be installed side-by-side with other
 // instances of the updater.
 std::vector<CLSID> GetSideBySideServers(UpdaterScope scope);
@@ -56,6 +61,11 @@ std::vector<CLSID> GetSideBySideServers(UpdaterScope scope);
 // Returns the CLSIDs of servers that can only be installed for the active
 // instance of the updater.
 std::vector<CLSID> GetActiveServers(UpdaterScope scope);
+
+// Returns the CLSIDs of servers that can be installed side-by-side (if
+// `is_internal` is `true`) or for the active instance (if `is_internal` is
+// `false`) .
+std::vector<CLSID> GetServers(bool is_internal, UpdaterScope scope);
 
 // Helper function that joins two vectors and returns the resultant vector.
 template <typename T>

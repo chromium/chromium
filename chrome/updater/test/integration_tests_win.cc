@@ -637,6 +637,68 @@ void WaitForUpdaterExit(UpdaterScope /*scope*/) {
   WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }));
 }
 
+// Verify registry entries for all interfaces.
+// IID entries under `Software\Classes\Interface`:
+// * ProxyStubClsid32 entry should point to the OLE automation marshaler
+// * TypeLib entry should be equal to the IID.
+//
+// TypeLib entries under `Software\Classes\TypeLib`:
+// * Read the typelib path under both `win32` and `win64`.
+// * Confirm that the typelib can be loaded using ::LoadTypeLib.
+// * Confirm that the typeinfo for each interface can be loaded from the
+// typelib.
+void VerifyInterfacesRegistryEntries(UpdaterScope scope) {
+  for (const auto is_internal : {true, false}) {
+    for (const auto& iid : GetInterfaces(is_internal)) {
+      const HKEY root = UpdaterScopeToHKeyRoot(scope);
+      const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
+      const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
+      const std::wstring iid_string = base::win::WStringFromGUID(iid);
+
+      std::wstring val;
+      {
+        const auto& path = iid_reg_path + L"\\ProxyStubClsid32";
+        EXPECT_EQ(base::win::RegKey(root, path.c_str(), KEY_READ)
+                      .ReadValue(L"", &val),
+                  ERROR_SUCCESS)
+            << ": " << root << ": " << path << ": " << iid_string;
+        EXPECT_EQ(val, L"{00020424-0000-0000-C000-000000000046}");
+      }
+
+      {
+        const auto& path = iid_reg_path + L"\\TypeLib";
+        EXPECT_EQ(base::win::RegKey(root, path.c_str(), KEY_READ)
+                      .ReadValue(L"", &val),
+                  ERROR_SUCCESS)
+            << ": " << root << ": " << path << ": " << iid_string;
+        EXPECT_EQ(val, iid_string);
+      }
+
+      const std::wstring typelib_reg_path_win32 =
+          typelib_reg_path + L"\\1.0\\0\\win32";
+      const std::wstring typelib_reg_path_win64 =
+          typelib_reg_path + L"\\1.0\\0\\win64";
+
+      for (const auto& path :
+           {typelib_reg_path_win32, typelib_reg_path_win64}) {
+        std::wstring typelib_path;
+        EXPECT_EQ(base::win::RegKey(root, path.c_str(), KEY_READ)
+                      .ReadValue(L"", &typelib_path),
+                  ERROR_SUCCESS)
+            << ": " << root << ": " << path << ": " << iid_string;
+
+        Microsoft::WRL::ComPtr<ITypeLib> type_lib;
+        EXPECT_HRESULT_SUCCEEDED(::LoadTypeLib(typelib_path.c_str(), &type_lib))
+            << ": Typelib path: " << typelib_path;
+
+        Microsoft::WRL::ComPtr<ITypeInfo> type_info;
+        EXPECT_HRESULT_SUCCEEDED(type_lib->GetTypeInfoOfGuid(iid, &type_info))
+            << ": Typelib path: " << typelib_path << ": IID: " << iid_string;
+      }
+    }
+  }
+}
+
 // Tests if the typelibs and some of the public, internal, and
 // legacy interfaces are available. Failure to query these interfaces indicates
 // an issue with typelib registration.
@@ -666,14 +728,17 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
   }
 
-  // IUpdaterInternal.
-  Microsoft::WRL::ComPtr<IUnknown> updater_internal_server;
-  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
-      scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
-                                     : __uuidof(UpdaterInternalUserClass),
-      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
-  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
-  EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
+  {  // IUpdaterInternal.
+    Microsoft::WRL::ComPtr<IUnknown> updater_internal_server;
+    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+        scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
+                                       : __uuidof(UpdaterInternalUserClass),
+        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
+    Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
+    EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
+  }
+
+  VerifyInterfacesRegistryEntries(scope);
 }
 
 void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
