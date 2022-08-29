@@ -69,53 +69,49 @@ MultitaskMenuView::MultitaskMenuView(
                                                 kMultitaskMenuPortraitHeight)
                                     : gfx::Size(kMultitaskMenuLandscapeWidth,
                                                 kMultitaskMenuLandscapeHeight));
-
-  half_button_ =
-      static_cast<SplitButtonView*>(AddChildView(CreateButtonContainer(
-          std::make_unique<SplitButtonView>(
-              SplitButton::SplitButtonType::kHalfButtons,
-              base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
-                                  base::Unretained(this),
-                                  SnapDirection::kPrimary),
-              base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
-                                  base::Unretained(this),
-                                  SnapDirection::kSecondary),
-              is_portrait_mode),
-          IDS_APP_ACCNAME_HALF)));
+  // Half button.
+  auto half_button = std::make_unique<SplitButtonView>(
+      SplitButton::SplitButtonType::kHalfButtons,
+      base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
+                          base::Unretained(this), SnapDirection::kPrimary),
+      base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
+                          base::Unretained(this), SnapDirection::kSecondary),
+      is_portrait_mode);
+  half_button_ = half_button.get();
+  AddChildView(
+      CreateButtonContainer(std::move(half_button), IDS_APP_ACCNAME_HALF));
 
   // Partial button.
-  partial_button_ =
-      static_cast<SplitButtonView*>(AddChildView(CreateButtonContainer(
-          std::make_unique<SplitButtonView>(
-              SplitButton::SplitButtonType::kPartialButtons,
-              base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
-                                  base::Unretained(this),
-                                  SnapDirection::kPrimary),
-              base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
-                                  base::Unretained(this),
-                                  SnapDirection::kSecondary),
-              is_portrait_mode),
-          IDS_APP_ACCNAME_PARTIAL)));
+  auto partial_button = std::make_unique<SplitButtonView>(
+      SplitButton::SplitButtonType::kPartialButtons,
+      base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
+                          base::Unretained(this), SnapDirection::kPrimary),
+      base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
+                          base::Unretained(this), SnapDirection::kSecondary),
+      is_portrait_mode);
+  partial_button_ = partial_button.get();
+  AddChildView(CreateButtonContainer(std::move(partial_button),
+                                     IDS_APP_ACCNAME_PARTIAL));
 
   // Full screen button.
-  full_button_ =
-      static_cast<MultitaskBaseButton*>(AddChildView(CreateButtonContainer(
-          std::make_unique<MultitaskBaseButton>(
-              base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
-                                  base::Unretained(this)),
-              MultitaskBaseButton::Type::kFull, is_portrait_mode,
-              l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FULL)),
-          IDS_APP_ACCNAME_FULL)));
+  auto full_button = std::make_unique<MultitaskBaseButton>(
+      base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
+                          base::Unretained(this)),
+      MultitaskBaseButton::Type::kFull, is_portrait_mode,
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FULL));
+  full_button_ = full_button.get();
+  AddChildView(
+      CreateButtonContainer(std::move(full_button), IDS_APP_ACCNAME_FULL));
 
   // Float on top button.
-  float_button_ =
-      static_cast<MultitaskBaseButton*>(AddChildView(CreateButtonContainer(
-          std::make_unique<MultitaskBaseButton>(
-              base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
-                                  base::Unretained(this)),
-              MultitaskBaseButton::Type::kFloat, is_portrait_mode,
-              l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT_ON_TOP)),
-          IDS_APP_ACCNAME_FLOAT_ON_TOP)));
+  auto float_button = std::make_unique<MultitaskBaseButton>(
+      base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
+                          base::Unretained(this)),
+      MultitaskBaseButton::Type::kFloat, is_portrait_mode,
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT_ON_TOP));
+  float_button_ = float_button.get();
+  AddChildView(CreateButtonContainer(std::move(float_button),
+                                     IDS_APP_ACCNAME_FLOAT_ON_TOP));
 }
 
 MultitaskMenuView::~MultitaskMenuView() = default;
