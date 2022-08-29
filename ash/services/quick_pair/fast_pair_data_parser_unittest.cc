@@ -28,8 +28,10 @@ constexpr int kNotDiscoverableAdvHeader = 0b00000110;
 constexpr int kAccountKeyFilterHeader = 0b01100000;
 constexpr int kAccountKeyFilterNoNotificationHeader = 0b01100010;
 constexpr int kSaltHeader = 0b00010001;
+constexpr int kSaltHeader2Bytes = 0b00100001;
+constexpr int kSaltHeader3Bytes = 0b00110001;
 const std::vector<uint8_t> kSaltBytes = {0x01};
-const std::vector<uint8_t> kInvalidSaltBytes = {0x01, 0x02};
+const std::vector<uint8_t> kLargeSaltBytes = {0xC7, 0xC8};
 const std::vector<uint8_t> kDeviceAddressBytes = {17, 18, 19, 20, 21, 22};
 constexpr int kBatteryHeader = 0b00110011;
 constexpr int kBatterHeaderNoNotification = 0b00110100;
@@ -37,7 +39,8 @@ constexpr int kBatterHeaderNoNotification = 0b00110100;
 const std::string kModelId = "112233";
 const std::string kAccountKeyFilter = "112233445566";
 const std::string kSalt = "01";
-const std::string kInvalidSalt = "01020404050607";
+const std::string kLargeSalt = "C7C8";
+const std::string kInvalidSalt = "C7C8C9";
 const std::string kBattery = "01048F";
 const std::string kDeviceAddress = "11:12:13:14:15:16";
 
@@ -406,13 +409,40 @@ TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_WrongType) {
   run_loop.Run();
 }
 
+TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_SaltTwoBytes) {
+  std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
+                                   .SetHeader(kNotDiscoverableAdvHeader)
+                                   .SetModelId(kModelId)
+                                   .AddExtraFieldHeader(kAccountKeyFilterHeader)
+                                   .AddExtraField(kAccountKeyFilter)
+                                   .AddExtraFieldHeader(kSaltHeader2Bytes)
+                                   .AddExtraField(kLargeSalt)
+                                   .Build()
+                                   ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_TRUE(advertisement.has_value());
+        EXPECT_EQ(kAccountKeyFilter,
+                  base::HexEncode(advertisement->account_key_filter));
+        EXPECT_EQ(kLargeSaltBytes, advertisement->salt);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, kDeviceAddress,
+                                                  std::move(callback));
+
+  run_loop.Run();
+}
+
 TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_SaltTooLarge) {
   std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
                                    .SetHeader(kNotDiscoverableAdvHeader)
                                    .SetModelId(kModelId)
-                                   .AddExtraFieldHeader(0b01100001)
+                                   .AddExtraFieldHeader(kAccountKeyFilterHeader)
                                    .AddExtraField(kAccountKeyFilter)
-                                   .AddExtraFieldHeader(kSaltHeader)
+                                   .AddExtraFieldHeader(kSaltHeader3Bytes)
                                    .AddExtraField(kInvalidSalt)
                                    .Build()
                                    ->CreateServiceData();

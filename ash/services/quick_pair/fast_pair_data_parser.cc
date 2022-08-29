@@ -274,8 +274,10 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
     return;
   }
 
-  if (salt_bytes.size() > 1) {
-    QP_LOG(WARNING) << " Parsed a salt field larger than one byte: "
+  // The salt byte requirements need to stay aligned with the Fast Pair Spec:
+  // https://developers.devsite.corp.google.com/nearby/fast-pair/specifications/service/provider#AccountKeyFilter
+  if (salt_bytes.size() > 2) {
+    QP_LOG(WARNING) << " Parsed a salt field larger than two bytes: "
                     << salt_bytes.size();
     std::move(callback).Run(absl::nullopt);
     return;
