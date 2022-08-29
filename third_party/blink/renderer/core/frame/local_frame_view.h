@@ -739,8 +739,7 @@ class CORE_EXPORT LocalFrameView final
   }
   void DidChangeMobileFriendliness(const MobileFriendliness& mf);
 
-  // Returns the UKM aggregator for this frame, or this frame's local root if
-  // features::kLocalFrameRootPrePostFCPMetrics is enabled, creating it if
+  // Returns the UKM aggregator for this frame's local root, creating it if
   // necessary.
   LocalFrameUkmAggregator& EnsureUkmAggregator();
   void ResetUkmAggregatorForTesting();
