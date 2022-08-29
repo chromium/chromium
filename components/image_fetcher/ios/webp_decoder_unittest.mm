@@ -17,6 +17,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -91,7 +92,9 @@ class WebpDecoderTest : public testing::Test {
         new std::vector<uint8_t>(width * height * bytes_per_pixel, 0);
     base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
         &result->front(), width, height, bits_per_component, bytes_per_row,
-        color_space, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big));
+        color_space,
+        base::to_underlying(kCGImageAlphaPremultipliedLast) |
+            base::to_underlying(kCGBitmapByteOrder32Big)));
     CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
     // Check that someting has been written in |result|.
     std::vector<uint8_t> zeroes(width * height * bytes_per_pixel, 0);
