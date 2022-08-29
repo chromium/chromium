@@ -37,7 +37,7 @@ class SessionRestorationBrowserAgent
       WebStateListObserver,
       public web::WebStateObserver {
  public:
-  // Creates an SessionRestorationBrowserAgent scoped to |browser|.
+  // Creates an SessionRestorationBrowserAgent scoped to `browser`.
   static void CreateForBrowser(Browser* browser,
                                SessionServiceIOS* session_service);
 
@@ -56,7 +56,7 @@ class SessionRestorationBrowserAgent
   void AddObserver(SessionRestorationObserver* observer);
   void RemoveObserver(SessionRestorationObserver* observer);
 
-  // Restores the |window| (for example, after a crash). If there is only one ,
+  // Restores the `window` (for example, after a crash). If there is only one ,
   // tab showing the NTP, then this tab should be clobbered, otherwise, the tabs
   // from the restored sessions should be added at the end of the current list
   // of tabs. Returns YES if the single NTP tab is closed.
@@ -68,7 +68,7 @@ class SessionRestorationBrowserAgent
   bool RestoreSession();
 
   // Persists the current list of tabs to disk, either immediately or deferred
-  // based on the value of |immediately|.
+  // based on the value of `immediately`.
   void SaveSession(const bool immediately);
 
   // Returns true if there is a session restoration in progress, otherwise it
@@ -137,7 +137,7 @@ class SessionRestorationBrowserAgent
   // True when session restoration is in progress.
   bool restoring_session_ = false;
 
-  // Observer for the active web state in |browser_|'s web state list.
+  // Observer for the active web state in `browser_`'s web state list.
   std::unique_ptr<AllWebStateObservationForwarder> all_web_state_observer_;
 };
 

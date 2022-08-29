@@ -30,10 +30,10 @@ class WebStateList;
 // be used without initializing the object with a non-null WebStateList.
 - (SessionIOS*)sessionForSaving;
 
-// Call that function when |webState| state changed and the new state must be
+// Call that function when `webState` state changed and the new state must be
 // persisted. This webState content will be added in the SessionIOS on the next
-// call to |sessionForSaving|.
-// Dirty webStates are reset when calling |sessionForSaving|.
+// call to `sessionForSaving`.
+// Dirty webStates are reset when calling `sessionForSaving`.
 - (void)markWebStateDirty:(web::WebState*)webState;
 
 @end

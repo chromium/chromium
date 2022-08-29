@@ -66,7 +66,7 @@ class SessionServiceTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Returns a WebStateList with |tabs_count| WebStates and activates the first
+  // Returns a WebStateList with `tabs_count` WebStates and activates the first
   // WebState.
   std::unique_ptr<WebStateList> CreateWebStateList(int tabs_count) {
     std::unique_ptr<WebStateList> web_state_list =
@@ -84,7 +84,7 @@ class SessionServiceTest : public PlatformTest {
   }
 
   // Returns the path to serialized SessionWindowIOS from a testdata file named
-  // |filename| or nil if the file cannot be found.
+  // `filename` or nil if the file cannot be found.
   NSString* SessionPathForTestData(const base::FilePath::CharType* filename) {
     base::FilePath session_path;
     if (!base::PathService::Get(ios::DIR_TEST_DATA, &session_path))
@@ -132,7 +132,7 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPath) {
                        directory:directory()
                      immediately:YES];
 
-  // Even if |immediately| is YES, the file is created by a task on the task
+  // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();
@@ -158,7 +158,7 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPathDirectoryExists) {
                        directory:directory()
                      immediately:YES];
 
-  // Even if |immediately| is YES, the file is created by a task on the task
+  // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();
@@ -190,7 +190,7 @@ TEST_F(SessionServiceTest, SeparateFiles_SaveSession) {
                        sessionID:session_id
                        directory:directory()
                      immediately:YES];
-  // Even if |immediately| is YES, the file is created by a task on the task
+  // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();
@@ -245,7 +245,7 @@ TEST_F(SessionServiceTest, SeparateFiles_OnlyDirtySaved) {
                        sessionID:session_id
                        directory:directory()
                      immediately:YES];
-  // Even if |immediately| is YES, the file is created by a task on the task
+  // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();
@@ -315,7 +315,7 @@ TEST_F(SessionServiceTest, SeparateFiles_CleanFiles) {
                        directory:directory()
                      immediately:YES];
 
-  // Even if |immediately| is YES, the file is created by a task on the task
+  // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();
@@ -390,7 +390,7 @@ TEST_F(SessionServiceTest, LoadSessionFromDirectory) {
                        directory:directory()
                      immediately:YES];
 
-  // Even if |immediately| is YES, the file is created by a task on the task
+  // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();
@@ -414,7 +414,7 @@ TEST_F(SessionServiceTest, LoadSessionFromPath) {
                        directory:directory()
                      immediately:YES];
 
-  // Even if |immediately| is YES, the file is created by a task on the task
+  // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();

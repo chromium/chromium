@@ -11,7 +11,7 @@
 
 // Testing subclass of SessionService that immediately consumes session windows
 // passed to -saveSessionWindow:sessionPath:immediately: is consumed immediately
-// but only saved to disk if |performIO| is set to YES. Also it keeps track of
+// but only saved to disk if `performIO` is set to YES. Also it keeps track of
 // how many calls to saveSessionWindow have been done.
 @interface TestSessionService : SessionServiceIOS
 

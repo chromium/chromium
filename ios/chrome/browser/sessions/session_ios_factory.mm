@@ -62,7 +62,7 @@
 #pragma mark - Private
 
 - (BOOL)canSaveCurrentSession {
-  // The |_webStateList| needs to be alive for the session to be saved.
+  // The `_webStateList` needs to be alive for the session to be saved.
   if (!_webStateList)
     return NO;
 

@@ -24,7 +24,7 @@ NSString* const kSessionStableIdentifierKey = @"stableIdentifier";
 NSString* const kSessionCurrentURLKey = @"sessionCurrentURL";
 NSString* const kSessionCurrentTitleKey = @"sessionCurrentTitle";
 
-// Returns whether |index| is valid for a SessionWindowIOS with |session_count|
+// Returns whether `index` is valid for a SessionWindowIOS with `session_count`
 // entries.
 BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
   return (session_count == 0) ? (index == static_cast<NSUInteger>(NSNotFound))

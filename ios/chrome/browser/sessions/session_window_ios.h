@@ -34,8 +34,8 @@
 @interface SessionWindowIOS : NSObject<NSCoding>
 
 // Initializes SessionsWindowIOS using the parameters are initial values for
-// the |sessions| and |selectedIndex| properties. |selectedIndex| must be a
-// valid indice in |sessions| or NSNotFound if |sessions| is empty.
+// the `sessions` and `selectedIndex` properties. `selectedIndex` must be a
+// valid indice in `sessions` or NSNotFound if `sessions` is empty.
 - (instancetype)initWithSessions:(NSArray<CRWSessionStorage*>*)sessions
                  sessionsSummary:(NSArray<SessionSummary*>*)sessionsSummary
                      tabContents:(NSDictionary<NSString*, NSData*>*)tabContents
@@ -52,7 +52,7 @@
 @property(nonatomic, readonly) NSDictionary<NSString*, NSData*>* tabContents;
 
 // The currently selected session. NSNotFound if the sessionWindow contains
-// no sessions; otherwise a valid index in |sessions|.
+// no sessions; otherwise a valid index in `sessions`.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 
 @end

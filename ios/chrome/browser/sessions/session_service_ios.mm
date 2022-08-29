@@ -34,10 +34,10 @@
 #error "This file requires ARC support."
 #endif
 
-// When C++ exceptions are disabled, the C++ library defines |try| and
-// |catch| so as to allow exception-expecting C++ code to build properly when
+// When C++ exceptions are disabled, the C++ library defines `try` and
+// `catch` so as to allow exception-expecting C++ code to build properly when
 // language support for exceptions is not present.  These macros interfere
-// with the use of |@try| and |@catch| in Objective-C files such as this one.
+// with the use of `@try` and `@catch` in Objective-C files such as this one.
 // Undefine these macros here, after everything has been #included, since
 // there will be no C++ uses and only Objective-C uses from this point on.
 #undef try
@@ -110,7 +110,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self performSaveToPathInBackground:sessionPath];
   } else if (!hadPendingSession) {
-    // If there wasn't previously a delayed save pending for |sessionPath|,
+    // If there wasn't previously a delayed save pending for `sessionPath`,
     // enqueue one now.
     [self performSelector:@selector(performSaveToPathInBackground:)
                withObject:sessionPath
@@ -219,7 +219,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 #pragma mark - Private methods
 
-// Delete files/folders of the given |paths|.
+// Delete files/folders of the given `paths`.
 - (void)deletePaths:(NSArray<NSString*>*)paths
          completion:(base::OnceClosure)callback {
   _taskRunner->PostTaskAndReply(

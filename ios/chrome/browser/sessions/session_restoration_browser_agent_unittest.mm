@@ -109,8 +109,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   NSString* session_id() { return session_identifier_; }
 
  protected:
-  // Creates a session window with |sessions_count| and mark the
-  // |selected_index| entry as selected.
+  // Creates a session window with `sessions_count` and mark the
+  // `selected_index` entry as selected.
   SessionWindowIOS* CreateSessionWindow(int sessions_count,
                                         int selected_index) {
     NSMutableArray<CRWSessionStorage*>* sessions = [NSMutableArray array];

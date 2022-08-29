@@ -29,7 +29,7 @@ namespace {
 const base::FilePath::CharType kRoot[] = FILE_PATH_LITERAL("root");
 const char kName[] = "filename";
 
-// Creates a temporary directory with |filenames| files below. The file names
+// Creates a temporary directory with `filenames` files below. The file names
 // may contain path separator in which case the whole directory structure will
 // be created. The file themselves will be created empty with default access.
 base::ScopedTempDir CreateScopedTempDirWithContent(
@@ -50,8 +50,8 @@ base::ScopedTempDir CreateScopedTempDirWithContent(
   return temp_directory;
 }
 
-// Returns the list of files recursively found below |directory|. The path will
-// be relative to |directory|.
+// Returns the list of files recursively found below `directory`. The path will
+// be relative to `directory`.
 std::vector<base::FilePath> GetDirectoryContent(
     const base::FilePath& directory) {
   base::FileEnumerator enumerator(directory, /*recursive=*/true,

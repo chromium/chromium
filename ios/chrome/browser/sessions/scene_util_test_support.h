@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// Returns a fake UIScene with |identifier| as session persistent identifier
+// Returns a fake UIScene with `identifier` as session persistent identifier
 // when running on iOS 13+ or nil otherwise. The fake object implements just
 // enough API for SessionIdentifierForScene().
 id FakeSceneWithIdentifier(NSString* identifier);

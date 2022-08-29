@@ -11,10 +11,10 @@
 #endif
 
 namespace {
-// Note: |NSNotFound| is equal to |NSIntegerMax| in 32-bit and 64-bit that
-// in turn is initialized to |LONG_MAX|. On a 32-bit build, |INT_MAX| and
-// |LONG_MAX| have the same value, however, in a 64-bit build, |LONG_MAX|
-// is much larger, so we define |NSNotFound32| to |INT_MAX| that has the
+// Note: `NSNotFound` is equal to `NSIntegerMax` in 32-bit and 64-bit that
+// in turn is initialized to `LONG_MAX`. On a 32-bit build, `INT_MAX` and
+// `LONG_MAX` have the same value, however, in a 64-bit build, `LONG_MAX`
+// is much larger, so we define `NSNotFound32` to `INT_MAX` that has the
 // same value in both 32-bit and 64-bit builds.
 enum { NSNotFound32 = INT_MAX };
 }  // namespace
