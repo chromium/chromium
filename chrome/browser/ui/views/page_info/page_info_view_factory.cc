@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -464,5 +465,11 @@ const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
           ? vector_icons::kExtensionIcon
           : vector_icons::kBusinessIcon;
   return ui::ImageModel::FromVectorIcon(managed_vector_icon, ui::kColorIcon,
+                                        GetIconSize());
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
+  return ui::ImageModel::FromVectorIcon(kEyeCrossedIcon, ui::kColorIcon,
                                         GetIconSize());
 }

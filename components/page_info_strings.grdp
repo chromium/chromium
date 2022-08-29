@@ -709,7 +709,7 @@
   </message>
 
   <!-- Cookies subpage -->
-  <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The descritpion of cookies in Cookies Subpage with place holder for link to settings." translateable="false">
+  <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The descritpion of cookies in Cookies Subpage with placeholder for link to settings." translateable="false">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings." translateable="false">
@@ -727,10 +727,19 @@
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button." translateable="false">
         {NUM_COOKIES, plural, =1 {1 site allowed} other {# sites allowed}}
   </message>
-  <message name="IDS_PAGE_FPS_BUTTON_TITLE" desc="The title of first-party sets button in Cookies Subpage with place holder for name of the owner of this set." translateable="false">
+   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening cookies in use dialog in cookies subpage." translateable="false">
+    Manage cookies and site data
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="The text of the tooltip on the button opening cookies in use dialog in cookies subpage." translateable="false">
+    Show cookies
+  </message>
+  <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page with a filter for this sets' pages." translateable="false">
+    Show sites
+  </message>
+  <message name="IDS_PAGE_INFO_FPS_BUTTON_TITLE" desc="The title of first-party sets button in cookies subpage with placeholder for name of the owner of this set." translateable="false">
     See sites related to <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>
   </message>
-  <message name="IDS_PAGE_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in Cookies Subpage with place holder for name of the owner of this set." translateable="false">
+  <message name="IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in cookies subpage with placeholder for name of the owner of this set." translateable="false">
     <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph> says these sites are related
   </message>
 

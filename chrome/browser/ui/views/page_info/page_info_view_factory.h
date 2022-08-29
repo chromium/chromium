@@ -124,6 +124,9 @@ class PageInfoViewFactory {
   // Returns the icon for the 'Ad personalization' button.
   static const ui::ImageModel GetAdPersonalizationIcon();
 
+  // Returns the icon for the 'Block third party cookies' button.
+  static const ui::ImageModel GetBlockingThirdPartyCookiesIcon();
+
   [[nodiscard]] std::unique_ptr<views::View> CreateMainPageView(
       base::OnceClosure initialized_callback);
   [[nodiscard]] std::unique_ptr<views::View> CreateSecurityPageView();

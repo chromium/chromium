@@ -83,11 +83,10 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
   const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
 
   const std::u16string& tooltip =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP);
 
   // Create the cookie button, with a temporary value for the subtitle text
   // since the site count is not yet known.
-  // TODO(crbug.com/1346305): Change to correct final string.
   cookies_dialog_button_ = cookies_buttons_container_view_->AddChildView(
       std::make_unique<PageInfoHoverButton>(
           base::BindRepeating(
@@ -95,7 +94,7 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
                 view->presenter_->OpenCookiesDialog();
               },
               this),
-          icon, IDS_PAGE_INFO_COOKIES, std::u16string(),
+          icon, IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
           tooltip, /*subtitle_text=*/u" ",
           PageInfoViewFactory::GetLaunchIcon()));
@@ -133,10 +132,10 @@ void PageInfoCookiesContentView::SetCookieInfo(
           privacy_sandbox::kPrivacySandboxFirstPartySetsUI) &&
       cookie_info.fps_info) {
     const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
-        IDS_PAGE_FPS_BUTTON_TITLE, cookie_info.fps_info->owner_name);
+        IDS_PAGE_INFO_FPS_BUTTON_TITLE, cookie_info.fps_info->owner_name);
 
     const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
-        IDS_PAGE_FPS_BUTTON_SUBTITLE, cookie_info.fps_info->owner_name);
+        IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE, cookie_info.fps_info->owner_name);
 
     InitFPSButton();
     fps_button_->SetTitleText(fps_button_title);
@@ -160,11 +159,7 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE);
   const auto tooltip = l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP);
-  // TODO(crbug.com/1346305): Add correct icon.
-  PageInfo::PermissionInfo info;
-  info.type = ContentSettingsType::COOKIES;
-  info.setting = CONTENT_SETTING_ALLOW;
-  const auto icon = PageInfoViewFactory::GetPermissionIcon(info);
+  const auto icon = PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon();
 
   blocking_third_party_cookies_row_ =
       cookies_buttons_container_view_->AddChildView(
@@ -202,7 +197,7 @@ void PageInfoCookiesContentView::InitFPSButton() {
   const ui::ImageModel icon_fps = PageInfoViewFactory::GetPermissionIcon(info);
 
   const std::u16string& tooltip =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP);
 
   // Create the fps_button with temporary values for title and subtitle
   // as we don't have data yet, it will be updated.
