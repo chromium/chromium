@@ -140,10 +140,9 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
   std::unique_ptr<PressureManagerImplSync> manager_impl_sync_;
 };
 
-// Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
-#if BUILDFLAG(IS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
-#define MAYBE_OneClient DISABLED_OneClient
-#elif BUILDFLAG(IS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
+// TODO(crbug.com/1226086): Fix test flakiness.
+#if (BUILDFLAG(IS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)) || \
+    (BUILDFLAG(IS_LINUX) && defined(USE_OZONE))
 #define MAYBE_OneClient DISABLED_OneClient
 #else
 #define MAYBE_OneClient OneClient
@@ -157,10 +156,9 @@ TEST_F(PressureManagerImplTest, MAYBE_OneClient) {
   EXPECT_EQ(client.updates()[0].first, mojom::PressureState{0.42});
 }
 
-// Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
-#if BUILDFLAG(IS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
-#define MAYBE_ThreeClients DISABLED_ThreeClients
-#elif BUILDFLAG(IS_LINUX) && defined(USE_OZONE)  // https://crbug.com/1226086
+// TODO(crbug.com/1226086): Fix test flakiness.
+#if (BUILDFLAG(IS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)) || \
+    (BUILDFLAG(IS_LINUX) && defined(USE_OZONE))
 #define MAYBE_ThreeClients DISABLED_ThreeClients
 #else
 #define MAYBE_ThreeClients ThreeClients
