@@ -196,6 +196,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_interfaces_registered");
   }
 
+  void ExpectMarshalInterfaceSucceeds() const override {
+    RunCommand("expect_marshal_interface_succeeds");
+  }
+
   void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
                                       int expected_final_state,
                                       int expected_error_code) const override {

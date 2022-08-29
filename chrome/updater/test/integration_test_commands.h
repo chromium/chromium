@@ -71,6 +71,7 @@ class IntegrationTestCommands
   virtual void WaitForUpdaterExit() const = 0;
 #if BUILDFLAG(IS_WIN)
   virtual void ExpectInterfacesRegistered() const = 0;
+  virtual void ExpectMarshalInterfaceSucceeds() const = 0;
   virtual void ExpectLegacyUpdate3WebSucceeds(
       const std::string& app_id,
       int expected_final_state,

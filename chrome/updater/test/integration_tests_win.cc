@@ -4,6 +4,7 @@
 
 #include <shlobj.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include <regstr.h>
 
@@ -13,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -40,7 +42,9 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/win_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -670,6 +674,64 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
       nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
+}
+
+void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
+  // Create proxy/stubs for the IUpdaterInternal interface.
+  // Look up the ProxyStubClsid32.
+  CLSID psclsid = {};
+  EXPECT_HRESULT_SUCCEEDED(
+      ::CoGetPSClsid(__uuidof(IUpdaterInternal), &psclsid));
+  EXPECT_EQ(base::ToUpperASCII(base::win::WStringFromGUID(psclsid)),
+            L"{00020424-0000-0000-C000-000000000046}");
+
+  // Get the proxy/stub factory buffer.
+  Microsoft::WRL::ComPtr<IPSFactoryBuffer> psfb;
+  EXPECT_HRESULT_SUCCEEDED(
+      ::CoGetClassObject(psclsid, CLSCTX_INPROC, 0, IID_PPV_ARGS(&psfb)));
+
+  // Create the interface proxy.
+  Microsoft::WRL::ComPtr<IRpcProxyBuffer> proxy_buffer;
+  Microsoft::WRL::ComPtr<IUpdaterInternal> object;
+  EXPECT_HRESULT_SUCCEEDED(
+      psfb->CreateProxy(nullptr, __uuidof(IUpdaterInternal), &proxy_buffer,
+                        IID_PPV_ARGS_Helper(&object)));
+
+  // Create the interface stub.
+  Microsoft::WRL::ComPtr<IRpcStubBuffer> stub_buffer;
+  EXPECT_HRESULT_SUCCEEDED(
+      psfb->CreateStub(__uuidof(IUpdaterInternal), nullptr, &stub_buffer));
+
+  // Marshal and unmarshal an IUpdaterInternal object.
+  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
+  EXPECT_HRESULT_SUCCEEDED(
+      Microsoft::WRL::MakeAndInitialize<UpdaterInternalImpl>(
+          &updater_internal));
+
+  Microsoft::WRL::ComPtr<IStream> stream;
+  EXPECT_HRESULT_SUCCEEDED(::CoMarshalInterThreadInterfaceInStream(
+      __uuidof(IUpdaterInternal), updater_internal.Get(), &stream));
+
+  base::WaitableEvent unmarshal_complete_event;
+
+  base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](Microsoft::WRL::ComPtr<IStream> stream,
+                 base::WaitableEvent& event) {
+                const base::ScopedClosureRunner signal_event(base::BindOnce(
+                    [](base::WaitableEvent& event) { event.Signal(); },
+                    std::ref(event)));
+
+                Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
+                EXPECT_HRESULT_SUCCEEDED(::CoUnmarshalInterface(
+                    stream.Get(), IID_PPV_ARGS(&updater_internal)));
+              },
+              stream, std::ref(unmarshal_complete_event)));
+
+  EXPECT_TRUE(
+      unmarshal_complete_event.TimedWait(TestTimeouts::action_max_timeout()));
 }
 
 void InitializeBundle(UpdaterScope scope,

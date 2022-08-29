@@ -176,6 +176,7 @@ void WaitForUpdaterExit(UpdaterScope scope);
 
 #if BUILDFLAG(IS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
+void ExpectMarshalInterfaceSucceeds(UpdaterScope scope);
 void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                                     const std::string& app_id,
                                     int expected_final_state,

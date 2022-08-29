@@ -169,6 +169,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectInterfacesRegistered(updater_scope_);
   }
 
+  void ExpectMarshalInterfaceSucceeds() const override {
+    updater::test::ExpectMarshalInterfaceSucceeds(updater_scope_);
+  }
+
   void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
                                       int expected_final_state,
                                       int expected_error_code) const override {

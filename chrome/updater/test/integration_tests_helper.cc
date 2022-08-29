@@ -246,6 +246,8 @@ void AppTestHelper::FirstTaskRun() {
 #if BUILDFLAG(IS_WIN)
     {"expect_interfaces_registered",
      WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
+    {"expect_marshal_interface_succeeds",
+     WithSystemScope(Wrap(&ExpectMarshalInterfaceSucceeds))},
     {"expect_legacy_update3web_succeeds",
      WithSwitch("expected_error_code",
                 WithSwitch("expected_final_state",

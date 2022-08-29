@@ -154,6 +154,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectInterfacesRegistered();
   }
 
+  void ExpectMarshalInterfaceSucceeds() {
+    test_commands_->ExpectMarshalInterfaceSucceeds();
+  }
+
   void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
                                       int expected_final_state,
                                       int expected_error_code) {
@@ -550,6 +554,12 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
 }
 
 #if BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTest, MarshalInterface) {
+  Install();
+  ExpectMarshalInterfaceSucceeds();
+  Uninstall();
+}
+
 TEST_F(IntegrationTest, LegacyUpdate3Web) {
   ScopedServer test_server(test_commands_);
   Install();
