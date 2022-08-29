@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
@@ -117,7 +118,7 @@ base::Value::Dict LocalPrinterHandlerChromeos::CapabilityToValue(
                                            ? kValueTrue
                                            : kValueFalse}}),
       PrinterSemanticCapsAndDefaults::Papers(), caps->has_secure_protocol,
-      base::OptionalOrNullptr(caps->capabilities));
+      base::OptionalToPtr(caps->capabilities));
 }
 
 // static
