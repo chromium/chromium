@@ -56,10 +56,10 @@ class MockNavigationHandle : public NavigationHandle {
     return render_frame_host_ ? !render_frame_host_->GetParent() : true;
   }
   MOCK_METHOD0(IsInPrerenderedMainFrame, bool());
-  bool IsPrerenderedPageActivation() override {
+  bool IsPrerenderedPageActivation() const override {
     return is_prerendered_page_activation_;
   }
-  bool IsInFencedFrameTree() override { return is_in_fenced_frame_tree_; }
+  bool IsInFencedFrameTree() const override { return is_in_fenced_frame_tree_; }
   FrameType GetNavigatingFrameType() const override {
     NOTIMPLEMENTED();
     return FrameType::kPrimaryMainFrame;

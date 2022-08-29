@@ -6580,6 +6580,12 @@ void NavigationRequest::WriteIntoTrace(
     dict.Add("rfh_restored_from_bfcache",
              rfh_restored_from_back_forward_cache_);
   }
+
+  if (blink::features::IsPrerender2Enabled() &&
+      prerender_frame_tree_node_id_.has_value()) {
+    dict.Add("prerender_frame_tree_node_id",
+             prerender_frame_tree_node_id_.value());
+  }
 }
 
 bool NavigationRequest::SetNavigationTimeout(base::TimeDelta timeout) {
@@ -6833,7 +6839,7 @@ bool NavigationRequest::IsInPrerenderedMainFrame() {
   return GetNavigatingFrameType() == FrameType::kPrerenderMainFrame;
 }
 
-bool NavigationRequest::IsPrerenderedPageActivation() {
+bool NavigationRequest::IsPrerenderedPageActivation() const {
   if (!blink::features::IsPrerender2Enabled())
     return false;
 
@@ -6841,7 +6847,7 @@ bool NavigationRequest::IsPrerenderedPageActivation() {
   return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
 }
 
-bool NavigationRequest::IsInFencedFrameTree() {
+bool NavigationRequest::IsInFencedFrameTree() const {
   return frame_tree_node()->IsInFencedFrameTree();
 }
 

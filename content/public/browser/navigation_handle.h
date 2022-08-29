@@ -130,12 +130,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Prerender2:
   // Returns true if this navigation will activate a prerendered page. It is
   // only meaningful to call this after BeginNavigation().
-  virtual bool IsPrerenderedPageActivation() = 0;
+  virtual bool IsPrerenderedPageActivation() const = 0;
 
   // FencedFrame:
   // Returns true if the navigation is taking place in a frame in a fenced frame
   // tree.
-  virtual bool IsInFencedFrameTree() = 0;
+  virtual bool IsInFencedFrameTree() const = 0;
 
   // Returns the type of the frame in which this navigation is taking place.
   virtual FrameType GetNavigatingFrameType() const = 0;
