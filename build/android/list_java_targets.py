@@ -62,7 +62,7 @@ def _resolve_ninja(cmd):
   return cmd
 
 
-def _run_ninja(output_dir, args):
+def _run_ninja(output_dir, args, quiet=False):
   cmd = [
       _resolve_ninja('autoninja'),
       '-C',
@@ -70,7 +70,10 @@ def _run_ninja(output_dir, args):
   ]
   cmd.extend(args)
   logging.info('Running: %r', cmd)
-  subprocess.run(cmd, check=True, stdout=sys.stderr)
+  if quiet:
+    subprocess.run(cmd, check=True, capture_output=True)
+  else:
+    subprocess.run(cmd, check=True, stdout=sys.stderr)
 
 
 def _query_for_build_config_targets(output_dir):
@@ -174,12 +177,13 @@ def main():
                       action='store_true',
                       help='Restrict to targets that have proguard enabled')
   parser.add_argument('-v', '--verbose', default=0, action='count')
+  parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
 
   args.build |= bool(args.type or args.proguard_enabled or args.print_types
                      or args.stats)
 
-  logging.basicConfig(level=logging.WARNING - (10 * args.verbose),
+  logging.basicConfig(level=logging.WARNING + 10 * (args.quiet - args.verbose),
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   if args.output_directory:
@@ -193,7 +197,8 @@ def main():
 
   if args.build:
     logging.warning('Building %d .build_config.json files...', len(entries))
-    _run_ninja(output_dir, [e.ninja_build_config_target for e in entries])
+    _run_ninja(output_dir, [e.ninja_build_config_target for e in entries],
+               quiet=args.quiet)
 
   if args.type:
     entries = [e for e in entries if e.get_type() in args.type]
