@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import 'chrome://resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 import '../../settings_shared.css.js';
 
 import {CrRadioButtonMixin} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
