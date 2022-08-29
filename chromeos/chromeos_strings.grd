@@ -2087,6 +2087,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_BACK_BUTTON" desc="Aria label for the back button to return to a prior page">
         Back to <ph name="PAGE_NAME">$1<ex>Wallpaper</ex></ph>
       </message>
+      <message name="IDS_PERSONALIZATION_APP_GUEST_NAME" desc="Name of the guest user in personalization hub">
+        Guest
+      </message>
       <message name="IDS_PERSONALIZATION_APP_WALLPAPER_COLLECTIONS" desc="Aria label for the wallpaper collections grid">
         Wallpaper Collections
       </message>
