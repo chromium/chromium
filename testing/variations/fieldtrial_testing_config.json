@@ -1708,11 +1708,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_LazyEmbeds3000_20220809",
+                    "name": "Enabled_LazyEmbeds0_20220809",
                     "params": {
                         "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
                         "strategy": "allow_list",
-                        "timeout": "3000"
+                        "timeout": "0"
                     },
                     "enable_features": [
                         "AutomaticLazyFrameLoadingToEmbedUrls",
@@ -1723,11 +1723,11 @@
                     ]
                 },
                 {
-                    "name": "Enabled_LazyEmbeds0_20220809",
+                    "name": "Enabled_LazyEmbeds3000_20220809",
                     "params": {
                         "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
                         "strategy": "allow_list",
-                        "timeout": "0"
+                        "timeout": "3000"
                     },
                     "enable_features": [
                         "AutomaticLazyFrameLoadingToEmbedUrls",
