@@ -46,11 +46,6 @@ fuzzer_test("origin_trial_token_fuzzer") {
   seed_corpus = "//content/test/data/fuzzer_corpus/origin_trial_token_data/"
 }
 
-fuzzer_test("renderer_fuzzer") {
-  sources = [ "renderer_fuzzer.cc" ]
-  deps = [ ":fuzzer_support" ]
-}
-
 fuzzer_test("renderer_tree_fuzzer") {
   sources = [ "renderer_tree_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
