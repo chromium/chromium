@@ -384,6 +384,8 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
+  NetworkChangeAsh* network_change_ash() { return network_change_ash_.get(); }
+
   NetworkingAttributesAsh* networking_attributes_ash() {
     return networking_attributes_ash_.get();
   }
