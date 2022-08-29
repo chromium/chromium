@@ -12,8 +12,12 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -31,6 +35,7 @@
 #include "google_apis/common/task_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "url/gurl.h"
 
 namespace file_manager {
 namespace util {
@@ -74,6 +79,53 @@ void GetMimeTypeAfterGetMimeTypeForArcContentFileSystem(
   } else {
     std::move(callback).Run(absl::nullopt);
   }
+}
+
+void OnResolveToContentUrl(
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    Profile* profile,
+    const base::FilePath& path,
+    const GURL& content_url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(profile);
+
+  if (content_url.is_valid()) {
+    auto* runner =
+        arc::ArcFileSystemOperationRunner::GetForBrowserContext(profile);
+    if (!runner) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    runner->GetMimeType(
+        content_url,
+        base::BindOnce(&GetMimeTypeAfterGetMimeTypeForArcContentFileSystem,
+                       std::move(callback)));
+    return;
+  }
+
+  // If |content url| could not be parsed from documents provider special
+  // path (i.e. absolute path is obfuscated), then lookup by extension in the
+  // |kAndroidMimeTypeMappings| as a backup method.
+  if (path.empty()) {
+    LOG(ERROR) << "File path is empty";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  base::FilePath::StringType extension =
+      base::ToLowerASCII(path.FinalExtension());
+  if (extension.empty()) {
+    LOG(ERROR) << "File name is missing extension for path: " << path;
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  extension = extension.substr(1);  // Strip the leading dot.
+  const std::string mime_type = arc::FindArcMimeTypeFromExtension(extension);
+  if (mime_type.empty()) {
+    LOG(ERROR) << "Could not find ARC mime type from extension: " << extension;
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(mime_type);
 }
 
 // Helper function to converts a callback that takes boolean value to that takes
@@ -229,20 +281,59 @@ void GetNonNativeLocalPathMimeType(
     return;
   }
 
-  if (arc::IsArcAllowedForProfile(profile) &&
-      base::FilePath(arc::kContentFileSystemMountPointPath).IsParent(path)) {
-    GURL arc_url = arc::PathToArcUrl(path);
-    auto* runner =
-        arc::ArcFileSystemOperationRunner::GetForBrowserContext(profile);
-    if (!runner) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
-      return;
+  if (arc::IsArcAllowedForProfile(profile)) {
+    if (base::FilePath(arc::kContentFileSystemMountPointPath).IsParent(path)) {
+      const GURL arc_url = arc::PathToArcUrl(path);
+      if (!arc_url.is_valid()) {
+        LOG(ERROR) << "ARC URL is invalid for path: " << path;
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        return;
+      }
+
+      auto* runner =
+          arc::ArcFileSystemOperationRunner::GetForBrowserContext(profile);
+      if (!runner) {
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        return;
+      }
+      runner->GetMimeType(
+          arc_url,
+          base::BindOnce(&GetMimeTypeAfterGetMimeTypeForArcContentFileSystem,
+                         std::move(callback)));
+    } else if (base::FilePath(arc::kDocumentsProviderMountPointPath)
+                   .IsParent(path)) {
+      auto* root_map =
+          arc::ArcDocumentsProviderRootMap::GetForArcBrowserContext();
+      if (!root_map) {
+        LOG(ERROR) << "Could not find root map from ARC browser context";
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        return;
+      }
+
+      std::string authority;
+      std::string root_document_id;
+      if (!arc::ParseDocumentsProviderPath(path, &authority,
+                                           &root_document_id)) {
+        LOG(ERROR) << "Failed to parse documents provider path: " << path;
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        return;
+      }
+      auto* root = root_map->Lookup(authority, root_document_id);
+      if (!root) {
+        LOG(ERROR) << "No root found for authority: " << authority
+                   << " document_id: " << root_document_id;
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        return;
+      }
+      root->ResolveToContentUrl(
+          path, base::BindOnce(&OnResolveToContentUrl, std::move(callback),
+                               profile, path));
     }
-    runner->GetMimeType(
-        arc_url,
-        base::BindOnce(&GetMimeTypeAfterGetMimeTypeForArcContentFileSystem,
-                       std::move(callback)));
     return;
   }
 

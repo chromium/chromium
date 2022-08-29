@@ -26,15 +26,22 @@ struct MimeTypeToExtensions {
   const char* extensions;
 };
 
-// The mapping from MIME types to file name extensions, taken from Android N.
+// The mapping from MIME types to file name extensions, taken from Android T.
 // See: frameworks/base/media/java/android/media/MediaFile.java
 constexpr MimeTypeToExtensions kAndroidMimeTypeMappings[] = {
-    {"application/mspowerpoint", "ppt"},
-    {"application/msword", "doc"},
+    {"application/vnd.ms-powerpoint", "ppt,pot,pps,ppa"},
+    {"application/msword", "doc,dot"},
+    {"application/"
+     "vnd.openxmlformats-officedocument.presentationml.presentation",
+     "pptx"},
+    {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     "xlsx"},
+    {"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     "docx"},
     {"application/ogg", "ogg,oga"},
     {"application/pdf", "pdf"},
     {"application/vnd.apple.mpegurl", "m3u8"},
-    {"application/vnd.ms-excel", "xls"},
+    {"application/vnd.ms-excel", "xls,xlt,xla"},
     {"application/vnd.ms-wpl", "wpl"},
     {"application/x-android-drm-fl", "fl"},
     {"application/x-mpegurl", "m3u"},
@@ -51,19 +58,23 @@ constexpr MimeTypeToExtensions kAndroidMimeTypeMappings[] = {
     {"audio/mpegurl", "m3u8"},
     {"audio/ogg", "ogg"},
     {"audio/sp-midi", "smf"},
+    {"audio/x-aiff", "aiff"},
     {"audio/x-matroska", "mka"},
     {"audio/x-mpegurl", "m3u,m3u8"},
     {"audio/x-ms-wma", "wma"},
     {"audio/x-scpls", "pls"},
     {"audio/x-wav", "wav"},
     {"image/gif", "gif"},
+    {"image/jp2", "jpg2"},
     {"image/jpeg", "jpg,jpeg"},
+    {"image/jpx", "jpx"},
     {"image/png", "png"},
     {"image/vnd.wap.wbmp", "wbmp"},
     {"image/webp", "webp"},
     {"image/x-adobe-dng", "dng"},
     {"image/x-canon-cr2", "cr2"},
     {"image/x-fuji-raf", "raf"},
+    {"image/x-heif", "heif"},
     {"image/x-ms-bmp", "bmp"},
     {"image/x-nikon-nef", "nef"},
     {"image/x-nikon-nrw", "nrw"},
