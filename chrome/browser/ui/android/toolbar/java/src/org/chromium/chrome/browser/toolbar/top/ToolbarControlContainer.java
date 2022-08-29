@@ -16,12 +16,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
@@ -105,10 +113,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
      * @param toolbar The toolbar contained inside this control container. Should be called
      *                after inflation is complete.
      * @param isIncognito Whether the toolbar should be initialized with incognito colors.
+     * @param constraintsSupplier Used to access current constraints of the browser controls.
+     * @param tabSupplier Used to access the current tab state.
      */
-    public void setToolbar(Toolbar toolbar, boolean isIncognito) {
+    public void setPostInitializationDependencies(Toolbar toolbar, boolean isIncognito,
+            ObservableSupplier<Integer> constraintsSupplier, Supplier<Tab> tabSupplier) {
         mToolbar = toolbar;
-        mToolbarContainer.setToolbar(mToolbar);
+        mToolbarContainer.setPostInitializationDependencies(
+                mToolbar, constraintsSupplier, tabSupplier);
 
         View toolbarView = findViewById(R.id.toolbar);
         assert toolbarView != null;
@@ -178,8 +190,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             return new ToolbarViewResourceAdapter(this, useHardwareBitmapDraw);
         }
 
-        public void setToolbar(Toolbar toolbar) {
-            ((ToolbarViewResourceAdapter) getResourceAdapter()).setToolbar(toolbar);
+        public void setPostInitializationDependencies(Toolbar toolbar,
+                ObservableSupplier<Integer> constraintsSupplier, Supplier<Tab> tabSupplier) {
+            ToolbarViewResourceAdapter adapter =
+                    ((ToolbarViewResourceAdapter) getResourceAdapter());
+            adapter.setPostInitializationDependencies(toolbar, constraintsSupplier, tabSupplier);
         }
 
         @Override
@@ -195,8 +210,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         private final Rect mToolbarRect = new Rect();
         private final View mToolbarContainer;
 
+        @Nullable
         private Toolbar mToolbar;
         private int mTabStripHeightPx;
+        @Nullable
+        private ConstraintsChecker mConstraintsObserver;
+        @Nullable
+        private Supplier<Tab> mTabSupplier;
 
         /** Builds the resource adapter for the toolbar. */
         public ToolbarViewResourceAdapter(View toolbarContainer, boolean useHardwareBitmapDraw) {
@@ -207,10 +227,23 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         /**
          * Set the toolbar after it has been dynamically inflated.
          * @param toolbar The browser's toolbar.
+         * @param constraintsSupplier Used to access current constraints of the browser controls.
+         * @param tabSupplier Used to access the current tab state.
          */
-        public void setToolbar(Toolbar toolbar) {
+        public void setPostInitializationDependencies(Toolbar toolbar,
+                @Nullable ObservableSupplier<Integer> constraintsSupplier,
+                @Nullable Supplier<Tab> tabSupplier) {
+            assert mToolbar == null;
             mToolbar = toolbar;
             mTabStripHeightPx = mToolbar.getTabStripHeight();
+
+            assert mConstraintsObserver == null;
+            if (constraintsSupplier != null) {
+                mConstraintsObserver = new ConstraintsChecker(this, constraintsSupplier);
+            }
+
+            assert mTabSupplier == null;
+            mTabSupplier = tabSupplier;
         }
 
         /**
@@ -227,6 +260,23 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 CaptureReadinessResult.logBlockCaptureReason(
                         TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY);
                 return false;
+            }
+
+            if (FeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+                    && mConstraintsObserver != null && mTabSupplier != null) {
+                Tab tab = mTabSupplier.get();
+
+                // TODO(https://crbug.com/1355516): Understand and fix this for native pages. It
+                // seems capturing is required for some part of theme observers to work correctly,
+                // but it shouldn't be.
+                boolean isNativePage = tab == null || tab.isNativePage();
+                if (!isNativePage && mConstraintsObserver.areControlsLocked()) {
+                    mConstraintsObserver.scheduleRequestResourceOnUnlock();
+                    CaptureReadinessResult.logBlockCaptureReason(
+                            TopToolbarBlockCaptureReason.BROWSER_CONTROLS_LOCKED);
+                    return false;
+                }
             }
 
             CaptureReadinessResult isReadyResult =
@@ -274,6 +324,44 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                     mToolbarContainer.getHeight() - mToolbar.getHeight() - mTabStripHeightPx;
             return ResourceFactory.createToolbarContainerResource(
                     mToolbarRect, mLocationBarRect, shadowHeight);
+        }
+    }
+
+    /**
+     * Watches a constraints supplier for the next time the browser controls are unlocked,
+     * and then tells the {@link ViewResourceAdapter} to generate a resource.
+     */
+    private static class ConstraintsChecker implements Callback<Integer> {
+        @NonNull
+        private final ViewResourceAdapter mViewResourceAdapter;
+        @NonNull
+        private final ObservableSupplier<Integer> mConstraintsSupplier;
+
+        /**
+         * @param viewResourceAdapter The target to notify when a capture is needed.
+         */
+        public ConstraintsChecker(ViewResourceAdapter viewResourceAdapter,
+                ObservableSupplier<Integer> constraintsSupplier) {
+            mViewResourceAdapter = viewResourceAdapter;
+            mConstraintsSupplier = constraintsSupplier;
+        }
+
+        private boolean areControlsLocked() {
+            Integer constraints = mConstraintsSupplier.get();
+            // Treat null (unknown) as locked/SHOWN.
+            return constraints == null || constraints.intValue() == BrowserControlsState.SHOWN;
+        }
+
+        private void scheduleRequestResourceOnUnlock() {
+            mConstraintsSupplier.addObserver(this);
+        }
+
+        @Override
+        public void onResult(Integer result) {
+            if (!areControlsLocked()) {
+                mConstraintsSupplier.removeObserver(this);
+                mViewResourceAdapter.onResourceRequested();
+            }
         }
     }
 

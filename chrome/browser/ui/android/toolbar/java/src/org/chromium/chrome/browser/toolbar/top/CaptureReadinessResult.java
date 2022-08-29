@@ -45,7 +45,9 @@ class CaptureReadinessResult {
             TopToolbarBlockCaptureReason.URL_BAR_FOCUS_IN_PROGRESS,
             TopToolbarBlockCaptureReason.OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS,
             TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS,
-            TopToolbarBlockCaptureReason.SCROLL_ABLATION, TopToolbarBlockCaptureReason.NUM_ENTRIES})
+            TopToolbarBlockCaptureReason.SCROLL_ABLATION,
+            TopToolbarBlockCaptureReason.BROWSER_CONTROLS_LOCKED,
+            TopToolbarBlockCaptureReason.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     @interface TopToolbarBlockCaptureReason {
         int UNKNOWN = 0;
@@ -57,10 +59,10 @@ class CaptureReadinessResult {
         int OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS = 6;
         int STATUS_ICON_ANIMATION_IN_PROGRESS = 7;
         int SCROLL_ABLATION = 8;
-        // TODO(https://crbug.com/1324678): BROWSER_CONTROLS_STATE_SHOWN.
+        int BROWSER_CONTROLS_LOCKED = 9;
         // TODO(https://crbug.com/1324678): SCROLL_IN_PROGRESS.
         // TODO(https://crbug.com/1324678): NATIVE_PAGE.
-        int NUM_ENTRIES = 9;
+        int NUM_ENTRIES = 10;
     }
 
     public static CaptureReadinessResult readyForced() {

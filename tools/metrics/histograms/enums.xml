@@ -94993,6 +94993,7 @@ would be helpful to identify which type is being sent.
   <int value="6" label="OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS"/>
   <int value="7" label="STATUS_ICON_ANIMATION_IN_PROGRESS"/>
   <int value="8" label="SCROLL_ABLATION"/>
+  <int value="9" label="BROWSER_CONTROLS_LOCKED"/>
 </enum>
 
 <enum name="TouchActions">
