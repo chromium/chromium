@@ -14,21 +14,15 @@
     { src: 'url("foo.ttf") format()', valid: false },
     // Quoted strings in format()
     { src: 'url("foo.ttf") format("collection")', valid: true },
-    { src: 'url("foo.ttf") format("embedded-opentype")', valid: true },
     { src: 'url("foo.ttf") format("opentype")', valid: true },
-    { src: 'url("foo.ttf") format("svg")', valid: true },
     { src: 'url("foo.ttf") format("truetype")', valid: true },
     { src: 'url("foo.ttf") format("woff")', valid: true },
     { src: 'url("foo.ttf") format("woff2")', valid: true },
     // Multiple strings (was valid in CSS Fonts 3, but not allowed in Fonts 4)
     { src: 'url("foo.ttf") format("opentype", "truetype")', valid: false },
-    // Unknown format string still matches the grammar, although it won't be loaded
-    { src: 'url("foo.ttf") format("xyzzy")', valid: true },
     // Keywords (new in Fonts 4)
     { src: 'url("foo.ttf") format(collection)', valid: true },
-    { src: 'url("foo.ttf") format(embedded-opentype)', valid: true },
     { src: 'url("foo.ttf") format(opentype)', valid: true },
-    { src: 'url("foo.ttf") format(svg)', valid: true },
     { src: 'url("foo.ttf") format(truetype)', valid: true },
     { src: 'url("foo.ttf") format(woff)', valid: true },
     { src: 'url("foo.ttf") format(woff2)', valid: true },
@@ -43,6 +37,19 @@
     { src: 'url("foo.ttf") format(none)', valid: false },
     { src: 'url("foo.ttf") format(normal)', valid: false },
     { src: 'url("foo.ttf") format(xyzzy)', valid: false },
+    // Unknown format string still matches the grammar, although it won't be
+    // loaded. UAs may choose to either not load it, or not add unsupported
+    // entries to the list, ensure that subsequent component of the list are
+    // still recognized.
+    { src: 'url("foo.ttf") format("embedded-opentype"), url("bar.html")', valid: true },
+    { src: 'url("foo.ttf") format(embedded-opentype), url("bar.html")', valid: true },
+    { src: 'url("foo.ttf") format("svg"), url("bar.html")', valid: true },
+    { src: 'url("foo.ttf") format(svg), url("bar.html")', valid: true },
+    // Hard parsing errors should make the line invalid.
+    { src: 'url("foo.ttf") format(xyzz), url("bar.html")', valid: false },
+    { src: 'url("foo.ttf") dummy(xyzzy), url("bar.html")', valid: false },
+    { src: 'url("foo.ttf") format(), url("bar.html")', valid: false },
+    { src: 'url("foo.ttf") format(none), url("bar.html")', valid: false },
   ];
 
   for (let t of tests) {

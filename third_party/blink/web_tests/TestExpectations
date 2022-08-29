@@ -3268,6 +3268,8 @@ crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-
 crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.14 ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-width-height.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-width-height.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-width-height.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]

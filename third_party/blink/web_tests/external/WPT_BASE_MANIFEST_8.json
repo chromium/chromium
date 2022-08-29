@@ -254058,11 +254058,11 @@
     ],
     "dispatcher": {
      "README.md": [
-      "9058ebc4b6461310e6ab7dd83537f899eaecfbdb",
+      "3bb2900c789ab688f5c279ea706bd331ed9055a0",
       []
      ],
      "dispatcher.js": [
-      "84daa8ce9b55bc7521073a6753c200ce9de816d9",
+      "7c51fa6af4232c8ea27215b5377f35831299ba79",
       []
      ],
      "dispatcher.py": [
@@ -273617,7 +273617,7 @@
      ],
      "parsing": {
       "font-face-src-format-expected.txt": [
-       "5401239089b5ae1a15727dd3b8991aa8b4bb7fb6",
+       "2e8aa5259e7d0500c5285332fb824aaffea98673",
        []
       ],
       "font-face-src-tech-expected.txt": [
@@ -341422,6 +341422,14 @@
        "62829556bb438c1396a0f17c7e3b45456f2bdad9",
        []
       ],
+      "prompt-by-before-unload-inner-frame.html": [
+       "ba59ca79604d9448b90234d429e9abf1625814a1",
+       []
+      ],
+      "prompt-by-before-unload.html": [
+       "8cfe09a41fe2ac32e734073329681bb74962eb03",
+       []
+      ],
       "push.https.html": [
        "30eb563ab75532d47dfc5706b81686059d19a8a0",
        []
@@ -391797,7 +391805,7 @@
        ]
       ],
       "font-face-src-format.html": [
-       "34ed5ec5390724696efae41b86e0d0a0a873215e",
+       "22f6d564ed7ed707f16dadb8011f838d171795b9",
        [
         null,
         {}
@@ -543701,6 +543709,13 @@
        {}
       ]
      ],
+     "referrer-policy.https.html": [
+      "d0bc8576028fd5b183e60e767bee5928a6a8e78c",
+      [
+       null,
+       {}
+      ]
+     ],
      "same-origin-cookies.https.html": [
       "1d60a4bee0faab8d2fd6656b8459d23c8b1d3298",
       [
@@ -543910,6 +543925,15 @@
      ],
      "restriction-presentation-request.https.html": [
       "5f7742204e2b399b6ee2b2aaad656dfc5a09765c",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-prompt-by-before-unload.html": [
+      "16ebe4f39b855378550d29f577778d74a0b11850",
       [
        null,
        {
