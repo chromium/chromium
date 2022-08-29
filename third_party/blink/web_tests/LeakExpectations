@@ -10,7 +10,7 @@
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
-# ask hajimehoshi@ or yuzus@.                                             #
+# ask yuzus@.                                                             #
 ###########################################################################
 
 crbug.com/786995 virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Skip ]
@@ -61,6 +61,9 @@ crbug.com/1350279 [ Linux ] external/wpt/accessibility/crashtests/svg-mouse-list
 
 # Sheriff 2022-08-29
 crbug.com/1356276 [ Linux ] virtual/async-script-scheduling-apply-to-cross-site-only/wpt_internal/async-script-scheduling/execution-order.sub.html [ Failure ]
+
+# Sheriff 2022-08-29
+crbug.com/1357182 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html [ Failure Pass ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
