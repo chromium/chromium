@@ -40,7 +40,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_pref_names.h"
@@ -348,10 +351,10 @@ bool ClearCache(base::FilePath cache_path, base::FilePath logs_path) {
 // Observes drive disable Preference's change.
 class DriveIntegrationService::PreferenceWatcher
     : public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public ash::NetworkPortalDetector::Observer {
+      public ash::NetworkStateHandlerObserver {
  public:
   explicit PreferenceWatcher(PrefService* pref_service)
-      : pref_service_(pref_service), integration_service_(nullptr) {
+      : pref_service_(pref_service) {
     DCHECK(pref_service);
     pref_change_registrar_.Init(pref_service);
     pref_change_registrar_.Add(
@@ -377,20 +380,18 @@ class DriveIntegrationService::PreferenceWatcher
     if (integration_service_) {
       content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
           this);
-      ash::network_portal_detector::GetInstance()->RemoveObserver(this);
+      if (ash::NetworkHandler::IsInitialized()) {
+        ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+            this);
+      }
     }
   }
 
-  void set_integration_service(DriveIntegrationService* integration_service) {
+  void SetIntegrationService(DriveIntegrationService* integration_service) {
     integration_service_ = integration_service;
     content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
 
-    // The NetworkPortalDetector instance may not be ready yet, so defer
-    // accessing it.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
-                                      AddNetworkPortalDetectorObserver,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    AddNetworkPortalDetectorObserver();
   }
 
   void UpdateSyncPauseState() {
@@ -404,10 +405,8 @@ class DriveIntegrationService::PreferenceWatcher
   }
 
   bool is_offline() const {
-    return last_portal_status_ !=
-               ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE &&
-           last_portal_status_ !=
-               ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN;
+    return portal_state_ != ash::NetworkState::PortalState::kOnline &&
+           portal_state_ != ash::NetworkState::PortalState::kUnknown;
   }
 
  private:
@@ -437,32 +436,34 @@ class DriveIntegrationService::PreferenceWatcher
   }
 
   void AddNetworkPortalDetectorObserver() {
-    if (ash::network_portal_detector::IsInitialized()) {
-      ash::network_portal_detector::GetInstance()->AddAndFireObserver(this);
-    } else {
-      // The NetworkPortalDetector instance still not ready. Postpone even more.
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
-                             AddNetworkPortalDetectorObserver,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::Seconds(5));
-    }
+    if (!ash::NetworkHandler::IsInitialized())
+      return;  // Test environment.
+    ash::NetworkStateHandler* handler =
+        ash::NetworkHandler::Get()->network_state_handler();
+    handler->AddObserver(this);
+    const ash::NetworkState* default_network = handler->DefaultNetwork();
+    ash::NetworkState::PortalState portal_state =
+        default_network ? default_network->GetPortalState()
+                        : ash::NetworkState::PortalState::kUnknown;
+    PortalStateChanged(default_network, portal_state);
   }
 
-  // ash::NetworkPortalDetector::Observer
-  void OnPortalDetectionCompleted(
-      const ash::NetworkState* network,
-      const ash::NetworkPortalDetector::CaptivePortalStatus status) override {
-    last_portal_status_ = status;
+  // ash::NetworkStateHandlerObserver
+  void PortalStateChanged(
+      const ash::NetworkState* default_network,
+      ash::NetworkState::PortalState portal_state) override {
+    portal_state_ = portal_state;
 
     if (integration_service_->remount_when_online_ &&
-        last_portal_status_ ==
-            ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
+        portal_state == ash::NetworkState::PortalState::kOnline) {
       integration_service_->remount_when_online_ = false;
       integration_service_->mount_start_ = {};
       integration_service_->AddDriveMountPoint();
     }
+  }
+
+  void OnShuttingDown() override {
+    ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   }
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver
@@ -478,9 +479,9 @@ class DriveIntegrationService::PreferenceWatcher
 
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  DriveIntegrationService* integration_service_;
-  ash::NetworkPortalDetector::CaptivePortalStatus last_portal_status_ =
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN;
+  DriveIntegrationService* integration_service_ = nullptr;
+  ash::NetworkState::PortalState portal_state_ =
+      ash::NetworkState::PortalState::kUnknown;
 
   base::WeakPtrFactory<PreferenceWatcher> weak_ptr_factory_{this};
 };
@@ -650,7 +651,7 @@ DriveIntegrationService::DriveIntegrationService(
   if (util::IsDriveAvailableForProfile(profile)) {
     preference_watcher_ =
         std::make_unique<PreferenceWatcher>(profile->GetPrefs());
-    preference_watcher_->set_integration_service(this);
+    preference_watcher_->SetIntegrationService(this);
   }
 
   bool migrated_to_drivefs =
