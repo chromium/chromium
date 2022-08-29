@@ -34,6 +34,16 @@ public interface FastCheckoutComponent {
          * selected.
          */
         void onDismissed();
+
+        /**
+         * Opens the Autofill profile settings menu.
+         */
+        void openAutofillProfileSettings();
+
+        /**
+         * Opens the credit card settings menu.
+         */
+        void openCreditCardSettings();
     }
 
     /**

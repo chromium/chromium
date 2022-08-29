@@ -30,6 +30,12 @@ class FastCheckoutController {
   // Informs the controller that the user has dismissed the sheet.
   virtual void OnDismiss() = 0;
 
+  // Opens the settings menu for Autofill profiles.
+  virtual void OpenAutofillProfileSettings() = 0;
+
+  // Opens the settings menu for credit cards.
+  virtual void OpenCreditCardSettings() = 0;
+
   // The web page view containing the focused field.
   virtual gfx::NativeView GetNativeView() = 0;
 };

@@ -89,6 +89,14 @@ void FastCheckoutViewImpl::Show(
       env, java_object_internal_, autofill_profiles_array, credit_cards_array);
 }
 
+void FastCheckoutViewImpl::OpenAutofillProfileSettings(JNIEnv* env) {
+  controller_->OpenAutofillProfileSettings();
+}
+
+void FastCheckoutViewImpl::OpenCreditCardSettings(JNIEnv* env) {
+  controller_->OpenCreditCardSettings();
+}
+
 bool FastCheckoutViewImpl::RecreateJavaObject() {
   if (controller_->GetNativeView() == nullptr ||
       controller_->GetNativeView()->GetWindowAndroid() == nullptr) {

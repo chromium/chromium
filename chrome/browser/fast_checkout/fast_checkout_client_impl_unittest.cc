@@ -33,6 +33,8 @@ class MockFastCheckoutController : public FastCheckoutController {
                std::unique_ptr<autofill::CreditCard> credit_card),
               (override));
   MOCK_METHOD(void, OnDismiss, (), (override));
+  MOCK_METHOD(void, OpenAutofillProfileSettings, (), (override));
+  MOCK_METHOD(void, OpenCreditCardSettings, (), (override));
   MOCK_METHOD(gfx::NativeView, GetNativeView, (), (override));
 };
 

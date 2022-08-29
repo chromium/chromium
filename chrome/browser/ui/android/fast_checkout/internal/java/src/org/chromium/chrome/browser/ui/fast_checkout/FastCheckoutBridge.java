@@ -88,10 +88,26 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
         }
     }
 
+    @Override
+    public void openAutofillProfileSettings() {
+        if (mNativeFastCheckoutBridge != 0) {
+            FastCheckoutBridgeJni.get().openAutofillProfileSettings(mNativeFastCheckoutBridge);
+        }
+    }
+
+    @Override
+    public void openCreditCardSettings() {
+        if (mNativeFastCheckoutBridge != 0) {
+            FastCheckoutBridgeJni.get().openCreditCardSettings(mNativeFastCheckoutBridge);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onOptionsSelected(long nativeFastCheckoutViewImpl, FastCheckoutAutofillProfile profile,
                 FastCheckoutCreditCard creditCard);
         void onDismiss(long nativeFastCheckoutViewImpl);
+        void openAutofillProfileSettings(long nativeFastCheckoutViewImpl);
+        void openCreditCardSettings(long nativeFastCheckoutViewImpl);
     }
 }

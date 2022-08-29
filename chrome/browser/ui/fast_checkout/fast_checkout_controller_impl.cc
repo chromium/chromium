@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 
+#include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -49,6 +50,18 @@ FastCheckoutControllerImpl::GetPersonalDataManager() {
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   return autofill::PersonalDataManagerFactory::GetForProfile(
       profile->GetOriginalProfile());
+}
+
+void FastCheckoutControllerImpl::OpenAutofillProfileSettings() {
+#if BUILDFLAG(IS_ANDROID)
+  autofill::ShowAutofillProfileSettings(web_contents_);
+#endif
+}
+
+void FastCheckoutControllerImpl::OpenCreditCardSettings() {
+#if BUILDFLAG(IS_ANDROID)
+  autofill::ShowAutofillCreditCardSettings(web_contents_);
+#endif
 }
 
 gfx::NativeView FastCheckoutControllerImpl::GetNativeView() {

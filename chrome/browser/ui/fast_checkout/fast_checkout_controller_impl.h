@@ -49,6 +49,8 @@ class FastCheckoutControllerImpl : public FastCheckoutController {
       std::unique_ptr<autofill::AutofillProfile> profile,
       std::unique_ptr<autofill::CreditCard> credit_card) override;
   void OnDismiss() override;
+  void OpenAutofillProfileSettings() override;
+  void OpenCreditCardSettings() override;
   gfx::NativeView GetNativeView() override;
 
  protected:
