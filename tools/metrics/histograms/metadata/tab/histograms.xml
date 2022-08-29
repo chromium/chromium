@@ -421,13 +421,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.PerceivedRestoreTime" units="ms" expires_after="M88">
+<histogram name="Tab.PerceivedRestoreTime" units="ms" expires_after="M108">
+  <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     [Android] User-perceived load time for a successful tab restore, measured
     from the first time the user sees the tab being restored until the load
     completes.
+
+    Warning this historgram was expired between M89 and 2022-08-24.
   </summary>
 </histogram>
 
@@ -621,12 +624,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.StatusWhenSwitchedBackToForeground" enum="TabStatus"
-    expires_after="M85">
+    expires_after="M108">
+  <owner>ckitagawa@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
     [Android and iOS] The status of a tab collected each time the user switches
     to it on mobile. That does not include tabs being created at the time the
     user switches to them, such as NTP or tabs opened to handle intents.
+
+    Warning this historgram was expired between M86 and 2022-08-24.
   </summary>
 </histogram>
 
