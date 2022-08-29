@@ -33,7 +33,6 @@ group("polymer3_elements") {
     ":oobe_eula_module",
     ":os_install_module",
     ":os_trial_module",
-    ":pin_setup_module",
     ":recommend_apps_module",
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
@@ -81,7 +80,7 @@ js_type_check("closure_compile_local") {
     ":os_install.m",
     ":os_trial.m",
     ":parental_handoff",
-    ":pin_setup.m",
+    ":pin_setup",
     ":recommend_apps.m",
     ":saml_confirm_password",
     ":signin_fatal_error.m",
@@ -498,8 +497,8 @@ js_library("os_trial.m") {
   extra_deps = [ ":os_trial_module" ]
 }
 
-js_library("pin_setup.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/pin_setup.m.js" ]
+js_library("pin_setup") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/pin_setup.js" ]
   deps = [
     "../../components:oobe_types.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -513,7 +512,7 @@ js_library("pin_setup.m") {
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:setup_pin_keyboard.m",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":pin_setup_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("recommend_apps.m") {
@@ -823,15 +822,6 @@ polymer_modulizer("os_trial") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("pin_setup") {
-  js_file = "pin_setup.js"
-  html_file = "pin_setup.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("recommend_apps") {
   js_file = "recommend_apps.js"
   html_file = "recommend_apps.html"
@@ -914,6 +904,7 @@ html_to_js("web_components") {
     "managed_terms_of_service.js",
     "oobe_reset.js",
     "parental_handoff.js",
+    "pin_setup.js",
     "saml_confirm_password.js",
   ]
 }
