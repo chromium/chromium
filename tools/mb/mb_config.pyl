@@ -3230,7 +3230,7 @@
     ],
 
     'official_goma_linux_pgo': [
-      'official', 'goma', 'static', 'no_symbols', 'pgo_phase_1',
+      'official', 'goma', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_goma_mac': [
@@ -3250,7 +3250,7 @@
     ],
 
     'official_goma_mac_arm_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'static', 'no_symbols', 'pgo_phase_1'
+      'official', 'goma', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_goma_mac_perf': [
@@ -3262,7 +3262,7 @@
     ],
 
     'official_goma_mac_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'static', 'no_symbols', 'pgo_phase_1'
+      'official', 'goma', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_goma_minimal_symbols_android': [
@@ -3302,7 +3302,7 @@
     ],
 
     'official_goma_x64_pgo': [
-      'official', 'goma', 'x64', 'static', 'no_symbols', 'pgo_phase_1', 'no_resource_allowlisting',
+      'official', 'goma', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_goma_x86': [
@@ -3310,7 +3310,7 @@
     ],
 
     'official_goma_x86_pgo': [
-      'official', 'goma', 'x86', 'static', 'no_symbols', 'pgo_phase_1', 'no_resource_allowlisting',
+      'official', 'goma', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_optimize_goma': [
@@ -4455,7 +4455,6 @@
     },
 
     'pgo_phase_1': {
-      'mixins': ['strip_absolute_paths_from_debug_symbols'],
       'gn_args': 'chrome_pgo_phase=1'
     },
 

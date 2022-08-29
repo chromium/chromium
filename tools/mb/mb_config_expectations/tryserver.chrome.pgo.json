@@ -7,7 +7,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
@@ -22,7 +21,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
@@ -32,10 +30,10 @@
   "linux-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
+      "dcheck_always_on": false,
       "is_chrome_branded": true,
-      "is_component_build": false,
+      "is_debug": false,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 0,
       "use_goma": true
     }
@@ -43,13 +41,12 @@
   "mac-arm-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
-      "enable_keystone_registration_framework": false,
+      "dcheck_always_on": false,
       "enable_widevine_cdm_host_verification": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
-      "is_component_build": false,
+      "is_debug": false,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
       "use_goma": true
@@ -58,13 +55,12 @@
   "mac-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
-      "enable_keystone_registration_framework": false,
+      "dcheck_always_on": false,
       "enable_widevine_cdm_host_verification": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
-      "is_component_build": false,
+      "is_debug": false,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 0,
       "use_goma": true
     }
@@ -72,11 +68,10 @@
   "win32-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
-      "enable_resource_allowlist_generation": false,
+      "dcheck_always_on": false,
       "is_chrome_branded": true,
-      "is_component_build": false,
+      "is_debug": false,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 0,
       "target_cpu": "x86",
       "use_goma": true
@@ -85,11 +80,10 @@
   "win64-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
-      "enable_resource_allowlist_generation": false,
+      "dcheck_always_on": false,
       "is_chrome_branded": true,
-      "is_component_build": false,
+      "is_debug": false,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 0,
       "target_cpu": "x64",
       "use_goma": true
