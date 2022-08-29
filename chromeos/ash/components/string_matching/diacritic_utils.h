@@ -6,24 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_DIACRITIC_UTILS_H_
 
 #include <string>
-#include "base/containers/flat_map.h"
 
 namespace ash::string_matching {
-class DiacriticUtils {
- public:
-  DiacriticUtils();
-  ~DiacriticUtils();
 
-  DiacriticUtils(const DiacriticUtils&) = delete;
-  DiacriticUtils& operator=(const DiacriticUtils&) = delete;
-
-  // Removes diacritics from 'str' and return the result. e.g.:
-  // RemoveDiacritics(hölzle) => holzle
-  const std::u16string RemoveDiacritics(const std::u16string& str);
-
- private:
-  base::flat_map<char16_t, std::u16string> conversion_map_;
-};
+// Removes diacritics from 'str' and return the result. e.g.:
+// RemoveDiacritics(hölzle) => holzle
+const std::u16string RemoveDiacritics(const std::u16string& str);
 
 }  // namespace ash::string_matching
 #endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_DIACRITIC_UTILS_H_
