@@ -314,6 +314,7 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
                         ? SOURCE_FILE
                         : SOURCE_DEVICE;
   volume->mount_path_ = base::FilePath(mount_point.mount_path);
+  volume->mount_condition_ = mount_point.mount_condition;
 
   if (disk) {
     volume->file_system_type_ = disk->file_system_type();
