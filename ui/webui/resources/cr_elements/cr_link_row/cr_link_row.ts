@@ -9,7 +9,7 @@
  * of this element to take the user to another page in the app or to an external
  * page (somewhat like an HTML link).
  */
-import '../cr_actionable_row_style.m.js';
+import '../cr_actionable_row_style.css.js';
 import '../cr_icon_button/cr_icon_button.js';
 import '../hidden_style_css.m.js';
 import '../icons.m.js';

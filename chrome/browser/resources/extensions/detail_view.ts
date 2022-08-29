@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';

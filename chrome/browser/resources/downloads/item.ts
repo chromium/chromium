@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import './strings.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';

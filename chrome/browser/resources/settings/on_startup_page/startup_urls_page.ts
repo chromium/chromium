@@ -8,7 +8,7 @@
  */
 
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/extension_controlled_indicator.js';

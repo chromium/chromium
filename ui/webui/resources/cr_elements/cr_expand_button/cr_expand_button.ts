@@ -7,7 +7,7 @@
  * 'cr-expand-button' is a chrome-specific wrapper around a button that toggles
  * between an opened (expanded) and closed state.
  */
-import '../cr_actionable_row_style.m.js';
+import '../cr_actionable_row_style.css.js';
 import '../cr_icon_button/cr_icon_button.js';
 import '../icons.m.js';
 import '../shared_vars_css.m.js';

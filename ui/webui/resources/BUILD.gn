@@ -298,8 +298,6 @@ if (is_chromeos_ash) {
 
 if (include_polymer) {
   generate_definitions_js_files += [
-    "cr_elements/action_link_css.m.js",
-    "cr_elements/cr_actionable_row_style.m.js",
     "cr_elements/cr_icons_css.m.js",
     "cr_elements/hidden_style_css.m.js",
     "cr_elements/icons.m.js",

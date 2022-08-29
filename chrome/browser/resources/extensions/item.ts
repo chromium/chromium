@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import './icons.html.js';
 import './shared_style.css.js';
 import './shared_vars.css.js';

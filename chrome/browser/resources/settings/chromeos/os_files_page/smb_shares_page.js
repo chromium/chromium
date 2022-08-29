@@ -6,7 +6,7 @@ import 'chrome://resources/cr_components/chromeos/smb_shares/add_smb_share_dialo
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';

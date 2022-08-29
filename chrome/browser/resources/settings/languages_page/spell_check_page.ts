@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 // <if expr="_google_chrome or not is_macosx">
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 // </if>

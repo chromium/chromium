@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/js/action_link.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';

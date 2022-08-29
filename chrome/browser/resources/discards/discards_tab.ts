@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
