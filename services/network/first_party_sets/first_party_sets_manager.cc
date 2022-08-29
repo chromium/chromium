@@ -20,6 +20,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
@@ -113,7 +114,7 @@ void FirstPartySetsManager::ComputeMetadataAndInvoke(
                       timer.Elapsed());
 
   std::move(callback).Run(
-      ComputeMetadataInternal(site, base::OptionalOrNullptr(top_frame_site),
+      ComputeMetadataInternal(site, base::OptionalToPtr(top_frame_site),
                               party_context, fps_context_config));
 }
 
@@ -143,8 +144,8 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
                      : absl::nullopt;
 
   return net::FirstPartySetMetadata(
-      context, base::OptionalOrNullptr(FindEntry(site, fps_context_config)),
-      base::OptionalOrNullptr(top_frame_owner));
+      context, base::OptionalToPtr(FindEntry(site, fps_context_config)),
+      base::OptionalToPtr(top_frame_owner));
 }
 
 absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(

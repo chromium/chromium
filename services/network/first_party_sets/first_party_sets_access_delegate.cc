@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_metadata.h"
 
@@ -107,7 +108,7 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
       callbacks = base::SplitOnceCallback(std::move(callback));
 
   absl::optional<net::FirstPartySetMetadata> sync_result =
-      manager_->ComputeMetadata(site, base::OptionalOrNullptr(top_frame_site),
+      manager_->ComputeMetadata(site, base::OptionalToPtr(top_frame_site),
                                 party_context, context_config_,
                                 std::move(callbacks.first));
 
