@@ -272,6 +272,10 @@ extern const char kEnableFREUIModuleIOSDescription[];
 extern const char kEnableFullscreenAPIName[];
 extern const char kEnableFullscreenAPIDescription[];
 
+// Title and description for the flag to enable open in download
+extern const char kEnableOpenInDownloadName[];
+extern const char kEnableOpenInDownloadDescription[];
+
 // Title and description for the flag to enable omnibox suggestions scrolling on
 // iPad.
 extern const char kEnableSuggestionsScrollingOnIPadName[];

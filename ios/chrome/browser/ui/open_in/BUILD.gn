@@ -101,3 +101,12 @@ source_set("eg2_tests") {
 
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
