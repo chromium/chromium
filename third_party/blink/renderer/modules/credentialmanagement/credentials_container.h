@@ -40,10 +40,6 @@ class MODULES_EXPORT CredentialsContainer final : public ScriptWrappable,
   ScriptPromise preventSilentAccess(ScriptState*);
 
   void Trace(Visitor*) const override;
-
- private:
-  class OtpRequestAbortAlgorithm;
-  class PublicKeyRequestAbortAlgorithm;
 };
 
 }  // namespace blink

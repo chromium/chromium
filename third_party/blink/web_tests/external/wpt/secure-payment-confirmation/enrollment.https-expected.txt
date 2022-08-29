@@ -5,8 +5,6 @@ PASS Payment credential requires userVerification to be "required", not "preferr
 PASS Payment credential requires userVerification to be "required", not "discouraged".
 PASS Payment credential does not allow residentKey to be "discouraged".
 PASS Payment credential requires authenticatorAttachment to be "platform", not "cross-platform".
-PASS Payment credential abort without reason
-PASS Payment credential abort reason with Error
 PASS Clean up the test environment
 Harness: the test ran to completion.
 
