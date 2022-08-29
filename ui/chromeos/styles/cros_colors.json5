@@ -383,8 +383,8 @@
     menu_item_background_hover: "$ripple_color",
 
     /* nudge */
-    nudge_label_color: "$text_color_primary_inverted",
-    nudge_icon_color: "$icon_color_primary_inverted",
+    nudge_label_color: "$button_label_color_primary",
+    nudge_icon_color: "$button_icon_color_primary",
     nudge_background_color: "$color_prominent",
 
     /* scroll bar */
