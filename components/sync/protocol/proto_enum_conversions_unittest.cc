@@ -31,6 +31,11 @@ TEST(ProtoEnumConversionsTest, GetAppListItemTypeString) {
   TestEnumStringsNonEmpty(sync_pb::AppListSpecifics::AppListItemType);
 }
 
+TEST(ProtoEnumConversionsTest, GetSegmentationPlatformTypeTypeString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::SegmentationSpecifics::DeviceMetadata::PlatformType);
+}
+
 TEST(ProtoEnumConversionsTest, GetBrowserTypeString) {
   TestEnumStringsNonEmpty(sync_pb::SyncEnums::BrowserType);
 }

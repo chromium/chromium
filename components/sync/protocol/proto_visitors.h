@@ -39,6 +39,7 @@
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
+#include "components/sync/protocol/segmentation_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
@@ -567,6 +568,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(reading_list);
   VISIT(search_engine);
   VISIT(security_event);
+  VISIT(segmentation);
   VISIT(send_tab_to_self);
   VISIT(session);
   VISIT(sharing_message);
@@ -970,6 +972,43 @@ VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {
   VISIT(target_device_sync_cache_guid);
   VISIT(opened);
   VISIT(notification_dismissed);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SegmentationSpecifics& proto) {
+  VISIT(segmentation_key);
+  VISIT(segment_selection_result);
+  VISIT(device_metadata);
+  VISIT_REP(model_execution_data);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::SegmentationSpecifics::SegmentSelectionResult& proto) {
+  VISIT(selected_segment);
+  VISIT(expiry_time_windows_epoch_seconds);
+  VISIT(last_updated_time_windows_epoch_seconds);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::SegmentationSpecifics::DeviceMetadata& proto) {
+  VISIT(cache_guid);
+  VISIT_ENUM(platform_type);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::SegmentationSpecifics::ModelExecutionData& proto) {
+  VISIT(model_id);
+  VISIT_REP(model_outputs);
+  VISIT(execution_time_windows_epoch_seconds);
+  VISIT(score_expiry_time_windows_epoch_seconds);
+  VISIT(model_version);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::SegmentationSpecifics::ModelExecutionData::ModelOutput&
+        proto) {
+  VISIT(label);
+  VISIT(score);
+  VISIT(rank);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionHeader& proto) {

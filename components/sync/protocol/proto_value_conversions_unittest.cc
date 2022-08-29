@@ -30,6 +30,7 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/priority_preference_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
+#include "components/sync/protocol/segmentation_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -96,6 +97,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(priority_preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(reading_list)
 DEFINE_SPECIFICS_TO_VALUE_TEST(search_engine)
 DEFINE_SPECIFICS_TO_VALUE_TEST(security_event)
+DEFINE_SPECIFICS_TO_VALUE_TEST(segmentation)
 DEFINE_SPECIFICS_TO_VALUE_TEST(send_tab_to_self)
 DEFINE_SPECIFICS_TO_VALUE_TEST(session)
 DEFINE_SPECIFICS_TO_VALUE_TEST(sharing_message)

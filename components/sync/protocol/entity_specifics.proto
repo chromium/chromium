@@ -47,6 +47,7 @@ import "components/sync/protocol/saved_tab_group_specifics.proto";
 import "components/sync/protocol/search_engine_specifics.proto";
 import "components/sync/protocol/security_event_specifics.proto";
 import "components/sync/protocol/send_tab_to_self_specifics.proto";
+import "components/sync/protocol/segmentation_specifics.proto";
 import "components/sync/protocol/session_specifics.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
 import "components/sync/protocol/synced_notification_app_info_specifics.proto";
@@ -163,6 +164,7 @@ message EntitySpecifics {
     SavedTabGroupSpecifics saved_tab_group = 1004874;
     AutofillWalletUsageSpecifics autofill_wallet_usage = 1033580;
     ContactInfoSpecifics contact_info = 1034378;
+    SegmentationSpecifics segmentation = 1026052;
   }
   reserved 218175;
   reserved "wifi_credential";
