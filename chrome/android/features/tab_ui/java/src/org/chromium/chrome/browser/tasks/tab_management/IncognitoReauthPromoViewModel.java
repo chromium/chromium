@@ -10,6 +10,7 @@ import android.content.Context;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -51,6 +52,12 @@ public class IncognitoReauthPromoViewModel {
                         view -> {
                             data.getDismissActionProvider().dismiss(
                                     MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "Android.IncognitoReauth.PromoAcceptedOrDismissed",
+                                    IncognitoReauthPromoMessageService
+                                            .IncognitoReauthPromoActionType.NO_THANKS,
+                                    IncognitoReauthPromoMessageService
+                                            .IncognitoReauthPromoActionType.NUM_ENTRIES);
                         })
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, false)
                 .with(MessageCardViewProperties.ICON_WIDTH_IN_PIXELS,
