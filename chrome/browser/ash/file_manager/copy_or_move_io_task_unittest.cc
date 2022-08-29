@@ -362,6 +362,61 @@ TEST_P(CopyOrMoveIOTaskTest, MissingDestination) {
       base::DirectoryExists(temp_dir_.GetPath().Append("nonexistent_folder")));
 }
 
+TEST_P(CopyOrMoveIOTaskTest, DestinationNamesDifferentToSourceNames) {
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  std::string bar_contents = base::RandBytesAsString(kTestFileSize);
+  ASSERT_TRUE(
+      base::WriteFile(temp_dir_.GetPath().Append("foo.txt"), foo_contents));
+  ASSERT_TRUE(
+      base::WriteFile(temp_dir_.GetPath().Append("bar.txt"), bar_contents));
+  ASSERT_TRUE(base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder")));
+  base::RunLoop run_loop;
+
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL("foo.txt"),
+      CreateFileSystemURL("bar.txt"),
+  };
+  std::vector<storage::FileSystemURL> expected_output_urls = {
+      CreateFileSystemURL("dest_folder/different_file_name.txt"),
+      CreateFileSystemURL("dest_folder/alternate_file_name.txt"),
+  };
+  std::vector<base::FilePath> destination_paths = {
+      base::FilePath("different_file_name.txt"),
+      base::FilePath("alternate_file_name.txt"),
+  };
+  auto dest = CreateFileSystemURL("dest_folder/");
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+  EXPECT_CALL(
+      complete_callback,
+      Run(AllOf(Field(&ProgressStatus::type, GetParam()),
+                Field(&ProgressStatus::destination_folder, dest),
+                Field(&ProgressStatus::state, State::kSuccess),
+                Field(&ProgressStatus::bytes_transferred, 2 * kTestFileSize),
+                Field(&ProgressStatus::total_bytes, 2 * kTestFileSize),
+                Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+                Field(&ProgressStatus::sources,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK,
+                                                    base::File::FILE_OK))),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusUrls(expected_output_urls)),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK,
+                                                    base::File::FILE_OK))))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  CopyOrMoveIOTask task(GetParam(), source_urls, destination_paths, dest,
+                        &profile_, file_system_context_);
+  task.Execute(base::DoNothing(), complete_callback.Get());
+  run_loop.Run();
+
+  ExpectFileContents(
+      temp_dir_.GetPath().Append("dest_folder/different_file_name.txt"),
+      foo_contents);
+  ExpectFileContents(
+      temp_dir_.GetPath().Append("dest_folder/alternate_file_name.txt"),
+      bar_contents);
+}
+
 INSTANTIATE_TEST_SUITE_P(CopyOrMove,
                          CopyOrMoveIOTaskTest,
                          testing::Values(OperationType::kCopy,

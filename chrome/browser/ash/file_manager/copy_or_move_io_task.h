@@ -22,8 +22,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 // This class represents a copy or move operation. It checks whether there is
 // enough space for the copy or move to occur, and also sends the copy or move
@@ -34,6 +33,16 @@ class CopyOrMoveIOTask : public IOTask {
   CopyOrMoveIOTask(
       OperationType type,
       std::vector<storage::FileSystemURL> source_urls,
+      storage::FileSystemURL destination_folder,
+      Profile* profile,
+      scoped_refptr<storage::FileSystemContext> file_system_context);
+  // Use this constructor if you require the destination entries to have
+  // different file names to the source entries. The size of `source_urls` and
+  // `destination_file_names` must be the same.
+  CopyOrMoveIOTask(
+      OperationType type,
+      std::vector<storage::FileSystemURL> source_urls,
+      std::vector<base::FilePath> destination_file_names,
       storage::FileSystemURL destination_folder,
       Profile* profile,
       scoped_refptr<storage::FileSystemContext> file_system_context);
@@ -78,6 +87,13 @@ class CopyOrMoveIOTask : public IOTask {
   // bytes by for each copy or move completion.
   std::vector<int64_t> source_sizes_;
 
+  // Stores a list of file names (i.e. base::FilePath::BaseName, not full paths)
+  // that will serve as the name for the source URLs in progress_.sources. These
+  // names are prior to conflict resolution so in the event they conflict they
+  // may be renamed to include a numbered suffix (e.g. foo.txt (1)). The
+  // std::vector::size here MUST be the same as progress_.sources size.
+  std::vector<base::FilePath> destination_file_names_;
+
   // Stores the size reported by the last progress update so we can compute the
   // delta on the next progress update.
   int64_t last_progress_size_;
@@ -96,7 +112,6 @@ class CopyOrMoveIOTask : public IOTask {
   base::WeakPtrFactory<CopyOrMoveIOTask> weak_ptr_factory_{this};
 };
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_H_

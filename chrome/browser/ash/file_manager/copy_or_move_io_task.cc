@@ -38,8 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 namespace {
 
@@ -100,6 +99,22 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
   }
 
   source_sizes_.reserve(source_urls.size());
+}
+
+CopyOrMoveIOTask::CopyOrMoveIOTask(
+    OperationType type,
+    std::vector<storage::FileSystemURL> source_urls,
+    std::vector<base::FilePath> destination_file_names,
+    storage::FileSystemURL destination_folder,
+    Profile* profile,
+    scoped_refptr<storage::FileSystemContext> file_system_context)
+    : CopyOrMoveIOTask(type,
+                       source_urls,
+                       std::move(destination_folder),
+                       profile,
+                       file_system_context) {
+  DCHECK_EQ(source_urls.size(), destination_file_names.size());
+  destination_file_names_ = std::move(destination_file_names);
 }
 
 CopyOrMoveIOTask::~CopyOrMoveIOTask() {
@@ -309,9 +324,16 @@ void CopyOrMoveIOTask::GotFreeDiskSpace(int64_t free_space) {
 // entry being transferred.
 void CopyOrMoveIOTask::GenerateDestinationURL(size_t idx) {
   DCHECK(idx < progress_.sources.size());
+
+  // In the event no `destination_file_names_` exist, fall back to the
+  // `BaseName` from the source URL.
+  const auto destination_file_name =
+      (destination_file_names_.size() == progress_.sources.size())
+          ? destination_file_names_[idx]
+          : progress_.sources[idx].url.path().BaseName();
+
   util::GenerateUnusedFilename(
-      progress_.destination_folder,
-      progress_.sources[idx].url.path().BaseName(), file_system_context_,
+      progress_.destination_folder, destination_file_name, file_system_context_,
       base::BindOnce(&CopyOrMoveIOTask::CopyOrMoveFile,
                      weak_ptr_factory_.GetWeakPtr(), idx));
 }
@@ -417,5 +439,4 @@ void CopyOrMoveIOTask::SetCurrentOperationID(
   operation_id_.emplace(id);
 }
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task
