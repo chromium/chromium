@@ -2420,7 +2420,7 @@ scoped_refptr<ToggleRootList> StyleBuilderConverter::ConvertToggleRoot(
       if (const auto* states_list = DynamicTo<CSSValueList>(state_value)) {
         ++index;
         found_states = true;
-        DCHECK_LE(1u, states_list->length());
+        DCHECK_LE(2u, states_list->length());
         ToggleRoot::States::NamesType states_vec;
         states_vec.ReserveInitialCapacity(states_list->length());
         for (const auto& state : *states_list) {

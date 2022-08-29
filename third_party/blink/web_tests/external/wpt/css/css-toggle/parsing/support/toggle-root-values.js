@@ -23,6 +23,7 @@ function test_toggle_root_computed_values(property) {
   test_computed_value(property, 'mytoggle calc(-9.5) at calc(6.5)', 'mytoggle 1 at 7');
   test_computed_value(property, 'mytoggle group sticky self, yourtoggle self sticky', 'mytoggle sticky group self, yourtoggle sticky self');
   test_computed_value(property, 'mytoggle group 2 at 1', 'mytoggle 2 at 1 group');
+  test_computed_value(property, 'mytoggle [one two]');
   test_computed_value(property, 'mytoggle [one two three]');
   test_computed_value(property, 'mytoggle [one two three] at 0', 'mytoggle [one two three]');
   test_computed_value(property, 'mytoggle [ one two three ] at 0', 'mytoggle [one two three]');
@@ -56,6 +57,7 @@ function test_toggle_root_valid_values(property) {
   test_valid_value(property, 'mytoggle calc(-9.5) at calc(6.5)');
   test_valid_value(property, 'mytoggle group sticky self, yourtoggle self sticky', 'mytoggle sticky group self, yourtoggle sticky self');
   test_valid_value(property, 'mytoggle group 2 at 1', 'mytoggle 2 at 1 group');
+  test_valid_value(property, 'mytoggle [one two]');
   test_valid_value(property, 'mytoggle [one two three]');
   test_valid_value(property, 'mytoggle [one two three] at 0');
   test_valid_value(property, 'mytoggle [ one two three ] at 0', 'mytoggle [one two three] at 0');
@@ -83,7 +85,8 @@ function test_toggle_root_invalid_values(property) {
   test_invalid_value(property, 'mytoggle, none');
   test_invalid_value(property, 'mytoggle 1 at');
   test_invalid_value(property, 'mytoggle []');
-  test_invalid_value(property, 'mytoggle [one] at');
+  test_invalid_value(property, 'mytoggle [one]');
+  test_invalid_value(property, 'mytoggle [one two] at');
   test_invalid_value(property, 'mytoggle [one two two three]');
   test_invalid_value(property, 'mytoggle [one two one three]');
   test_invalid_value(property, 'mytoggle 0 sticky self');

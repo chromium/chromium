@@ -5428,10 +5428,7 @@ CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange& range,
           state_list->Append(*state_name);
         }
 
-        // TODO(https://github.com/tabatkins/css-toggle/issues/19): The
-        // spec currently allows an empty list of states, but this
-        // doesn't make sense, so we do not.
-        if (state_list->length() == 0 || !block.AtEnd()) {
+        if (state_list->length() < 2u || !block.AtEnd()) {
           return nullptr;
         }
         list->Append(*state_list);

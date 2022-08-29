@@ -85,6 +85,20 @@ promise_test(async function() {
   assert_equals(b.toggles.size, 1, "b.toggles.size after failed set");
   assert_equals(b.toggles.get("newname"), t, "b.toggles.get after failed set");
 
+  assert_throws_dom("SyntaxError", () => { let t = new CSSToggle({ "states": [] }); },
+                    "toggle constructor with empty list of states");
+  assert_throws_dom("SyntaxError", () => { let t = new CSSToggle({ "states": ["one"] }); },
+                    "toggle constructor with only one state");
+  assert_throws_dom("SyntaxError", () => { let t = new CSSToggle({ "states": ["one", "two", "one"] }); },
+                    "toggle constructor with duplicate states");
+  let c = new CSSToggle({ "states": ["one", "two", "three"] });
+  assert_throws_dom("SyntaxError", () => { c.states = []; },
+                    "toggle states setter with empty list of states");
+  assert_throws_dom("SyntaxError", () => { c.states = ["one"]; },
+                    "toggle states setter with only one state");
+  assert_throws_dom("SyntaxError", () => { c.states = ["one", "two", "one"]; },
+                    "toggle states setter with duplicate states");
+
   // TODO(https://crbug.com/1250716): Should the toggle on a be
   // re-created at some point?  If so, when?
 

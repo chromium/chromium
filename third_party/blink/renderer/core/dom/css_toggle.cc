@@ -148,8 +148,17 @@ void CSSToggle::setStates(const V8UnionStringArrayOrUnsignedLong* value,
 void CSSToggle::setStatesInternal(const States& states,
                                   ExceptionState& exception_state) {
   if (states.IsNames()) {
+    const auto& states_vec = states.AsNames();
+
+    if (states_vec.size() < 2u) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kSyntaxError,
+          "The value provided contains fewer than 2 states.");
+      return;
+    }
+
     HashSet<AtomicString> states_present;
-    for (const AtomicString& state : states.AsNames()) {
+    for (const AtomicString& state : states_vec) {
       auto add_result = states_present.insert(state);
       if (!add_result.is_new_entry) {
         exception_state.ThrowDOMException(
