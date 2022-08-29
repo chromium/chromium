@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
@@ -67,7 +68,7 @@ void CrosSpeechRecognitionService::BindRecognizer(
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   base::FilePath binary_path, languagepack_path;
-  PopulateFilePaths(base::OptionalOrNullptr(options->language), binary_path,
+  PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
                     languagepack_path);
 
   CrosSpeechRecognitionRecognizerImpl::Create(
@@ -84,7 +85,7 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   base::FilePath binary_path, languagepack_path;
-  PopulateFilePaths(base::OptionalOrNullptr(options->language), binary_path,
+  PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
                     languagepack_path);
 
   // CrosSpeechRecognitionService runs on browser UI thread.
