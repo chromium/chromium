@@ -333,12 +333,12 @@ void EnrollmentScreen::ShowImpl() {
 void EnrollmentScreen::TakeTpmOwnership() {
   // This is used in browsertest to test cancel button.
   if (tpm_ownership_callback_for_testing_.has_value()) {
-    TpmManagerClient::Get()->TakeOwnership(
+    chromeos::TpmManagerClient::Get()->TakeOwnership(
         ::tpm_manager::TakeOwnershipRequest(),
         std::move(tpm_ownership_callback_for_testing_.value()));
     return;
   }
-  TpmManagerClient::Get()->TakeOwnership(
+  chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(),
       base::BindOnce(&EnrollmentScreen::OnTpmStatusResponse,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -86,8 +86,8 @@ void TokenRevoker::OnOAuth2RevokeTokenCompleted(
 EnterpriseEnrollmentHelperImpl::EnterpriseEnrollmentHelperImpl() {
   // Init the TPM if it has not been done until now (in debug build we might
   // have not done that yet).
-  TpmManagerClient::Get()->TakeOwnership(::tpm_manager::TakeOwnershipRequest(),
-                                         base::DoNothing());
+  chromeos::TpmManagerClient::Get()->TakeOwnership(
+      ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
 }
 
 EnterpriseEnrollmentHelperImpl::~EnterpriseEnrollmentHelperImpl() {

@@ -79,7 +79,7 @@ Record GetNextUserAddedRemovedRecord(MissiveClientTestObserver* observer) {
 
 absl::optional<Record> MaybeGetEnqueuedUserAddedRemovedRecord() {
   const std::vector<Record>& records =
-      MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
+      chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           Priority::IMMEDIATE);
   for (const Record& record : records) {
     if (record.destination() == Destination::ADDED_REMOVED_EVENTS) {

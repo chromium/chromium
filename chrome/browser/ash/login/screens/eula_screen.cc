@@ -164,7 +164,7 @@ void EulaScreen::ShowImpl() {
   // When --tpm-is-dynamic switch is set pre-enrollment TPM check relies on the
   // TPM being un-owned until enrollment. b/187429309
   if (!switches::IsTpmDynamic()) {
-    TpmManagerClient::Get()->TakeOwnership(
+    chromeos::TpmManagerClient::Get()->TakeOwnership(
         ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
   }
   if (WizardController::IsZeroTouchHandsOffOobeFlow()) {

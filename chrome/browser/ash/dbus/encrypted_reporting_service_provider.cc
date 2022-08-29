@@ -102,11 +102,12 @@ void EncryptedReportingServiceProvider::OnExported(
 // static
 ::reporting::UploadClient::ReportSuccessfulUploadCallback
 EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
-  MissiveClient* const missive_client = MissiveClient::Get();
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
   return base::BindPostTask(
       missive_client->origin_task_runner(),
       base::BindRepeating(
-          [](base::WeakPtr<MissiveClient> missive_client,
+          [](base::WeakPtr<chromeos::MissiveClient> missive_client,
              ::reporting::SequenceInformation sequence_information,
              bool force_confirm) {
             if (missive_client) {
@@ -120,11 +121,12 @@ EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
 // static
 ::reporting::UploadClient::EncryptionKeyAttachedCallback
 EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
-  MissiveClient* const missive_client = MissiveClient::Get();
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
   return base::BindPostTask(
       missive_client->origin_task_runner(),
       base::BindRepeating(
-          [](base::WeakPtr<MissiveClient> missive_client,
+          [](base::WeakPtr<chromeos::MissiveClient> missive_client,
              ::reporting::SignedEncryptionInfo signed_encryption_info) {
             if (missive_client) {
               missive_client->UpdateEncryptionKey(
@@ -213,7 +215,8 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
                                            remaining_storage_capacity))};
 
   DCHECK(upload_provider_);
-  MissiveClient* const missive_client = MissiveClient::Get();
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
   if (!missive_client) {
     LOG(ERROR) << "No Missive client available";
     SendStatusAsResponse(

@@ -180,14 +180,16 @@ class TestCryptohomePkcs11Client : public FakeCryptohomePkcs11Client {
 
 class SystemTPMTokenInfoGetterTest : public testing::Test {
  public:
-  SystemTPMTokenInfoGetterTest() { TpmManagerClient::Get()->InitializeFake(); }
+  SystemTPMTokenInfoGetterTest() {
+    chromeos::TpmManagerClient::Get()->InitializeFake();
+  }
 
   SystemTPMTokenInfoGetterTest(const SystemTPMTokenInfoGetterTest&) = delete;
   SystemTPMTokenInfoGetterTest& operator=(const SystemTPMTokenInfoGetterTest&) =
       delete;
 
   ~SystemTPMTokenInfoGetterTest() override {
-    TpmManagerClient::Get()->Shutdown();
+    chromeos::TpmManagerClient::Get()->Shutdown();
   }
 
   void SetUp() override {
@@ -211,7 +213,7 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
  public:
   UserTPMTokenInfoGetterTest()
       : account_id_(AccountId::FromUserEmail("user@gmail.com")) {
-    TpmManagerClient::Get()->InitializeFake();
+    chromeos::TpmManagerClient::Get()->InitializeFake();
   }
 
   UserTPMTokenInfoGetterTest(const UserTPMTokenInfoGetterTest&) = delete;
@@ -219,7 +221,7 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
       delete;
 
   ~UserTPMTokenInfoGetterTest() override {
-    TpmManagerClient::Get()->Shutdown();
+    chromeos::TpmManagerClient::Get()->Shutdown();
   }
 
   void SetUp() override {
@@ -289,7 +291,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TokenSlotIdEqualsZero) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
@@ -305,11 +307,11 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TPMNotOwnedSystemSlotFallbackEnabled) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
@@ -338,11 +340,11 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotOwnedSystemSlotFallbackEnabled) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TPMOwnedSystemSlotFallbackEnabled) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(true);
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(true);
@@ -371,7 +373,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMOwnedSystemSlotFallbackEnabled) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TpmEnabledCallFails) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->set_non_nonsensitive_status_dbus_error_count(1);
 
@@ -457,7 +459,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyFails) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->set_non_nonsensitive_status_dbus_error_count(2);
   cryptohome_client_->set_get_tpm_token_info_failure_count(1);
@@ -489,7 +491,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelayBounded) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->set_non_nonsensitive_status_dbus_error_count(4);
   cryptohome_client_->set_get_tpm_token_info_failure_count(5);

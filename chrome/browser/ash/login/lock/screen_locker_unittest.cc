@@ -79,7 +79,7 @@ class ScreenLockerUnitTest : public testing::Test {
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BiodClient::InitializeFake();
     CrasAudioClient::InitializeFake();
-    TpmManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::InitializeFake();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
 
@@ -163,7 +163,7 @@ class ScreenLockerUnitTest : public testing::Test {
     bluez::BluezDBusManager::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
-    TpmManagerClient::Shutdown();
+    chromeos::TpmManagerClient::Shutdown();
     CrasAudioClient::Shutdown();
     BiodClient::Shutdown();
     ConciergeClient::Shutdown();

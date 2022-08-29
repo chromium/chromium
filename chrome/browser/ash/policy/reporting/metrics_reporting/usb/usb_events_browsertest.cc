@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(
 
   LoginAffiliatedUser();
 
-  MissiveClientTestObserver missive_observer_(
+  chromeos::MissiveClientTestObserver missive_observer_(
       ::reporting::Destination::PERIPHERAL_EVENTS);
 
   cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(
     UsbTelemetryCollectedWhenPolicyEnabledWithAffiliatedUser) {
   EnableUsbPolicy();
 
-  MissiveClientTestObserver missive_observer_(
+  chromeos::MissiveClientTestObserver missive_observer_(
       ::reporting::Destination::PERIPHERAL_EVENTS);
 
   auto usb_telemetry = CreateUsbTelemetry();
@@ -194,14 +194,14 @@ IN_PROC_BROWSER_TEST_F(
     NoUsbEventsOrTelemetryWhenPolicyEnabledWithUnaffiliatedUser) {
   EnableUsbPolicy();
 
-  MissiveClientTestObserver missive_observer_(
+  chromeos::MissiveClientTestObserver missive_observer_(
       ::reporting::Destination::PERIPHERAL_EVENTS);
 
   LoginUnaffiliatedUser();
 
   cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
   EXPECT_TRUE(NoUsbEventsEnqueued(
-      MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
+      chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           ::reporting::Priority::SECURITY)));
 }
 
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Shouldn't be any USB event related records in the MissiveClient queue
   EXPECT_TRUE(NoUsbEventsEnqueued(
-      MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
+      chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           ::reporting::Priority::SECURITY)));
 }
 
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Shouldn't be any USB event related records in the MissiveClient queue
   EXPECT_TRUE(NoUsbEventsEnqueued(
-      MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
+      chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           ::reporting::Priority::SECURITY)));
 }
 

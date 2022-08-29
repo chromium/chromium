@@ -65,7 +65,8 @@ void FirewallHole::Open(PortType type,
       base::BindOnce(&FirewallHole::PortAccessGranted, type, port, interface,
                      std::move(lifeline_local), std::move(callback));
 
-  PermissionBrokerClient* client = PermissionBrokerClient::Get();
+  chromeos::PermissionBrokerClient* client =
+      chromeos::PermissionBrokerClient::Get();
   DCHECK(client) << "Could not get permission broker client.";
 
   switch (type) {
@@ -84,7 +85,8 @@ FirewallHole::~FirewallHole() {
   base::OnceCallback<void(bool)> port_released_closure = base::BindOnce(
       &PortReleased, type_, port_, interface_, std::move(lifeline_fd_));
 
-  PermissionBrokerClient* client = PermissionBrokerClient::Get();
+  chromeos::PermissionBrokerClient* client =
+      chromeos::PermissionBrokerClient::Get();
   DCHECK(client) << "Could not get permission broker client.";
   switch (type_) {
     case PortType::TCP:

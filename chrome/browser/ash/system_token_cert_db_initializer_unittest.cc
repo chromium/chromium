@@ -31,7 +31,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
     UserDataAuthClient::InitializeFake();
     SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
-    TpmManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::InitializeFake();
 
     system_token_cert_db_initializer_ =
         std::make_unique<SystemTokenCertDBInitializer>();
@@ -45,7 +45,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
   ~SystemTokenCertDbInitializerTest() override {
     system_token_cert_db_initializer_.reset();
 
-    TpmManagerClient::Shutdown();
+    chromeos::TpmManagerClient::Shutdown();
     NetworkCertLoader::Shutdown();
     SystemTokenCertDbStorage::Shutdown();
     UserDataAuthClient::Shutdown();
@@ -79,11 +79,11 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
 // 5 minutes after being requested, and the system slot uses software fallback
 // when it's allowed and TPM is disabled.
 TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseSuccessSoftwareFallback) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
@@ -117,11 +117,11 @@ TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseSuccessSoftwareFallback) {
 // successfully by SystemTokenCertDbInitializer if TPM is disabled and system
 // slot software fallback is not allowed.
 TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseFailureDisabledTPM) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);

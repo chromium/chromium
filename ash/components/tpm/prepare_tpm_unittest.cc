@@ -16,8 +16,8 @@ namespace {
 
 class PrepareTpmTest : public ::testing::Test {
  public:
-  PrepareTpmTest() { TpmManagerClient::InitializeFake(); }
-  ~PrepareTpmTest() override { TpmManagerClient::Shutdown(); }
+  PrepareTpmTest() { chromeos::TpmManagerClient::InitializeFake(); }
+  ~PrepareTpmTest() override { chromeos::TpmManagerClient::Shutdown(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment;
@@ -27,7 +27,7 @@ class PrepareTpmTest : public ::testing::Test {
 
 // Tests if the password is getting cleared when TPM is owned.
 TEST_F(PrepareTpmTest, PrepareTpmOwned) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(true);
@@ -38,7 +38,7 @@ TEST_F(PrepareTpmTest, PrepareTpmOwned) {
   PrepareTpm(std::move(on_finished));
   run_loop.Run();
 
-  EXPECT_EQ(TpmManagerClient::Get()
+  EXPECT_EQ(chromeos::TpmManagerClient::Get()
                 ->GetTestInterface()
                 ->clear_stored_owner_password_count(),
             1);
@@ -46,7 +46,7 @@ TEST_F(PrepareTpmTest, PrepareTpmOwned) {
 
 // Tests if the ownership process is triggered if TPM is not owned yet.
 TEST_F(PrepareTpmTest, PrepareTpmNotOwned) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
@@ -57,14 +57,16 @@ TEST_F(PrepareTpmTest, PrepareTpmNotOwned) {
   PrepareTpm(std::move(on_finished));
   run_loop.Run();
 
-  EXPECT_EQ(TpmManagerClient::Get()->GetTestInterface()->take_ownership_count(),
+  EXPECT_EQ(chromeos::TpmManagerClient::Get()
+                ->GetTestInterface()
+                ->take_ownership_count(),
             1);
 }
 
 // Tests the program flow doesn't fall through and execute any unexpected
 // follow-up action if tpm manager reports error.
 TEST_F(PrepareTpmTest, PrepareTpmFailedToGetStatus) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_status(::tpm_manager::STATUS_DBUS_ERROR);
@@ -75,11 +77,13 @@ TEST_F(PrepareTpmTest, PrepareTpmFailedToGetStatus) {
   PrepareTpm(std::move(on_finished));
   run_loop.Run();
 
-  EXPECT_EQ(TpmManagerClient::Get()
+  EXPECT_EQ(chromeos::TpmManagerClient::Get()
                 ->GetTestInterface()
                 ->clear_stored_owner_password_count(),
             0);
-  EXPECT_EQ(TpmManagerClient::Get()->GetTestInterface()->take_ownership_count(),
+  EXPECT_EQ(chromeos::TpmManagerClient::Get()
+                ->GetTestInterface()
+                ->take_ownership_count(),
             0);
 }
 

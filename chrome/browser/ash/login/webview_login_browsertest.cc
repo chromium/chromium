@@ -1684,8 +1684,8 @@ class WebviewClientCertsTokenLoadingLoginTest
     // At very early stage, the system slot is being initialized becuase fake
     // tpm manager tells the TPM is owned by default. So, it has to be overriden
     // here instead of in the test body or `SetUpOnMainThread()`.
-    TpmManagerClient::InitializeFake();
-    TpmManagerClient::Get()
+    chromeos::TpmManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::Get()
         ->GetTestInterface()
         ->mutable_nonsensitive_status_reply()
         ->set_is_owned(false);
@@ -1841,11 +1841,13 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
 
   // Report the TPM as ready, triggering the system token initialization by
   // SystemTokenCertDBInitializer.
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(true);
-  TpmManagerClient::Get()->GetTestInterface()->EmitOwnershipTakenSignal();
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->EmitOwnershipTakenSignal();
 
   absl::optional<net::SSLInfo> ssl_info =
       RequestClientCertTestPageInFrame(test::OobeJS(), kSigninWebview);
@@ -1863,11 +1865,13 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
 
   // Report the TPM as ready, triggering the system token initialization by
   // SystemTokenCertDBInitializer.
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
-  TpmManagerClient::Get()->GetTestInterface()->EmitOwnershipTakenSignal();
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->EmitOwnershipTakenSignal();
 
   EXPECT_FALSE(IsTpmTokenEnabled());
   EXPECT_FALSE(IsSystemSlotAvailable());

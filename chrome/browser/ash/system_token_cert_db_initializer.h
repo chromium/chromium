@@ -26,8 +26,9 @@ namespace ash {
 // components, i.e. components under //chrome/browser/chromeos/ and //chromeos/
 //
 // All of the methods must be called on the UI thread.
-class SystemTokenCertDBInitializer : public TpmManagerClient::Observer,
-                                     public net::NSSCertDatabase::Observer {
+class SystemTokenCertDBInitializer
+    : public chromeos::TpmManagerClient::Observer,
+      public net::NSSCertDatabase::Observer {
  public:
   // It is stated in cryptohome implementation that 5 minutes is enough time to
   // wait for any TPM operations. For more information, please refer to:

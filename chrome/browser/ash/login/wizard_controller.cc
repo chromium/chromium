@@ -2566,7 +2566,7 @@ void WizardController::MaybeTakeTPMOwnership() {
     return;
 
   DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
-  TpmManagerClient::Get()->TakeOwnership(::tpm_manager::TakeOwnershipRequest(),
-                                         base::DoNothing());
+  chromeos::TpmManagerClient::Get()->TakeOwnership(
+      ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
 }
 }  // namespace ash

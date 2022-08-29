@@ -120,7 +120,7 @@ SystemTokenCertDBInitializer::~SystemTokenCertDBInitializer() {
 
   // Note that the observer could potentially not be added yet, but
   // the operation is a no-op in that case.
-  TpmManagerClient::Get()->RemoveObserver(this);
+  chromeos::TpmManagerClient::Get()->RemoveObserver(this);
 
   // Notify consumers of SystemTokenCertDbStorage that the database is not
   // usable anymore.
@@ -152,13 +152,13 @@ void SystemTokenCertDBInitializer::OnCryptohomeAvailable(bool available) {
   }
 
   VLOG(1) << "SystemTokenCertDBInitializer: Cryptohome available.";
-  TpmManagerClient::Get()->AddObserver(this);
+  chromeos::TpmManagerClient::Get()->AddObserver(this);
 
   CheckTpm();
 }
 
 void SystemTokenCertDBInitializer::CheckTpm() {
-  TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
       base::BindOnce(&SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -207,7 +207,7 @@ void SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus(
       // initialization was interrupted. We don't care about the result, and
       // don't block waiting for it.
       LOG(WARNING) << "Request taking TPM ownership.";
-      TpmManagerClient::Get()->TakeOwnership(
+      chromeos::TpmManagerClient::Get()->TakeOwnership(
           ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
     }
     return;

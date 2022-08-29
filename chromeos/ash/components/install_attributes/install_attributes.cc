@@ -316,7 +316,7 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
 
   // Clearing the TPM password seems to be always a good deal. At this point
   // install attributes is ready, which implies TPM readiness as well.
-  TpmManagerClient::Get()->ClearStoredOwnerPassword(
+  chromeos::TpmManagerClient::Get()->ClearStoredOwnerPassword(
       ::tpm_manager::ClearStoredOwnerPasswordRequest(),
       base::BindOnce(&InstallAttributes::OnClearStoredOwnerPassword,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -423,7 +423,7 @@ bool InstallAttributes::IsConsumerKioskDeviceWithAutoLaunch() {
 }
 
 void InstallAttributes::TriggerConsistencyCheck(int dbus_retries) {
-  TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
       base::BindOnce(&InstallAttributes::OnTpmStatusComplete,
                      weak_ptr_factory_.GetWeakPtr(), dbus_retries));

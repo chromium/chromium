@@ -33,9 +33,9 @@ class FirewallHoleTest : public testing::Test {
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
   ~FirewallHoleTest() override = default;
 
-  void SetUp() override { PermissionBrokerClient::InitializeFake(); }
+  void SetUp() override { chromeos::PermissionBrokerClient::InitializeFake(); }
 
-  void TearDown() override { PermissionBrokerClient::Shutdown(); }
+  void TearDown() override { chromeos::PermissionBrokerClient::Shutdown(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;

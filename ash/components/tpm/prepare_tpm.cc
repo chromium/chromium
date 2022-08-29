@@ -42,12 +42,12 @@ void OnGetTpmStatus(base::OnceClosure preparation_finished_callback,
     return;
   }
   if (reply.is_owned()) {
-    TpmManagerClient::Get()->ClearStoredOwnerPassword(
+    chromeos::TpmManagerClient::Get()->ClearStoredOwnerPassword(
         ::tpm_manager::ClearStoredOwnerPasswordRequest(),
         base::BindOnce(OnClearStoredOwnerPassword,
                        std::move(preparation_finished_callback)));
   } else {
-    TpmManagerClient::Get()->TakeOwnership(
+    chromeos::TpmManagerClient::Get()->TakeOwnership(
         ::tpm_manager::TakeOwnershipRequest(),
         base::BindOnce(OnTakeOwnership,
                        std::move(preparation_finished_callback)));
@@ -57,7 +57,7 @@ void OnGetTpmStatus(base::OnceClosure preparation_finished_callback,
 }  // namespace
 
 void PrepareTpm(base::OnceClosure preparation_finished_callback) {
-  TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
       base::BindOnce(OnGetTpmStatus, std::move(preparation_finished_callback)));
 }
