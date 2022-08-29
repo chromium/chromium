@@ -22,10 +22,6 @@ extern const base::Feature kNewOverflowMenuSimpleDestinationIcons;
 // Feature to enable smart sorting the new overflow menu.
 extern const base::Feature kSmartSortingNewOverflowMenu;
 
-// Feature to enable smart sorting new destinations added to the new overflow
-// menu.
-extern const base::Feature kSmartSortingNewDestinations;
-
 // Feature to add a "Share Chrome App" action to the overflow menu
 extern const base::Feature kNewOverflowMenuShareChromeAction;
 
@@ -46,9 +42,6 @@ bool IsNewOverflowMenuSimpleDestinationIconsEnabled();
 
 // Whether the new Google Password Manager branding is enabled.
 bool IsPasswordManagerBrandingUpdateEnabled();
-
-// Whether smart sorting for new destinations is enabled.
-bool IsSmartSortingNewDestinationsEnabled();
 
 // Whether smart sorting the new overflow menu is enabled.
 bool IsSmartSortingNewOverflowMenuEnabled();

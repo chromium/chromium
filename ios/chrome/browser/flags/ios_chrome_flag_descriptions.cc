@@ -628,11 +628,6 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-const char kSmartSortingNewDestinationsName[] =
-    "Smart Sorting new destinations added to the overflow menu.";
-const char kSmartSortingNewDestinationsDescription[] =
-    "Enables smart sorting new destinations added to the overflow menu.";
-
 const char kSmartSortingNewOverflowMenuName[] =
     "Smart Sorting the new Overflow Menu";
 const char kSmartSortingNewOverflowMenuDescription[] =

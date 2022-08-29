@@ -571,11 +571,6 @@ extern const char kSharedHighlightingIOSDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
-// Title and description for the flag to enable smart sorting new destinations
-// added to the overflow menu.
-extern const char kSmartSortingNewDestinationsName[];
-extern const char kSmartSortingNewDestinationsDescription[];
-
 // Title and description for the flag to enable smart sorting the new overflow
 // menu.
 extern const char kSmartSortingNewOverflowMenuName[];
