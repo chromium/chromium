@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(ASH_DBUS_SMBPROVIDER) FakeSmbProviderClient
   void AddNetBiosPacketParsingForTesting(uint8_t packet_id,
                                          std::vector<std::string> hostnames);
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override;
 
   // SmbProviderClient override.

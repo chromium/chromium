@@ -15,7 +15,7 @@ namespace ash {
 
 // CiceroneClient is used to communicate with Cicerone, which is used to
 // communicate with containers running inside VMs.
-class COMPONENT_EXPORT(CICERONE) CiceroneClient : public DBusClient {
+class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
  public:
   class Observer {
    public:

@@ -106,7 +106,7 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
                                       std::move(callback)));
   }
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         imageloader::kImageLoaderServiceName,

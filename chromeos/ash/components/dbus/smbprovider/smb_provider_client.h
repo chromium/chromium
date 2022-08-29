@@ -24,7 +24,7 @@ namespace ash {
 // service. All methods should be called from the origin thread (UI thread)
 // which initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(ASH_DBUS_SMBPROVIDER) SmbProviderClient
-    : public DBusClient,
+    : public chromeos::DBusClient,
       public base::SupportsWeakPtr<SmbProviderClient> {
  public:
   using ReadDirectoryCallback = base::OnceCallback<void(

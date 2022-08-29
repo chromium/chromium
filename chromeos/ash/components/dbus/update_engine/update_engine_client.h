@@ -24,7 +24,7 @@ class FakeUpdateEngineClient;
 
 // UpdateEngineClient is used to communicate with the update engine.
 class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) UpdateEngineClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // The result code used for RequestUpdateCheck().
   enum UpdateCheckResult {

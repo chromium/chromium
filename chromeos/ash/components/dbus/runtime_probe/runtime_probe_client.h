@@ -16,7 +16,7 @@ namespace ash {
 // RuntimeProbeClient is used to communicate with Runtime Probe, which provides
 // data for hardware telemetry.
 class COMPONENT_EXPORT(ASH_DBUS_RUNTIME_PROBE) RuntimeProbeClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   using RuntimeProbeCallback =
       chromeos::DBusMethodCallback<runtime_probe::ProbeResult>;

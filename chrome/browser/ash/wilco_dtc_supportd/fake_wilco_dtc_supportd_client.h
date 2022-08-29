@@ -24,7 +24,7 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
 
   ~FakeWilcoDtcSupportdClient() override;
 
-  // DBusClient overrides:
+  // chromeos::DBusClient overrides:
   void Init(dbus::Bus* bus) override;
 
   // WilcoDtcSupportdClient overrides:

@@ -58,7 +58,7 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         virtual_file_provider::kVirtualFileProviderServiceName,

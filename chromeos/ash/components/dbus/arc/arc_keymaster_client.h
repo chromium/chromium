@@ -13,7 +13,8 @@ namespace ash {
 
 // ArcKeymasterClient is used to bootstrap a Mojo connection with the
 // arc-keymasterd daemon in Chrome OS.
-class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcKeymasterClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcKeymasterClient
+    : public chromeos::DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static ArcKeymasterClient* Get();

@@ -94,7 +94,7 @@ class SmbProviderClientImpl : public SmbProviderClient {
                &callback);
   }
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         smbprovider::kSmbProviderServiceName,

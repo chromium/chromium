@@ -20,7 +20,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcKeymasterClient
 
   ~FakeArcKeymasterClient() override = default;
 
-  // DBusClient override:
+  // chromeos::DBusClient override:
   void Init(dbus::Bus* bus) override;
 
   // ArcKeymasterClient override:

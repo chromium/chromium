@@ -16,7 +16,8 @@ namespace ash {
 
 // SeneschalClient is used to communicate with Seneschal, which manages
 // 9p file servers.
-class COMPONENT_EXPORT(SENESCHAL) SeneschalClient : public DBusClient {
+class COMPONENT_EXPORT(SENESCHAL) SeneschalClient
+    : public chromeos::DBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:

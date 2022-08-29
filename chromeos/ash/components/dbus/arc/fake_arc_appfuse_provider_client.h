@@ -21,7 +21,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcAppfuseProviderClient
 
   ~FakeArcAppfuseProviderClient() override;
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override;
 
   // ArcAppfuseProviderClient override:

@@ -307,7 +307,7 @@ std::ostream& operator<<(std::ostream& out, const MountEntry& entry);
 // This class only makes calls, result/error handling should be done
 // by callbacks.
 class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // A callback to handle the result of EnumerateDevices.
   // The argument is the enumerated device paths.

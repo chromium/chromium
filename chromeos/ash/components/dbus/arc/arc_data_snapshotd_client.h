@@ -18,7 +18,7 @@ namespace ash {
 // ArcDataSnapshotdClient is used to delegate ARC data/ snapshot related tasks
 // to arc-data-snapshotd daemon in Chrome OS.
 class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcDataSnapshotdClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static ArcDataSnapshotdClient* Get();

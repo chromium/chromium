@@ -15,7 +15,8 @@ namespace ash {
 // ArcMidisClient is used to pass an FD to the midis daemon for the purpose
 // of setting up a Mojo channel. It is expected to be called once during browser
 // initialization.
-class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcMidisClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcMidisClient
+    : public chromeos::DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static ArcMidisClient* Get();

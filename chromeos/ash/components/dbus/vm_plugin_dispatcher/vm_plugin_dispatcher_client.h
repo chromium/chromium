@@ -17,7 +17,7 @@ namespace ash {
 // VmPluginDispatcherClient is used to communicate with the Plugin VM
 // Dispatcher, which manages plugin VMs.
 class COMPONENT_EXPORT(ASH_DBUS_VM_PLUGIN_DISPATCHER) VmPluginDispatcherClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // Used to observe changes to VM tool's state and VM's state.
   class Observer : public base::CheckedObserver {

@@ -59,7 +59,7 @@ class ArcObbMounterClientImpl : public ArcObbMounterClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         arc::obb_mounter::kArcObbMounterServiceName,

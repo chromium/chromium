@@ -20,7 +20,7 @@ namespace ash {
 // All method should be called from the origin thread (UI thread) which
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(ASH_DBUS_IMAGE_BURNER) ImageBurnerClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static ImageBurnerClient* Get();

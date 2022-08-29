@@ -19,7 +19,8 @@ class FakeCiceroneClient;
 
 // ConciergeClient is used to communicate with Concierge, which is used to
 // start and stop VMs, as well as for disk image management.
-class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
+class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
+    : public chromeos::DBusClient {
  public:
   static constexpr base::ObserverListPolicy kObserverListPolicy =
       base::ObserverListPolicy::EXISTING_ONLY;

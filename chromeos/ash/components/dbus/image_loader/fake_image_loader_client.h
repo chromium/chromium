@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(ASH_DBUS_IMAGE_LOADER) FakeImageLoaderClient
   // Returns empty file path if the component is not loaded at the time.
   base::FilePath GetComponentInstallPath(const std::string& name) const;
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* dbus) override {}
 
   // ImageLoaderClient override:

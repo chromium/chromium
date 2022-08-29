@@ -13,7 +13,7 @@
 
 namespace ash {
 
-class WilcoDtcSupportdClient : public DBusClient {
+class WilcoDtcSupportdClient : public chromeos::DBusClient {
  public:
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);

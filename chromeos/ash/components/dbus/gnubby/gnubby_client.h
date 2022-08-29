@@ -13,7 +13,8 @@
 
 namespace ash {
 // GnubbyClient is used to communicate with the Gnubby service.
-class COMPONENT_EXPORT(ASH_DBUS_GNUBBY) GnubbyClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_GNUBBY) GnubbyClient
+    : public chromeos::DBusClient {
  public:
   // Interface for observing changes in Gnubby Client
   class Observer {

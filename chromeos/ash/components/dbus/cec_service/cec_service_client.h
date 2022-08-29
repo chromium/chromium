@@ -21,7 +21,7 @@ namespace ash {
 // All methods should be called from the origin thread (UI thread)
 // which initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(ASH_DBUS_CEC_SERVICE) CecServiceClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static CecServiceClient* Get();
@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CEC_SERVICE) CecServiceClient
   virtual void QueryDisplayCecPowerState(PowerStateCallback callback) = 0;
 
  protected:
-  // Let test code call protected DBusClient::Init().
+  // Let test code call protected chromeos::DBusClient::Init().
   friend class CecServiceClientTest;
 
   CecServiceClient();

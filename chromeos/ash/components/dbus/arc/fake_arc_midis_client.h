@@ -20,7 +20,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcMidisClient
 
   ~FakeArcMidisClient() override = default;
 
-  // DBusClient override:
+  // chromeos::DBusClient override:
   void Init(dbus::Bus* bus) override;
 
   // ArcMidisClient override:

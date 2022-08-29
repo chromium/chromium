@@ -19,7 +19,7 @@ namespace ash {
 // methods should be called from the origin thread (UI thread) which initializes
 // the DBusThreadManager instance.
 class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcAppfuseProviderClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static ArcAppfuseProviderClient* Get();

@@ -24,7 +24,7 @@ namespace ash {
 // file descriptor behaves like a regular file descriptor (unlike a pipe, it
 // supports seek), while actually there is no real file associated with it.
 class COMPONENT_EXPORT(ASH_DBUS_VIRTUAL_FILE_PROVIDER) VirtualFileProviderClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   using GenerateVirtualFileIdCallback =
       base::OnceCallback<void(const absl::optional<std::string>& id)>;

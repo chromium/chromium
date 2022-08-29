@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(ASH_DBUS_VIRTUAL_FILE_PROVIDER)
 
   ~FakeVirtualFileProviderClient() override;
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override;
 
   // VirtualFileProviderClient overrides:

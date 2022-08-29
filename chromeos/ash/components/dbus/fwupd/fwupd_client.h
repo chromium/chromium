@@ -21,7 +21,8 @@ namespace ash {
 using FirmwareInstallOptions = std::map<std::string, bool>;
 
 // FwupdClient is used for handling signals from the fwupd daemon.
-class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
+    : public chromeos::DBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:

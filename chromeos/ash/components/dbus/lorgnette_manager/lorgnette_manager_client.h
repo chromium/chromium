@@ -21,7 +21,7 @@ namespace ash {
 // LorgnetteManagerClient is used to communicate with the lorgnette
 // document scanning daemon.
 class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // Attributes provided to a scan request.
   struct ScanProperties {

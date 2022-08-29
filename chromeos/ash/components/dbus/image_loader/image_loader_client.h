@@ -19,7 +19,7 @@ namespace ash {
 // ImageLoaderClient is used to communicate with the ImageLoader service, which
 // registers and loads component updates on Chrome OS.
 class COMPONENT_EXPORT(ASH_DBUS_IMAGE_LOADER) ImageLoaderClient
-    : public DBusClient {
+    : public chromeos::DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
   static ImageLoaderClient* Get();

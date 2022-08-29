@@ -15,7 +15,8 @@
 namespace ash {
 
 // ChunneldClient is used to communicate with chunneld and monitor chunneld.
-class COMPONENT_EXPORT(ASH_DBUS_CHUNNELD) ChunneldClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_CHUNNELD) ChunneldClient
+    : public chromeos::DBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:

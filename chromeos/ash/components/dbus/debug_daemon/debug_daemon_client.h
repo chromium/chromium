@@ -40,7 +40,7 @@ enum DbusLibraryError {
 
 // DebugDaemonClient is used to communicate with the debug daemon.
 class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
-    : public DBusClient,
+    : public chromeos::DBusClient,
       public base::trace_event::TracingAgent {
  public:
   // Returns the global instance if initialized. May return null.

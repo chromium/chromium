@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcObbMounterClient
 
   ~FakeArcObbMounterClient() override;
 
-  // DBusClient override.
+  // chromeos::DBusClient override.
   void Init(dbus::Bus* bus) override;
 
   // ArcObbMounterClient override:

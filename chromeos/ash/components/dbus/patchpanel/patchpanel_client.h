@@ -17,7 +17,8 @@ namespace ash {
 // Simple wrapper around patchpanel DBus API. The method names and protobuf
 // schema used by patchpanel DBus API are defined in
 // third_party/cros_system_api/dbus/patchpanel.
-class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient : public DBusClient {
+class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
+    : public chromeos::DBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:
