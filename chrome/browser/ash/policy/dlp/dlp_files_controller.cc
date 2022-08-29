@@ -132,6 +132,9 @@ DlpFilesController::DlpFileDestination::DlpFileDestination(
 DlpFilesController::DlpFileDestination::DlpFileDestination(
     const dlp::DlpComponent component)
     : component(MapProtoToPolicyComponent(component)) {}
+DlpFilesController::DlpFileDestination::DlpFileDestination(
+    const DlpRulesManager::Component component)
+    : component(component) {}
 
 DlpFilesController::DlpFileDestination&
 DlpFilesController::DlpFileDestination::operator=(const DlpFileDestination&) =
@@ -238,6 +241,33 @@ void DlpFilesController::FilterDisallowedUploads(
                      std::move(result_callback)));
 }
 
+void DlpFilesController::MaybeReportEvent(
+    const std::string& src,
+    absl::optional<DlpFileDestination> dst,
+    DlpRulesManager::Level level) {
+  if (level == DlpRulesManager::Level::kAllow ||
+      level == DlpRulesManager::Level::kNotSet)
+    return;
+
+  DlpReportingManager* reporting_manager = rules_manager_.GetReportingManager();
+  if (!reporting_manager)
+    return;
+
+  if (!dst.has_value()) {
+    reporting_manager->ReportEvent(src, DlpRulesManager::Restriction::kFiles,
+                                   level);
+    return;
+  }
+
+  if (dst->component.has_value()) {
+    reporting_manager->ReportEvent(src, dst->component.value(),
+                                   DlpRulesManager::Restriction::kFiles, level);
+  } else if (dst->url_or_path.has_value()) {
+    reporting_manager->ReportEvent(src, dst->url_or_path.value(),
+                                   DlpRulesManager::Restriction::kFiles, level);
+  }
+}
+
 void DlpFilesController::CheckIfDownloadAllowed(
     const GURL& download_url,
     const base::FilePath& file_path,
@@ -297,6 +327,8 @@ void DlpFilesController::IsFilesTransferRestricted(
       level = rules_manager_.IsRestrictedComponent(
           GURL(file.source_url), dst_component.value(),
           DlpRulesManager::Restriction::kFiles, nullptr);
+      MaybeReportEvent(file.source_url.spec(),
+                       DlpFileDestination((dst_component.value())), level);
     } else {
       // TODO(crbug.com/1286366): Revisit whether passing files paths here
       // make sense.
@@ -304,6 +336,8 @@ void DlpFilesController::IsFilesTransferRestricted(
       level = rules_manager_.IsRestrictedDestination(
           GURL(file.source_url), GURL(*destination.url_or_path),
           DlpRulesManager::Restriction::kFiles, nullptr, nullptr);
+      MaybeReportEvent(file.source_url.spec(),
+                       DlpFileDestination(*destination.url_or_path), level);
     }
 
     if (level == DlpRulesManager::Level::kBlock)
@@ -383,6 +417,8 @@ bool DlpFilesController::IsDlpPolicyMatched(const std::string& source_url) {
     default:
       break;
   }
+
+  MaybeReportEvent(source_url, {}, level);
 
   return restricted;
 }

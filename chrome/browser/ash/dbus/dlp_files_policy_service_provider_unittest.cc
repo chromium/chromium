@@ -144,6 +144,10 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsDlpPolicyMatched) {
       .Times(::testing::AnyNumber())
       .WillOnce(::testing::Return(files_controller_.get()));
 
+  EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
+      .Times(::testing::AnyNumber())
+      .WillOnce(::testing::Return(nullptr));
+
   auto response =
       CallDlpFilesPolicyServiceMethod<dlp::IsDlpPolicyMatchedResponse>(
           dlp::kDlpFilesPolicyServiceIsDlpPolicyMatchedMethod, request);

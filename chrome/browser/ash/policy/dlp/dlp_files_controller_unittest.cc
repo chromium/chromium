@@ -23,6 +23,9 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
@@ -61,9 +64,10 @@ namespace {
 constexpr char kEmailId[] = "test@example.com";
 constexpr char kGaiaId[] = "12345";
 
-constexpr char kExample1[] = "https://example1.com";
-constexpr char kExample2[] = "https://example2.com";
-constexpr char kExample3[] = "https://example3.com";
+constexpr char kExample1[] = "https://example1.com/";
+constexpr char kExample2[] = "https://example2.com/";
+constexpr char kExample3[] = "https://example3.com/";
+constexpr char kExampleNotRestricted[] = "https://example4.com/";
 
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
@@ -117,6 +121,7 @@ class DlpFilesControllerTest : public testing::Test {
   void TearDown() override {
     scoped_user_manager_.reset();
     profile_.reset();
+    reporting_manager_.reset();
 
     chromeos::DlpClient::Shutdown();
   }
@@ -129,6 +134,12 @@ class DlpFilesControllerTest : public testing::Test {
     files_controller_ = std::make_unique<DlpFilesController>(*rules_manager_);
     ON_CALL(*rules_manager_, GetDlpFilesController)
         .WillByDefault(::testing::Return(files_controller_.get()));
+
+    reporting_manager_ = std::make_unique<DlpReportingManager>();
+    SetReportQueueForReportingManager(reporting_manager_.get(), events,
+                                      base::SequencedTaskRunnerHandle::Get());
+    ON_CALL(*rules_manager_, GetReportingManager)
+        .WillByDefault(::testing::Return(reporting_manager_.get()));
 
     return dlp_rules_manager;
   }
@@ -191,6 +202,8 @@ class DlpFilesControllerTest : public testing::Test {
 
   MockDlpRulesManager* rules_manager_ = nullptr;
   std::unique_ptr<DlpFilesController> files_controller_;
+  std::unique_ptr<DlpReportingManager> reporting_manager_;
+  std::vector<DlpPolicyEvent> events;
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
@@ -509,6 +522,32 @@ TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Components) {
   EXPECT_EQ(result[0].components, expected_components);
 }
 
+TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
+  AddFilesToDlpClient();
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kReport))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
+
+  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(kExample1));
+  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExample2));
+  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExample3));
+  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExampleNotRestricted));
+
+  ASSERT_EQ(events.size(), 3u);
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             kExample1, DlpRulesManager::Restriction::kFiles,
+                             DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             kExample2, DlpRulesManager::Restriction::kFiles,
+                             DlpRulesManager::Level::kReport)));
+  EXPECT_THAT(events[2], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             kExample3, DlpRulesManager::Restriction::kFiles,
+                             DlpRulesManager::Level::kWarn)));
+}
+
 class DlpFilesExternalDestinationTest
     : public DlpFilesControllerTest,
       public ::testing::WithParamInterface<
@@ -630,6 +669,10 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
 
+  EXPECT_CALL(*rules_manager_, GetReportingManager())
+      .Times(::testing::AnyNumber())
+      .WillRepeatedly(::testing::Return(reporting_manager_.get()));
+
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
@@ -638,6 +681,74 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       transferred_files,
       DlpFilesController::DlpFileDestination(dst_url.path().value()),
       DlpWarnDialog::FilesAction::kTransfer, cb.Get());
+
+  ASSERT_EQ(events.size(), 2u);
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             kExample1, expected_component,
+                             DlpRulesManager::Restriction::kFiles,
+                             DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             kExample3, expected_component,
+                             DlpRulesManager::Restriction::kFiles,
+                             DlpRulesManager::Level::kBlock)));
+}
+
+class DlpFilesUrlDestinationTest : public DlpFilesControllerTest,
+                                   public ::testing::WithParamInterface<
+                                       std::tuple<std::vector<std::string>,
+                                                  std::string,
+                                                  DlpRulesManager::Level,
+                                                  std::vector<std::string>>> {};
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesUrlDestinationTest,
+    ::testing::Values(
+        std::make_tuple(std::vector<std::string>({kExample1, kExample2,
+                                                  kExample3}),
+                        "https://wetransfer.com/",
+                        DlpRulesManager::Level::kBlock,
+                        std::vector<std::string>({kExample1, kExample3})),
+        std::make_tuple(std::vector<std::string>({kExample1, kExample2,
+                                                  kExample3}),
+                        "https://drive.google.com/",
+                        DlpRulesManager::Level::kAllow,
+                        std::vector<std::string>({}))));
+
+TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
+  auto [files_sources_strings, dst, confidential_files_restriction_level,
+        disallowed_sources_strings] = GetParam();
+
+  std::vector<DlpFilesController::FileDaemonInfo> transferred_files;
+  std::vector<DlpFilesController::FileDaemonInfo> disallowed_files;
+
+  for (const auto& src : files_sources_strings)
+    transferred_files.emplace_back(base::FilePath(), src);
+  for (const auto& src : disallowed_sources_strings)
+    disallowed_files.emplace_back(base::FilePath(), src);
+
+  MockIsFilesTransferRestrictedCallback cb;
+  EXPECT_CALL(cb, Run(disallowed_files)).Times(1u);
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _))
+      .WillOnce(testing::Return(confidential_files_restriction_level))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
+      .WillOnce(testing::Return(confidential_files_restriction_level));
+
+  EXPECT_CALL(*rules_manager_, GetReportingManager())
+      .Times(::testing::AnyNumber())
+      .WillRepeatedly(::testing::Return(reporting_manager_.get()));
+
+  files_controller_->IsFilesTransferRestricted(
+      transferred_files, DlpFilesController::DlpFileDestination(dst),
+      DlpWarnDialog::FilesAction::kDownload, cb.Get());
+
+  ASSERT_EQ(events.size(), disallowed_files.size());
+  for (size_t i = 0u; i < disallowed_files.size(); ++i) {
+    EXPECT_THAT(events[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                               disallowed_files[i].source_url.spec(), dst,
+                               DlpRulesManager::Restriction::kFiles,
+                               confidential_files_restriction_level)));
+  }
 }
 
 class DlpFilesWarningDialogTest

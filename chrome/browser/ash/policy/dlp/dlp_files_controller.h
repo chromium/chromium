@@ -93,6 +93,7 @@ class DlpFilesController {
   struct DlpFileDestination {
     explicit DlpFileDestination(const std::string& url);
     explicit DlpFileDestination(const dlp::DlpComponent component);
+    explicit DlpFileDestination(const DlpRulesManager::Component component);
 
     DlpFileDestination& operator=(const DlpFileDestination&);
     DlpFileDestination(DlpFileDestination&&);
@@ -188,6 +189,11 @@ class DlpFilesController {
   void ReturnDlpMetadata(std::vector<absl::optional<ino_t>> inodes,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
+
+  // Reports an event if a `DlpReportingManager` instance exists.
+  void MaybeReportEvent(const std::string& src,
+                        absl::optional<DlpFileDestination> dst,
+                        DlpRulesManager::Level level);
 
   const DlpRulesManager& rules_manager_;
 
