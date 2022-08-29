@@ -4703,6 +4703,7 @@ if (is_chromeos_lacros) {
       "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
       "../browser/extensions/api/preference/preference_api_lacros_browsertest.cc",
       "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
+      "../browser/lacros/browser_launcher_browsertest.cc",
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/cert/cert_db_initializer_browsertest.cc",
       "../browser/lacros/clipboard_lacros_browsertest.cc",

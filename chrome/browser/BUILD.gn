@@ -5460,6 +5460,8 @@ static_library("browser") {
       "lacros/arc/arc_intent_helper_mojo_lacros.h",
       "lacros/automation_manager_lacros.cc",
       "lacros/automation_manager_lacros.h",
+      "lacros/browser_launcher.cc",
+      "lacros/browser_launcher.h",
       "lacros/browser_service_lacros.cc",
       "lacros/browser_service_lacros.h",
       "lacros/cert/cert_db_initializer.h",

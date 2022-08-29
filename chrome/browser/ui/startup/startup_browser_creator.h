@@ -149,10 +149,6 @@ class StartupBrowserCreator {
       StartupProfileInfo profile_info,
       const Profiles& last_opened_profiles);
 
-  // Returns true if we're in the process of restoring the session for the
-  // last opened profiles in `LaunchBrowserForLastProfiles()`.
-  static bool IsLaunchingBrowserForLastProfiles();
-
   // Returns true during browser process startup if the previous browser was
   // restarted. This only returns true before the first StartupBrowserCreator
   // destructs. WasRestarted() will update prefs::kWasRestarted to false, but
