@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
-#define BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -199,4 +199,4 @@ BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 }  // namespace allocator
 }  // namespace base
 
-#endif  // BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_H_

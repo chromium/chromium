@@ -19,7 +19,7 @@
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #endif
 
 #include <tuple>

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
+#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 #error This header is meant to be included only once by allocator_shim.cc
 #endif
-#define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
+
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
@@ -375,3 +377,5 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
 }  // namespace
 
 }  // namespace base::allocator
+
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_

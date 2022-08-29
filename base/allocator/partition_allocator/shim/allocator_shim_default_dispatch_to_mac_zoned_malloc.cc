@@ -4,9 +4,9 @@
 
 #include <utility>
 
-#include "base/allocator/allocator_interception_mac.h"
-#include "base/allocator/allocator_shim.h"
-#include "base/allocator/malloc_zone_functions_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 
 namespace base {
 namespace allocator {

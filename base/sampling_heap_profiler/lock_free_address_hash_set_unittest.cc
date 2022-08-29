@@ -9,7 +9,7 @@
 #include <cinttypes>
 #include <memory>
 
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/debug/alias.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/simple_thread.h"

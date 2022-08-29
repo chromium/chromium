@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_INTERNALS_H_
-#define BASE_ALLOCATOR_ALLOCATOR_SHIM_INTERNALS_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
 
 #include "build/build_config.h"
 
@@ -13,7 +13,7 @@
 #include <sys/cdefs.h>  // for __THROW
 #endif
 
-#ifndef __THROW  // Not a glibc system
+#ifndef __THROW   // Not a glibc system
 #ifdef _NOEXCEPT  // LLVM libc++ uses noexcept instead
 #define __THROW _NOEXCEPT
 #else
@@ -50,4 +50,4 @@
 
 #endif  // __GNUC__
 
-#endif  // BASE_ALLOCATOR_ALLOCATOR_SHIM_INTERNALS_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_INTERNALS_H_

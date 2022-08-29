@@ -15,7 +15,7 @@
 // only reason to intercept these calls is to re-label OOM crashes with slightly
 // more details.
 
-#include "base/allocator/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -27,7 +27,7 @@
 #include <new>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/malloc_zone_functions_mac.h"
+#include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/logging.h"
@@ -336,8 +336,8 @@ void InitializeDefaultDispatchToMacAllocator() {
 }
 
 void StoreFunctionsForDefaultZone() {
-  ChromeMallocZone* default_zone = reinterpret_cast<ChromeMallocZone*>(
-      malloc_default_zone());
+  ChromeMallocZone* default_zone =
+      reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
   StoreMallocZone(default_zone);
 }
 
@@ -386,14 +386,14 @@ void InterceptAllocationsMac() {
 
   g_oom_killer_enabled = true;
 
-// === C malloc/calloc/valloc/realloc/posix_memalign ===
+  // === C malloc/calloc/valloc/realloc/posix_memalign ===
 
-// This approach is not perfect, as requests for amounts of memory larger than
-// MALLOC_ABSOLUTE_MAX_SIZE (currently SIZE_T_MAX - (2 * PAGE_SIZE)) will still
-// fail with a NULL rather than dying (see malloc_zone_malloc() in
-// https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c for
-// details). Unfortunately, it's the best we can do. Also note that this does
-// not affect allocations from non-default zones.
+  // This approach is not perfect, as requests for amounts of memory larger than
+  // MALLOC_ABSOLUTE_MAX_SIZE (currently SIZE_T_MAX - (2 * PAGE_SIZE)) will
+  // still fail with a NULL rather than dying (see malloc_zone_malloc() in
+  // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c
+  // for details). Unfortunately, it's the best we can do. Also note that this
+  // does not affect allocations from non-default zones.
 
 #if !defined(ADDRESS_SANITIZER)
   // Don't do anything special on OOM for the malloc zones replaced by
@@ -511,17 +511,17 @@ void InterceptAllocationsMac() {
 }
 
 void UninterceptMallocZonesForTesting() {
-  UninterceptMallocZoneForTesting(malloc_default_zone());
+  UninterceptMallocZoneForTesting(malloc_default_zone());  // IN-TEST
   vm_address_t* zones;
   unsigned int count;
   kern_return_t kr = malloc_get_all_zones(mach_task_self(), 0, &zones, &count);
   CHECK(kr == KERN_SUCCESS);
   for (unsigned int i = 0; i < count; ++i) {
-    UninterceptMallocZoneForTesting(
+    UninterceptMallocZoneForTesting(  // IN-TEST
         reinterpret_cast<struct _malloc_zone_t*>(zones[i]));
   }
 
-  ClearAllMallocZonesForTesting();
+  ClearAllMallocZonesForTesting();  // IN-TEST
 }
 
 bool AreMallocZonesIntercepted() {

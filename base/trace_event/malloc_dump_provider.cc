@@ -36,7 +36,7 @@
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)

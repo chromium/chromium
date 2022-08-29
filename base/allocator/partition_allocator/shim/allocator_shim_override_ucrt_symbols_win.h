@@ -5,14 +5,18 @@
 // This header defines symbols to override the same functions in the Visual C++
 // CRT implementation.
 
-#ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
-#define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
+#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
+#error This header is meant to be included only once by allocator_shim.cc
+#endif
+
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
 
 #include <malloc.h>
 
 #include <windows.h>
 
-#include "base/allocator/allocator_shim_internals.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 
 // Even though most C++ allocation operators can be left alone since the
 // interception works at a lower level, these ones should be
@@ -175,4 +179,4 @@ __declspec(restrict) void* _aligned_offset_recalloc(void* address,
 
 }  // extern "C"
 
-#endif  // BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_

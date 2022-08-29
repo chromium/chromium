@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_
+#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_
 #error This header is meant to be included only once by allocator_shim.cc
 #endif
-#define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_
 
-#include "base/allocator/malloc_zone_functions_mac.h"
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_
+
+#include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "third_party/apple_apsl/malloc.h"
 
 namespace base {
@@ -58,3 +60,5 @@ MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
 
 }  // namespace allocator
 }  // namespace base
+
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_

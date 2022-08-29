@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 
 #include <ostream>
 
-#include "base/allocator/winheap_stubs_win.h"
+#include "base/allocator/partition_allocator/shim/winheap_stubs_win.h"
 #include "base/check.h"
 
 namespace {

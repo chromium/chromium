@@ -4,7 +4,7 @@
 
 #include <limits>
 
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/memory.h"

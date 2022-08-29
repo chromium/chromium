@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_MALLOC_ZONE_FUNCTIONS_MAC_H_
-#define BASE_ALLOCATOR_MALLOC_ZONE_FUNCTIONS_MAC_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_MALLOC_ZONE_FUNCTIONS_MAC_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_MALLOC_ZONE_FUNCTIONS_MAC_H_
 
 #include <malloc/malloc.h>
 #include <stddef.h>
@@ -100,4 +100,4 @@ inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
 }  // namespace allocator
 }  // namespace base
 
-#endif  // BASE_ALLOCATOR_MALLOC_ZONE_FUNCTIONS_MAC_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_MALLOC_ZONE_FUNCTIONS_MAC_H_

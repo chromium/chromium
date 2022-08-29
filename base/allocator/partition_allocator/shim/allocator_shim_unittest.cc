@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -29,7 +29,7 @@
 #include <windows.h>
 #elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
-#include "base/allocator/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #include "base/mac/mac_util.h"
 #include "third_party/apple_apsl/malloc.h"
 #else

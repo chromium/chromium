@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/allocator/winheap_stubs_win.h"
+#include "base/allocator/partition_allocator/shim/winheap_stubs_win.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -16,7 +16,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/allocator/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #endif
 
 namespace base {

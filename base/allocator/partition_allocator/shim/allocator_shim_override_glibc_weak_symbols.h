@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_
+#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_
 #error This header is meant to be included only once by allocator_shim.cc
 #endif
-#define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_
+
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_
 
 // Alias the internal Glibc symbols to the shim entry points.
 // This file is strongly inspired by tcmalloc's libc_override_glibc.h.
@@ -24,7 +26,7 @@
 
 #include <new>
 
-#include "base/allocator/allocator_shim_internals.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 
 // __MALLOC_HOOK_VOLATILE not defined in all Glibc headers.
 #if !defined(__MALLOC_HOOK_VOLATILE)
@@ -117,3 +119,5 @@ SHIM_ALWAYS_EXPORT int __posix_memalign(void** r, size_t a, size_t s) {
 #error The target platform does not seem to use Glibc. Disable the allocator \
 shim by setting use_allocator_shim=false in GN args.
 #endif
+
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_

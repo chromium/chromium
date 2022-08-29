@@ -8,8 +8,8 @@
 #include <cmath>
 #include <utility>
 
-#include "base/allocator/allocator_shim.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/bind.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"

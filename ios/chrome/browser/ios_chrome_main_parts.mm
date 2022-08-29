@@ -84,8 +84,8 @@
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/allocator_interception_mac.h"
-#include "base/allocator/allocator_shim.h"
+#import "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#import "base/allocator/partition_allocator/shim/allocator_shim.h"
 #endif
 
 #if DCHECK_IS_ON()

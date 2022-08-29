@@ -36,7 +36,7 @@
 #include "base/debug/handle_hooks_win.h"
 #include "base/win/current_module.h"
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #endif
 
 #include <timeapi.h>

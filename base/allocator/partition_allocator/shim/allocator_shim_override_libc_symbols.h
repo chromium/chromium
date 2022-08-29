@@ -5,10 +5,12 @@
 // Its purpose is to preempt the Libc symbols for malloc/new so they call the
 // shim layer entry points.
 
-#ifdef BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_LIBC_SYMBOLS_H_
+#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_LIBC_SYMBOLS_H_
 #error This header is meant to be included only once by allocator_shim.cc
 #endif
-#define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_LIBC_SYMBOLS_H_
+
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_LIBC_SYMBOLS_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_LIBC_SYMBOLS_H_
 
 #include "build/build_config.h"
 
@@ -18,7 +20,7 @@
 #include <malloc.h>
 #endif
 
-#include "base/allocator/allocator_shim_internals.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 
 extern "C" {
 
@@ -86,3 +88,5 @@ SHIM_ALWAYS_EXPORT size_t malloc_usable_size(void* address) __THROW {
 //   struct mallinfo mallinfo(void);
 
 }  // extern "C"
+
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_LIBC_SYMBOLS_H_

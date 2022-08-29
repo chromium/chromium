@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+
 #include <mach/mach.h>
 
-#include "base/allocator/allocator_interception_mac.h"
-#include "base/allocator/allocator_shim.h"
-#include "base/allocator/malloc_zone_functions_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

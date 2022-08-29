@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include <atomic>
 #include <cstddef>
@@ -10,7 +10,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
@@ -22,6 +21,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"

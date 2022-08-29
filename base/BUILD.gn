@@ -1230,10 +1230,10 @@ mixed_component("base") {
 
   if (is_mac) {
     sources += [
-      "allocator/allocator_interception_mac.h",
-      "allocator/allocator_interception_mac.mm",
-      "allocator/malloc_zone_functions_mac.cc",
-      "allocator/malloc_zone_functions_mac.h",
+      "allocator/partition_allocator/shim/allocator_interception_mac.h",
+      "allocator/partition_allocator/shim/allocator_interception_mac.mm",
+      "allocator/partition_allocator/shim/malloc_zone_functions_mac.cc",
+      "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
@@ -1559,60 +1559,58 @@ mixed_component("base") {
 
   if (use_allocator_shim) {
     sources += [
-      "allocator/allocator_shim.cc",
-      "allocator/allocator_shim.h",
-      "allocator/allocator_shim_internals.h",
+      "allocator/partition_allocator/shim/allocator_shim.cc",
+      "allocator/partition_allocator/shim/allocator_shim.h",
+      "allocator/partition_allocator/shim/allocator_shim_internals.h",
     ]
     if (use_partition_alloc) {
       sources += [
-        "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc",
-        "allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
+        "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
+        "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h",
       ]
     }
     if (is_android) {
       sources += [
-        "allocator/allocator_shim_override_cpp_symbols.h",
-        "allocator/allocator_shim_override_linker_wrapped_symbols.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_cpp_symbols.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_linker_wrapped_symbols.h",
       ]
       all_dependent_configs += [ "//base/allocator:wrap_malloc_symbols" ]
     }
     if (is_apple) {
       sources += [
-        "allocator/allocator_shim_override_mac_default_zone.h",
-        "allocator/allocator_shim_override_mac_symbols.h",
         "allocator/early_zone_registration_mac.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_mac_default_zone.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_mac_symbols.h",
       ]
       configs += [ "//base/allocator:mac_no_default_new_delete_symbols" ]
     }
     if (is_chromeos || is_linux) {
       sources += [
-        "allocator/allocator_shim_override_cpp_symbols.h",
-        "allocator/allocator_shim_override_glibc_weak_symbols.h",
-        "allocator/allocator_shim_override_libc_symbols.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_cpp_symbols.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_glibc_weak_symbols.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_libc_symbols.h",
       ]
     }
     if (is_win) {
       sources += [
-        "allocator/allocator_shim_override_ucrt_symbols_win.h",
-        "allocator/winheap_stubs_win.cc",
-        "allocator/winheap_stubs_win.h",
+        "allocator/partition_allocator/shim/allocator_shim_override_ucrt_symbols_win.h",
+        "allocator/partition_allocator/shim/winheap_stubs_win.cc",
+        "allocator/partition_allocator/shim/winheap_stubs_win.h",
       ]
     }
 
     if (use_allocator == "none") {
       if (is_android) {
-        sources += [ "allocator/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc" ]
+        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc" ]
       }
       if (is_apple) {
-        sources += [
-          "allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc",
-        ]
+        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc" ]
       }
       if (is_chromeos || is_linux) {
-        sources += [ "allocator/allocator_shim_default_dispatch_to_glibc.cc" ]
+        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_glibc.cc" ]
       }
       if (is_win) {
-        sources += [ "allocator/allocator_shim_default_dispatch_to_winheap.cc" ]
+        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_winheap.cc" ]
       }
     }
   }
@@ -2288,10 +2286,10 @@ mixed_component("base") {
 
     if (use_allocator_shim) {
       sources += [
-        "allocator/allocator_interception_mac.h",
-        "allocator/allocator_interception_mac.mm",
-        "allocator/malloc_zone_functions_mac.cc",
-        "allocator/malloc_zone_functions_mac.h",
+        "allocator/partition_allocator/shim/allocator_interception_mac.h",
+        "allocator/partition_allocator/shim/allocator_interception_mac.mm",
+        "allocator/partition_allocator/shim/malloc_zone_functions_mac.cc",
+        "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
       ]
     } else {
       sources -= [
@@ -3580,8 +3578,8 @@ test("base_unittests") {
 
   if (is_mac) {
     sources += [
-      "allocator/allocator_interception_mac_unittest.mm",
-      "allocator/malloc_zone_functions_mac_unittest.cc",
+      "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
+      "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
       "enterprise_util_mac_unittest.mm",
       "mac/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
@@ -3748,8 +3746,8 @@ test("base_unittests") {
 
     if (use_allocator_shim) {
       sources += [
-        "allocator/allocator_interception_mac_unittest.mm",
-        "allocator/malloc_zone_functions_mac_unittest.cc",
+        "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
+        "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
       ]
     }
   }
@@ -3929,18 +3927,19 @@ test("base_unittests") {
 
   if (use_allocator_shim) {
     sources += [
-      "allocator/allocator_shim_unittest.cc",
+      "allocator/partition_allocator/shim/allocator_shim_unittest.cc",
       "sampling_heap_profiler/poisson_allocation_sampler_unittest.cc",
       "sampling_heap_profiler/sampling_heap_profiler_unittest.cc",
     ]
 
     if (is_win) {
-      sources += [ "allocator/winheap_stubs_win_unittest.cc" ]
+      sources +=
+          [ "allocator/partition_allocator/shim/winheap_stubs_win_unittest.cc" ]
     }
 
     sources += [
-      "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc",
       "allocator/partition_alloc_support_unittest.cc",
+      "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc",
     ]
   }
 
