@@ -2546,6 +2546,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.Widevine.HardwareSecure.Support"
+    enum="BooleanSupported" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    When hardware secure decryption is enabled, whether Widevine hardware secure
+    decryption is actually supported by the platform (device). Reported at most
+    once per browser session when EME query is triggered by a website, and when
+    Widevine hardware secure CDM was registered.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.Widevine.HardwareSecure.Support.{VideoCodec}"
+    enum="BooleanSupported" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    When hardware secure decryption is enabled and supported by Widevine,
+    whether {VideoCodec} video codec is supported by the platform (device).
+    Reported at most once per browser session when EME query is triggered by a
+    website, and when Widevine hardware secure CDM was registered.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
 <histogram name="Media.EME.Widevine.VideoCapability.HasEmptyRobustness"
     enum="BooleanEmpty" expires_after="2023-01-15">
   <owner>xhwang@chromium.org</owner>

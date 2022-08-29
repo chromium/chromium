@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/media/cdm_registry_impl.h"
@@ -23,6 +24,7 @@
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 
@@ -53,19 +55,52 @@ void ReportSoftwareSecureCdmAvailableUMA(const std::string& key_system,
                             available);
 }
 
-// Reports the status of the hardware secure CDM. Only reported once per browser
-// session per `key_system`.
-void ReportHardwareSecureCapabilityStatusUMA(const std::string& key_system,
-                                             CdmInfo::Status status) {
+constexpr media::VideoCodec kVideoCodecsToReportToUma[] = {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    media::VideoCodec::kH264,
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    media::VideoCodec::kHEVC,
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+    media::VideoCodec::kDolbyVision,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+    media::VideoCodec::kVP9, media::VideoCodec::kAV1};
+
+// Reports the status and capabilities of the hardware secure CDM. Only reported
+// once per browser session per `key_system`.
+void ReportHardwareSecureCapabilityStatusUMA(
+    const std::string& key_system,
+    CdmInfo::Status status,
+    const media::CdmCapability* hw_secure_capability) {
+  // Use a set to track whether the UMA has been reported for `key_system` to
+  // make sure we only report once.
   static base::NoDestructor<std::set<std::string>> reported_key_systems;
   if (reported_key_systems->count(key_system))
     return;
 
   reported_key_systems->insert(key_system);
-  auto key_system_name_for_uma =
+
+  auto uma_prefix =
+      "Media.EME." +
       media::GetKeySystemNameForUMA(key_system, /*use_hw_secure_codecs=*/true);
-  base::UmaHistogramEnumeration(
-      "Media.EME." + key_system_name_for_uma + ".CdmInfoStatus", status);
+
+  // Report whether hardware secure decryption is disabled and if so why.
+  base::UmaHistogramEnumeration(uma_prefix + ".CdmInfoStatus", status);
+
+  // When hardware secure decryption is enabled, report whether it is supported.
+  if (status == CdmInfo::Status::kEnabled) {
+    base::UmaHistogramBoolean(uma_prefix + ".Support", hw_secure_capability);
+    // When supported, report whether a particular video codec is supported.
+    if (hw_secure_capability) {
+      const auto& video_codecs = hw_secure_capability->video_codecs;
+      for (const auto& video_codec : kVideoCodecsToReportToUma) {
+        base::UmaHistogramBoolean(
+            uma_prefix + ".Support." + media::GetCodecNameForUMA(video_codec),
+            video_codecs.count(video_codec));
+      }
+    }
+  }
 }
 
 bool IsEnabled(CdmInfo::Status status) {
@@ -539,7 +574,8 @@ KeySystemCapabilities CdmRegistryImpl::GetKeySystemCapabilities() {
     std::tie(hw_secure_capability, status) =
         GetHardwareSecureCapability(*this, key_system);
     DCHECK(status != CdmInfo::Status::kUninitialized);
-    ReportHardwareSecureCapabilityStatusUMA(key_system, status);
+    ReportHardwareSecureCapabilityStatusUMA(
+        key_system, status, base::OptionalToPtr(hw_secure_capability));
     capability.hw_secure_capability =
         IsEnabled(status) ? hw_secure_capability : absl::nullopt;
 
