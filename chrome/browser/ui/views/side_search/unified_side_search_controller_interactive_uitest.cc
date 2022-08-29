@@ -546,6 +546,30 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_CloseTabWithSideSearchOpenShouldNotCrash \
+  DISABLED_CloseTabWithSideSearchOpenShouldNotCrash
+#else
+#define MAYBE_CloseTabWithSideSearchOpenShouldNotCrash \
+  CloseTabWithSideSearchOpenShouldNotCrash
+#endif
+// Test added for crbug.com/1356966 .
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       MAYBE_CloseTabWithSideSearchOpenShouldNotCrash) {
+  auto* browser_view = BrowserViewFor(browser());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
+            browser_view->side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id());
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
 class SideSearchV2TestAutoTriggeringBrowserTest : public SideSearchBrowserTest {
  public:
   SideSearchV2TestAutoTriggeringBrowserTest() {
