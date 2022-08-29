@@ -32,6 +32,7 @@
 #include "components/autofill_assistant/browser/mock_client.h"
 #include "components/autofill_assistant/browser/mock_controller_observer.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
+#include "components/autofill_assistant/browser/public/mock_external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -118,9 +119,12 @@ class HeadlessScriptControllerImplTest : public testing::Test {
     ON_CALL(*mock_web_controller_, FindElement)
         .WillByDefault(RunOnceCallback<2>(ClientStatus(), nullptr));
 
+    mock_external_action_delegate_ =
+        std::make_unique<MockExternalActionDelegate>();
     auto client = std::make_unique<ClientHeadless>(
-        web_contents_.get(), starter_->GetCommonDependencies(), nullptr,
-        nullptr, task_environment_.GetMockTickClock(),
+        web_contents_.get(), starter_->GetCommonDependencies(),
+        mock_external_action_delegate_.get(), nullptr,
+        task_environment_.GetMockTickClock(),
         mock_runtime_manager_->GetWeakPtr(), &ukm_recorder_, nullptr);
     headless_script_controller_ =
         std::make_unique<HeadlessScriptControllerImpl>(
@@ -129,12 +133,13 @@ class HeadlessScriptControllerImplTest : public testing::Test {
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
-  // Note that calling this method moves |service_| and |web_controller_| so
-  // it should not be called more than once per test.
+  // Note that calling this method moves |mock_service_to_inject_| and
+  // |mock_web_controller_to_inject_| so it should not be called more than once
+  // per test.
   void Start(const base::flat_map<std::string, std::string>& params,
              bool expect_success) {
     // Since the callback is often called in a PostTask, we use this to make
-    // sure the test does not fininsh before the callback is called.
+    // sure the test does not finish before the callback is called.
     base::RunLoop run_loop;
 
     EXPECT_CALL(mock_script_ended_callback_, Run)
@@ -191,13 +196,14 @@ class HeadlessScriptControllerImplTest : public testing::Test {
   std::unique_ptr<MockRuntimeManager> mock_runtime_manager_;
   std::unique_ptr<Starter> starter_;
   std::unique_ptr<HeadlessScriptControllerImpl> headless_script_controller_;
+  std::unique_ptr<MockExternalActionDelegate> mock_external_action_delegate_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   raw_ptr<MockService> mock_service_;
   raw_ptr<MockWebController> mock_web_controller_;
 
  private:
   // These will be moved when the |Start| method is called, so expectations
-  // should be written using |mock_service| and |mock_web_controller_| instead.
+  // should be written using |mock_service_| and |mock_web_controller_| instead.
   std::unique_ptr<MockService> mock_service_to_inject_;
   std::unique_ptr<MockWebController> mock_web_controller_to_inject_;
 };
@@ -236,6 +242,161 @@ TEST_F(HeadlessScriptControllerImplTest, SuccessfulRun) {
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   Start(params, /* expect_success= */ true);
+}
+
+TEST_F(HeadlessScriptControllerImplTest, ScriptWithExternalActionSucceeds) {
+  SupportsScriptResponseProto script_response;
+  auto* script = AddRunnableScript(&script_response, "script");
+  script->mutable_presentation()->set_autostart(true);
+  SetupScripts(script_response);
+
+  ActionsResponseProto script_actions;
+  script_actions.add_actions()->mutable_external_action()->mutable_info();
+  script_actions.add_actions()->mutable_stop();
+
+  std::vector<ProcessedActionProto> processed_actions_capture;
+  EXPECT_CALL(*mock_service_, GetNextActions)
+      .WillOnce(
+          DoAll(SaveArg<3>(&processed_actions_capture),
+                RunOnceCallback<6>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{})));
+
+  external::Result result;
+  result.set_success(true);
+  result.mutable_result_info();
+  EXPECT_CALL(*mock_external_action_delegate_, OnActionRequested)
+      .WillOnce(RunOnceCallback<2>(result));
+
+  SetupActionsForScript("script", script_actions);
+
+  base::flat_map<std::string, std::string> params = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  Start(params, /* expect_success= */ true);
+  ASSERT_THAT(processed_actions_capture, SizeIs(2));
+  EXPECT_EQ(processed_actions_capture[0].status(), ACTION_APPLIED);
+  EXPECT_EQ(processed_actions_capture[1].status(), ACTION_APPLIED);
+  EXPECT_TRUE(
+      processed_actions_capture[0].external_action_result().has_result_info());
+}
+
+TEST_F(HeadlessScriptControllerImplTest,
+       ReportMainActionFailureOnExternalActionFailure) {
+  SupportsScriptResponseProto script_response;
+  auto* script = AddRunnableScript(&script_response, "script");
+  script->mutable_presentation()->set_autostart(true);
+  SetupScripts(script_response);
+
+  ActionsResponseProto first_roundtrip_actions;
+  first_roundtrip_actions.add_actions()
+      ->mutable_external_action()
+      ->mutable_info();
+  SetupActionsForScript("script", first_roundtrip_actions);
+
+  external::Result result;
+  result.set_success(false);
+  result.mutable_result_info();
+  EXPECT_CALL(*mock_external_action_delegate_, OnActionRequested)
+      .WillOnce(RunOnceCallback<2>(result));
+
+  // An action failing causes all following actions to be ignored, so we need to
+  // put the stop action in the following roundtrip.
+  ActionsResponseProto second_roundtrip_actions;
+  second_roundtrip_actions.add_actions()->mutable_stop();
+  std::vector<ProcessedActionProto> processed_actions_capture;
+  EXPECT_CALL(*mock_service_, GetNextActions)
+      .WillOnce(
+          DoAll(SaveArg<3>(&processed_actions_capture),
+                RunOnceCallback<6>(net::HTTP_OK,
+                                   second_roundtrip_actions.SerializeAsString(),
+                                   ServiceRequestSender::ResponseInfo{})))
+      .WillOnce((RunOnceCallback<6>(net::HTTP_OK, "",
+                                    ServiceRequestSender::ResponseInfo{})));
+
+  base::flat_map<std::string, std::string> params = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  Start(params, /* expect_success= */ true);
+  ASSERT_THAT(processed_actions_capture, SizeIs(1));
+  EXPECT_EQ(processed_actions_capture[0].status(), UNKNOWN_ACTION_STATUS);
+  EXPECT_TRUE(
+      processed_actions_capture[0].external_action_result().has_result_info());
+}
+
+TEST_F(HeadlessScriptControllerImplTest,
+       ExternalActionEndingDuringDomUpdateSuccessfullyEndsMainAction) {
+  SupportsScriptResponseProto script_response;
+  auto* script = AddRunnableScript(&script_response, "script");
+  script->mutable_presentation()->set_autostart(true);
+  SetupScripts(script_response);
+
+  ActionsResponseProto script_actions;
+  auto* external_action =
+      script_actions.add_actions()->mutable_external_action();
+  external_action->mutable_info();
+  auto* condition = external_action->add_conditions();
+  condition->set_id(1);
+  *condition->mutable_element_condition()->mutable_match() =
+      ToSelectorProto("#element");
+  EXPECT_CALL(*mock_web_controller_, FindElement(Selector({"#element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinderResult>());
+      }));
+  script_actions.add_actions()->mutable_stop();
+
+  base::MockCallback<
+      base::RepeatingCallback<void(const external::ElementConditionsUpdate&)>>
+      dom_updates_callback;
+  base::OnceCallback<void(const external::Result&)> stored_end_action_callback;
+  // The external action is requested but the external execution does not end it
+  // right away.
+  EXPECT_CALL(*mock_external_action_delegate_, OnActionRequested)
+      .WillOnce([&stored_end_action_callback, &dom_updates_callback](
+                    const external::Action& action_info,
+                    base::OnceCallback<void(
+                        ExternalActionDelegate::DomUpdateCallback)>
+                        start_dom_checks_callback,
+                    base::OnceCallback<void(const external::Result&)>
+                        end_action_callback) {
+        stored_end_action_callback = std::move(end_action_callback);
+        std::move(start_dom_checks_callback).Run(dom_updates_callback.Get());
+      });
+
+  external::Result result;
+  result.set_success(true);
+  result.mutable_result_info();
+  // The action is ended as a result of a DOM update.
+  EXPECT_CALL(dom_updates_callback, Run)
+      .WillOnce([&result, &stored_end_action_callback](
+                    const external::ElementConditionsUpdate& update) {
+        ASSERT_THAT(update.results(), SizeIs(1));
+        EXPECT_EQ(update.results(0).id(), 1);
+        EXPECT_TRUE(update.results(0).satisfied());
+        std::move(stored_end_action_callback).Run(result);
+      });
+
+  SetupActionsForScript("script", script_actions);
+
+  std::vector<ProcessedActionProto> processed_actions_capture;
+  EXPECT_CALL(*mock_service_, GetNextActions)
+      .WillOnce(
+          DoAll(SaveArg<3>(&processed_actions_capture),
+                RunOnceCallback<6>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{})));
+
+  base::flat_map<std::string, std::string> params = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  Start(params, /* expect_success= */ true);
+  ASSERT_THAT(processed_actions_capture, SizeIs(2));
+  EXPECT_EQ(processed_actions_capture[0].status(), ACTION_APPLIED);
+  EXPECT_EQ(processed_actions_capture[1].status(), ACTION_APPLIED);
+  EXPECT_TRUE(
+      processed_actions_capture[0].external_action_result().has_result_info());
 }
 
 }  // namespace autofill_assistant
