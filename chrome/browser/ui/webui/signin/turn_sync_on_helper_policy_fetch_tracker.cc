@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_service.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace {

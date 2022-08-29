@@ -76,7 +76,7 @@ class SigninManagerTest : public testing::Test {
   SigninManagerTest& operator=(const SigninManagerTest&) = delete;
 
   void RecreateSigninManager() {
-    signin_manger_ =
+    signin_manager_ =
         std::make_unique<SigninManager>(&prefs_, identity_manager(), &client_);
   }
 
@@ -97,6 +97,20 @@ class SigninManagerTest : public testing::Test {
               event.GetEventTypeFor(ConsentLevel::kSignin));
     EXPECT_TRUE(event.GetPreviousState().primary_account.IsEmpty());
     EXPECT_EQ(expected_primary_account,
+              event.GetCurrentState().primary_account);
+    observer().Reset();
+  }
+
+  void ExpectUnconsentedPrimaryAccountChangedEvent(
+      const CoreAccountInfo& expected_previous_account,
+      const CoreAccountInfo& expected_current_account) {
+    EXPECT_EQ(1U, observer().events().size());
+    auto event = observer().events()[0];
+    EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
+              event.GetEventTypeFor(ConsentLevel::kSignin));
+    EXPECT_EQ(expected_previous_account,
+              event.GetPreviousState().primary_account);
+    EXPECT_EQ(expected_current_account,
               event.GetCurrentState().primary_account);
     observer().Reset();
   }
@@ -164,7 +178,7 @@ class SigninManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestSigninClient client_;
   IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<SigninManager> signin_manger_;
+  std::unique_ptr<SigninManager> signin_manager_;
   FakeIdentityManagerObserver observer_;
 };
 
@@ -211,6 +225,24 @@ TEST_F(
 
   // With no refresh token, there is no unconsented primary account any more.
   identity_test_env()->RemoveRefreshTokenForAccount(account.account_id);
+  ExpectUnconsentedPrimaryAccountClearedEvent(account);
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+
+TEST_F(SigninManagerTest, UnconsentedPrimaryAccountChangedBlockedByHandle) {
+  // Prerequisite: Add an unconsented primary account, incl. proper cookies.
+  AccountInfo account = MakeAccountAvailableWithCookies(kTestEmail);
+  ExpectUnconsentedPrimaryAccountSetEvent(account);
+
+  // Take a handle, then signal to clear the account.
+  auto handle = signin_manager_->CreateAccountSelectionInProgressHandle();
+  identity_test_env()->RemoveRefreshTokenForAccount(account.account_id);
+
+  EXPECT_TRUE(observer().events().empty());
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  // The account gets cleared once we destroy the handle.
+  handle.reset();
   ExpectUnconsentedPrimaryAccountClearedEvent(account);
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 }
@@ -409,6 +441,55 @@ TEST_F(SigninManagerTest,
             event.GetEventTypeFor(ConsentLevel::kSignin));
   EXPECT_EQ(second_account, event.GetPreviousState().primary_account);
   EXPECT_EQ(first_account, event.GetCurrentState().primary_account);
+#endif
+}
+
+TEST_F(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
+  AccountInfo first_account =
+      identity_test_env()->MakeAccountAvailable(kTestEmail);
+  AccountInfo second_account =
+      identity_test_env()->MakeAccountAvailable(kTestEmail2);
+  identity_test_env()->SetCookieAccounts(
+      {{first_account.email, first_account.gaia},
+       {second_account.email, second_account.gaia}});
+  ASSERT_EQ(first_account,
+            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+  ExpectUnconsentedPrimaryAccountSetEvent(first_account);
+
+  std::unique_ptr<AccountSelectionInProgressHandle> handle =
+      signin_manager_->CreateAccountSelectionInProgressHandle();
+  ASSERT_TRUE(handle);
+
+  // Set the primary account to the second account in cookies. This simulates
+  // that the user chose the second account as the to-be-synced account.
+  // The unconsented primary account should be updated.
+  identity_test_env()->SetPrimaryAccount(second_account.email,
+                                         ConsentLevel::kSignin);
+  EXPECT_EQ(second_account,
+            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  observer().Reset();
+
+  // Release the handle. The unconsented primary account should be updated to be
+  // the first account in cookies.
+  handle.reset();
+  ASSERT_FALSE(handle);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // On Lacros, the UPA is not computed based on cookies, so it won't be
+      // automatically reset to the "first" account.
+      second_account,
+#else
+      first_account,
+#endif
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_EQ(0U, observer().events().size());
+#else
+  ExpectUnconsentedPrimaryAccountChangedEvent(second_account, first_account);
 #endif
 }
 

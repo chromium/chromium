@@ -166,7 +166,10 @@ absl::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email,
                                   ConsentLevel consent_level) {
-  DCHECK(!identity_manager->HasPrimaryAccount(consent_level));
+  DCHECK(
+      !identity_manager->HasPrimaryAccount(consent_level) ||
+      (identity_manager->GetPrimaryAccountInfo(consent_level).email != email &&
+       consent_level == ConsentLevel::kSignin));
 
   AccountInfo account_info =
       EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);

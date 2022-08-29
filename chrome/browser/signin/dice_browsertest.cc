@@ -58,12 +58,14 @@
 #include "components/signin/core/browser/dice_header_helper.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "components/variations/variations_switches.h"
@@ -82,6 +84,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using net::test_server::BasicHttpResponse;
@@ -553,7 +556,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
   // signin::IdentityManager::Observer
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       RunClosureIfValid(std::move(on_primary_account_set_quit_closure_));
     }
@@ -594,10 +597,10 @@ class DiceBrowserTest : public InProcessBrowserTest,
     EXPECT_EQ(count, reconcilor_unblocked_count_);
   }
 
-  // Waits until the user consented for sync.
+  // Waits until the user consented at the `kSignin` level.
   void WaitForSigninSucceeded() {
     if (GetIdentityManager()
-            ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
+            ->GetPrimaryAccountId(signin::ConsentLevel::kSignin)
             .empty()) {
       WaitForClosure(&on_primary_account_set_quit_closure_);
     }
@@ -949,9 +952,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, DiceExtensionConsent_GetAuthToken) {
             dice_request_header_);
 
   // Sync should not be enabled.
-  EXPECT_TRUE(GetIdentityManager()
-                  ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
-                  .empty());
+  EXPECT_EQ(absl::nullopt,
+            signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
@@ -1005,7 +1007,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
 
   WaitForSigninSucceeded();
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSync));
+                                    signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      syncer::prefs::kSyncRequested));
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
@@ -1018,8 +1022,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
 }
 
-// Tests that Sync is enabled if the ENABLE_SYNC response is received before the
-// refresh token.
+// Tests that the account is signed in if the ENABLE_SYNC response is received
+// before the refresh token, and the Sync opt-in is offered.
 
 // https://crbug.com/1082858
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)
@@ -1046,10 +1050,14 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
 
   // Receive token.
   EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   SendRefreshTokenResponse();
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSignin));
 
   // Check that the Dice request header was sent, with signout confirmation.
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
@@ -1064,10 +1072,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
       GURL(chrome::kChromeUINewTabURL),
       content::NotificationService::AllSources());
 
-  WaitForSigninSucceeded();
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSync));
-
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
   EXPECT_EQ(1, reconcilor_started_count_);
@@ -1075,8 +1079,11 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
   // Check that the tab was navigated to the NTP.
   ntp_url_observer.Wait();
 
-  // Dismiss the Sync confirmation UI.
+  // Wait for the Sync confirmation UI and click through.
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
+
+  EXPECT_EQ(signin::ConsentLevel::kSync,
+            signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
 }
 
 // Verifies that Chrome doesn't crash on browser window close when the sync
@@ -1100,7 +1107,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
 
   WaitForSigninSucceeded();
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSync));
+                                    signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      syncer::prefs::kSyncRequested));
 
   // Wait until the sync confirmation webUI is created but not fully loaded
   // yet. The native dialog is not displayed yet since it waits until the webUI

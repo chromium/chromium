@@ -16,6 +16,12 @@ const base::Feature kEnableFamilyInfoFeedback{"EnableFamilyInfoFeedback",
 const base::Feature kForYouFre{"ForYouFre", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Kill-switch for the change to show the Sync consent screen without advancing
+// to the `ConsentLevel::kSync` first.
+// TODO(https://crbug.com/1353733): Remove by M108.
+const base::Feature kDelayConsentLevelUpgrade{"DelayConsentLevelUpgrade",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables the client-side processing of the HTTP response header
 // Google-Accounts-RemoveLocalAccount.
 const base::Feature kProcessGaiaRemoveLocalAccountHeader{

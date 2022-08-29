@@ -227,9 +227,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     EXPECT_EQ(
         identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         account_id());
-    EXPECT_EQ(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync),
-        consent_level == signin::ConsentLevel::kSync);
+    EXPECT_EQ(consent_level,
+              signin::GetPrimaryAccountConsentLevel(identity_manager()));
   }
 
   syncer::TestSyncService* sync_service() {
@@ -608,6 +607,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   SignIn(kEnterpriseEmail);
   sync_service()->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   content::TestNavigationObserver profile_customization_observer(
       kProfileCustomizationUrl);
   profile_customization_observer.StartWatchingNewWebContents();

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/signin/signin_manager.h"
 
+#include <memory>
+
 #include "base/bind.h"
+#include "base/callback.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -16,6 +19,31 @@
 #include "components/signin/public/base/signin_client.h"
 #include "google_apis/gaia/core_account_id.h"
 #endif
+
+namespace {
+
+class AccountSelectionInProgressHandleInternal
+    : public AccountSelectionInProgressHandle {
+ public:
+  explicit AccountSelectionInProgressHandleInternal(
+      base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {
+    DCHECK(on_destroy_);
+  }
+
+  AccountSelectionInProgressHandleInternal(
+      const AccountSelectionInProgressHandleInternal&) = delete;
+  AccountSelectionInProgressHandleInternal& operator=(
+      const AccountSelectionInProgressHandleInternal&) = delete;
+
+  ~AccountSelectionInProgressHandleInternal() override {
+    std::move(on_destroy_).Run();
+  }
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+}  // namespace
 
 SigninManager::SigninManager(PrefService* prefs,
                              signin::IdentityManager* identity_manager,
@@ -56,7 +84,22 @@ void SigninManager::StartLacrosSigninFlow(
 }
 #endif
 
+std::unique_ptr<AccountSelectionInProgressHandle>
+SigninManager::CreateAccountSelectionInProgressHandle() {
+  ++live_account_selection_handles_count_;
+  return std::make_unique<AccountSelectionInProgressHandleInternal>(
+      base::BindOnce(
+          &SigninManager::OnAccountSelectionInProgressHandleDestroyed,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 void SigninManager::UpdateUnconsentedPrimaryAccount() {
+  if (live_account_selection_handles_count_ > 0) {
+    // Don't update the unconsented primary account while some UI flow is also
+    // manipulating it.
+    return;
+  }
+
   // Only update the unconsented primary account only after accounts are loaded.
   if (!identity_manager_->AreRefreshTokensLoaded()) {
     return;
@@ -251,6 +294,14 @@ void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
 }
 
 void SigninManager::OnSigninAllowedPrefChanged() {
+  UpdateUnconsentedPrimaryAccount();
+}
+
+void SigninManager::OnAccountSelectionInProgressHandleDestroyed() {
+  DCHECK_GT(live_account_selection_handles_count_, 0);
+  --live_account_selection_handles_count_;
+
+  // We should reset the primary account in case we missed some relevant events.
   UpdateUnconsentedPrimaryAccount();
 }
 

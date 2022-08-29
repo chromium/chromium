@@ -15,6 +15,8 @@ extern const base::Feature kEnableFamilyInfoFeedback;
 extern const base::Feature kForYouFre;
 #endif
 
+extern const base::Feature kDelayConsentLevelUpgrade;
+
 extern const base::Feature kProcessGaiaRemoveLocalAccountHeader;
 
 extern const base::Feature kSyncPromoAfterSigninIntercept;
