@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/timer/timer.h"
@@ -279,6 +280,7 @@ class DemoSetupTestBase : public OobeBaseTest {
 
  protected:
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
+  base::HistogramTester histogram_tester_;
 
  private:
   // TODO(agawronska): Maybe create a separate test fixture for offline setup.
@@ -510,6 +512,17 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
   AcceptTermsAndExpectDemoSetupProgress();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepCompletionTime.Consolidated-consent", 1);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepShownStatus.Consolidated-consent", 1);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
+        "AcceptedDemo",
+        1);
+  }
 
   // Verify the email corresponds to US.
   EXPECT_EQ("admin-us@cros-demo-mode.com",
@@ -760,6 +773,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_BackOnTermsScreen) {
     test::OobeJS().ClickOnPath(kDemoPreferencesNext);
     test::WaitForConsolidatedConsentScreen();
     test::OobeJS().ClickOnPath(kCCBackButton);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepCompletionTime.Consolidated-consent", 1);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepShownStatus.Consolidated-consent", 1);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
+        "BackDemo",
+        1);
   } else {
     // User cannot go to ARC ToS screen without accepting eula - simulate that.
     StartupUtils::MarkEulaAccepted();

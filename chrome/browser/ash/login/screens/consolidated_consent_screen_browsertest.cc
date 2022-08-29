@@ -324,6 +324,15 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
   EXPECT_EQ(screen_result_.value(),
             ConsolidatedConsentScreen::Result::ACCEPTED);
 
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTime.Consolidated-consent", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepShownStatus.Consolidated-consent", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
+      "AcceptedRegular",
+      1);
+
   histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
   histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
 
