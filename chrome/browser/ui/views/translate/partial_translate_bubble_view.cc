@@ -439,7 +439,6 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
     tabbed_pane_->GetTabAt(0)->SetTitleText(source_language_name);
     tabbed_pane_->GetTabAt(1)->SetTitleText(target_language_name);
     model_->Translate();
-    tabbed_pane_->SelectTabAt(1);
 
     // Update max width of text selection label to match width of bubble, which
     // changes with the lengths of the languages displayed in the tabbed pane.
