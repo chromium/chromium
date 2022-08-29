@@ -231,6 +231,10 @@ test("media_unittests") {
       "//build/config/fuchsia/test/platform_video_codecs.shard.test-cml",
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
+
+    if (enable_library_cdms) {
+      excluded_files = [ "lib.unstripped/libclearkeycdm.so" ]
+    }
   }
 
   if (enable_media_remoting) {

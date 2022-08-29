@@ -4504,6 +4504,10 @@ if (!is_android) {
         "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
       ]
 
+      if (enable_library_cdms) {
+        excluded_files += [ "lib.unstripped/libclearkeycdm.so" ]
+      }
+
       # Tests depend on having a Python interpreter present on-device.
       # TODO(crbug.com/1292144): Determine whether a solution can be devised
       # for Fuchsia.
@@ -10327,6 +10331,10 @@ if (!is_android) {
         "//media/cdm/library_cdm/clear_key_cdm",
         "//third_party/widevine/cdm",
       ]
+
+      if (is_fuchsia) {
+        excluded_files = [ "lib.unstripped/libclearkeycdm.so" ]
+      }
     }
 
     # This target should not require the Chrome executable to run.
