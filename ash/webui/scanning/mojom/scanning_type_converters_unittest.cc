@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/scanning/scanning_type_converters.h"
+#include "ash/webui/scanning/mojom/scanning_type_converters.h"
+#include <map>
+#include "base/containers/fixed_flat_map.h"
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
@@ -16,6 +18,18 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAreArray;
+
+using MojomScanResult = ash::scanning::mojom::ScanResult;
+using ProtoScanFailureMode = lorgnette::ScanFailureMode;
+
+using MojomColorMode = ash::scanning::mojom::ColorMode;
+using ProtoColorMode = lorgnette::ColorMode;
+
+using MojomSourceType = ash::scanning::mojom::SourceType;
+using ProtoSourceType = lorgnette::SourceType;
+
+using MojomFileType = ash::scanning::mojom::FileType;
+using ProtoImageFormat = lorgnette::ImageFormat;
 
 namespace mojo_ipc = scanning::mojom;
 
@@ -88,6 +102,31 @@ mojo_ipc::ScanSettingsPtr CreateMojomScanSettings(
   settings.page_size = page_size;
   settings.resolution_dpi = kFirstResolution;
   return settings.Clone();
+}
+
+template <typename MojoEnum, typename SourceEnum, size_t N>
+void TestToMojom(const base::fixed_flat_map<MojoEnum, SourceEnum, N>& enums) {
+  // The mojo enum is not sparse.
+  EXPECT_EQ(enums.size() - 1, static_cast<size_t>(MojoEnum::kMaxValue));
+
+  for (auto enum_pair : enums) {
+    EXPECT_EQ(
+        enum_pair.first,
+        (mojo::EnumTraits<MojoEnum, SourceEnum>::ToMojom(enum_pair.second)));
+  }
+}
+
+template <typename MojoEnum, typename SourceEnum, size_t N>
+void TestFromMojom(const base::fixed_flat_map<MojoEnum, SourceEnum, N>& enums) {
+  // The mojo enum is not sparse.
+  EXPECT_EQ(enums.size() - 1, static_cast<uint32_t>(MojoEnum::kMaxValue));
+
+  for (auto enum_pair : enums) {
+    SourceEnum mojo_to_source;
+    EXPECT_TRUE((mojo::EnumTraits<MojoEnum, SourceEnum>::FromMojom(
+        enum_pair.first, &mojo_to_source)));
+    EXPECT_EQ(mojo_to_source, enum_pair.second);
+  }
 }
 
 }  // namespace
@@ -214,37 +253,83 @@ INSTANTIATE_TEST_SUITE_P(
                                lorgnette::IMAGE_FORMAT_JPEG,
                                mojo_ipc::PageSize::kMax, 0, 0}));
 
-// Test that each lorgnette::ScanFailureMode is converted into the correct
-// mojo_ipc::ScanResult.
-TEST(ScanResultTest, Convert) {
-  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                              lorgnette::ScanFailureMode>::
-                 ToMojom(lorgnette::SCAN_FAILURE_MODE_NO_FAILURE)),
-            mojo_ipc::ScanResult::kSuccess);
-  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                              lorgnette::ScanFailureMode>::
-                 ToMojom(lorgnette::SCAN_FAILURE_MODE_UNKNOWN)),
-            mojo_ipc::ScanResult::kUnknownError);
-  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                              lorgnette::ScanFailureMode>::
-                 ToMojom(lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY)),
-            mojo_ipc::ScanResult::kDeviceBusy);
-  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                              lorgnette::ScanFailureMode>::
-                 ToMojom(lorgnette::SCAN_FAILURE_MODE_ADF_JAMMED)),
-            mojo_ipc::ScanResult::kAdfJammed);
-  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                              lorgnette::ScanFailureMode>::
-                 ToMojom(lorgnette::SCAN_FAILURE_MODE_ADF_EMPTY)),
-            mojo_ipc::ScanResult::kAdfEmpty);
-  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                              lorgnette::ScanFailureMode>::
-                 ToMojom(lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN)),
-            mojo_ipc::ScanResult::kFlatbedOpen);
-  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                              lorgnette::ScanFailureMode>::
-                 ToMojom(lorgnette::SCAN_FAILURE_MODE_IO_ERROR)),
-            mojo_ipc::ScanResult::kIoError);
+// Test that mapping between lorgnette::ColorMode and mojo_ipc::ColorMode
+// behaves as expected.
+TEST(ScanningMojomTraitsTest, ColorMode) {
+  constexpr auto enums =
+      base::MakeFixedFlatMap<MojomColorMode, ProtoColorMode>({
+          {MojomColorMode::kBlackAndWhite, ProtoColorMode::MODE_LINEART},
+          {MojomColorMode::kGrayscale, ProtoColorMode::MODE_GRAYSCALE},
+          {MojomColorMode::kColor, ProtoColorMode::MODE_COLOR},
+      });
+
+  TestToMojom(enums);
+  TestFromMojom(enums);
+}
+
+// Test that mapping between lorgnette::SourceType and mojo_ipc::SourceType
+// behaves as expected.
+TEST(ScanningMojomTraitsTest, SourceType) {
+  constexpr auto enums =
+      base::MakeFixedFlatMap<MojomSourceType, ProtoSourceType>({
+          {MojomSourceType::kFlatbed, ProtoSourceType::SOURCE_PLATEN},
+          {MojomSourceType::kAdfSimplex, ProtoSourceType::SOURCE_ADF_SIMPLEX},
+          {MojomSourceType::kAdfDuplex, ProtoSourceType::SOURCE_ADF_DUPLEX},
+          {MojomSourceType::kDefault, ProtoSourceType::SOURCE_DEFAULT},
+          {MojomSourceType::kUnknown, ProtoSourceType::SOURCE_UNSPECIFIED},
+      });
+
+  TestToMojom(enums);
+  TestFromMojom(enums);
+}
+
+TEST(ScanningMojomTraitsTest, FileType) {
+  constexpr auto enums =
+      base::MakeFixedFlatMap<MojomFileType, ProtoImageFormat>({
+          {MojomFileType::kPng, ProtoImageFormat::IMAGE_FORMAT_PNG},
+          {MojomFileType::kJpg, ProtoImageFormat::IMAGE_FORMAT_JPEG},
+      });
+  // The mojo enum is sparse - there is no pdf format in lorgnette::ImageFormat.
+  // Test without calling TestToMojom(enums), TestFromMojom(enums) functions.
+  // Test ToMojom
+  for (auto enum_pair : enums) {
+    EXPECT_EQ(enum_pair.first,
+              (mojo::EnumTraits<MojomFileType, ProtoImageFormat>::ToMojom(
+                  enum_pair.second)));
+  }
+
+  // Test FromMojom
+  for (auto enum_pair : enums) {
+    ProtoImageFormat mojo_to_source;
+    EXPECT_TRUE((mojo::EnumTraits<MojomFileType, ProtoImageFormat>::FromMojom(
+        enum_pair.first, &mojo_to_source)));
+    EXPECT_EQ(mojo_to_source, enum_pair.second);
+  }
+}
+
+// Test that mapping between lorgnette::ScanFailureMode and mojo_ipc::ScanResult
+// behaves as expected.
+TEST(ScanningMojomTraitsTest, ScanResult) {
+  constexpr auto enums =
+      base::MakeFixedFlatMap<MojomScanResult, ProtoScanFailureMode>({
+          {MojomScanResult::kSuccess,
+           ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE},
+          {MojomScanResult::kUnknownError,
+           ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN},
+          {MojomScanResult::kDeviceBusy,
+           ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY},
+          {MojomScanResult::kAdfJammed,
+           ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_JAMMED},
+          {MojomScanResult::kAdfEmpty,
+           ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_EMPTY},
+          {MojomScanResult::kFlatbedOpen,
+           ProtoScanFailureMode::SCAN_FAILURE_MODE_FLATBED_OPEN},
+          {MojomScanResult::kIoError,
+           ProtoScanFailureMode::SCAN_FAILURE_MODE_IO_ERROR},
+      });
+
+  TestToMojom(enums);
+  TestFromMojom(enums);
 }
 
 }  // namespace ash

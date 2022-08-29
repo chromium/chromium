@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
-#define CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
+#ifndef ASH_WEBUI_SCANNING_MOJOM_SCANNING_TYPE_CONVERTERS_H_
+#define ASH_WEBUI_SCANNING_MOJOM_SCANNING_TYPE_CONVERTERS_H_
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
@@ -30,6 +30,8 @@ struct EnumTraits<ash::scanning::mojom::SourceType, lorgnette::SourceType> {
 
 template <>
 struct EnumTraits<ash::scanning::mojom::FileType, lorgnette::ImageFormat> {
+  static ash::scanning::mojom::FileType ToMojom(
+      lorgnette::ImageFormat image_format);
   static bool FromMojom(ash::scanning::mojom::FileType input,
                         lorgnette::ImageFormat* out);
 };
@@ -38,7 +40,9 @@ template <>
 struct EnumTraits<ash::scanning::mojom::ScanResult,
                   lorgnette::ScanFailureMode> {
   static ash::scanning::mojom::ScanResult ToMojom(
-      const lorgnette::ScanFailureMode lorgnette_failure_mode);
+      lorgnette::ScanFailureMode lorgnette_failure_mode);
+  static bool FromMojom(ash::scanning::mojom::ScanResult input,
+                        lorgnette::ScanFailureMode* out);
 };
 
 template <>
@@ -57,4 +61,4 @@ struct StructTraits<lorgnette::ScanSettings,
 
 }  // namespace mojo
 
-#endif  // CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
+#endif  // ASH_WEBUI_SCANNING_MOJOM_SCANNING_TYPE_CONVERTERS_H_

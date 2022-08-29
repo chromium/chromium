@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/scanning/scanning_type_converters.h"
+#include "ash/webui/scanning/mojom/scanning_type_converters.h"
+#include "ash/webui/scanning/mojom/scanning.mojom.h"
 
 #include <utility>
 
@@ -15,6 +16,9 @@ namespace mojo {
 namespace {
 
 namespace mojo_ipc = ash::scanning::mojom;
+
+using MojomScanResult = ash::scanning::mojom::ScanResult;
+using ProtoScanFailureMode = lorgnette::ScanFailureMode;
 
 using MojomColorMode = ash::scanning::mojom::ColorMode;
 using ProtoColorMode = lorgnette::ColorMode;
@@ -192,10 +196,51 @@ MojomSourceType EnumTraits<MojomSourceType, ProtoSourceType>::ToMojom(
     case ProtoSourceType::SOURCE_DEFAULT:
       return MojomSourceType::kDefault;
     case ProtoSourceType::SOURCE_UNSPECIFIED:
+      return MojomSourceType::kUnknown;
     case ProtoSourceType::SourceType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoSourceType::SourceType_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
       return MojomSourceType::kUnknown;
+  }
+}
+
+// static
+bool EnumTraits<MojomSourceType, ProtoSourceType>::FromMojom(
+    MojomSourceType input,
+    ProtoSourceType* out) {
+  switch (input) {
+    case MojomSourceType::kFlatbed:
+      *out = ProtoSourceType::SOURCE_PLATEN;
+      return true;
+    case MojomSourceType::kAdfSimplex:
+      *out = ProtoSourceType::SOURCE_ADF_SIMPLEX;
+      return true;
+    case MojomSourceType::kAdfDuplex:
+      *out = ProtoSourceType::SOURCE_ADF_DUPLEX;
+      return true;
+    case MojomSourceType::kDefault:
+      *out = ProtoSourceType::SOURCE_DEFAULT;
+      return true;
+    case MojomSourceType::kUnknown:
+      *out = ProtoSourceType::SOURCE_UNSPECIFIED;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+};
+
+// static
+MojomFileType EnumTraits<MojomFileType, ProtoImageFormat>::ToMojom(
+    ProtoImageFormat input) {
+  switch (input) {
+    case ProtoImageFormat::IMAGE_FORMAT_PNG:
+      return MojomFileType::kPng;
+    case ProtoImageFormat::IMAGE_FORMAT_JPEG:
+      return MojomFileType::kJpg;
+    case ProtoImageFormat::ImageFormat_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case ProtoImageFormat::ImageFormat_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return MojomFileType::kJpg;
   }
 }
 
@@ -219,31 +264,60 @@ bool EnumTraits<MojomFileType, ProtoImageFormat>::FromMojom(
 }
 
 // static
-mojo_ipc::ScanResult
-EnumTraits<ash::scanning::mojom::ScanResult, lorgnette::ScanFailureMode>::
-    ToMojom(const lorgnette::ScanFailureMode lorgnette_failure_mode) {
-  switch (lorgnette_failure_mode) {
-    case lorgnette::SCAN_FAILURE_MODE_NO_FAILURE:
-      return mojo_ipc::ScanResult::kSuccess;
-    case lorgnette::SCAN_FAILURE_MODE_UNKNOWN:
-      return mojo_ipc::ScanResult::kUnknownError;
-    case lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY:
-      return mojo_ipc::ScanResult::kDeviceBusy;
-    case lorgnette::SCAN_FAILURE_MODE_ADF_JAMMED:
-      return mojo_ipc::ScanResult::kAdfJammed;
-    case lorgnette::SCAN_FAILURE_MODE_ADF_EMPTY:
-      return mojo_ipc::ScanResult::kAdfEmpty;
-    case lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN:
-      return mojo_ipc::ScanResult::kFlatbedOpen;
-    case lorgnette::SCAN_FAILURE_MODE_IO_ERROR:
-      return mojo_ipc::ScanResult::kIoError;
-    case lorgnette::ScanFailureMode_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case lorgnette::ScanFailureMode_INT_MAX_SENTINEL_DO_NOT_USE_:
+MojomScanResult EnumTraits<MojomScanResult, ProtoScanFailureMode>::ToMojom(
+    ProtoScanFailureMode input) {
+  switch (input) {
+    case ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE:
+      return MojomScanResult::kSuccess;
+    case ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN:
+      return MojomScanResult::kUnknownError;
+    case ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY:
+      return MojomScanResult::kDeviceBusy;
+    case ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_JAMMED:
+      return MojomScanResult::kAdfJammed;
+    case ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_EMPTY:
+      return MojomScanResult::kAdfEmpty;
+    case ProtoScanFailureMode::SCAN_FAILURE_MODE_FLATBED_OPEN:
+      return MojomScanResult::kFlatbedOpen;
+    case ProtoScanFailureMode::SCAN_FAILURE_MODE_IO_ERROR:
+      return MojomScanResult::kIoError;
+    case ProtoScanFailureMode::ScanFailureMode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case ProtoScanFailureMode::ScanFailureMode_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-
   NOTREACHED();
-  return mojo_ipc::ScanResult::kUnknownError;
+  return MojomScanResult::kUnknownError;
+}
+
+// static
+bool EnumTraits<MojomScanResult, ProtoScanFailureMode>::FromMojom(
+    MojomScanResult input,
+    ProtoScanFailureMode* output) {
+  switch (input) {
+    case MojomScanResult::kSuccess:
+      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE;
+      return true;
+    case MojomScanResult::kUnknownError:
+      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN;
+      return true;
+    case MojomScanResult::kDeviceBusy:
+      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY;
+      return true;
+    case MojomScanResult::kAdfJammed:
+      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_JAMMED;
+      return true;
+    case MojomScanResult::kAdfEmpty:
+      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_EMPTY;
+      return true;
+    case MojomScanResult::kFlatbedOpen:
+      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_FLATBED_OPEN;
+      return true;
+    case MojomScanResult::kIoError:
+      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_IO_ERROR;
+      return true;
+  }
+  NOTREACHED();
+  return false;
 }
 
 // static

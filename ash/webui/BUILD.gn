@@ -32,6 +32,7 @@ test("ash_webui_unittests") {
     "//ash/webui/personalization_app:unit_tests",
     "//ash/webui/projector_app:unit_tests",
     "//ash/webui/scanning:unit_tests",
+    "//ash/webui/scanning/mojom:unit_tests",
     "//ash/webui/shimless_rma/backend:unit_tests",
     "//ash/webui/shimless_rma/mojom:unit_tests",
     "//ash/webui/shortcut_customization_ui/backend:unit_tests",

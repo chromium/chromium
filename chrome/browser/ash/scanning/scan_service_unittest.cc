@@ -53,6 +53,8 @@ namespace {
 
 namespace mojo_ipc = scanning::mojom;
 
+using ProtoScanFailureMode = lorgnette::ScanFailureMode;
+
 // Path to the user's "My files" folder.
 constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
 
@@ -206,7 +208,7 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   }
 
   void OnScanComplete(
-      mojo_ipc::ScanResult result,
+      ProtoScanFailureMode result,
       const std::vector<base::FilePath>& scanned_file_paths) override {
     scan_result_ = result;
     scanned_file_paths_ = scanned_file_paths;
@@ -216,7 +218,7 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
     cancel_scan_success_ = success;
   }
 
-  void OnMultiPageScanFail(mojo_ipc::ScanResult result) override {
+  void OnMultiPageScanFail(ProtoScanFailureMode result) override {
     multi_page_scan_result_ = result;
   }
 
@@ -234,7 +236,7 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   // Returns true if the scan completed successfully.
   bool scan_success() const {
     return progress_ == 100 && page_complete_ &&
-           scan_result_ == mojo_ipc::ScanResult::kSuccess;
+           scan_result_ == ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE;
   }
 
   // Returns true if the cancel scan request completed successfully.
@@ -243,10 +245,10 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   uint32_t new_page_index() const { return new_page_index_; }
 
   // Returns the result of the scan job.
-  mojo_ipc::ScanResult scan_result() const { return scan_result_; }
+  ProtoScanFailureMode scan_result() const { return scan_result_; }
 
   // Returns the result of the multi-page scan job.
-  mojo_ipc::ScanResult multi_page_scan_result() const {
+  ProtoScanFailureMode multi_page_scan_result() const {
     return multi_page_scan_result_;
   }
 
@@ -259,9 +261,10 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   uint32_t progress_ = 0;
   bool page_complete_ = false;
   uint32_t new_page_index_ = UINT32_MAX;
-  mojo_ipc::ScanResult scan_result_ = mojo_ipc::ScanResult::kUnknownError;
-  mojo_ipc::ScanResult multi_page_scan_result_ =
-      mojo_ipc::ScanResult::kUnknownError;
+  ProtoScanFailureMode scan_result_ =
+      ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN;
+  ProtoScanFailureMode multi_page_scan_result_ =
+      ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN;
   bool cancel_scan_success_ = false;
   std::vector<base::FilePath> scanned_file_paths_;
   mojo::Receiver<mojo_ipc::ScanJobObserver> receiver_{this};
@@ -545,7 +548,7 @@ TEST_F(ScanServiceTest, Scan) {
       EXPECT_TRUE(base::PathExists(saved_scan_path));
 
     EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-    EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+    EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE,
               fake_scan_job_observer_.scan_result());
     EXPECT_EQ(scan_data.size() - 1, fake_scan_job_observer_.new_page_index());
     EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
@@ -607,7 +610,7 @@ TEST_F(ScanServiceTest, ScanFails) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY,
             fake_scan_job_observer_.scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
@@ -626,7 +629,7 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY,
             fake_scan_job_observer_.scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 
@@ -649,7 +652,7 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
     EXPECT_TRUE(base::PathExists(saved_scan_path));
 
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE,
             fake_scan_job_observer_.scan_result());
   EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
   EXPECT_EQ(scan_data.size() - 1, fake_scan_job_observer_.new_page_index());
@@ -683,7 +686,7 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
     EXPECT_TRUE(base::PathExists(saved_scan_path));
 
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE,
             fake_scan_job_observer_.scan_result());
   EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
   EXPECT_EQ(scan_data.size() - 1, fake_scan_job_observer_.new_page_index());
@@ -694,7 +697,7 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY,
             fake_scan_job_observer_.scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
@@ -754,7 +757,7 @@ TEST_F(ScanServiceTest, HoldingSpaceScan) {
         CreateScanSettings(scanned_files_mount_->GetRootPath(), type);
     EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
     EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-    EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
+    EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE,
               fake_scan_job_observer_.scan_result());
     EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
 
@@ -775,7 +778,7 @@ TEST_F(ScanServiceTest, HoldingSpaceScan) {
 
     EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
     EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-    EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+    EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY,
               fake_scan_job_observer_.scan_result());
     EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 
@@ -856,7 +859,7 @@ TEST_F(ScanServiceTest, MultiPageScanFails) {
   // The first scan should pass with no failure.
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kUnknownError,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN,
             fake_scan_job_observer_.multi_page_scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
   EXPECT_EQ(0u, fake_scan_job_observer_.new_page_index());
@@ -866,7 +869,7 @@ TEST_F(ScanServiceTest, MultiPageScanFails) {
   fake_lorgnette_scanner_manager_.SetScanResponse({});
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY,
             fake_scan_job_observer_.multi_page_scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 
@@ -894,7 +897,7 @@ TEST_F(ScanServiceTest, StartingAnotherMultiPageScan) {
   // The first scan should pass with no failure.
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kUnknownError,
+  EXPECT_EQ(ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN,
             fake_scan_job_observer_.multi_page_scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
   EXPECT_EQ(0u, fake_scan_job_observer_.new_page_index());

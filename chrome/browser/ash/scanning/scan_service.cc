@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/scanning/mojom/scanning_type_converters.h"
 #include "ash/webui/scanning/scanning_uma.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -28,7 +29,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/scanning_file_path_helper.h"
-#include "chrome/browser/ash/scanning/scanning_type_converters.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chromeos/utils/pdf_conversion.h"
@@ -538,12 +538,7 @@ void ScanService::OnMultiPageScanPageCompleted(
     return;
   }
 
-  // TODO(crbug.com/1234861): Setup mojo TypeMaps so we can remove calling the
-  // EnumTraits directly.
-  scan_job_observer_->OnMultiPageScanFail(
-      mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                       lorgnette::ScanFailureMode>::
-          ToMojom(static_cast<lorgnette::ScanFailureMode>(failure_mode)));
+  scan_job_observer_->OnMultiPageScanFail(failure_mode);
 
   base::UmaHistogramEnumeration("Scanning.MultiPageScan.PageScanResult",
                                 GetScanJobFailureReason(failure_mode));
@@ -579,10 +574,7 @@ void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
     scanned_file_paths_.clear();
   }
 
-  scan_job_observer_->OnScanComplete(
-      mojo::EnumTraits<ash::scanning::mojom::ScanResult,
-                       lorgnette::ScanFailureMode>::ToMojom(failure_mode),
-      scanned_file_paths_);
+  scan_job_observer_->OnScanComplete(failure_mode, scanned_file_paths_);
   HoldingSpaceKeyedService* holding_space_keyed_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(context_);
   if (holding_space_keyed_service) {
