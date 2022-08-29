@@ -22,7 +22,7 @@
 
 namespace {
 
-// Waits until |url| has the expected blocked state.
+// Waits until `url` has the expected blocked state.
 void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   NSString* nsurl = base::SysUTF8ToNSString(url.spec());
   GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(

@@ -22,12 +22,12 @@ class PolicyBlocklistService : public KeyedService {
       std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager);
   ~PolicyBlocklistService() override;
 
-  // Returns the blocking state for |url|.
+  // Returns the blocking state for `url`.
   policy::URLBlocklist::URLBlocklistState GetURLBlocklistState(
       const GURL& url) const;
 
  private:
-  // The URLBlocklistManager associated with |browser_state|.
+  // The URLBlocklistManager associated with `browser_state`.
   std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager_;
 
   PolicyBlocklistService(const PolicyBlocklistService&) = delete;
