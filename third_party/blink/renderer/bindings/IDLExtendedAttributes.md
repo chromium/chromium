@@ -1173,7 +1173,7 @@ The `[ReflectInvalid]` extended attribute specifies the value that an IDL getter
 Non-empty string value specified by `[ReflectInvalid]` must be added to
 `core/html/keywords.json5`.
 
-When no value is specified by `[ReflectEmpty]`, the value will be IDL null if the attribute type is nullable, otherwise the empty string.
+When no value is specified by `[ReflectInvalid]`, the value will be IDL null if the attribute type is nullable, otherwise the empty string.
 
 ### [ReflectMissing] _(a)_
 
@@ -1196,7 +1196,7 @@ The `[ReflectMissing]` extended attribute specifies the value that an IDL getter
 Non-empty string value specified by `[ReflectMissing]` must be added to
 `core/html/keywords.json5`.
 
-When no value is specified by `[ReflectEmpty]`, the value will be IDL null if the attribute type is nullable, otherwise the empty string.
+When no value is specified by `[ReflectMissing]`, the value will be IDL null if the attribute type is nullable, otherwise the empty string.
 
 ### [ReflectOnly] _(a)_
 
