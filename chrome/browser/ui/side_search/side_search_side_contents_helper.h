@@ -92,6 +92,10 @@ class SideSearchSideContentsHelper
   // contents.
   void SetDelegate(Delegate* delegate);
 
+  void set_auto_triggered(bool auto_triggered) {
+    auto_triggered_ = auto_triggered;
+  }
+
  private:
   friend class content::WebContentsUserData<SideSearchSideContentsHelper>;
   explicit SideSearchSideContentsHelper(content::WebContents* web_contents);
@@ -106,10 +110,17 @@ class SideSearchSideContentsHelper
 
   WebuiLoadTimer webui_load_timer_;
 
-  // Only used for metrics.
+  // Tracks the number of times a navigation was committed within the side
+  // panel.
   int navigation_within_side_search_count_ = 0;
+
+  // Tracks the number of times a navigation was redirected to the tab's web
+  // contents.
   int redirection_to_tab_count_ = 0;
-  bool has_loaded_url_ = false;
+
+  // Tracks whether or not the current search journey was automatically
+  // triggered (i.e. the user did not explicitly open the side panel).
+  bool auto_triggered_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

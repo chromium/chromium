@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -577,6 +578,8 @@ class SideSearchV2TestAutoTriggeringBrowserTest : public SideSearchBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   static void RegisterTestTracker(content::BrowserContext* context) {
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
@@ -599,6 +602,7 @@ class SideSearchV2TestAutoTriggeringBrowserTest : public SideSearchBrowserTest {
             {kEventTriggerKey, kEventTriggerValue}};
   }
 
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription subscription_;
 };
@@ -642,7 +646,43 @@ IN_PROC_BROWSER_TEST_F(
   // search side panel.
   NavigateActiveTab(browser(), non_srp_url_3, /*is_renderer_initiated=*/true);
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
             coordinator->GetCurrentSidePanelEntryForTesting()->id());
+
+  // Navigate matching and non-matching URLs in the side contents and verify
+  // that metrics are emitted correctly.
+  NavigateActiveSideContents(browser(), GetMatchingSearchUrl());
+  NavigateActiveSideContents(browser(), GetNonMatchingUrl());
+
+  // Metrics should not be emitted until the side panel is closed (i.e. the
+  // side contents is destroted).
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.RedirectionToTabCountPerJourney2", 1, 0);
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", 1, 0);
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", 1, 0);
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.AutoTrigger."
+      "NavigationCommittedWithinSideSearchCountPerJourney",
+      1, 0);
+
+  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
+  BrowserViewFor(browser())->side_panel_coordinator()->Close();
+  EXPECT_EQ(nullptr, tab_contents_helper->side_panel_contents_for_testing());
+
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.RedirectionToTabCountPerJourney2", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "SideSearch.AutoTrigger."
+      "NavigationCommittedWithinSideSearchCountPerJourney",
+      1, 1);
 }
