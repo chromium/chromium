@@ -131,15 +131,60 @@
     <message name="IDS_PRICE_TRACKING_SETTINGS_POPUP_DESCRIPTION" desc="Text shown in chrome settings indicating that the price drop notifications will be sent via chrome popups. User can turn on or off the toggle next to this setting item to manage whether they want to receive such notifications.">
       Price drop alerts show up as popup notifications on your desktop
     </message>
+  </if>
 
-    <message name="IDS_PRICE_DROP_POPUP_CONTENT_TITLE" desc="Text shown on the price drop popup notification. It tells users how much price drop on the corresponding product.">
-      <ph name="PRICE_DROP">%1$s<ex>$100</ex></ph> price drop on <ph name="PRODUCT_NAME">%2$s<ex>Chromebook</ex></ph>
+  <!-- Android only -->
+  <if expr="is_android">
+    <!-- For Android Price Tracking -->
+    <message name="IDS_PRICE_ANNOTATIONS_SETTINGS_TITLE" desc="The title text for price annotations settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to see price drops on their open tabs.">
+      Show price drops on tabs
     </message>
-    <message name="IDS_PRICE_DROP_POPUP_CONTENT_TEXT" desc="Text shown on the price drop popup notification below the content title. It tells users the current price of the product and the source website.">
-      Now <ph name="CURRENT_PRICE">%1$s<ex>$799</ex></ph> on <ph name="SOURCE_WEBSITE">%2$s<ex>amazon.com</ex></ph>
+    <message name="IDS_PRICE_ANNOTATIONS_SETTINGS_DESCRIPTION" desc="The description text for price annotations settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to see price drops on their open tabs.">
+      Price drop alerts will show up on your open tabs
     </message>
-    <message name="IDS_PRICE_DROP_POPUP_ACTION_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we send them to the source website.">
-      Visit site
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_TITLE" desc="The title text for price notifications settings in Google services. User can click into this item to view the detailed settings.">
+      Get price tracking notifications
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_DESCRIPTION" desc="The description text for price notifications settings in Google services. User can click into this item to view the detailed settings.">
+      Manage mobile and email notifications
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_DETAILED_PAGE_TITLE" desc="The title text for the detailed page settings of price notifications in Google services.">
+      Price tracking notifications
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_DETAILED_PAGE_DESCRIPTION" desc="The description text for the detailed page settings of price notifications in Google services.">
+      Manage how you receive price drop alerts for products you track
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_TITLE" desc="The title text for managing mobile price drop popup notifications shown on the detailed page settings in Google services.">
+      Mobile
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_DESCRIPTION_ON" desc="The description text for managing mobile price drop popup notifications when the notification is currently enabled. Shown on the detailed page settings in Google services. It tells users that they can disable the popup notification in the Chrome notification settings.">
+      Price drop alerts are on. You can change this in <ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph>
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_DESCRIPTION_OFF" desc="The description text for managing mobile price drop popup notifications when the notification is currently disabled. Shown on the detailed page settings in Google services. It tells users that they can enable the popup notification in the Chrome notification settings.">
+      Chrome notifications must be on. You can turn them on in <ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph>
+    </message>
+    <message name="IDS_CHROME_NOTIFICATION_SETTINGS_FOR_PRICE_TRACKING" desc="The button text within the description for managing mobile price drop popup notifications. When user clicks this button, we send them to the Chrome notification settings.">
+      settings
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_EMAIL_TITLE" desc="The title text for managing price drop email notifications shown on the detailed page settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to receive price drop emails.">
+      Email
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_EMAIL_DESCRIPTION" desc="The description text for managing price drop email notifications shown on the detailed page settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to receive price drop emails.">
+      Send to <ph name="EMAIL_ADDRESS">%1$s<ex>example@google.com</ex></ph>
     </message>
   </if>
+
+  <!-- For Price Tracking on all platforms -->
+  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TITLE" desc="Text shown on the price drop popup notification. It tells users how much price drop on the corresponding product.">
+    <ph name="PRICE_DROP">%1$s<ex>$100</ex></ph> price drop on <ph name="PRODUCT_NAME">%2$s<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TEXT" desc="Text shown on the price drop popup notification below the content title. It tells users the current price of the product and the source website.">
+    Now <ph name="CURRENT_PRICE">%1$s<ex>$799</ex></ph> on <ph name="SOURCE_WEBSITE">%2$s<ex>amazon.com</ex></ph>
+  </message>
+  <message name="IDS_PRICE_DROP_POPUP_ACTION_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we send them to the source website.">
+    Visit site
+  </message>
+  <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users.">
+    Untrack price
+  </message>
 </grit-part>
