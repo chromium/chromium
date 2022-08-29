@@ -194,7 +194,7 @@ void DispatchExtendableMessageEventFromServiceWorker(
 
 ServiceWorkerObjectHost::ServiceWorkerObjectHost(
     base::WeakPtr<ServiceWorkerContextCore> context,
-    ServiceWorkerContainerHost* container_host,
+    base::WeakPtr<ServiceWorkerContainerHost> container_host,
     scoped_refptr<ServiceWorkerVersion> version)
     : context_(context),
       container_host_(container_host),
@@ -279,6 +279,7 @@ void ServiceWorkerObjectHost::TerminateForTesting(
 void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
     ::blink::TransferableMessage message,
     StatusCallback callback) {
+  DCHECK(container_host_);
   if (!context_) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);
     return;
@@ -299,7 +300,7 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
                        container_host_->GetWeakPtr()));
   } else if (container_host_->IsContainerForWindowClient()) {
     service_worker_client_utils::GetClient(
-        container_host_,
+        container_host_.get(),
         base::BindOnce(&DispatchExtendableMessageEventFromClient, context_,
                        version_, std::move(message), container_origin_,
                        std::move(callback)));
@@ -316,6 +317,7 @@ void ServiceWorkerObjectHost::OnConnectionError() {
   // If there are still receivers, |this| is still being used.
   if (!receivers_.empty())
     return;
+  DCHECK(container_host_);
   // Will destroy |this|.
   container_host_->RemoveServiceWorkerObjectHost(version_->version_id());
 }
