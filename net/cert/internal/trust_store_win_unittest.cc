@@ -252,8 +252,7 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
   }
 }
 
-// Test that disallowed certs with the right EKU settings will be
-// distrusted.
+// Test that disallowed certs will be distrusted regardless of EKU settings.
 TEST(TrustStoreWin, GetTrustDisallowedCerts) {
   crypto::ScopedHCERTSTORE root_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
@@ -277,9 +276,8 @@ TEST(TrustStoreWin, GetTrustDisallowedCerts) {
     base::StringPiece file_name;
     CertificateTrustType expected_result;
   } kTestData[] = {
-      // dByD in root, also in distrusted but without szOID_PKIX_KP_SERVER_AUTH
-      // set.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
+      // dByD in root, distrusted but without szOID_PKIX_KP_SERVER_AUTH set.
+      {kMultiRootDByD, CertificateTrustType::DISTRUSTED},
       // dByD in root, also in distrusted with szOID_PKIX_KP_SERVER_AUTH set.
       {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
   };

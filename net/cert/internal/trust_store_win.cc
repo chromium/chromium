@@ -290,8 +290,9 @@ CertificateTrust TrustStoreWin::GetTrust(
               CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
     base::span<const uint8_t> cert_from_store_span = base::make_span(
         cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
-    if (base::ranges::equal(cert_span, cert_from_store_span) &&
-        IsCertTrustedForServerAuth(cert_from_store)) {
+    // If a cert is in the windows distruted store, it is considered
+    // distrusted for all purporses. EKU isn't checked. See crbug.com/1355961.
+    if (base::ranges::equal(cert_span, cert_from_store_span)) {
       return CertificateTrust::ForDistrusted();
     }
   }
