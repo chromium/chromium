@@ -38,7 +38,7 @@ class WaylandBufferHandle;
 class WaylandSurface {
  public:
   using ExplicitReleaseCallback =
-      base::RepeatingCallback<void(wl_buffer*, base::ScopedFD)>;
+      base::OnceCallback<void(wl_buffer*, base::ScopedFD)>;
 
   WaylandSurface(WaylandConnection* connection, WaylandWindow* ro_window);
   WaylandSurface(const WaylandSurface&) = delete;
@@ -62,12 +62,8 @@ class WaylandSurface {
     return entered_outputs_;
   }
 
-  bool has_explicit_release_callback() const {
-    return !explicit_release_callback_.is_null();
-  }
-  void set_explicit_release_callback(ExplicitReleaseCallback callback) {
-    explicit_release_callback_ = callback;
-  }
+  // Requests an explicit release for the next commit.
+  void RequestExplicitRelease(ExplicitReleaseCallback callback);
 
   // Returns an id that identifies the |wl_surface_|.
   uint32_t GetSurfaceId() const;
@@ -186,7 +182,8 @@ class WaylandSurface {
   struct ExplicitReleaseInfo {
     ExplicitReleaseInfo(
         wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
-        wl_buffer* buffer);
+        wl_buffer* buffer,
+        ExplicitReleaseCallback explicit_release_callback);
     ~ExplicitReleaseInfo();
 
     ExplicitReleaseInfo(const ExplicitReleaseInfo&) = delete;
@@ -198,6 +195,8 @@ class WaylandSurface {
     wl::Object<zwp_linux_buffer_release_v1> linux_buffer_release;
     // The buffer associated with this explicit release.
     raw_ptr<wl_buffer> buffer;
+    // The associated release callback with this request.
+    ExplicitReleaseCallback explicit_release_callback;
   };
 
   struct State {
@@ -295,7 +294,7 @@ class WaylandSurface {
   wl::Object<augmented_surface> augmented_surface_;
   base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
       linux_buffer_releases_;
-  ExplicitReleaseCallback explicit_release_callback_;
+  ExplicitReleaseCallback next_explicit_release_request_;
 
   // For top level window, stores outputs that the window is currently rendered
   // at.

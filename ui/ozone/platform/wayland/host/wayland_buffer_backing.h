@@ -27,6 +27,12 @@ class WaylandConnection;
 // Has one-to-many relationship with WaylandBufferHandle.
 class WaylandBufferBacking {
  public:
+  enum class BufferBackingType {
+    kShm = 0,
+    kDmabuf = 1,
+    kSolidColor = 2,
+  };
+
   WaylandBufferBacking() = delete;
   WaylandBufferBacking(const WaylandBufferBacking&) = delete;
   WaylandBufferBacking& operator=(const WaylandBufferBacking&) = delete;
@@ -52,6 +58,9 @@ class WaylandBufferBacking {
 
   // Same as above but does not do the requesting.
   WaylandBufferHandle* GetBufferHandle(WaylandSurface* requestor);
+
+  // Returns type of the backing. See BufferBackingType.
+  virtual BufferBackingType GetBackingType() const = 0;
 
  private:
   // Non-owned pointer to the main connection.

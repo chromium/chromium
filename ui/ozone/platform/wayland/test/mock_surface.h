@@ -95,6 +95,9 @@ class MockSurface : public ServerObject {
     DCHECK(!linux_buffer_releases_.contains(buffer));
     linux_buffer_releases_.emplace(buffer, linux_buffer_release);
   }
+  bool has_linux_buffer_release() const {
+    return !linux_buffer_releases_.empty();
+  }
   void ClearBufferReleases();
 
   wl_resource* attached_buffer() const { return attached_buffer_; }

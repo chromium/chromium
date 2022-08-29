@@ -10,6 +10,7 @@
 #include "base/containers/adapters.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -290,6 +291,12 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   if (!config.access_fence_handle.is_null())
     surface->SetAcquireFence(std::move(config.access_fence_handle));
 
+  // If it's a solid color buffer, do not set a release callback as it's not
+  // required to wait for this buffer - Wayland compositor only uses that to
+  // produce a config for the quad.
+  const bool is_solid_color_buffer =
+      buffer_handle->backing_type() ==
+      WaylandBufferBacking::BufferBackingType::kSolidColor;
   if (will_attach) {
     // Setup frame callback if wayland_surface will commit this buffer.
     // On Mutter, we don't receive frame.callback acks if we don't attach a
@@ -301,16 +308,17 @@ void WaylandFrameManager::ApplySurfaceConfigure(
                                this);
     }
 
-    if (connection_->linux_explicit_synchronization_v1() &&
-        !surface->has_explicit_release_callback()) {
-      surface->set_explicit_release_callback(
-          base::BindRepeating(&WaylandFrameManager::OnExplicitBufferRelease,
-                              weak_factory_.GetWeakPtr(), surface));
+    if (!is_solid_color_buffer) {
+      if (connection_->linux_explicit_synchronization_v1()) {
+        surface->RequestExplicitRelease(
+            base::BindOnce(&WaylandFrameManager::OnExplicitBufferRelease,
+                           weak_factory_.GetWeakPtr(), surface));
+      }
+      buffer_handle->set_buffer_released_callback(
+          base::BindOnce(&WaylandFrameManager::OnWlBufferRelease,
+                         weak_factory_.GetWeakPtr(), surface),
+          surface);
     }
-    buffer_handle->set_buffer_released_callback(
-        base::BindOnce(&WaylandFrameManager::OnWlBufferRelease,
-                       weak_factory_.GetWeakPtr(), surface),
-        surface);
   }
 
   if (connection_->presentation() && !frame->pending_feedback) {
@@ -320,19 +328,21 @@ void WaylandFrameManager::ApplySurfaceConfigure(
                                           &feedback_listener, this);
   }
 
-  // If we have submitted this buffer in a previous frame and it is not released
-  // yet, submitting the buffer again will not make wayland compositor to
-  // release it twice. Remove it from the previous frame.
-  for (auto& submitted_frames : submitted_frames_) {
-    auto result = submitted_frames->submitted_buffers.find(surface);
-    if (result != submitted_frames->submitted_buffers.end() &&
-        result->second->wl_buffer() == buffer_handle->wl_buffer()) {
-      submitted_frames->submitted_buffers.erase(result);
-      break;
+  if (!is_solid_color_buffer) {
+    // If we have submitted this buffer in a previous frame and it is not
+    // released yet, submitting the buffer again will not make wayland
+    // compositor to release it twice. Remove it from the previous frame.
+    for (auto& submitted_frames : submitted_frames_) {
+      auto result = submitted_frames->submitted_buffers.find(surface);
+      if (result != submitted_frames->submitted_buffers.end() &&
+          result->second->wl_buffer() == buffer_handle->wl_buffer()) {
+        submitted_frames->submitted_buffers.erase(result);
+        break;
+      }
     }
-  }
 
-  frame->submitted_buffers.emplace(surface, buffer_handle);
+    frame->submitted_buffers.emplace(surface, buffer_handle);
+  }
 
   // Send instructions across wayland protocol, but do not commit yet, let the
   // caller decide whether the commit should flush.

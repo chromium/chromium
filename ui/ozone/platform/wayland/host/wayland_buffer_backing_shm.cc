@@ -46,4 +46,9 @@ void WaylandBufferBackingShm::RequestBufferHandle(
     auto close = std::move(fd_);
 }
 
+WaylandBufferBacking::BufferBackingType
+WaylandBufferBackingShm::GetBackingType() const {
+  return WaylandBufferBacking::BufferBackingType::kShm;
+}
+
 }  // namespace ui

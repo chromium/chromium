@@ -40,4 +40,9 @@ void WaylandBufferBackingDmabuf::RequestBufferHandle(
     auto close = std::move(fd_);
 }
 
+WaylandBufferBacking::BufferBackingType
+WaylandBufferBackingDmabuf::GetBackingType() const {
+  return WaylandBufferBacking::BufferBackingType::kDmabuf;
+}
+
 }  // namespace ui

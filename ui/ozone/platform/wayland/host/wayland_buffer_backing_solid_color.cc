@@ -26,4 +26,9 @@ void WaylandBufferBackingSolidColor::RequestBufferHandle(
                                                                 size()));
 }
 
+WaylandBufferBacking::BufferBackingType
+WaylandBufferBackingSolidColor::GetBackingType() const {
+  return WaylandBufferBacking::BufferBackingType::kSolidColor;
+}
+
 }  // namespace ui

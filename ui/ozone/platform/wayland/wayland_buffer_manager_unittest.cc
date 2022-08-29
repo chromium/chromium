@@ -2565,6 +2565,42 @@ TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
   EXPECT_TRUE(buffer_manager_gpu_->pending_tasks_.empty());
 }
 
+TEST_P(WaylandBufferManagerTest, DoesNotRequestReleaseForSolidColorBuffers) {
+  if (!connection_->linux_explicit_synchronization_v1())
+    GTEST_SKIP();
+
+  server_.EnsureSurfaceAugmenter();
+
+  Sync();
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
+
+  const auto solid_color_buffer_id = buffer_manager_gpu_->AllocateBufferID();
+  buffer_manager_gpu_->CreateSolidColorBuffer(
+      SkColor4f::FromColor(SK_ColorBLUE), gfx::Size(1, 1),
+      solid_color_buffer_id);
+
+  Sync();
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  std::vector<wl::WaylandOverlayConfig> overlay_configs;
+  auto bounds = window_->GetBoundsInPixels();
+  overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+      INT32_MIN, solid_color_buffer_id, bounds));
+  buffer_manager_gpu_->CommitOverlays(widget_, 1u, std::move(overlay_configs));
+
+  constexpr uint32_t kNumberOfCommits = 1;
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+
+  Sync();
+
+  EXPECT_FALSE(mock_surface->has_linux_buffer_release());
+}
+
 class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
  public:
   WaylandBufferManagerViewportTest() = default;

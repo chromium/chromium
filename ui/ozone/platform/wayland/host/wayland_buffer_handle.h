@@ -57,6 +57,10 @@ class WaylandBufferHandle {
   // wl_buffer.release events.
   void OnExplicitRelease(WaylandSurface* requestor);
 
+  WaylandBufferBacking::BufferBackingType backing_type() const {
+    return backing_->GetBackingType();
+  }
+
  private:
   // Called when wl_buffer object is created.
   void OnWlBufferCreated(wl::Object<struct wl_buffer> wl_buffer);

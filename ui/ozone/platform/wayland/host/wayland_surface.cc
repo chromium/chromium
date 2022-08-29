@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -62,8 +63,11 @@ uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
 
 WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
     wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
-    wl_buffer* buffer)
-    : linux_buffer_release(std::move(linux_buffer_release)), buffer(buffer) {}
+    wl_buffer* buffer,
+    ExplicitReleaseCallback explicit_release_callback)
+    : linux_buffer_release(std::move(linux_buffer_release)),
+      buffer(buffer),
+      explicit_release_callback(std::move(explicit_release_callback)) {}
 
 WaylandSurface::ExplicitReleaseInfo::~ExplicitReleaseInfo() = default;
 
@@ -80,12 +84,16 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
       surface_(connection->CreateSurface()) {}
 
 WaylandSurface::~WaylandSurface() {
-  if (explicit_release_callback_.is_null())
-    return;
   for (auto& release : linux_buffer_releases_) {
-    explicit_release_callback_.Run(release.second.buffer.get(),
-                                   base::ScopedFD());
+    DCHECK(release.second.explicit_release_callback);
+    std::move(release.second.explicit_release_callback)
+        .Run(release.second.buffer.get(), base::ScopedFD());
   }
+}
+
+void WaylandSurface::RequestExplicitRelease(ExplicitReleaseCallback callback) {
+  DCHECK(!next_explicit_release_request_);
+  next_explicit_release_request_ = std::move(callback);
 }
 
 uint32_t WaylandSurface::GetSurfaceId() const {
@@ -367,7 +375,7 @@ void WaylandSurface::ApplyPendingState() {
               surface_sync, pending_state_.acquire_fence.owned_fd.get());
         }
 
-        if (!explicit_release_callback_.is_null()) {
+        if (!next_explicit_release_request_.is_null()) {
           auto* linux_buffer_release =
               zwp_linux_surface_synchronization_v1_get_release(surface_sync);
 
@@ -383,7 +391,8 @@ void WaylandSurface::ApplyPendingState() {
               linux_buffer_release,
               ExplicitReleaseInfo(
                   wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
-                  pending_state_.buffer));
+                  pending_state_.buffer,
+                  std::move(next_explicit_release_request_)));
         }
       }
     }
@@ -677,8 +686,8 @@ void WaylandSurface::ExplicitRelease(
   auto iter = linux_buffer_releases_.find(linux_buffer_release);
   DCHECK(iter != linux_buffer_releases_.end());
   DCHECK(iter->second.buffer);
-  if (!explicit_release_callback_.is_null())
-    explicit_release_callback_.Run(iter->second.buffer.get(), std::move(fence));
+  std::move(iter->second.explicit_release_callback)
+      .Run(iter->second.buffer.get(), std::move(fence));
   linux_buffer_releases_.erase(iter);
 }
 
