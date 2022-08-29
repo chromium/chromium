@@ -71,7 +71,7 @@ class SettingsInputMethodOptionsPageElement extends
       /**
        * The content to be displayed in the page, auto generated every time when
        * the user enters the page.
-       * @private {!Array<!{title: string, options:!Array<!Object<string, *>>}>}
+       * @private {!Array<{title: string, options:!Array<!Object<string, *>>}>}
        */
       optionSections_: {
         type: Array,
@@ -212,7 +212,7 @@ class SettingsInputMethodOptionsPageElement extends
   /**
    * Handler for toggle button and dropdown change. Update the value of the
    * changing option in Cros prefs.
-   * @param {!{model: !{option: Object}}} e
+   * @param {{model: {option: Object}}} e
    * @private
    */
   onToggleButtonOrDropdownChange_(e) {
@@ -269,7 +269,7 @@ class SettingsInputMethodOptionsPageElement extends
 
   /**
    * Opens external link in Chrome.
-   * @param {!{model: !{option: !{url: !Route}}}} e
+   * @param {{model: {option: {url: !Route}}}} e
    * @private
    */
   navigateToOtherPageInSettings_(e) {

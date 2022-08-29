@@ -252,8 +252,8 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler for click events on an input method on the main page,
    * which sets it as the current input method.
-   * @param {!{model: !{item: !chrome.languageSettingsPrivate.InputMethod},
-   *           target: !{tagName: string}}} e
+   * @param {{model: {item: !chrome.languageSettingsPrivate.InputMethod},
+   *           target: {tagName: string}}} e
    * @private
    */
   onInputMethodClick_(e) {
@@ -271,7 +271,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler for <Enter> events on an input method on the main page,
    * which sets it as the current input method.
-   * @param {!{model: !{item: !chrome.languageSettingsPrivate.InputMethod},
+   * @param {{model: {item: !chrome.languageSettingsPrivate.InputMethod},
    *           key: string}} e
    * @private
    */
@@ -287,7 +287,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Opens the input method extension's options page in a new tab (or focuses
    * an existing instance of the IME's options).
-   * @param {!{model: !{item: chrome.languageSettingsPrivate.InputMethod}}} e
+   * @param {{model: {item: chrome.languageSettingsPrivate.InputMethod}}} e
    * @private
    */
   openExtensionOptionsPage_(e) {
@@ -309,7 +309,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   }
 
   /**
-   * @param {!{model: !{item: chrome.languageSettingsPrivate.InputMethod}}} e
+   * @param {{model: {item: chrome.languageSettingsPrivate.InputMethod}}} e
    * @private
    */
   navigateToOptionsPageInSettings_(e) {
@@ -421,7 +421,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   }
 
   /**
-   * @param {!{model: !{item: chrome.languageSettingsPrivate.InputMethod}}} e
+   * @param {{model: {item: chrome.languageSettingsPrivate.InputMethod}}} e
    * @private
    */
   onRemoveInputMethodClick_(e) {
@@ -439,7 +439,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   }
 
   /**
-   * @param {!{model: !{item: SpellCheckLanguageState}}} e
+   * @param {{model: {item: SpellCheckLanguageState}}} e
    * @private
    */
   onRemoveSpellcheckLanguageClick_(e) {
@@ -543,7 +543,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   /**
    * Handler for enabling or disabling spell check for a specific language.
-   * @param {!{target: Element, model: !{item: !LanguageState}}} e
+   * @param {{target: Element, model: {item: !LanguageState}}} e
    * @private
    */
   onSpellCheckLanguageChange_(e) {
@@ -559,7 +559,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler for clicking on the name of the language. The action taken must
    * match the control that is available.
-   * @param {!{target: Element, model: !{item: !LanguageState}}} e
+   * @param {{target: Element, model: {item: !LanguageState}}} e
    * @private
    */
   onSpellCheckNameClick_(e) {
@@ -582,7 +582,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler to initiate another attempt at downloading the spell check
    * dictionary for a specified language.
-   * @param {!{target: Element, model: !{item: !LanguageState}}} e
+   * @param {{target: Element, model: {item: !LanguageState}}} e
    * @private
    */
   onRetryDictionaryDownloadClick_(e) {

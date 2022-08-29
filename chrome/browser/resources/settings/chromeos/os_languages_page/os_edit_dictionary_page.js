@@ -242,7 +242,7 @@ class OsSettingsEditDictionaryPageElement extends
 
   /**
    * Handles Enter and Escape key presses for the new-word input.
-   * @param {!CustomEvent<!{key: string}>} e
+   * @param {!CustomEvent<{key: string}>} e
    * @private
    */
   onKeysPress_(e) {
@@ -255,7 +255,7 @@ class OsSettingsEditDictionaryPageElement extends
 
   /**
    * Handles tapping on a "Remove word" icon button.
-   * @param {!{model: !{item: string}}} e
+   * @param {{model: {item: string}}} e
    * @private
    */
   onRemoveWordTap_(e) {

@@ -29,7 +29,7 @@ import {getTemplate} from './add_items_dialog.html.js';
  * search.
  * `disabledByPolicy` can be set to show that a given item is disabled by
  * policy. These items will never appear as a suggestion.
- * @typedef {!{id: string, name: string, searchTerms: !Array<string>,
+ * @typedef {{id: string, name: string, searchTerms: !Array<string>,
  * disabledByPolicy: boolean}}
  */
 export let Item;
@@ -183,7 +183,7 @@ class OsSettingsAddItemsDialogElement extends
   }
 
   /**
-   * @param {!{model: !{item: !Item}, target: !Element}} e
+   * @param {{model: {item: !Item}, target: !Element}} e
    * @private
    */
   onCheckboxChange_(e) {

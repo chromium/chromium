@@ -263,7 +263,7 @@ class OsSettingsLanguagesPageV2Element extends
 
   /**
    * Handler for changes to the translate checkbox.
-   * @param {!{target: !Element}} e
+   * @param {{target: !Element}} e
    * @private
    */
   onTranslateCheckboxChange_(e) {

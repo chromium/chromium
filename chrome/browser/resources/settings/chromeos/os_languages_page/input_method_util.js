@@ -198,7 +198,7 @@ const SettingsHeaders = {
  * These should be in the order they are expected to appear in
  * the actual settings pages.
  *
- * @type {Object<SettingsType, !Array<!{title: SettingsHeaders, optionNames:
+ * @type {Object<SettingsType, !Array<{title: SettingsHeaders, optionNames:
  * !Array<OptionType>}>>}
  */
 const Settings = {
@@ -389,7 +389,7 @@ export function hasOptionsPageInSettings(
  * @param {string} engineId Input method engine ID.
  * @param {boolean} predictiveWritingEnabled .
  * @param {boolean} physicalKeyboardDiacriticsEnabled .
- * @return {!Array<!{title: string, optionNames:
+ * @return {!Array<{title: string, optionNames:
  *     !Array<OptionType>}>} the options to be
  *     displayed.
  */
@@ -605,7 +605,7 @@ export function getUntranslatedOptionLabelName(option) {
 
 /**
  * @param {!OptionType} option The option type.
- * @return {!Array<!{value: *, name: string}>} The list of items to be
+ * @return {!Array<{value: *, name: string}>} The list of items to be
  *     displayed in the dropdown for |option|.
  */
 export function getOptionMenuItems(option) {
