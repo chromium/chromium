@@ -6414,9 +6414,6 @@ crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-
 # Disable flaky test for further investigation
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
 
-# Sheriff 2022-03-01
-crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Pass Timeout ]
-
 # Sheriff 2022-03-03
 crbug.com/1302571 virtual/threaded/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
 
