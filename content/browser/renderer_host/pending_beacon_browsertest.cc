@@ -13,17 +13,29 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
+
+MATCHER(IsFrameVisible,
+        base::StrCat({"Frame is", negation ? " not" : "", " visible"})) {
+  return arg->GetVisibilityState() == PageVisibilityState::kVisible;
+}
+
+MATCHER(IsFrameHidden,
+        base::StrCat({"Frame is", negation ? " not" : "", " hidden"})) {
+  return arg->GetVisibilityState() == PageVisibilityState::kHidden;
+}
 
 class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
  protected:
@@ -94,7 +106,16 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
         std::make_unique<RenderFrameHostWrapper>(current_frame_host());
     return *current_document_;
   }
-  RenderFrameHostWrapper& previous_document() { return *previous_document_; }
+  // Caution: the returned might already be killed if BFCache it not working.
+  RenderFrameHostWrapper& previous_document() {
+    CHECK(previous_document_);
+    CHECK(!previous_document_->IsDestroyed());
+    return *previous_document_;
+  }
+  bool WaitUntilPreviousDocumentDeleted() {
+    CHECK(previous_document_);
+    return previous_document_->WaitUntilRenderFrameDeleted();
+  }
 
   bool NavigateToURL(const GURL& url) {
     previous_document_ =
@@ -156,16 +177,6 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
   std::unique_ptr<RenderFrameHostWrapper> previous_document_ = nullptr;
 };
 
-MATCHER(IsFrameVisible,
-        base::StrCat({"Frame is", negation ? " not" : "", " visible"})) {
-  return arg->GetVisibilityState() == PageVisibilityState::kVisible;
-}
-
-MATCHER(IsFrameHidden,
-        base::StrCat({"Frame is", negation ? " not" : "", " hidden"})) {
-  return arg->GetVisibilityState() == PageVisibilityState::kHidden;
-}
-
 struct TestTimeoutType {
   std::string test_case_name;
   int32_t timeout;
@@ -219,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
     let p = new PendingGetBeacon($1, {backgroundTimeout: $2});
   )",
                                     kBeaconEndpoint, GetParam().timeout));
-  ASSERT_TRUE(previous_document().WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(WaitUntilPreviousDocumentDeleted());
 
   WaitForAllBeaconsSent(total_beacon);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
@@ -236,15 +247,17 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
     let p = new PendingGetBeacon($1, {timeout: $2});
   )",
                                     kBeaconEndpoint, GetParam().timeout));
-  ASSERT_TRUE(previous_document().WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(WaitUntilPreviousDocumentDeleted());
 
   WaitForAllBeaconsSent(total_beacon);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
 // Tests to cover PendingBeacon's backgroundTimeout behaviors.
-// Sets `PendingBeaconMaxBackgroundTimeoutInMs` (10s) > BFCache timeout (5s) to
-// also cover beacon sending on page eviction.
+// Setting a long `PendingBeaconMaxBackgroundTimeoutInMs` (1min) > BFCache
+// timeout (5s) so that beacon sending cannot be caused by reaching max
+// background timeout limit but only by BFCache eviction if backgroundTimeout
+// set >= 5s.
 class PendingBeaconBackgroundTimeoutBrowserTest
     : public PendingBeaconTimeoutBrowserTestBase {
  protected:
@@ -253,7 +266,10 @@ class PendingBeaconBackgroundTimeoutBrowserTest
         {{blink::features::kPendingBeaconAPI,
           {{"PendingBeaconMaxBackgroundTimeoutInMs", "10000"}}},
          {features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "5"}}}},
+          {{"TimeToLiveInBackForwardCacheInSeconds", "5"}}},
+         // Forces BFCache to work in low memory device.
+         {features::kBackForwardCacheMemoryControls,
+          {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}},
         {});
     PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
   }
@@ -262,19 +278,14 @@ class PendingBeaconBackgroundTimeoutBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SendOnHidden DISABLED_SendOnHidden
-#else
-#define MAYBE_SendOnHidden SendOnHidden
-#endif
 IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
-                       MAYBE_SendOnHidden) {
+                       SendOnHiddenAfterNavigation) {
   const size_t total_beacon = 1;
   RegisterBeaconRequestMonitor(total_beacon);
 
   // Creates a pending beacon with 0s backgroundTimeout.
-  // It should be sent out right on entering `hidden` state.
+  // It should be sent out right on entering `hidden` state after navigating
+  // away from A.
   RunScriptInANavigateToB(JsReplace(R"(
     let p = new PendingGetBeacon($1, {backgroundTimeout: 0});
   )",
@@ -282,18 +293,11 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
   ASSERT_THAT(previous_document(), IsFrameHidden());
 
   WaitForAllBeaconsSent(total_beacon);
-  ASSERT_THAT(previous_document(), IsFrameHidden());
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
-// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SendOnBackgroundTimeout DISABLED_SendOnBackgroundTimeout
-#else
-#define MAYBE_SendOnBackgroundTimeout SendOnBackgroundTimeout
-#endif
 IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
-                       MAYBE_SendOnBackgroundTimeout) {
+                       SendOnBackgroundTimeout) {
   const size_t total_beacon = 1;
   RegisterBeaconRequestMonitor(total_beacon);
 
@@ -307,23 +311,14 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
   ASSERT_THAT(previous_document(), IsFrameHidden());
 
   WaitForAllBeaconsSent(total_beacon);
-  ASSERT_THAT(previous_document(), IsFrameHidden());
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
-// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires \
-  DISABLED_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires
-#else
-#define MAYBE_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires \
-  NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires
-#endif
 // When backgroundTimeout is set, its timer resets every time when the page
 // becomes visible if it has not yet expired.
 IN_PROC_BROWSER_TEST_F(
     PendingBeaconBackgroundTimeoutBrowserTest,
-    MAYBE_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires) {
+    NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires) {
   const size_t total_beacon = 0;
   RegisterBeaconRequestMonitor(total_beacon);
 
@@ -401,16 +396,9 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest, SendOnZeroTimeout) {
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
-// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SendOnTimeoutWhenPageIsHidden \
-  DISABLED_SendOnTimeoutWhenPageIsHidden
-#else
-#define MAYBE_SendOnTimeoutWhenPageIsHidden SendOnTimeoutWhenPageIsHidden
-#endif
 // When timeout is set, it's not relevant whether the page is hidden or not.
 IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest,
-                       MAYBE_SendOnTimeoutWhenPageIsHidden) {
+                       SendOnTimeoutWhenPageIsHidden) {
   const size_t total_beacon = 1;
   RegisterBeaconRequestMonitor(total_beacon);
 
@@ -516,7 +504,10 @@ class PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPendingBeaconAPI, {}},
          {features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}}},
+          {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}},
+         // Forces BFCache to work in low memory device.
+         {features::kBackForwardCacheMemoryControls,
+          {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}},
         {});
     PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
   }
@@ -550,17 +541,9 @@ class PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache \
-  DISABLED_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache
-#else
-#define MAYBE_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache \
-  NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache
-#endif
 IN_PROC_BROWSER_TEST_F(
     PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest,
-    MAYBE_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
+    NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
   const size_t total_beacon = 0;
   RegisterBeaconRequestMonitor(total_beacon);
 
