@@ -17,6 +17,10 @@ namespace scheduler {
 // A list of features which influence scheduling behaviour (throttling /
 // freezing / back-forward cache) and which might be sent to the browser process
 // for metrics-related purposes.
+// When you add a feature, be sure to add it in the lists either to
+// kDisallowedFeatures or kAllowedFeatures in BackForwardCacheImpl.
+// When you remove a feature, add its index in removed_features in
+// BackForwardCacheMetricsTest.AllFeaturesCovered.
 enum class WebSchedulerTrackedFeature : uint32_t {
   kMinValue = 0,
   kWebSocket = 0,

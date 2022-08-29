@@ -341,6 +341,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
       BackForwardCacheCanStoreDocumentResult& eviction_reason);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheMetricsTest, AllFeaturesCovered);
+
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
 
@@ -411,6 +413,12 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns true if the flag is on for pages with cache-control:no-store to
   // get restored from back/forward cache unless cookies change.
   static bool AllowStoringPagesWithCacheControlNoStore();
+
+  enum RequestedFeatures { kAll, kOnlySticky };
+  static BlockListedFeatures GetAllowedFeatures(
+      RequestedFeatures requested_features);
+  static BlockListedFeatures GetDisallowedFeatures(
+      RequestedFeatures requested_features);
 
   // Contains the set of stored Entries.
   // Invariant:
