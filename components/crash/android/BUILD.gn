@@ -32,6 +32,7 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums_srcjar" ]
   sources = [
+    "java/src/org/chromium/components/crash/CustomAssertionHandler.java",
     "java/src/org/chromium/components/crash/LogcatCrashExtractor.java",
     "java/src/org/chromium/components/crash/MinidumpLogcatPrepender.java",
     "java/src/org/chromium/components/crash/PureJavaExceptionReporter.java",

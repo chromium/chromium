@@ -2138,7 +2138,8 @@ if (enable_java_templates) {
 
       # Set these even when !use_final_fields so that they have correct default
       # values within robolectric_binary(), which ignores jar_excluded_patterns.
-      if (enable_java_asserts) {
+      if ((defined(invoker.use_custom_assertion_handler) &&
+           invoker.use_custom_assertion_handler) || enable_java_asserts) {
         defines += [ "_ENABLE_ASSERTS" ]
       }
       if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
@@ -2929,6 +2930,7 @@ if (enable_java_templates) {
         }
         bundles_supported = _bundles_supported
         use_final_fields = true
+        use_custom_assertion_handler = defined(invoker.custom_assertion_handler)
         enable_multidex = _enable_multidex
         is_incremental_install = _incremental_apk
         if (defined(invoker.build_config_include_product_version_resource) &&
@@ -3113,12 +3115,16 @@ if (enable_java_templates) {
 
     if (_uses_static_library_synchronized_proguard) {
       _final_dex_target_dep = "${invoker.static_library_provider}__dexsplitter"
+      not_needed(invoker, [ "custom_assertion_handler" ])
     } else if ((_is_bundle_module && _proguard_enabled) || _omit_dex) {
       # No library dep needed.
+      not_needed(invoker, [ "custom_assertion_handler" ])
     } else if (_incremental_apk) {
-      if (defined(invoker.enable_proguard_checks)) {
-        not_needed(invoker, [ "enable_proguard_checks" ])
-      }
+      not_needed(invoker,
+                 [
+                   "enable_proguard_checks",
+                   "custom_assertion_handler",
+                 ])
     } else {
       # Dex generation for app bundle modules with proguarding enabled takes
       # place later due to synchronized proguarding.
@@ -3127,6 +3133,7 @@ if (enable_java_templates) {
         forward_variables_from(invoker,
                                [
                                  "enable_proguard_checks",
+                                 "custom_assertion_handler",
                                  "proguard_enable_obfuscation",
                                ])
         min_sdk_version = _min_sdk_version
@@ -3631,6 +3638,7 @@ if (enable_java_templates) {
                                "chromium_code",
                                "command_line_flags_file",
                                "create_apk_script",
+                               "custom_assertion_handler",
                                "data",
                                "data_deps",
                                "deps",
@@ -3773,6 +3781,7 @@ if (enable_java_templates) {
                                "build_config_include_product_version_resource",
                                "bundle_target",
                                "chromium_code",
+                               "custom_assertion_handler",
                                "data",
                                "data_deps",
                                "deps",
@@ -5111,6 +5120,7 @@ if (enable_java_templates) {
         dex(_dex_target) {
           forward_variables_from(invoker,
                                  [
+                                   "custom_assertion_handler",
                                    "expected_proguard_config",
                                    "expected_proguard_config_base",
                                    "min_sdk_version",

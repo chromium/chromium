@@ -39,8 +39,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.components.crash.CustomAssertionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporter;
+import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporterFactory;
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.components.version_info.VersionConstants;
@@ -208,16 +210,21 @@ public class SplitCompatApplication extends Application {
         BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());
 
         // WebView installs its own PureJavaExceptionHandler.
+        // Incremental install disables process isolation, so things in this block will
+        // actually be run for incremental apks, but not normal apks.
         if (!isIsolatedProcess && !isWebViewProcess()) {
-            // Incremental install disables process isolation, so things in this block will
-            // actually be run for incremental apks, but not normal apks.
-            PureJavaExceptionHandler.installHandler(() -> {
-                // ChromePureJavaExceptionReporter may be in the chrome module, so load by
-                // reflection from there.
-                return (JavaExceptionReporter) BundleUtils.newInstance(
-                        createChromeContext(ContextUtils.getApplicationContext()),
-                        "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
-            });
+            JavaExceptionReporterFactory factory = new JavaExceptionReporterFactory() {
+                @Override
+                public JavaExceptionReporter createJavaExceptionReporter() {
+                    // ChromePureJavaExceptionReporter may be in the chrome module, so load by
+                    // reflection from there.
+                    return (JavaExceptionReporter) BundleUtils.newInstance(
+                            createChromeContext(ContextUtils.getApplicationContext()),
+                            "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
+                }
+            };
+            PureJavaExceptionHandler.installHandler(factory);
+            CustomAssertionHandler.installHandler(factory);
         }
 
         TraceEvent.end(ATTACH_BASE_CONTEXT_EVENT);

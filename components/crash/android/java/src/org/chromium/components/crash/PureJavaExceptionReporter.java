@@ -15,6 +15,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.version_info.VersionInfo;
 
@@ -65,12 +67,9 @@ public abstract class PureJavaExceptionReporter
     private final String mLocalId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     private final String mBoundary = "------------" + UUID.randomUUID() + RN;
 
-    // The top level directory where all crash related files are stored.
-    protected final File mCrashFilesDirectory;
     private boolean mAttachLogcat;
 
-    public PureJavaExceptionReporter(File crashFilesDirectory, boolean attachLogcat) {
-        mCrashFilesDirectory = crashFilesDirectory;
+    public PureJavaExceptionReporter(boolean attachLogcat) {
         mAttachLogcat = attachLogcat;
     }
 
@@ -82,6 +81,17 @@ public abstract class PureJavaExceptionReporter
             flushToFile();
             uploadReport();
         }
+    }
+
+    /**
+     * Report an exception on a background thread.
+     *
+     * This is used for silent exception reporting.
+     */
+    @Override
+    public void postCreateAndUploadReport(Throwable javaException) {
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> createAndUploadReport(javaException));
     }
 
     private void addPairedString(String messageType, String messageData) {
@@ -102,7 +112,7 @@ public abstract class PureJavaExceptionReporter
     private void createReport(Throwable javaException) {
         try {
             String minidumpFileName = getMinidumpPrefix() + mLocalId + FILE_SUFFIX;
-            File minidumpDir = new File(mCrashFilesDirectory, CrashFileManager.CRASH_DUMP_DIR);
+            File minidumpDir = new File(getCrashFilesDirectory(), CrashFileManager.CRASH_DUMP_DIR);
             // Tests disable minidump uploading by not creating the minidump directory.
             mUpload = minidumpDir.exists();
             String overrideMinidumpDirPath =
@@ -190,7 +200,7 @@ public abstract class PureJavaExceptionReporter
         if (mAttachLogcat) {
             LogcatCrashExtractor logcatExtractor = new LogcatCrashExtractor();
             mMinidumpFile = logcatExtractor.attachLogcatToMinidump(
-                    mMinidumpFile, new CrashFileManager(mCrashFilesDirectory));
+                    mMinidumpFile, new CrashFileManager(getCrashFilesDirectory()));
         }
         uploadMinidump(mMinidumpFile);
     }
@@ -211,4 +221,9 @@ public abstract class PureJavaExceptionReporter
      * @return prefix to be added before the minidump file name.
      */
     protected abstract String getMinidumpPrefix();
+
+    /**
+     * @return The top level directory where all crash related files are stored.
+     */
+    protected abstract File getCrashFilesDirectory();
 }

@@ -79,6 +79,8 @@ def _ParseOptions():
       '--force-enable-assertions',
       action='store_true',
       help='Forcefully enable javac generated assertion code.')
+  parser.add_argument('--assertion-handler',
+                      help='The class name of the assertion handler class.')
   parser.add_argument(
       '--feature-jars',
       action='append',
@@ -136,8 +138,12 @@ def _ParseOptions():
 
   if bool(options.keep_rules_targets_regex) != bool(
       options.keep_rules_output_path):
-    raise Exception('You must path both --keep-rules-targets-regex and '
-                    '--keep-rules-output-path')
+    parser.error('You must path both --keep-rules-targets-regex and '
+                 '--keep-rules-output-path')
+
+  if options.force_enable_assertions and options.assertion_handler:
+    parser.error('Cannot use both --force-enable-assertions and '
+                 '--assertion-handler')
 
   options.classpath = build_utils.ParseGnList(options.classpath)
   options.proguard_configs = build_utils.ParseGnList(options.proguard_configs)
@@ -320,7 +326,9 @@ def _OptimizeWithR8(options,
     if options.min_api:
       cmd += ['--min-api', options.min_api]
 
-    if options.force_enable_assertions:
+    if options.assertion_handler:
+      cmd += ['--force-assertions-handler:' + options.assertion_handler]
+    elif options.force_enable_assertions:
       cmd += ['--force-enable-assertions']
 
     for lib in libraries:

@@ -10,6 +10,7 @@ import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 import("//chrome/android/trichrome.gni")
 import("//chrome/version.gni")
+import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
@@ -275,6 +276,10 @@ template("system_webview_apk_or_module_tmpl") {
       proguard_configs +=
           [ "//android_webview/nonembedded/java/proguard.flags" ]
       png_to_webp = true
+    }
+
+    if (enable_silent_java_assert_reporting && !_omit_dex) {
+      custom_assertion_handler = crash_reporting_assertion_handler
     }
 
     if (!defined(version_code)) {

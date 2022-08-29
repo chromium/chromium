@@ -124,6 +124,8 @@ def _ParseArgs(args):
   parser.add_argument('--force-enable-assertions',
                       action='store_true',
                       help='Forcefully enable javac generated assertion code.')
+  parser.add_argument('--assertion-handler',
+                      help='The class name of the assertion handler class.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -135,6 +137,10 @@ def _ParseArgs(args):
 
   if options.main_dex_rules_path and not options.multi_dex:
     parser.error('--main-dex-rules-path is unused if multidex is not enabled')
+
+  if options.force_enable_assertions and options.assertion_handler:
+    parser.error('Cannot use both --force-enable-assertions and '
+                 '--assertion-handler')
 
   options.class_inputs = build_utils.ParseGnList(options.class_inputs)
   options.class_inputs_filearg = build_utils.ParseGnList(
@@ -518,6 +524,8 @@ def main(args):
   if options.desugar_jdk_libs_json:
     dex_cmd += ['--desugared-lib', options.desugar_jdk_libs_json]
     input_paths += [options.desugar_jdk_libs_json]
+  if options.assertion_handler:
+    dex_cmd += ['--force-assertions-handler:' + options.assertion_handler]
   if options.force_enable_assertions:
     dex_cmd += ['--force-enable-assertions']
 

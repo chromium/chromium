@@ -1305,7 +1305,12 @@ if (enable_java_templates) {
       _args += [ "--show-desugar-default-interface-warnings" ]
     }
 
-    if (enable_java_asserts) {
+    if (defined(invoker.custom_assertion_handler)) {
+      _args += [
+        "--assertion-handler",
+        invoker.custom_assertion_handler,
+      ]
+    } else if (enable_java_asserts) {
       # The default for generating dex file format is
       # --force-disable-assertions.
       _args += [ "--force-enable-assertions" ]
@@ -1487,6 +1492,10 @@ if (enable_java_templates) {
 
     assert(!(defined(invoker.apply_mapping) && !_proguard_enabled),
            "apply_mapping can only be specified if proguard is enabled.")
+    if (defined(invoker.custom_assertion_handler)) {
+      assert(_proguard_enabled,
+             "Proguard is required to support the custom assertion handler.")
+    }
 
     if (_enable_main_dex_list) {
       _main_dex_rules = "//build/android/main_dex_classes.flags"
@@ -1504,6 +1513,7 @@ if (enable_java_templates) {
                                TESTONLY_AND_VISIBILITY + [
                                      "add_view_trace_events",
                                      "build_config",
+                                     "custom_assertion_handler",
                                      "data",
                                      "data_deps",
                                      "deps",
@@ -1733,7 +1743,12 @@ if (enable_java_templates) {
           not_needed(invoker, [ "desugar_jars_paths" ])
         }
 
-        if (enable_java_asserts) {
+        if (defined(invoker.custom_assertion_handler)) {
+          args += [
+            "--assertion-handler",
+            invoker.custom_assertion_handler,
+          ]
+        } else if (enable_java_asserts) {
           # The default for generating dex file format is
           # --force-disable-assertions.
           args += [ "--force-enable-assertions" ]

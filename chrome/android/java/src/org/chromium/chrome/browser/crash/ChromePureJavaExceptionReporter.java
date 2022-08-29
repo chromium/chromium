@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.crash;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.components.crash.PureJavaExceptionReporter;
 
 import java.io.File;
@@ -24,7 +22,12 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
 
     @UsedByReflection("SplitCompatApplication.java")
     public ChromePureJavaExceptionReporter() {
-        super(ContextUtils.getApplicationContext().getCacheDir(), /*attachLogcat=*/true);
+        super(/*attachLogcat=*/true);
+    }
+
+    @Override
+    protected File getCrashFilesDirectory() {
+        return ContextUtils.getApplicationContext().getCacheDir();
     }
 
     @Override
@@ -59,7 +62,7 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
      * @param javaException The exception to report.
      */
     public static void postReportJavaException(Throwable javaException) {
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> reportJavaException(javaException));
+        ChromePureJavaExceptionReporter reporter = new ChromePureJavaExceptionReporter();
+        reporter.postCreateAndUploadReport(javaException);
     }
 }

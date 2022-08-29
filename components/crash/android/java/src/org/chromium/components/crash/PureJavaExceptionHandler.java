@@ -23,6 +23,7 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
     /** Interface to allow uploading reports. */
     public interface JavaExceptionReporter {
         void createAndUploadReport(Throwable e);
+        void postCreateAndUploadReport(Throwable e);
     }
 
     /** A factory interface to allow creating custom reporters. */

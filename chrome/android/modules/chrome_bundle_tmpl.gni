@@ -6,6 +6,7 @@ import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/version.gni")
+import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//components/module_installer/android/module_desc_java.gni")
 
 # Instantiates a Chrome-specific app bundle.
@@ -194,6 +195,9 @@ template("chrome_bundle") {
     system_image_locale_allowlist = platform_pak_locales - extended_locales
     is_multi_abi = _is_multi_abi
     validate_services = _enable_chrome_module
+    if (enable_silent_java_assert_reporting) {
+      custom_assertion_handler = crash_reporting_assertion_handler
+    }
 
     # For this to be respected, it must also be set on the base module target.
     strip_unused_resources = is_official_build
