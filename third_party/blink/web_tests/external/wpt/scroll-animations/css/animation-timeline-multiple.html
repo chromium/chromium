@@ -32,21 +32,17 @@
     to { right: 200px; }
   }
 
-  @scroll-timeline top_timeline {
-    source: selector(#scroller1);
-    orientation: block;
+  #top_scroller {
+    scroll-timeline: block top_timeline;
   }
-  @scroll-timeline bottom_timeline {
-    source: selector(#scroller1);
-    orientation: inline;
+  #bottom_scroller {
+    scroll-timeline: inline bottom_timeline;
   }
-  @scroll-timeline left_timeline {
-    source: selector(#scroller2);
-    orientation: block;
+  #left_scroller {
+    scroll-timeline: block left_timeline;
   }
-  @scroll-timeline right_timeline {
-    source: selector(#scroller2);
-    orientation: inline;
+  #right_scroller {
+    scroll-timeline: inline right_timeline;
   }
 
   #element {
@@ -61,19 +57,27 @@
   }
 </style>
 <main>
-  <div id=scroller1><div></div></div>
-  <div id=scroller2><div></div></div>
+  <div id=top_scroller><div></div></div>
+  <div id=bottom_scroller><div></div></div>
+  <div id=left_scroller><div></div></div>
+  <div id=right_scroller><div></div></div>
   <div id=element></div>
 </main>
 <script>
   // Force layout of scrollers.
-  scroller1.offsetTop;
-  scroller2.offsetTop;
+  top_scroller.offsetTop;
+  bottom_scroller.offsetTop;
+  left_scroller.offsetTop;
+  right_scroller.offsetTop;
 
-  scroller1.scrollTop = 20;
-  scroller1.scrollLeft = 40;
-  scroller2.scrollTop = 60;
-  scroller2.scrollLeft = 80;
+  top_scroller.scrollTop = 20;
+  top_scroller.scrollLeft = 40;
+  bottom_scroller.scrollTop = 20;
+  bottom_scroller.scrollLeft = 40;
+  left_scroller.scrollTop = 60;
+  left_scroller.scrollLeft = 80;
+  right_scroller.scrollTop = 60;
+  right_scroller.scrollLeft = 80;
 
   promise_test(async (t) => {
     await waitForNextFrame();
