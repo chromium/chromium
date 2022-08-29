@@ -150,7 +150,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   additional_fields.Set(
       "source_registration_time",
       SerializeTimeRoundedDownToWholeDayInSeconds(
-          attribution_info.source.common_info().impression_time()));
+          attribution_info.source.common_info().source_time()));
   additional_fields.Set(
       "attribution_destination",
       attribution_info.source.common_info().DestinationSite().Serialize());

@@ -103,7 +103,7 @@ bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
                                            const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AddRateLimit(db, Scope::kSource, source,
-                      source.common_info().impression_time());
+                      source.common_info().source_time());
 }
 
 bool RateLimitTable::AddRateLimitForAttribution(
@@ -208,7 +208,7 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginLimit(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AllowedForReportingOriginLimit(db, Scope::kSource,
                                         source.common_info(),
-                                        source.common_info().impression_time());
+                                        source.common_info().source_time());
 }
 
 RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
@@ -234,7 +234,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   const CommonSourceInfo& common_info = source.common_info();
   statement.BindString(0, common_info.SourceSite().Serialize());
   statement.BindString(1, SerializeOrigin(common_info.reporting_origin()));
-  statement.BindTime(2, common_info.impression_time());
+  statement.BindTime(2, common_info.source_time());
 
   const std::string serialized_destination_site =
       common_info.DestinationSite().Serialize();

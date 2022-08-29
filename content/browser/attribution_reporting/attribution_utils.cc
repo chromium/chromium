@@ -36,8 +36,7 @@ base::span<const base::TimeDelta> EarlyDeadlines(
 }
 
 base::TimeDelta ExpiryDeadline(const CommonSourceInfo& source) {
-  base::TimeDelta expiry_deadline =
-      source.expiry_time() - source.impression_time();
+  base::TimeDelta expiry_deadline = source.expiry_time() - source.source_time();
 
   constexpr base::TimeDelta kMinExpiryDeadline = base::Days(2);
   if (expiry_deadline < kMinExpiryDeadline)
@@ -46,11 +45,11 @@ base::TimeDelta ExpiryDeadline(const CommonSourceInfo& source) {
   return expiry_deadline;
 }
 
-base::Time ReportTimeFromDeadline(base::Time impression_time,
+base::Time ReportTimeFromDeadline(base::Time source_time,
                                   base::TimeDelta deadline) {
   // Valid conversion reports should always have a valid reporting deadline.
   DCHECK(!deadline.is_zero());
-  return impression_time + deadline + kWindowDeadlineOffset;
+  return source_time + deadline + kWindowDeadlineOffset;
 }
 
 }  // namespace
@@ -83,14 +82,14 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
   for (base::TimeDelta early_deadline : EarlyDeadlines(source.source_type())) {
     // If this window is valid for the conversion, use it.
     // |trigger_time| is roughly ~now.
-    if (source.impression_time() + early_deadline >= trigger_time &&
+    if (source.source_time() + early_deadline >= trigger_time &&
         early_deadline < deadline_to_use) {
       deadline_to_use = early_deadline;
       break;
     }
   }
 
-  return ReportTimeFromDeadline(source.impression_time(), deadline_to_use);
+  return ReportTimeFromDeadline(source.source_time(), deadline_to_use);
 }
 
 int NumReportWindows(AttributionSourceType source_type) {
@@ -111,7 +110,7 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
           ? early_deadlines[window_index]
           : ExpiryDeadline(source);
 
-  return ReportTimeFromDeadline(source.impression_time(), deadline);
+  return ReportTimeFromDeadline(source.source_time(), deadline);
 }
 
 std::string SerializeAttributionJson(const base::Value::Dict& body,

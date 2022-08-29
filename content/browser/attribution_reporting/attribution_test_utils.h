@@ -475,7 +475,7 @@ class SourceBuilder {
 
  private:
   uint64_t source_event_id_ = 123;
-  base::Time impression_time_;
+  base::Time source_time_;
   base::TimeDelta expiry_;
   url::Origin source_origin_;
   url::Origin destination_origin_;
@@ -753,11 +753,6 @@ MATCHER_P(SourceTypeIs, matcher, "") {
 
 MATCHER_P(SourcePriorityIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.common_info().priority(),
-                            result_listener);
-}
-
-MATCHER_P(ImpressionTimeIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().impression_time(),
                             result_listener);
 }
 

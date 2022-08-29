@@ -28,14 +28,14 @@ class CONTENT_EXPORT CommonSourceInfo {
  public:
   static base::Time GetExpiryTime(
       absl::optional<base::TimeDelta> declared_expiry,
-      base::Time impression_time,
+      base::Time source_time,
       AttributionSourceType source_type);
 
   CommonSourceInfo(uint64_t source_event_id,
                    url::Origin source_origin,
                    url::Origin destination_origin,
                    url::Origin reporting_origin,
-                   base::Time impression_time,
+                   base::Time source_time,
                    base::Time expiry_time,
                    AttributionSourceType source_type,
                    int64_t priority,
@@ -59,7 +59,7 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
-  base::Time impression_time() const { return impression_time_; }
+  base::Time source_time() const { return source_time_; }
 
   base::Time expiry_time() const { return expiry_time_; }
 
@@ -94,7 +94,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   url::Origin source_origin_;
   url::Origin destination_origin_;
   url::Origin reporting_origin_;
-  base::Time impression_time_;
+  base::Time source_time_;
   base::Time expiry_time_;
   AttributionSourceType source_type_;
   int64_t priority_;

@@ -75,7 +75,7 @@ base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
   return absl::visit(
       base::Overloaded{
           [](const StorableSource& source) {
-            return source.common_info().impression_time();
+            return source.common_info().source_time();
           },
           [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
           [](const AttributionSimulatorCookie& cookie) {

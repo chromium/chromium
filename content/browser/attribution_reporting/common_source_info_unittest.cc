@@ -13,23 +13,22 @@
 namespace content {
 
 TEST(CommonSourceInfoTest, NoExpiryForImpression_DefaultUsed) {
-  const base::Time impression_time = base::Time::Now();
+  const base::Time source_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(
-        impression_time + base::Days(30),
-        CommonSourceInfo::GetExpiryTime(
-            /*declared_expiry=*/absl::nullopt, impression_time, source_type));
+    EXPECT_EQ(source_time + base::Days(30),
+              CommonSourceInfo::GetExpiryTime(
+                  /*declared_expiry=*/absl::nullopt, source_time, source_type));
   }
 }
 
 TEST(CommonSourceInfoTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
   constexpr base::TimeDelta declared_expiry = base::Days(60);
-  const base::Time impression_time = base::Time::Now();
+  const base::Time source_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(impression_time + base::Days(30),
-              CommonSourceInfo::GetExpiryTime(declared_expiry, impression_time,
+    EXPECT_EQ(source_time + base::Days(30),
+              CommonSourceInfo::GetExpiryTime(declared_expiry, source_time,
                                               source_type));
   }
 }
@@ -44,13 +43,13 @@ TEST(CommonSourceInfoTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
       {base::Days(1) - base::Milliseconds(1), base::Days(1)},
   };
 
-  const base::Time impression_time = base::Time::Now();
+  const base::Time source_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
     for (const auto& test_case : kTestCases) {
-      EXPECT_EQ(impression_time + test_case.want_expiry,
+      EXPECT_EQ(source_time + test_case.want_expiry,
                 CommonSourceInfo::GetExpiryTime(test_case.declared_expiry,
-                                                impression_time, source_type));
+                                                source_time, source_type));
     }
   }
 }
@@ -71,23 +70,23 @@ TEST(CommonSourceInfoTest, NonWholeDayImpressionExpirySpecified_Rounded) {
        base::Days(1)},
   };
 
-  const base::Time impression_time = base::Time::Now();
+  const base::Time source_time = base::Time::Now();
 
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(
-        impression_time + test_case.want_expiry,
-        CommonSourceInfo::GetExpiryTime(
-            test_case.declared_expiry, impression_time, test_case.source_type));
+        source_time + test_case.want_expiry,
+        CommonSourceInfo::GetExpiryTime(test_case.declared_expiry, source_time,
+                                        test_case.source_type));
   }
 }
 
 TEST(CommonSourceInfoTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   constexpr base::TimeDelta declared_expiry = base::Days(10);
-  const base::Time impression_time = base::Time::Now();
+  const base::Time source_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(impression_time + base::Days(10),
-              CommonSourceInfo::GetExpiryTime(declared_expiry, impression_time,
+    EXPECT_EQ(source_time + base::Days(10),
+              CommonSourceInfo::GetExpiryTime(declared_expiry, source_time,
                                               source_type));
   }
 }

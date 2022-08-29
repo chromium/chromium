@@ -308,7 +308,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
       DeserializePotentiallyTrustworthyOrigin(statement.ColumnString(col++));
   url::Origin reporting_origin =
       DeserializePotentiallyTrustworthyOrigin(statement.ColumnString(col++));
-  base::Time impression_time = statement.ColumnTime(col++);
+  base::Time source_time = statement.ColumnTime(col++);
   base::Time expiry_time = statement.ColumnTime(col++);
   absl::optional<AttributionSourceType> source_type =
       DeserializeSourceType(statement.ColumnInt(col++));
@@ -346,7 +346,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
           CommonSourceInfo(
               source_event_id, std::move(source_origin),
               std::move(destination_origin), std::move(reporting_origin),
-              impression_time, expiry_time, *source_type, priority,
+              source_time, expiry_time, *source_type, priority,
               std::move(*filter_data), debug_key, std::move(*aggregation_keys)),
           *attribution_logic, *active_state, source_id),
       .num_conversions = num_conversions,
@@ -637,7 +637,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
                               common_info.destination_origin()));
   statement.BindString(3, serialized_conversion_destination);
   statement.BindString(4, serialized_reporting_origin);
-  statement.BindTime(5, common_info.impression_time());
+  statement.BindTime(5, common_info.source_time());
   statement.BindTime(6, common_info.expiry_time());
   statement.BindInt(7, SerializeSourceType(common_info.source_type()));
   statement.BindInt(8, SerializeAttributionLogic(attribution_logic));
@@ -669,7 +669,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   absl::optional<base::Time> min_fake_report_time;
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
-    const base::Time trigger_time = common_info.impression_time();
+    const base::Time trigger_time = common_info.source_time();
 
     for (const auto& fake_report : *randomized_response) {
       DCHECK_EQ(fake_report.trigger_data,
@@ -2368,7 +2368,7 @@ AttributionStorageSql::HasCapacityForUniqueDestinationLimitForPendingSource(
   statement.BindString(0, source.common_info().SourceSite().Serialize());
   statement.BindString(1, SerializePotentiallyTrustworthyOrigin(
                               source.common_info().reporting_origin()));
-  statement.BindTime(2, source.common_info().impression_time());
+  statement.BindTime(2, source.common_info().source_time());
 
   base::flat_set<std::string> destinations;
   while (statement.Step()) {

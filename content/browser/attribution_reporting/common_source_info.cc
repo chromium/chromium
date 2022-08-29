@@ -15,7 +15,7 @@ namespace content {
 
 base::Time CommonSourceInfo::GetExpiryTime(
     absl::optional<base::TimeDelta> declared_expiry,
-    base::Time impression_time,
+    base::Time source_time,
     AttributionSourceType source_type) {
   constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
 
@@ -29,15 +29,15 @@ base::Time CommonSourceInfo::GetExpiryTime(
 
   // If the impression specified its own expiry, clamp it to the minimum and
   // maximum.
-  return impression_time + base::clamp(expiry, kMinImpressionExpiry,
-                                       kDefaultAttributionSourceExpiry);
+  return source_time + base::clamp(expiry, kMinImpressionExpiry,
+                                   kDefaultAttributionSourceExpiry);
 }
 
 CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
                                    url::Origin source_origin,
                                    url::Origin destination_origin,
                                    url::Origin reporting_origin,
-                                   base::Time impression_time,
+                                   base::Time source_time,
                                    base::Time expiry_time,
                                    AttributionSourceType source_type,
                                    int64_t priority,
@@ -48,7 +48,7 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
       source_origin_(std::move(source_origin)),
       destination_origin_(std::move(destination_origin)),
       reporting_origin_(std::move(reporting_origin)),
-      impression_time_(impression_time),
+      source_time_(source_time),
       expiry_time_(expiry_time),
       source_type_(source_type),
       priority_(priority),
@@ -56,9 +56,9 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
       debug_key_(debug_key),
       aggregation_keys_(std::move(aggregation_keys)) {
   // 30 days is the max allowed expiry for an impression.
-  DCHECK_GE(base::Days(30), expiry_time - impression_time);
+  DCHECK_GE(base::Days(30), expiry_time - source_time);
   // The impression must expire strictly after it occurred.
-  DCHECK_GT(expiry_time, impression_time);
+  DCHECK_GT(expiry_time, source_time);
   DCHECK(network::IsOriginPotentiallyTrustworthy(source_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(destination_origin_));

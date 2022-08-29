@@ -61,7 +61,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), source.source_origin(),
       source.DestinationSite().Serialize(), source.reporting_origin(),
-      source.impression_time().ToJsTime(), source.expiry_time().ToJsTime(),
+      source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
       source.source_type(), source.priority(),
       WebUIDebugKey(source.debug_key()), dedup_keys,
       source.filter_data().filter_values(),

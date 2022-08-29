@@ -111,7 +111,7 @@ class AttributionStorageTest : public testing::Test {
                              .SetTime(base::Time::Now())
                              .Build())
         .SetTriggerData(event_trigger->data)
-        .SetReportTime(source.common_info().impression_time() + kReportDelay)
+        .SetReportTime(source.common_info().source_time() + kReportDelay)
         .SetPriority(event_trigger->priority)
         .Build();
   }

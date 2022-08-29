@@ -134,7 +134,7 @@ base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
     const CommonSourceInfo& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return source.impression_time() + report_delay_;
+  return source.source_time() + report_delay_;
 }
 
 base::Time ConfigurableStorageDelegate::GetAggregatableReportTime(
@@ -467,7 +467,7 @@ bool SourceObserver::WaitForNavigationWithNoImpression() {
 // Builds an impression with default values. This is done as a builder because
 // all values needed to be provided at construction time.
 SourceBuilder::SourceBuilder(base::Time time)
-    : impression_time_(time),
+    : source_time_(time),
       expiry_(base::Milliseconds(kExpiryTime)),
       source_origin_(url::Origin::Create(GURL(kDefaultSourceOrigin))),
       destination_origin_(url::Origin::Create(GURL(kDefaultDestinationOrigin))),
@@ -563,9 +563,9 @@ SourceBuilder& SourceBuilder::SetAggregationKeys(
 
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
   return CommonSourceInfo(source_event_id_, source_origin_, destination_origin_,
-                          reporting_origin_, impression_time_,
-                          /*expiry_time=*/impression_time_ + expiry_,
-                          source_type_, priority_, filter_data_, debug_key_,
+                          reporting_origin_, source_time_,
+                          /*expiry_time=*/source_time_ + expiry_, source_type_,
+                          priority_, filter_data_, debug_key_,
                           aggregation_keys_);
 }
 
@@ -785,7 +785,7 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
     return std::make_tuple(source.source_event_id(), source.source_origin(),
                            source.destination_origin(),
-                           source.reporting_origin(), source.impression_time(),
+                           source.reporting_origin(), source.source_time(),
                            source.expiry_time(), source.source_type(),
                            source.priority(), source.filter_data(),
                            source.debug_key(), source.aggregation_keys());
@@ -1106,7 +1106,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << ",source_origin=" << source.source_origin()
              << ",destination_origin=" << source.destination_origin()
              << ",reporting_origin=" << source.reporting_origin()
-             << ",impression_time=" << source.impression_time()
+             << ",source_time=" << source.source_time()
              << ",expiry_time=" << source.expiry_time()
              << ",source_type=" << source.source_type()
              << ",priority=" << source.priority()
