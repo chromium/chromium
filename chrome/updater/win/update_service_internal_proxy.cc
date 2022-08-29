@@ -150,9 +150,17 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
 
   // TODO(crbug.com/1341471) - revert the CL that introduced the check after
   // the bug is resolved.
-  VLOG_IF(2, FAILED(hr)) << "Failed to query the updater_internal interface. "
-                         << std::hex << hr;
-  CHECK(SUCCEEDED(hr));
+  if (hr == TYPE_E_CANTLOADLIBRARY) {
+    CheckComInterfaceTypeLib(scope_, true);
+    CheckComInterfaceTypeLib(scope_, false);
+    NOTREACHED();
+  }
+  if (FAILED(hr)) {
+    VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
+            << hr;
+    std::move(callback).Run();
+    return;
+  }
 
   // The COM RPC takes ownership of the `rpc_callback` and owns a reference to
   // the `updater_internal` object as well. As long as the `rpc_callback`
@@ -206,22 +214,18 @@ void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
 
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   hr = server.As(&updater_internal);
+
+  // TODO(crbug.com/1341471) - revert the CL that introduced the check after
+  // the bug is resolved.
+  if (hr == TYPE_E_CANTLOADLIBRARY) {
+    CheckComInterfaceTypeLib(scope_, true);
+    CheckComInterfaceTypeLib(scope_, false);
+    NOTREACHED();
+  }
+
   if (FAILED(hr)) {
     VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
             << hr;
-
-    // TODO(crbug.com/1341471) - revert the CL that introduced this check after
-    // the bug is resolved.
-    for (int i = 0; i < 10; ++i) {
-      base::WaitableEvent().TimedWait(base::Seconds(1));
-      CHECK(FAILED(server.As(&updater_internal)))
-          << "Unexpectedly succeeded in querying the updater_internal "
-             "interface after retrying: "
-          << i;
-    }
-
-    CheckComInterfaceTypeLib(scope_, true);
-    CheckComInterfaceTypeLib(scope_, false);
     std::move(callback).Run();
     return;
   }
