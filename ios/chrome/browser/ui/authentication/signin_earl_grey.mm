@@ -111,11 +111,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       @"Unexpected signed in user");
 }
 
-- (void)verifyAuthenticated {
-  EG_TEST_HELPER_ASSERT_TRUE([SigninEarlGreyAppInterface hasPrimaryIdentity],
-                             @"User is not signed in");
-}
-
 - (void)verifySyncUIEnabled:(BOOL)enabled {
   NSString* accessibilityString =
       enabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)

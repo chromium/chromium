@@ -50,9 +50,6 @@ enum class ConsentLevel;
 // Induces a GREYAssert if an identity is signed in.
 - (void)verifySignedOut;
 
-// Induces a GREYAssert if there are no signed-in identities.
-- (void)verifyAuthenticated;
-
 // Induces a GREYAssert if the Sync state does not match `enabled`.
 - (void)verifySyncUIEnabled:(BOOL)enabled;
 

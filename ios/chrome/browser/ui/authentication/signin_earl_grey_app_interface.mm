@@ -78,15 +78,6 @@
               ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
-+ (BOOL)hasPrimaryIdentity {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  return authentication_service->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
-}
-
 + (void)signOut {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();

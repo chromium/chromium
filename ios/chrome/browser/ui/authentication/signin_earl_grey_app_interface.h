@@ -42,9 +42,6 @@ enum class ConsentLevel;
 // Checks that no identity is signed in.
 + (BOOL)isSignedOut;
 
-// Checks whether there is a primary identity.
-+ (BOOL)hasPrimaryIdentity;
-
 // Signs out the current user.
 + (void)signOut;
 

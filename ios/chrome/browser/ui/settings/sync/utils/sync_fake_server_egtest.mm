@@ -150,7 +150,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
   std::string original_guid = [ChromeEarlGrey syncCacheGUID];
 
-  [SigninEarlGrey verifyAuthenticated];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncInitialized:NO syncTimeout:kSyncOperationTimeout];
 
@@ -173,7 +173,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
 
-  [SigninEarlGrey verifyAuthenticated];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncInitialized:NO syncTimeout:kSyncOperationTimeout];
 
