@@ -25,6 +25,10 @@ namespace libassistant {
 class AudioInputStream;
 class AudioCapturer;
 
+// AudioInputImpl automatically falls back to libassistant based hotword
+// detection if DSP device id is not available.
+// TODO(b/242776750): Remove this behavior if possible to simplify
+// AudioInputImpl.
 class AudioInputImpl : public assistant_client::AudioInput {
  public:
   explicit AudioInputImpl(const absl::optional<std::string>& device_id);

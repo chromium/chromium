@@ -24,6 +24,10 @@ namespace {
 using mojom::LidState;
 using Resolution = assistant_client::ConversationStateListener::Resolution;
 
+constexpr char kNormalDeviceId[] = "normal-device-id";
+constexpr char kHotwordDeviceId[] = "hotword-device-id";
+constexpr char kSkipForNonDspMessage[] = "This test case is for DSP";
+
 class FakeAudioInputObserver : public assistant_client::AudioInput::Observer {
  public:
   FakeAudioInputObserver() = default;
@@ -38,14 +42,42 @@ class FakeAudioInputObserver : public assistant_client::AudioInput::Observer {
   void OnAudioStopped() override {}
 };
 
-class AssistantAudioInputControllerTest : public testing::Test {
+class AssistantAudioInputControllerTest : public testing::TestWithParam<bool> {
  public:
-  AssistantAudioInputControllerTest() : controller_() {
+  AssistantAudioInputControllerTest() : enable_dsp_(GetParam()), controller_() {
     controller_.Bind(client_.BindNewPipeAndPassReceiver(), &platform_delegate_);
 
-    // Enable DSP feature flag.
-    scoped_feature_list_.InitAndEnableFeature(
-        assistant::features::kEnableDspHotword);
+    if (enable_dsp_) {
+      // Enable DSP feature flag.
+      scoped_feature_list_.InitAndEnableFeature(
+          assistant::features::kEnableDspHotword);
+    }
+  }
+
+  void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
+
+    EXPECT_TRUE(pre_condition_checked_)
+        << "You must call AssertHotwordAvailableState or MarkPreconditionMet "
+           "to confirm that you are testing the expected environment";
+  }
+
+  // Hotword test requires some set up. AudioInputImpl automatically falls back
+  // to non-DSP hotword if it doesn't meet the condition. This function checks
+  // whether the test is exercising the expected environment.
+  void AssertHotwordAvailableState() {
+    ASSERT_EQ(enable_dsp_, audio_input().IsHotwordAvailable());
+    pre_condition_checked_ = true;
+  }
+
+  // Some test cases exercises non-DSP behavior even for DSP available variant.
+  // Call this function at the end of its test body to mark that the test is
+  // intentionally exercising that scenario.
+  void MarkPreconditionMet() {
+    ASSERT_FALSE(pre_condition_checked_) << "Pre-condition is already checked.";
+    pre_condition_checked_ = true;
   }
 
   // See |InitializeForTestOfType| for an explanation of this enum.
@@ -64,6 +96,9 @@ class AssistantAudioInputControllerTest : public testing::Test {
   // that we're testing. So for example if you call
   // InitializeForTestOfType(kLidState) then this will ensure all requirements
   // are set but not the lid state (which is left in its initial value).
+  //
+  // TODO(b/242776750): Set up in test body instead of using this utility method
+  // to make it clear what set up the test is testing.
   void InitializeForTestOfType(TestType type) {
     if (type != kLidStateTest)
       SetLidState(LidState::kOpen);
@@ -72,10 +107,13 @@ class AssistantAudioInputControllerTest : public testing::Test {
       AddAudioInputObserver();
 
     if (type != kDeviceIdTest)
-      SetDeviceId("fake-audio-device");
+      SetDeviceId(kNormalDeviceId);
 
     if (type != kHotwordEnabledTest)
       SetHotwordEnabled(true);
+
+    if (type != kHotwordDeviceIdTest && enable_dsp_)
+      SetHotwordDeviceId(kHotwordDeviceId);
   }
 
   mojo::Remote<mojom::AudioInputController>& client() { return client_; }
@@ -86,7 +124,32 @@ class AssistantAudioInputControllerTest : public testing::Test {
     return controller().audio_input_provider().GetAudioInput();
   }
 
+  bool IsEnableDspFlagOn() { return enable_dsp_; }
+
+  // TODO(b/242776750): Change this to NotRecordingAudio. If we test that it's
+  // recording, we should test expected channel (query or hotword) as well with
+  // using IsRecordingForQuery or IsRecordingHotword.
   bool IsRecordingAudio() { return audio_input().IsRecordingForTesting(); }
+
+  // TODO(b/242776750): Make this a custom matcher to provide better error
+  // message.
+  bool IsRecordingForQuery() {
+    return audio_input().IsRecordingForTesting() &&
+           audio_input().IsMicOpenForTesting() &&
+           audio_input().GetOpenDeviceIdForTesting() == kNormalDeviceId;
+  }
+
+  bool IsRecordingHotword() {
+    if (enable_dsp_) {
+      return audio_input().IsRecordingForTesting() &&
+             !audio_input().IsMicOpenForTesting() &&
+             audio_input().GetOpenDeviceIdForTesting() == kHotwordDeviceId;
+    } else {
+      return audio_input().IsRecordingForTesting() &&
+             !audio_input().IsMicOpenForTesting() &&
+             audio_input().GetOpenDeviceIdForTesting() == kNormalDeviceId;
+    }
+  }
 
   bool IsUsingDeadStreamDetection() {
     return audio_input().IsUsingDeadStreamDetectionForTesting().value_or(false);
@@ -95,8 +158,6 @@ class AssistantAudioInputControllerTest : public testing::Test {
   std::string GetOpenDeviceId() {
     return audio_input().GetOpenDeviceIdForTesting().value_or("<none>");
   }
-
-  bool IsMicOpen() { return audio_input().IsMicOpenForTesting(); }
 
   void SetLidState(LidState new_state) {
     client()->SetLidState(new_state);
@@ -134,6 +195,8 @@ class AssistantAudioInputControllerTest : public testing::Test {
   }
 
  private:
+  const bool enable_dsp_;
+  bool pre_condition_checked_ = false;
   base::test::TaskEnvironment environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<mojom::AudioInputController> client_;
@@ -142,10 +205,18 @@ class AssistantAudioInputControllerTest : public testing::Test {
   assistant::FakePlatformDelegate platform_delegate_;
 };
 
+INSTANTIATE_TEST_SUITE_P(Assistant,
+                         AssistantAudioInputControllerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& param) {
+                           return param.param ? "DSP" : "NonDSP";
+                         });
+
 }  // namespace
 
-TEST_F(AssistantAudioInputControllerTest, ShouldOnlyRecordWhenLidIsOpen) {
+TEST_P(AssistantAudioInputControllerTest, ShouldOnlyRecordWhenLidIsOpen) {
   InitializeForTestOfType(kLidStateTest);
+  AssertHotwordAvailableState();
 
   // Initially the lid is considered closed.
   EXPECT_FALSE(IsRecordingAudio());
@@ -157,85 +228,110 @@ TEST_F(AssistantAudioInputControllerTest, ShouldOnlyRecordWhenLidIsOpen) {
   EXPECT_FALSE(IsRecordingAudio());
 }
 
-TEST_F(AssistantAudioInputControllerTest, ShouldOnlyRecordWhenDeviceIdIsSet) {
+TEST_P(AssistantAudioInputControllerTest, ShouldOnlyRecordWhenDeviceIdIsSet) {
   InitializeForTestOfType(kDeviceIdTest);
 
   // Initially there is no device id.
   EXPECT_FALSE(IsRecordingAudio());
 
-  SetDeviceId("device-id");
-  EXPECT_TRUE(IsRecordingAudio());
+  SetDeviceId(kNormalDeviceId);
+  AssertHotwordAvailableState();
+  EXPECT_TRUE(IsRecordingHotword());
 
   SetDeviceId(absl::nullopt);
   EXPECT_FALSE(IsRecordingAudio());
 }
 
-TEST_F(AssistantAudioInputControllerTest, StopOnlyRecordWhenHotwordIsEnabled) {
+TEST_P(AssistantAudioInputControllerTest, StopOnlyRecordWhenHotwordIsEnabled) {
   InitializeForTestOfType(kHotwordEnabledTest);
+  AssertHotwordAvailableState();
 
-  // Hotword is enabled by default.
-  EXPECT_TRUE(IsRecordingAudio());
+  // Hotword is enabled by InitializeForTestOfType.
+  EXPECT_TRUE(IsRecordingHotword());
 
   SetHotwordEnabled(false);
+  EXPECT_FALSE(IsRecordingHotword());
+  // Double check that AudioInputImpl is not recording any other type of audio.
   EXPECT_FALSE(IsRecordingAudio());
 
   SetHotwordEnabled(true);
-  EXPECT_TRUE(IsRecordingAudio());
+  EXPECT_TRUE(IsRecordingHotword());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        StartRecordingWhenDisableHotwordAndForceOpenMic) {
   InitializeForTestOfType(kHotwordEnabledTest);
   SetHotwordEnabled(false);
+  AssertHotwordAvailableState();
+
   EXPECT_FALSE(IsRecordingAudio());
 
   // Force open mic should start recording.
+  // This is exercising a corner case. OnConversationTurnStarted() should be
+  // called if mic gets opened.
+  // TODO(b/242776750): Change the query recording condition as mic open +
+  // OnConversationTurnStarted, i.e. do not record for a query if
+  // OnConversationTurnStarted not called.
   SetMicOpen(true);
-  EXPECT_TRUE(IsRecordingAudio());
+  EXPECT_TRUE(IsRecordingForQuery());
 
   SetMicOpen(false);
   EXPECT_FALSE(IsRecordingAudio());
 }
 
-TEST_F(AssistantAudioInputControllerTest, ShouldUseProvidedDeviceId) {
+TEST_P(AssistantAudioInputControllerTest, ShouldUseProvidedDeviceId) {
   InitializeForTestOfType(kDeviceIdTest);
   SetDeviceId("the-expected-device-id");
+  AssertHotwordAvailableState();
 
+  SetMicOpen(true);
+  OnConversationTurnStarted();
   EXPECT_TRUE(IsRecordingAudio());
   EXPECT_EQ("the-expected-device-id", GetOpenDeviceId());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        ShouldSwitchToHotwordDeviceIdWhenSet) {
+  if (!IsEnableDspFlagOn()) {
+    GTEST_SKIP() << kSkipForNonDspMessage;
+  }
+
   InitializeForTestOfType(kHotwordDeviceIdTest);
 
-  SetDeviceId("the-device-id");
+  SetDeviceId(kNormalDeviceId);
   EXPECT_TRUE(IsRecordingAudio());
-  EXPECT_EQ("the-device-id", GetOpenDeviceId());
+  EXPECT_EQ(kNormalDeviceId, GetOpenDeviceId());
 
-  SetHotwordDeviceId("the-hotword-device-id");
+  SetHotwordDeviceId(kHotwordDeviceId);
+  AssertHotwordAvailableState();
   EXPECT_TRUE(IsRecordingAudio());
-  EXPECT_EQ("the-hotword-device-id", GetOpenDeviceId());
+  EXPECT_EQ(kHotwordDeviceId, GetOpenDeviceId());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        ShouldKeepUsingHotwordDeviceIdWhenDeviceIdChanges) {
+  if (!IsEnableDspFlagOn()) {
+    GTEST_SKIP() << kSkipForNonDspMessage;
+  }
+
   InitializeForTestOfType(kHotwordDeviceIdTest);
 
-  SetDeviceId("the-original-device-id");
-  SetHotwordDeviceId("the-hotword-device-id");
+  SetDeviceId(kNormalDeviceId);
+  SetHotwordDeviceId(kHotwordDeviceId);
+  AssertHotwordAvailableState();
 
   EXPECT_TRUE(IsRecordingAudio());
-  EXPECT_EQ("the-hotword-device-id", GetOpenDeviceId());
+  EXPECT_EQ(kHotwordDeviceId, GetOpenDeviceId());
 
-  SetDeviceId("the-new-device-id");
+  SetDeviceId("new-normal-device-id");
   EXPECT_TRUE(IsRecordingAudio());
-  EXPECT_EQ("the-hotword-device-id", GetOpenDeviceId());
+  EXPECT_EQ(kHotwordDeviceId, GetOpenDeviceId());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        ShouldUseDefaultDeviceIdIfNoDeviceIdIsSet) {
   InitializeForTestOfType(kDeviceIdTest);
+
   // Mic must be open, otherwise we will not start recording audio if the
   // device id is not set.
   SetMicOpen(true);
@@ -244,24 +340,36 @@ TEST_F(AssistantAudioInputControllerTest,
 
   EXPECT_TRUE(IsRecordingAudio());
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId, GetOpenDeviceId());
+
+  MarkPreconditionMet();
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        DeadStreamDetectionShouldBeDisabledWhenUsingHotwordDevice) {
+  if (!IsEnableDspFlagOn()) {
+    GTEST_SKIP() << kSkipForNonDspMessage;
+  }
+
   InitializeForTestOfType(kHotwordDeviceIdTest);
 
   SetHotwordDeviceId(absl::nullopt);
   EXPECT_TRUE(IsUsingDeadStreamDetection());
 
-  SetHotwordDeviceId("fake-hotword-device");
+  SetHotwordDeviceId(kHotwordDeviceId);
+  AssertHotwordAvailableState();
   EXPECT_FALSE(IsUsingDeadStreamDetection());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        ShouldSwitchToNormalAudioDeviceWhenConversationTurnStarts) {
+  if (!IsEnableDspFlagOn()) {
+    GTEST_SKIP() << kSkipForNonDspMessage;
+  }
+
   InitializeForTestOfType(kDeviceIdTest);
   SetDeviceId("normal-device-id");
   SetHotwordDeviceId("hotword-device-id");
+  AssertHotwordAvailableState();
 
   // While checking for hotword we should be using the hotword device.
   EXPECT_EQ("hotword-device-id", GetOpenDeviceId());
@@ -272,11 +380,16 @@ TEST_F(AssistantAudioInputControllerTest,
   EXPECT_EQ("normal-device-id", GetOpenDeviceId());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        ShouldSwitchToHotwordAudioDeviceWhenConversationIsFinished) {
+  if (!IsEnableDspFlagOn()) {
+    GTEST_SKIP() << kSkipForNonDspMessage;
+  }
+
   InitializeForTestOfType(kDeviceIdTest);
   SetDeviceId("normal-device-id");
   SetHotwordDeviceId("hotword-device-id");
+  AssertHotwordAvailableState();
 
   // During the conversation we should be using the normal audio device.
   OnConversationTurnStarted();
@@ -288,38 +401,61 @@ TEST_F(AssistantAudioInputControllerTest,
   EXPECT_EQ("hotword-device-id", GetOpenDeviceId());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        ShouldCloseMicWhenConversationIsFinishedNormally) {
   InitializeForTestOfType(kDeviceIdTest);
   SetMicOpen(true);
-  SetDeviceId("normal-device-id");
-  SetHotwordDeviceId("hotword-device-id");
+  SetDeviceId(kNormalDeviceId);
+  SetHotwordDeviceId(kHotwordDeviceId);
+  AssertHotwordAvailableState();
 
   // Mic should keep opened during the conversation.
   OnConversationTurnStarted();
-  EXPECT_EQ(true, IsMicOpen());
+  EXPECT_TRUE(IsRecordingForQuery());
 
   // Once the conversation has finished normally without needing mic to keep
   // opened, we should close it.
   OnConversationTurnFinished();
-  EXPECT_EQ(false, IsMicOpen());
+  EXPECT_TRUE(IsRecordingHotword());
 }
 
-TEST_F(AssistantAudioInputControllerTest,
+TEST_P(AssistantAudioInputControllerTest,
        ShouldKeepMicOpenedIfNeededWhenConversationIsFinished) {
   InitializeForTestOfType(kDeviceIdTest);
   SetMicOpen(true);
-  SetDeviceId("normal-device-id");
-  SetHotwordDeviceId("hotword-device-id");
+  SetDeviceId(kNormalDeviceId);
+  SetHotwordDeviceId(kHotwordDeviceId);
+  AssertHotwordAvailableState();
 
   // Mic should keep opened during the conversation.
   OnConversationTurnStarted();
-  EXPECT_EQ(true, IsMicOpen());
+  EXPECT_EQ(true, IsRecordingForQuery());
 
   // If the conversation is finished where mic should still be kept opened
   // (i.e. there's a follow-up interaction), we should keep mic opened.
   OnConversationTurnFinished(Resolution::NORMAL_WITH_FOLLOW_ON);
-  EXPECT_EQ(true, IsMicOpen());
+
+  // TODO(b/242776750): MicOpen=true doesn't mean that AudioInputImpl is
+  // recording. Double check that whether it's expected behavior, i.e. whether
+  // this expects that IsRecordingForQuery=true or not.
+  EXPECT_EQ(true, audio_input().IsMicOpenForTesting());
+}
+
+TEST_P(AssistantAudioInputControllerTest,
+       ShouldCloseMicWhenConversationIsFinishedNormallyHotwordOff) {
+  InitializeForTestOfType(kDeviceIdTest);
+  SetDeviceId(kNormalDeviceId);
+  SetHotwordDeviceId(kHotwordDeviceId);
+  SetHotwordEnabled(false);
+  AssertHotwordAvailableState();
+  ASSERT_EQ(false, IsRecordingAudio());
+
+  SetMicOpen(true);
+  OnConversationTurnStarted();
+  EXPECT_EQ(true, IsRecordingForQuery());
+
+  OnConversationTurnFinished();
+  EXPECT_EQ(false, IsRecordingAudio());
 }
 
 }  // namespace libassistant

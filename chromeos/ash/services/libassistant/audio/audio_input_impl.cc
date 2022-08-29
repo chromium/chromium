@@ -480,7 +480,7 @@ absl::optional<bool> AudioInputImpl::IsUsingDeadStreamDetectionForTesting()
 void AudioInputImpl::StartRecording() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!HasOpenAudioStream());
-  RecreateAudioInputStream(IsHotwordAvailable());
+  RecreateAudioInputStream(IsHotwordAvailable() && IsHotwordEnabled());
 }
 
 void AudioInputImpl::StopRecording() {
