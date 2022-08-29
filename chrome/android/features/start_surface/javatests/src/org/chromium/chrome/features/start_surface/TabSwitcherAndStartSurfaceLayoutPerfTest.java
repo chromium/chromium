@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -399,8 +400,8 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
             mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
-            Espresso.onView(allOf(withParent(withId(
-                                          org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),
+            Espresso.onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                                          mActivityTestRule.getActivity()))),
                                     withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                     .perform(RecyclerViewActions.actionOnItemAtPosition(
                             targetIndex, ViewActions.click()));

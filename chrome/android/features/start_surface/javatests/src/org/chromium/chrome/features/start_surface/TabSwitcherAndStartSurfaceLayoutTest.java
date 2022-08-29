@@ -144,6 +144,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 // clang-format off
 /** Tests for the {@link TabSwitcherAndStartSurfaceLayout} */
@@ -196,7 +198,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws ExecutionException {
         AccessibilityChecks.enable();
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         // After setUp, Chrome is launched and has one NTP.
@@ -208,8 +210,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         mRepeat = 1;
 
-        mTabListDelegate = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting()
-                                   .getGridTabListDelegate();
+        mTabListDelegate = getTabListDelegateFromUIThread();
         mTabListDelegate.setBitmapCallbackForTesting(mBitmapListener);
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting());
 
@@ -989,7 +990,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
         onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
-        closeFirstTabInTabSwitcher();
+        closeFirstTabInTabSwitcher(mActivityTestRule.getActivity());
 
         CriteriaHelper.pollUiThread(
                 () -> !TabSuggestionMessageService.isSuggestionAvailableForTesting());
@@ -1734,7 +1735,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
         assertNull(snackbarManager.getCurrentSnackbarForTesting());
-        closeFirstTabInTabSwitcher();
+        closeFirstTabInTabSwitcher(cta);
         assertTrue(snackbarManager.getCurrentSnackbarForTesting().getController()
                            instanceof UndoBarController);
         verifyTabSwitcherCardCount(cta, 2);
@@ -1757,7 +1758,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         // Verify TabModelObserver is correctly setup by checking if tab switcher changes with tab
         // closure.
-        closeFirstTabInTabSwitcher();
+        closeFirstTabInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 0);
 
         // Verify TabGroupModelFilter is correctly setup by checking if tab switcher changes with
@@ -1784,12 +1785,22 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         assertNull(snackbarManager.getCurrentSnackbarForTesting());
 
         // Verify close this tab group and undo in tab switcher.
-        closeFirstTabInTabSwitcher();
+        closeFirstTabInTabSwitcher(cta);
         assertTrue(snackbarManager.getCurrentSnackbarForTesting().getController()
                            instanceof UndoBarController);
         verifyTabSwitcherCardCount(cta, 0);
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    private TabSwitcher.TabListDelegate getTabListDelegateFromUIThread() {
+        AtomicReference<TabSwitcher.TabListDelegate> tabListDelegate = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> tabListDelegate.set(
+                                mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting()
+                                        .getGridTabListDelegate()));
+        return tabListDelegate.get();
     }
 
     private void enterTabGroupManualSelection(ChromeTabbedActivity cta) {
@@ -1994,6 +2005,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     }
 
     private Matcher<View> tabSwitcherViewMatcher() {
-        return allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view));
+        return allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                             mActivityTestRule.getActivity()))),
+                withId(R.id.tab_list_view));
     }
 }

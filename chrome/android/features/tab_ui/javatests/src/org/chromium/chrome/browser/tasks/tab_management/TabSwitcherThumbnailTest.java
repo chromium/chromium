@@ -129,7 +129,8 @@ public class TabSwitcherThumbnailTest {
         // There is a higher chance for the test to fail with backward counting, because after the
         // view being recycled, its height might have the correct measurement.
         for (int i = tabCounts - 1; i >= 0; i--) {
-            onView(allOf(withParent(withId(org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),
+            onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                                 mActivityTestRule.getActivity()))),
                            withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                     .perform(scrollToPosition(i))
                     .check(ThumbnailHeightAssertion.notZeroAt(i))

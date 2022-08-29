@@ -239,7 +239,8 @@ public class TabGridIphTest {
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
                 TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                       withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.scrollTo(withId(R.id.tab_grid_message_item)));
         onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
@@ -282,7 +283,8 @@ public class TabGridIphTest {
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
         // Scroll to the position of the IPH entrance so that it is completely showing for Espresso
         // click.
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                       withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.scrollToPosition(1));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
@@ -309,7 +311,7 @@ public class TabGridIphTest {
         onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Close the last tab in tab switcher and the IPH item should not be showing.
-        closeFirstTabInTabSwitcher();
+        closeFirstTabInTabSwitcher(cta);
         CriteriaHelper.pollUiThread(() -> !TabSwitcherCoordinator.hasAppendedMessagesForTesting());
         verifyTabSwitcherCardCount(cta, 0);
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
@@ -319,7 +321,7 @@ public class TabGridIphTest {
         onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Close the last tab in the tab switcher.
-        closeFirstTabInTabSwitcher();
+        closeFirstTabInTabSwitcher(cta);
         CriteriaHelper.pollUiThread(() -> !TabSwitcherCoordinator.hasAppendedMessagesForTesting());
         verifyTabSwitcherCardCount(cta, 0);
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
@@ -344,7 +346,8 @@ public class TabGridIphTest {
                                                      .findViewHolderForAdapterPosition(1);
         assertEquals(TabProperties.UiType.MESSAGE, viewHolder.getItemViewType());
 
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+        onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                       withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(
                         1, getSwipeToDismissAction(true)));
 
