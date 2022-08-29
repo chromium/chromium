@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -9,6 +8,7 @@
     overflow: hidden;
     width: 100px;
     height: 100px;
+    scroll-timeline: timeline;
   }
   #contents {
     height: 200px;
@@ -16,9 +16,6 @@
   @keyframes expand {
     from { width: 100px; }
     to { width: 200px; }
-  }
-  @scroll-timeline timeline {
-    source: selector(#scroller);
   }
   #element {
     width: 0px;
