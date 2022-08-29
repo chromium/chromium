@@ -183,7 +183,7 @@ const base::Feature kMetal{"Metal", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(ARCH_CPU_ARM64)
 const base::Feature kDisableFlushWorkaroundForMacCrash{
-    "DisableFlushWorkaroundForMacCrash", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DisableFlushWorkaroundForMacCrash", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 #endif
 
