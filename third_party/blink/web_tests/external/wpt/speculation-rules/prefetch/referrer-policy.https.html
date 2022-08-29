@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<title>Prefetch is done with the referring page's referrer policy</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.sub.js"></script>
+
+<script>
+"use strict";
+
+promise_test(async t => {
+  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
+
+  const agent = await spawnWindow(t);
+  await setReferrerPolicy(agent, "strict-origin-when-cross-origin");
+  const expectedReferrer = agent.getExecutorURL().href;
+
+  const nextURL = agent.getExecutorURL({ page: 2 });
+  await agent.forceSinglePrefetch(nextURL);
+  await agent.navigate(nextURL);
+
+  const headers = await agent.getRequestHeaders();
+  assert_prefetched(headers, "must be prefetched");
+  assert_equals(headers.referer, expectedReferrer, "must send the full URL as the referrer");
+}, 'with "strict-origin-when-cross-origin" referrer policy');
+
+promise_test(async t => {
+  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
+
+  const agent = await spawnWindow(t);
+  await setReferrerPolicy(agent, "strict-origin");
+  const expectedReferrer = agent.getExecutorURL().origin + "/";
+
+  const nextURL = agent.getExecutorURL({ page: 2 });
+  await agent.forceSinglePrefetch(nextURL);
+  await agent.navigate(nextURL);
+
+  const headers = await agent.getRequestHeaders();
+  assert_prefetched(headers, "must be prefetched");
+  assert_equals(headers.referer, expectedReferrer, "must send the origin as the referrer");
+}, 'with "strict-origin" referrer policy');
+
+promise_test(async t => {
+  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
+
+  const agent = await spawnWindow(t);
+  await setReferrerPolicy(agent, "no-referrer");
+  const expectedReferrer = agent.getExecutorURL().origin + "/";
+
+  const nextURL = agent.getExecutorURL({ page: 2 });
+  await agent.forceSinglePrefetch(nextURL);
+  await agent.navigate(nextURL);
+
+  const headers = await agent.getRequestHeaders();
+  assert_prefetched(headers, "must be prefetched");
+  assert_equals(headers.referer, undefined, "must send no referrer");
+}, 'with "no-referrer" referrer policy');
+
+function setReferrerPolicy(agent, referrerPolicy) {
+  return agent.execute_script(referrerPolicy => {
+    const meta = document.createElement("meta");
+    meta.name = "referrer";
+    meta.content = referrerPolicy;
+    document.head.append(meta);
+  }, [referrerPolicy]);
+}
+</script>
