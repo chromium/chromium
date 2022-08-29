@@ -32,6 +32,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
@@ -218,13 +219,13 @@ class MockHostResolverBase::RequestImpl
 
   const AddressList* GetAddressResults() const override {
     DCHECK(complete_);
-    return base::OptionalOrNullptr(address_results_);
+    return base::OptionalToPtr(address_results_);
   }
 
   const std::vector<HostResolverEndpointResult>* GetEndpointResults()
       const override {
     DCHECK(complete_);
-    return base::OptionalOrNullptr(endpoint_results_);
+    return base::OptionalToPtr(endpoint_results_);
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
@@ -245,7 +246,7 @@ class MockHostResolverBase::RequestImpl
 
   const std::set<std::string>* GetDnsAliasResults() const override {
     DCHECK(complete_);
-    return base::OptionalOrNullptr(fixed_up_dns_alias_results_);
+    return base::OptionalToPtr(fixed_up_dns_alias_results_);
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {

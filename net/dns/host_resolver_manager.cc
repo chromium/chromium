@@ -59,6 +59,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
@@ -668,13 +669,13 @@ class HostResolverManager::RequestImpl
 
   const AddressList* GetAddressResults() const override {
     DCHECK(complete_);
-    return base::OptionalOrNullptr(legacy_address_results_);
+    return base::OptionalToPtr(legacy_address_results_);
   }
 
   const std::vector<HostResolverEndpointResult>* GetEndpointResults()
       const override {
     DCHECK(complete_);
-    return base::OptionalOrNullptr(endpoint_results_);
+    return base::OptionalToPtr(endpoint_results_);
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
@@ -710,7 +711,7 @@ class HostResolverManager::RequestImpl
     }
 #endif  // DCHECK_IS_ON()
 
-    return base::OptionalOrNullptr(fixed_up_dns_alias_results_);
+    return base::OptionalToPtr(fixed_up_dns_alias_results_);
   }
 
   const std::vector<bool>* GetExperimentalResultsForTesting() const override {
@@ -1865,7 +1866,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK, [&] {
       return NetLogDnsTaskFailedParams(net_error, failed_transaction_type, ttl,
-                                       base::OptionalOrNullptr(saved_results_));
+                                       base::OptionalToPtr(saved_results_));
     });
 
     // Expect this to result in destroying `this` and thus cancelling any
