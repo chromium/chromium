@@ -22,7 +22,6 @@ constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
     &kMigrateDefaultChromeAppToWebAppsGSuite,
     &kMigrateDefaultChromeAppToWebAppsNonGSuite,
 #if BUILDFLAG(IS_CHROMEOS)
-    &kCursiveStylusPreinstall,
     &kCursiveManagedStylusPreinstall,
     &kMessagesPreinstall,
 #endif
@@ -82,11 +81,6 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
 const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
     "AllowDefaultWebAppMigrationForChromeOsManagedUsers",
     base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables installing the Cursive app on devices with a built-in stylus-capable
-// screen.
-const base::Feature kCursiveStylusPreinstall{"CursiveStylusPreinstall",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables installing the Cursive app on managed devices with a built-in
 // stylus-capable screen.
