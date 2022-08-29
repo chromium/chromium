@@ -1326,6 +1326,9 @@ void ShimlessRmaService::OnGetStateResponse(
       state_proto_.state_case() == rmad::RmadState::kWelcome &&
       mojo_state_ == mojom::State::kWelcomeScreen) {
     user_has_seen_network_page_ = false;
+    state_proto_.mutable_welcome()->set_choice(
+        rmad::WelcomeState::RMAD_CHOICE_FINALIZE_REPAIR);
+
     mojo_state_ = mojom::State::kConfigureNetwork;
     std::move(callback).Run(
         CreateStateResult(mojom::State::kConfigureNetwork,
