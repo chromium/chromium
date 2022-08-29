@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -18,8 +19,24 @@
 
 namespace blink {
 
+namespace {
+
+Page* GetContainingPage(HTMLVideoElement& video) {
+  LocalDOMWindow* window = video.DomWindow();
+  if (!window)
+    return nullptr;
+
+  LocalFrame* frame = window->GetFrame();
+  if (!frame)
+    return nullptr;
+
+  return frame->GetPage();
+}
+
+}  // namespace
+
 VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
-    : PageVisibilityObserver(video.GetDocument().GetPage()),
+    : PageVisibilityObserver(GetContainingPage(video)),
       ExecutionContextLifecycleStateObserver(video.GetExecutionContext()),
       video_element_(video) {
   VideoElement().addEventListener(event_type_names::kPlaying, this, true);
@@ -46,6 +63,7 @@ VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
 
 void VideoWakeLock::ElementDidMoveToNewDocument() {
   SetExecutionContext(VideoElement().GetExecutionContext());
+  SetPage(GetContainingPage(VideoElement()));
 
   if (RuntimeEnabledFeatures::VideoWakeLockOptimisationHiddenMutedEnabled()) {
     intersection_observer_->disconnect();
