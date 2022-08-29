@@ -697,9 +697,12 @@ void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
   job_.reset();
 
   const user_manager::User* user = GetUser();
+  if (!user) {
+    return;
+  }
   // If the user image for the currently logged-in user became managed, stop the
   // sync observer so that the policy-set image does not get synced out.
-  if (user && user->is_logged_in())
+  if (user->is_logged_in())
     user_image_sync_observer_.reset();
 
   user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
@@ -712,8 +715,12 @@ void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
     return;
 
   has_managed_image_ = false;
-  user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
-      *GetUser(), /*is_enterprise_managed=*/false);
+
+  const auto* user = GetUser();
+  if (user) {
+    user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
+        *user, /*is_enterprise_managed=*/false);
+  }
   SetInitialUserImage();
   TryToCreateImageSyncObserver();
 }
