@@ -38,6 +38,7 @@ class FullscreenController;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
 @class NewTabPageCoordinator;
+@class LensCoordinator;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -63,6 +64,7 @@ typedef struct {
   PopupMenuCoordinator* popupMenuCoordinator;
   DownloadManagerCoordinator* downloadManagerCoordinator;
   NewTabPageCoordinator* ntpCoordinator;
+  LensCoordinator* lensCoordinator;
   PrimaryToolbarCoordinator* primaryToolbarCoordinator;
   SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;

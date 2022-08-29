@@ -298,9 +298,6 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 // Coordinator for the QR scanner.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
 
-// Coordinator that manages Lens features.
-@property(nonatomic, strong) LensCoordinator* lensCoordinator;
-
 // Coordinator for displaying the Reading List.
 @property(nonatomic, strong) ReadingListCoordinator* readingListCoordinator;
 
@@ -369,6 +366,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   BubblePresenter* _bubblePresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   NewTabPageCoordinator* _ntpCoordinator;
+  LensCoordinator* _lensCoordinator;
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
   PrimaryToolbarCoordinator* _primaryToolbarCoordinator;
   SecondaryToolbarCoordinator* _secondaryToolbarCoordinator;
@@ -694,6 +692,8 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   _ntpCoordinator.toolbarDelegate = _toolbarCoordinatorAdaptor;
   _ntpCoordinator.bubblePresenter = _bubblePresenter;
 
+  _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
+
   _textZoomHandler = HandlerForProtocol(_dispatcher, TextZoomCommands);
   _helpHandler = HandlerForProtocol(_dispatcher, HelpCommands);
   _popupMenuCommandsHandler =
@@ -711,6 +711,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   _viewControllerDependencies.downloadManagerCoordinator =
       self.downloadManagerCoordinator;
   _viewControllerDependencies.ntpCoordinator = _ntpCoordinator;
+  _viewControllerDependencies.lensCoordinator = _lensCoordinator;
   _viewControllerDependencies.primaryToolbarCoordinator =
       _primaryToolbarCoordinator;
   _viewControllerDependencies.secondaryToolbarCoordinator =
@@ -751,6 +752,9 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   _ntpCoordinator.baseViewController = self.viewController;
 
+  _lensCoordinator.baseViewController = self.viewController;
+  [_lensCoordinator start];
+
   [_dispatcher startDispatchingToTarget:self.viewController
                             forProtocol:@protocol(BrowserCommands)];
 }
@@ -763,6 +767,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   _viewControllerDependencies.popupMenuCoordinator = nil;
   _viewControllerDependencies.downloadManagerCoordinator = nil;
   _viewControllerDependencies.ntpCoordinator = nil;
+  _viewControllerDependencies.lensCoordinator = nil;
   _viewControllerDependencies.primaryToolbarCoordinator = nil;
   _viewControllerDependencies.secondaryToolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
@@ -797,6 +802,9 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   [self.qrScannerCoordinator stop];
   self.qrScannerCoordinator = nil;
+
+  [_lensCoordinator stop];
+  _lensCoordinator = nil;
 
   [self.downloadManagerCoordinator stop];
   self.downloadManagerCoordinator = nil;
@@ -845,11 +853,6 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   self.printController =
       [[PrintController alloc] initWithBaseViewController:self.viewController];
-
-  self.lensCoordinator =
-      [[LensCoordinator alloc] initWithBaseViewController:self.viewController
-                                                  browser:self.browser];
-  [self.lensCoordinator start];
 
   /* NetExportCoordinator is created and started by a delegate method */
 
@@ -963,9 +966,6 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   self.passwordSuggestionCoordinator = nil;
 
   self.printController = nil;
-
-  [self.lensCoordinator stop];
-  self.lensCoordinator = nil;
 
   [self.readingListCoordinator stop];
   self.readingListCoordinator = nil;

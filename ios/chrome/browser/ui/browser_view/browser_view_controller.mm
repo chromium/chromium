@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
+#import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
@@ -235,6 +236,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Note other delegates defined in the Delegates category header.
 @interface BrowserViewController () <FindBarPresentationDelegate,
+                                     LensPresentationDelegate,
                                      FullscreenUIElement,
                                      MainContentUI,
                                      SideSwipeControllerDelegate,
@@ -497,6 +499,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.helpHandler = dependencies.helpHandler;
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
     self.snackbarCommandsHandler = dependencies.snackbarCommandsHandler;
+
+    dependencies.lensCoordinator.delegate = self;
 
     _inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
@@ -3629,6 +3633,22 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     (FindBarCoordinator*)findBarCoordinator {
   [self setFramesForHeaders:[self headerViews]
                    atOffset:[self currentHeaderOffset]];
+}
+
+#pragma mark - LensPresentationDelegate:
+
+- (CGRect)webContentAreaForLensCoordinator:(LensCoordinator*)lensCoordinator {
+  DCHECK(lensCoordinator);
+
+  // The LensCoordinator needs the content area of the webView with the
+  // header and footer toolbars visible.
+  UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
+  if (!IsRegularXRegularSizeClass(self)) {
+    viewportInsets.bottom = [self secondaryToolbarHeightWithInset];
+  }
+
+  viewportInsets.top = [self expandedTopToolbarHeight];
+  return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
 }
 
 #pragma mark - NewTabPageTabHelperDelegate
