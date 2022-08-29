@@ -569,6 +569,8 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
 
   HRESULT hr = SetDCompModeInternal();
   if (FAILED(hr)) {
+    base::UmaHistogramSparse(
+        "Media.MediaFoundationRenderer.FailedToSetDCompMode", hr);
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER, ErrorReason::kFailedToSetDCompMode,
             hr);
     std::move(callback).Run(base::win::ScopedHandle(), PrintHr(hr));
