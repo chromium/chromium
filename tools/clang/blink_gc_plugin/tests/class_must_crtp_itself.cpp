@@ -6,7 +6,7 @@
 
 namespace blink {
 
-class WrongClass {};
+class WrongClass : GarbageCollected<WrongClass> {};
 
 class RightClass : GarbageCollected<WrongClass> {};
 

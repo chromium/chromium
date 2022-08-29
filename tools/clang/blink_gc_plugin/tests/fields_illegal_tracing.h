@@ -14,12 +14,14 @@ namespace bar {
 // check that (only) std::unique_ptr<> is reported
 // as an illegal smart pointer type.
 template<typename T> class unique_ptr {
-public:
-    ~unique_ptr() { }
-    operator T*() const { return 0; }
-    T* operator->() { return 0; }
+  DISALLOW_NEW();
 
-    void Trace(Visitor* visitor) const {}
+ public:
+  ~unique_ptr() {}
+  operator T*() const { return 0; }
+  T* operator->() { return 0; }
+
+  void Trace(Visitor* visitor) const {}
 };
 
 }

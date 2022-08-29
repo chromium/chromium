@@ -89,13 +89,22 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
   options_.checked_namespaces.insert("cppgc");
 
   // Ignore GC implementation files.
-  options_.ignored_directories.push_back(
-      "third_party/blink/renderer/platform/heap/");
-  options_.ignored_directories.push_back("v8/src/heap/cppgc/");
-  options_.ignored_directories.push_back("v8/src/heap/cppgc-js/");
+  options_.ignored_paths.push_back("third_party/blink/renderer/platform/heap/");
+  options_.ignored_paths.push_back("v8/src/heap/cppgc/");
+  options_.ignored_paths.push_back("v8/src/heap/cppgc-js/");
 
-  options_.allowed_directories.push_back(
+  options_.allowed_paths.push_back(
       "third_party/blink/renderer/platform/heap/test/");
+
+  options_.checked_namespaces_for_default_malloc.insert("blink");
+
+  // For now always ignore testing files and generated mojom files for default
+  // malloc. TODO(wangxianzhu): Revisit this after fixing all default mallocs
+  // discovered in blink.
+  options_.always_ignored_paths_for_default_malloc.push_back("_test.cc");
+  options_.always_ignored_paths_for_default_malloc.push_back("_test.h");
+  options_.always_ignored_paths_for_default_malloc.push_back("/testing/");
+  options_.always_ignored_paths_for_default_malloc.push_back(".mojom-");
 }
 
 void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
@@ -272,7 +281,42 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
       CheckFinalization(info);
   }
 
+  CheckDefaultMalloc(info);
+
   DumpClass(info);
+}
+
+void BlinkGCPluginConsumer::CheckDefaultMalloc(RecordInfo* info) {
+  // For now this feature is disabled by default. It's enabled only if the
+  // "ignored-paths-for-default-malloc=..." is specified.
+  if (options_.ignored_paths_for_default_malloc.empty())
+    return;
+
+  if (!InCheckedNamespace(info,
+                          options_.checked_namespaces_for_default_malloc) ||
+      InIgnoredPath(info, options_.always_ignored_paths_for_default_malloc,
+                    {}) ||
+      InIgnoredPath(info, options_.ignored_paths_for_default_malloc,
+                    options_.allowed_paths_for_default_malloc)) {
+    return;
+  }
+
+  if (info->name().find("Traits") != std::string::npos ||
+      info->name().find("_Test") != std::string::npos) {
+    return;
+  }
+
+  // Don't check if the class can't construct.
+  if (info->record()->isAbstract() ||
+      (info->IsConsideredAbstract() &&
+       !info->record()->needsImplicitDefaultConstructor())) {
+    return;
+  }
+
+  if (info->IsGCDerived() || info->DeclaresNewOperator())
+    return;
+
+  reporter_.UsingDefaultMalloc(info);
 }
 
 CXXRecordDecl* BlinkGCPluginConsumer::GetDependentTemplatedDecl(
@@ -612,10 +656,10 @@ std::string BlinkGCPluginConsumer::GetLocString(SourceLocation loc) {
 }
 
 bool BlinkGCPluginConsumer::IsIgnored(RecordInfo* record) {
-  return (!record ||
-          !InCheckedNamespace(record) ||
-          IsIgnoredClass(record) ||
-          InIgnoredDirectory(record));
+  return (
+      !record || !InCheckedNamespace(record, options_.checked_namespaces) ||
+      IsIgnoredClass(record) ||
+      InIgnoredPath(record, options_.ignored_paths, options_.allowed_paths));
 }
 
 bool BlinkGCPluginConsumer::IsIgnoredClass(RecordInfo* info) {
@@ -628,25 +672,31 @@ bool BlinkGCPluginConsumer::IsIgnoredClass(RecordInfo* info) {
           options_.ignored_classes.end());
 }
 
-bool BlinkGCPluginConsumer::InIgnoredDirectory(RecordInfo* info) {
+bool BlinkGCPluginConsumer::InIgnoredPath(
+    RecordInfo* info,
+    const std::vector<std::string>& ignored_file_paths,
+    const std::vector<std::string>& allowed_file_paths) {
   std::string filename;
   if (!GetFilename(info->record()->getBeginLoc(), &filename))
     return false;  // TODO: should we ignore non-existing file locations?
 #if defined(_WIN32)
   std::replace(filename.begin(), filename.end(), '\\', '/');
 #endif
-  for (const auto& ignored_dir : options_.ignored_directories)
-    if (filename.find(ignored_dir) != std::string::npos) {
-      for (const auto& allowed_dir : options_.allowed_directories) {
-        if (filename.find(allowed_dir) != std::string::npos)
+  for (const auto& ignored_path : ignored_file_paths) {
+    if (filename.find(ignored_path) != std::string::npos) {
+      for (const auto& allowed_path : allowed_file_paths) {
+        if (filename.find(allowed_path) != std::string::npos)
           return false;
       }
       return true;
     }
+  }
   return false;
 }
 
-bool BlinkGCPluginConsumer::InCheckedNamespace(RecordInfo* info) {
+bool BlinkGCPluginConsumer::InCheckedNamespace(
+    RecordInfo* info,
+    const std::set<std::string>& checked_namespaces) {
   if (!info)
     return false;
   for (DeclContext* context = info->record()->getDeclContext();
@@ -655,8 +705,8 @@ bool BlinkGCPluginConsumer::InCheckedNamespace(RecordInfo* info) {
     if (NamespaceDecl* decl = dyn_cast<NamespaceDecl>(context)) {
       if (decl->isAnonymousNamespace())
         return true;
-      if (options_.checked_namespaces.find(decl->getNameAsString()) !=
-          options_.checked_namespaces.end()) {
+      if (checked_namespaces.find(decl->getNameAsString()) !=
+          checked_namespaces.end()) {
         return true;
       }
     }

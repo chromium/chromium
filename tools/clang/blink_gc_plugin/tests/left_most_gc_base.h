@@ -9,8 +9,15 @@
 
 namespace blink {
 
-class A { };
-class B { };
+class A {
+ protected:
+  A() = default;
+};
+
+class B {
+ protected:
+  B() = default;
+};
 
 class Right : public A, public B, public GarbageCollected<Right> { };  // Error
 class Left : public GarbageCollected<Left>, public B, public A { };

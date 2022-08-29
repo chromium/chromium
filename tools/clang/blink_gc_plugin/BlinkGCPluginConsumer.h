@@ -62,6 +62,8 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
                         clang::CXXMethodDecl* trace,
                         Config::TraceMethodType trace_type);
 
+  void CheckDefaultMalloc(RecordInfo* info);
+
   void DumpClass(RecordInfo* info);
 
   // Adds either a warning or error, based on the current handling of -Werror.
@@ -73,9 +75,12 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
 
   bool IsIgnoredClass(RecordInfo* info);
 
-  bool InIgnoredDirectory(RecordInfo* info);
+  bool InIgnoredPath(RecordInfo* info,
+                     const std::vector<std::string>& ignored_paths,
+                     const std::vector<std::string>& allowed_paths);
 
-  bool InCheckedNamespace(RecordInfo* info);
+  bool InCheckedNamespace(RecordInfo* info,
+                          const std::set<std::string>& checked_namespaces);
 
   bool GetFilename(clang::SourceLocation loc, std::string* filename);
 

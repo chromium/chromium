@@ -15,6 +15,8 @@ class HeapObject : public GarbageCollected<HeapObject> {
 };
 
 class Object {
+  USING_FAST_MALLOC();
+
  public:
   void Trace(Visitor*) const;
 

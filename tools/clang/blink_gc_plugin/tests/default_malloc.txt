@@ -1,0 +1,11 @@
+In file included from default_malloc.cpp:5:
+./default_malloc.h:12:1: warning: [blink-gc] Class 'DefaultMallocWithImplicitDefaultConstructor' should be either garbage collected, or declare one of STACK_ALLOCATED(), STATIC_ONLY(), DISALLOW_NEW(), USING_FAST_MALLOC()
+class DefaultMallocWithImplicitDefaultConstructor {
+^
+./default_malloc.h:16:1: warning: [blink-gc] Class 'DefaultMallocWithExplicitDefaultConstructor' should be either garbage collected, or declare one of STACK_ALLOCATED(), STATIC_ONLY(), DISALLOW_NEW(), USING_FAST_MALLOC()
+class DefaultMallocWithExplicitDefaultConstructor {
+^
+./default_malloc.h:24:1: warning: [blink-gc] Class 'DefaultMallocWithNonDefaultConstructor' should be either garbage collected, or declare one of STACK_ALLOCATED(), STATIC_ONLY(), DISALLOW_NEW(), USING_FAST_MALLOC()
+class DefaultMallocWithNonDefaultConstructor {
+^
+3 warnings generated.
