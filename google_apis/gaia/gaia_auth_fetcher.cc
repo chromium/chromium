@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -111,7 +112,7 @@ std::unique_ptr<base::DictionaryValue> ParseJSONDict(const std::string& data) {
   absl::optional<base::Value> message_value = base::JSONReader::Read(data);
   if (message_value && message_value->is_dict()) {
     response_dict = std::make_unique<base::DictionaryValue>();
-    response_dict->MergeDictionary(base::OptionalOrNullptr(message_value));
+    response_dict->MergeDictionary(base::OptionalToPtr(message_value));
   }
   return response_dict;
 }
