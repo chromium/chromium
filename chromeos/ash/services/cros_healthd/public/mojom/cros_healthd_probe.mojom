@@ -6,7 +6,7 @@
 // normally consumed by the browser.
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
-// in src/platform2/diagnostics/mojo/cros_healthd_probe.mojom.
+// in src/platform2/diagnostics/mojom/public/cros_healthd_probe.mojom.
 
 module chromeos.cros_healthd.mojom;
 
@@ -16,7 +16,7 @@ import "chromeos/services/network_health/public/mojom/network_health.mojom";
 // An enumeration of CPU architectures.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Extensible]
+[Stable, Extensible]
 enum CpuArchitectureEnum {
   [Default] kUnknown = 0,
   kX86_64 = 1,
@@ -107,17 +107,12 @@ enum ProcessState {
 
 // Process probe result. Can either be populated with the ProcessInfo or an
 // error retrieving the information.
-//
-// NextMinVersion: 2, NextIndex: 3
-[Extensible]
+[Stable]
 union ProcessResult {
-  // The required field for backwards compatibility. The unrecognized Mojo
-  // field will deserialize to this field. It should not be used.
-  [MinVersion=1, Default] bool unmapped_field@2;
   // Valid ProcessInfo.
-  ProcessInfo process_info@0;
+  ProcessInfo process_info;
   // The error that occurred attempting to retrieve the ProcessInfo.
-  ProbeError error@1;
+  ProbeError error;
 };
 
 // Information related to a particular process.
@@ -183,6 +178,7 @@ struct ProcessInfo {
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
 // error retrieving the information.
+[Stable]
 union BatteryResult {
   // Valid BatteryInfo. Null value if a battery is not present.
   BatteryInfo? battery_info;
@@ -193,6 +189,7 @@ union BatteryResult {
 // Information related to the main battery.
 //
 // NextMinVersion: 1, NextIndex: 14
+[Stable]
 struct BatteryInfo {
   // TODO(https://crbug.com/979245): Update "smart" cycle count.
   int64 cycle_count@0;
@@ -230,6 +227,7 @@ struct BatteryInfo {
 
 // Non-removable block device probe result. Can either be populated with the
 // NonRemovableBlockDeviceInfo or an error retrieving the information.
+[Stable]
 union NonRemovableBlockDeviceResult {
   // Valid NonRemovableBlockDeviceInfo.
   array<NonRemovableBlockDeviceInfo> block_device_info;
@@ -290,7 +288,7 @@ union BlockDeviceFirmware {
 // Purpose of the storage device.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Extensible]
+[Stable, Extensible]
 enum StorageDevicePurpose {
   [Default] kUnknown = 0,
   kBootDevice = 1,
@@ -300,6 +298,7 @@ enum StorageDevicePurpose {
 // Information related to a specific non-removable block device.
 //
 // NextMinVersion: 1, NextIndex: 17
+[Stable]
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
 
@@ -351,6 +350,7 @@ struct NonRemovableBlockDeviceInfo {
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
 // retrieving the information.
+[Stable]
 union CpuResult {
   // Valid CpuInfo.
   CpuInfo cpu_info;
@@ -361,6 +361,7 @@ union CpuResult {
 // Information about the device's CPUs.
 //
 // NextMinVersion: 2, NextIndex: 7
+[Stable]
 struct CpuInfo {
   // Number of total threads available.
   uint32 num_total_threads@0;
@@ -384,10 +385,11 @@ struct CpuInfo {
 // Information related to virtualization.
 //
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct VirtualizationInfo {
   // The possible states of Simultaneous multithreading(SMT) control.
-  [Extensible]
-  enum SMTControl{
+  [Stable, Extensible]
+  enum SMTControl {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
     // SMT is enabled.
@@ -415,10 +417,11 @@ struct VirtualizationInfo {
 // Information related to CPU Vulnerabilities.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct VulnerabilityInfo {
   // The status of the vulnerability.
-  [Extensible]
-  enum Status{
+  [Stable, Extensible]
+  enum Status {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
     // Not affected by this vulnerability.
@@ -441,6 +444,7 @@ struct VulnerabilityInfo {
 // Information related to Keylocker.
 //
 // NextMinVersion: 1, NextIndex: 1
+[Stable]
 struct KeylockerInfo {
   // Has Keylocker been configured or not.
   bool keylocker_configured@0;
@@ -449,6 +453,7 @@ struct KeylockerInfo {
 // Information related to a particular physical CPU.
 //
 // NextMinVersion: 2, NextIndex: 4
+[Stable]
 struct PhysicalCpuInfo {
   // The CPU model name, if available.
   // For Arm devices, we will return SoC model instead.
@@ -465,10 +470,11 @@ struct PhysicalCpuInfo {
 // Information related to virtualization status of a cpu.
 //
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct CpuVirtualizationInfo {
   // The type of cpu hardware virtualization.
-  [Extensible]
-  enum Type{
+  [Stable, Extensible]
+  enum Type {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
     // The cpu supports Intel virtualization (VT-x).
@@ -489,6 +495,7 @@ struct CpuVirtualizationInfo {
 // Information related to a particular logical CPU.
 //
 // NextMinVersion: 1, NextIndex: 7
+[Stable]
 struct LogicalCpuInfo {
   // The max CPU clock speed in kHz.
   uint32 max_clock_speed_khz@0;
@@ -512,6 +519,7 @@ struct LogicalCpuInfo {
 // Information about a CPU's C-states.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct CpuCStateInfo {
   // Name of the state.
   string name@0;
@@ -522,6 +530,7 @@ struct CpuCStateInfo {
 // Information about a single CPU temperature channel.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct CpuTemperatureChannel {
   // Temperature channel label, if found on the device.
   string? label@0;
@@ -531,6 +540,7 @@ struct CpuTemperatureChannel {
 
 // Timezone probe result. Can either be populated with the TimezoneInfo or an
 // error retrieving the information.
+[Stable]
 union TimezoneResult {
   // Valid TimezoneInfo.
   TimezoneInfo timezone_info;
@@ -541,6 +551,7 @@ union TimezoneResult {
 // Timezone information.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct TimezoneInfo {
   // The timezone of the device in POSIX standard.
   string posix@0;
@@ -550,6 +561,7 @@ struct TimezoneInfo {
 
 // Memory probe result. Can either be populated with the MemoryInfo or an
 // error retrieving the information.
+[Stable]
 union MemoryResult {
   // Valid MemoryInfo.
   MemoryInfo memory_info;
@@ -560,6 +572,7 @@ union MemoryResult {
 // Memory information.
 //
 // NextMinVersion: 2, NextIndex: 5
+[Stable]
 struct MemoryInfo {
   // Total memory, in KiB.
   uint32 total_memory_kib@0;
@@ -574,6 +587,7 @@ struct MemoryInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct MemoryEncryptionInfo {
   // Memory encryption state.
   EncryptionState encryption_state@0;
@@ -587,9 +601,9 @@ struct MemoryEncryptionInfo {
 
 // Memory encryption states.
 // NextMinVersion: 1, NextIndex: 4
-[Extensible]
+[Stable, Extensible]
 enum EncryptionState {
-  kUnknown = 0,
+  [Default] kUnknown = 0,
   kEncryptionDisabled = 1,
   kTmeEnabled = 2,
   kMktmeEnabled = 3,
@@ -597,15 +611,16 @@ enum EncryptionState {
 
 // Crypto algorithm.
 // NextMinVersion: 1, NextIndex: 3
-[Extensible]
+[Stable, Extensible]
 enum CryptoAlgorithm {
-  kUnknown = 0,
+  [Default] kUnknown = 0,
   kAesXts128 = 1,
   kAesXts256 = 2,
 };
 
 // Backlight probe result. Can either be populated with the BacklightInfo or an
 // error retrieving the information.
+[Stable]
 union BacklightResult {
   // Valid BacklightInfo.
   array<BacklightInfo> backlight_info;
@@ -616,6 +631,7 @@ union BacklightResult {
 // Backlight information.
 //
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct BacklightInfo {
   // Path to this backlight on the system. Useful if the caller needs to
   // correlate with other information.
@@ -628,6 +644,7 @@ struct BacklightInfo {
 
 // Fan probe result. Can either be populated with the FanInfo or an error
 // retrieving the information
+[Stable]
 union FanResult {
   // A list of valid FanInfo.
   array<FanInfo> fan_info;
@@ -638,6 +655,7 @@ union FanResult {
 // Fan information.
 //
 // NextMinVersion: 1, NextIndex: 1
+[Stable]
 struct FanInfo {
   // Fan speed in RPM.
   uint32 speed_rpm@0;
@@ -645,6 +663,7 @@ struct FanInfo {
 
 // Stateful partition probe result. Can either be populated with a valid
 // StatefulPartitionInfo or an error retrieving the information.
+[Stable]
 union StatefulPartitionResult {
   // A valid StatefulPartitionInfo.
   StatefulPartitionInfo partition_info;
@@ -655,6 +674,7 @@ union StatefulPartitionResult {
 // Stateful partition info
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct StatefulPartitionInfo {
   // Available space for user data storage in the device in bytes.
   uint64 available_space@0;
@@ -668,6 +688,7 @@ struct StatefulPartitionInfo {
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
 // or an error retrieving the information.
+[Stable]
 union BluetoothResult {
   // Valid BluetoothAdapterInfo.
   array<BluetoothAdapterInfo> bluetooth_adapter_info;
@@ -678,6 +699,7 @@ union BluetoothResult {
 // Information related to one of a device's Bluetooth adapters.
 //
 // NextMinVersion: 3, NextIndex: 11
+[Stable]
 struct BluetoothAdapterInfo {
   // The name of the adapter.
   string name@0;
@@ -707,6 +729,7 @@ struct BluetoothAdapterInfo {
 // Information related to one of a adapter's Bluetooth connected devices.
 //
 // NextMinVersion: 2, NextIndex: 9
+[Stable]
 struct BluetoothDeviceInfo {
   // The MAC address of the device.
   string address@0;
@@ -730,8 +753,8 @@ struct BluetoothDeviceInfo {
 
 // An enumeration of type in Bluetooth device info.
 //
-// NextMinVersion: 1, NextIndex: 4
-[Extensible]
+// NextMinVersion: 1, NextIndex: 5
+[Stable, Extensible]
 enum BluetoothDeviceType {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
@@ -748,6 +771,7 @@ enum BluetoothDeviceType {
 // Supported Capabilities related information.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct SupportedCapabilities {
   // Max advertising data length.
   uint8 max_adv_len@0;
@@ -760,10 +784,12 @@ struct SupportedCapabilities {
 };
 
 // System probe result. DEPRECATED.
+[Stable]
 union DEPRECATE_SystemResult { ProbeError error; };
 
 // System probe result. Can either be populated with the SystemInfo or an error
 // retrieving the information.
+[Stable]
 union SystemResult {
   // Valid SystemInfo.
   SystemInfo system_info;
@@ -774,6 +800,7 @@ union SystemResult {
 // System Information.
 //
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct SystemInfo {
   // The info related to the OS.
   OsInfo os_info@0;
@@ -787,6 +814,7 @@ struct SystemInfo {
 // The OS information.
 //
 // NextMinVersion: 2, NextIndex: 5
+[Stable]
 struct OsInfo {
   // Google code name for the given model. While it is OK to use this string for
   // human-display purposes (such as in a debug log or help dialog), or for a
@@ -808,6 +836,7 @@ struct OsInfo {
 // (e.g. "87.13544.59.0") into its parts:
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct OsVersion {
   // The OS version release milestone (e.g. "87").
   string release_milestone@0;
@@ -822,7 +851,7 @@ struct OsVersion {
 // The boot mode of the current os.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Extensible]
+[Stable, Extensible]
 enum BootMode {
   [Default] kUnknown = 0,
   // Boot with ChromeOS firmware.
@@ -842,6 +871,7 @@ enum BootMode {
 // exist in some situation. (e.g. in a early stage device)
 //
 // NextMinVersion: 1, NextIndex: 6
+[Stable]
 struct VpdInfo {
   // A unique identifier of the device. (Required RO VPD field)
   string? serial_number@0;
@@ -864,6 +894,7 @@ struct VpdInfo {
 // to identify the hardware.
 //
 // NextMinVersion: 1, NextIndex: 11
+[Stable]
 struct DmiInfo {
   // The BIOS vendor.
   string? bios_vendor@0;
@@ -893,6 +924,7 @@ struct DmiInfo {
 
 // Network probe result. Can either be populated with the NetworkHealthSnapshot
 // or an error retrieving the information.
+[Stable]
 union NetworkResult {
   // Valid NetworkHealthSnapshot.
   chromeos.network_health.mojom.NetworkHealthState network_health;
@@ -900,6 +932,7 @@ union NetworkResult {
   ProbeError error;
 };
 
+[Stable]
 union NetworkInterfaceResult {
   // Valid network interfaces.
   array<NetworkInterfaceInfo> network_interface_info;
@@ -909,12 +942,14 @@ union NetworkInterfaceResult {
 
 // Will expand to beyond wireless interface.
 // NextMinVersion: 1, NextIndex: 1
+[Stable]
 union NetworkInterfaceInfo {
   // Wireless interfaces.
   WirelessInterfaceInfo wireless_interface_info@0;
 };
 
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct WirelessInterfaceInfo {
   // Interface name.
   string interface_name@0;
@@ -925,6 +960,7 @@ struct WirelessInterfaceInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 7
+[Stable]
 struct WirelessLinkInfo {
   // Access point address.
   string access_point_address_str@0;
@@ -944,6 +980,7 @@ struct WirelessLinkInfo {
 
 // Audio probe result. Can either be populated with the AudioInfo or an
 // error retrieving the information.
+[Stable]
 union AudioResult {
   // Valid AudioInfo.
   AudioInfo audio_info;
@@ -954,6 +991,7 @@ union AudioResult {
 // Audio information.
 //
 // NextMinVersion: 1, NextIndex: 8
+[Stable]
 struct AudioInfo {
   // Is active output device mute or not.
   bool output_mute@0;
@@ -974,21 +1012,18 @@ struct AudioInfo {
 };
 
 // Audio hardware probe result.
-//
-// NextMinVersion: 1, NextIndex: 3
+[Stable]
 union AudioHardwareResult {
-  // The required field for backwards compatibility. The unrecognized Mojo
-  // field will deserialize to this field. It should not be used.
-  [Default] bool unmapped_field0;
   // Valid AudioHardwareInfo.
-  AudioHardwareInfo audio_hardware_info@1;
+  AudioHardwareInfo audio_hardware_info;
   // The error that occurred.
-  ProbeError error@2;
+  ProbeError error;
 };
 
 // Audio hardware information.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct AudioHardwareInfo {
   // Audio cards information.
   array<AudioCard> audio_cards@0;
@@ -997,6 +1032,7 @@ struct AudioHardwareInfo {
 // Audio card information.
 //
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct AudioCard {
   // The id used by ALSA(Advanced Linux Sound Architecture).
   string alsa_id@0;
@@ -1010,6 +1046,7 @@ struct AudioCard {
 // HD-Audio codec information.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct HDAudioCodec {
   // The name. E.g. "ATI R6xx HDMI".
   string name@0;
@@ -1018,6 +1055,7 @@ struct HDAudioCodec {
 };
 
 // Boot performance result.
+[Stable]
 union BootPerformanceResult {
   // Valid BootPerformanceInfo.
   BootPerformanceInfo boot_performance_info;
@@ -1028,6 +1066,7 @@ union BootPerformanceResult {
 // Boot performance information.
 //
 // NextMinVersion: 1, NextIndex: 5
+[Stable]
 struct BootPerformanceInfo {
   // Total time since power on to login screen prompt.
   double boot_up_seconds@0;
@@ -1045,6 +1084,7 @@ struct BootPerformanceInfo {
 
 // Bus probe result. Can either be populated with the BusDevice or an error
 // retrieving the information.
+[Stable]
 union BusResult {
   // Valid BusDevice.
   array<BusDevice> bus_devices;
@@ -1056,7 +1096,7 @@ union BusResult {
 // use.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Extensible]
+[Stable, Extensible]
 enum BusDeviceClass {
   // For the devices which cannot be classified.
   [Default] kOthers = 0,
@@ -1071,6 +1111,7 @@ enum BusDeviceClass {
 // The bus device info.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct BusDevice {
   // The vendor / product name of the device. These are extracted from the
   // databases on the system and should only be used for showing / logging.
@@ -1084,6 +1125,9 @@ struct BusDevice {
 };
 
 // The info related to specific bus type.
+//
+// NextMinVersion: 2
+[Stable, Extensible]
 union BusInfo {
   // The info related to pci.
   PciBusInfo pci_bus_info;
@@ -1091,11 +1135,15 @@ union BusInfo {
   UsbBusInfo usb_bus_info;
   // The info related to thunderbolt.
   ThunderboltBusInfo thunderbolt_bus_info;
+  // The required field for backwards compatibility. The unrecognized Mojo
+  // field will deserialize to this field. It should not be used.
+  [MinVersion=1, Default] bool unmapped_field;
 };
 
 // The info related to pci.
 //
 // NextMinVersion: 1, NextIndex: 6
+[Stable]
 struct PciBusInfo {
   // These fields can be used to classify / identify the pci devices. See the
   // pci.ids database for the values. (https://github.com/gentoo/hwids)
@@ -1113,6 +1161,7 @@ struct PciBusInfo {
 // The info related to usb.
 //
 // NextMinVersion: 2, NextIndex: 7
+[Stable]
 struct UsbBusInfo {
   // These fields can be used to classify / identify the usb devices. See the
   // usb.ids database for the values. (https://github.com/gentoo/hwids)
@@ -1133,6 +1182,7 @@ struct UsbBusInfo {
 // The info related to firmware version obtained from fwupd.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct FwupdFirmwareVersionInfo {
   // The string form of the firmware version.
   string version@0;
@@ -1144,7 +1194,7 @@ struct FwupdFirmwareVersionInfo {
 // repo for the values. (https://github.com/fwupd/fwupd)
 //
 // NextMinVersion: 1, NextIndex: 14
-[Extensible]
+[Stable, Extensible]
 enum FwupdVersionFormat {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
@@ -1179,6 +1229,7 @@ enum FwupdVersionFormat {
 // The info related to usb interfaces.
 //
 // NextMinVersion: 1, NextIndex: 5
+[Stable]
 struct UsbBusInterfaceInfo {
   // The zero-based number (index) of the interface.
   uint8 interface_number@0;
@@ -1195,6 +1246,7 @@ struct UsbBusInterfaceInfo {
 
 // TPM probe result. Can either be populated with the TpmInfo or an error
 // retrieving the information.
+[Stable]
 union TpmResult {
   // Valid TpmInfo.
   TpmInfo tpm_info;
@@ -1205,6 +1257,7 @@ union TpmResult {
 // Information of the Trusted Platform Module(TPM).
 //
 // NextMinVersion: 1, NextIndex: 6
+[Stable]
 struct TpmInfo {
   // TPM version related information.
   TpmVersion version@0;
@@ -1225,7 +1278,7 @@ struct TpmInfo {
 // The version of Google security chip(GSC).
 //
 // NextMinVersion: 1, NextIndex: 3
-[Extensible]
+[Stable, Extensible]
 enum TpmGSCVersion {
   // For the devices which cannot be classified.
   [Default] kNotGSC = 0,
@@ -1238,6 +1291,7 @@ enum TpmGSCVersion {
 // TPM version related information.
 //
 // NextMinVersion: 1, NextIndex: 7
+[Stable]
 struct TpmVersion {
   // GSC version.
   TpmGSCVersion gsc_version@0;
@@ -1260,6 +1314,7 @@ struct TpmVersion {
 // TPM status related information.
 //
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct TpmStatus {
   // Whether a TPM is enabled on the system.
   bool enabled@0;
@@ -1272,6 +1327,7 @@ struct TpmStatus {
 // TPM dictionary attack (DA) related information.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct TpmDictionaryAttack {
   // The current dictionary attack counter value.
   uint32 counter@0;
@@ -1286,6 +1342,7 @@ struct TpmDictionaryAttack {
 // TPM attestation related information.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct TpmAttestation {
   // Is prepared for enrollment? True if prepared for *any* CA.
   bool prepared_for_enrollment@0;
@@ -1296,6 +1353,7 @@ struct TpmAttestation {
 // TPM supported features information.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct TpmSupportedFeatures {
   // Whether the u2f is supported or not.
   bool support_u2f@0;
@@ -1309,6 +1367,7 @@ struct TpmSupportedFeatures {
 
 // Graphics probe result. Can either be populated with the GraphicsInfo or an
 // error retrieving the information.
+[Stable]
 union GraphicsResult {
   // Valid GraphicsInfo.
   GraphicsInfo graphics_info;
@@ -1319,6 +1378,7 @@ union GraphicsResult {
 // Graphics information.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct GraphicsInfo {
   // OpenGL | ES information.
   GLESInfo gles_info@0;
@@ -1327,6 +1387,7 @@ struct GraphicsInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 5
+[Stable]
 struct GLESInfo {
   // GL version.
   string version@0;
@@ -1341,6 +1402,7 @@ struct GLESInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct EGLInfo {
   // EGL version.
   string version@0;
@@ -1353,6 +1415,7 @@ struct EGLInfo {
 };
 
 // Display result.
+[Stable]
 union DisplayResult {
   // Valid DisplayInfo.
   DisplayInfo display_info;
@@ -1363,6 +1426,7 @@ union DisplayResult {
 // Display information.
 //
 // NextMinVersion: 2, NextIndex: 2
+[Stable]
 struct DisplayInfo {
   // Embedded display info.
   EmbeddedDisplayInfo edp_info@0;
@@ -1371,6 +1435,7 @@ struct DisplayInfo {
 };
 
 // NextMinVersion: 3, NextIndex: 15
+[Stable]
 struct EmbeddedDisplayInfo {
   // Privacy screen is supported or not.
   bool privacy_screen_supported@0;
@@ -1405,6 +1470,7 @@ struct EmbeddedDisplayInfo {
 };
 
 // NextMinVersion: 2, NextIndex: 13
+[Stable]
 struct ExternalDisplayInfo {
   // Display width in millimeters.
   NullableUint32? display_width@0;
@@ -1437,7 +1503,7 @@ struct ExternalDisplayInfo {
 // An enumeration of display input type.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Extensible]
+[Stable, Extensible]
 enum DisplayInputType {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
@@ -1450,6 +1516,7 @@ enum DisplayInputType {
 // Information related to a Thunderbolt device.
 //
 // NextMinVersion: 1, NextIndex: 8
+[Stable]
 struct ThunderboltBusInterfaceInfo {
   // Vendor name of connected device interface.
   string vendor_name@0;
@@ -1470,7 +1537,7 @@ struct ThunderboltBusInterfaceInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 6
-[Extensible]
+[Stable, Extensible]
 enum ThunderboltSecurityLevel {
   [Default] kNone = 0,
   kUserLevel = 1,
@@ -1481,6 +1548,7 @@ enum ThunderboltSecurityLevel {
 };
 
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct ThunderboltBusInfo {
   // Security level none, user, secure, dponly.
   ThunderboltSecurityLevel security_level@0;
@@ -1489,6 +1557,7 @@ struct ThunderboltBusInfo {
 };
 
 // Input result.
+[Stable]
 union InputResult {
   // Valid InputInfo.
   InputInfo input_info;
@@ -1499,6 +1568,7 @@ union InputResult {
 // Input software and hardware information.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct InputInfo {
   // The touchpad library name used by the input stack.
   string touchpad_library_name@0;
@@ -1509,6 +1579,7 @@ struct InputInfo {
 // Data of a touch screen device.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct TouchscreenDevice {
   // The input device of this touchscreen.
   InputDevice input_device@0;
@@ -1523,12 +1594,13 @@ struct TouchscreenDevice {
 // Data of a input device.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 struct InputDevice {
   // Name of the device.
   string name@0;
 
   // The connection type of the input device.
-  [Extensible]
+  [Stable, Extensible]
   enum ConnectionType {
     // For mojo backward compatibility.
     [Default] kUnmappedEnumField,
@@ -1561,6 +1633,7 @@ struct InputDevice {
 // to fetch that information, but was unable to.
 //
 // NextMinVersion: 5, NextIndex: 21
+[Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
