@@ -1031,8 +1031,16 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
 
 }  // namespace
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1357773): Flaky on Mac.
+#define MAYBE_ExpectPerformanceHistogramsAreRecorded \
+  DISABLED_ExpectPerformanceHistogramsAreRecorded
+#else
+#define MAYBE_ExpectPerformanceHistogramsAreRecorded \
+  ExpectPerformanceHistogramsAreRecorded
+#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       ExpectPerformanceHistogramsAreRecorded) {
+                       MAYBE_ExpectPerformanceHistogramsAreRecorded) {
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ResetConfigurationToEnableOnPhishingSites(true /* measure_performance */);
