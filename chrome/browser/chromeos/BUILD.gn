@@ -3190,7 +3190,6 @@ source_set("unit_tests") {
     "../ash/notifications/low_disk_notification_unittest.cc",
     "../ash/notifications/mock_adb_sideloading_policy_change_notification.cc",
     "../ash/notifications/mock_adb_sideloading_policy_change_notification.h",
-    "../ash/notifications/multi_capture_notification_unittest.cc",
     "../ash/notifications/request_system_proxy_credentials_view_unittest.cc",
     "../ash/notifications/update_required_notification_unittest.cc",
     "../ash/os_feedback/os_feedback_screenshot_manager_unittest.cc",

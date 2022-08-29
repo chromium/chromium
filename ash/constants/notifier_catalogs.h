@@ -165,8 +165,7 @@ enum class NotificationCatalogName {
   kTailoredSecurityPromotion = 150,
   kArcLowDiskSpacePreStop = 151,
   kArcLowDiskSpacePostStop = 152,
-  kMultiCapture = 153,
-  kMaxValue = kMultiCapture
+  kMaxValue = kArcLowDiskSpacePostStop
 };
 
 // A living catalog that registers system nudges.

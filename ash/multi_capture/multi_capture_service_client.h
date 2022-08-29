@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "ash/ash_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,7 +19,7 @@ namespace ash {
 // Client of the MultiCaptureService mojo interface. Receives events about
 // multi captures being started / stopped and forwards it to ash clients to
 // show usage indicators.
-class ASH_EXPORT MultiCaptureServiceClient
+class MultiCaptureServiceClient
     : public video_capture::mojom::MultiCaptureServiceClient {
  public:
   class Observer : public base::CheckedObserver {

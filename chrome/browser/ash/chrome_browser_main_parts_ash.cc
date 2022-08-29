@@ -125,7 +125,6 @@
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
-#include "chrome/browser/ash/notifications/multi_capture_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -1389,9 +1388,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
     zram_writeback_controller_ = ash::memory::ZramWritebackController::Create();
     zram_writeback_controller_->Start();
   }
-
-  multi_capture_notification_ = std::make_unique<MultiCaptureNotification>(
-      Shell::Get()->multi_capture_service_client());
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
