@@ -15213,6 +15213,31 @@ be describing additional metrics about the same event.
       removed from the page. See http://bit.ly/fcp_plus_plus for more details.
     </summary>
   </metric>
+  <metric name="PaintTiming.NavigationToLargestContentfulPaint2AtFirstOnHidden">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time when the page first paints the largest content (text or
+      image) within viewport, across all frames. Recorded at the point when a
+      page which has been opened in the foreground is moved to the background
+      for the first time. See http://bit.ly/fcp_plus_plus for more details. Log
+      of major changes: http://bit.ly/chrome-speed-metrics-changelog. This
+      metric is trying to record the LCP values which are not able to be
+      recorded in PaintTiming.NavigationToLargestContentfulPaint2 for some
+      reasons.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.country,profile.system_ram"/>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="ParseTiming.NavigationToParseStart">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation

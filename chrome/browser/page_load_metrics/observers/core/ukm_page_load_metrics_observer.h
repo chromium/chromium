@@ -204,6 +204,11 @@ class UkmPageLoadMetricsObserver
   // background.
   void ReportLayoutInstabilityAfterFirstForeground();
 
+  // Record some largest contentful paint metrics that have occurred on the
+  // page until the first time the page starts in the foreground and moves to
+  // the background.
+  void ReportLargestContentfulPaintAfterFirstForeground();
+
   // Guaranteed to be non-null during the lifetime of |this|.
   raw_ptr<network::NetworkQualityTracker> network_quality_tracker_;
 

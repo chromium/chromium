@@ -2793,6 +2793,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2AtFirstOnHidden"
+    units="ms" expires_after="2023-08-08">
+  <owner>lanwei@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, across all frames.
+    Recorded at the point when a page which has been opened in the foreground is
+    moved to the background for the first time. Excludes any content painted
+    after user input. Includes content that has been removed from the page. See
+    web.dev/lcp for more details.
+
+    This metric is trying to record the LCP values which are not able to be
+    recorded in PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 for
+    some reasons.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
+
+    Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"
     units="ms" expires_after="2023-02-12">
   <owner>bmcquade@chromium.org</owner>

@@ -394,13 +394,14 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     was_hidden_ = true;
   }
 
-  // Record the CLS metrics when the tab is first hidden after it is first
-  // shown in foreground, in case that OnComplete is not called.
+  // Record the CLS and LCP metrics when the tab is first hidden after it is
+  // first shown in foreground, in case that OnComplete is not called.
   // last_time_shown_ is set when the page starts in the foreground or the page
   // becomes foregrounded.
   if (!was_hidden_after_first_show_in_foreground &&
       !last_time_shown_.is_null()) {
     ReportLayoutInstabilityAfterFirstForeground();
+    ReportLargestContentfulPaintAfterFirstForeground();
     was_hidden_after_first_show_in_foreground = true;
   }
   return CONTINUE_OBSERVING;
@@ -1100,6 +1101,31 @@ void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
       "CumulativeShiftScoreAtFirstOnHidden",
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetPageRenderData().layout_shift_score));
+}
+
+void UkmPageLoadMetricsObserver::
+    ReportLargestContentfulPaintAfterFirstForeground() {
+  DCHECK(!last_time_shown_.is_null());
+
+  const page_load_metrics::ContentfulPaintTimingInfo&
+      all_frames_largest_contentful_paint =
+          GetDelegate()
+              .GetLargestContentfulPaintHandler()
+              .MergeMainFrameAndSubframes();
+
+  if (all_frames_largest_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          all_frames_largest_contentful_paint.Time(), GetDelegate())) {
+    ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+    builder.SetPaintTiming_NavigationToLargestContentfulPaint2AtFirstOnHidden(
+        all_frames_largest_contentful_paint.Time().value().InMilliseconds());
+
+    PAGE_LOAD_HISTOGRAM(
+        "PageLoad.PaintTiming."
+        "NavigationToLargestContentfulPaint2AtFirstOnHidden",
+        all_frames_largest_contentful_paint.Time().value());
+    builder.Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void UkmPageLoadMetricsObserver::RecordAbortMetrics(
