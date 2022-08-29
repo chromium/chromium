@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 11
+// Next MinVersion: 12
 
 module crosapi.mojom;
 
@@ -13,7 +13,7 @@ import "mojo/public/mojom/base/time.mojom";
 // //components/account_manager_core/chromeos/tokens.proto.
 [Stable, Extensible]
 enum AccountType {
-  kUnspecified = 0,
+  [Default] kUnspecified = 0,
   kGaia = 1,
   kActiveDirectory = 2,
 };
@@ -41,7 +41,15 @@ struct Account {
 };
 
 // See google_apis/gaia/google_service_auth_error.h
-// Currently sent from ash to lacros.
+//
+// IMPORTANT: Do NOT send these values from Lacros to Ash without thinking about
+// version skew. Specifically, newer Lacros versions may send values which are
+// unknown to Ash. See the implementation of
+// `account_manager::FromMojoGoogleServiceAuthError`.
+// Note while fixing this - this enum needs to be trivially compatible with
+// google_apis/gaia/google_service_auth_error.h - which does not have an
+// "unknown" value.
+//
 // Next value: 15.
 [Stable]
 struct GoogleServiceAuthError {
@@ -67,7 +75,7 @@ struct GoogleServiceAuthError {
   // Next value: 4.
   [Stable, Extensible]
   enum InvalidGaiaCredentialsReason {
-    kUnknown = 0,
+    [Default] kUnknown = 0,
     kCredentialsRejectedByServer = 1,
     kCredentialsRejectedByClient = 2,
     kCredentialsMissing = 3,
@@ -90,7 +98,9 @@ struct AccountAdditionOptions {
 
 [Stable]
 struct AccountAdditionResult {
-  // The result of account addition request.
+  // The result of account addition request, sent from Ash to Lacros.
+  // Note: The default value of this enum is `kUnexpectedResponse = 4`, not
+  // `kSuccess = 0`. This was changed in MinVersion 11.
   // Next value: 6.
   [Stable, Extensible]
   enum Status {
@@ -98,7 +108,7 @@ struct AccountAdditionResult {
     kAlreadyInProgress = 1,
     kCancelledByUser = 2,
     kNetworkError = 3,
-    kUnexpectedResponse = 4,
+    [Default] kUnexpectedResponse = 4,
     [MinVersion = 9] kBlockedByPolicy = 5,
   };
 
