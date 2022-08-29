@@ -3753,6 +3753,21 @@
           'shards': 4,
         },
       },
+      # TODO(crbug.com/1357218): Experiment whether lowering the parallel jobs can improve the success rate.
+      'browser_tests_require_lacros experiment': {
+        'name': 'browser_tests_require_lacros experiment',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter',
+          '--lacros-chrome-path=lacros_clang_x64',
+          '--test-launcher-jobs=3',
+        ],
+        'test': 'browser_tests',
+        'swarming': {
+          'shards': 4,
+        },
+        'ci_only': True,
+        'experiment_percentage': 1,
+      },
     },
 
     'linux_chromeos_lacros_gtests': {
