@@ -21,7 +21,8 @@ namespace shared_storage_worklet {
 
 class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
  public:
-  explicit PrivateAggregation(
+  PrivateAggregation(
+      mojom::SharedStorageWorkletServiceClient& client,
       content::mojom::PrivateAggregationHost& private_aggregation_host);
   ~PrivateAggregation() override;
 
@@ -35,7 +36,10 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
  private:
   void SendHistogramReport(gin::Arguments* args);
 
+  raw_ref<mojom::SharedStorageWorkletServiceClient> client_;
   raw_ref<content::mojom::PrivateAggregationHost> private_aggregation_host_;
+
+  bool has_recorded_use_counters_ = false;
 
   base::WeakPtrFactory<PrivateAggregation> weak_ptr_factory_{this};
 };

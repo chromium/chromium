@@ -538,6 +538,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
       }
       privateAggregation.sendHistogramReport(args);
     }
+    function doNothing() {}
   )";
 
   v8::Local<v8::UnboundScript> script = Compile(kScript);
@@ -909,6 +910,22 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         ElementsAre(
             "https://example.org/script.js:8 Uncaught TypeError: "
             "Invalid or missing value in sendHistogramReport argument."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
+  // API not called
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+
+    Run(scope, script, "doNothing", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()

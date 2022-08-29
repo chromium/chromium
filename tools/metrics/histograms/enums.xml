@@ -41115,6 +41115,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4329" label="ReplacedElementPaintedWithLargeOverflow"/>
   <int value="4330" label="FlexboxAbsPosJustifyContent"/>
   <int value="4331" label="MultipleFetchHandlersInServiceWorker"/>
+  <int value="4333" label="PrivateAggregationApiAll"/>
+  <int value="4334" label="PrivateAggregationApiFledge"/>
+  <int value="4335" label="PrivateAggregationApiSharedStorage"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

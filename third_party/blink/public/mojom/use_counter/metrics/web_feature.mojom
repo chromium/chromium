@@ -3650,6 +3650,9 @@ enum WebFeature {
   kReplacedElementPaintedWithLargeOverflow = 4329,
   kFlexboxAbsPosJustifyContent = 4330,
   kMultipleFetchHandlersInServiceWorker = 4331,
+  kPrivateAggregationApiAll = 4333,
+  kPrivateAggregationApiFledge = 4334,
+  kPrivateAggregationApiSharedStorage = 4335,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

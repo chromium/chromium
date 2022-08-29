@@ -11,6 +11,7 @@ import
 import "content/common/private_aggregation_host.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -64,6 +65,9 @@ interface SharedStorageWorkletServiceClient {
 
   // Handle console.log(): log the message to the DevTools console.
   ConsoleLog(string message);
+
+  // Record use counters for APIs used within the worklet.
+  RecordUseCounters(array<blink.mojom.WebFeature> features);
 };
 
 // Used by the browser to load shared storage worklet script and run operations

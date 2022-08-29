@@ -156,6 +156,16 @@ class TestClient
     observed_console_log_messages_.push_back(message);
   }
 
+  void RecordUseCounters(
+      const std::vector<blink::mojom::WebFeature>& features) override {
+    ASSERT_THAT(
+        features,
+        testing::UnorderedElementsAre(
+            blink::mojom::WebFeature::kPrivateAggregationApiAll,
+            blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+    observed_record_use_counter_call_ = true;
+  }
+
   const std::vector<SetParams>& observed_set_params() const {
     return observed_set_params_;
   }
@@ -170,6 +180,10 @@ class TestClient
 
   const std::vector<std::u16string>& observed_get_params() const {
     return observed_get_params_;
+  }
+
+  bool observed_record_use_counter_call() const {
+    return observed_record_use_counter_call_;
   }
 
   const std::vector<std::string>& observed_console_log_messages() const {
@@ -224,6 +238,7 @@ class TestClient
   std::vector<std::u16string> observed_delete_params_;
   std::vector<std::u16string> observed_get_params_;
   std::vector<std::string> observed_console_log_messages_;
+  bool observed_record_use_counter_call_ = false;
 };
 
 class MockMojomPrivateAggregationHost
@@ -675,6 +690,7 @@ TEST_F(SharedStorageAddModuleTest,
 
   EXPECT_TRUE(success());
   EXPECT_TRUE(error_message().empty());
+  EXPECT_FALSE(test_client()->observed_record_use_counter_call());
 }
 
 class SharedStorageRunOperationTest
@@ -1460,6 +1476,7 @@ TEST_F(SharedStorageRunOperationTest,
   EXPECT_FALSE(unnamed_operation_success());
   EXPECT_EQ(unnamed_operation_error_message(),
             "ReferenceError: privateAggregation is not defined");
+  EXPECT_FALSE(test_client()->observed_record_use_counter_call());
 }
 
 class SharedStorageObjectMethodTest : public SharedStorageRunOperationTest {
@@ -2207,12 +2224,22 @@ class SharedStoragePrivateAggregationTest
             }));
 
     ExecuteScriptExpectNoError(script_body);
+
+    EXPECT_TRUE(test_client()->observed_record_use_counter_call());
   }
 
-  std::string ExecuteScriptReturningError(const std::string& script_body) {
+  std::string ExecuteScriptReturningError(
+      const std::string& script_body,
+      bool expected_use_counter_called = true) {
+    EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport).Times(0);
+
     std::string error_message;
     ExecuteScript(script_body, &error_message);
     EXPECT_FALSE(error_message.empty());
+
+    // These tests all invoke sendHistogramReport (albeit incorrectly), so the
+    // use counter is expected to be triggered.
+    EXPECT_TRUE(test_client()->observed_record_use_counter_call());
     return error_message;
   }
 
@@ -2326,6 +2353,12 @@ TEST_F(SharedStoragePrivateAggregationTest, NegativeValue_Rejected) {
   EXPECT_EQ(error_str,
             "https://example.test/:1 Uncaught TypeError: Value must be "
             "non-negative.");
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, NoApiUse_UseCounterNotCalled) {
+  EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport).Times(0);
+  ExecuteScriptExpectNoError("const a = 1;");
+  EXPECT_FALSE(test_client()->observed_record_use_counter_call());
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, MultipleRequests) {
