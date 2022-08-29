@@ -25,6 +25,8 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
   // Represents a period of time for which budget usage is recorded. This
   // interval includes the `start_time()` instant but excludes the end time
   // (`start_time() + kDuration`) instant.
+  // TODO(crbug.com/1353473): Ensure `base::Time::Min()` and nearby times are
+  // handled correctly.
   class TimeWindow {
    public:
     static constexpr base::TimeDelta kDuration = base::Hours(1);

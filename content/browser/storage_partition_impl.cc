@@ -79,6 +79,7 @@
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/quota/quota_context.h"
@@ -972,6 +973,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       InterestGroupManagerImpl* interest_group_manager,
       AttributionManager* attribution_manager,
       AggregationService* aggregation_service,
+      PrivateAggregationManager* private_aggregation_manager,
       storage::SharedStorageManager* shared_storage_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
@@ -1004,7 +1006,8 @@ class StoragePartitionImpl::DataDeletionHelper {
     kAggregationService = 9,
     kSharedStorage = 10,
     kGpuCache = 11,
-    kMaxValue = kGpuCache,
+    kPrivateAggregation = 12,
+    kMaxValue = kPrivateAggregation,
   };
 
   base::OnceClosure CreateTaskCompletionClosure(TracingDataType data_type);
@@ -1725,7 +1728,7 @@ storage::SharedStorageManager* StoragePartitionImpl::GetSharedStorageManager() {
   return shared_storage_manager_.get();
 }
 
-PrivateAggregationManagerImpl*
+PrivateAggregationManager*
 StoragePartitionImpl::GetPrivateAggregationManager() {
   DCHECK(initialized_);
   return private_aggregation_manager_.get();
@@ -2202,8 +2205,8 @@ void StoragePartitionImpl::ClearDataImpl(
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
       interest_group_manager_.get(), attribution_manager_.get(),
-      aggregation_service_.get(), shared_storage_manager_.get(),
-      perform_storage_cleanup, begin, end);
+      aggregation_service_.get(), private_aggregation_manager_.get(),
+      shared_storage_manager_.get(), perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2405,6 +2408,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     InterestGroupManagerImpl* interest_group_manager,
     AttributionManager* attribution_manager,
     AggregationService* aggregation_service,
+    PrivateAggregationManager* private_aggregation_manager,
     storage::SharedStorageManager* shared_storage_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
@@ -2545,6 +2549,13 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     aggregation_service->ClearData(
         begin, end, filter,
         CreateTaskCompletionClosure(TracingDataType::kAggregationService));
+  }
+
+  if (private_aggregation_manager &&
+      (remove_mask_ & REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL)) {
+    private_aggregation_manager->ClearBudgetData(
+        begin, end, filter,
+        CreateTaskCompletionClosure(TracingDataType::kPrivateAggregation));
   }
 
   // TODO(crbug.com/1340250): The Plugin Private File System is removed, but
@@ -2830,8 +2841,7 @@ void StoragePartitionImpl::OverrideAttributionManagerForTesting(
 }
 
 void StoragePartitionImpl::OverridePrivateAggregationManagerForTesting(
-    std::unique_ptr<PrivateAggregationManagerImpl>
-        private_aggregation_manager) {
+    std::unique_ptr<PrivateAggregationManager> private_aggregation_manager) {
   DCHECK(initialized_);
   private_aggregation_manager_ = std::move(private_aggregation_manager);
 }

@@ -25,7 +25,10 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -77,18 +80,35 @@ void PrivateAggregationBudgeter::ConsumeBudget(
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(bool)> on_done) {
   if (storage_status_ == StorageStatus::kInitializing) {
-    if (pending_consume_budget_calls_.size() >= kMaxPendingCalls) {
+    if (pending_calls_.size() >= kMaxPendingCalls) {
       std::move(on_done).Run(false);
       return;
     }
 
-    // `base::Unretained` is safe as `pending_consume_budget_calls_` is owned by
-    // `this`.
-    pending_consume_budget_calls_.push_back(base::BindOnce(
+    // `base::Unretained` is safe as `pending_calls_` is owned by `this`.
+    pending_calls_.push_back(base::BindOnce(
         &PrivateAggregationBudgeter::ConsumeBudgetImpl, base::Unretained(this),
         budget, budget_key, std::move(on_done)));
   } else {
     ConsumeBudgetImpl(budget, budget_key, std::move(on_done));
+  }
+}
+
+void PrivateAggregationBudgeter::ClearData(
+    base::Time delete_begin,
+    base::Time delete_end,
+    StoragePartition::StorageKeyMatcherFunction filter,
+    base::OnceClosure done) {
+  if (storage_status_ == StorageStatus::kInitializing) {
+    // To ensure that data deletion always succeeds, we don't check
+    // `pending_calls.size()` here.
+
+    // `base::Unretained` is safe as `pending_calls_` is owned by `this`.
+    pending_calls_.push_back(base::BindOnce(
+        &PrivateAggregationBudgeter::ClearDataImpl, base::Unretained(this),
+        delete_begin, delete_end, std::move(filter), std::move(done)));
+  } else {
+    ClearDataImpl(delete_begin, delete_end, std::move(filter), std::move(done));
   }
 }
 
@@ -110,10 +130,10 @@ void PrivateAggregationBudgeter::OnStorageDoneInitializing(
 }
 
 void PrivateAggregationBudgeter::ProcessAllPendingCalls() {
-  for (base::OnceClosure& cb : pending_consume_budget_calls_) {
+  for (base::OnceClosure& cb : pending_calls_) {
     std::move(cb).Run();
   }
-  pending_consume_budget_calls_.clear();
+  pending_calls_.clear();
 }
 
 // TODO(crbug.com/1336733): Consider enumerating different error cases and log
@@ -213,6 +233,100 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     storage_->budgets_data()->UpdateData(origin_key, budgets);
   }
   std::move(on_done).Run(budget_increase_allowed);
+}
+
+void PrivateAggregationBudgeter::ClearDataImpl(
+    base::Time delete_begin,
+    base::Time delete_end,
+    StoragePartition::StorageKeyMatcherFunction filter,
+    base::OnceClosure done) {
+  switch (storage_status_) {
+    case StorageStatus::kInitializing:
+      NOTREACHED();
+      break;
+    case StorageStatus::kInitializationFailed:
+      std::move(done).Run();
+      return;
+    case StorageStatus::kOpen:
+      break;
+  }
+
+  // TODO(alexmt): Delay `done` being run until after the database task is
+  // complete.
+
+  // Treat null times as unbounded lower or upper range. This is used by
+  // browsing data remover.
+  if (delete_begin.is_null())
+    delete_begin = base::Time::Min();
+
+  if (delete_end.is_null())
+    delete_end = base::Time::Max();
+
+  bool is_all_time_covered = delete_begin.is_min() && delete_end.is_max();
+
+  if (is_all_time_covered && filter.is_null()) {
+    storage_->budgets_data()->DeleteAllData();
+    std::move(done).Run();
+    return;
+  }
+
+  std::vector<std::string> origins_to_delete;
+
+  for (const auto& [origin_key, budgets] :
+       storage_->budgets_data()->GetAllCached()) {
+    if (filter.is_null() ||
+        filter.Run(blink::StorageKey(url::Origin::Create(GURL(origin_key))))) {
+      origins_to_delete.push_back(origin_key);
+    }
+  }
+
+  if (is_all_time_covered) {
+    storage_->budgets_data()->DeleteData(origins_to_delete);
+    std::move(done).Run();
+    return;
+  }
+
+  // Ensure we round down to capture any time windows that partially overlap.
+  int64_t serialized_delete_begin =
+      delete_begin.is_min()
+          ? SerializeTimeForStorage(base::Time::Min())
+          : SerializeTimeForStorage(
+                PrivateAggregationBudgetKey::TimeWindow(delete_begin)
+                    .start_time());
+
+  // No need to round up as we compare against the time window's start time.
+  int64_t serialized_delete_end = SerializeTimeForStorage(delete_end);
+
+  for (const std::string& origin_key : origins_to_delete) {
+    proto::PrivateAggregationBudgets budgets;
+    storage_->budgets_data()->TryGetData(origin_key, &budgets);
+
+    static constexpr PrivateAggregationBudgetKey::Api kAllApis[] = {
+        PrivateAggregationBudgetKey::Api::kFledge,
+        PrivateAggregationBudgetKey::Api::kSharedStorage};
+
+    for (PrivateAggregationBudgetKey::Api api : kAllApis) {
+      google::protobuf::RepeatedPtrField<
+          proto::PrivateAggregationBudgetPerHour>* hourly_budgets =
+          GetHourlyBudgets(api, budgets);
+      DCHECK(hourly_budgets);
+
+      auto new_end = std::remove_if(
+          hourly_budgets->begin(), hourly_budgets->end(),
+          [=](const proto::PrivateAggregationBudgetPerHour& elem) {
+            return elem.hour_start_timestamp() >= serialized_delete_begin &&
+                   elem.hour_start_timestamp() <= serialized_delete_end;
+          });
+      hourly_budgets->erase(new_end, hourly_budgets->end());
+    }
+    storage_->budgets_data()->UpdateData(origin_key, budgets);
+  }
+
+  // A no-op call to force the database to be flushed immediately instead of
+  // waiting up to `PrivateAggregationBudgetStorage::kFlushDelay`.
+  storage_->budgets_data()->DeleteData({});
+
+  std::move(done).Run();
 }
 
 }  // namespace content

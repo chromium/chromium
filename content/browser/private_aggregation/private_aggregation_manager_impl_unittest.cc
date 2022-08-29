@@ -12,8 +12,10 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -28,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -285,6 +288,48 @@ TEST_F(PrivateAggregationManagerImplTest,
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
       mojo::PendingReceiver<mojom::PrivateAggregationHost>()));
+}
+
+TEST_F(PrivateAggregationManagerImplTest,
+       ClearBudgetingData_InvokesClearDataIdentically) {
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*budgeter_,
+                ClearData(kExampleTime, kExampleTime + base::Days(1), _, _))
+        .WillOnce(Invoke([](base::Time delete_begin, base::Time delete_end,
+                            StoragePartition::StorageKeyMatcherFunction filter,
+                            base::OnceClosure done) {
+          EXPECT_TRUE(filter.is_null());
+          std::move(done).Run();
+        }));
+    manager_.ClearBudgetData(kExampleTime, kExampleTime + base::Days(1),
+                             StoragePartition::StorageKeyMatcherFunction(),
+                             run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  StoragePartition::StorageKeyMatcherFunction example_filter;
+  example_filter =
+      base::BindLambdaForTesting([](const blink::StorageKey& storage_key) {
+        return storage_key.origin() ==
+               url::Origin::Create(GURL("https://example.com"));
+      });
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*budgeter_,
+                ClearData(kExampleTime - base::Days(10), kExampleTime, _, _))
+        .WillOnce(Invoke([&example_filter](
+                             base::Time delete_begin, base::Time delete_end,
+                             StoragePartition::StorageKeyMatcherFunction filter,
+                             base::OnceClosure done) {
+          EXPECT_EQ(filter, example_filter);
+          std::move(done).Run();
+        }));
+    manager_.ClearBudgetData(kExampleTime - base::Days(10), kExampleTime,
+                             example_filter, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 }  // namespace content

@@ -21,6 +21,9 @@ MockPrivateAggregationHost::MockPrivateAggregationHost()
 
 MockPrivateAggregationHost::~MockPrivateAggregationHost() = default;
 
+MockPrivateAggregationManager::MockPrivateAggregationManager() = default;
+MockPrivateAggregationManager::~MockPrivateAggregationManager() = default;
+
 MockPrivateAggregationContentBrowserClient::
     MockPrivateAggregationContentBrowserClient() = default;
 
