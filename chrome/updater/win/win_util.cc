@@ -874,9 +874,9 @@ bool EnableProcessHeapMetadataProtection() {
 
 absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
   base::FilePath temp_dir;
-  if (!base::PathService::Get(
-          ::IsUserAnAdmin() ? base::DIR_PROGRAM_FILES : base::DIR_TEMP,
-          &temp_dir)) {
+  if (!base::PathService::Get(::IsUserAnAdmin() ? int{base::DIR_PROGRAM_FILES}
+                                                : int{base::DIR_TEMP},
+                              &temp_dir)) {
     return absl::nullopt;
   }
 
