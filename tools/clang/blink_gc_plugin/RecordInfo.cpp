@@ -16,21 +16,7 @@ RecordInfo::RecordInfo(CXXRecordDecl* record, RecordCache* cache)
     : cache_(cache),
       record_(record),
       name_(record->getName()),
-      fields_need_tracing_(TracingStatus::Unknown()),
-      bases_(0),
-      fields_(0),
-      is_stack_allocated_(kNotComputed),
-      is_non_newable_(kNotComputed),
-      is_only_placement_newable_(kNotComputed),
-      does_need_finalization_(kNotComputed),
-      has_gc_mixin_methods_(kNotComputed),
-      is_declaring_local_trace_(kNotComputed),
-      determined_trace_methods_(false),
-      trace_method_(0),
-      trace_dispatch_method_(0),
-      finalize_dispatch_method_(0),
-      is_gc_derived_(false),
-      directly_derived_gc_base_(nullptr) {}
+      fields_need_tracing_(TracingStatus::Unknown()) {}
 
 RecordInfo::~RecordInfo() {
   delete fields_;
@@ -273,51 +259,31 @@ bool RecordInfo::IsStackAllocated() {
   return is_stack_allocated_;
 }
 
-bool RecordInfo::IsNonNewable() {
-  if (is_non_newable_ == kNotComputed) {
-    bool deleted = false;
-    bool all_deleted = true;
-    for (CXXRecordDecl::method_iterator it = record_->method_begin();
-         it != record_->method_end();
-         ++it) {
-      if (it->getNameAsString() == kNewOperatorName) {
-        deleted = it->isDeleted();
-        all_deleted = all_deleted && deleted;
-      }
-    }
-    is_non_newable_ = (deleted && all_deleted) ? kTrue : kFalse;
-  }
-  return is_non_newable_;
-}
-
-bool RecordInfo::IsOnlyPlacementNewable() {
-  if (is_only_placement_newable_ == kNotComputed) {
-    bool placement = false;
-    bool new_deleted = false;
-    for (CXXRecordDecl::method_iterator it = record_->method_begin();
-         it != record_->method_end();
-         ++it) {
-      if (it->getNameAsString() == kNewOperatorName) {
-        if (it->getNumParams() == 1) {
-          new_deleted = it->isDeleted();
-        } else if (it->getNumParams() == 2) {
-          placement = !it->isDeleted();
-        }
-      }
-    }
-    is_only_placement_newable_ = (placement && new_deleted) ? kTrue : kFalse;
-  }
-  return is_only_placement_newable_;
+bool RecordInfo::IsNewDisallowed() {
+  if (auto* new_operator = DeclaresNewOperator())
+    return new_operator->isDeleted();
+  return false;
 }
 
 CXXMethodDecl* RecordInfo::DeclaresNewOperator() {
-  for (CXXRecordDecl::method_iterator it = record_->method_begin();
-       it != record_->method_end();
-       ++it) {
-    if (it->getNameAsString() == kNewOperatorName && it->getNumParams() == 1)
-      return *it;
+  if (!determined_new_operator_) {
+    determined_new_operator_ = true;
+    for (auto* method : record_->methods()) {
+      if (method->getNameAsString() == kNewOperatorName &&
+          method->getNumParams() == 1) {
+        new_operator_ = method;
+        break;
+      }
+    }
+    if (!new_operator_) {
+      for (auto& base : GetBases()) {
+        new_operator_ = base.second.info()->DeclaresNewOperator();
+        if (new_operator_)
+          break;
+      }
+    }
   }
-  return 0;
+  return new_operator_;
 }
 
 // An object requires a tracing method if it has any fields that need tracing

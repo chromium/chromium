@@ -20,17 +20,10 @@ class DerivedHeapObject : public HeapObject, public StackObject {
 ./stack_allocated.h:43:28: warning: [blink-gc] Stack-allocated class 'DerivedHeapObject2' derives class 'HeapObject' which is garbage collected.
 class DerivedHeapObject2 : public HeapObject {
                            ^
-./stack_allocated.h:44:3: warning: [blink-gc] Garbage collected class 'DerivedHeapObject2' is not permitted to override its new operator.
-  STACK_ALLOCATED();
-  ^
-./heap/stubs.h:358:3: note: expanded from macro 'STACK_ALLOCATED'
-  void* operator new(size_t) = delete;                     \
-  ^
-In file included from stack_allocated.cpp:5:
 ./stack_allocated.h:24:5: warning: [blink-gc] Class 'StackObject' has untraced or not traceable fields.
     void Trace(Visitor* visitor) const { visitor->Trace(m_obj); }
     ^
 ./stack_allocated.h:27:5: note: [blink-gc] Untraceable field 'm_obj' declared here:
     HeapObject* m_obj; // Does not need tracing.
     ^
-7 warnings generated.
+6 warnings generated.

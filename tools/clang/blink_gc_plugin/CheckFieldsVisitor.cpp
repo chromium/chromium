@@ -18,10 +18,8 @@ CheckFieldsVisitor::Errors& CheckFieldsVisitor::invalid_fields() {
 
 bool CheckFieldsVisitor::ContainsInvalidFields(RecordInfo* info) {
   stack_allocated_host_ = info->IsStackAllocated();
-  managed_host_ = stack_allocated_host_ ||
-                  info->IsGCAllocated() ||
-                  info->IsNonNewable() ||
-                  info->IsOnlyPlacementNewable();
+  managed_host_ =
+      stack_allocated_host_ || info->IsGCAllocated() || info->IsNewDisallowed();
   for (RecordInfo::Fields::iterator it = info->GetFields().begin();
        it != info->GetFields().end();
        ++it) {
