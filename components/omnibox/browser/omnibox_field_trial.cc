@@ -767,6 +767,13 @@ const base::FeatureParam<int> kAutocompleteStabilityUpdateResultDebounceDelay(
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
+// The maximum number of entries stored by the in-memory zero-suggest cache at
+// at any given time (LRU eviction policy is used to enforce this limit).
+const base::FeatureParam<int> kZeroSuggestCacheMaxSize(
+    &omnibox::kZeroSuggestInMemoryCaching,
+    "ZeroSuggestCacheMaxSize",
+    10);
+
 // The relevance score for remote zero-suggest ranges from 550-1400. A default
 // value of 500 places local history zero-suggest below the remote zero-suggest.
 const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore(

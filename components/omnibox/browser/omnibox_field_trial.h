@@ -512,6 +512,9 @@ extern const base::FeatureParam<int>
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 
+// Determines the maximum number of entries stored by the in-memory ZPS cache.
+extern const base::FeatureParam<int> kZeroSuggestCacheMaxSize;
+
 // Determines the relevance score for the local history zero-prefix suggestions.
 extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
 
