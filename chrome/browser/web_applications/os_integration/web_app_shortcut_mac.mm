@@ -1376,22 +1376,18 @@ void WebAppShortcutCreator::RevealAppShimInFinder(
     const base::FilePath& app_path) const {
   auto closure = base::BindOnce(
       [](const base::FilePath& app_path) {
-        // Use selectFile:inFileViewerRootedAtPath:  to show the contents of
-        // the parent directory with the app shim selected.
-        //
-        // Despite calling this API with a rooted path, the Finder creates a
-        // new window each time the app shim is revealed (at least during
-        // tests). We skip revealing the app shim during testing to avoid an
-        // avalanche of new Finder windows.
+        // The Finder creates a new window each time the app shim is revealed.
+        // Skip revealing the app shim during testing to avoid an avalanche of
+        // new Finder windows.
         if (AppShimRevealDisabledForTest()) {
           return;
         }
+        NSURL* path_url = base::mac::FilePathToNSURL(app_path);
         [[NSWorkspace sharedWorkspace]
-                          selectFile:base::mac::FilePathToNSString(app_path)
-            inFileViewerRootedAtPath:@""];
+            activateFileViewerSelectingURLs:@[ path_url ]];
       },
       app_path);
-  // Perform the call to NSWorkSpace on the UI thread. Calling it on the IO
+  // Perform the call to NSWorkspace on the UI thread. Calling it on the IO
   // thread appears to cause crashes.
   // https://crbug.com/1067367
   content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(closure));
