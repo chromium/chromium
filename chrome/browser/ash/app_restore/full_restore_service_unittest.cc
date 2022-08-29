@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -604,6 +605,23 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   VerifyNotification(false, false);
 
   FullRestoreService::MaybeCloseNotification(profile());
+}
+
+// If the OS restore setting is 'Ask every time' and glanceables are enabled,
+// the notification is not shown.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       AskEveryTimeWithGlanceables) {
+  base::test::ScopedFeatureList feature_list(features::kGlanceables);
+
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  CreateFullRestoreServiceForTesting();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+
+  VerifyNotification(/*has_crash_notification=*/false,
+                     /*has_restore_notification=*/false);
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore

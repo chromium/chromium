@@ -255,7 +255,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
     if (ash::features::AreGlanceablesEnabled()) {
       // Must be called after CalenderKeyedServiceFactory is initialized.
-      ChromeGlanceablesDelegate::Get()->OnPrimaryUserSessionStarted();
+      ChromeGlanceablesDelegate::Get()->OnPrimaryUserSessionStarted(profile);
     }
 
     // Ensure that PhoneHubManager and EcheAppManager are created for the

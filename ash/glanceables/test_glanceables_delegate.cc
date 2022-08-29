@@ -14,4 +14,8 @@ void TestGlanceablesDelegate::RestoreSession() {
   ++restore_session_count_;
 }
 
+void TestGlanceablesDelegate::OnGlanceablesClosed() {
+  ++on_glanceables_closed_count_;
+}
+
 }  // namespace ash

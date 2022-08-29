@@ -125,6 +125,8 @@ class GlanceablesTest : public AshTestBase {
 };
 
 TEST_F(GlanceablesTest, CreateAndDestroyUi) {
+  ASSERT_EQ(0, GetTestDelegate()->on_glanceables_closed_count());
+
   controller_->CreateUi();
 
   // A fullscreen widget was created.
@@ -146,6 +148,9 @@ TEST_F(GlanceablesTest, CreateAndDestroyUi) {
   // Widget and glanceables view are destroyed.
   EXPECT_FALSE(GetWidget());
   EXPECT_FALSE(GetGlanceablesView());
+
+  // Delegate was notified that glanceables were closed.
+  EXPECT_EQ(1, GetTestDelegate()->on_glanceables_closed_count());
 }
 
 TEST_F(GlanceablesTest, GlanceablesViewCreatesChildViews) {

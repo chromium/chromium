@@ -19,11 +19,14 @@ class TestGlanceablesDelegate : public GlanceablesDelegate {
 
   // GlanceablesDelegate:
   void RestoreSession() override;
+  void OnGlanceablesClosed() override;
 
   int restore_session_count() { return restore_session_count_; }
+  int on_glanceables_closed_count() { return on_glanceables_closed_count_; }
 
  private:
   int restore_session_count_ = 0;
+  int on_glanceables_closed_count_ = 0;
 };
 
 }  // namespace ash

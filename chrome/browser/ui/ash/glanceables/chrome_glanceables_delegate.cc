@@ -8,8 +8,10 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/notreached.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/app_restore/full_restore_save_handler.h"
 
 namespace {
 ChromeGlanceablesDelegate* g_instance = nullptr;
@@ -34,15 +36,29 @@ ChromeGlanceablesDelegate* ChromeGlanceablesDelegate::Get() {
   return g_instance;
 }
 
-void ChromeGlanceablesDelegate::OnPrimaryUserSessionStarted() {
+void ChromeGlanceablesDelegate::OnPrimaryUserSessionStarted(Profile* profile) {
+  primary_profile_ = profile;
   if (ShouldShowOnLogin())
     controller_->ShowOnLogin();
 }
 
 void ChromeGlanceablesDelegate::RestoreSession() {
-  // TODO(crbug.com/1353119): Use the FullRestoreService to trigger session
-  // restore.
-  NOTIMPLEMENTED();
+  if (!primary_profile_ || did_restore_)
+    return;
+  auto* full_restore_service =
+      ash::full_restore::FullRestoreService::GetForProfile(primary_profile_);
+  if (!full_restore_service)
+    return;
+  full_restore_service->Restore();
+  did_restore_ = true;
+}
+
+void ChromeGlanceablesDelegate::OnGlanceablesClosed() {
+  if (!did_restore_) {
+    // The user closed glanceables without triggering a session restore, so
+    // start the full restore state save timer.
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
+  }
 }
 
 bool ChromeGlanceablesDelegate::ShouldShowOnLogin() const {
@@ -52,7 +68,13 @@ bool ChromeGlanceablesDelegate::ShouldShowOnLogin() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoFirstRun))
     return false;
 
-  // TODO(crbug.com/1353119): Use logic from FullRestoreService to decide
-  // whether or not to show.
+  // Don't show glanceables for session types that don't support full restore
+  // (e.g. demo mode, forced app mode).
+  // TODO(crbug.com/1353119): Refine triggering logic based on PM/UX feedback.
+  if (!ash::full_restore::FullRestoreServiceFactory::
+          IsFullRestoreAvailableForProfile(primary_profile_)) {
+    return false;
+  }
+
   return true;
 }

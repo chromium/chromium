@@ -7,6 +7,8 @@
 
 #include "ash/glanceables/glanceables_delegate.h"
 
+class Profile;
+
 namespace ash {
 class GlanceablesController;
 }  // namespace ash
@@ -25,16 +27,23 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate {
 
   // Called when the primary user logs in, after various KeyedServices are
   // created.
-  void OnPrimaryUserSessionStarted();
+  void OnPrimaryUserSessionStarted(Profile* profile);
 
   // ash::GlanceablesDelegate:
   void RestoreSession() override;
+  void OnGlanceablesClosed() override;
 
  private:
   // Returns true if glanceables should be show for the current login.
   bool ShouldShowOnLogin() const;
 
   ash::GlanceablesController* const controller_;
+
+  // The profile for the primary user in the session.
+  Profile* primary_profile_ = nullptr;
+
+  // Whether the user triggered session restore on login.
+  bool did_restore_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_GLANCEABLES_CHROME_GLANCEABLES_DELEGATE_H_

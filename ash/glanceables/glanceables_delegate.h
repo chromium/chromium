@@ -18,6 +18,9 @@ class ASH_EXPORT GlanceablesDelegate {
 
   // Triggers session restore.
   virtual void RestoreSession() = 0;
+
+  // Called after the glanceables UI is closed.
+  virtual void OnGlanceablesClosed() = 0;
 };
 
 }  // namespace ash

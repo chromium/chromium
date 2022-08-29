@@ -103,6 +103,7 @@ void GlanceablesController::CreateUi() {
 void GlanceablesController::DestroyUi() {
   widget_.reset();
   view_ = nullptr;
+  delegate_->OnGlanceablesClosed();
   window_hider_.reset();  // Show hidden windows.
 }
 
