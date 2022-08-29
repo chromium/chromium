@@ -253,13 +253,9 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
     if (!info->IsGCMixin()) {
       CheckLeftMostDerived(info);
       CheckDispatch(info);
-      if (CXXMethodDecl* newop = info->DeclaresNewOperator()) {
-        if (!info->IsStackAllocated() &&
-            !Config::IsGCBase(newop->getParent()->getName()) &&
-            !Config::IsIgnoreAnnotated(newop)) {
+      if (CXXMethodDecl* newop = info->DeclaresNewOperator())
+        if (!Config::IsIgnoreAnnotated(newop))
           reporter_.ClassOverridesNew(info, newop);
-        }
-      }
     }
 
     {

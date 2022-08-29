@@ -15,8 +15,7 @@ void PartObject::Trace(Visitor* visitor) const {
   visitor->Trace(m_obj);
 }
 
-void DerivedPartObject::Trace(Visitor* visitor) const {
-  visitor->Trace(m_obj1);
-  PartObject::Trace(visitor);
+void InlineObject::Trace(Visitor* visitor) const {
+  visitor->Trace(m_obj);
 }
 }

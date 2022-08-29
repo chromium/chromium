@@ -5,9 +5,15 @@
 #ifndef HEAP_STUBS_H_
 #define HEAP_STUBS_H_
 
-#include <cstddef>
-#include <new>
-#include <utility>
+#include "stddef.h"
+
+#define WTF_MAKE_FAST_ALLOCATED                 \
+    public:                                     \
+    void* operator new(size_t, void* p);        \
+    void* operator new[](size_t, void* p);      \
+    void* operator new(size_t size);            \
+    private:                                    \
+    typedef int __thisIsHereToForceASemicolonAfterThisMacro
 
 namespace WTF {
 
@@ -215,16 +221,7 @@ class BasicCrossThreadPersistent : public PersistentBase {
 }  // namespace internal
 
 template <typename T>
-class GarbageCollected {
-  void* operator new(size_t) = delete;
-  void* operator new[](size_t) = delete;
-};
-
-template <typename T, typename... Args>
-T* MakeGarbageCollected(int, Args&&... args) {
-  void* memory = reinterpret_cast<void*>(0x87654321);
-  return ::new (memory) T(std::forward<Args>(args)...);
-}
+class GarbageCollected {};
 
 class GarbageCollectedMixin {
  public:
@@ -264,10 +261,6 @@ using Visitor = cppgc::Visitor;
 
 template <typename T>
 using GarbageCollected = cppgc::GarbageCollected<T>;
-template <typename T, typename... Args>
-T* MakeGarbageCollected(Args&&... args) {
-  return cppgc::MakeGarbageCollected<T>(0, std::forward<Args>(args)...);
-}
 
 using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
 
@@ -297,17 +290,7 @@ class Visitor {
   void Trace(const T&);
 };
 
-template <typename T>
-class GarbageCollected {
-  void* operator new(size_t) = delete;
-  void* operator new[](size_t) = delete;
-};
-
-template <typename T, typename... Args>
-T* MakeGarbageCollected(Args&&... args) {
-  void* memory = reinterpret_cast<void*>(0x87654321);
-  return ::new (memory) T(std::forward<Args>(args)...);
-}
+template<typename T> class GarbageCollected { };
 
 class GarbageCollectedMixin {
  public:
@@ -362,12 +345,10 @@ public:
 
 using namespace WTF;
 
-#define DISALLOW_NEW()                                            \
- public:                                                          \
-  void* operator new(size_t, void* location) { return location; } \
-                                                                  \
- private:                                                         \
-  void* operator new(size_t) = delete
+#define DISALLOW_NEW()                 \
+ private:                              \
+  void* operator new(size_t) = delete; \
+  void* operator new(size_t, void*) = delete;
 
 #define STACK_ALLOCATED()                                  \
  public:                                                   \
@@ -375,7 +356,14 @@ using namespace WTF;
                                                            \
  private:                                                  \
   void* operator new(size_t) = delete;                     \
-  void* operator new(size_t, void*) = delete
+  void* operator new(size_t, void*) = delete;
+
+#define DISALLOW_NEW_EXCEPT_PLACEMENT_NEW() \
+ public:                                    \
+  void* operator new(size_t, void*);        \
+                                            \
+ private:                                   \
+  void* operator new(size_t) = delete;
 
 #define GC_PLUGIN_IGNORE(bug) \
   __attribute__((annotate("blink_gc_plugin_ignore")))

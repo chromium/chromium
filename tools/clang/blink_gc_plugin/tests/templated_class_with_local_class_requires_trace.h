@@ -12,10 +12,10 @@ namespace blink {
 class NonHeapObject { };
 
 class HeapObject : public GarbageCollected<HeapObject> {
- public:
-  HeapObject() {}
+public:
+    HeapObject() { }
 
-  void Trace(Visitor*) const {}
+    void Trace(Visitor*) const {}
 };
 
 template <typename T>
