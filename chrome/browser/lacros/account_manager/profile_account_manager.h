@@ -52,6 +52,9 @@ class ProfileAccountManager : public KeyedService,
                          const account_manager::Account& account) override;
   void OnAccountRemoved(const base::FilePath& profile_path,
                         const account_manager::Account& account) override;
+  void OnAuthErrorChanged(const base::FilePath& profile_path,
+                          const account_manager::AccountKey& account,
+                          const GoogleServiceAuthError& error) override;
 
   // account_manager::AccountManagerFacade:
   void AddObserver(
