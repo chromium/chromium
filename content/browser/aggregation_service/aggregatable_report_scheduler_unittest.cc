@@ -17,6 +17,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
@@ -31,6 +32,7 @@ namespace {
 
 using testing::_;
 using testing::Invoke;
+using testing::Property;
 
 // Will be used to verify the sequence of expected function calls.
 using Checkpoint = ::testing::MockFunction<void(int)>;
@@ -489,6 +491,32 @@ TEST_F(AggregatableReportSchedulerTest,
   // report was only delayed by 0 or 1 microsecond, but this flake is rare
   // enough to ignore (1 in 30 million runs).
   task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(AggregatableReportSchedulerTest,
+       StorageLimitReached_ReportSilentlyDropped) {
+  // Attempt to schedule one too many reports.
+  for (int i = 0;
+       i < AggregationService::kMaxStoredReportsPerReportingOrigin + 1; ++i) {
+    AggregatableReportRequest example_request =
+        aggregation_service::CreateExampleRequest();
+
+    AggregatableReportSharedInfo expected_shared_info =
+        example_request.shared_info().Clone();
+    expected_shared_info.scheduled_report_time = kExampleTime;
+
+    scheduler_.ScheduleRequest(
+        AggregatableReportRequest::Create(example_request.payload_contents(),
+                                          std::move(expected_shared_info))
+            .value());
+  }
+
+  // One report has been silently dropped.
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Property(&std::vector<AggregationServiceStorage::RequestAndId>::size,
+                   AggregationService::kMaxStoredReportsPerReportingOrigin)));
+  task_environment_.FastForwardBy(kExampleTime - base::Time::Now());
 }
 
 }  // namespace content

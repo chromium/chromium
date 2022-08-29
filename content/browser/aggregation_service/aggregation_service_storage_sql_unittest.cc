@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -13,22 +14,29 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/public/common/content_paths.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -45,6 +53,12 @@ const char kExampleUrl[] =
 const std::vector<PublicKey> kExampleKeys{
     aggregation_service::GenerateKey("dummy_id").public_key};
 
+std::string RemoveQuotes(base::StringPiece input) {
+  std::string output;
+  base::RemoveChars(input, "\"", &output);
+  return output;
+}
+
 }  // namespace
 
 class AggregationServiceStorageSqlTest : public testing::Test {
@@ -56,9 +70,18 @@ class AggregationServiceStorageSqlTest : public testing::Test {
     clock_.SetNow(base::Time::Now());
   }
 
-  void OpenDatabase() {
-    storage_ = std::make_unique<AggregationServiceStorageSql>(
-        /*run_in_memory=*/false, temp_directory_.GetPath(), &clock_);
+  // Use the default limit unless specified.
+  void OpenDatabase(
+      absl::optional<int> max_stored_requests_per_reporting_origin =
+          absl::nullopt) {
+    if (max_stored_requests_per_reporting_origin.has_value()) {
+      storage_ = std::make_unique<AggregationServiceStorageSql>(
+          /*run_in_memory=*/false, temp_directory_.GetPath(), &clock_,
+          max_stored_requests_per_reporting_origin.value());
+    } else {
+      storage_ = std::make_unique<AggregationServiceStorageSql>(
+          /*run_in_memory=*/false, temp_directory_.GetPath(), &clock_);
+    }
   }
 
   void CloseDatabase() { storage_.reset(); }
@@ -153,8 +176,9 @@ TEST_F(AggregationServiceStorageSqlTest,
     EXPECT_EQ(sql::test::CountSQLTables(&raw_db), 5u);
 
     // [urls_by_url_idx], [fetch_time_idx], [expiry_time_idx],
-    // [report_time_idx], [creation_time_idx] and meta table index.
-    EXPECT_EQ(sql::test::CountSQLIndices(&raw_db), 6u);
+    // [report_time_idx], [creation_time_idx], [reporting_origin_idx] and meta
+    // table index.
+    EXPECT_EQ(sql::test::CountSQLIndices(&raw_db), 7u);
   }
 }
 
@@ -895,6 +919,101 @@ TEST_F(AggregationServiceStorageSqlTest,
             kExampleTime + base::Hours(1));
 }
 
+TEST_F(AggregationServiceStorageSqlTest, StoreRequest_RespectsLimit) {
+  base::HistogramTester histograms;
+
+  size_t example_limit = 10;
+  OpenDatabase(example_limit);
+
+  for (size_t i = 0; i < example_limit; ++i) {
+    EXPECT_EQ(
+        storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(), i);
+
+    storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  }
+
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit);
+
+  // Storing one more report will silently fail.
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit);
+
+  // Deleting a request frees up space.
+  storage_->DeleteRequest(RequestId{5});
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit - 1);
+
+  // We can then store another request.
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit);
+
+  histograms.ExpectBucketCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
+      true, example_limit + 1);
+  histograms.ExpectBucketCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
+      false, 1);
+}
+
+TEST_F(AggregationServiceStorageSqlTest, StoreRequest_LimitIsScopedCorrectly) {
+  base::HistogramTester histograms;
+
+  size_t example_limit = 10;
+  OpenDatabase(example_limit);
+
+  for (size_t i = 0; i < example_limit; ++i) {
+    EXPECT_EQ(
+        storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(), i);
+
+    storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  }
+
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit);
+
+  // Storing one more report will silently fail.
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit);
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  // Different APIs using the same reporting origin share a limit so storage
+  // will silently fail.
+  AggregatableReportSharedInfo different_api_shared_info =
+      example_request.shared_info().Clone();
+  different_api_shared_info.api_identifier = "some-other-api";
+  storage_->StoreRequest(
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(different_api_shared_info))
+          .value());
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit);
+
+  // Different reporting origins have separate limits so storage will succeed.
+  AggregatableReportSharedInfo different_reporting_origin_shared_info =
+      example_request.shared_info().Clone();
+  different_reporting_origin_shared_info.reporting_origin =
+      url::Origin::Create(GURL("https://some-other-reporting-origin.example"));
+  storage_->StoreRequest(AggregatableReportRequest::Create(
+                             example_request.payload_contents(),
+                             std::move(different_reporting_origin_shared_info))
+                             .value());
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            example_limit + 1);
+
+  histograms.ExpectBucketCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
+      true, example_limit + 1);
+  histograms.ExpectBucketCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
+      false, 2);
+}
+
 TEST_F(AggregationServiceStorageSqlInMemoryTest,
        DatabaseInMemoryReopened_RequestsNotPersisted) {
   OpenDatabase();
@@ -913,6 +1032,201 @@ TEST_F(AggregationServiceStorageSqlInMemoryTest,
   EXPECT_FALSE(storage_->NextReportTimeAfter(base::Time::Min()).has_value());
   EXPECT_TRUE(
       storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
+}
+
+class AggregationServiceStorageSqlMigrationsTest
+    : public AggregationServiceStorageSqlTest {
+ public:
+  AggregationServiceStorageSqlMigrationsTest() = default;
+
+  void MigrateDatabase() {
+    AggregationServiceStorageSql storage(
+        /*run_in_memory=*/false, temp_directory_.GetPath(), &clock_);
+
+    // We need to run an operation on storage to force the lazy initialization.
+    std::ignore = storage.NextReportTimeAfter(base::Time::Min());
+  }
+
+  void LoadDatabase(int version_id, const base::FilePath* db_path = nullptr) {
+    std::string contents = GetDatabaseData(version_id);
+    ASSERT_FALSE(contents.empty());
+
+    sql::Database db;
+    // Use `db_path()` if none is specified.
+    ASSERT_TRUE(db.Open(db_path ? *db_path : this->db_path()));
+    ASSERT_TRUE(db.Execute(contents.data()));
+  }
+
+  std::string GetCurrentSchema() {
+    base::FilePath current_version_path = temp_directory_.GetPath().Append(
+        FILE_PATH_LITERAL("TestCurrentVersion.db"));
+    LoadDatabase(AggregationServiceStorageSql::kCurrentVersionNumber,
+                 &current_version_path);
+    sql::Database db;
+    EXPECT_TRUE(db.Open(current_version_path));
+    return db.GetSchema();
+  }
+
+  static int VersionFromDatabase(sql::Database* db) {
+    sql::Statement statement(
+        db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
+    if (!statement.Step())
+      return 0;
+    return statement.ColumnInt(0);
+  }
+
+ private:
+  // Returns empty string in case of an error.
+  std::string GetDatabaseData(int version_id) {
+    base::FilePath source_path;
+    base::PathService::Get(content::DIR_TEST_DATA, &source_path);
+    // Should be safe cross platform because StringPrintf has overloads for wide
+    // strings.
+    source_path = source_path.Append(base::FilePath(base::StringPrintf(
+        FILE_PATH_LITERAL("aggregation_service/databases/version_%d.sql"),
+        version_id)));
+
+    if (!base::PathExists(source_path))
+      return std::string();
+
+    std::string contents;
+    base::ReadFileToString(source_path, &contents);
+
+    return contents;
+  }
+};
+
+TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
+  base::HistogramTester histograms;
+  {
+    OpenDatabase();
+
+    // We need to perform an operation that is non-trivial on an empty database
+    // to force initialization.
+    storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+
+    CloseDatabase();
+  }
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(VersionFromDatabase(&db),
+              AggregationServiceStorageSql::kCurrentVersionNumber);
+
+    EXPECT_TRUE(db.DoesTableExist("urls"));
+    EXPECT_TRUE(db.DoesTableExist("keys"));
+    EXPECT_TRUE(db.DoesTableExist("report_requests"));
+    EXPECT_TRUE(db.DoesTableExist("meta"));
+
+    EXPECT_EQ(db.GetSchema(), GetCurrentSchema());
+  }
+
+  histograms.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 1);
+  histograms.ExpectUniqueSample(
+      "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
+      AggregationServiceStorageSql::InitStatus::kSuccess, 1);
+}
+
+// Note: We should add a MigrateLatestDeprecatedVersion test when we first
+// deprecate a version.
+
+TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion1ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(/*version_id=*/1);
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+    ASSERT_FALSE(db.DoesTableExist("report_requests"));
+
+    sql::Statement s(db.GetUniqueStatement("SELECT * FROM urls"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(s.ColumnString(1), "https://url.example/path");  // url
+    ASSERT_FALSE(s.Step());
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(VersionFromDatabase(&db),
+              AggregationServiceStorageSql::kCurrentVersionNumber);
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(db.GetSchema()), RemoveQuotes(GetCurrentSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(db.GetUniqueStatement("SELECT * FROM urls"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(s.ColumnString(1), "https://url.example/path");  // url
+    ASSERT_FALSE(s.Step());
+  }
+
+  histograms.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 0);
+  histograms.ExpectUniqueSample(
+      "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
+      AggregationServiceStorageSql::InitStatus::kSuccess, 1);
+}
+
+TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(/*version_id=*/2);
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+    ASSERT_TRUE(db.DoesTableExist("report_requests"));
+    ASSERT_FALSE(db.DoesIndexExist("reporting_origin_idx"));
+
+    sql::Statement s(db.GetUniqueStatement("SELECT * FROM report_requests"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(s.ColumnString(3),
+              "https://reporting.example");  // reporting_origin
+    ASSERT_FALSE(s.Step());
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(VersionFromDatabase(&db),
+              AggregationServiceStorageSql::kCurrentVersionNumber);
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(db.GetSchema()), RemoveQuotes(GetCurrentSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(db.GetUniqueStatement("SELECT * FROM report_requests"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(s.ColumnString(3),
+              "https://reporting.example");  // reporting_origin
+    ASSERT_FALSE(s.Step());
+  }
+
+  histograms.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 0);
+  histograms.ExpectUniqueSample(
+      "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
+      AggregationServiceStorageSql::InitStatus::kSuccess, 1);
 }
 
 }  // namespace content

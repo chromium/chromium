@@ -19,6 +19,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
