@@ -6,9 +6,6 @@
 
 #include <sstream>
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
@@ -433,6 +430,27 @@ TEST(FirstPartySetParser, Rejects_NonSchemefulSiteCcTLDAliases) {
       "}";
 
   std::istringstream stream(input);
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
+              Pair(IsEmpty(), IsEmpty()));
+}
+
+TEST(FirstPartySetParser, Rejects_NondisjointCcTLDAliases) {
+  // These two sets overlap only via a ccTLD variant.
+  std::istringstream stream(
+      "{"                                         //
+      "\"owner\": \"https://example.test\","      //
+      "\"members\": [\"https://member.test1\"],"  //
+      "\"ccTLDs\": {"                             //
+      "\"https://member.test1\": [\"https://member.cctld\"],"
+      "}"                                                     //
+      "}\n"                                                   //
+      "{"                                                     //
+      "\"owner\": \"https://foo.test\","                      //
+      "\"members\": [\"https://member.test2\"],"              //
+      "\"ccTLDs\": {"                                         //
+      "\"https://member.test2\": [\"https://member.cctld\"]"  //
+      "}"                                                     //
+      "}");
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
               Pair(IsEmpty(), IsEmpty()));
 }
