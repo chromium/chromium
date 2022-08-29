@@ -917,7 +917,7 @@ bool AreCertsEq(const scoped_refptr<ParsedCertificate> cert_1,
 }
 
 // Test to ensure that path building stops when an intermediate cert is
-// encountered that is not usable for TLS because of EKU restrictions.
+// encountered that is not usable for TLS because it is explicitly distrusted.
 TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
   crypto::ScopedHCERTSTORE root_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
@@ -932,7 +932,7 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
                                szOID_PKIX_KP_SERVER_AUTH);
   AddToStoreWithEKURestriction(intermediate_store.get(), c_by_e_,
                                szOID_PKIX_KP_SERVER_AUTH);
-  AddToStoreWithEKURestriction(intermediate_store.get(), c_by_d_, nullptr);
+  AddToStoreWithEKURestriction(disallowed_store.get(), c_by_d_, nullptr);
 
   std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
       std::move(root_store), std::move(intermediate_store),
@@ -948,7 +948,7 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
 
   auto result = path_builder.Run();
   ASSERT_TRUE(result.HasValidPath());
-  ASSERT_EQ(2U, result.paths.size());
+  ASSERT_EQ(1U, result.paths.size());
   const auto& path = *result.GetBestValidPath();
   ASSERT_EQ(3U, path.certs.size());
   EXPECT_TRUE(AreCertsEq(b_by_c_, path.certs[0]));
@@ -963,7 +963,7 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
   ASSERT_EQ(1, valid_paths);
 }
 
-// Test that if an intermediate is disabled for TLS, and it is the only
+// Test that if an intermediate is untrusted, and it is the only
 // path, then path building should fail, even if the root is enabled for
 // TLS.
 TEST_F(PathBuilderMultiRootTest, TrustStoreWinNoPathEKURestrictions) {
@@ -976,7 +976,7 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinNoPathEKURestrictions) {
 
   AddToStoreWithEKURestriction(root_store.get(), d_by_d_,
                                szOID_PKIX_KP_SERVER_AUTH);
-  AddToStoreWithEKURestriction(intermediate_store.get(), c_by_d_, nullptr);
+  AddToStoreWithEKURestriction(disallowed_store.get(), c_by_d_, nullptr);
   std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
       std::move(root_store), std::move(intermediate_store),
       std::move(disallowed_store));

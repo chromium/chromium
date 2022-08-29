@@ -319,40 +319,18 @@ CertificateTrust TrustStoreWin::GetTrust(
     return CertificateTrust::ForTrustAnchorEnforcingExpiration();
   }
 
-  cert_from_store = nullptr;
-  bool intermediate_found = false;
-  bool intermediate_is_trusted = true;
-  while ((cert_from_store = CertFindCertificateInStore(
-              intermediate_cert_store_.get(), X509_ASN_ENCODING, 0,
-              CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-    base::span<const uint8_t> cert_from_store_span = base::make_span(
-        cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
-
-    if (base::ranges::equal(cert_span, cert_from_store_span)) {
-      // Found cert, yay!
-      intermediate_found = true;
-      intermediate_is_trusted &= IsCertTrustedForServerAuth(cert_from_store);
-    }
-  }
-
-  // Found at least one instance of the cert in the intermediate store, and all
-  // instances found are trusted for TLS server auth.
-  if (intermediate_found && intermediate_is_trusted) {
-    return CertificateTrust::ForUnspecified();
-  }
-
   // If we fall through here, we've either
   //
-  // (a) found the cert in root or intermediates (or both) but neither is
-  //     usable for server auth (in which case treat as distrusted for path
-  //     building)
+  // (a) found the cert but it is not usable for server auth. Treat this as
+  //     Unspecified trust. Originally this was treated as Distrusted, but this
+  //     is inconsistent with how the Windows verifier works, which is to union
+  //     all of the EKU usages for all instances of the cert, whereas sending
+  //     back Distrusted would not do that.
   //
   // or
   //
   // (b) Haven't found the cert. Tell everyone Unspecified.
-  return (root_found || intermediate_found)
-             ? CertificateTrust::ForDistrusted()
-             : CertificateTrust::ForUnspecified();
+  return CertificateTrust::ForUnspecified();
 }
 
 }  // namespace net
