@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_error_ui.h"
+#include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 
 #include "base/bind.h"
 #include "build/branding_buildflags.h"
@@ -14,7 +14,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 AccountManagerErrorUI::AccountManagerErrorUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui), weak_factory_(this) {
@@ -60,4 +60,4 @@ AccountManagerErrorUI::AccountManagerErrorUI(content::WebUI* web_ui)
 
 AccountManagerErrorUI::~AccountManagerErrorUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

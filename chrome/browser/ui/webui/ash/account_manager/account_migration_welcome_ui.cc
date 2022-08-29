@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_ui.h"
+#include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 
 #include <memory>
 #include <string>
@@ -28,7 +28,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -128,4 +128,4 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
 
 AccountMigrationWelcomeUI::~AccountMigrationWelcomeUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

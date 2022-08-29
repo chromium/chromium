@@ -246,8 +246,8 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_error_ui.h"
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_ui.h"
+#include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
+#include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 #include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"
@@ -967,9 +967,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::cloud_upload::CloudUploadUI>;
   }
   if (url.host_piece() == chrome::kChromeUIAccountManagerErrorHost)
-    return &NewWebUI<chromeos::AccountManagerErrorUI>;
+    return &NewWebUI<ash::AccountManagerErrorUI>;
   if (url.host_piece() == chrome::kChromeUIAccountMigrationWelcomeHost)
-    return &NewWebUI<chromeos::AccountMigrationWelcomeUI>;
+    return &NewWebUI<ash::AccountMigrationWelcomeUI>;
   if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
     return &NewWebUI<chromeos::AddSupervisionUI>;
   if (url.host_piece() == chrome::kChromeUIParentAccessHost)

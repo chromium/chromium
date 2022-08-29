@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_dialog.h"
+#include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_dialog.h"
 
 #include <string>
 
@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_ui.h"
+#include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -19,7 +19,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_types.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr int kSigninDialogWidth = 768;
@@ -95,4 +95,4 @@ const std::string& AccountMigrationWelcomeDialog::Id() {
   return id_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

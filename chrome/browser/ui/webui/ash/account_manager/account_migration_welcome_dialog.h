@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_DIALOG_H_
 
 #include <string>
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 class AccountMigrationWelcomeDialog : public SystemWebDialogDelegate {
  public:
@@ -41,6 +41,11 @@ class AccountMigrationWelcomeDialog : public SystemWebDialogDelegate {
   const std::string id_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_DIALOG_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::AccountMigrationWelcomeDialog;
+}
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_DIALOG_H_

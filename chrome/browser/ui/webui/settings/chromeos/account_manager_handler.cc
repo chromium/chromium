@@ -19,7 +19,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_dialog.h"
+#include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_dialog.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/grit/generated_resources.h"
@@ -423,7 +423,7 @@ void AccountManagerUIHandler::HandleMigrateAccount(
   CHECK(!args.empty());
   const std::string& account_email = args[0].GetString();
 
-  chromeos::AccountMigrationWelcomeDialog::Show(account_email);
+  AccountMigrationWelcomeDialog::Show(account_email);
 }
 
 void AccountManagerUIHandler::HandleRemoveAccount(
