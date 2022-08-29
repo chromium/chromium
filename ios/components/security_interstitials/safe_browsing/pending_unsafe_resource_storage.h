@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,7 +31,7 @@ class PendingUnsafeResourceStorage {
   // Returns the pending UnsafeResource, or null if the pending decision is
   // finished.
   const security_interstitials::UnsafeResource* resource() const {
-    return base::OptionalOrNullptr(resource_);
+    return base::OptionalToPtr(resource_);
   }
 
  private:
