@@ -25,6 +25,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
+
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 
@@ -86,11 +88,13 @@ export const APPS_FEATURE = 1 << 2;
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
+ * @implements {LockStateBehaviorInterface}
  */
 const SettingsMultidevicePermissionsSetupDialogElementBase = mixinBehaviors(
     [
       I18nBehavior,
       WebUIListenerBehavior,
+      LockStateBehavior,
     ],
     PolymerElement);
 
@@ -271,7 +275,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       },
 
       /** @private */
-      isSetPinDone_: {
+      isPinSet_: {
         type: Boolean,
         value: false,
       },
@@ -639,7 +643,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         if (!this.isScreenLockEnabled_) {
           return;
         }
-        if (this.isPinNumberSelected_ && !this.isSetPinDone_) {
+        if (this.isPinNumberSelected_ && !this.isPinSet_ && !this.hasPin) {
           // When users select pin number and click next button, popup set pin
           // dialog.
           this.showSetupPinDialog_ = true;
@@ -723,7 +727,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
   onSetPinDone_() {
     // Once users confirm pin number, take them to the 'finish setup on the
     // phone' step directly.
-    this.isSetPinDone_ = true;
+    this.isPinSet_ = true;
     this.nextPage_();
   }
 

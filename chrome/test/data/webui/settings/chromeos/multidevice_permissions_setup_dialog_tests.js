@@ -775,7 +775,7 @@ suite('Multidevice', () => {
       isScreenLockEnabled_: true,
       flowState_: SetupFlowStatus.SET_LOCKSCREEN,
       isPinNumberSelected_: true,
-      isSetPinDone_: true,
+      isPinSet_: true,
       isPasswordDialogShowing: true,
     });
     flush();
