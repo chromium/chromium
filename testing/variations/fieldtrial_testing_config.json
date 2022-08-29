@@ -7444,7 +7444,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
@@ -7454,9 +7453,10 @@
             ],
             "experiments": [
                 {
-                    "name": "FirstScriptLazy_20220609",
+                    "name": "FirstScriptLazy_20220829",
                     "params": {
-                        "compile-strategy": "first-script-lazy"
+                        "compile-strategy": "first-script-lazy",
+                        "inline-script-timeout": "5ms"
                     },
                     "enable_features": [
                         "PrecompileInlineScripts"
