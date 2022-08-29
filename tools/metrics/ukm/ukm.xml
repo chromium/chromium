@@ -12912,7 +12912,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="NavigationThrottleDeferredTime" singular="False">
+<event name="NavigationThrottleDeferredTime">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
