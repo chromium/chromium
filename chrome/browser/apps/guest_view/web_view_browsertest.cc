@@ -71,6 +71,7 @@
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -165,28 +166,41 @@ const char kCacheResponsePath[] = "/cache-control-response";
 const char kRedirectResponseFullPath[] =
     "/extensions/platform_apps/web_view/shim/guest_redirect.html";
 
-class WebContentsHiddenObserver : public content::WebContentsObserver {
+class RenderWidgetHostVisibilityObserver
+    : public content::RenderWidgetHostObserver {
  public:
-  WebContentsHiddenObserver(content::WebContents* web_contents,
-                            base::OnceClosure hidden_callback)
-      : WebContentsObserver(web_contents),
-        hidden_callback_(std::move(hidden_callback)) {}
-  WebContentsHiddenObserver(const WebContentsHiddenObserver&) = delete;
-  WebContentsHiddenObserver& operator=(const WebContentsHiddenObserver&) =
-      delete;
+  RenderWidgetHostVisibilityObserver(content::RenderWidgetHost* host,
+                                     base::OnceClosure hidden_callback)
+      : hidden_callback_(std::move(hidden_callback)) {
+    observation_.Observe(host);
+  }
+  ~RenderWidgetHostVisibilityObserver() override = default;
+  RenderWidgetHostVisibilityObserver(
+      const RenderWidgetHostVisibilityObserver&) = delete;
+  RenderWidgetHostVisibilityObserver& operator=(
+      const RenderWidgetHostVisibilityObserver&) = delete;
 
-  // WebContentsObserver.
-  void OnVisibilityChanged(content::Visibility visibility) override {
-    if (visibility == content::Visibility::HIDDEN) {
+  bool hidden_observed() const { return hidden_observed_; }
+
+ private:
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
+                                         bool became_visible) override {
+    if (!became_visible) {
       hidden_observed_ = true;
       std::move(hidden_callback_).Run();
     }
   }
 
-  bool hidden_observed() const { return hidden_observed_; }
+  void RenderWidgetHostDestroyed(content::RenderWidgetHost* host) override {
+    EXPECT_TRUE(observation_.IsObservingSource(host));
+    observation_.Reset();
+  }
 
- private:
   base::OnceClosure hidden_callback_;
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHostObserver>
+      observation_{this};
   bool hidden_observed_ = false;
 };
 
@@ -1176,14 +1190,16 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SpatialNavigationJavascriptAPI) {
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 }
 
-// This test verifies that hiding the guest triggers WebContents::WasHidden().
+// This test verifies that hiding the guest triggers visibility change
+// notifications.
 IN_PROC_BROWSER_TEST_P(WebViewVisibilityTest, GuestVisibilityChanged) {
   LoadAppWithGuest("web_view/visibility_changed");
 
   scoped_refptr<content::MessageLoopRunner> loop_runner(
       new content::MessageLoopRunner);
-  WebContentsHiddenObserver observer(GetGuestWebContents(),
-                                     loop_runner->QuitClosure());
+  RenderWidgetHostVisibilityObserver observer(
+      GetGuestRenderFrameHost()->GetRenderWidgetHost(),
+      loop_runner->QuitClosure());
 
   // Handled in platform_apps/web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-guest");
@@ -1197,8 +1213,9 @@ IN_PROC_BROWSER_TEST_P(WebViewVisibilityTest, EmbedderVisibilityChanged) {
 
   scoped_refptr<content::MessageLoopRunner> loop_runner(
       new content::MessageLoopRunner);
-  WebContentsHiddenObserver observer(GetGuestWebContents(),
-                                     loop_runner->QuitClosure());
+  RenderWidgetHostVisibilityObserver observer(
+      GetGuestRenderFrameHost()->GetRenderWidgetHost(),
+      loop_runner->QuitClosure());
 
   // Handled in platform_apps/web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-embedder");
