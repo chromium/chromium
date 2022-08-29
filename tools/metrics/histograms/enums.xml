@@ -41214,6 +41214,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4343" label="DeferredShaping2ReshapedByPrinting"/>
   <int value="4344" label="DeferredShaping2ReshapedByScrolling"/>
   <int value="4345" label="LCPCandidateImageFromOriginDirtyStyle"/>
+  <int value="4346" label="V8TurboFanOsrCompileStarted"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
