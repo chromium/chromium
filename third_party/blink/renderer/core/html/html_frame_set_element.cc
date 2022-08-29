@@ -48,6 +48,8 @@ namespace blink {
 
 namespace {
 
+constexpr int kDefaultBorderThicknessPx = 6;
+
 const Vector<LayoutUnit>& ColumnSizes(const LayoutBox& box) {
   if (const auto* legacy = DynamicTo<LayoutFrameSet>(box))
     return legacy->Columns().sizes_;
@@ -74,7 +76,7 @@ const Vector<LayoutUnit>& RowSizes(const LayoutBox& box) {
 
 HTMLFrameSetElement::HTMLFrameSetElement(Document& document)
     : HTMLElement(html_names::kFramesetTag, document),
-      border_(6),
+      border_(0),
       border_set_(false),
       frameborder_(true),
       frameborder_set_(false) {
@@ -296,9 +298,16 @@ bool HTMLFrameSetElement::NoResize() const {
 }
 
 int HTMLFrameSetElement::Border(const ComputedStyle& style) const {
-  if (!HasFrameBorder() || border_ == 0)
+  if (!HasFrameBorder())
     return 0;
-  return std::max(ClampTo<int>(border_ * style.EffectiveZoom()), 1);
+  if (border_set_) {
+    return border_ == 0
+               ? 0
+               : std::max(ClampTo<int>(border_ * style.EffectiveZoom()), 1);
+  }
+  if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
+    return frame_set->Border(style);
+  return ClampTo<int>(kDefaultBorderThicknessPx * style.EffectiveZoom());
 }
 
 bool HTMLFrameSetElement::HasBorderColor() const {
@@ -421,16 +430,6 @@ LayoutObject* HTMLFrameSetElement::CreateLayoutObject(
 }
 
 void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
-  // Inherit default settings from parent frameset
-  // FIXME: This is not dynamic.
-  if (HTMLFrameSetElement* frameset =
-          Traversal<HTMLFrameSetElement>::FirstAncestor(*this)) {
-    if (HasFrameBorder()) {
-      if (!border_set_)
-        border_ = frameset->HasFrameBorder() ? frameset->border_ : 0;
-    }
-  }
-
   HTMLElement::AttachLayoutTree(context);
   is_resizing_ = false;
   ResizeChildrenData();
