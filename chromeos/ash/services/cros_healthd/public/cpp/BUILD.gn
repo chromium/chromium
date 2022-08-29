@@ -21,9 +21,11 @@ source_set("cpp") {
     "service_connection.h",
   ]
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus/cros_healthd",
     "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/components/mojo_service_manager",
     "//ui/events/ozone/evdev:event_device_info",
   ]
   if (use_real_dbus_clients) {

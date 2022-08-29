@@ -6,8 +6,10 @@
 
 #include <fcntl.h>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +18,9 @@
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/components/mojo_service_manager/connection.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -245,6 +249,8 @@ class ServiceConnectionImpl : public ServiceConnection {
   // Repeating callback that binds a mojo::PendingRemote to the
   // NetworkDiagnosticsRoutines interface and returns it.
   BindNetworkDiagnosticsRoutinesCallback bind_network_diagnostics_callback_;
+
+  const bool use_service_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -648,18 +654,30 @@ void ServiceConnectionImpl::ProbeProcessInfo(
 void ServiceConnectionImpl::GetDiagnosticsService(
     mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureCrosHealthdServiceFactoryIsBound();
-  cros_healthd_service_factory_->GetDiagnosticsService(std::move(service));
+  if (use_service_manager_) {
+    chromeos::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosHealthdDiagnostics, absl::nullopt,
+        std::move(service).PassPipe());
+  } else {
+    EnsureCrosHealthdServiceFactoryIsBound();
+    cros_healthd_service_factory_->GetDiagnosticsService(std::move(service));
+  }
 }
 
 void ServiceConnectionImpl::SetBindNetworkHealthServiceCallback(
     BindNetworkHealthServiceCallback callback) {
+  // Don't set the interface if service manager is used.
+  if (use_service_manager_)
+    return;
   bind_network_health_callback_ = std::move(callback);
   BindAndSendNetworkHealthService();
 }
 
 void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
     BindNetworkDiagnosticsRoutinesCallback callback) {
+  // Don't set the interface if service manager is used.
+  if (use_service_manager_)
+    return;
   bind_network_diagnostics_callback_ = std::move(callback);
   BindAndSendNetworkDiagnosticsRoutines();
 }
@@ -668,6 +686,9 @@ void ServiceConnectionImpl::SendChromiumDataCollector(
     mojo::PendingRemote<
         chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
         remote) {
+  // Don't set the interface if service manager is used.
+  if (use_service_manager_)
+    return;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->SendChromiumDataCollector(std::move(remote));
@@ -722,6 +743,7 @@ void ServiceConnectionImpl::FlushForTesting() {
 }
 
 void ServiceConnectionImpl::BindAndSendNetworkHealthService() {
+  DCHECK(!use_service_manager_) << "ServiceFactory is not supported.";
   if (bind_network_health_callback_.is_null())
     return;
 
@@ -732,6 +754,7 @@ void ServiceConnectionImpl::BindAndSendNetworkHealthService() {
 }
 
 void ServiceConnectionImpl::BindAndSendNetworkDiagnosticsRoutines() {
+  DCHECK(!use_service_manager_) << "ServiceFactory is not supported.";
   if (bind_network_diagnostics_callback_.is_null())
     return;
 
@@ -745,11 +768,19 @@ void ServiceConnectionImpl::BindAndSendNetworkDiagnosticsRoutines() {
 void ServiceConnectionImpl::GetProbeService(
     mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureCrosHealthdServiceFactoryIsBound();
-  cros_healthd_service_factory_->GetProbeService(std::move(service));
+  if (use_service_manager_) {
+    chromeos::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosHealthdProbe, absl::nullopt,
+        std::move(service).PassPipe());
+  } else {
+    EnsureCrosHealthdServiceFactoryIsBound();
+    cros_healthd_service_factory_->GetProbeService(std::move(service));
+  }
 }
 
 void ServiceConnectionImpl::EnsureCrosHealthdServiceFactoryIsBound() {
+  DCHECK(!use_service_manager_)
+      << "ServiceFactory is not available in service manager.";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cros_healthd_service_factory_.is_bound())
     return;
@@ -771,8 +802,7 @@ void ServiceConnectionImpl::BindCrosHealthdDiagnosticsServiceIfNeeded() {
   if (cros_healthd_diagnostics_service_.is_bound())
     return;
 
-  EnsureCrosHealthdServiceFactoryIsBound();
-  cros_healthd_service_factory_->GetDiagnosticsService(
+  GetDiagnosticsService(
       cros_healthd_diagnostics_service_.BindNewPipeAndPassReceiver());
   cros_healthd_diagnostics_service_.set_disconnect_handler(base::BindOnce(
       &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
@@ -783,9 +813,15 @@ void ServiceConnectionImpl::BindCrosHealthdEventServiceIfNeeded() {
   if (cros_healthd_event_service_.is_bound())
     return;
 
-  EnsureCrosHealthdServiceFactoryIsBound();
-  cros_healthd_service_factory_->GetEventService(
-      cros_healthd_event_service_.BindNewPipeAndPassReceiver());
+  if (use_service_manager_) {
+    chromeos::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosHealthdEvent, absl::nullopt,
+        cros_healthd_event_service_.BindNewPipeAndPassReceiver().PassPipe());
+  } else {
+    EnsureCrosHealthdServiceFactoryIsBound();
+    cros_healthd_service_factory_->GetEventService(
+        cros_healthd_event_service_.BindNewPipeAndPassReceiver());
+  }
   cros_healthd_event_service_.set_disconnect_handler(base::BindOnce(
       &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
 }
@@ -795,14 +831,26 @@ void ServiceConnectionImpl::BindCrosHealthdProbeServiceIfNeeded() {
   if (cros_healthd_probe_service_.is_bound())
     return;
 
-  EnsureCrosHealthdServiceFactoryIsBound();
-  cros_healthd_service_factory_->GetProbeService(
-      cros_healthd_probe_service_.BindNewPipeAndPassReceiver());
+  GetProbeService(cros_healthd_probe_service_.BindNewPipeAndPassReceiver());
   cros_healthd_probe_service_.set_disconnect_handler(base::BindOnce(
       &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
 }
 
-ServiceConnectionImpl::ServiceConnectionImpl() {
+bool UseServiceManager() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_service_manager =
+      command_line->HasSwitch(ash::switches::kAshUseCrOSMojoServiceManager);
+  bool healthd_use_service_manager =
+      command_line->HasSwitch(ash::switches::kCrosHealthdUsesServiceManager);
+  DCHECK(!healthd_use_service_manager ||
+         (healthd_use_service_manager && has_service_manager))
+      << "Healthd try to use chromeos mojo service manager but it is not "
+         "enabled.";
+  return has_service_manager && healthd_use_service_manager;
+}
+
+ServiceConnectionImpl::ServiceConnectionImpl()
+    : use_service_manager_(UseServiceManager()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 #if !defined(USE_REAL_DBUS_CLIENTS)
   // Creates the fake mojo service if need. This is for browser test to do the
@@ -818,7 +866,8 @@ ServiceConnectionImpl::ServiceConnectionImpl() {
       FakeCrosHealthd::Initialize();
   }
 #endif  // defined(USE_REAL_DBUS_CLIENTS)
-  EnsureCrosHealthdServiceFactoryIsBound();
+  if (!use_service_manager_)
+    EnsureCrosHealthdServiceFactoryIsBound();
 }
 
 void ServiceConnectionImpl::OnDisconnect() {
@@ -829,6 +878,10 @@ void ServiceConnectionImpl::OnDisconnect() {
   cros_healthd_probe_service_.reset();
   cros_healthd_diagnostics_service_.reset();
   cros_healthd_event_service_.reset();
+
+  // Don't try to reconnect if service manager is used.
+  if (use_service_manager_)
+    return;
 
   EnsureCrosHealthdServiceFactoryIsBound();
   // If the cros_healthd_service_factory_ was able to be rebound, resend the
@@ -841,6 +894,8 @@ void ServiceConnectionImpl::OnDisconnect() {
 
 void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(
     const bool success) {
+  DCHECK(!use_service_manager_)
+      << "D-Bus is not used if service manager is used.";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!success) {
     DLOG(WARNING) << "BootstrapMojoConnection D-Bus call failed.";
