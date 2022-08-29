@@ -1095,10 +1095,6 @@ void Layer::UpdateNinePatchLayerImage(const gfx::ImageSkia& image) {
   DCHECK(nine_patch_layer_.get());
 
   nine_patch_layer_image_ = image;
-  // TODO(estade): we don't clean up old bitmaps in the UIResourceManager when
-  // the scale factor changes. Currently for the way NinePatchLayers are used,
-  // we don't need/want to, but we should address this in the future if it
-  // becomes an issue.
   nine_patch_layer_->SetBitmap(
       image.GetRepresentation(device_scale_factor_).GetBitmap());
 }

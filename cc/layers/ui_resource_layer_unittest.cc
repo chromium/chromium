@@ -7,6 +7,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "cc/resources/ui_resource_manager.h"
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
@@ -190,6 +191,38 @@ TEST_F(UIResourceLayerTest, SharedBitmap) {
   EXPECT_NE(other_lth_resource_id, layer1->resource_id());
   layer1->SetBitmap(bitmap_copy);
   EXPECT_EQ(other_lth_resource_id, layer1->resource_id());
+}
+
+TEST_F(UIResourceLayerTest, SharedBitmapCacheSizeLimit) {
+  scoped_refptr<TestUIResourceLayer> layer = TestUIResourceLayer::Create();
+  layer_tree_host()->SetRootLayer(layer);
+
+  // Number of bitmaps that are created then get their references dropped.
+  constexpr size_t kDroppedResources = 100u;
+
+  // Populate the shared bitmap cache.
+  auto* manager = layer_tree_host()->GetUIResourceManager();
+  while (manager->owned_shared_resources_size_for_test() < kDroppedResources) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(10, 10);
+    bitmap.setImmutable();
+    layer->SetBitmap(bitmap);
+  }
+
+  // No eviction because bitmaps are references by UIResourcesRequests.
+  EXPECT_EQ(manager->owned_shared_resources_size_for_test(), kDroppedResources);
+
+  // Pretend UIResourcesRequests are processed to drop bitmap references.
+  manager->TakeUIResourcesRequests();
+
+  // Create one more shared bitmap resource and the eviction happens.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.setImmutable();
+  layer->SetBitmap(bitmap);
+
+  // The cache should trimmed down.
+  EXPECT_EQ(manager->owned_shared_resources_size_for_test(), 1u);
 }
 
 }  // namespace
