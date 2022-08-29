@@ -12,6 +12,9 @@ pdf_enable_xfa_override = is_chromeos || is_linux || is_mac || is_win
 # FreeType, configured by the embedder in //build/config/freetype.
 pdf_bundle_freetype_override = false
 
+# Build PDFium with PartitionAlloc as the memory allocator.
+pdf_use_partition_alloc_override = true
+
 # Disable use of Skia backend.
 pdf_use_skia_override = false
 
