@@ -13,8 +13,10 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -759,6 +761,38 @@ std::string MakeAuctionScriptSupportsTie() {
       kSellerDebugWinReportBaseUrl, kPostAuctionSignalsPlaceholder);
 }
 
+// Represents an entry in trusted bidding signal's `perInterestGroupData` field.
+struct BiddingSignalsPerInterestGroupData {
+  std::string interest_group_name;
+  absl::optional<base::flat_map<std::string, double>> priority_vector;
+};
+
+// Creates a trusted bidding signals response body with the provided data.
+std::string MakeBiddingSignalsWithPerInterestGroupData(
+    std::vector<BiddingSignalsPerInterestGroupData> per_interest_group_data) {
+  base::Value::Dict per_interest_group_dict;
+  for (const auto& data : per_interest_group_data) {
+    base::Value::Dict interest_group_dict;
+    if (data.priority_vector) {
+      base::Value::Dict priority_vector;
+      for (const auto& pair : *data.priority_vector) {
+        priority_vector.Set(pair.first, pair.second);
+      }
+      interest_group_dict.Set("priorityVector", std::move(priority_vector));
+    }
+    per_interest_group_dict.Set(data.interest_group_name,
+                                std::move(interest_group_dict));
+  }
+
+  base::Value::Dict bidding_signals_dict;
+  bidding_signals_dict.Set("perInterestGroupData",
+                           std::move(per_interest_group_dict));
+
+  std::string bidding_signals_string;
+  CHECK(base::JSONWriter::Write(bidding_signals_dict, &bidding_signals_string));
+  return bidding_signals_string;
+}
+
 // Returns a report URL with given parameters for reportWin(), with post auction
 // signals included in the URL
 const GURL ReportWinUrl(
@@ -966,6 +1000,11 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<GURL>& debug_win_report_url = absl::nullopt,
       PrivateAggregationRequests pa_requests = {}) {
     WaitForGenerateBid();
+
+    base::RunLoop run_loop;
+    generate_bid_client_->OnBiddingSignalsReceived(
+        /*priority_vector=*/{}, run_loop.QuitClosure());
+    run_loop.Run();
 
     if (!bid.has_value()) {
       generate_bid_client_->OnGenerateBidComplete(
@@ -7979,6 +8018,638 @@ TEST_F(AuctionRunnerTest, PriorityVector) {
   // auction.
   CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with only one interest group participating. The priority calculated
+// using the priority vector fetch in bidding signals is negative, so it should
+// be filtered out after the bidding signals fetch, and there should be no
+// winner.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorOnlyGroupFiltered) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  EXPECT_EQ(kFullTrustedSignalsUrl,
+            url_loader_factory_.GetPendingRequest(0)->request.url);
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", -1}}}}}));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_url);
+
+  // The interest group is considered to have participated in the auction.
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
+                  /*expected_interest_groups=*/1,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with only one interest group participating. The priority calculated
+// using the priority vector fetch in bidding signals is zero, so it should
+// not be filtered out.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorOnlyGroupNotFiltered) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  EXPECT_EQ(kFullTrustedSignalsUrl,
+            url_loader_factory_.GetPendingRequest(0)->request.url);
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", 0}}}}}));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with two interest groups participating, both with the same owner. The
+// priority calculated using the priority vector fetch in bidding signals is
+// negative for both groups. The group limit is 1 and
+// `enable_bidding_signals_prioritization` is set to true for one of the groups,
+// so the auction should be set up to filter only after all priority vectors
+// have been received, but then they eliminates both interest groups.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorBothGroupsFiltered) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1,2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.enable_bidding_signals_prioritization = true;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  all_buyers_group_limit_ = 1;
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  EXPECT_EQ(kFullTrustedSignalsUrl,
+            url_loader_factory_.GetPendingRequest(0)->request.url);
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", -1}}}},
+           {"2", {{{"browserSignals.one", -2}}}}}));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with two interest groups participating, both with the same owner.
+// The priority calculated using the priority vector fetch in bidding signals is
+// negative for the first group to receive trusted signals (which is group 2).
+// The group limit is 1 and `enable_bidding_signals_prioritization` is set to
+// true for one of the groups, so the auction should be set up to filter only
+// after all priority vectors have been received.
+//
+// The two interest groups use different trusted signals URLs, so the order the
+// responses are received in can be controlled.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorFirstGroupFiltered) {
+  const GURL kFullTrustedSignalsUrl1 =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1");
+  const GURL kBidder1TrustedSignalsUrl2 =
+      GURL(kBidder1TrustedSignalsUrl.spec() + "2");
+  const GURL kFullTrustedSignalsUrl2 =
+      GURL(kBidder1TrustedSignalsUrl2.spec() +
+           "?hostname=publisher1.com&interestGroupNames=2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.enable_bidding_signals_prioritization = true;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl2,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  all_buyers_group_limit_ = 1;
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  ASSERT_EQ(2, url_loader_factory_.NumPending());
+
+  // Group 2 has a negative priority.
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl2,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"2", {{{"browserSignals.one", -2}}}}}));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl1,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", 1}}}}}));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with two interest groups participating, both with the same owner.
+// The priority calculated using the priority vector fetch in bidding signals is
+// negative for the second group to receive trusted signals (which is group 2).
+// The group limit is 1 and `enable_bidding_signals_prioritization` is set to
+// true for one of the groups, so the auction should be set up to filter only
+// after all priority vectors have been received.
+//
+// The two interest groups use different trusted signals URLs, so the order the
+// responses are received in can be controlled.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorSecondGroupFiltered) {
+  const GURL kFullTrustedSignalsUrl1 =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1");
+  const GURL kBidder1TrustedSignalsUrl2 =
+      GURL(kBidder1TrustedSignalsUrl.spec() + "2");
+  const GURL kFullTrustedSignalsUrl2 =
+      GURL(kBidder1TrustedSignalsUrl2.spec() +
+           "?hostname=publisher1.com&interestGroupNames=2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.enable_bidding_signals_prioritization = true;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl2,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  all_buyers_group_limit_ = 1;
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  ASSERT_EQ(2, url_loader_factory_.NumPending());
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl1,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", 1}}}}}));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+
+  // Group 2 has a negative priority.
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl2,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"2", {{{"browserSignals.one", -2}}}}}));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with two interest groups participating, both with the same owner.
+// The priority calculated using the priority vector fetch in bidding signals is
+// negative for both groups. The group limit is 1 and
+// `enable_bidding_signals_prioritization` is set to true for one of the groups,
+// so the auction should be set up to filter only after all priority vectors
+// have been received.
+//
+// In this test, the group with the lower priority is removed when enforcing the
+// per-bidder size limit. The other interest group goes on to win the auction.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorSizeLimitFiltersOneGroup) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1,2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.enable_bidding_signals_prioritization = true;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  all_buyers_group_limit_ = 1;
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  EXPECT_EQ(kFullTrustedSignalsUrl,
+            url_loader_factory_.GetPendingRequest(0)->request.url);
+
+  // Group 2 has a lower, but non-negative, priority.
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", 1}}}},
+           {"2", {{{"browserSignals.one", 0.5}}}}}));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with two interest groups participating, both with the same owner.
+// The priority calculated using the priority vector fetch in bidding signals is
+// negative for both groups. The group limit is 1 and
+// `enable_bidding_signals_prioritization` is set to true for one of the groups,
+// so the auction should be set up to filter only after all priority vectors
+// have been received.
+//
+// In this test, neither group is filtered due to having a negative priority,
+// however, the group that would otherwise bid higher is filtered out due to the
+// per buyer interest group limit.
+TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorNoGroupFiltered) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1,2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.enable_bidding_signals_prioritization = true;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  all_buyers_group_limit_ = 1;
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  EXPECT_EQ(kFullTrustedSignalsUrl,
+            url_loader_factory_.GetPendingRequest(0)->request.url);
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", 2}}}},
+           {"2", {{{"browserSignals.one", 1}}}}}));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Test that `basePriority` works as expected. Interest groups have one priority
+// order with base priorities, another with the priority vectors that are part
+// of the interest groups, and then the priority vectors downloaded as signals
+// echo the base priority values, which should be the order that takes effect,
+// when one group has `enable_bidding_signals_prioritization` set to true.
+TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorBasePriority) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1,2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.priority = 2;
+  bidders[0].interest_group.priority_vector = {{"browserSignals.one", 1}};
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+  bidders[1].interest_group.priority = 1;
+  bidders[1].interest_group.priority_vector = {{"browserSignals.one", 2}};
+  bidders[1].interest_group.enable_bidding_signals_prioritization = true;
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.basePriority", 1}}}},
+           {"2", {{{"browserSignals.basePriority", 1}}}}}));
+
+  all_buyers_group_limit_ = 1;
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Test that `firstDotProductPriority` works as expected. Interest groups have
+// one priority order with base priorities, another with the priority vectors
+// that are part of the interest groups, and then the priority vectors
+// downloaded as signals echo the values of the previous priority vector dot
+// product, which should be the order that takes effect, when one group has
+// `enable_bidding_signals_prioritization` set to true.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorFirstDotProductPriority) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1,2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.priority = 1;
+  bidders[0].interest_group.priority_vector = {{"browserSignals.one", 2}};
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+  bidders[1].interest_group.priority = 2;
+  bidders[1].interest_group.priority_vector = {{"browserSignals.one", 1}};
+  bidders[1].interest_group.enable_bidding_signals_prioritization = true;
+
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.firstDotProductPriority", 1}}}},
+           {"2", {{{"browserSignals.firstDotProductPriority", 1}}}}}));
+
+  all_buyers_group_limit_ = 1;
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Test that when no priority vector is received, the result of the first
+// priority calculation using the interset group's priority vector is used, if
+// available, and if not, the base priority is used.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorNotreceivedMixPrioritySources) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1,2");
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptSupportsTie());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.priority = 0;
+  bidders[0].interest_group.priority_vector = {{"browserSignals.one", 2}};
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+  bidders[1].interest_group.priority = 1;
+  bidders[1].interest_group.enable_bidding_signals_prioritization = true;
+
+  // Empty priority vector.
+  auction_worklet::AddBidderJsonResponse(&url_loader_factory_,
+                                         kFullTrustedSignalsUrl,
+                                         /*content=*/"{}");
+
+  all_buyers_group_limit_ = 1;
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, "1"), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with two interest groups participating, both with the same owner.
+// `enable_bidding_signals_prioritization` is set to true and the size limit is
+// one, so the worklets wait until all other worklets have received signals
+// before proceeding. However, the worklets' Javascript fails to load before any
+// signals are received, which should safely fail the auction. This follows the
+// same path as if the worklet crashed, so no need to test crashing combined
+// with `enable_bidding_signals_prioritization`.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorSharedScriptLoadErrorAfterSignals) {
+  const GURL kFullTrustedSignalsUrl =
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&interestGroupNames=1,2");
+  url_loader_factory_.ClearResponses();
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.enable_bidding_signals_prioritization = true;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  all_buyers_group_limit_ = 1;
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  // Seller script, bidder script, signals URL should all be pending.
+  EXPECT_EQ(3, url_loader_factory_.NumPending());
+
+  // Bidding signals received. Auction should still be pending.
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, kFullTrustedSignalsUrl,
+      MakeBiddingSignalsWithPerInterestGroupData(
+          {{"1", {{{"browserSignals.one", 1}}}},
+           {"2", {{{"browserSignals.one", 2}}}}}));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  // Seller script, bidder script should still be pending.
+  EXPECT_EQ(2, url_loader_factory_.NumPending());
+
+  // Script loads fail. The auction should safely fail.
+  url_loader_factory_.AddResponse(kBidder1Url.spec(), "", net::HTTP_NOT_FOUND);
+  auction_run_loop_->Run();
+
+  // Only get an error for one interest group - the other was filtered out due
+  // to having a lower priority.
+  EXPECT_THAT(
+      result_.errors,
+      testing::UnorderedElementsAre(
+          "Failed to load https://adplatform.com/offers.js HTTP status ="
+          " 404 Not Found."));
+  EXPECT_EQ(absl::nullopt, result_.winning_group_id);
+  EXPECT_EQ(absl::nullopt, result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Auction with two interest groups participating, both with the same owner.
+// `enable_bidding_signals_prioritization` is set to true and the size limit is
+// one, so the worklets wait until all other worklets have received signals
+// before proceeding. However, the worklet's Javascript fails to load after
+// signals are received, which should safely fail the auction. This follows the
+// same path as if the worklet crashed, so no need to test crashing combined
+// with `enable_bidding_signals_prioritization`.
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsPriorityVectorSharedScriptLoadErrorBeforeSignals) {
+  url_loader_factory_.ClearResponses();
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders[0].interest_group.enable_bidding_signals_prioritization = true;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  all_buyers_group_limit_ = 1;
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+  // Seller script, bidder script, signals URL should all be pending.
+  EXPECT_EQ(3, url_loader_factory_.NumPending());
+
+  // Script loads fail. The auction should safely fail.
+  url_loader_factory_.AddResponse(kBidder1Url.spec(), "", net::HTTP_NOT_FOUND);
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(
+      result_.errors,
+      testing::UnorderedElementsAre(
+          "Failed to load https://adplatform.com/offers.js HTTP status ="
+          " 404 Not Found.",
+          "Failed to load https://adplatform.com/offers.js HTTP status ="
+          " 404 Not Found."));
+  EXPECT_EQ(absl::nullopt, result_.winning_group_id);
+  EXPECT_EQ(absl::nullopt, result_.ad_url);
+
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/1,
                   /*expected_sellers=*/1);
 }
 

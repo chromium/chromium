@@ -235,6 +235,9 @@ class InterestGroupAuction::BuyerHelper
           continue;
       }
 
+      if (bidder.interest_group.enable_bidding_signals_prioritization)
+        enable_bidding_signals_prioritization_ = true;
+
       auto state = std::make_unique<BidState>();
       state->bidder = std::move(bidder);
       state->calculated_priority = priority;
@@ -255,7 +258,16 @@ class InterestGroupAuction::BuyerHelper
       return;
     }
 
-    ApplySizeLimitAndSort();
+    if (!enable_bidding_signals_prioritization_) {
+      ApplySizeLimitAndSort();
+    } else {
+      // When not applying the size limit yet, still sort by priority, since
+      // worklets preserve the order they see requests in. This allows higher
+      // priority interest groups will get to bid first, and also groups
+      // interest groups by the origin they joined to potentially improve
+      // Javscript context reuse.
+      SortByPriorityAndGroupByJoinOrigin();
+    }
   }
 
   ~BuyerHelper() override = default;
@@ -268,6 +280,7 @@ class InterestGroupAuction::BuyerHelper
     DCHECK(!bid_states_.empty());
     DCHECK_EQ(0, num_outstanding_bids_);
     num_outstanding_bids_ = bid_states_.size();
+    num_outstanding_bidding_signals_received_calls_ = num_outstanding_bids_;
 
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
@@ -283,6 +296,25 @@ class InterestGroupAuction::BuyerHelper
   }
 
   // auction_worklet::mojom::GenerateBidClient implementation:
+
+  void OnBiddingSignalsReceived(
+      const base::flat_map<std::string, double>& priority_vector,
+      base::OnceClosure resume_generate_bid_callback) override {
+    BidState* state = generate_bid_client_receiver_set_.current_context();
+    absl::optional<double> new_priority;
+    if (!priority_vector.empty()) {
+      const auto& interest_group = state->bidder.interest_group;
+      new_priority = CalculateInterestGroupPriority(
+          *auction_->config_, interest_group, priority_vector,
+          (interest_group.priority_vector &&
+           !interest_group.priority_vector->empty())
+              ? state->calculated_priority
+              : absl::optional<double>());
+    }
+    OnBiddingSignalsReceivedInternal(state, new_priority,
+                                     std::move(resume_generate_bid_callback));
+  }
+
   void OnGenerateBidComplete(
       auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
       uint32_t bidding_signals_data_version,
@@ -417,6 +449,12 @@ class InterestGroupAuction::BuyerHelper
     auto rand_end = std::upper_bound(rand_begin, bid_states_.end(),
                                      min_priority, BidStatesDescByPriority());
     base::RandomShuffle(rand_begin, rand_end);
+    for (size_t i = size_limit_; i < bid_states_.size(); ++i) {
+      // Need to close pipes explicitly, as the state's GenerateBidClientPipe is
+      // owned by `generate_bid_client_receiver_set_`, deleting the bid isn't
+      // sufficient.
+      CloseBidStatePipes(*bid_states_[i]);
+    }
     bid_states_.resize(size_limit_);
 
     // Restore the origin grouping within lowest priority band among the
@@ -426,38 +464,51 @@ class InterestGroupAuction::BuyerHelper
   }
 
   // Called when the `bid_state` BidderWorklet crashes or fails to load.
-  // Invokes OnGenerateBidComplete() for the worklet with a failure.
+  // Invokes OnGenerateBidCompleteInternal() for the worklet with a failure.
   void OnBidderWorkletGenerateBidFatalError(
       BidState* bid_state,
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors) {
+    // Add error(s) directly to error list.
     if (fatal_error_type ==
         AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
       // Ignore default error message in case of crash. Instead, use a more
       // specific one.
-      OnGenerateBidCompleteInternal(
-          bid_state, auction_worklet::mojom::BidderWorkletBidPtr(),
-          /*bidding_signals_data_version=*/0,
-          /*has_bidding_signals_data_version=*/false,
-          /*debug_loss_report_url=*/absl::nullopt,
-          /*debug_win_report_url=*/absl::nullopt,
-          /*set_priority=*/0,
-          /*has_set_priority=*/false,
-          /*pa_requests=*/{},
-          {base::StrCat({bid_state->bidder.interest_group.bidding_url->spec(),
-                         " crashed while trying to run generateBid()."})});
+      auction_->errors_.push_back(
+          base::StrCat({bid_state->bidder.interest_group.bidding_url->spec(),
+                        " crashed while trying to run generateBid()."}));
+    } else {
+      auction_->errors_.insert(auction_->errors_.end(), errors.begin(),
+                               errors.end());
+    }
+
+    // If waiting on bidding signals, the bidder needs to be removed in the same
+    // way as if it had a new negative priority value, so reuse that logic. The
+    // bidder needs to be removed, and the remaining bidders potentially need to
+    // have the size limit applied and have their generate bid calls resumed, if
+    // they were waiting on this bidder. Therefore, can't just call
+    // OnGenerateBidCompleteInternal().
+    if (!bid_state->bidding_signals_received) {
+      OnBiddingSignalsReceivedInternal(bid_state,
+                                       /*new_priority=*/-1,
+                                       base::OnceClosure());
       return;
     }
 
-    // Otherwise, use error message from the worklet.
-    OnGenerateBidCompleteInternal(
-        bid_state, auction_worklet::mojom::BidderWorkletBidPtr(),
-        /*bidding_signals_data_version=*/0,
-        /*has_bidding_signals_data_version=*/false,
-        /*debug_loss_report_url=*/absl::nullopt,
-        /*debug_win_report_url=*/absl::nullopt,
-        /*set_priority=*/0, /*has_set_priority=*/false,
-        /*pa_requests=*/{}, errors);
+    // Otherwise call OnGenerateBidCompleteInternal() directly to complete the
+    // bid. This will also result in closing pipes. If
+    // `enable_bidding_signals_prioritization_` is true, the closed pipe will be
+    // noticed, and it will be removed before applying the priority filter.
+    OnGenerateBidCompleteInternal(bid_state,
+                                  auction_worklet::mojom::BidderWorkletBidPtr(),
+                                  /*bidding_signals_data_version=*/0,
+                                  /*has_bidding_signals_data_version=*/false,
+                                  /*debug_loss_report_url=*/absl::nullopt,
+                                  /*debug_win_report_url=*/absl::nullopt,
+                                  /*set_priority=*/0,
+                                  /*has_set_priority=*/false,
+                                  /*pa_requests=*/{},
+                                  /*errors=*/{});
   }
 
   // Invoked whenever the AuctionWorkletManager has provided a BidderWorket
@@ -507,6 +558,116 @@ class InterestGroupAuction::BuyerHelper
           FROM_HERE,
           base::BindOnce(&BuyerHelper::SendPendingSignalsRequestsForBidder,
                          weak_ptr_factory_.GetWeakPtr(), bid_state));
+    }
+  }
+
+  // Invoked when OnBiddingSignalsReceived() has been called for `state`, or
+  // with a negative priority when the worklet process has an error and is
+  // waiting on the OnBiddingSignalsReceived() invocation.
+  void OnBiddingSignalsReceivedInternal(
+      BidState* state,
+      absl::optional<double> new_priority,
+      base::OnceClosure resume_generate_bid_callback) {
+    DCHECK(!state->bidding_signals_received);
+    DCHECK(state->generate_bid_client_receiver_id);
+    DCHECK_GT(num_outstanding_bids_, 0);
+    DCHECK_GT(num_outstanding_bidding_signals_received_calls_, 0);
+    // `resume_generate_bid_callback` must be non-null except when invoked with
+    // a negative `net_priority` on worklet error.
+    DCHECK(resume_generate_bid_callback || *new_priority < 0);
+
+    state->bidding_signals_received = true;
+    --num_outstanding_bidding_signals_received_calls_;
+
+    // If `new_priority` has a value and is negative, need to record the bidder
+    // as no longer participating in the auction and cancel bid generation.
+    if (new_priority.has_value() && *new_priority < 0) {
+      // Record if there are other bidders, as if there are not, the next call
+      // may delete `this`.
+      bool other_bidders = (num_outstanding_bids_ > 1);
+
+      // If the result of applying the filter is negative, complete the bid
+      // with OnGenerateBidCompleteInternal(), which will close the relevant
+      // pipes and abort bid generation.
+      OnGenerateBidCompleteInternal(
+          state, auction_worklet::mojom::BidderWorkletBidPtr(),
+          /*bidding_signals_data_version=*/0,
+          /*has_bidding_signals_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt,
+          /*set_priority=*/0,
+          /*has_set_priority=*/false,
+          /*pa_requests=*/{},
+          /*errors=*/{});
+      // If this was the last bidder, and it was filtered out, there's nothing
+      // else to do, and `this` may have already been deleted.
+      if (!other_bidders)
+        return;
+
+      // If bidding_signals_prioritization is not enabled, there's also
+      // nothing else to do - no other bidders were blocked on the bidder's
+      // OnBiddingSignalsReceived() call.
+      if (!enable_bidding_signals_prioritization_)
+        return;
+    } else {
+      if (new_priority.has_value())
+        state->calculated_priority = *new_priority;
+      // Otherwise, invoke the callback to proceed to generate a bid, if don't
+      // need to prioritize / filter based on number of interest groups.
+      if (!enable_bidding_signals_prioritization_) {
+        std::move(resume_generate_bid_callback).Run();
+        return;
+      }
+
+      state->resume_generate_bid_callback =
+          std::move(resume_generate_bid_callback);
+    }
+
+    // Check if there are any outstanding OnBiddingSignalsReceived() calls. If
+    // so, need to sort interest groups by priority resume pending generate bid
+    // calls.
+    DCHECK(enable_bidding_signals_prioritization_);
+    if (num_outstanding_bidding_signals_received_calls_ > 0)
+      return;
+
+    // Remove Bid states that were filtered out due to having negative new
+    // priorities, as ApplySizeLimitAndSort() assumes all bidders are still
+    // potentially capable of generating bids. Do these all at once to avoid
+    // repeatedly searching for bid stats that had negative priority vector
+    // multiplication results, each time a priority vector is received.
+    for (size_t i = 0; i < bid_states_.size();) {
+      // Removing a bid is guaranteed to destroy the worklet handle, though not
+      // necessarily the `resume_generate_bid_callback` (in particular,
+      // OnBidderWorkletGenerateBidFatalError() calls OnGenerateBidInternal() if
+      // a worklet with a `resume_generate_bid_callback` already set crashes,
+      // but does not clear `resume_generate_bid_callback`, since doing so
+      // directly without closing the pipe first will DCHECK).
+      if (!bid_states_[i]->worklet_handle) {
+        // The GenerateBidClient pipe should also have been closed.
+        DCHECK(!bid_states_[i]->generate_bid_client_receiver_id);
+        // std::swap() instead of std::move() because self-move isn't guaranteed
+        // to work.
+        std::swap(bid_states_[i], bid_states_.back());
+        bid_states_.pop_back();
+        continue;
+      }
+      DCHECK(bid_states_[i]->resume_generate_bid_callback);
+      ++i;
+    }
+
+    // The above loop should have deleted any bid states not accounted for in
+    // `num_outstanding_bids_`.
+    DCHECK_EQ(static_cast<size_t>(num_outstanding_bids_), bid_states_.size());
+
+    ApplySizeLimitAndSort();
+
+    // Update `num_outstanding_bids_` to reflect the remaining number of pending
+    // bids, after applying the size limit.
+    num_outstanding_bids_ = bid_states_.size();
+
+    // Let all generate bid calls proceed.
+    for (auto& pending_state : bid_states_) {
+      std::move(pending_state->resume_generate_bid_callback).Run();
     }
   }
 
@@ -586,8 +747,10 @@ class InterestGroupAuction::BuyerHelper
     }
 
     --num_outstanding_bids_;
-    if (num_outstanding_bids_ == 0)
+    if (num_outstanding_bids_ == 0) {
+      DCHECK_EQ(num_outstanding_bidding_signals_received_calls_, 0);
       auction_->OnBidSourceDone();
+    }
   }
 
   // Calls SendPendingSignalsRequests() for the BidderWorklet of `bid_state`,
@@ -701,7 +864,8 @@ class InterestGroupAuction::BuyerHelper
 
   const url::Origin owner_;
 
-  // State of loaded interest groups owned by `owner_`.
+  // State of loaded interest groups owned by `owner_`. Use unique_ptrs so that
+  // pointers aren't invalidated by sorting / deleting BidStates.
   std::vector<std::unique_ptr<BidState>> bid_states_;
 
   // Per-BidState receivers. These can never be null. Uses unique_ptrs so that
@@ -710,7 +874,20 @@ class InterestGroupAuction::BuyerHelper
                               BidState*>
       generate_bid_client_receiver_set_;
 
+  int num_outstanding_bidding_signals_received_calls_ = 0;
   int num_outstanding_bids_ = 0;
+
+  // True if any interest group owned by `owner_` participating in this auction
+  // has `use_biddings_signals_prioritization` set to true. When this is true,
+  // all GenerateBid() calls will be deferred until OnBiddingSignalsReceived()
+  // has been invoked for all bidders (or they've failed to generate bids due to
+  // errors).
+  //
+  // TODO(mmenke): Could only set this to true if the number of bidders exceeds
+  // the per-buyer limit as well, and only the `priority_vector` as a filter for
+  // buyers with `use_biddings_signals_prioritization` set to true, as a small
+  // performance optimization.
+  bool enable_bidding_signals_prioritization_ = false;
 
   base::WeakPtrFactory<BuyerHelper> weak_ptr_factory_{this};
 };

@@ -94,10 +94,43 @@ struct BidderWorkletBid {
   mojo_base.mojom.TimeDelta bid_duration;
 };
 
-// Single use client for each GenerateBid() call.
+// Single use client for each GenerateBid() call. Allows deferring generating
+// bids until after a bidder's interest groups have all received priority
+// vectors, which allows for cancelling generate bid calls from lower priority
+// bidders based on data fetched from the trusted bidding signals URL.
+//
+// Needs a full callback interface because Mojo callbacks aren't otherwise
+// cancellable, and one GenerateBid call invokes two callbacks.
 interface GenerateBidClient {
+  // Invoked once the trusted bidding signals have been successfully fetched,
+  // or have failed to be fetched. Will be called even when the trusted bidding
+  // signals url is null, to allow simpler mixing of GenerateBid() calls with
+  // and without them. This allows the caller in the browser process to abort
+  // bid generation in the case that the interest group's new priority
+  // calculated using `priority_vector` results in filtering out the bid.
+  // It's called in the case of no priority vector because even when there's
+  // no change in priority, filtering out due to priority depends on the
+  // priorities of other interest groups owned by the same bidder, so the
+  // browser process needs to know if there's no priority vector before it
+  // can apply priority-based filtering.
+  //
+  // OnGenerateBidComplete() will only be invoked after the
+  // OnBiddingSignalsReceived() callback has been invoked, except on fatal
+  // errors, like failing to fetch the Javascript needed to run a worklet. If
+  // a fatal error occurs before OnBiddingSignalsReceived() has been invoked,
+  // the pipe will be closed without invoking it.
+  //
+  // Arguments:
+  //  `priority_vector` The priorityVector for the interest group received as
+  //   part of the trusted bidding signals, or an empty list, if no signals
+  //   were received, or the signals had not priorityVector for the interest
+  //   group that is generating a bid.
+  OnBiddingSignalsReceived(map<string, double> priority_vector) => ();
+
   // Invoked once GenerateBid completes, either having successfully generated a
   // bid, or having failed to generate one for any reason.
+  //
+  // Arguments:
   //
   // `bid` If the worklet is successfully loaded and chooses to bid in the
   //  auction, contains information about the bid. Null otherwise.
@@ -148,6 +181,11 @@ interface GenerateBidClient {
 // Manages the auction workflow for one loaded FLEDGE bidder worklet.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 //
+// Auctions involve running Javascript from multiple origins, so they
+// cannot be run within a single process. This API allows the browser
+// process to load Javascript FLEDGE worklets in other processes and
+// manage their lifetimes.
+//
 // The BidderWorklet is functionally stateless, so methods are idempotent
 // and can be called multiple times, in any order, for multiple auctions
 // using the same worklet. There is no need to wait for one callback to be
@@ -196,8 +234,8 @@ interface BidderWorklet {
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
-  // `generate_bid_client` On completion, its OnGenerateBidComplete()
-  //  method is called. Associated to retain priority ordering of calls.
+  // `generate_bid_client` Client that receives callbacks as GenerateBid()
+  //  progresses. Associated to retain priority ordering of calls.
   GenerateBid(
       BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
       url.mojom.Origin interest_group_join_origin,

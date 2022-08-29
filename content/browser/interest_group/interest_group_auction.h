@@ -204,6 +204,18 @@ class CONTENT_EXPORT InterestGroupAuction
     // generateBid() is running.
     absl::optional<mojo::ReceiverId> generate_bid_client_receiver_id;
 
+    // True when OnBiddingSignalsReceived() has been invoked. Needed to
+    // correctly handle the case the bidder worklet pipe is closed before
+    // OnBiddingSignalsReceived() is invoked.
+    bool bidding_signals_received = false;
+
+    // Callback to resume generating a bid after OnBiddingSignalsReceived() has
+    // been invoked. Only used when `enabled_bidding_signals_prioritization` is
+    // true for any interest group with the same owner, while waiting for all
+    // interest groups to receive their final priorities. In other cases, the
+    // callback is invoked immediately.
+    base::OnceClosure resume_generate_bid_callback;
+
     // True if the worklet successfully made a bid.
     bool made_bid = false;
 

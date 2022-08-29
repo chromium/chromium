@@ -162,6 +162,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     // reported on bid completion.
     absl::optional<std::string> trusted_bidding_signals_error_msg;
 
+    // Set to true once the callback sent to the OnBiddingSignalsReceived()
+    // method of `generate_bid_client` has been invoked. the Javascript
+    // generateBid() method will not be run until that happens.
+    bool signals_received_callback_invoked = false;
+
     mojo::AssociatedRemote<mojom::GenerateBidClient> generate_bid_client;
   };
 
@@ -315,6 +320,15 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
       GenerateBidTaskList::iterator task,
       scoped_refptr<TrustedSignals::Result> result,
       absl::optional<std::string> error_msg);
+
+  // Invoked when the GenerateBidClient associated with `task` is destroyed.
+  // Cancels bid generation.
+  void OnGenerateBidClientDestroyed(GenerateBidTaskList::iterator task);
+
+  // Callback passed to mojom::GenerateBidClient::OnSignalsReceived. Sets
+  // `task->signals_received_callback_invoked` to true, and invokes
+  // GenerateBidIfReady().
+  void SignalsReceivedCallback(GenerateBidTaskList::iterator task);
 
   // Checks if the script has been loaded successfully, and the
   // TrustedSignals load has finished (successfully or not). If so, calls
