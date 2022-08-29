@@ -86,7 +86,7 @@ class ReaderTestThread : public base::PlatformThread::Delegate {
          static_cast<uint32_t>(i) < thread_test_config_.dbg_commands[0].size();
          ++i) {
       // Spin to allow writer to jump in once in a while.
-      for (uint32_t _ = 0; _ < spin_amount_; ++_) {
+      for (uint32_t spinner = 0; spinner < spin_amount_; ++spinner) {
         ++spin_inc_var_;
       }
       // The position of the rect is used as a unique identifier
@@ -140,9 +140,10 @@ class WriterTestThread : public base::PlatformThread::Delegate {
   }
 
   void ThreadMain() override {
-    for (uint32_t _ = 0; _ < num_writer_tries_; ++_) {
+    for (uint32_t writer_try = 0; writer_try < num_writer_tries_;
+         ++writer_try) {
       // Spin to add delays before writer tries again.
-      for (uint32_t _ = 0; _ < spin_amount_; ++_) {
+      for (uint32_t spinner = 0; spinner < spin_amount_; ++spinner) {
         ++spin_inc_var_;
       }
       test_fixture_ptr_->GetFrameData(false);

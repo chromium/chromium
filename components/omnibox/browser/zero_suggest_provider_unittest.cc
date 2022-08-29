@@ -1680,20 +1680,20 @@ TEST_F(ZeroSuggestProviderTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(omnibox::kClobberTriggersSRPZeroSuggest);
 
-  // Set up the pref to cache the response from the previous run.
-  std::string json_response(
-      R"(["",["search1", "search2", "search3"],)"
-      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
-      R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
-  AutocompleteInput input = PrefetchingInputForSRP();
-  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
-      prefs, input.current_url().spec(), json_response);
 
   {
     base::HistogramTester histogram_tester;
 
     // Start a prefetch request.
+    AutocompleteInput input = PrefetchingInputForSRP();
+    // Set up the pref to cache the response from the previous run.
+    std::string json_response(
+        R"(["",["search1", "search2", "search3"],)"
+        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+        R"("google:verbatimrelevance":1300}])");
+    omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+        prefs, input.current_url().spec(), json_response);
     provider_->StartPrefetch(input);
     EXPECT_TRUE(provider_->done());
 
@@ -1824,20 +1824,20 @@ TEST_F(ZeroSuggestProviderTest,
   features.InitAndEnableFeature(
       omnibox::kClobberTriggersContextualWebZeroSuggest);
 
-  // Set up the pref to cache the response from the previous run.
-  std::string json_response(
-      R"(["",["search1", "search2", "search3"],)"
-      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
-      R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
-  AutocompleteInput input = PrefetchingInputForWeb();
-  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
-      prefs, input.current_url().spec(), json_response);
 
   {
     base::HistogramTester histogram_tester;
 
     // Start a prefetch request.
+    AutocompleteInput input = PrefetchingInputForWeb();
+    // Set up the pref to cache the response from the previous run.
+    std::string json_response(
+        R"(["",["search1", "search2", "search3"],)"
+        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+        R"("google:verbatimrelevance":1300}])");
+    omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+        prefs, input.current_url().spec(), json_response);
     provider_->StartPrefetch(input);
     EXPECT_TRUE(provider_->done());
 

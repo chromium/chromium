@@ -35,7 +35,7 @@ class WriterThread : public base::PlatformThread::Delegate {
   WriterThread() = default;
 
   void ThreadMain() override {
-    for (uint32_t _ = 0; _ < kNumWriterTries; ++_) {
+    for (uint32_t writer_try = 0; writer_try < kNumWriterTries; ++writer_try) {
       RWLockTest::test_rwlock.WriteLock();
 
       for (int i = 0; i < size_; ++i) {
@@ -81,7 +81,7 @@ class ReaderThread : public base::PlatformThread::Delegate {
   ReaderThread& operator=(const ReaderThread&) = delete;
 
   void ThreadMain() override {
-    for (uint32_t _ = 0; _ < kNumCounts; ++_) {
+    for (uint32_t count = 0; count < kNumCounts; ++count) {
       RWLockTest::test_rwlock.ReadLock();
       ++(*array_)[array_index];
       RWLockTest::test_rwlock.ReadUnlock();

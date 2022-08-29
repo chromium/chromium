@@ -183,16 +183,16 @@ void SelectorObserver::OnGetElementsResponse(
     DomObjectFrameStack element_dom_object;
     element_dom_object.object_data.object_id = element_object_id_entry->second;
     element_dom_object.object_data.node_frame_id = dom_root.frame_id();
-    const auto entry = frame_ids_.find(dom_root);
-    if (entry != frame_ids_.end()) {
+    if (const auto entry = frame_ids_.find(dom_root);
+        entry != frame_ids_.end()) {
       element_dom_object.render_frame_id = entry->second.global_frame_id;
     }
     size_t depth = 1;
     std::string prev_frame_id = "";
     auto it = dom_roots_.find(std::make_pair(element.selector_id, depth++));
     while (it != dom_roots_.end() && it->second != dom_root) {
-      const auto entry = frame_ids_.find(it->second);
-      if (entry != frame_ids_.end()) {
+      if (const auto entry = frame_ids_.find(it->second);
+          entry != frame_ids_.end()) {
         JsObjectIdentifier frame;
         frame.object_id = entry->second.devtools_id;
         frame.node_frame_id = prev_frame_id;

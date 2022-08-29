@@ -6607,13 +6607,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromRenderPassQuads) {
   // Both CompositorRenderPass are built with
   // has_damage_from_contributing_content set to true.
   {
-    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    CompositorFrame root_frame_2 = MakeEmptyCompositorFrame();
     root_passes[0].has_damage_from_contributing_content = true;
-    AddPasses(&root_frame.render_pass_list, root_passes,
-              &root_frame.metadata.referenced_surfaces);
+    AddPasses(&root_frame_2.render_pass_list, root_passes,
+              &root_frame_2.metadata.referenced_surfaces);
 
     root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
-                                      std::move(root_frame));
+                                      std::move(root_frame_2));
 
     CompositorFrame child_frame = MakeEmptyCompositorFrame();
     child_passes[0].has_damage_from_contributing_content = true;

@@ -4870,10 +4870,10 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {
   FormData form;
   form.url = GURL("http://www.foo.com/");
-  FormFieldData field;
-  field.name = u"text field";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormFieldData field_data;
+  field_data.name = u"text field";
+  field_data.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field_data);
 
   FormStructure form_structure(form);
   for (auto& field : form_structure)
@@ -8244,11 +8244,12 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
                             AllOf(Not(NO_SERVER_DATA), Not(UNKNOWN_TYPE))))));
 
   for (PatternSource other_pattern_source : other_pattern_sources()) {
-    auto get_heuristic_type = [&](const AutofillField& field) {
+    auto get_other_pattern_heuristic_type = [&](const AutofillField& field) {
       return field.heuristic_type(other_pattern_source);
     };
     EXPECT_THAT(test_api(&form_structure).fields(),
-                Each(Pointee(ResultOf(get_heuristic_type, NO_SERVER_DATA))))
+                Each(Pointee(ResultOf(get_other_pattern_heuristic_type,
+                                      NO_SERVER_DATA))))
         << "PatternSource = " << static_cast<int>(other_pattern_source);
   }
 }
