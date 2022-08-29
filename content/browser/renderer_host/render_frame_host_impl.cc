@@ -2907,7 +2907,10 @@ gfx::AcceleratedWidget
 RenderFrameHostImpl::AccessibilityGetAcceleratedWidget() {
   // Only the active RenderFrameHost is connected to the native widget tree for
   // accessibility, so return null if this is queried on any other frame.
-  if (!is_main_frame() || !IsActive())
+  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
+  // and so is_main_frame should not be used to identify all embedded frames.
+  // Follow up to confirm correctness.
+  if (!AccessibilityIsMainFrame() || !IsActive())
     return gfx::kNullAcceleratedWidget;
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -3069,7 +3072,10 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     // frames arguably are renderer-created.
     //
     // TODO(https://crbug.com/1194421): Address the prerendering case.
-    if (is_main_frame() && !renderer_initiated_creation_of_main_frame &&
+    // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
+    // and so is_main_frame should not be used to identify all embedded frames.
+    // Follow up to confirm correctness.
+    if (IsOutermostMainFrame() && !renderer_initiated_creation_of_main_frame &&
         lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
       policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
     }
@@ -3388,6 +3394,8 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     // (1) to allow the process to be potentially reused by future navigations
     // withjin a short time window, and
     // (2) to give the subframe unload handlers a chance to execute.
+    // TODO(crbug.com/1356280): consider delaying process shutdown for fenced
+    // frames.
     if (!is_main_frame() && IsActive()) {
       base::TimeDelta subframe_shutdown_timeout =
           frame_tree_->IsBeingDestroyed()
@@ -7025,7 +7033,10 @@ void RenderFrameHostImpl::CapturePaintPreviewOfSubframe(
           DisallowActivationReasonId::kCapturePaintPreview))
     return;
   // This should only be called on a subframe.
-  if (is_main_frame()) {
+  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
+  // and so is_main_frame should not be used to identify all embedded frames.
+  // Follow up to confirm correctness.
+  if (IsOutermostMainFrame()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_SUBFRAME_CAPTURE_ON_MAIN_FRAME);
     return;
@@ -8334,10 +8345,12 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
       type == BeforeUnloadType::INNER_DELEGATE_ATTACH;
   DCHECK(for_navigation || for_inner_delegate_attach || !is_reload);
 
-  // TAB_CLOSE and DISCARD should only dispatch beforeunload on main frames.
+  // TAB_CLOSE and DISCARD should only dispatch beforeunload on outermost main
+  // frames.
   DCHECK(type == BeforeUnloadType::BROWSER_INITIATED_NAVIGATION ||
          type == BeforeUnloadType::RENDERER_INITIATED_NAVIGATION ||
-         type == BeforeUnloadType::INNER_DELEGATE_ATTACH || is_main_frame());
+         type == BeforeUnloadType::INNER_DELEGATE_ATTACH ||
+         IsOutermostMainFrame());
 
   if (!for_navigation) {
     // Cancel any pending navigations, to avoid their navigation commit/fail
@@ -8823,6 +8836,10 @@ void RenderFrameHostImpl::CommitNavigation(
         "CommitNavigation", "commit_origin",
         common_params->url.DeprecatedGetOriginAsURL().spec());
     SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_main_frame", is_main_frame());
+    // The reason this isn't is_outermost_main_frame is so that the full name of
+    // the key does not exceed the 40 character limit.
+    SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_outermost_frame",
+                          IsOutermostMainFrame());
     NOTREACHED() << "Commiting in incompatible process for URL: "
                  << process_lock.lock_url() << " lock vs "
                  << common_params->url.DeprecatedGetOriginAsURL();
@@ -10232,7 +10249,10 @@ ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
 
 ui::AXTreeID RenderFrameHostImpl::GetFocusedAXTreeID() {
   // If this is not the root frame tree node, we're done.
-  if (!is_main_frame())
+  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
+  // and so is_main_frame should not be used to identify all embedded frames.
+  // Follow up to confirm correctness.
+  if (!AccessibilityIsMainFrame())
     return ui::AXTreeIDUnknown();
 
   RenderFrameHostImpl* focused_frame = delegate_->GetFocusedFrame();
@@ -10601,12 +10621,16 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
   auto is_shutting_down_cb = base::BindRepeating(
       []() { return GetContentClient()->browser()->IsShuttingDown(); });
 
+  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
+  // and so is_main_frame should not be used to identify all embedded frames.
+  // Follow up to confirm correctness.
   media::MediaMetricsProvider::Create(
       GetProcess()->GetBrowserContext()->IsOffTheRecord()
           ? media::MediaMetricsProvider::BrowsingMode::kIncognito
           : media::MediaMetricsProvider::BrowsingMode::kNormal,
-      is_main_frame() ? media::MediaMetricsProvider::FrameStatus::kTopFrame
-                      : media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
+      IsOutermostMainFrame()
+          ? media::MediaMetricsProvider::FrameStatus::kTopFrame
+          : media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
       GetPage().last_main_document_source_id(),
       media::learning::FeatureValue(GetLastCommittedOrigin().host()),
       std::move(save_stats_cb),
@@ -12304,7 +12328,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       BuildCommitNavigationCallback(navigation_request));
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",
-                    is_main_frame() ? "MainFrame" : "Subframe"}),
+                    IsOutermostMainFrame() ? "MainFrame" : "Subframe"}),
       timer.Elapsed());
 }
 
@@ -12671,6 +12695,12 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       "is_main_frame", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_main_frame_key,
                                  bool_to_crash_key(is_main_frame()));
+
+  static auto* const is_outermost_frame_key =
+      base::debug::AllocateCrashKeyString("is_outermost_frame",
+                                          base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(is_outermost_frame_key,
+                                 bool_to_crash_key(IsOutermostMainFrame()));
 
   static auto* const is_cross_process_subframe_key =
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
@@ -13904,21 +13934,22 @@ void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
   // have |is_cross_origin_frame| set to false, even though this frame is cross-
   // origin from its parent frame B. This value is only used in manual analysis.
   bool is_cross_origin_frame =
-      !is_main_frame() &&
-      !GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(origin);
+      !IsOutermostMainFrame() &&
+      !GetOutermostMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
+          origin);
 
   // Compares the subframe site with the main frame site. In the case of
   // nested subframes such as A(B(A)), the bottom-most frame A is expected to
   // have |is_cross_site_frame| set to false, even though this frame is cross-
   // site from its parent frame B. This value is only used in manual analysis.
   bool is_cross_site_frame =
-      !is_main_frame() &&
+      !IsOutermostMainFrame() &&
       (net::SchemefulSite(origin) !=
-       net::SchemefulSite(GetMainFrame()->GetLastCommittedOrigin()));
+       net::SchemefulSite(GetOutermostMainFrame()->GetLastCommittedOrigin()));
 
   ukm::builders::DocumentCreated(document_ukm_source_id)
       .SetNavigationSourceId(GetPageUkmSourceId())
-      .SetIsMainFrame(is_main_frame())
+      .SetIsMainFrame(IsOutermostMainFrame())
       .SetIsCrossOriginFrame(is_cross_origin_frame)
       .SetIsCrossSiteFrame(is_cross_site_frame)
       .Record(ukm_recorder);

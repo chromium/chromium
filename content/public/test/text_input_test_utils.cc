@@ -310,8 +310,10 @@ bool DestroyRenderWidgetHost(int32_t process_id,
   while (!rfh->is_local_root())
     rfh = rfh->GetParent();
 
+  DCHECK(rfh->GetPage().IsPrimary())
+      << "Only implemented for frames in a primary page";
   FrameTreeNode* ftn = rfh->frame_tree_node();
-  if (rfh->is_main_frame()) {
+  if (rfh->IsOutermostMainFrame()) {
     WebContents::FromRenderFrameHost(rfh)->Close();
   } else {
     ftn->frame_tree()->RemoveFrame(ftn);
