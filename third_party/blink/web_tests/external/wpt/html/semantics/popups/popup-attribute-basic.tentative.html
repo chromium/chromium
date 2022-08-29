@@ -17,6 +17,8 @@
   <header popup>Different element type</header>
   <nav popup>Different element type</nav>
   <input type=text popup value="Different element type">
+  <dialog popup>Dialog with popup attribute</dialog>
+  <dialog popup="manual">Dialog with popup=manual</dialog>
   <div popup=true>Invalid popup value - defaults to popup=manual</div>
   <div popup=popup>Invalid popup value - defaults to popup=manual</div>
   <div popup=invalid>Invalid popup value - defaults to popup=manual</div>
@@ -24,6 +26,7 @@
 
 <div id=nonpopups>
   <div>Not a pop-up</div>
+  <dialog open>Dialog without popup attribute</dialog>
 </div>
 
 <div popup class=animated>Animated pop-up</div>

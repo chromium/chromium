@@ -2588,7 +2588,7 @@ void Element::showPopUp(ExceptionState& exception_state) {
   document.AddToTopLayer(this);
   // Remove display:none styling:
   GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
-  PseudoStateChanged(CSSSelector::kPseudoPopupHidden);
+  PseudoStateChanged(CSSSelector::kPseudoPopupOpeningOrOpen);
 
   // Force a style update. This ensures that base property values are set prior
   // to `:open` matching, so that transitions can start on the change to
@@ -2816,7 +2816,7 @@ void Element::PopupHideFinishIfNeeded() {
   if (GetPopupData()) {
     GetPopupData()->setVisibilityState(PopupVisibilityState::kHidden);
     GetPopupData()->setAnimationFinishedListener(nullptr);
-    PseudoStateChanged(CSSSelector::kPseudoPopupHidden);
+    PseudoStateChanged(CSSSelector::kPseudoPopupOpeningOrOpen);
   }
 }
 

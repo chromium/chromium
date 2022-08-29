@@ -1367,7 +1367,9 @@ textarea[dir=auto i] {
     unicode-bidi: plaintext;
 }
 
-dialog:not([open]) {
+/* The `,[popup]:-internal-popup-opening-or-open` is to support the pop-up API, and
+   has no effect if the HTMLPopupAttribute feature is disabled. */
+dialog:not([open],[popup]:-internal-popup-opening-or-open) {
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     display: none;
 }

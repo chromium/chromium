@@ -9,8 +9,8 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-[popup]:-internal-popup-hidden {
-  display: none;
+[popup]:not(:-internal-popup-opening-or-open,dialog[open]) {
+  display:none;
 }
 
 [popup] {

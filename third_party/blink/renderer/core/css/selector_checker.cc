@@ -1504,18 +1504,19 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return element.popupOpen();
       }
       return false;
-    case CSSSelector::kPseudoPopupHidden:
+    case CSSSelector::kPseudoPopupOpeningOrOpen:
       if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
               element.GetDocument().GetExecutionContext())) {
+        // The html.css UA stylesheet contains a rule for <dialog> elements
+        // that uses this pseudo, with `dialog:not(this_pseudo)`, so it's
+        // important to *not* match when the feature is *disabled*.
         return false;
       }
       if (element.HasPopupAttribute()) {
-        return element.GetPopupData()->visibilityState() ==
+        return element.GetPopupData()->visibilityState() !=
                PopupVisibilityState::kHidden;
       }
-      // Invalid values of the `popup` attribute should match the
-      // :-internal-popup-hidden pseudo selector.
-      return element.FastHasAttribute(html_names::kPopupAttr);
+      return false;
     case CSSSelector::kPseudoFullscreen:
     // fall through
     case CSSSelector::kPseudoFullScreen:
