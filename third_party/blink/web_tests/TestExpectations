@@ -4174,6 +4174,7 @@ crbug.com/831942 media/webkit-media-controls-webkit-appearance.html [ Failure Pa
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Skip ]
 crbug.com/832169 media/media-controls-fit-properly-while-zoomed.html [ Failure Pass ]
 crbug.com/849694 [ Mac ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
+crbug.com/1348591 [ Win ] http/tests/media/controls/playback-speed-button-infinite-duration.html [ Failure Pass ]
 
 # Tests currently failing on Windows when run on Swarming
 crbug.com/757165 [ Win ] compositing/culling/filter-occlusion-blur.html [ Skip ]
