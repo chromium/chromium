@@ -224,7 +224,7 @@ bool PaintController::UseCachedSubsequenceIfPossible(
   ++num_cached_new_subsequences_;
 
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
-    EnsureUnderInvalidationChecker().WouldUseCachedSubsequence(client);
+    EnsureUnderInvalidationChecker().WouldUseCachedSubsequence(client.Id());
     // Return false to let the painter actually paint. We will check if the new
     // painting is the same as the cached one.
     return false;

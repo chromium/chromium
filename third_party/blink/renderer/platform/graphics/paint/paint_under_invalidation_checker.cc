@@ -27,19 +27,19 @@ PaintUnderInvalidationChecker::~PaintUnderInvalidationChecker() {
 bool PaintUnderInvalidationChecker::IsChecking() const {
   if (old_item_index_ != kNotFound) {
     DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
-    DCHECK(!subsequence_client_ ||
+    DCHECK(subsequence_client_id_ == kInvalidDisplayItemClientId ||
            (old_chunk_index_ != kNotFound && new_chunk_index_ != kNotFound));
     return true;
   }
 
-  DCHECK(!subsequence_client_);
+  DCHECK_EQ(subsequence_client_id_, kInvalidDisplayItemClientId);
   DCHECK_EQ(old_chunk_index_, kNotFound);
   DCHECK_EQ(new_chunk_index_, kNotFound);
   return false;
 }
 
 bool PaintUnderInvalidationChecker::IsCheckingSubsequence() const {
-  if (subsequence_client_) {
+  if (subsequence_client_id_ != kInvalidDisplayItemClientId) {
     DCHECK(IsChecking());
     return true;
   }
@@ -51,7 +51,7 @@ void PaintUnderInvalidationChecker::Stop() {
   old_chunk_index_ = kNotFound;
   new_chunk_index_ = kNotFound;
   old_item_index_ = kNotFound;
-  subsequence_client_ = nullptr;
+  subsequence_client_id_ = kInvalidDisplayItemClientId;
 }
 
 void PaintUnderInvalidationChecker::WouldUseCachedItem(
@@ -91,7 +91,7 @@ void PaintUnderInvalidationChecker::CheckNewItem() {
       old_item.IsCacheable() ? PaintInvalidationReason::kNone
                              : PaintInvalidationReason::kUncacheable);
 
-  if (subsequence_client_) {
+  if (subsequence_client_id_ != kInvalidDisplayItemClientId) {
     // We are checking under-invalidation of a cached subsequence.
     ++old_item_index_;
   } else {
@@ -101,15 +101,15 @@ void PaintUnderInvalidationChecker::CheckNewItem() {
 }
 
 void PaintUnderInvalidationChecker::WouldUseCachedSubsequence(
-    const DisplayItemClient& client) {
+    DisplayItemClientId client_id) {
   DCHECK(!IsChecking());
 
-  const auto* markers = paint_controller_.GetSubsequenceMarkers(client.Id());
+  const auto* markers = paint_controller_.GetSubsequenceMarkers(client_id);
   DCHECK(markers);
   old_chunk_index_ = markers->start_chunk_index;
   new_chunk_index_ = NewPaintChunks().size();
   old_item_index_ = OldPaintChunks()[markers->start_chunk_index].begin_index;
-  subsequence_client_ = &client;
+  subsequence_client_id_ = client_id;
 }
 
 void PaintUnderInvalidationChecker::CheckNewChunk() {
@@ -151,14 +151,14 @@ void PaintUnderInvalidationChecker::WillEndSubsequence(
     }
   }
 
-  if (subsequence_client_->Id() == client_id)
+  if (subsequence_client_id_ == client_id)
     Stop();
 }
 
 void PaintUnderInvalidationChecker::CheckNewChunkInternal() {
-  DCHECK(subsequence_client_);
+  DCHECK_NE(subsequence_client_id_, kInvalidDisplayItemClientId);
   const auto* markers =
-      paint_controller_.GetSubsequenceMarkers(subsequence_client_->Id());
+      paint_controller_.GetSubsequenceMarkers(subsequence_client_id_);
   DCHECK(markers);
   const auto& new_chunk = NewPaintChunks()[new_chunk_index_];
   if (old_chunk_index_ >= markers->end_chunk_index) {
@@ -179,9 +179,11 @@ void PaintUnderInvalidationChecker::ShowItemError(
     const char* reason,
     const DisplayItem& new_item,
     const DisplayItem* old_item) const {
-  if (subsequence_client_) {
+  if (subsequence_client_id_ != kInvalidDisplayItemClientId) {
     LOG(ERROR) << "(In cached subsequence for "
-               << subsequence_client_->DebugName() << ")";
+               << paint_controller_.new_paint_artifact_->ClientDebugName(
+                      subsequence_client_id_)
+               << ")";
   }
   LOG(ERROR) << "Under-invalidation: " << reason;
 #if DCHECK_IS_ON()
@@ -217,14 +219,16 @@ void PaintUnderInvalidationChecker::ShowSubsequenceError(
     DisplayItemClientId client_id,
     const PaintChunk* new_chunk,
     const PaintChunk* old_chunk) {
-  if (subsequence_client_) {
+  if (subsequence_client_id_ != kInvalidDisplayItemClientId) {
     LOG(ERROR) << "(In cached subsequence for "
-               << subsequence_client_->DebugName() << ")";
+               << paint_controller_.new_paint_artifact_->ClientDebugName(
+                      subsequence_client_id_)
+               << ")";
   }
   LOG(ERROR) << "Under-invalidation: " << reason;
   if (client_id != kInvalidDisplayItemClientId) {
-    // |client| may be different from |subsequence_client_| if the error occurs
-    // in a descendant subsequence of the cached subsequence.
+    // |client_id| may be different from |subsequence_client_id_| if the error
+    // occurs in a descendant subsequence of the cached subsequence.
     LOG(ERROR) << "Subsequence client: "
                << paint_controller_.new_paint_artifact_->ClientDebugName(
                       client_id);

@@ -6,13 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class DisplayItem;
-class DisplayItemClient;
 class DisplayItemList;
 class PaintController;
 struct PaintChunk;
@@ -37,7 +35,7 @@ class PaintUnderInvalidationChecker {
   // Called from PaintController::UseCachedSubsequenceIfPossible() to inform
   // that PaintController would use a cached subsequence if we were not checking
   // under-invalidations.
-  void WouldUseCachedSubsequence(const DisplayItemClient&);
+  void WouldUseCachedSubsequence(DisplayItemClientId);
   void CheckNewChunk();
   void WillEndSubsequence(DisplayItemClientId client_id,
                           wtf_size_t start_chunk_index);
@@ -70,7 +68,8 @@ class PaintUnderInvalidationChecker {
   // Points to the next new paint chunk which will be checked when it's
   // complete.
   wtf_size_t new_chunk_index_ = kNotFound;
-  WeakPersistent<const DisplayItemClient> subsequence_client_ = nullptr;
+
+  DisplayItemClientId subsequence_client_id_ = kInvalidDisplayItemClientId;
 };
 
 }  // namespace blink
