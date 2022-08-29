@@ -511,7 +511,7 @@ void Clean(UpdaterScope scope) {
   }
 
   if (scope == UpdaterScope::kUser) {
-    base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
+    base::win::RegKey(root, REGSTR_PATH_RUN, KEY_WRITE)
         .DeleteValue(GetTaskNamePrefix(scope).c_str());
   }
 
