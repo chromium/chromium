@@ -1462,7 +1462,7 @@
           "--board=jacuzzi",
           "--flash"
         ],
-        "experiment_percentage": 5,
+        "experiment_percentage": 50,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
