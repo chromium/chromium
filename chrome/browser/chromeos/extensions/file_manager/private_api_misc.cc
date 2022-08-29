@@ -1267,6 +1267,11 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
     }
   }
 
+  // During this conversion a GET_METADATA_FIELD_IS_DIRECTORY will be triggered
+  // in file_system_context.cc DidOpenFileSystemForResolveURL() which will
+  // might not use file_definition.is_directory in some scenarios, which will
+  // make entry_definition's is_directory become true, so in the callback we
+  // need to filter out is_directory=true.
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
       file_manager::util::GetFileSystemContextForSourceURL(profile,
                                                            source_url()),
@@ -1282,6 +1287,15 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
         std::unique_ptr<file_manager::util::EntryDefinitionList>
             entry_definition_list) {
   DCHECK(entry_definition_list);
+
+  // Remove all directories entries.
+  entry_definition_list->erase(
+      std::remove_if(entry_definition_list->begin(),
+                     entry_definition_list->end(),
+                     [](const file_manager::util::EntryDefinition& e) {
+                       return e.is_directory == true;
+                     }),
+      entry_definition_list->end());
 
   Respond(
       WithArguments(file_manager::util::ConvertEntryDefinitionListToListValue(
