@@ -152,8 +152,10 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
       network::mojom::ResolveHostParameters::New();
   PrepareRequestInfo(hint, parameters.get());
 
+  // Intentionally using a HostPortPair because scheme isn't specified.
   storage_partition->GetNetworkContext()->ResolveHost(
-      net::HostPortPair(host_port.host, host_port.port),
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair(host_port.host, host_port.port)),
       render_frame_host->GetNetworkIsolationKey(), std::move(parameters),
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(

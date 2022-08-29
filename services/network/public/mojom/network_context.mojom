@@ -1319,8 +1319,17 @@ interface NetworkContext {
   // HostResolver::ResolveHost.
   //
   // All outstanding requests are cancelled if the NetworkContext is destroyed.
-  // Such requests will receive ERR_FAILED via |response_client|.
-  ResolveHost(HostPortPair host,
+  // Such requests will receive ERR_FAILED via `response_client`.
+  //
+  // When `host` is a SchemeHostPort, behaves under the assumption that the
+  // resolution is being done for the purpose of making a connection with the
+  // specified scheme to the specified host and port. This could result in
+  // scheme-specific DNS queries, e.g. for HTTPS resource records, and special
+  // errors if DNS indicates a connection should not be made using the
+  // specified scheme, e.g. ERR_DNS_NAME_HTTPS_ONLY indicates that a connection
+  // should not be made without first redirecting an http or ws request to an
+  // https or wss request.
+  ResolveHost(HostResolverHost host,
               NetworkIsolationKey network_isolation_key,
               ResolveHostParameters? optional_parameters,
               pending_remote<ResolveHostClient> response_client);

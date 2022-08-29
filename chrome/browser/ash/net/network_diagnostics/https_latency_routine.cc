@@ -127,7 +127,10 @@ void HttpsLatencyRoutine::HostResolver::Run(const GURL& url) {
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
-  host_resolver_->ResolveHost(net::HostPortPair::FromURL(url),
+  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
+  // DNS resource record query.
+  host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                                  net::HostPortPair::FromURL(url)),
                               net::NetworkIsolationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());

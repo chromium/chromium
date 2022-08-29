@@ -32,17 +32,17 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  // Yes, we are passing zero as the port. There are some interesting but not
-  // presently relevant reasons why HostResolver asks for the port of the
-  // hostname you'd like to resolve, even though it doesn't use that value in
-  // determining its answer.
+  // Intentionally pass host only (no scheme or non-zero port) to only get a
+  // basic resolution for the hostname itself.
   net::HostPortPair host_port_pair(params->hostname, 0);
   url::Origin origin = extension_->origin();
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
-      ->ResolveHost(host_port_pair, net::NetworkIsolationKey(origin, origin),
-                    nullptr, receiver_.BindNewPipeAndPassRemote());
+      ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                        std::move(host_port_pair)),
+                    net::NetworkIsolationKey(origin, origin), nullptr,
+                    receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&DnsResolveFunction::OnComplete, base::Unretained(this),
                      net::ERR_NAME_NOT_RESOLVED,

@@ -159,10 +159,13 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
     DCHECK(!receiver_.is_bound());
 
     net::HostPortPair host_port_pair(host, port);
+    // Intentionally using a HostPortPair because scheme isn't specified.
     // Use a transient NetworkIsolationKey, as there's no need to share cached
     // DNS results from this request with anything else.
     profile->GetDefaultStoragePartition()->GetNetworkContext()->ResolveHost(
-        host_port_pair, net::NetworkIsolationKey::CreateTransient(), nullptr,
+        network::mojom::HostResolverHost::NewHostPortPair(
+            std::move(host_port_pair)),
+        net::NetworkIsolationKey::CreateTransient(), nullptr,
         receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&PortForwardingHostResolver::OnComplete,

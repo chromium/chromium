@@ -267,10 +267,14 @@ void NetInternalsMessageHandler::OnResolveHost(const base::Value::List& list) {
 
   // When ResolveHost() in network process completes, OnResolveHostDone() method
   // is called.
+  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
+  // DNS resource record query.
   mojo::PendingReceiver<network::mojom::ResolveHostClient> receiver;
-  GetNetworkContext()->ResolveHost(host_port_pair, net::NetworkIsolationKey(),
-                                   /*optional_parameters=*/nullptr,
-                                   receiver.InitWithNewPipeAndPassRemote());
+  GetNetworkContext()->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          std::move(host_port_pair)),
+      net::NetworkIsolationKey(),
+      /*optional_parameters=*/nullptr, receiver.InitWithNewPipeAndPassRemote());
 
   auto callback = base::BindOnce(&NetInternalsMessageHandler::OnResolveHostDone,
                                  weak_factory_.GetWeakPtr(), *callback_id);

@@ -223,9 +223,11 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   network::mojom::ResolveHostParametersPtr params =
       network::mojom::ResolveHostParameters::New();
   params->dns_query_type = dns_query_type;
+  // Intentionally using a HostPortPair because scheme isn't specified.
   host_resolver_->ResolveHost(
-      host_port_pair, net::NetworkIsolationKey(origin, origin),
-      std::move(params), receiver_.BindNewPipeAndPassRemote());
+      network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
+      net::NetworkIsolationKey(origin, origin), std::move(params),
+      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&SocketExtensionWithDnsLookupFunction::OnComplete,
                      base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,

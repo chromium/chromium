@@ -64,7 +64,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
   ~FakeHostResolver() override {}
 
   // network::mojom::HostResolver
-  void ResolveHost(const net::HostPortPair& host,
+  void ResolveHost(network::mojom::HostResolverHostPtr host,
                    const net::NetworkIsolationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    mojo::PendingRemote<network::mojom::ResolveHostClient>

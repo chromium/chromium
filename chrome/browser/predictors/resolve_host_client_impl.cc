@@ -18,6 +18,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace predictors {
 
@@ -36,9 +37,14 @@ ResolveHostClientImpl::ResolveHostClientImpl(
   parameters->purpose =
       network::mojom::ResolveHostParameters::Purpose::kPreconnect;
   resolve_host_start_time_ = base::TimeTicks::Now();
-  network_context->ResolveHost(net::HostPortPair::FromURL(url),
-                               network_isolation_key, std::move(parameters),
-                               receiver_.BindNewPipeAndPassRemote());
+  // Intentionally using a SchemeHostPort. Resolving http:// scheme host will
+  // fail when a HTTPS resource record exists due to DNS-based scheme upgrade
+  // functionality.
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewSchemeHostPort(
+          url::SchemeHostPort(url)),
+      network_isolation_key, std::move(parameters),
+      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostClientImpl::OnConnectionError, base::Unretained(this)));
 }

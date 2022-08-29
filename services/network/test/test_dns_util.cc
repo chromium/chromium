@@ -78,8 +78,11 @@ DnsLookupResult BlockingDnsLookup(
     const net::NetworkIsolationKey& network_isolation_key) {
   mojo::PendingRemote<network::mojom::ResolveHostClient> client;
   DnsLookupClient dns_lookup_client(client.InitWithNewPipeAndPassReceiver());
-  network_context->ResolveHost(host_port_pair, network_isolation_key,
-                               std::move(params), std::move(client));
+  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
+  // DNS resource record query.
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
+      network_isolation_key, std::move(params), std::move(client));
   return dns_lookup_client.WaitForResult();
 }
 

@@ -11,6 +11,7 @@ import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/request_priority.mojom";
+import "url/mojom/scheme_host_port.mojom";
 
 struct DnsOverHttpsServerConfig {
   string server_template;
@@ -46,6 +47,12 @@ enum SecureDnsPolicy {
   DISABLE,
   // The "bootstrap" policy is only used within the network process, so it is
   // not exposed via Mojo.
+};
+
+// The target host of ResolveHost method.
+union HostResolverHost {
+  url.mojom.SchemeHostPort scheme_host_port;
+  HostPortPair host_port_pair;
 };
 
 // Overridable DNS configuration values for host resolution. All fields default
@@ -286,15 +293,15 @@ interface MdnsListenClient {
 interface HostResolver {
   // Resolves the given hostname (or IP address literal). Results are a network
   // error code, and on success (network error code OK), an AddressList. All
-  // results are sent via the passed |response_client|.
+  // results are sent via the passed `response_client`.
   //
-  // |network_isolation_key| specifies what NetworkIsolationKey to use as an
+  // `network_isolation_key` specifies what NetworkIsolationKey to use as an
   // index into the host cache. This both allows a URLLoader created with the
   // same NetworkIsolationKey to access the host cache entry populated by a
   // call to the HostResolver, and prevents the result from being leaked to
   // URLLoaders made using a different NetworkIsolationKey.
   //
-  // Additional optional parameters may be set using |optional_parameters|. If
+  // Additional optional parameters may be set using `optional_parameters`. If
   // unset, reasonable defaults will be used, equivalent to using a
   // ResolveHostParameters struct without changing any fields from their default
   // values.
@@ -304,8 +311,17 @@ interface HostResolver {
   //
   // All outstanding requests are cancelled if the HostResolver or parent
   // NetworkContext are destroyed. Such requests will receive ERR_FAILED via
-  // |response_client|.
-  ResolveHost(HostPortPair host,
+  // `response_client`.
+  //
+  // When `host` is a SchemeHostPort, behaves under the assumption that the
+  // resolution is being done for the purpose of making a connection with the
+  // specified scheme to the specified host and port. This could result in
+  // scheme-specific DNS queries, e.g. for HTTPS resource records, and special
+  // errors if DNS indicates a connection should not be made using the
+  // specified scheme, e.g. ERR_DNS_NAME_HTTPS_ONLY indicates that a connection
+  // should not be made without first redirecting an http or ws request to an
+  // https or wss request.
+  ResolveHost(HostResolverHost host,
               NetworkIsolationKey network_isolation_key,
               ResolveHostParameters? optional_parameters,
               pending_remote<ResolveHostClient> response_client);

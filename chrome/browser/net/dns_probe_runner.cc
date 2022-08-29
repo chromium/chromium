@@ -98,9 +98,12 @@ void DnsProbeRunner::RunProbe(base::OnceClosure callback) {
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
+  // Intentionally using a HostPortPair not to trigger HTTPS DNS resource
+  // record query.
   // Use transient NIKs - don't want cached responses anyways, so no benefit
   // from sharing a cache, beyond multiple probes not evicting anything.
-  host_resolver_->ResolveHost(net::HostPortPair(kKnownGoodHostname, 80),
+  host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                                  net::HostPortPair(kKnownGoodHostname, 443)),
                               net::NetworkIsolationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());

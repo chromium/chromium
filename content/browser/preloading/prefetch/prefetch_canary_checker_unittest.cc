@@ -35,16 +35,22 @@ class FakeNetworkContext : public network::TestNetworkContext {
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  void ResolveHost(const net::HostPortPair& host,
+  void ResolveHost(network::mojom::HostResolverHostPtr host,
                    const net::NetworkIsolationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    mojo::PendingRemote<network::mojom::ResolveHostClient>
                        response_client) override {
-    EXPECT_TRUE(pending_requests_.find(host) == pending_requests_.end());
+    net::HostPortPair host_port_pair =
+        host->is_host_port_pair()
+            ? host->get_host_port_pair()
+            : net::HostPortPair(host->get_scheme_host_port().host(),
+                                host->get_scheme_host_port().port());
+    EXPECT_TRUE(pending_requests_.find(host_port_pair) ==
+                pending_requests_.end());
     auto request = std::make_unique<ResolveHostRequest>(
-        this, host, std::move(response_client),
+        this, host_port_pair, std::move(response_client),
         std::move(optional_parameters->control_handle));
-    pending_requests_.emplace(host, std::move(request));
+    pending_requests_.emplace(host_port_pair, std::move(request));
     num_requests_made_++;
   }
 

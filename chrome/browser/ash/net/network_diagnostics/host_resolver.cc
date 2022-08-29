@@ -45,9 +45,13 @@ HostResolver::HostResolver(const net::HostPortPair& host_port_pair,
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
+  // Intentionally using a HostPortPair not to trigger ERR_DNS_NAME_HTTPS_ONLY
+  // error while resolving http:// scheme host when a HTTPS resource record
+  // exists.
   host_resolver_->ResolveHost(
-      host_port_pair, net::NetworkIsolationKey::CreateTransient(),
-      std::move(parameters), receiver_.BindNewPipeAndPassRemote());
+      network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
+      net::NetworkIsolationKey::CreateTransient(), std::move(parameters),
+      receiver_.BindNewPipeAndPassRemote());
 }
 
 HostResolver::~HostResolver() = default;

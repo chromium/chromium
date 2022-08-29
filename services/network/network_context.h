@@ -386,7 +386,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CreateNetLogExporter(
       mojo::PendingReceiver<mojom::NetLogExporter> receiver) override;
   void ResolveHost(
-      const net::HostPortPair& host,
+      mojom::HostResolverHostPtr host,
       const net::NetworkIsolationKey& network_isolation_key,
       mojom::ResolveHostParametersPtr optional_parameters,
       mojo::PendingRemote<mojom::ResolveHostClient> response_client) override;

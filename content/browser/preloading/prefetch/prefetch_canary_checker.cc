@@ -382,10 +382,13 @@ void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
           base::BindOnce(&PrefetchCanaryChecker::OnDNSResolved, GetWeakPtr())),
       client_remote.InitWithNewPipeAndPassReceiver());
 
+  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
+  // DNS resource record query.
   browser_context_->GetDefaultStoragePartition()
       ->GetNetworkContext()
-      ->ResolveHost(net::HostPortPair::FromURL(url), nik,
-                    std::move(resolve_host_parameters),
+      ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                        net::HostPortPair::FromURL(url)),
+                    nik, std::move(resolve_host_parameters),
                     std::move(client_remote));
 
   timeout_timer_ = std::make_unique<base::OneShotTimer>();

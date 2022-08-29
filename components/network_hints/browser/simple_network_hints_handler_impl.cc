@@ -82,10 +82,13 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
     // TODO(https://crbug.com/997049): Pass in a non-empty NetworkIsolationKey.
+    // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger
+    // HTTPS DNS resource record query.
     render_frame_host->GetProcess()
         ->GetStoragePartition()
         ->GetNetworkContext()
-        ->ResolveHost(host_port_pair,
+        ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                          std::move(host_port_pair)),
                       GetPendingNetworkIsolationKey(render_frame_host),
                       std::move(resolve_host_parameters),
                       receiver_.BindNewPipeAndPassRemote());

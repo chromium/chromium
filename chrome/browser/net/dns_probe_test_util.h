@@ -49,7 +49,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
 
   ~FakeHostResolver() override;
 
-  void ResolveHost(const net::HostPortPair& host,
+  void ResolveHost(network::mojom::HostResolverHostPtr host,
                    const net::NetworkIsolationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    mojo::PendingRemote<network::mojom::ResolveHostClient>
@@ -73,7 +73,7 @@ class HangingHostResolver : public network::mojom::HostResolver {
       mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver);
   ~HangingHostResolver() override;
 
-  void ResolveHost(const net::HostPortPair& host,
+  void ResolveHost(network::mojom::HostResolverHostPtr host,
                    const net::NetworkIsolationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    mojo::PendingRemote<network::mojom::ResolveHostClient>

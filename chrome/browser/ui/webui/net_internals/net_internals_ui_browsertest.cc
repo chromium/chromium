@@ -236,8 +236,10 @@ void NetInternalsTest::MessageHandler::DnsLookup(
       ->profile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
-      ->ResolveHost(net::HostPortPair(hostname, 80), network_isolation_key_,
-                    std::move(resolve_host_parameters), std::move(client));
+      ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                        net::HostPortPair(hostname, 80)),
+                    network_isolation_key_, std::move(resolve_host_parameters),
+                    std::move(client));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

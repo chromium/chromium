@@ -55,11 +55,14 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
                                                   std::move(pending_receiver));
                        },
                        resolver.BindNewPipeAndPassReceiver()));
+    // Intentionally using a HostPortPair because scheme isn't specified.
     // Fine to use a transient NetworkIsolationKey here - this is for debugging,
     // so performance doesn't matter, and it doesn't need to share a DNS cache
     // with anything else.
-    resolver->ResolveHost(address, net::NetworkIsolationKey::CreateTransient(),
-                          nullptr, receiver_.BindNewPipeAndPassRemote());
+    resolver->ResolveHost(
+        network::mojom::HostResolverHost::NewHostPortPair(address),
+        net::NetworkIsolationKey::CreateTransient(), nullptr,
+        receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&ResolveHostAndOpenSocket::OnComplete,
                        base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,

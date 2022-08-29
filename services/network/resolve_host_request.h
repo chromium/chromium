@@ -18,7 +18,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
-class HostPortPair;
 class NetLog;
 class NetworkIsolationKey;
 }  // namespace net
@@ -32,7 +31,7 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
  public:
   ResolveHostRequest(
       net::HostResolver* resolver,
-      const net::HostPortPair& host,
+      mojom::HostResolverHostPtr host,
       const net::NetworkIsolationKey& network_isolation_key,
       const absl::optional<net::HostResolver::ResolveHostParameters>&
           optional_parameters,

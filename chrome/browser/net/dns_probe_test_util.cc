@@ -63,7 +63,7 @@ FakeHostResolver::FakeHostResolver(
 FakeHostResolver::~FakeHostResolver() = default;
 
 void FakeHostResolver::ResolveHost(
-    const net::HostPortPair& host,
+    network::mojom::HostResolverHostPtr host,
     const net::NetworkIsolationKey& network_isolation_key,
     network::mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<network::mojom::ResolveHostClient>
@@ -94,7 +94,7 @@ HangingHostResolver::HangingHostResolver(
 HangingHostResolver::~HangingHostResolver() = default;
 
 void HangingHostResolver::ResolveHost(
-    const net::HostPortPair& host,
+    network::mojom::HostResolverHostPtr host,
     const net::NetworkIsolationKey& network_isolation_key,
     network::mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<network::mojom::ResolveHostClient> response_client) {

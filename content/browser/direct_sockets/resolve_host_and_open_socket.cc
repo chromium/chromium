@@ -95,8 +95,10 @@ void ResolveHostAndOpenSocket::Start() {
     is_mdns_name_ = true;
   }
 #endif  // !BUILDFLAG(ENABLE_MDNS)
+  // Intentionally using a HostPortPair because scheme isn't specified.
   resolver_->ResolveHost(
-      net::HostPortPair(*options_->remote_hostname, options_->remote_port),
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair(*options_->remote_hostname, options_->remote_port)),
       net::NetworkIsolationKey::CreateTransient(), std::move(parameters),
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(

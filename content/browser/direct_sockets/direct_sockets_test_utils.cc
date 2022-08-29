@@ -28,7 +28,7 @@ MockHostResolver::MockHostResolver(
 MockHostResolver::~MockHostResolver() = default;
 
 void MockHostResolver::ResolveHost(
-    const ::net::HostPortPair& host,
+    network::mojom::HostResolverHostPtr host,
     const ::net::NetworkIsolationKey& network_isolation_key,
     network::mojom::ResolveHostParametersPtr optional_parameters,
     ::mojo::PendingRemote<network::mojom::ResolveHostClient>
@@ -36,11 +36,19 @@ void MockHostResolver::ResolveHost(
   DCHECK(!internal_request_);
   DCHECK(!response_client_.is_bound());
 
-  internal_request_ = internal_resolver_->CreateRequest(
-      host, network_isolation_key,
-      net::NetLogWithSource::Make(net::NetLog::Get(),
-                                  net::NetLogSourceType::NONE),
-      absl::nullopt);
+  internal_request_ =
+      host->is_host_port_pair()
+          ? internal_resolver_->CreateRequest(
+                host->get_host_port_pair(), network_isolation_key,
+                net::NetLogWithSource::Make(net::NetLog::Get(),
+                                            net::NetLogSourceType::NONE),
+                absl::nullopt)
+          : internal_resolver_->CreateRequest(
+                host->get_scheme_host_port(), network_isolation_key,
+                net::NetLogWithSource::Make(net::NetLog::Get(),
+                                            net::NetLogSourceType::NONE),
+                absl::nullopt);
+
   mojo::Remote<network::mojom::ResolveHostClient> response_client(
       std::move(pending_response_client));
 

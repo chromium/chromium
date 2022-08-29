@@ -98,7 +98,11 @@ void DnsResolutionRoutine::AttemptResolution() {
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
-  host_resolver_->ResolveHost(net::HostPortPair(kHostname, kHttpPort),
+  // Intentionally using a HostPortPair not to trigger ERR_DNS_NAME_HTTPS_ONLY
+  // error while resolving http:// scheme host when a HTTPS resource record
+  // exists.
+  host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                                  net::HostPortPair(kHostname, kHttpPort)),
                               net::NetworkIsolationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());

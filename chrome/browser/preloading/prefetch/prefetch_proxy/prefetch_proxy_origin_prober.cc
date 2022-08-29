@@ -25,6 +25,7 @@
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace {
 
@@ -265,9 +266,12 @@ void PrefetchProxyOriginProber::StartDNSResolution(
           url, std::move(callback), also_do_tls_connect)),
       client_remote.InitWithNewPipeAndPassReceiver());
 
+  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
+  // DNS resource record query.
   profile_->GetDefaultStoragePartition()->GetNetworkContext()->ResolveHost(
-      net::HostPortPair::FromURL(url), nik, std::move(resolve_host_parameters),
-      std::move(client_remote));
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair::FromURL(url)),
+      nik, std::move(resolve_host_parameters), std::move(client_remote));
 }
 
 void PrefetchProxyOriginProber::OnDNSResolved(

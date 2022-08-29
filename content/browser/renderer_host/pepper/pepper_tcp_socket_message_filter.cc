@@ -389,10 +389,13 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
   if (!render_frame_host)
     return PP_ERROR_FAILED;
 
+  // Intentionally using a HostPortPair because scheme isn't specified.
   // TODO(mmenke): Pass in correct NetworkIsolationKey.
-  network_context->ResolveHost(net::HostPortPair(host, port),
-                               render_frame_host->GetNetworkIsolationKey(),
-                               nullptr, receiver_.BindNewPipeAndPassRemote());
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair(host, port)),
+      render_frame_host->GetNetworkIsolationKey(), nullptr,
+      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&PepperTCPSocketMessageFilter::OnComplete,
                      base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,

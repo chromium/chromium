@@ -155,7 +155,11 @@ void DnsLatencyRoutine::AttemptNextResolution() {
 
   start_resolution_time_ = tick_clock_->NowTicks();
 
-  host_resolver_->ResolveHost(net::HostPortPair(hostname, kHttpPort),
+  // Intentionally using a HostPortPair not to trigger ERR_DNS_NAME_HTTPS_ONLY
+  // error while resolving http:// scheme host when a HTTPS resource record
+  // exists.
+  host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                                  net::HostPortPair(hostname, kHttpPort)),
                               net::NetworkIsolationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());

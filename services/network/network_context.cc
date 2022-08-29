@@ -1735,7 +1735,7 @@ void NetworkContext::CreateNetLogExporter(
 }
 
 void NetworkContext::ResolveHost(
-    const net::HostPortPair& host,
+    mojom::HostResolverHostPtr host,
     const net::NetworkIsolationKey& network_isolation_key,
     mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<mojom::ResolveHostClient> response_client) {
@@ -1743,8 +1743,7 @@ void NetworkContext::ResolveHost(
     internal_host_resolver_ = std::make_unique<HostResolver>(
         url_request_context_->host_resolver(), url_request_context_->net_log());
   }
-
-  internal_host_resolver_->ResolveHost(host, network_isolation_key,
+  internal_host_resolver_->ResolveHost(std::move(host), network_isolation_key,
                                        std::move(optional_parameters),
                                        std::move(response_client));
 }
