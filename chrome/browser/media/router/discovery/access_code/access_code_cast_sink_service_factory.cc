@@ -16,7 +16,7 @@ namespace media_router {
 AccessCodeCastSinkService* AccessCodeCastSinkServiceFactory::GetForProfile(
     Profile* profile) {
   DCHECK(profile);
-  if (!GetAccessCodeCastEnabledPref(profile->GetPrefs())) {
+  if (!GetAccessCodeCastEnabledPref(profile)) {
     return nullptr;
   }
   DCHECK(MediaRouterFactory::GetApiForBrowserContext(profile))
@@ -58,12 +58,12 @@ AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
 AccessCodeCastSinkServiceFactory::~AccessCodeCastSinkServiceFactory() = default;
 
 KeyedService* AccessCodeCastSinkServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  if (!GetAccessCodeCastEnabledPref(
-          Profile::FromBrowserContext(profile)->GetPrefs())) {
+    content::BrowserContext* context) const {
+  // TODO(b/243973085): Remove profile init duplication.
+  if (!GetAccessCodeCastEnabledPref(Profile::FromBrowserContext(context))) {
     return nullptr;
   }
-  return new AccessCodeCastSinkService(static_cast<Profile*>(profile));
+  return new AccessCodeCastSinkService(static_cast<Profile*>(context));
 }
 
 bool AccessCodeCastSinkServiceFactory::ServiceIsCreatedWithBrowserContext()
