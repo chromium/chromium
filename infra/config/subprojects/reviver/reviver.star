@@ -84,6 +84,7 @@ builder(
     name = "runner",
     executable = "recipe:reviver/chromium/runner",
     auto_builder_dimension = False,
+    execution_timeout = 6 * time.hour,
     # TODO(crbug/1346396) Figure out what machines the runnner should run on
     pool = ci.DEFAULT_POOL,
     # TODO(crbug/1346396) Remove this once the reviver service account has
