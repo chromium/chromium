@@ -27,6 +27,9 @@ NetworkAnonymizationKey::NetworkAnonymizationKey() = default;
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const NetworkAnonymizationKey& network_anonymization_key) = default;
 
+NetworkAnonymizationKey::NetworkAnonymizationKey(
+    NetworkAnonymizationKey&& network_anonymization_key) = default;
+
 NetworkAnonymizationKey::~NetworkAnonymizationKey() = default;
 
 NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(

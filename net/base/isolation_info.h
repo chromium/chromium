@@ -10,6 +10,7 @@
 
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -187,6 +188,10 @@ class NET_EXPORT IsolationInfo {
     return network_isolation_key_;
   }
 
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
+  }
+
   const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
   // The value that should be consulted for the third-party cookie blocking
@@ -207,6 +212,11 @@ class NET_EXPORT IsolationInfo {
   }
 
   bool IsEqualForTesting(const IsolationInfo& other) const;
+
+  NetworkAnonymizationKey CreateNetworkAnonymizationKeyForIsolationInfo(
+      const absl::optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& frame_origin,
+      const base::UnguessableToken* nonce) const;
 
   // Serialize the `IsolationInfo` into a string. Fails if transient, returning
   // an empty string.
@@ -231,7 +241,9 @@ class NET_EXPORT IsolationInfo {
 
   // This can be deduced from the two origins above, but keep a cached version
   // to avoid repeated eTLD+1 calculations, when this is using eTLD+1.
-  net::NetworkIsolationKey network_isolation_key_;
+  NetworkIsolationKey network_isolation_key_;
+
+  NetworkAnonymizationKey network_anonymization_key_;
 
   SiteForCookies site_for_cookies_;
 

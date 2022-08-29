@@ -56,7 +56,7 @@ class NET_EXPORT NetworkAnonymizationKey {
  public:
   NetworkAnonymizationKey(
       const SchemefulSite& top_frame_site,
-      const absl::optional<SchemefulSite>& frame_site,
+      const absl::optional<SchemefulSite>& frame_site = absl::nullopt,
       const absl::optional<bool> is_cross_site = absl::nullopt,
       const absl::optional<base::UnguessableToken> nonce = absl::nullopt);
 

@@ -7131,6 +7131,7 @@
                 {
                     "name": "enabled3_doublekey",
                     "enable_features": [
+                        "EnableDoubleKeyNetworkAnonymizationKey",
                         "ForceIsolationInfoFrameOriginToTopLevelFrame",
                         "PartitionConnectionsByNetworkIsolationKey",
                         "PartitionDomainReliabilityByNetworkIsolationKey",
