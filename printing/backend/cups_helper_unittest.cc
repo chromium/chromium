@@ -665,8 +665,7 @@ TEST(PrintBackendCupsHelperTest, NoTempFileLeftBehind) {
         GeneratePpdResolutionTestData("Resolution").c_str(), &dummy_caps));
   }
 
-  // TODO(crbug.com/1245412): This should return true.
-  EXPECT_FALSE(base::IsDirectoryEmpty(temp_dir.GetPath()));
+  EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir.GetPath()));
 }
 
 }  // namespace printing
