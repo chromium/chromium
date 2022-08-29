@@ -49,6 +49,8 @@
 namespace {
 
 constexpr char kCloseAction[] = "LensUnifiedSidePanel.HideSidePanel";
+constexpr char kExpectedSidePanelContentUrlRegex[] =
+    ".*ep=ccm&re=dcsp&s=csp&st=\\d+&p=somepayload";
 
 // Maintains image search test state. In particular, note that |menu_observer_|
 // must live until the right-click completes asynchronously.
@@ -170,15 +172,8 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   base::UserActionTester user_action_tester;
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
-  DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanel
-#else
-#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
-  ImageSearchWithValidImageOpensUnifiedSidePanel
-#endif
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel) {
+                       ImageSearchWithValidImageOpensUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
 
@@ -194,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
   EXPECT_TRUE(GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(side_panel_content,
-              testing::MatchesRegex(".*ep=ccm&s=csp&st=\\d+&p=somepayload"));
+              testing::MatchesRegex(kExpectedSidePanelContentUrlRegex));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
@@ -263,15 +258,8 @@ class SearchImageWithUnifiedSidePanelFooterDisabled
   }
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
-  DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanel
-#else
-#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
-  ImageSearchWithValidImageOpensUnifiedSidePanel
-#endif
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
-                       MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel) {
+                       ImageSearchWithValidImageOpensUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
 
@@ -288,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
       GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(side_panel_content,
-              testing::MatchesRegex(".*ep=ccm&s=csp&st=\\d+&p=somepayload"));
+              testing::MatchesRegex(kExpectedSidePanelContentUrlRegex));
 }
 
 }  // namespace
