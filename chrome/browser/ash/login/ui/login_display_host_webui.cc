@@ -761,24 +761,6 @@ void LoginDisplayHostWebUI::OnDisplayMetricsChanged(
   }
 }
 
-void LoginDisplayHostWebUI::UpScaleOobe() {
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  if (primary_display_id_ == display_id) {
-    return;
-  }
-  primary_display_id_ = display_id;
-  auto* display_manager = Shell::Get()->display_manager();
-  const gfx::Size size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area_size();
-  const int longest_side = std::max(size.width(), size.height());
-  if (longest_side >= k4KDisplay.longest_side) {
-    display_manager->UpdateZoomFactor(display_id, k4KDisplay.scale_factor);
-  } else if (longest_side >= kMediumDisplay.longest_side) {
-    display_manager->UpdateZoomFactor(display_id, kMediumDisplay.scale_factor);
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, ui::InputDeviceEventObserver
 void LoginDisplayHostWebUI::OnInputDeviceConfigurationChanged(
