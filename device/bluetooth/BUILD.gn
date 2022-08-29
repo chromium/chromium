@@ -436,6 +436,8 @@ component("bluetooth") {
         "floss/bluetooth_adapter_floss.h",
         "floss/bluetooth_device_floss.cc",
         "floss/bluetooth_device_floss.h",
+        "floss/bluetooth_gatt_connection_floss.cc",
+        "floss/bluetooth_gatt_connection_floss.h",
         "floss/bluetooth_pairing_floss.cc",
         "floss/bluetooth_pairing_floss.h",
         "floss/bluetooth_socket_floss.cc",
