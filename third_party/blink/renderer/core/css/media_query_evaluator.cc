@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
+#include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -1425,8 +1426,6 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
   DCHECK(container);
 
   AtomicString property_name(feature.Name());
-  CSSVariableData* computed =
-      container->ComputedStyleRef().GetVariableData(property_name);
 
   const CSSCustomPropertyDeclaration* query_specified =
       DynamicTo<CSSCustomPropertyDeclaration>(bounds.right.value.GetCSSValue());
@@ -1435,19 +1434,32 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     return KleeneValue::kFalse;
   }
 
-  const CSSCustomPropertyDeclaration* query_value =
-      DynamicTo<CSSCustomPropertyDeclaration>(StyleResolver::ComputeValue(
-          container, CSSPropertyName(property_name), *query_specified));
+  const CSSValue* query_value = StyleResolver::ComputeValue(
+      container, CSSPropertyName(property_name), *query_specified);
 
-  CSSVariableData* query_computed =
-      query_value ? query_value->Value() : nullptr;
+  if (const auto* decl_value =
+          DynamicTo<CSSCustomPropertyDeclaration>(query_value)) {
+    CSSVariableData* query_computed =
+        decl_value ? decl_value->Value() : nullptr;
+    CSSVariableData* computed =
+        container->ComputedStyleRef().GetVariableData(property_name);
 
-  // TODO(crbug.com/1220144): Compare the two CSSVariableData using
-  // base::ValuesEquivalent when we correctly strip leading and trailing
-  // whitespaces for custom property values.
-  if (TokensEqualIgnoringLeadingAndTrailingSpaces(computed, query_computed)) {
-    return KleeneValue::kTrue;
+    // TODO(crbug.com/1220144): Compare the two CSSVariableData using
+    // base::ValuesEquivalent when we correctly strip leading and trailing
+    // whitespaces for custom property values.
+    if (TokensEqualIgnoringLeadingAndTrailingSpaces(computed, query_computed)) {
+      return KleeneValue::kTrue;
+    }
+    return KleeneValue::kFalse;
   }
+
+  const CSSValue* computed_value =
+      CustomProperty(property_name, *media_values_->GetDocument())
+          .CSSValueFromComputedStyle(container->ComputedStyleRef(),
+                                     nullptr /* layout_object */,
+                                     false /* allow_visited_style */);
+  if (base::ValuesEquivalent(query_value, computed_value))
+    return KleeneValue::kTrue;
   return KleeneValue::kFalse;
 }
 
