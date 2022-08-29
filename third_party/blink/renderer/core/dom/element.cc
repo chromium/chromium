@@ -1211,6 +1211,8 @@ void Element::scrollIntoView(bool align_to_top) {
 }
 
 void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
+  DeferredShapingController::From(GetDocument())
+      ->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
   ActivateDisplayLockIfNeeded(DisplayLockActivationReason::kScrollIntoView);
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
@@ -1611,7 +1613,8 @@ void Element::setScrollLeft(double new_left) {
   if (!InActiveDocument())
     return;
 
-  DeferredShapingController::From(GetDocument())->ReshapeAllDeferred();
+  DeferredShapingController::From(GetDocument())
+      ->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -1663,7 +1666,8 @@ void Element::setScrollTop(double new_top) {
   if (!InActiveDocument())
     return;
 
-  DeferredShapingController::From(GetDocument())->ReshapeAllDeferred();
+  DeferredShapingController::From(GetDocument())
+      ->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -5571,6 +5575,8 @@ void Element::Focus(const FocusParams& params) {
       frame_owner_element->contentDocument()->UnloadStarted())
     return;
 
+  DeferredShapingController::From(GetDocument())
+      ->ReshapeAllDeferred(ReshapeReason::kFocus);
   // Ensure we have clean style (including forced display locks).
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
 
@@ -5856,9 +5862,7 @@ bool Element::IsClickableControl(Node* node) {
 }
 
 bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
-  auto& state = GetDocument().GetDisplayLockDocumentState();
-  state.UnlockShapingDeferredElements(*this);
-  if (!state.HasActivatableLocks())
+  if (!GetDocument().GetDisplayLockDocumentState().HasActivatableLocks())
     return false;
 
   HeapVector<Member<Element>> activatable_targets;

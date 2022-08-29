@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -248,8 +249,10 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
         CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty();
     if (is_for_layout_dependent_property) {
       auto& owner_doc = owner->GetDocument();
-      owner_doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements(
-          *styled_node, property_name->Id());
+      if (auto* ds_controller = DeferredShapingController::From(owner_doc)) {
+        ds_controller->ReshapeDeferred(ReshapeReason::kComputedStyle,
+                                       *styled_node, property_name->Id());
+      }
       owner_doc.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
       // The style recalc could have caused the styled node to be discarded or
       // replaced if it was a PseudoElement so we need to update it.
@@ -273,9 +276,9 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
   if (is_for_layout_dependent_property) {
     auto& doc = styled_node->GetDocument();
     // EditingStyle uses this class with DisallowTransitionScope.
-    if (!doc.Lifecycle().StateTransitionDisallowed()) {
-      doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements(
-          *styled_node, property->PropertyID());
+    if (!doc.Lifecycle().StateTransitionDisallowed() && doc.View()) {
+      DeferredShapingController::From(doc)->ReshapeDeferred(
+          ReshapeReason::kComputedStyle, *styled_node, property->PropertyID());
       doc.UpdateStyleAndLayoutForNode(styled_node,
                                       DocumentUpdateReason::kJavaScript);
     }

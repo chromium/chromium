@@ -2703,7 +2703,8 @@ void Document::EnsurePaintLocationDataValidForNode(
   if (!node->InActiveDocument())
     return;
 
-  GetDisplayLockDocumentState().UnlockShapingDeferredElements(*node);
+  DeferredShapingController::From(*this)->ReshapeDeferred(
+      ReshapeReason::kGeometryApi, *node);
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
       node, DisplayLockContext::ForcedPhase::kLayout);
@@ -2721,11 +2722,11 @@ void Document::EnsurePaintLocationDataValidForNode(const Node* node,
     return;
 
   if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
-    auto& state = GetDisplayLockDocumentState();
+    auto* ds_controller = DeferredShapingController::From(*this);
     if (property_id == CSSPropertyID::kWidth)
-      state.UnlockToDetermineWidth(*node->GetLayoutObject());
+      ds_controller->ReshapeDeferredForWidth(*node->GetLayoutObject());
     else
-      state.UnlockToDetermineHeight(*node->GetLayoutObject());
+      ds_controller->ReshapeDeferredForHeight(*node->GetLayoutObject());
   }
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
@@ -3221,7 +3222,7 @@ void Document::SetPrinting(PrintingState state) {
   if (was_printing != is_printing) {
     GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
     if (auto* ds_controller = DeferredShapingController::From(*this))
-      ds_controller->ReshapeAllDeferred();
+      ds_controller->ReshapeAllDeferred(ReshapeReason::kPrinting);
 
     // We force the color-scheme to light for printing.
     ColorSchemeChanged();
@@ -4110,7 +4111,7 @@ void Document::SetParsingState(ParsingState parsing_state) {
     if (auto* ds_controller = DeferredShapingController::From(*this)) {
       PaintTiming& timing = PaintTiming::From(*this);
       if (!timing.FirstContentfulPaint().is_null())
-        ds_controller->ReshapeAllDeferred();
+        ds_controller->ReshapeAllDeferred(ReshapeReason::kDomContentLoaded);
     }
   }
 }

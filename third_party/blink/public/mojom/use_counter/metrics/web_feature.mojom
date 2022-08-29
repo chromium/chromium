@@ -3531,7 +3531,7 @@ enum WebFeature {
   kAudioContextOutputLatency = 4210,
   kV8Window_QueryLocalFonts_Method = 4211,
   kCSSAtRuleScope = 4212,
-  kDeferredShapingDisabledByPositioned = 4213,
+  kOBSOLETE_DeferredShapingDisabledByPositioned = 4213,
   kCapabilityDelegationOfFullscreenRequest = 4214,
   kSerialPortForget = 4215,
   kCookieHasNotBeenRefreshedIn201To300Days = 4216,
@@ -3578,7 +3578,7 @@ enum WebFeature {
   kSecurePaymentConfirmationOptOut = 4257,
   kAnyPopupAttribute = 4258,
   kDeferredShapingWorked = 4259,
-  kDeferredShapingReshapedByForceLayout = 4260,
+  kOBSOLETE_DeferredShapingReshapedByForceLayout = 4260,
   kMediaSourceGetHandle = 4261,
   kIdentityInCanMakePaymentEvent = 4262,
   kSharedStorageAPI_SharedStorage_DOMReference = 4263,
@@ -3654,6 +3654,15 @@ enum WebFeature {
   kPrivateAggregationApiAll = 4333,
   kPrivateAggregationApiFledge = 4334,
   kPrivateAggregationApiSharedStorage = 4335,
+  kDeferredShaping2ReshapedByComputedStyle = 4336,
+  kDeferredShaping2ReshapedByDomContentLoaded = 4337,
+  kDeferredShaping2ReshapedByFcp = 4338,
+  kDeferredShaping2DisabledByFragmentAnchor = 4339,
+  kDeferredShaping2ReshapedByFocus = 4340,
+  kDeferredShaping2ReshapedByGeometry = 4341,
+  kDeferredShaping2ReshapedByInspector = 4342,
+  kDeferredShaping2ReshapedByPrinting = 4343,
+  kDeferredShaping2ReshapedByScrolling = 4344,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

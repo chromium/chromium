@@ -64,14 +64,14 @@ void DeferredShapingController::OnFirstContentfulPaint() {
   default_allow_deferred_shaping_ = false;
   reshaping_task_handle_ = PostCancellableTask(
       *frame_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      WTF::Bind(&DeferredShapingController::ReshapeAllDeferredInternal,
-                WrapWeakPersistent(this)));
+      WTF::Bind(&DeferredShapingController::ReshapeAllDeferred,
+                WrapWeakPersistent(this), ReshapeReason::kFcp));
 }
 
-size_t DeferredShapingController::ReshapeAllDeferred() {
+void DeferredShapingController::ReshapeAllDeferred(ReshapeReason reason) {
   default_allow_deferred_shaping_ = false;
   if (deferred_elements_.IsEmpty())
-    return 0;
+    return;
   size_t count = 0;
   for (auto& element : deferred_elements_) {
     if (!element->isConnected())
@@ -88,15 +88,71 @@ size_t DeferredShapingController::ReshapeAllDeferred() {
     box->ClearLayoutResults();
   }
   deferred_elements_.clear();
-  return count;
+  if (count == 0)
+    return;
+
+  const char* reason_string;
+  WebFeature feature = WebFeature::kMaxValue;
+  switch (reason) {
+    case ReshapeReason::kComputedStyle:
+      reason_string = "computed style";
+      feature = WebFeature::kDeferredShaping2ReshapedByComputedStyle;
+      break;
+    case ReshapeReason::kDomContentLoaded:
+      reason_string = "DOMContentLoaded after FCP";
+      feature = WebFeature::kDeferredShaping2ReshapedByDomContentLoaded;
+      break;
+    case ReshapeReason::kFcp:
+      reason_string = "FCP after DOMContentLoaded";
+      feature = WebFeature::kDeferredShaping2ReshapedByFcp;
+      break;
+    case ReshapeReason::kFragmentAnchor:
+      reason_string = "fragment anchor";
+      feature = WebFeature::kDeferredShaping2DisabledByFragmentAnchor;
+      break;
+    case ReshapeReason::kFocus:
+      reason_string = "focus";
+      feature = WebFeature::kDeferredShaping2ReshapedByFocus;
+      break;
+    case ReshapeReason::kGeometryApi:
+      reason_string = "geometry APIs";
+      feature = WebFeature::kDeferredShaping2ReshapedByGeometry;
+      break;
+    case ReshapeReason::kInspector:
+      reason_string = "inspector";
+      feature = WebFeature::kDeferredShaping2ReshapedByInspector;
+      break;
+    case ReshapeReason::kPrinting:
+      reason_string = "printing";
+      feature = WebFeature::kDeferredShaping2ReshapedByPrinting;
+      break;
+    case ReshapeReason::kScrollingApi:
+      reason_string = "scrolling APIs";
+      feature = WebFeature::kDeferredShaping2ReshapedByScrolling;
+      break;
+  }
+  if (feature != WebFeature::kMaxValue) {
+    UseCounter::Count(frame_->GetDocument(), feature);
+  }
+  DEFERRED_SHAPING_VLOG(1) << "Reshaped all " << count << " elements by "
+                           << reason_string;
+  return;
 }
 
-void DeferredShapingController::ReshapeAllDeferredInternal() {
-  size_t count = ReshapeAllDeferred();
-  if (count) {
-    DEFERRED_SHAPING_VLOG(1)
-        << "Re-shaped all " << count << " elements by idle-after-parsing";
-  }
+void DeferredShapingController::ReshapeDeferred(ReshapeReason reason,
+                                                const Node& target,
+                                                CSSPropertyID property_id) {
+  ReshapeAllDeferred(reason);
+}
+
+void DeferredShapingController::ReshapeDeferredForWidth(
+    const LayoutObject& object) {
+  ReshapeAllDeferred(ReshapeReason::kGeometryApi);
+}
+
+void DeferredShapingController::ReshapeDeferredForHeight(
+    const LayoutObject& object) {
+  ReshapeAllDeferred(ReshapeReason::kGeometryApi);
 }
 
 }  // namespace blink

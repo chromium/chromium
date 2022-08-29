@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEFERRED_SHAPING_CONTROLLER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -15,7 +16,21 @@ namespace blink {
 
 class Document;
 class Element;
+class LayoutObject;
 class LocalFrame;
+class Node;
+
+enum ReshapeReason {
+  kComputedStyle,
+  kDomContentLoaded,  // DOMCntentLoaded after FCP
+  kFcp,               // FCP after DOMContentLoaded
+  kFragmentAnchor,
+  kFocus,
+  kGeometryApi,
+  kInspector,
+  kPrinting,
+  kScrollingApi,
+};
 
 // DeferredShapingController class manages states of the Deferred Shaping
 // feature.
@@ -41,12 +56,24 @@ class CORE_EXPORT DeferredShapingController
   void RegisterDeferred(Element& element);
   bool IsRegisteredDeferred(Element& element) const;
   void UnregisterDeferred(Element& element);
-  size_t ReshapeAllDeferred();
+
+  void ReshapeAllDeferred(ReshapeReason reason);
+  // Reshape shaping-deferred elements so that |target| can return the precise
+  // value of |property_id|.
+  // If |property_id| is kInvalid, this function unlocks elements necessary for
+  // any geometry of the target node.
+  void ReshapeDeferred(ReshapeReason reason,
+                       const Node& target,
+                       CSSPropertyID property_id = CSSPropertyID::kInvalid);
+  // Reshape shaping-deferred elements so that |object| can return the precise
+  // width.
+  void ReshapeDeferredForWidth(const LayoutObject& object);
+  // Reshape shaping-deferred elements so that |object| can return the precise
+  // height.
+  void ReshapeDeferredForHeight(const LayoutObject& object);
   void OnFirstContentfulPaint();
 
  private:
-  void ReshapeAllDeferredInternal();
-
   Member<LocalFrame> frame_;
   TaskHandle reshaping_task_handle_;
   HeapHashSet<Member<Element>> deferred_elements_;

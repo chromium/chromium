@@ -1362,7 +1362,8 @@ void LocalFrameView::ProcessUrlFragment(const KURL& url,
     // part of the lifecycle.
     if (same_document_navigation)
       ScheduleAnimation();
-    GetDeferredShapingController().ReshapeAllDeferred();
+    GetDeferredShapingController().ReshapeAllDeferred(
+        ReshapeReason::kFragmentAnchor);
   }
 }
 

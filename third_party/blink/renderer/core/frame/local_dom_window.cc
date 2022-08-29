@@ -1630,7 +1630,8 @@ void LocalDOMWindow::scrollBy(const ScrollToOptions* scroll_to_options) const {
   if (!page)
     return;
 
-  view->GetDeferredShapingController().ReshapeAllDeferred();
+  view->GetDeferredShapingController().ReshapeAllDeferred(
+      ReshapeReason::kScrollingApi);
   document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   float x = 0.0f;
@@ -1690,7 +1691,8 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions* scroll_to_options) const {
   // clamped, which is never the case for (0, 0).
   if (!scroll_to_options->hasLeft() || !scroll_to_options->hasTop() ||
       scroll_to_options->left() || scroll_to_options->top()) {
-    view->GetDeferredShapingController().ReshapeAllDeferred();
+    view->GetDeferredShapingController().ReshapeAllDeferred(
+        ReshapeReason::kScrollingApi);
     document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
   }
 

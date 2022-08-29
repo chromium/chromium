@@ -446,37 +446,6 @@ void DisplayLockDocumentState::NotifyPrintingOrPreviewChanged() {
     context->SetShouldUnlockAutoForPrint(printing_);
 }
 
-void DisplayLockDocumentState::UnlockShapingDeferredElements() {
-  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
-    return;
-  auto* ds_controller = DeferredShapingController::From(*document_);
-  if (!ds_controller)
-    return;
-  size_t count = ds_controller->ReshapeAllDeferred();
-  if (count > 0) {
-    UseCounter::Count(document_,
-                      WebFeature::kDeferredShapingReshapedByForceLayout);
-    DEFERRED_SHAPING_VLOG(1)
-        << "Unlocked all " << count << " elements by force-layout.";
-  }
-}
-
-void DisplayLockDocumentState::UnlockShapingDeferredElements(
-    const Node& target,
-    CSSPropertyID property_id) {
-  UnlockShapingDeferredElements();
-}
-
-void DisplayLockDocumentState::UnlockToDetermineWidth(
-    const LayoutObject& object) {
-  UnlockShapingDeferredElements();
-}
-
-void DisplayLockDocumentState::UnlockToDetermineHeight(
-    const LayoutObject& object) {
-  UnlockShapingDeferredElements();
-}
-
 void DisplayLockDocumentState::IssueForcedRenderWarning(Element* element) {
   // Note that this is a verbose level message, since it can happen
   // frequently and is not necessarily a problem if the developer is

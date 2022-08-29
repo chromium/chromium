@@ -41076,7 +41076,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4210" label="AudioContextOutputLatency"/>
   <int value="4211" label="V8Window_QueryLocalFonts_Method"/>
   <int value="4212" label="CSSAtRuleScope"/>
-  <int value="4213" label="DeferredShapingDisabledByPositioned"/>
+  <int value="4213" label="OBSOLETE_DeferredShapingDisabledByPositioned"/>
   <int value="4214" label="CapabilityDelegationOfFullscreenRequest"/>
   <int value="4215" label="SerialPortForget"/>
   <int value="4216" label="CookieHasNotBeenRefreshedIn201To300Days"/>
@@ -41124,7 +41124,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4257" label="SecurePaymentConfirmationOptOut"/>
   <int value="4258" label="AnyPopupAttribute"/>
   <int value="4259" label="DeferredShapingWorked"/>
-  <int value="4260" label="DeferredShapingReshapedByForceLayout"/>
+  <int value="4260" label="OBSOLETE_DeferredShapingReshapedByForceLayout"/>
   <int value="4261" label="MediaSourceGetHandle"/>
   <int value="4262" label="IdentityInCanMakePaymentEvent"/>
   <int value="4263" label="SharedStorageAPI_SharedStorage_DOMReference"/>
@@ -41204,6 +41204,15 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4333" label="PrivateAggregationApiAll"/>
   <int value="4334" label="PrivateAggregationApiFledge"/>
   <int value="4335" label="PrivateAggregationApiSharedStorage"/>
+  <int value="4336" label="DeferredShaping2ReshapedByComputedStyle"/>
+  <int value="4337" label="DeferredShaping2ReshapedByDomContentLoaded"/>
+  <int value="4338" label="DeferredShaping2ReshapedByFcp"/>
+  <int value="4339" label="DeferredShaping2DisabledByFragmentAnchor"/>
+  <int value="4340" label="DeferredShaping2ReshapedByFocus"/>
+  <int value="4341" label="DeferredShaping2ReshapedByGeometry"/>
+  <int value="4342" label="DeferredShaping2ReshapedByInspector"/>
+  <int value="4343" label="DeferredShaping2ReshapedByPrinting"/>
+  <int value="4344" label="DeferredShaping2ReshapedByScrolling"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
