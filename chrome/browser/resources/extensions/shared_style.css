@@ -12,7 +12,6 @@
 
 a[href] {
   color: var(--cr-link-color);
-  text-decoration: none;
 }
 
 .activity-message {

@@ -84,7 +84,6 @@ span ~ a {
 
 a[href] {
   color: var(--cr-link-color);
-  text-decoration: none;
 }
 
 /* For elements that are simple out-links but don't look like anchors. */

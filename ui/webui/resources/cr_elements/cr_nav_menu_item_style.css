@@ -25,6 +25,7 @@
   padding-block-start: 10px;
   padding-inline-start: 23px;
   position: relative;
+  text-decoration: none;
 }
 
 :host-context(cr-drawer) .cr-nav-menu-item {

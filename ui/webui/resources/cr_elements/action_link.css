@@ -11,7 +11,7 @@
 [is='action-link'] {
   cursor: pointer;
   display: inline-block;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 [is='action-link'],

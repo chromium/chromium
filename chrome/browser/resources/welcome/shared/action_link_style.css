@@ -16,7 +16,7 @@ button.action-link {
   cursor: pointer;
   display: inline-block;
   font-family: inherit;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 button.action-link[disabled] {
