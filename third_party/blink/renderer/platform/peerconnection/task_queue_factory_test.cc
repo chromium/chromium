@@ -39,10 +39,13 @@ class TestTaskQueueFactory final : public webrtc::TaskQueueFactory {
 
 // Instantiate suite to run all tests defined in
 // third_party/webrtc/api/task_queue/task_queue_test.h.
-INSTANTIATE_TEST_SUITE_P(
-    WebRtcTaskQueue,
-    TaskQueueTest,
-    ::testing::Values(std::make_unique<TestTaskQueueFactory>));
+//
+// TODO(webrtc:14389): Bring this test back once WebRTC's change to
+// CreateDefaultTaskQueueFactory()'s signature has landed.
+// INSTANTIATE_TEST_SUITE_P(
+//     WebRtcTaskQueue,
+//     TaskQueueTest,
+//     ::testing::Values(std::make_unique<TestTaskQueueFactory>));
 
 // Provider needed for the MetronomeLikeTaskQueueTest suite.
 class TaskQueueProvider : public MetronomeLikeTaskQueueProvider {
