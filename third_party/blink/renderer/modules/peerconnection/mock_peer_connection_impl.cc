@@ -153,6 +153,10 @@ std::vector<std::string> FakeRtpSender::stream_ids() const {
   return stream_ids_;
 }
 
+void FakeRtpSender::SetStreams(const std::vector<std::string>& stream_ids) {
+  stream_ids_ = stream_ids;
+}
+
 std::vector<webrtc::RtpEncodingParameters> FakeRtpSender::init_send_encodings()
     const {
   return {};
