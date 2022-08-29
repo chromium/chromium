@@ -72,6 +72,7 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
   struct Args {
     const base::StringPiece tests_dir;
     const base::StringPiece manifest_template;
+    const std::vector<std::string>& additional_src_files;
   };
 
   explicit SystemExtensionsApiBrowserTest(const Args& args);
@@ -92,6 +93,7 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
   const base::FilePath this_dir_;
   const base::FilePath tests_dir_;
   const std::string manifest_template_;
+  const std::vector<std::string> additional_src_files_;
 
   std::unique_ptr<TestRunner> test_runner_;
   base::test::ScopedFeatureList feature_list_;

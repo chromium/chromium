@@ -121,7 +121,8 @@ base::FilePath GetAbsolutePathFromSrcRelative(base::StringPiece dir) {
 
 SystemExtensionsApiBrowserTest::SystemExtensionsApiBrowserTest(const Args& args)
     : tests_dir_(GetAbsolutePathFromSrcRelative(args.tests_dir)),
-      manifest_template_(args.manifest_template) {
+      manifest_template_(args.manifest_template),
+      additional_src_files_(args.additional_src_files) {
   feature_list_.InitWithFeatures(
       {features::kSystemExtensions,
        ::features::kEnableServiceWorkersForChromeUntrusted},
@@ -200,6 +201,14 @@ testing::AssertionResult SystemExtensionsApiBrowserTest::RunTestImpl(
         gen_dir.AppendASCII(mojom_file.path).AppendASCII(mojom_file.name),
         system_extension_path.AppendASCII(mojom_file.name)))
         << "Failed to copy mojo resource: " << mojom_file.name;
+  }
+
+  // Copy additional files.
+  for (const std::string& file_path : additional_src_files_) {
+    base::FilePath absolute_path = GetAbsolutePathFromSrcRelative(file_path);
+    CHECK(base::CopyFile(
+        absolute_path, system_extension_path.Append(absolute_path.BaseName())))
+        << "Failed to copy additional file: " << absolute_path.BaseName();
   }
 
   // Write manifest.

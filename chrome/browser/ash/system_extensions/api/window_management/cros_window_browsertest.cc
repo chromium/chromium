@@ -161,6 +161,8 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
       : SystemExtensionsApiBrowserTest({
             .tests_dir = kTestsDir,
             .manifest_template = kManifestTemplate,
+            .additional_src_files = {"chrome/test/data/system_extensions/"
+                                     "cros_window_test_utils.js"},
         }) {}
 };
 
@@ -324,316 +326,58 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMoveTo) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let [window] = await chromeos.windowManagement.getWindows();
-
-  let x = window.screenLeft;
-  let y = window.screenTop;
-  x -= 20;
-  y -= 20;
-
-  await moveToAndTest(x, y);
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMoveTo) {
+  RunTest("cros_window_move_to.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMoveBy) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let [window] = await chromeos.windowManagement.getWindows();
-
-  await moveByAndTest(-20, -20);
-
-  // Check that calling twice continues to move the window.
-  await moveByAndTest(10, 10);
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMoveBy) {
+  RunTest("cros_window_move_by.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowResizeTo) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let [window] = await chromeos.windowManagement.getWindows();
-
-  let width = window.width;
-  let height = window.height;
-  width -= 20;
-  height -= 20;
-
-  await resizeToAndTest(width, height);
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowResizeTo) {
+  RunTest("cros_window_resize_to.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowResizeBy) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let [window] = await chromeos.windowManagement.getWindows();
-
-  await resizeByAndTest(-20, -20);
-
-  await resizeByAndTest(10, 10);
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowResizeBy) {
+  RunTest("cros_window_resize_by.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowSetFullscreen) {
-  const char test_code[] = R"(
-async function cros_test() {
-  // Check that the window begins in a non-fullscreen state.
-  await assertWindowState("normal");
-
-  // Check that window can be fullscreened and repeating maintains fullscreen.
-  await setFullscreenAndTest(true);
-  await setFullscreenAndTest(true);
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       CrosWindowSetFullscreen) {
+  RunTest("cros_window_set_fullscreen.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, FullscreenMinMax) {
-  const char test_code[] = R"(
-async function cros_test() {
-  // Check that window begins in non-fullscreen state.
-  await assertWindowState("normal");
-
-  // Minimized->Fullscreen->Maximized->Minimized
-  await minimizeAndTest();
-  await setFullscreenAndTest(true);
-  await maximizeAndTest();
-  await minimizeAndTest();
-
-  // Reversing above: Minimized<-Fullscreen<-Maximized<-Minimized
-  await maximizeAndTest();
-  await setFullscreenAndTest(true);
-  await minimizeAndTest();
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, FullScreenMinMax) {
+  RunTest("fullscreen_min_max.js");
 }
 
-// When unsetting fullscreen from a previously normal or maximized window,
-// the window state should return to its previous state.
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        UnsetFullscreenNonMinimized) {
-  const char test_code[] = R"(
-async function cros_test() {
-  await assertWindowState("normal");
-
-  await setFullscreenAndTest(true);
-  await setFullscreenAndTest(false);
-  await assertWindowState("normal");
-
-  await maximizeAndTest();
-  await setFullscreenAndTest(true);
-  await setFullscreenAndTest(false);
-  await assertWindowState("maximized");
-}
-  )";
-
-  RunTest(test_code);
+  RunTest("unset_fullscreen_non_minimized.js");
 }
 
-// When unsetting fullscreen from a previously minimized window,
-// the window state should return to the last non-minimized state.
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, UnsetFullscreenMinimized) {
-  const char test_code[] = R"(
-async function cros_test() {
-  await assertWindowState("normal");
-
-  // Normal->Minimized->Fullscreen should unfullscreen to normal.
-  await minimizeAndTest();
-  await setFullscreenAndTest(true);
-  await setFullscreenAndTest(false);
-  await assertWindowState("normal");
-
-  // Normal->Fullscreen->Minimized->Fullscreen should unfullscreen to normal.
-  await setFullscreenAndTest(true);
-  await minimizeAndTest();
-  await setFullscreenAndTest(true);
-  await setFullscreenAndTest(false);
-  await assertWindowState("normal");
-
-  // Maximized->Minimized->Fullscreen should unfullscreen to normal.
-  await maximizeAndTest();
-  await minimizeAndTest();
-  await setFullscreenAndTest(true);
-  await setFullscreenAndTest(false);
-  await assertWindowState("maximized");
-
-  // Maximized->Fullscreen->Minimized->Fullscreen should unfullscreen to normal.
-  await setFullscreenAndTest(true);
-  await minimizeAndTest();
-  await setFullscreenAndTest(true);
-  await setFullscreenAndTest(false);
-  await assertWindowState("maximized");
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       UnsetFullscreenMinimized) {
+  RunTest("unset_fullscreen_minimized.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMaximize) {
-  const char test_code[] = R"(
-async function cros_test() {
-  await assertWindowState("normal");
-
-  await maximizeAndTest();
-
-  // Repeating maximize should not change any properties.
-  await maximizeAndTest();
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMaximize) {
+  RunTest("cros_window_maximize.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMinimize) {
-  const char test_code[] = R"(
-async function cros_test() {
-  await assertWindowState("normal");
-
-  await minimizeAndTest();
-
-  // Repeating minimize should not change any properties.
-  await minimizeAndTest();
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMinimize) {
+  RunTest("cros_window_minimize.js");
 }
 
-// Checks that focusing a non-visible unfocused window correctly sets focus.
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowFocusSingle) {
-  const char test_code[] = R"(
-async function cros_test() {
-  await assertWindowState("normal");
-  {
-    let [window] = await chromeos.windowManagement.getWindows();
-    assert_true(window.isFocused);
-  }
-
-  await minimizeAndTest();
-  {
-    let [window] = await chromeos.windowManagement.getWindows();
-    assert_false(window.isFocused);
-  }
-
-  await focusAndTest();
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowFocusSingle) {
+  RunTest("cros_window_focus_single.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowFocusMulti) {
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowFocusMulti) {
   // Open browser instance to take focus.
   chrome::NewWindow(browser());
 
-  const char test_code[] = R"(
-async function cros_test() {
-  // async window retriever with stable window ordering after first retrieval.
-  let getWindows;
-
-  {
-    let [first_window, second_window] =
-        await chromeos.windowManagement.getWindows();
-    getWindows = async function() {
-      let [first_returned_window, second_returned_window] =
-          await chromeos.windowManagement.getWindows();
-      assert_equals(first_window.id, first_returned_window.id);
-      assert_equals(second_window.id, second_returned_window.id);
-      return [first_returned_window, second_returned_window];
-    };
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    // When focusing 1st window, it should have sole focus.
-    await first_window.focus();
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    assert_true(first_window.isFocused);
-    assert_false(second_window.isFocused);
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    // When focusing 2nd window, it should have sole focus.
-    await second_window.focus();
-
-    [first_window, second_window] = await getWindows();
-    assert_false(first_window.isFocused);
-    assert_true(second_window.isFocused);
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    // Fullscreening a window does not focus an unfocused window.
-    await first_window.setFullscreen(true);
-
-    [first_window, second_window] = await getWindows();
-    assert_false(first_window.isFocused);
-    assert_true(second_window.isFocused);
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    // We can focus a fullscreen window.
-    await first_window.focus();
-
-    [first_window, second_window] = await getWindows();
-    assert_true(first_window.isFocused);
-    assert_false(second_window.isFocused);
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    // We can focus another window on top of a fullscreen window.
-    await second_window.focus();
-
-    [first_window, second_window] = await getWindows();
-    assert_false(first_window.isFocused);
-    assert_true(second_window.isFocused);
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    // Minimizing focused window should pass focus to next window.
-    await second_window.minimize();
-
-    [first_window, second_window] = await getWindows();
-    assert_true(first_window.isFocused);
-    assert_false(second_window.isFocused);
-  }
-
-  {
-    let [first_window, second_window] = await getWindows();
-    // Minimizing remaining window should lose focus.
-    await first_window.minimize();
-
-    [first_window, second_window] = await getWindows();
-    assert_false(first_window.isFocused);
-    assert_false(second_window.isFocused);
-  }
-}
-  )";
-
-  RunTest(test_code);
+  RunTest("cros_window_focus_multi.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowClose) {
@@ -681,25 +425,9 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        CacheGetWindowsReturnsProperty) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let returnedWindows = await chromeos.windowManagement.getWindows();
-  assert_array_equals(chromeos.windowManagement.windows, returnedWindows);
-
-  let windows = chromeos.windowManagement.windows;
-  await chromeos.windowManagement.getWindows();
-
-  // TODO(b/232866765): Change to assert_array_equals() once we update the
-  // cache.
-  windows.forEach((window, index) => {
-    assert_not_equals(window, chromeos.windowManagement.windows[index]);
-  });
-}
-  )";
-
-  RunTest(test_code);
+  RunTest("cache_get_windows_returns_property.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowSWACrashTest) {
@@ -757,48 +485,19 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        CrosWindowPendingCallsToGetAllWindowsShouldNotCrash) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let getWindowsPromise = chromeos.windowManagement.getWindows();
-  for (let i = 0; i < 100; i++)
-    chromeos.windowManagement.getWindows();
-  await getWindowsPromise;
-}
-  )";
-
-  RunTest(test_code);
+  RunTest("cros_window_pending_calls_to_get_all_windows_should_not_crash.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        CrosWindowPendingCallsToGetWindowShouldNotCrash) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let [window] = await chromeos.windowManagement.getWindows();
-  let movePromise = window.moveTo(0, 0);
-  for (let i = 0; i < 100; i++)
-    window.moveTo(0, 0);
-  await movePromise;
-}
-  )";
-
-  RunTest(test_code);
+  RunTest("cros_window_pending_calls_to_get_window_should_not_crash.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        CrosWindowPendingCallsToGetWidgetShouldNotCrash) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let [window] = await chromeos.windowManagement.getWindows();
-  let fullscreenPromise = window.setFullscreen(true);
-  for (let i = 0; i < 100; i++)
-    window.setFullscreen(true);
-  await fullscreenPromise;
-}
-  )";
-
-  RunTest(test_code);
+  RunTest("cros_window_pending_calls_to_get_widget_should_not_crash.js");
 }
 
 // Tests that the CrosWindowManagement object is an EventTarget.
@@ -807,40 +506,13 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
   RunTest("cros_window_manager_event_target.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosAcceleratorEventIdl) {
-  const char test_code[] = R"(
-async function cros_test() {
-  assert_true(chromeos.CrosAcceleratorEvent !== undefined, 'event');
-  let accelerator_event = new chromeos.CrosAcceleratorEvent(
-     'acceleratordown', {acceleratorName: 'close-window', repeat: false});
-  assert_equals(accelerator_event.type, 'acceleratordown', 'event type');
-  assert_equals(accelerator_event.acceleratorName, 'close-window');
-  assert_false(accelerator_event.repeat);
-  assert_true(accelerator_event.bubbles, 'bubbles');
-  assert_false(accelerator_event.cancelable, 'cancelable');
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       CrosAcceleratorEventIdl) {
+  RunTest("cros_accelerator_event_idl.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowEventIdl) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let windows = await chromeos.windowManagement.getWindows();
-  assert_true(chromeos.CrosWindowEvent !== undefined, 'event');
-  let window_event = new chromeos.CrosWindowEvent('windowclosed',
-      {window: windows[0]});
-  assert_equals(window_event.type, 'windowclosed', 'event type');
-  assert_equals(window_event.window, windows[0], 'Window event has correct\
-      window property');
-  assert_true(window_event.bubbles, 'Window event should bubble');
-  assert_false(window_event.cancelable, 'Window event should not be\
-      cancelable');
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowEventIdl) {
+  RunTest("cros_window_event_idl.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
