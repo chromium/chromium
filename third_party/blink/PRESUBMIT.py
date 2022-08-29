@@ -194,7 +194,7 @@ def _CheckStyle(input_api, output_api):
             if child.returncode != 0:
                 results.append(
                     output_api.PresubmitError('check_blink_style.py failed',
-                                              [stderrdata]))
+                                              [stderrdata.decode('utf-8')]))
         except Exception as e:
             results.append(
                 output_api.PresubmitNotifyResult(
