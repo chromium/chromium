@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">قبل از اجازه به سایت‌ها برای پخش محتوای محافظت‌شده سؤال شود (توصیه می‌شود)</translation>
 <translation id="2146738493024040262">برنامه فوری را باز کنید</translation>
 <translation id="2148716181193084225">امروز</translation>
+<translation id="2155988908301433309">همیشه سایت ویژه تلفن همراه مشاهده شود</translation>
 <translation id="2182457891543959921">قبل از اینکه به سایت‌ها اجازه داده شود نقشه سه‌بعدی از محیط ایجاد کنند یا موقعیت دوربین را ردیابی کنند سؤال شود (توصیه می‌شود)</translation>
 <translation id="2212565012507486665">مجاز کردن کوکی ها</translation>
 <translation id="2228071138934252756">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به دوربین دسترسی پیدا کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2687403674020088961">مسدود کردن همه کوکی‌ها (توصیه نمی‌شود)</translation>
+<translation id="2692299144678073135">اجازه دادن به سایت‌های مربوطه برای به‌خاطر آوردن شما در سایت‌ها</translation>
 <translation id="2704606927547763573">کپی شد</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2717722538473713889">آدرس‌های ایمیل</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4008040567710660924">کوکی‌ها را برای سایت خاصی مجاز کنید.</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
+<translation id="4048876521107516222">سایت‌های مربوطه از کوکی استفاده می‌کنند تا در مواردی مثل ورود به سیستم به شما کمک کنند</translation>
 <translation id="4149994727733219643">نمای ساده‌شده برای صفحه‌های وب</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
 <translation id="4169549551965910670">‏به دستگاه USB متصل است</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">سایت‌ها نمی‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="5516455585884385570">باز کردن تنظیمات اعلان</translation>
 <translation id="5527111080432883924">قبل از اینکه به سایت‌ها اجازه داده شود به نوشتار و تصاویر بریده‌دان دسترسی پیدا کنند سؤال شود (توصیه می‌شود)</translation>
+<translation id="5553273073880784901">همیشه سایت ویژه رایانه مشاهده شود</translation>
 <translation id="5553374991681107062">جدیدترین</translation>
 <translation id="5556459405103347317">تازه‌سازی</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">آخرین بازدید: دیروز</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5922853908706496913">درحال هم‌رسانی صفحه‌نمایش</translation>
+<translation id="5922967540311291836">مسدود کردن کوکی‌های شخص ثالث:</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">لغو انتخاب</translation>
 <translation id="7846621471902887024">از سیستم همه سایت‌ها خارج خواهید شد.</translation>
 <translation id="7882806643839505685">پخش صدا برای سایت خاصی مجاز شود.</translation>
+<translation id="789180354981963912">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»:</translation>
 <translation id="7940722705963108451">به من یادآوری شود</translation>
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
 <translation id="7999064672810608036">مطمئنید که می‌خواهید تمام داده‌های محلی، شامل کوکی‌ها را حذف کنید و تمام مجوزهای این وب‌سایت را بازنشانی کنید؟</translation>

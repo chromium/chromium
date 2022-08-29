@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Płyta winylowa</translation>
 <translation id="3290356915286466215">Niezabezpieczona</translation>
 <translation id="3291218047831493686">Połącz się z tą siecią, aby zmienić ustawienie blokady SIM</translation>
+<translation id="3293023191599135697">Sieci WEP nie są obsługiwane</translation>
 <translation id="3295357220137379386">Urządzenie jest zajęte</translation>
 <translation id="3296763833017966289">Gruziński</translation>
 <translation id="3307875152560779385">Ukraiński</translation>
@@ -312,6 +313,7 @@
 <translation id="3689865792480713551">Anuluj <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nieaktywowana, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3691184985318546178">Syngaleski</translation>
+<translation id="3722341589402358578">Wystąpił błąd. Niektóre elementy mogły nie zostać przeniesione do kosza.</translation>
 <translation id="3726463242007121105">Nie można otworzyć urządzenia, ponieważ jego system plików nie jest obsługiwany.</translation>
 <translation id="3727148787322499904">Zmiana tego ustawienia wpłynie na wszystkie sieci współdzielone</translation>
 <translation id="3737576078404241332">Usuń z paska bocznego</translation>

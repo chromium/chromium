@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Запрашивать разрешение на воспроизведение защищенного контента (рекомендуется)</translation>
 <translation id="2146738493024040262">Открыть приложение с мгновенным запуском</translation>
 <translation id="2148716181193084225">Сегодня</translation>
+<translation id="2155988908301433309">Всегда показывать мобильную версию сайта.</translation>
 <translation id="2182457891543959921">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры (рекомендуется)</translation>
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2687403674020088961">Заблокировать все файлы cookie (не рекомендуется)</translation>
+<translation id="2692299144678073135">Разрешать связанным сайтам запоминать ваши данные на сайтах</translation>
 <translation id="2704606927547763573">Скопировано</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2717722538473713889">Адреса электронной почты</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Название</translation>
 <translation id="4008040567710660924">Разрешить определенному сайту сохранять файлы cookie</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
+<translation id="4048876521107516222">Связанные сайты используют файлы cookie, чтобы предоставлять пользователю дополнительные возможности, например запоминать, что выполнен вход в аккаунт</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Сайты не могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="5516455585884385570">Перейти в настройки уведомлений</translation>
 <translation id="5527111080432883924">Запрашивать мое разрешение на доступ сайтов к тексту и изображениям, скопированным в буфер обмена (рекомендуется)</translation>
+<translation id="5553273073880784901">Всегда показывать полную версию сайта.</translation>
 <translation id="5553374991681107062">По дате</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5596627076506792578">Ещё</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Последнее посещение: вчера</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5922853908706496913">Предоставлен доступ к вашему экрану</translation>
+<translation id="5922967540311291836">Блокировать сторонние файлы cookie</translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7846621471902887024">Вы выйдете из аккаунта на всех сайтах.</translation>
 <translation id="7882806643839505685">Включить звуки на определенном сайте</translation>
+<translation id="789180354981963912">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
 <translation id="7940722705963108451">Напомнить</translation>
 <translation id="7986741934819883144">Выберите контакт</translation>
 <translation id="7999064672810608036">Вы уверены, что хотите удалить все данные этого веб-сайта, включая файлы cookie, и сбросить заданные разрешения?</translation>

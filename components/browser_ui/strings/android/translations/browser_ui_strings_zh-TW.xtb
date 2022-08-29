@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">允許網站播放受保護的內容前，必須先詢問你 (建議)</translation>
 <translation id="2146738493024040262">開啟免安裝應用程式</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="2155988908301433309">一律查看行動版網站</translation>
 <translation id="2182457891543959921">網站必須先詢問你，才能根據你的周遭環境建立 3D 地圖或追蹤攝影機位置 (建議)</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要允許 <ph name="APP_NAME" /> 存取裝置的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
+<translation id="2692299144678073135">允許相關網站記住你在不同網站上的身分</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2713106313042589954">關閉攝影機</translation>
 <translation id="2717722538473713889">電子郵件地址</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">標題</translation>
 <translation id="4008040567710660924">允許特定網站的 Cookie。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
+<translation id="4048876521107516222">相關網站會使用 Cookie 為你提供多項協助，例如保持登入狀態</translation>
 <translation id="4149994727733219643">使用簡易檢視模式查看網頁</translation>
 <translation id="4165986682804962316">網站設定</translation>
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">網站無法要求傳送通知給你</translation>
 <translation id="5516455585884385570">開啟通知設定</translation>
 <translation id="5527111080432883924">允許網站讀取剪貼簿中的文字和圖片前，必須先詢問你 (建議)</translation>
+<translation id="5553273073880784901">一律查看電腦版網站</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">上次造訪日期：昨天</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5922853908706496913">正在分享你的螢幕畫面</translation>
+<translation id="5922967540311291836">封鎖第三方 Cookie：</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">全部取消選取</translation>
 <translation id="7846621471902887024">系統會將你登出所有網站。</translation>
 <translation id="7882806643839505685">允許特定網站播放音訊。</translation>
+<translation id="789180354981963912">在無痕模式中封鎖第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7999064672810608036">確定要刪除這個網站儲存的所有本機資料 (包括 Cookie 在內)，並重設這個網站的所有權限嗎？</translation>

@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Pýtať sa, či chcete povoliť webu prehrávať chránený obsah (odporúčané)</translation>
 <translation id="2146738493024040262">Otvoriť okamžitú aplikáciu</translation>
 <translation id="2148716181193084225">Dnes</translation>
+<translation id="2155988908301433309">Vždy zobrazovať mobilný web</translation>
 <translation id="2182457891543959921">Pýtať sa, či chcete povoliť webu vytvárať priestorovú mapu okolia alebo sledovať pozíciu kamery (odporúčané)</translation>
 <translation id="2212565012507486665">Povoliť súbory cookie</translation>
 <translation id="2228071138934252756">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať váš fotoaparát, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2687403674020088961">Blokovať všetky súbory cookie (neodporúča sa)</translation>
+<translation id="2692299144678073135">Povoliť súvisiacim webom, aby si vás pamätali na rôznych weboch</translation>
 <translation id="2704606927547763573">Skopírované</translation>
 <translation id="2713106313042589954">Vypnúť kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4008040567710660924">Povoliť súbory cookie na konkrétnom webe.</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
+<translation id="4048876521107516222">Súvisiace weby vám prostredníctvom súborov cookie pomáhajú uchovať si aktívne prihlásenie</translation>
 <translation id="4149994727733219643">Jednoduché zobrazenie webových stránok</translation>
 <translation id="4165986682804962316">Nastavenia webu</translation>
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Weby nemôžu žiadať o odosielanie upozornení</translation>
 <translation id="5516455585884385570">Otvoriť nastavenia upozornení</translation>
 <translation id="5527111080432883924">Pýtať sa, či chcete povoliť webu prístup k textom a obrázkom v schránke (odporúčané)</translation>
+<translation id="5553273073880784901">Vždy zobrazovať web pre počítače</translation>
 <translation id="5553374991681107062">Najnovšie</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Naposledy navštívený včera</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5922853908706496913">Zdieľate obrazovku</translation>
+<translation id="5922967540311291836">Blokovať súbory cookie tretích strán:</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Zrušiť výber</translation>
 <translation id="7846621471902887024">Systém vás odhlási zo všetkých webov.</translation>
 <translation id="7882806643839505685">Povoliť zvuk na konkrétnom webe.</translation>
+<translation id="789180354981963912">Blokovať súbory cookie tretích strán v režime inkognito:</translation>
 <translation id="7940722705963108451">Pripomenúť mi</translation>
 <translation id="7986741934819883144">Výber kontaktu</translation>
 <translation id="7999064672810608036">Naozaj chcete vymazať všetky miestne dáta tohto webu, vrátane súborov cookie, a resetovať všetky jeho povolenia?</translation>

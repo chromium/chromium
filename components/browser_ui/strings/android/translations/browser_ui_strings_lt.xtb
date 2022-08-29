@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Paklausti prieš leidžiant svetainėms leisti saugomą turinį (rekomenduojama)</translation>
 <translation id="2146738493024040262">Atidaryti akimirksniu įkeliamą programėlę</translation>
 <translation id="2148716181193084225">Šiandien</translation>
+<translation id="2155988908301433309">Visada peržiūrėti svetainę mobiliesiems</translation>
 <translation id="2182457891543959921">Klausti, ar svetainėms leidžiama kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį (rekomenduojama)</translation>
 <translation id="2212565012507486665">Leisti slapukus</translation>
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2687403674020088961">Blokuoti visus slapukus (nerekomenduojama)</translation>
+<translation id="2692299144678073135">Leisti susijusioms svetainėms prisiminti jus svetainėse</translation>
 <translation id="2704606927547763573">Nukopij.</translation>
 <translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2717722538473713889">El. pašto adresai</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4008040567710660924">Leisti konkrečios svetainės slapukus.</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
+<translation id="4048876521107516222">Susijusios svetainės naudoja slapukus, kad padėtų, pvz., likti jums prisijungus</translation>
 <translation id="4149994727733219643">Supaprastinta tinklalapių peržiūra</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>
 <translation id="4169549551965910670">Prisijungta prie USB įrenginio</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Svetainės negali prašyti siųsti pranešimus</translation>
 <translation id="5516455585884385570">Atidaryti pranešimų nustatymus</translation>
 <translation id="5527111080432883924">Klausti, prieš leidžiant svetainėms skaityti tekstą ir vaizdus iš iškarpinės (rekomenduojama)</translation>
+<translation id="5553273073880784901">Visada peržiūrėti svetainę kompiuteriams</translation>
 <translation id="5553374991681107062">Naujausi</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Paskutinį kartą lankytasi vakar</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5922853908706496913">Bendrinamas ekranas</translation>
+<translation id="5922967540311291836">Blokuoti trečiųjų šalių slapukus:</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="5975083100439434680">Tolinti</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
 <translation id="7846621471902887024">Būsite atjungti nuo visų svetainių.</translation>
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
+<translation id="789180354981963912">Blokuoti trečiųjų šalių slapukus inkognito režimu:</translation>
 <translation id="7940722705963108451">Priminti</translation>
 <translation id="7986741934819883144">Pasirinkite kontaktą</translation>
 <translation id="7999064672810608036">Ar tikrai norite išvalyti visus šios svetainės vietinius duomenis, įskaitant slapukus, ir iš naujo nustatyti visus leidimus?</translation>

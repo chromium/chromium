@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Pytaj, zanim pozwolisz stronom na odtwarzanie treści chronionej (zalecane)</translation>
 <translation id="2146738493024040262">Otwórz aplikację błyskawiczną</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
+<translation id="2155988908301433309">Zawsze wyświetlaj stronę mobilną</translation>
 <translation id="2182457891543959921">Pytaj, zanim zezwolisz stronom na tworzenie mapy 3D Twojego otoczenia lub śledzenie pozycji kamery (zalecane)</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
+<translation id="2692299144678073135">Zezwalaj powiązanym witrynom na zapamiętywanie Cię na różnych stronach</translation>
 <translation id="2704606927547763573">Skopiowane</translation>
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2717722538473713889">Adresy e-mail</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="4008040567710660924">Zezwalaj na pliki cookie z określonej strony internetowej.</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
+<translation id="4048876521107516222">Powiązane witryny używają plików cookie, m.in. aby Cię nie wylogowywać</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
 <translation id="4169549551965910670">Połączona z urządzeniem USB</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Strony nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
 <translation id="5527111080432883924">Pytaj, czy zezwolić stronom na odczytywanie tekstu i obrazów ze schowka (zalecane)</translation>
+<translation id="5553273073880784901">Zawsze wyświetlaj stronę na komputery</translation>
 <translation id="5553374991681107062">Najnowsze</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5922853908706496913">Udostępnianie ekranu</translation>
+<translation id="5922967540311291836">Blokuj pliki cookie innych firm:</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Anuluj wybór</translation>
 <translation id="7846621471902887024">Wylogujemy Cię ze wszystkich stron.</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
+<translation id="789180354981963912">Blokuj pliki cookie innych firm w trybie incognito:</translation>
 <translation id="7940722705963108451">Przypomnij mi</translation>
 <translation id="7986741934819883144">Wybierz kontakt</translation>
 <translation id="7999064672810608036">Na pewno chcesz usunąć wszystkie dane lokalne (w tym pliki cookie) i zresetować uprawnienia tej witryny?</translation>

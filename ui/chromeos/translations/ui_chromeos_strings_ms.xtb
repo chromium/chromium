@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Rekod vinil</translation>
 <translation id="3290356915286466215">Tidak selamat</translation>
 <translation id="3291218047831493686">Sambung kepada rangkaian ini untuk menukar tetapan kunci SIM</translation>
+<translation id="3293023191599135697">Rangkaian WEP tidak disokong</translation>
 <translation id="3295357220137379386">Peranti sibuk</translation>
 <translation id="3296763833017966289">Bahasa Georgia</translation>
 <translation id="3307875152560779385">Ukraine</translation>
@@ -312,6 +313,7 @@
 <translation id="3689865792480713551">Batalkan <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Dinyahaktifkan, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Butiran</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3722341589402358578">Ralat telah berlaku. Sesetengah item mungkin belum dibuang.</translation>
 <translation id="3726463242007121105">Peranti ini tidak boleh dibuka kerana sistem failnya tidak disokong.</translation>
 <translation id="3727148787322499904">Tindakan menukar tetapan ini akan menjejaskan semua rangkaian yang dikongsi</translation>
 <translation id="3737576078404241332">Alih keluar daripada bar sisi</translation>

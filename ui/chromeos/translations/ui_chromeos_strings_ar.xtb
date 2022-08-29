@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">إلغاء <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، غير مفعّلة، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="3691184985318546178">السنهالية</translation>
+<translation id="3722341589402358578">حدث خطأ. ومن المحتمّل أنّ بعض الملفات لم يتم إرسالها إلى المهملات.</translation>
 <translation id="3726463242007121105">لا يمكن فتح الجهاز لأن نظام الملفات غير متوافق.</translation>
 <translation id="3727148787322499904">سيؤثر تغيير هذا الإعداد في جميع الشبكات المشتركة</translation>
 <translation id="3737576078404241332">الإزالة من الشريط الجانبي</translation>

@@ -277,6 +277,7 @@
 <translation id="125220115284141797">기본</translation>
 <translation id="1252987234827889034">프로필 오류가 발생했습니다.</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
+<translation id="1257336506558170607">선택한 인증서 내보내기</translation>
 <translation id="1258491128795710625">새로운 기능</translation>
 <translation id="1259152067760398571">안전 확인이 어제 실행됨</translation>
 <translation id="1260451001046713751"><ph name="HOST" />에서 팝업 및 리디렉션을 항상 허용</translation>
@@ -326,6 +327,7 @@
 <translation id="1307165550267142340">PIN이 생성되었습니다.</translation>
 <translation id="1307431692088049276">다시 묻지 않음</translation>
 <translation id="1307559529304613120">시스템이 이 기기에 대한 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
+<translation id="1312811472299082263">Ansible Playbook 또는 Crostini 백업 파일에서 만들기</translation>
 <translation id="1313405956111467313">자동 프록시 설정</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">열려 있는 탭을 포함한 모든 사이트에서 로그아웃됩니다.</translation>
@@ -1109,6 +1111,7 @@
 <translation id="2028449514182362831">움직임 감지 센서가 필요한 기능이 작동하지 않음</translation>
 <translation id="202918510990975568">비밀번호를 입력하여 보안을 구성하고 로그인하세요.</translation>
 <translation id="2030455719695904263">트랙패드</translation>
+<translation id="2031385797619033640">클릭하여 <ph name="EXTENSIONS_REQUESTING_ACCESS" /> 확장 프로그램이 <ph name="ORIGIN" /> 사이트를 읽고 변경하도록 허용합니다.</translation>
 <translation id="2031639749079821948">비밀번호가 Google 계정에 저장되었습니다.</translation>
 <translation id="2031914984822377766">선호하는 <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />를 추가하세요. 번역 시 목록의 가장 위에 있는 언어가 사용됩니다.</translation>
 <translation id="2033758234986231162">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고, 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
@@ -1469,6 +1472,7 @@
 <translation id="2328561734797404498"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 다시 시작해 주세요.</translation>
 <translation id="2328636661627946415">시크릿 모드에서 사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다. 시크릿 세션이 종료되면 쿠키가 삭제됩니다.</translation>
 <translation id="2329597144923131178">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 사용할 수 있습니다.</translation>
+<translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" />에 저장된 기기를 로드할 수 없습니다. 인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
 <translation id="2332131598580221120">스토어에서 보기</translation>
 <translation id="2332192922827071008">환경설정 열기</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
@@ -1912,6 +1916,7 @@
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">영문 철자 및 문법 검사</translation>
 <translation id="2753677631968972007">사이트 권한을 수동으로 관리합니다.</translation>
+<translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />에 저장된 빠른 페어링 기기를 찾는 중</translation>
 <translation id="2754825024506485820">Google Play 스토어에서 생산성, 엔터테인먼트 등 나에게 필요한 다양한 앱을 찾아보세요. 언제든지 앱을 설치할 수 있습니다.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> 초기화</translation>
 <translation id="2755367719610958252">접근성 기능 관리</translation>
@@ -2127,6 +2132,7 @@
 <translation id="2942279350258725020">Android 메시지</translation>
 <translation id="2942560570858569904">대기 중...</translation>
 <translation id="2942581856830209953">페이지 맞춤설정</translation>
+<translation id="2943268899142471972">Ansible Playbook 또는 Crostini 백업 파일 선택</translation>
 <translation id="2944060181911631861">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">파일로 이동</translation>
 <translation id="2946119680249604491">연결 추가</translation>
@@ -2967,6 +2973,7 @@
 <translation id="3784472333786002075">쿠키는 웹사이트에서 생성된 파일로, 다음과 같은 2가지 유형이 있습니다. 제1사 쿠키는 사용자가 방문하는 사이트에 의해 생성됩니다. 이때 사이트가 주소 표시줄에 나타납니다. 제3사 쿠키는 다른 사이트, 즉 광고나 이미지 등 사용자가 방문하는 웹사이트에 표시되는 일부 콘텐츠를 소유한 사이트에 의해 생성됩니다.</translation>
 <translation id="3785308913036335955">앱 단축키 표시</translation>
 <translation id="3785727820640310185">이 사이트의 저장된 비밀번호</translation>
+<translation id="3787434344076711519">번역 대기 중</translation>
 <translation id="3788301286821743879">키오스크 애플리케이션을 시작할 수 없습니다.</translation>
 <translation id="3788331399335602504">파일</translation>
 <translation id="3788401245189148511">이전에 가능했던 대상:</translation>
@@ -3250,6 +3257,7 @@
 <translation id="4036778507053569103">서버에서 다운로드한 정책이 올바르지 않습니다.</translation>
 <translation id="4037084878352560732">말</translation>
 <translation id="403725336528835653">먼저 사용해 보기</translation>
+<translation id="4040041015953651705">출발 언어</translation>
 <translation id="4040105702484676956"><ph name="SITE_NAME" /> 및 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{페이지 나가기}other{페이지 나가기}}</translation>
 <translation id="4043267180218562935">커서 크기</translation>
@@ -4054,6 +4062,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4838170306476614339">휴대전화의 사진, 미디어, 알림을 봅니다.</translation>
 <translation id="4838836835474292213">클립보드 읽기 액세스 허용됨</translation>
 <translation id="4838907349371614303">비밀번호가 업데이트됨</translation>
+<translation id="4838958829619609362">선택 항목이 <ph name="LANGUAGE" />로 제공되지 않음</translation>
 <translation id="4839303808932127586">동영상을 다른 이름으로 저장...(&amp;V)</translation>
 <translation id="4840096453115567876">시크릿 모드를 종료하시겠습니까?</translation>
 <translation id="4841741146571978176">필수 가상 머신이 존재하지 않습니다. 계속하려면 <ph name="VM_TYPE" /> VM을 설정해 보세요.</translation>
@@ -4825,6 +4834,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="558918721941304263">앱 로드 중...</translation>
 <translation id="5590418976913374224">기기 시작 시 소리 재생</translation>
 <translation id="5592595402373377407">아직 데이터가 충분하지 않습니다.</translation>
+<translation id="5594899180331219722">파일 선택</translation>
 <translation id="5595307023264033512">사이트에서 사용 중인 총 저장용량: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">주소 수정</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
@@ -5057,6 +5067,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5834581999798853053">약 <ph name="TIME" />분 남음</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 카메라 또는 마이크 녹음</translation>
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
+<translation id="5836999627049108525">출발 언어</translation>
 <translation id="583756221537636748">케이스</translation>
 <translation id="5840658767386246331">Google로 검색</translation>
 <translation id="5840680448799937675">항상 오프라인으로 파일 공유</translation>
@@ -5567,6 +5578,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6318944945640833942">프린터를 찾을 수 없습니다. 프린터 주소를 다시 입력해 주세요.</translation>
 <translation id="6322370287306604163">지문으로 신속하게 잠금 해제</translation>
 <translation id="6322559670748154781">일반적으로 다운로드하지 않는 파일이며, 고급 보호 기능으로 차단되었습니다</translation>
+<translation id="6324083483652497048">클릭하여 다음 확장 프로그램이 <ph name="ORIGIN" /> 사이트를 읽고 변경하도록 허용합니다.</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6325191661371220117">자동 실행 사용 안함</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
@@ -6597,6 +6609,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7343372807593926528">의견을 보내기 전에 문제를 설명해 주세요.</translation>
 <translation id="7344585835349671209">기기에서 HTTPS/SSL 인증서 관리</translation>
 <translation id="7345706641791090287">비밀번호 확인</translation>
+<translation id="7345919885156673810">선택 항목이 <ph name="LANGUAGE" />로 제공되지 않음</translation>
 <translation id="7346909386216857016">확인</translation>
 <translation id="7347452120014970266"><ph name="ORIGIN_NAME" /> 및 설치된 앱에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="7347751611463936647">이 확장 프로그램을 사용하려면 '<ph name="EXTENSION_KEYWORD" />'(을)를 입력하고 TAB을 누른 다음 명령어 또는 검색어를 입력하세요.</translation>

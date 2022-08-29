@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">黑膠唱片</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3291218047831493686">連接此網絡即可變更 SIM 卡鎖定設定</translation>
+<translation id="3293023191599135697">系統不支援 WEP 網絡</translation>
 <translation id="3295357220137379386">裝置忙碌中</translation>
 <translation id="3296763833017966289">喬治亞文</translation>
 <translation id="3307875152560779385">烏克蘭文</translation>
@@ -312,6 +313,7 @@
 <translation id="3689865792480713551">取消 <ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3691184985318546178">錫蘭文</translation>
+<translation id="3722341589402358578">發生錯誤，某些項目可能尚未移至垃圾桶。</translation>
 <translation id="3726463242007121105">這部裝置所用的檔案系統不受支援，因此系統無法開啟這部裝置。</translation>
 <translation id="3727148787322499904">變更此設定將會影響所有共用網絡</translation>
 <translation id="3737576078404241332">從側欄中移除</translation>

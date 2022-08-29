@@ -79,6 +79,7 @@
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
+<translation id="2692299144678073135">Permet que els llocs web relacionats et recordin en diversos llocs web</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2713106313042589954">Desactiva la càmera</translation>
 <translation id="2717722538473713889">Adreces electròniques</translation>
@@ -139,6 +140,7 @@
 <translation id="4002066346123236978">Títol</translation>
 <translation id="4008040567710660924">Permet les galetes d'un lloc web concret.</translation>
 <translation id="4046123991198612571">Pista següent</translation>
+<translation id="4048876521107516222">Els llocs web relacionats utilitzen galetes per ajudar-te amb coses com ara mantenir la sessió iniciada</translation>
 <translation id="4149994727733219643">Visualització simplificada de pàgines web</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
 <translation id="4169549551965910670">Connectat a un dispositiu USB</translation>
@@ -220,6 +222,7 @@
 <translation id="5887687176710214216">Darrera visita: ahir</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5922853908706496913">S'està compartint la pantalla</translation>
+<translation id="5922967540311291836">Bloqueja les galetes de tercers:</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +313,7 @@
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
 <translation id="7846621471902887024">Se't tancarà la sessió de tots els llocs web.</translation>
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
+<translation id="789180354981963912">Bloqueja les galetes de tercers en mode d'incògnit:</translation>
 <translation id="7940722705963108451">Recorda-m'ho</translation>
 <translation id="7986741934819883144">Selecciona un contacte</translation>
 <translation id="7999064672810608036">Confirmes que vols esborrar d'aquest lloc web totes les dades locals, incloses les galetes, i restablir-ne tots els permisos?</translation>

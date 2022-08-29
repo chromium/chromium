@@ -312,6 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> 작업을 취소합니다.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="3691184985318546178">싱할라어</translation>
+<translation id="3722341589402358578">오류가 발생했습니다. 일부 항목이 휴지통으로 이동되지 않았을 수도 있습니다.</translation>
 <translation id="3726463242007121105">파일 시스템이 지원되지 않아 이 기기를 열 수 없습니다.</translation>
 <translation id="3727148787322499904">이 설정을 변경하면 모든 공유 네트워크에 영향을 줍니다.</translation>
 <translation id="3737576078404241332">사이드바에서 삭제</translation>

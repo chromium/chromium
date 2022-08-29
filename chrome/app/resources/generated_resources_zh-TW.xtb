@@ -275,6 +275,7 @@
 <translation id="125220115284141797">預設值</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
+<translation id="1257336506558170607">匯出選取的憑證</translation>
 <translation id="1258491128795710625">新功能</translation>
 <translation id="1259152067760398571">昨天已執行安全檢查</translation>
 <translation id="1260451001046713751">一律允許 <ph name="HOST" /> 的彈出式視窗和重新導向</translation>
@@ -324,6 +325,7 @@
 <translation id="1307165550267142340">已建立 PIN 碼</translation>
 <translation id="1307431692088049276">不要再詢問我</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這個裝置儲存長期 API 存取符記。</translation>
+<translation id="1312811472299082263">使用 Ansible Playbook 或 Crostini 備份檔案建立</translation>
 <translation id="1313405956111467313">自動 Proxy 設定</translation>
 <translation id="131364520783682672">Caps Lock 鍵</translation>
 <translation id="1313660246522271310">系統會將你登出所有網站，包含已開啟的分頁</translation>
@@ -1097,6 +1099,7 @@
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="202918510990975568">請輸入你的密碼以進行安全性與登入設定</translation>
 <translation id="2030455719695904263">觸控板</translation>
+<translation id="2031385797619033640">按一下即可允許「<ph name="EXTENSIONS_REQUESTING_ACCESS" />」讀取及變更 <ph name="ORIGIN" />：</translation>
 <translation id="2031639749079821948">你已將密碼儲存在 Google 帳戶中</translation>
 <translation id="2031914984822377766">新增偏好的<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />。系統會將文字翻譯成清單頂端的語言。</translation>
 <translation id="2033758234986231162">無法與你的手機維持連線狀態。請確認你的手機在附近且處於解鎖狀態，並已開啟藍牙和 Wi-Fi。</translation>
@@ -1453,6 +1456,7 @@
 <translation id="2328561734797404498">請重新啟動裝置以使用「<ph name="APP_NAME" />」。</translation>
 <translation id="2328636661627946415">使用無痕模式時，網站只能使用 Cookie 查看你在該網站上的瀏覽活動。無痕模式工作階段結束時，系統就會刪除 Cookie。</translation>
 <translation id="2329597144923131178">登入後，即可從您使用的任何裝置取得自己的書籤、歷史記錄、密碼和其他設定。</translation>
+<translation id="2332115969598251205">無法載入已儲存到 <ph name="PRIMARY_EMAIL" /> 的裝置，請檢查網際網路連線，然後再試一次。</translation>
 <translation id="2332131598580221120">前往商店查看</translation>
 <translation id="2332192922827071008">開啟偏好設定</translation>
 <translation id="2332515770639153015">已啟用安全瀏覽強化防護功能</translation>
@@ -1896,6 +1900,7 @@
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">檢查拼字及文法</translation>
 <translation id="2753677631968972007">手動控管網站權限。</translation>
+<translation id="2754226775788136540">正在尋找已儲存到 <ph name="PRIMARY_EMAIL" /> 的快速配對裝置</translation>
 <translation id="2754825024506485820">Google Play 商店提供各種應用程式，從提升工作效率到生活娛樂都能滿足所需，而且隨時都能安裝。</translation>
 <translation id="2755349111255270002">重設這部 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">管理無障礙功能</translation>
@@ -2111,6 +2116,7 @@
 <translation id="2942279350258725020">Android 訊息</translation>
 <translation id="2942560570858569904">等待中…</translation>
 <translation id="2942581856830209953">自訂這個頁面</translation>
+<translation id="2943268899142471972">選取 Ansible Playbook 或 Crostini 備份檔案</translation>
 <translation id="2944060181911631861">傳送使用狀況與診斷資料。讓系統自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於系統和應用程式提高穩定性及做出其他改善。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。如果你的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到你的 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">前往檔案</translation>
 <translation id="2946119680249604491">新增連線</translation>
@@ -2951,6 +2957,7 @@
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，可分為兩種類型：第一方 Cookie 由你造訪過的網站所建立，也就是網址列所顯示的網站。第三方 Cookie 由其他網站所建立。這類網站通常是在你造訪的網站上提供部分內容 (例如廣告或圖片) 的其他網站。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
 <translation id="3785727820640310185">已儲存這個網站的密碼</translation>
+<translation id="3787434344076711519">正在等待翻譯</translation>
 <translation id="3788301286821743879">無法啟動資訊站應用程式。</translation>
 <translation id="3788331399335602504">這些檔案</translation>
 <translation id="3788401245189148511">要求下列權限：</translation>
@@ -3233,6 +3240,7 @@
 <translation id="4036778507053569103">從伺服器下載的政策無效。</translation>
 <translation id="4037084878352560732">馬</translation>
 <translation id="403725336528835653">先試用看看</translation>
+<translation id="4040041015953651705">原文語言</translation>
 <translation id="4040105702484676956">要對 <ph name="SITE_NAME" /> 和其安裝的應用程式清除相關網站資料和權限嗎？</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="4043267180218562935">游標大小</translation>
@@ -4038,6 +4046,7 @@
 <translation id="4838170306476614339">查看手機上的相片、媒體和通知</translation>
 <translation id="4838836835474292213">已允許讀取剪貼簿</translation>
 <translation id="4838907349371614303">已更新密碼</translation>
+<translation id="4838958829619609362">所選內容的語言不是<ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">將影片另存為(&amp;V)...</translation>
 <translation id="4840096453115567876">確定要結束無痕模式嗎？</translation>
 <translation id="4841741146571978176">必要的虛擬機器不存在。如要繼續，請嘗試設定「<ph name="VM_TYPE" />」</translation>
@@ -4809,6 +4818,7 @@
 <translation id="558918721941304263">正在載入應用程式...</translation>
 <translation id="5590418976913374224">裝置開啟時播放音效</translation>
 <translation id="5592595402373377407">目前還沒有足夠的資料。</translation>
+<translation id="5594899180331219722">選取檔案</translation>
 <translation id="5595307023264033512">網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -5039,6 +5049,7 @@
 <translation id="5834581999798853053">剩下 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 攝影機或麥克風錄影/錄音中</translation>
 <translation id="583673505367439042">網站可以要求編輯裝置上的檔案和資料夾</translation>
+<translation id="5836999627049108525">原文語言</translation>
 <translation id="583756221537636748">充電盒</translation>
 <translation id="5840658767386246331">透過 Google 搜尋</translation>
 <translation id="5840680448799937675">一律在離線時分享檔案</translation>
@@ -5548,6 +5559,7 @@
 <translation id="6318944945640833942">偵測不到印表機，請再次輸入印表機位址。</translation>
 <translation id="6322370287306604163">使用指紋快速解鎖</translation>
 <translation id="6322559670748154781">這個檔案不是常見的下載項目，因此遭到進階保護功能封鎖</translation>
+<translation id="6324083483652497048">按一下即可允許這些擴充功能讀取及變更 <ph name="ORIGIN" />：</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6325191661371220117">停用自動啟動功能</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
@@ -6578,6 +6590,7 @@
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
 <translation id="7345706641791090287">確認您的密碼</translation>
+<translation id="7345919885156673810">所選內容的語言不是<ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7347452120014970266">這會清除 <ph name="ORIGIN_NAME" /> 儲存的所有資料和 Cookie，以及該網站所安裝的應用程式資料和 Cookie</translation>
 <translation id="7347751611463936647">如要使用這個擴充功能，請輸入「<ph name="EXTENSION_KEYWORD" />」，然後按 TAB 鍵，接著再輸入你的指令或搜尋項目。</translation>

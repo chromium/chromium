@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Saytlar qorunan kontenti oxutmazdan əvvəl icazə tələb edilsin (tövsiyyə edilir)</translation>
 <translation id="2146738493024040262">Ani tətbiqi açın</translation>
 <translation id="2148716181193084225">Bu gün</translation>
+<translation id="2155988908301433309">Həmişə mobil sayta baxın</translation>
 <translation id="2182457891543959921">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə icazə verməzdən əvvəl icazə tələb edin (tövsiyə edilir)</translation>
 <translation id="2212565012507486665">Kukilərə icazə verin</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> tətbiqinə kameranıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2687403674020088961">Bütün kukiləri bloklayın (tövsiyə edilmir)</translation>
+<translation id="2692299144678073135">Əlaqəli saytların sizi yadda saxlamasına icazə verin</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2717722538473713889">E-poçt ünvanları</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4008040567710660924">Xüsusi sayt üçün kukilərə icazə verin.</translation>
 <translation id="4046123991198612571">Növbəti trek</translation>
+<translation id="4048876521107516222">Əlaqəli saytlar hesabdan çıxmadan qalmaq kimi işlərdə kömək etmək üçün kukilərdən istifadə edir</translation>
 <translation id="4149994727733219643">İnternet səhifələr üçün sadələşdirilmiş görünüş</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
 <translation id="4169549551965910670">USB cihazına qoşulub</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Saytlar bildiriş göndərilməsini tələb edə bilməz</translation>
 <translation id="5516455585884385570">Bildiriş ayarlarını açın</translation>
 <translation id="5527111080432883924">Saytların buferdəki mətn və şəkillərə girişinə icazə vermədən öncə soruşun (məsləhətlidir)</translation>
+<translation id="5553273073880784901">Həmişə masaüstü saytına baxın</translation>
 <translation id="5553374991681107062">Ən son</translation>
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Son ziyarət dünən olub</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5922853908706496913">Ekranınız paylaşılır</translation>
+<translation id="5922967540311291836">Üçüncü tərəf kukiləri bloklayın:</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />-<ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Seçimi ləğv edin</translation>
 <translation id="7846621471902887024">Bütün saytlardan çıxacaqsınız.</translation>
 <translation id="7882806643839505685">Xüsusi sayt üçün səsə icazə verin.</translation>
+<translation id="789180354981963912">Anonim rejimdə üçüncü tərəf kukilərini bloklayın:</translation>
 <translation id="7940722705963108451">Mənə xatırladın</translation>
 <translation id="7986741934819883144">Kontakt seçin</translation>
 <translation id="7999064672810608036">Bütün lokal datanı silmək və bu sayt üçün bütün icazələri sıfırlamaq istəyirsiniz?</translation>
