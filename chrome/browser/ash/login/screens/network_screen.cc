@@ -47,30 +47,16 @@ std::string NetworkScreen::GetResultString(Result result) {
   }
 }
 
-NetworkScreen::NetworkScreen(NetworkScreenView* view,
+NetworkScreen::NetworkScreen(base::WeakPtr<NetworkScreenView> view,
                              const ScreenExitCallback& exit_callback)
     : BaseScreen(NetworkScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback),
-      network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {
-  if (view_)
-    view_->Bind(this);
-}
+      network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {}
 
 NetworkScreen::~NetworkScreen() {
-  if (view_)
-    view_->Unbind();
   connection_timer_.Stop();
   UnsubscribeNetworkNotification();
-}
-
-void NetworkScreen::OnViewDestroyed(NetworkScreenView* view) {
-  if (view_ == view) {
-    view_ = nullptr;
-    // Ownership of NetworkScreen is complicated; ensure that we remove
-    // this as a NetworkStateHandler observer when the view is destroyed.
-    UnsubscribeNetworkNotification();
-  }
 }
 
 bool NetworkScreen::MaybeSkip(WizardContext& context) {
@@ -86,19 +72,18 @@ void NetworkScreen::ShowImpl() {
 }
 
 void NetworkScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
   connection_timer_.Stop();
   UnsubscribeNetworkNotification();
 }
 
-void NetworkScreen::OnUserActionDeprecated(const std::string& action_id) {
+void NetworkScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinueButtonClicked) {
     OnContinueButtonClicked();
   } else if (action_id == kUserActionBackButtonClicked) {
     OnBackButtonClicked();
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -166,11 +151,9 @@ void NetworkScreen::OnConnectionTimeout() {
 }
 
 void NetworkScreen::UpdateStatus() {
-  if (!view_)
-    return;
-
   bool is_connected = network_state_helper_->IsConnected();
-  if (is_connected)
+
+  if (view_ && is_connected)
     view_->ClearErrors();
 
   std::u16string network_name = network_state_helper_->GetCurrentNetworkName();

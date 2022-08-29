@@ -44,17 +44,13 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  NetworkScreen(NetworkScreenView* view,
+  NetworkScreen(base::WeakPtr<NetworkScreenView> view,
                 const ScreenExitCallback& exit_callback);
 
   NetworkScreen(const NetworkScreen&) = delete;
   NetworkScreen& operator=(const NetworkScreen&) = delete;
 
   ~NetworkScreen() override;
-
-  // Called when `view` has been destroyed. If this instance is destroyed before
-  // the `view` it should call view->Unbind().
-  void OnViewDestroyed(NetworkScreenView* view);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -81,7 +77,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // NetworkStateHandlerObserver:
@@ -150,7 +146,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // Timer for connection timeout.
   base::OneShotTimer connection_timer_;
 
-  NetworkScreenView* view_ = nullptr;
+  base::WeakPtr<NetworkScreenView> view_;
   ScreenExitCallback exit_callback_;
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 

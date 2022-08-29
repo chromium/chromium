@@ -21,23 +21,11 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId NetworkScreenView::kScreenId;
+NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.NetworkScreen.userActed");
-}
-
-NetworkScreenHandler::~NetworkScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+NetworkScreenHandler::~NetworkScreenHandler() = default;
 
 void NetworkScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   // In OOBE all physical network technologies should be enabled, so the user is
   // able to select any of the available networks on the device. Enabled
   // technologies should not be changed if network screen is shown outside of
@@ -57,24 +45,12 @@ void NetworkScreenHandler::Show() {
   ShowInWebUI(std::move(data));
 }
 
-void NetworkScreenHandler::Hide() {}
-
-void NetworkScreenHandler::Bind(NetworkScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void NetworkScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void NetworkScreenHandler::ShowError(const std::u16string& message) {
-  CallJS("login.NetworkScreen.setError", message);
+  CallExternalAPI("setError", message);
 }
 
 void NetworkScreenHandler::ClearErrors() {
-  CallJS("login.NetworkScreen.setError", std::string());
+  CallExternalAPI("setError", std::string());
 }
 
 void NetworkScreenHandler::DeclareLocalizedValues(
@@ -90,13 +66,6 @@ void NetworkScreenHandler::DeclareLocalizedValues(
 
 void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
-}
-
-void NetworkScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    show_on_init_ = false;
-    Show();
-  }
 }
 
 }  // namespace chromeos

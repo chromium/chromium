@@ -559,7 +559,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     mock_network_screen_view_ = std::make_unique<MockNetworkScreenView>();
     mock_network_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockNetworkScreen>(
-            mock_network_screen_view_.get(),
+            mock_network_screen_view_.get()->AsWeakPtr(),
             base::BindRepeating(&WizardController::OnNetworkScreenExit,
                                 base::Unretained(wizard_controller))));
 

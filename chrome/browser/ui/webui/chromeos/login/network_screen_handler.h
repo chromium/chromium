@@ -7,33 +7,22 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class NetworkScreen;
-}
 
 namespace chromeos {
 
 // Interface of network screen. Owned by NetworkScreen.
-class NetworkScreenView {
+class NetworkScreenView : public base::SupportsWeakPtr<NetworkScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"network-selection"};
+  inline constexpr static StaticOobeScreenId kScreenId{"network-selection",
+                                                       "NetworkScreen"};
 
   virtual ~NetworkScreenView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::NetworkScreen* screen) = 0;
-
-  // Unbinds model from the view.
-  virtual void Unbind() = 0;
 
   // Shows error message in a bubble.
   virtual void ShowError(const std::u16string& message) = 0;
@@ -59,9 +48,6 @@ class NetworkScreenHandler : public NetworkScreenView,
  private:
   // NetworkScreenView:
   void Show() override;
-  void Hide() override;
-  void Bind(ash::NetworkScreen* screen) override;
-  void Unbind() override;
   void ShowError(const std::u16string& message) override;
   void ClearErrors() override;
 
@@ -69,12 +55,6 @@ class NetworkScreenHandler : public NetworkScreenView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
-  void InitializeDeprecated() override;
-
-  ash::NetworkScreen* screen_ = nullptr;
-
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos
