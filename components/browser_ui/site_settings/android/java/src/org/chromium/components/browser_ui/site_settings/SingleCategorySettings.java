@@ -760,7 +760,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         mAllowedSiteCount = 0;
 
-        if (websites.size() == 0) {
+        if (websites.size() == 0 || !shouldAddExceptionsForCategory()) {
             updateBlockedHeader(0);
             updateAllowedHeader(0, true);
             updateManagedHeader(0);
@@ -1231,6 +1231,21 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                             getInfoForOrigins();
                             dialog.dismiss();
                         });
+    }
+
+    /**
+     * Always returns true unless a category uses custom logic to show/hide exceptions on the
+     * category settings page.
+     * @return Whether exceptions should be added for the category.
+     */
+    private boolean shouldAddExceptionsForCategory() {
+        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
+                && !ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
+                && SiteSettingsFeatureList.isEnabled(
+                        SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
+            return false;
+        }
+        return true;
     }
 
     /**

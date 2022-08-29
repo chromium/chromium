@@ -38,6 +38,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -93,6 +94,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -102,7 +104,9 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -1591,6 +1595,39 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
                 ContentSettingsType.REQUEST_DESKTOP_SITE, true)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllowRequestDesktopSiteDomainSetting_DowngradePath() {
+        // Enable RDS exceptions.
+        Map<String, Boolean> featureMap = new HashMap<>();
+        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
+        FeatureList.setTestFeatures(featureMap);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
+                    getBrowserContextHandle(), ContentSettingsType.REQUEST_DESKTOP_SITE,
+                    "https://example.com", "https://example.com", ContentSettingValues.ALLOW);
+        });
+
+        new TwoStatePermissionTestCase("RequestDesktopSite",
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
+                .withExpectedPrefKeys("allowed_group")
+                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
+                .run();
+
+        // Disable RDS exceptions for a downgrade.
+        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, false);
+        featureMap.put(SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE, true);
+        FeatureList.setTestFeatures(featureMap);
+
+        new TwoStatePermissionTestCase("RequestDesktopSite",
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
                 .run();
     }
 
