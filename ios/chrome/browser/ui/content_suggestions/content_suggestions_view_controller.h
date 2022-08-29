@@ -12,6 +12,7 @@
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
+class UrlLoadingBrowserAgent;
 
 // CollectionViewController to display the suggestions items.
 @interface ContentSuggestionsViewController
@@ -34,6 +35,7 @@
     audience;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
+@property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_H_

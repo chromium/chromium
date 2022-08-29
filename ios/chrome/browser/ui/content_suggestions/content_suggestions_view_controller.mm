@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
@@ -32,6 +33,8 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -47,9 +50,6 @@ namespace {
 // The width of the modules.
 const int kModuleWidthCompact = 343;
 const int kModuleWidthRegular = 432;
-
-// The height of the modules;
-const int kModuleHeight = 139;
 
 // The spacing between the modules.
 const float kModuleVerticalSpacing = 16.0f;
@@ -68,7 +68,10 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
-    ContentSuggestionsSelectionActions>
+    ContentSuggestionsSelectionActions,
+    URLDropDelegate>
+
+@property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 
 // Whether an item of type ItemTypePromo has already been added to the model.
 @property(nonatomic, assign) BOOL promoAdded;
@@ -141,6 +144,11 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.dragDropHandler = [[URLDragDropHandler alloc] init];
+  self.dragDropHandler.dropDelegate = self;
+  [self.view addInteraction:[[UIDropInteraction alloc]
+                                initWithDelegate:self.dragDropHandler]];
+
   if (IsContentSuggestionsUIModuleRefreshEnabled()) {
     self.view.backgroundColor = [UIColor clearColor];
   } else {
@@ -197,11 +205,9 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
     }
     CGFloat cardWidth = content_suggestions::searchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
-    [NSLayoutConstraint activateConstraints:@[
-      [parentView.widthAnchor constraintEqualToConstant:cardWidth],
-      [parentView.heightAnchor
-          constraintEqualToConstant:kReturnToRecentTabSize.height]
-    ]];
+    [NSLayoutConstraint
+        activateConstraints:@[ [parentView.widthAnchor
+                                constraintEqualToConstant:cardWidth] ]];
   }
   if (self.whatsNewView) {
     [self addUIElement:self.whatsNewView withCustomBottomSpacing:0];
@@ -221,7 +227,6 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
     self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
     self.mostVisitedStackView.spacing = horizontalSpacing;
 
-    UIView* parentView = self.mostVisitedStackView;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       self.mostVisitedStackView.backgroundColor =
           ntp_home::kNTPBackgroundColor();
@@ -241,30 +246,30 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
           [self.mostVisitedViews addObject:view];
         }
       }
-      parentView = self.mostVisitedModuleContainer;
       [self.verticalStackView
           addArrangedSubview:self.mostVisitedModuleContainer];
+      CGFloat width =
+          GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
+      self.mostVisitedContainerWidthAnchor =
+          [self.mostVisitedModuleContainer.widthAnchor
+              constraintEqualToConstant:width];
+      [NSLayoutConstraint
+          activateConstraints:@[ self.mostVisitedContainerWidthAnchor ]];
     } else {
       self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
       [self addUIElement:self.mostVisitedStackView
           withCustomBottomSpacing:kMostVisitedBottomMargin];
+      CGFloat width =
+          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
+      CGFloat height =
+          MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
+              .height;
+      [NSLayoutConstraint activateConstraints:@[
+        [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
+        [self.mostVisitedStackView.heightAnchor
+            constraintGreaterThanOrEqualToConstant:height]
+      ]];
     }
-    CGFloat width =
-        IsContentSuggestionsUIModuleRefreshEnabled()
-            ? GetModuleWidthForHorizontalTraitCollection(self.traitCollection)
-            : MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGFloat height =
-        IsContentSuggestionsUIModuleRefreshEnabled()
-            ? kModuleHeight
-            : MostVisitedCellSize(
-                  self.traitCollection.preferredContentSizeCategory)
-                  .height;
-    self.mostVisitedContainerWidthAnchor =
-        [parentView.widthAnchor constraintEqualToConstant:width];
-    [NSLayoutConstraint activateConstraints:@[
-      self.mostVisitedContainerWidthAnchor,
-      [parentView.heightAnchor constraintGreaterThanOrEqualToConstant:height]
-    ]];
     [self populateMostVisitedModule];
   }
   BOOL noTrendingQueriesToShow =
@@ -293,12 +298,8 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
             constraintEqualToConstant:
                 GetModuleWidthForHorizontalTraitCollection(
                     self.traitCollection)];
-    [NSLayoutConstraint activateConstraints:@[
-      self.trendingQueriesContainerWidthAnchor,
-      [self.trendingQueriesModuleContainer.heightAnchor
-          constraintEqualToConstant:[self.trendingQueriesModuleContainer
-                                            calculateIntrinsicHeight]]
-    ]];
+    [NSLayoutConstraint
+        activateConstraints:@[ self.trendingQueriesContainerWidthAnchor ]];
     [self populateTrendingQueriesModule];
   }
   if (self.shortcutsViews) {
@@ -327,33 +328,32 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
       index++;
     }
 
-    UIView* parentView = self.shortcutsStackView;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       self.shortcutsModuleContainer = [[ContentSuggestionsModuleContainer alloc]
           initWithContentView:self.shortcutsStackView
                    moduleType:ContentSuggestionsModuleTypeShortcuts];
-      parentView = self.shortcutsModuleContainer;
       [self.verticalStackView addArrangedSubview:self.shortcutsModuleContainer];
+      CGFloat width =
+          GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
+      self.shortcutsContainerWidthAnchor =
+          [self.shortcutsModuleContainer.widthAnchor
+              constraintEqualToConstant:width];
+      [NSLayoutConstraint
+          activateConstraints:@[ self.shortcutsContainerWidthAnchor ]];
     } else {
       [self addUIElement:self.shortcutsStackView
           withCustomBottomSpacing:kMostVisitedBottomMargin];
+      CGFloat width =
+          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
+      CGFloat height =
+          MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
+              .height;
+      [NSLayoutConstraint activateConstraints:@[
+        [self.shortcutsStackView.widthAnchor constraintEqualToConstant:width],
+        [self.shortcutsStackView.heightAnchor
+            constraintGreaterThanOrEqualToConstant:height]
+      ]];
     }
-    CGFloat width =
-        IsContentSuggestionsUIModuleRefreshEnabled()
-            ? GetModuleWidthForHorizontalTraitCollection(self.traitCollection)
-            : MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGFloat height =
-        IsContentSuggestionsUIModuleRefreshEnabled()
-            ? kModuleHeight
-            : MostVisitedCellSize(
-                  self.traitCollection.preferredContentSizeCategory)
-                  .height;
-    self.shortcutsContainerWidthAnchor =
-        [parentView.widthAnchor constraintEqualToConstant:width];
-    [NSLayoutConstraint activateConstraints:@[
-      self.shortcutsContainerWidthAnchor,
-      [parentView.heightAnchor constraintGreaterThanOrEqualToConstant:height]
-    ]];
   }
 }
 
@@ -372,6 +372,16 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
              ntp_home::FakeOmniboxAccessibilityID() &&
          touch.view.superview.accessibilityIdentifier !=
              ntp_home::FakeOmniboxAccessibilityID();
+}
+
+#pragma mark - URLDropDelegate
+
+- (BOOL)canHandleURLDropInView:(UIView*)view {
+  return YES;
+}
+
+- (void)view:(UIView*)view didDropURL:(const GURL&)URL atPoint:(CGPoint)point {
+  self.urlLoadingBrowserAgent->Load(UrlLoadParams::InCurrentTab(URL));
 }
 
 #pragma mark - UITraitEnvironment

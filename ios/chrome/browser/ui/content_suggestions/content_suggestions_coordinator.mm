@@ -17,7 +17,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
-#import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/favicon/large_icon_cache.h"
@@ -66,7 +65,6 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -79,8 +77,7 @@
 @interface ContentSuggestionsCoordinator () <
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
-    ContentSuggestionsViewControllerAudience,
-    URLDropDelegate> {
+    ContentSuggestionsViewControllerAudience> {
   // Observer bridge for mediator to listen to
   // StartSurfaceRecentTabObserverBridge.
   std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
@@ -91,7 +88,6 @@
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
-@property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Authentication Service for the user's signed-in state.
@@ -171,18 +167,14 @@
         self.contentSuggestionsMediator;
     self.contentSuggestionsViewController.audience = self;
     self.contentSuggestionsViewController.menuProvider = self;
+    self.contentSuggestionsViewController.urlLoadingBrowserAgent =
+        UrlLoadingBrowserAgent::FromBrowser(self.browser);
 
     self.contentSuggestionsMediator.consumer =
         self.contentSuggestionsViewController;
 
     self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
     [self.ntpMediator setUp];
-
-    self.dragDropHandler = [[URLDragDropHandler alloc] init];
-    self.dragDropHandler.dropDelegate = self;
-    [self.contentSuggestionsViewController.view
-        addInteraction:[[UIDropInteraction alloc]
-                           initWithDelegate:self.dragDropHandler]];
 }
 
 - (void)stop {
@@ -246,17 +238,6 @@
   return [SceneStateBrowserAgent::FromBrowser(self.browser)
               ->GetSceneState()
               .window.rootViewController.view safeAreaInsets];
-}
-
-#pragma mark - URLDropDelegate
-
-- (BOOL)canHandleURLDropInView:(UIView*)view {
-  return YES;
-}
-
-- (void)view:(UIView*)view didDropURL:(const GURL&)URL atPoint:(CGPoint)point {
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)
-      ->Load(UrlLoadParams::InCurrentTab(URL));
 }
 
 #pragma mark - ContentSuggestionsHeaderCommands

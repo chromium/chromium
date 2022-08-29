@@ -144,8 +144,12 @@ const float kTrendingQueriesContentHeight = 103;
             constraintEqualToAnchor:contentContainer.topAnchor],
       ]];
     }
+    // Height constraint must be flexible since on launch before the Feed
+    // CollectionView is used a native UICollectionView is the parent, and it
+    // can attempt to apply a large height constraint to the
+    // ContentSuggestionsViewController.
     self.heightConstraint = [self.heightAnchor
-        constraintEqualToConstant:[self calculateIntrinsicHeight]];
+        constraintGreaterThanOrEqualToConstant:[self calculateIntrinsicHeight]];
     self.heightConstraint.active = YES;
   }
   return self;
