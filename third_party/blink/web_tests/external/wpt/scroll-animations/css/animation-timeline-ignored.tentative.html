@@ -20,17 +20,14 @@
     from { width: 100px; }
     to { width: 200px; }
   }
-  @scroll-timeline timeline1 {
-    source: selector(#scroller1);
-    orientation: auto;
+  #scroller1 {
+    scroll-timeline: timeline1;
   }
-  @scroll-timeline timeline2 {
-    source: selector(#scroller2);
-    orientation: auto;
+  #scroller2 {
+    scroll-timeline: timeline2;
   }
-  @scroll-timeline timeline3 {
-    source: selector(#scroller3);
-    orientation: auto;
+  #scroller3 {
+    scroll-timeline: timeline3;
   }
   #element {
     width: 0px;
