@@ -6831,9 +6831,9 @@
             ],
             "experiments": [
                 {
-                    "name": "32KB_input_stream_20220815",
+                    "name": "4KB_input_stream_20220829",
                     "params": {
-                        "max_input_stream_bytes_available_unknown": "32768"
+                        "max_input_stream_bytes_available_unknown": "4096"
                     },
                     "enable_features": [
                         "OptimizeNetworkBuffers2"
