@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -21,6 +22,7 @@
 #include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,21 +52,6 @@ void ReportErrorStatusFromHasDummyGaiaToken(
   }
   std::move(callback).Run(account_manager::ToMojoGoogleServiceAuthError(error));
 }
-
-#if DCHECK_IS_ON()
-void VerifyThatAccountExists(
-    const account_manager::AccountKey& account_key,
-    const std::vector<account_manager::Account>& known_accounts) {
-  bool account_exists = false;
-  for (const account_manager::Account& known_account : known_accounts) {
-    if (known_account.key == account_key) {
-      account_exists = true;
-      break;
-    }
-  }
-  DCHECK(account_exists);
-}
-#endif  // DCHECK_IS_ON()
 
 }  // namespace
 
@@ -182,20 +169,21 @@ void AccountManagerMojoService::CreateAccessTokenFetcher(
 
 void AccountManagerMojoService::ReportAuthError(
     mojom::AccountKeyPtr mojo_account_key,
-    mojom::GoogleServiceAuthErrorPtr error) {
+    mojom::GoogleServiceAuthErrorPtr mojo_error) {
   absl::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
   DCHECK(maybe_account_key)
       << "Can't unmarshal account of type: " << mojo_account_key->account_type;
 
-#if DCHECK_IS_ON()
-  // Verify that `maybe_account_key` is known to Account Manager.
-  account_manager_->GetAccounts(
-      base::BindOnce(&VerifyThatAccountExists, maybe_account_key.value()));
-#endif  // DCHECK_IS_ON()
+  absl::optional<GoogleServiceAuthError> maybe_error =
+      account_manager::FromMojoGoogleServiceAuthError(mojo_error);
+  DCHECK(maybe_error) << "Can't unmarshal error with state: "
+                      << mojo_error->state;
 
-  for (auto& observer : observers_)
-    observer->OnAuthErrorChanged(mojo_account_key.Clone(), error.Clone());
+  account_manager_->GetAccounts(
+      base::BindOnce(&AccountManagerMojoService::MaybeNotifyAuthErrorObservers,
+                     weak_ptr_factory_.GetWeakPtr(), maybe_account_key.value(),
+                     maybe_error.value()));
 }
 
 void AccountManagerMojoService::OnTokenUpserted(
@@ -246,6 +234,25 @@ void AccountManagerMojoService::DeletePendingAccessTokenFetchRequest(
           [&request](const std::unique_ptr<AccessTokenFetcher>& pending_request)
               -> bool { return pending_request.get() == request; }),
       pending_access_token_requests_.end());
+}
+
+void AccountManagerMojoService::MaybeNotifyAuthErrorObservers(
+    const account_manager::AccountKey& account_key,
+    const GoogleServiceAuthError& error,
+    const std::vector<account_manager::Account>& known_accounts) {
+  if (!base::Contains(known_accounts, account_key,
+                      [](const account_manager::Account& account) {
+                        return account.key;
+                      })) {
+    // Ignore if the account is not known.
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer->OnAuthErrorChanged(
+        account_manager::ToMojoAccountKey(account_key),
+        account_manager::ToMojoGoogleServiceAuthError(error));
+  }
 }
 
 void AccountManagerMojoService::FlushMojoForTesting() {

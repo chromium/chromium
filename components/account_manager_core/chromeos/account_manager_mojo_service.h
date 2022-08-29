@@ -88,6 +88,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   // Deletes `request` from `pending_access_token_requests_`, if present.
   void DeletePendingAccessTokenFetchRequest(AccessTokenFetcher* request);
 
+  // Notifies observers about a change in the error status of `account_key`.
+  // Does nothing if `account_key` does not correspond to any account in
+  // `known_accounts`.
+  void MaybeNotifyAuthErrorObservers(
+      const account_manager::AccountKey& account_key,
+      const GoogleServiceAuthError& error,
+      const std::vector<account_manager::Account>& known_accounts);
+
   void FlushMojoForTesting();
   int GetNumPendingAccessTokenRequests() const;
 
