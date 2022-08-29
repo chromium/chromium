@@ -683,10 +683,11 @@ public class StartSurfaceCoordinator implements StartSurface {
         initializeOffsetChangedListener();
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
 
-        mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(mContainerView, mTasksSurface.getView()),
-                TasksSurfaceViewBinder::bind);
+        mTasksSurfacePropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(mPropertyModel,
+                        new TasksSurfaceViewBinder.ViewHolder(
+                                mContainerView, mTasksSurface.getView(), mSwipeRefreshLayout),
+                        TasksSurfaceViewBinder::bind);
     }
 
     private TabSwitcher.Controller initializeSecondaryTasksSurface() {
@@ -714,7 +715,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mSecondaryTasksSurfacePropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mPropertyModel,
                         new TasksSurfaceViewBinder.ViewHolder(
-                                mContainerView, mSecondaryTasksSurface.getView()),
+                                mContainerView, mSecondaryTasksSurface.getView(), null),
                         SecondaryTasksSurfaceViewBinder::bind);
         if (mOnTabSelectingListener != null) {
             mSecondaryTasksSurface.setOnTabSelectingListener(mOnTabSelectingListener);
@@ -760,6 +761,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mContainerView.addView(mSwipeRefreshLayout);
         FrameLayout directChildHolder = new FrameLayout(mActivity);
         mSwipeRefreshLayout.addView(directChildHolder);
+        mSwipeRefreshLayout.setVisibility(View.GONE);
         mContainerView = directChildHolder;
     }
 
@@ -823,5 +825,10 @@ public class StartSurfaceCoordinator implements StartSurface {
     @VisibleForTesting
     boolean isSecondaryTasksSurfaceEmptyForTesting() {
         return mSecondaryTasksSurface == null;
+    }
+
+    @VisibleForTesting
+    FeedSwipeRefreshLayout getFeedSwipeRefreshLayoutForTesting() {
+        return mSwipeRefreshLayout;
     }
 }

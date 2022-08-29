@@ -39,6 +39,7 @@ public class TasksSurfaceViewBinderUnitTest {
     private Activity mActivity;
     private ViewGroup mParentView;
     private ViewGroup mTasksSurfaceView;
+    private ViewGroup mFeedSwipeRefreshLayout;
     private PropertyModel mPropertyModel;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -51,11 +52,13 @@ public class TasksSurfaceViewBinderUnitTest {
         // the TasksSurfaceViewBinder.
         mParentView = new FrameLayout(mActivity);
         mTasksSurfaceView = new FrameLayout(mActivity);
+        mFeedSwipeRefreshLayout = new FrameLayout(mActivity);
         mActivity.setContentView(mParentView);
 
         mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
+                new TasksSurfaceViewBinder.ViewHolder(
+                        mParentView, mTasksSurfaceView, mFeedSwipeRefreshLayout),
                 TasksSurfaceViewBinder::bind);
     }
 
@@ -70,14 +73,16 @@ public class TasksSurfaceViewBinderUnitTest {
         mPropertyModel.set(TOP_MARGIN, 20);
 
         mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, mTasksSurfaceView.getVisibility());
+        assertEquals(View.VISIBLE, mFeedSwipeRefreshLayout.getVisibility());
         assertNotNull(mTasksSurfaceView.getParent());
         MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
         assertEquals(10, layoutParams.bottomMargin);
         assertEquals(20, layoutParams.topMargin);
 
         mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
+        assertEquals(View.GONE, mTasksSurfaceView.getVisibility());
+        assertEquals(View.GONE, mFeedSwipeRefreshLayout.getVisibility());
         assertNotNull(mTasksSurfaceView.getParent());
     }
 
