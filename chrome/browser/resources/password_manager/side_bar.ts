@@ -12,6 +12,7 @@ import './icons.html.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Page, RouteObserverMixin, Router} from './router.js';
 import {getTemplate} from './side_bar.html.js';
 
 export interface PasswordManagerSideBarElement {
@@ -20,13 +21,31 @@ export interface PasswordManagerSideBarElement {
   };
 }
 
-export class PasswordManagerSideBarElement extends PolymerElement {
+export class PasswordManagerSideBarElement extends RouteObserverMixin
+(PolymerElement) {
   static get is() {
     return 'password-manager-side-bar';
   }
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      // The id of the currently selected page.
+      selectedPage_: String,
+    };
+  }
+
+  private selectedPage_: Page;
+
+  override currentRouteChanged(page: Page): void {
+    this.selectedPage_ = page;
+  }
+
+  private onSelectorActivate_(event: CustomEvent<{selected: Page}>) {
+    Router.getInstance().navigateTo(event.detail.selected);
   }
 }
 

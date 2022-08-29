@@ -12,7 +12,10 @@ build_webui("build") {
     "side_bar.ts",
     "toolbar.ts",
   ]
-  non_web_component_files = [ "password_manager.ts" ]
+  non_web_component_files = [
+    "password_manager.ts",
+    "router.ts",
+  ]
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [

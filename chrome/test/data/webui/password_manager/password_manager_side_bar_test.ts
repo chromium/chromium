@@ -4,9 +4,9 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerSideBarElement} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerSideBarElement, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('PasswordManagerSideBarTest', function() {
   let sidebar: PasswordManagerSideBarElement;
@@ -15,6 +15,7 @@ suite('PasswordManagerSideBarTest', function() {
     document.body.innerHTML = '';
     sidebar = document.createElement('password-manager-side-bar');
     document.body.appendChild(sidebar);
+    return flushTasks();
   });
 
   test('check layout', function() {
@@ -22,4 +23,24 @@ suite('PasswordManagerSideBarTest', function() {
     const sideBarEntries = sidebar.shadowRoot!.querySelectorAll('a');
     assertEquals(3, sideBarEntries.length);
   });
+
+  [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
+      page => test(`clicking ${page} updates path`, function() {
+        const differentPage =
+            page === Page.PASSWORDS ? Page.CHECKUP : Page.PASSWORDS;
+        Router.getInstance().navigateTo(differentPage);
+        assertEquals(differentPage, Router.getInstance().currentPage);
+
+        const element =
+            sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
+        element.click();
+        assertEquals(page, Router.getInstance().currentPage);
+      }));
+
+  [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
+      page => test(`navigating to ${page} updates selected item`, function() {
+        Router.getInstance().navigateTo(page);
+        assertEquals(page, Router.getInstance().currentPage);
+        assertEquals(page, (sidebar.$.menu.selectedItem as HTMLElement).id);
+      }));
 });
