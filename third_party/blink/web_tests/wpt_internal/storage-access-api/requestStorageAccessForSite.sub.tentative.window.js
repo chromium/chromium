@@ -28,6 +28,22 @@ queryParams.forEach(function(param, index) {
   }
 });
 
+// TODO(crbug.com/1351540): when/if requestStorageAccessForSite is standardized,
+// upstream with the Storage Access API helpers file.
+function RunRequestStorageAccessForSiteInDetachedFrame(site) {
+  let nestedFrame = document.createElement('iframe');
+  document.body.append(nestedFrame);
+  const inner_doc = nestedFrame.contentDocument;
+  nestedFrame.remove();
+  return inner_doc.requestStorageAccessForSite(site);
+}
+
+function RunRequestStorageAccessForSiteViaDomParser(site) {
+  let parser = new DOMParser();
+  let doc = parser.parseFromString('<html></html>', 'text/html');
+  return doc.requestStorageAccessForSite(site);
+}
+
 // Common tests to run in all frames.
 test(
     () => {
@@ -50,6 +66,29 @@ if (topLevelDocument) {
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForSite() should be rejected by default with no user gesture');
+
+  promise_test(async t => {
+    let promise =
+        RunRequestStorageAccessForSiteInDetachedFrame('https://foo.com');
+    let description =
+        'document.requestStorageAccessForSite() call in a detached frame';
+    return promise
+        .then(t.unreached_func('Should have rejected: ' + description))
+        .catch(function(e) {
+          assert_equals(e.name, 'SecurityError', description);
+        });
+  }, '[non-fully-active] document.requestStorageAccessForSite() should not resolve when run in a detached frame');
+
+  promise_test(async t => {
+    let promise = RunRequestStorageAccessForSiteViaDomParser('https://foo.com');
+    let description =
+        'document.requestStorageAccessForSite() in a detached DOMParser result';
+    return promise
+        .then(t.unreached_func('Should have rejected: ' + description))
+        .catch(function(e) {
+          assert_equals(e.name, 'SecurityError', description);
+        });
+  }, '[non-fully-active] document.requestStorageAccessForSite() should not resolve when run in a detached DOMParser document');
 
   // Create a test with a single-child same-origin iframe.
   // This will validate that calls to requestStorageAccessForSite are rejected

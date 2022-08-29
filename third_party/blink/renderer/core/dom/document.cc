@@ -6109,23 +6109,21 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
 
 ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
                                                     const AtomicString& site) {
+  if (!GetFrame()) {
+    // Note that in detached frames, resolvers are not able to return a promise.
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kSecurityError,
+                          "requestStorageAccessForSite: Cannot be used unless "
+                          "the document is fully active."));
+  }
+
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
   ScriptPromise promise = resolver->Promise();
-
-  if (!GetFrame()) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForSite: Must not be called from a detached "
-        "frame."));
-
-    resolver->Reject();
-    return promise;
-  }
 
   const bool has_user_gesture =
       LocalFrame::HasTransientUserActivation(GetFrame());
