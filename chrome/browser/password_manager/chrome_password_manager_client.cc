@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 
 #include <memory>
-
 #include <string>
 #include <utility>
 
@@ -19,6 +18,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -992,7 +992,7 @@ ChromePasswordManagerClient::GetMetricsRecorder() {
   if (!metrics_recorder_) {
     metrics_recorder_.emplace(GetUkmSourceId());
   }
-  return base::OptionalOrNullptr(metrics_recorder_);
+  return base::OptionalToPtr(metrics_recorder_);
 }
 
 password_manager::PasswordRequirementsService*
