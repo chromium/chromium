@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -178,6 +179,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener, Snac
                 HistoryClustersViewBinder::noopBindView);
         mAdapter.registerType(ItemType.MORE_PROGRESS, this::buildMoreProgressView,
                 HistoryClustersViewBinder::bindMoreProgressView);
+        mAdapter.registerType(ItemType.EMPTY_TEXT, this::buildEmptyTextView,
+                HistoryClustersViewBinder::noopBindView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
         mActivityContentView = (ViewGroup) layoutInflater.inflate(
@@ -242,6 +245,14 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener, Snac
     private View buildRelatedSearchesView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.history_clusters_related_searches_view, parent, false);
+    }
+
+    private View buildEmptyTextView(ViewGroup parent) {
+        View wrapper = LayoutInflater.from(parent.getContext())
+                               .inflate(R.layout.empty_text_view, parent, false);
+        TextView innerView = wrapper.findViewById(R.id.empty_view);
+        innerView.setText(R.string.history_manager_empty);
+        return wrapper;
     }
 
     // OnMenuItemClickListener implementation.

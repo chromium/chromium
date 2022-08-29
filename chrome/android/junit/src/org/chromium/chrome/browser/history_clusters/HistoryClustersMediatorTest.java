@@ -394,7 +394,7 @@ public class HistoryClustersMediatorTest {
         // Two clusters + the header views (privacy disclaimer, clear browsing data, toggle).
         assertEquals(mModelList.size(), mHistoryClustersResultEmptyQuery.getClusters().size() + 3);
         assertThat(mModelList,
-                hasItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
+                hasExactItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
                         ItemType.TOGGLE, ItemType.CLUSTER, ItemType.CLUSTER));
 
         ListItem item = mModelList.get(3);
@@ -413,7 +413,7 @@ public class HistoryClustersMediatorTest {
         // The contents of the model list should be the same for an empty query in queryfull state
         // vs the queryless state, except that the queryfull state shouldn't have headers.
         assertEquals(mModelList.size(), mHistoryClustersResultEmptyQuery.getClusters().size());
-        assertThat(mModelList, hasItemTypes(ItemType.CLUSTER, ItemType.CLUSTER));
+        assertThat(mModelList, hasExactItemTypes(ItemType.CLUSTER, ItemType.CLUSTER));
 
         assertTrue(mModelList.get(0).model.getAllSetProperties().containsAll(
                 Arrays.asList(HistoryClustersItemProperties.CLICK_HANDLER,
@@ -430,22 +430,37 @@ public class HistoryClustersMediatorTest {
         fulfillPromise(promise, HistoryClustersResult.emptyResult());
 
         assertThat(mModelList,
-                hasItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
-                        ItemType.TOGGLE));
+                hasExactItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
+                        ItemType.TOGGLE, ItemType.EMPTY_TEXT));
 
         mShouldShowPrivacyDisclaimerSupplier.set(false);
-        assertThat(mModelList, hasItemTypes(ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE));
+        assertThat(mModelList,
+                hasExactItemTypes(
+                        ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE, ItemType.EMPTY_TEXT));
 
         mShouldShowClearBrowsingDataSupplier.set(false);
-        assertThat(mModelList, hasItemTypes(ItemType.TOGGLE));
+        assertThat(mModelList, hasExactItemTypes(ItemType.TOGGLE, ItemType.EMPTY_TEXT));
 
         mShouldShowClearBrowsingDataSupplier.set(true);
-        assertThat(mModelList, hasItemTypes(ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE));
+        assertThat(mModelList,
+                hasExactItemTypes(
+                        ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE, ItemType.EMPTY_TEXT));
 
         mShouldShowPrivacyDisclaimerSupplier.set(true);
         assertThat(mModelList,
-                hasItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
-                        ItemType.TOGGLE));
+                hasExactItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
+                        ItemType.TOGGLE, ItemType.EMPTY_TEXT));
+
+        promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("");
+
+        mMediator.setQueryState(QueryState.forQueryless());
+        mMediator.startQuery("");
+        fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
+
+        assertThat(mModelList,
+                hasExactItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
+                        ItemType.TOGGLE, ItemType.CLUSTER, ItemType.CLUSTER));
     }
 
     @Test
@@ -873,7 +888,7 @@ public class HistoryClustersMediatorTest {
         return argument -> argument.getUrl().equals(url);
     }
 
-    static Matcher<ModelList> hasItemTypes(@ItemType int... itemTypes) {
+    static Matcher<ModelList> hasExactItemTypes(@ItemType int... itemTypes) {
         return new BaseMatcher<ModelList>() {
             @Override
             public void describeTo(Description description) {

@@ -100,6 +100,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private ListItem mClearBrowsingDataItem;
     private QueryState mQueryState;
     private final ListItem mMoreProgressItem;
+    private final ListItem mEmptyTextListItem;
     private final HistoryClustersMetricsLogger mMetricsLogger;
     private final Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
     private final Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
@@ -177,6 +178,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                 (v) -> mPromise.then(this::continueQuery))
                         .build();
         mMoreProgressItem = new ListItem(ItemType.MORE_PROGRESS, moreProgressModel);
+        mEmptyTextListItem = new ListItem(ItemType.EMPTY_TEXT, new PropertyModel());
     }
 
     // SearchDelegate implementation.
@@ -225,14 +227,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         mPromise = mHistoryClustersBridge.queryClusters(query);
         mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
-        ensureFooter(State.LOADING, true);
+        ensureFooters(State.LOADING, true, null);
     }
 
     void continueQuery(HistoryClustersResult previousResult) {
         if (!previousResult.canLoadMore()) return;
         mPromise = mHistoryClustersBridge.loadMoreClusters(previousResult.getQuery());
         mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
-        ensureFooter(State.LOADING, true);
+        ensureFooters(State.LOADING, true, null);
     }
 
     void openHistoryClustersUi(String query) {
@@ -410,8 +412,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 continueQuery(result);
             }
 
-            ensureFooter(State.BUTTON, result.canLoadMore());
-
+            ensureFooters(State.BUTTON, result.canLoadMore(), result);
             return;
         }
 
@@ -503,7 +504,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     HistoryClustersItemProperties.LABEL, getTimeString(cluster.getTimestamp()));
         }
 
-        ensureFooter(State.BUTTON, result.canLoadMore());
+        ensureFooters(State.BUTTON, result.canLoadMore(), result);
     }
 
     private void resetModel() {
@@ -554,10 +555,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
     }
 
-    private void ensureFooter(@State int buttonState, boolean canLoadMore) {
+    private void ensureFooters(
+            @State int buttonState, boolean canLoadMore, HistoryClustersResult result) {
         mMoreProgressItem.model.set(
                 HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState);
-        boolean shouldShow = (buttonState == State.BUTTON && canLoadMore && mIsScrollToLoadDisabled)
+        boolean shouldShowLoadIndicator =
+                (buttonState == State.BUTTON && canLoadMore && mIsScrollToLoadDisabled)
                 || buttonState == State.LOADING;
         int currentIndex = mModelList.indexOf(mMoreProgressItem);
         boolean showing = currentIndex != -1;
@@ -565,8 +568,19 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mModelList.remove(mMoreProgressItem);
         }
 
-        if (shouldShow) {
+        if (shouldShowLoadIndicator) {
             mModelList.add(mMoreProgressItem);
+        }
+
+        boolean emptyTextShowing = mModelList.indexOf(mEmptyTextListItem) != -1;
+        boolean shouldShowEmptyText = !mQueryState.isSearching() && result != null
+                && !result.isContinuation() && result.getClusters().isEmpty();
+        if (emptyTextShowing) {
+            mModelList.remove(mEmptyTextListItem);
+        }
+
+        if (shouldShowEmptyText) {
+            mModelList.add(mEmptyTextListItem);
         }
     }
 

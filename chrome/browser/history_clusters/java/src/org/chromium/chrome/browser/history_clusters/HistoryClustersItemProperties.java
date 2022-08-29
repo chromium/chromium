@@ -22,7 +22,7 @@ import java.util.List;
 class HistoryClustersItemProperties {
     @IntDef({HistoryClustersItemProperties.ItemType.VISIT, ItemType.CLUSTER,
             ItemType.RELATED_SEARCHES, ItemType.TOGGLE, ItemType.PRIVACY_DISCLAIMER,
-            ItemType.CLEAR_BROWSING_DATA, ItemType.MORE_PROGRESS})
+            ItemType.CLEAR_BROWSING_DATA, ItemType.MORE_PROGRESS, ItemType.EMPTY_TEXT})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         int VISIT = 1;
@@ -32,6 +32,7 @@ class HistoryClustersItemProperties {
         int PRIVACY_DISCLAIMER = 5;
         int CLEAR_BROWSING_DATA = 6;
         int MORE_PROGRESS = 7;
+        int EMPTY_TEXT = 8;
     }
 
     static final WritableIntPropertyKey ACCESSIBILITY_STATE = new WritableIntPropertyKey();
