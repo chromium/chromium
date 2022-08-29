@@ -1063,9 +1063,8 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AudibilityStatePropagates) {
 IN_PROC_BROWSER_TEST_P(WebViewTest, WebViewRespectsInsets) {
   LoadAppWithGuest("web_view/simple");
 
-  content::WebContents* guest = GetGuestWebContents();
   content::RenderWidgetHostView* guest_host_view =
-      guest->GetRenderWidgetHostView();
+      GetGuestView()->GetGuestMainFrame()->GetView();
 
   auto insets = gfx::Insets::TLBR(0, 0, 100, 0);
   gfx::Rect expected(guest_host_view->GetVisibleViewportSize());
