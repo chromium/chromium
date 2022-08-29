@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>The default scroll-timeline at rule with paused animations</title>
-<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
+<title>Scroll timeline with paused animations</title>
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-notation">
 <link rel="help" href="https://drafts.csswg.org/css-animations/#animation-play-state">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,11 +11,6 @@
   @keyframes anim {
     from { width: 100px; }
     to { width: 200px; }
-  }
-
-  @scroll-timeline timeline {
-    source: auto;
-    orientation: auto;
   }
 
   .fill-vh {
@@ -40,7 +35,7 @@ promise_test(async t => {
   const scroller = document.scrollingElement;
   t.add_cleanup(resetScrollPosition);
 
-  div.style.animation = 'anim 100s linear timeline paused';
+  div.style.animation = 'anim 100s linear paused scroll(root)';
   const anim = div.getAnimations()[0];
   await anim.ready;
   assert_percents_equal(anim.currentTime, 0, 'timeline time reset');
@@ -59,7 +54,7 @@ promise_test(async t => {
   const scroller = document.scrollingElement;
   await waitForNextFrame();
 
-  div.style.animation = 'anim 100s linear forwards timeline';
+  div.style.animation = 'anim 100s linear forwards scroll(root)';
   const anim = div.getAnimations()[0];
   await anim.ready;
   assert_percents_equal(anim.currentTime, 0, 'timeline time reset');
