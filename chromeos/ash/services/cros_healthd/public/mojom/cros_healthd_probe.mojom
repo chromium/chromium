@@ -109,7 +109,7 @@ enum ProcessState {
 // error retrieving the information.
 //
 // NextMinVersion: 2, NextIndex: 3
-[Stable, Extensible]
+[Extensible]
 union ProcessResult {
   // The required field for backwards compatibility. The unrecognized Mojo
   // field will deserialize to this field. It should not be used.
