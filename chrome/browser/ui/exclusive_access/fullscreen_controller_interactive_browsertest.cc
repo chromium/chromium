@@ -45,7 +45,12 @@
 
 #if BUILDFLAG(IS_LINUX) && defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif
+#endif  // BUILDFLAG(IS_LINUX) && defined(USE_OZONE)
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/cocoa/nswindow_test_util.h"
+#include "ui/display/mac/test/virtual_display_mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -679,6 +684,86 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
+// Configures a two-display screen environment for testing of multi-screen
+// fullscreen behavior.
+class TestScreenEnvironment {
+ public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestScreenEnvironment() = default;
+  ~TestScreenEnvironment() = default;
+#else
+  TestScreenEnvironment() {
+#if BUILDFLAG(IS_MAC)
+    ns_window_faked_for_testing_ = ui::NSWindowFakedForTesting::IsEnabled();
+    // Disable `NSWindowFakedForTesting` to wait for actual async fullscreen on
+    // Mac via `FullscreenNotificationObserver`.
+    ui::NSWindowFakedForTesting::SetEnabled(false);
+#else
+    screen_.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
+                                      display::DisplayList::Type::PRIMARY);
+    display::Screen::SetScreenInstance(&screen_);
+#endif  // BUILDFLAG(IS_MAC)
+  }
+  ~TestScreenEnvironment() {
+#if BUILDFLAG(IS_MAC)
+    ui::NSWindowFakedForTesting::SetEnabled(ns_window_faked_for_testing_);
+#else
+    display::Screen::SetScreenInstance(nullptr);
+#endif  // BUILDFLAG(IS_MAC)
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  TestScreenEnvironment(const TestScreenEnvironment&) = delete;
+  TestScreenEnvironment& operator=(const TestScreenEnvironment&) = delete;
+
+  // Set up a test Screen environment with two displays after `display::Screen`
+  // has initialized.
+  void SetUp() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay("0+0-800x800,800+0-800x800");
+#elif BUILDFLAG(IS_MAC)
+    virtual_display_mac_util_ =
+        std::make_unique<display::test::VirtualDisplayMacUtil>();
+    display_id_ = virtual_display_mac_util_->AddDisplay(
+        1, display::test::VirtualDisplayMacUtil::k1680x1050);
+#else
+    screen_.display_list().AddDisplay({2, gfx::Rect(800, 0, 800, 800)},
+                                      display::DisplayList::Type::NOT_PRIMARY);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    EXPECT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  }
+
+  // Tear down the test Screen environment before `display::Screen` has shut
+  // down.
+  void TearDown() {
+#if BUILDFLAG(IS_MAC)
+    virtual_display_mac_util_.reset();
+#endif  // BUILDFLAG(IS_MAC)
+  }
+
+  void RemoveSecondDisplay() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay("0+0-800x800");
+#elif BUILDFLAG(IS_MAC)
+    virtual_display_mac_util_->RemoveDisplay(display_id_);
+#else
+    screen_.display_list().RemoveDisplay(2);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+ private:
+#if BUILDFLAG(IS_MAC)
+  bool ns_window_faked_for_testing_ = false;
+  int64_t display_id_ = display::kInvalidDisplayId;
+  std::unique_ptr<display::test::VirtualDisplayMacUtil>
+      virtual_display_mac_util_;
+#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+  display::ScreenBase screen_;
+#endif  // BUILDFLAG(IS_MAC)
+};
+
 // Tests FullscreenController support of Multi-Screen Window Placement features.
 // Sites with the Window Placement permission can request fullscreen on a
 // specific screen, move fullscreen windows to different displays, and more.
@@ -686,35 +771,33 @@ class MultiScreenFullscreenControllerInteractiveTest
     : public FullscreenControllerInteractiveTest {
  public:
   void SetUp() override {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    screen_.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
-                                      display::DisplayList::Type::PRIMARY);
-    display::Screen::SetScreenInstance(&screen_);
-#endif
+#if BUILDFLAG(IS_MAC)
+    if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
+      GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    // Set a test Screen instance before the browser `SetUp`.
+    test_screen_environment_ = std::make_unique<TestScreenEnvironment>();
     FullscreenControllerInteractiveTest::SetUp();
   }
 
   void TearDown() override {
     FullscreenControllerInteractiveTest::TearDown();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    display::Screen::SetScreenInstance(nullptr);
-#endif
+    // Unset the test Screen instance after the browser `TearDown`.
+    test_screen_environment_.reset();
   }
 
-  // Perform common setup operations for multi-screen fullscreen testing:
-  // Mock a screen with two displays, move the browser onto the first display,
-  // and auto-grant the Window Placement permission on its active tab.
-  content::WebContents* SetUpTestScreenAndWindowPlacementTab() {
-    // Set a test Screen environment with two displays.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("0+0-800x800,800+0-800x800");
-#else
-    screen_.display_list().AddDisplay({2, gfx::Rect(800, 0, 800, 800)},
-                                      display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+  void SetUpOnMainThread() override { test_screen_environment_->SetUp(); }
 
+  void TearDownOnMainThread() override { test_screen_environment_->TearDown(); }
+
+  void UpdateScreenEnvironment() {
+    test_screen_environment_->RemoveSecondDisplay();
+  }
+
+  // Move the browser onto the first display, and auto-grant the Window
+  // Placement permission on its active tab.
+  content::WebContents* SetUpWindowPlacementTab() {
     // Move the window to the first display (on the left).
     browser()->window()->SetBounds({150, 150, 600, 500});
 
@@ -803,38 +886,34 @@ class MultiScreenFullscreenControllerInteractiveTest
     EXPECT_FALSE(tab->HasRecentInteractiveInputEvent());
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  display::DisplayList& display_list() { return screen_.display_list(); }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
  private:
   base::test::ScopedFeatureList feature_list_{
       blink::features::kWindowPlacement};
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  display::ScreenBase screen_;
-#endif
+  std::unique_ptr<TestScreenEnvironment> test_screen_environment_;
 };
 
 // TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
-// display::Screen configuration used in this test. Disabled on Mac and Linux,
-// where the window server's async handling of the fullscreen window state may
-// transition the window into fullscreen on the actual (non-mocked) display
-// bounds before or after the window bounds checks, yielding flaky results.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_SeparateDisplay DISABLED_SeparateDisplay
-#else
+// display::Screen configuration used in this test. Disabled on Linux, where the
+// window server's async handling of the fullscreen window state may transition
+// the window into fullscreen on the actual (non-mocked) display bounds before
+// or after the window bounds checks, yielding flaky results.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_SeparateDisplay SeparateDisplay
+#else
+#define MAYBE_SeparateDisplay DISABLED_SeparateDisplay
 #endif
 // Test requesting fullscreen on a separate display.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplay) {
-  SetUpTestScreenAndWindowPlacementTab();
+  SetUpWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
 
   // Execute JS to request fullscreen on the second display (on the right).
   RequestContentFullscreenOnScreen(1);
-  EXPECT_EQ(gfx::Rect(800, 0, 800, 800), browser()->window()->GetBounds());
   const display::Screen* screen = display::Screen::GetScreen();
+  const auto second_display = screen->GetAllDisplays()[1];
+  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
   EXPECT_NE(screen->GetDisplayMatching(original_bounds),
             screen->GetDisplayMatching(browser()->window()->GetBounds()));
 
@@ -856,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on a separate display from a maximized window.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayMaximized) {
-  SetUpTestScreenAndWindowPlacementTab();
+  SetUpWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
 
   browser()->window()->Maximize();
@@ -891,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on the current display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwap) {
-  SetUpTestScreenAndWindowPlacementTab();
+  SetUpWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
 
   // Execute JS to request fullscreen on the current display (on the left).
@@ -921,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // from a maximized window.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwapMaximized) {
-  SetUpTestScreenAndWindowPlacementTab();
+  SetUpWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
 
   browser()->window()->Maximize();
@@ -964,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // restore browser-fullscreen on the original display.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_BrowserFullscreenContentFullscreenSwapDisplay) {
-  SetUpTestScreenAndWindowPlacementTab();
+  SetUpWindowPlacementTab();
 
   ToggleBrowserFullscreen(true);
   EXPECT_TRUE(IsFullscreenForBrowser());
@@ -999,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on a separate display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayAndSwap) {
-  SetUpTestScreenAndWindowPlacementTab();
+  SetUpWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
 
   // Execute JS to request fullscreen on the second display (on the right).
@@ -1032,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on the current display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SwapShowsBubble) {
-  SetUpTestScreenAndWindowPlacementTab();
+  SetUpWindowPlacementTab();
 
   // Execute JS to request fullscreen on the current display (on the left).
   RequestContentFullscreen();
@@ -1127,7 +1206,7 @@ class FullscreenCompanionWindowFullscreenControllerInteractiveTest
 IN_PROC_BROWSER_TEST_P(
     FullscreenCompanionWindowFullscreenControllerInteractiveTest,
     MAYBE_FullscreenCompanionWindow) {
-  content::WebContents* tab = SetUpTestScreenAndWindowPlacementTab();
+  content::WebContents* tab = SetUpWindowPlacementTab();
 
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1u, browser_list->size());
@@ -1224,7 +1303,7 @@ class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
 IN_PROC_BROWSER_TEST_P(
     FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
     MAYBE_FullscreenOnScreensChange) {
-  content::WebContents* tab = SetUpTestScreenAndWindowPlacementTab();
+  content::WebContents* tab = SetUpWindowPlacementTab();
 
   // Add a screenschange handler to requestFullscreen using the transient
   // affordance granted on screen change events, after user activation expiry.
@@ -1241,14 +1320,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(browser()->window()->IsFullscreen());
   WaitForUserActivationExpiry();
 
-  // Update the display configuration to trigger window.onscreenschange.
+  // Update the display configuration to trigger screenDetails.onscreenschange.
   FullscreenNotificationObserver fullscreen_observer(browser());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("0+0-800x800");
-#else
-  display_list().RemoveDisplay(2);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  UpdateScreenEnvironment();
   if (GetParam())  // The request will only be honored with the flag enabled.
     fullscreen_observer.Wait();
   EXPECT_EQ(GetParam(), browser()->window()->IsFullscreen());
