@@ -52,7 +52,7 @@ class CdmDocumentServiceImpl final
   void GetMediaFoundationCdmData(
       GetMediaFoundationCdmDataCallback callback) final;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
-  void OnCdmEvent(media::CdmEvent event) final;
+  void OnCdmEvent(media::CdmEvent event, uint32_t hresult) final;
 
   static void ClearCdmData(
       Profile* profile,

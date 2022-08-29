@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -142,6 +143,11 @@ void MediaFoundationServiceMonitor::OnServiceProcessCrashed(
   if (!info.IsService<media::mojom::MediaFoundationServiceBroker>())
     return;
 
+  bool is_after_power_or_display_change =
+      (base::Time::Now() - last_power_or_display_change_time_) < kGracePeriod;
+  base::UmaHistogramBoolean("Media.EME.MediaFoundationService.Crash",
+                            is_after_power_or_display_change);
+
   // Not checking `last_power_or_display_change_time_`; crashes are always bad.
   DVLOG(1) << __func__ << ": MediaFoundationService process crashed!";
   AddSample(kCrash);
@@ -175,16 +181,20 @@ void MediaFoundationServiceMonitor::OnSignificantPlayback() {
   AddSample(kSignificantPlayback);
 }
 
-void MediaFoundationServiceMonitor::OnPlaybackOrCdmError() {
+void MediaFoundationServiceMonitor::OnPlaybackOrCdmError(HRESULT hr) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (base::Time::Now() - last_power_or_display_change_time_ < kGracePeriod) {
     DVLOG(1) << "Playback or CDM error ignored since it happened right after "
                 "a power or display change.";
+    base::UmaHistogramSparse(
+        "Media.EME.MediaFoundationService.ErrorAfterPowerOrDisplayChange", hr);
     return;
   }
 
+  base::UmaHistogramSparse(
+      "Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange", hr);
   AddSample(kPlaybackOrCdmError);
 }
 

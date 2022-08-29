@@ -11757,6 +11757,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Affected"/>
 </enum>
 
+<enum name="BooleanAfterPowerOrDisplayChange">
+  <int value="0" label="Not After Power or Display Change"/>
+  <int value="1" label="After Power or Display Change"/>
+</enum>
+
 <enum name="BooleanAllowed">
   <int value="0" label="Not Allowed"/>
   <int value="1" label="Allowed"/>

@@ -72,7 +72,7 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) override;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
-  void OnCdmEvent(CdmEvent event) override;
+  void OnCdmEvent(CdmEvent event, HRESULT hresult) override;
 #endif  // BUILDFLAG(IS_WIN)
 };
 

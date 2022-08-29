@@ -361,7 +361,8 @@ void CdmDocumentServiceImpl::SetCdmClientToken(
   CdmPrefServiceHelper::SetCdmClientToken(user_prefs, cdm_origin, client_token);
 }
 
-void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event) {
+void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event,
+                                        uint32_t hresult) {
   DVLOG(1) << __func__ << ": event=" << static_cast<int>(event);
 
   // CdmDocumentServiceImpl is shared by all CDMs in the same RenderFrame.
@@ -389,7 +390,8 @@ void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event) {
     case media::CdmEvent::kCdmError:
       if (!has_reported_cdm_error_) {
         has_reported_cdm_error_ = true;
-        MediaFoundationServiceMonitor::GetInstance()->OnPlaybackOrCdmError();
+        MediaFoundationServiceMonitor::GetInstance()->OnPlaybackOrCdmError(
+            static_cast<HRESULT>(hresult));
       }
       break;
   }

@@ -189,8 +189,8 @@ void MediaFoundationCdmFactory::StoreClientToken(
   helper_->SetCdmClientToken(client_token);
 }
 
-void MediaFoundationCdmFactory::OnCdmEvent(CdmEvent event) {
-  helper_->OnCdmEvent(event);
+void MediaFoundationCdmFactory::OnCdmEvent(CdmEvent event, HRESULT hresult) {
+  helper_->OnCdmEvent(event, hresult);
 }
 
 void MediaFoundationCdmFactory::CreateMfCdm(

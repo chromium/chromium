@@ -65,7 +65,7 @@ void CdmAuxiliaryHelper::GetMediaFoundationCdmData(
 void CdmAuxiliaryHelper::SetCdmClientToken(
     const std::vector<uint8_t>& client_token) {}
 
-void CdmAuxiliaryHelper::OnCdmEvent(CdmEvent event) {}
+void CdmAuxiliaryHelper::OnCdmEvent(CdmEvent event, HRESULT hresult) {}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace media

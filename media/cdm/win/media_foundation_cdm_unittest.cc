@@ -94,7 +94,7 @@ class MediaFoundationCdmTest : public testing::Test {
 
   void InitializeAndExpectFailure() {
     can_initialize_ = false;
-    EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError));
+    EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError, E_FAIL));
     ASSERT_FAILED(cdm_->Initialize());
   }
 
@@ -512,7 +512,7 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
 
   // Make the next `Initialize()` fail.
   can_initialize_ = false;
-  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError));
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError, E_FAIL));
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
   EXPECT_CALL(cdm_client_,

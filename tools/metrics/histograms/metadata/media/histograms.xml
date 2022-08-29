@@ -2401,6 +2401,39 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
+<histogram name="Media.EME.MediaFoundationService.Crash"
+    enum="BooleanAfterPowerOrDisplayChange" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether a MediaFoundationService process crash is within 2 seconds after
+    power or display change. Reported when the MediaFoundationService process
+    crashes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.ErrorAfterPowerOrDisplayChange"
+    enum="Hresult" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    HRESULTs associated with errors happened in the MediaFoundationService
+    process within 2 seconds after power or display change.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange"
+    enum="Hresult" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    HRESULTs associated with errors happened in the MediaFoundationService
+    process NOT within 2 seconds after power or display change.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaFoundationService.IsKeySystemSupported"
     units="ms" expires_after="2023-01-15">
   <owner>xhwang@chromium.org</owner>
