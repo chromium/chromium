@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 
 #include "base/containers/flat_set.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,12 +18,16 @@
 #include "chrome/browser/web_applications/commands/sub_app_install_command.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -81,6 +86,18 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   }
 
   void UninstallParentApp() { UninstallWebApp(parent_app_id_); }
+
+  void UninstallParentAppBySource(WebAppManagement::Type source) {
+    base::RunLoop run_loop;
+    provider().install_finalizer().UninstallExternalWebApp(
+        parent_app_id_, source,
+        webapps::WebappUninstallSource::kParentUninstall,
+        base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 
   std::vector<AppId> GetAllSubAppIds(const AppId& parent_app_id) {
     return provider().registrar().GetAllSubAppIds(parent_app_id);
@@ -599,6 +616,55 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
   EXPECT_FALSE(provider().registrar().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_3)));
+}
+
+// Verify that uninstalling an app that has multiple sources just
+// removes a source and does not end up removing the sub_apps.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       RemovingSourceFromParentAppDoesNotRemoveSubApps) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  // Add another source to mock installation from 2 sources.
+  {
+    ScopedRegistryUpdate update(&provider().sync_bridge());
+    WebApp* web_app = update->UpdateApp(parent_app_id_);
+    if (web_app)
+      web_app->AddSource(WebAppManagement::kDefault);
+  }
+
+  // Verify that 2 subapps are installed.
+  UnhashedAppId unhashed_sub_app_id_1 =
+      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
+  UnhashedAppId unhashed_sub_app_id_2 = GenerateAppIdUnhashed(
+      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
+
+  EXPECT_EQ(
+      Result(blink::mojom::SubAppsServiceAddResultCode::kSuccessNewInstall,
+             unhashed_sub_app_id_1),
+      CallAdd({{unhashed_sub_app_id_1, GetURL(kSubAppPath)}}));
+  EXPECT_EQ(
+      Result(blink::mojom::SubAppsServiceAddResultCode::kSuccessNewInstall,
+             unhashed_sub_app_id_2),
+      CallAdd({{unhashed_sub_app_id_2, GetURL(kSubAppPath2)}}));
+
+  EXPECT_TRUE(provider().registrar().IsInstalled(
+      GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
+  EXPECT_TRUE(provider().registrar().IsInstalled(
+      GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
+
+  UninstallParentAppBySource(WebAppManagement::kDefault);
+  // Verify that parent app and sub_apps are still installed, only
+  // the default install source is removed from the parent app.
+  EXPECT_TRUE(provider().registrar().IsInstalled(parent_app_id_));
+  EXPECT_FALSE(
+      provider().registrar().GetAppById(parent_app_id_)->IsPreinstalledApp());
+
+  EXPECT_TRUE(provider().registrar().IsInstalled(
+      GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
+  EXPECT_TRUE(provider().registrar().IsInstalled(
+      GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
 }
 
 // Make sure the Add API can't force manifest update. Add sub-app, verify
