@@ -18,7 +18,7 @@ if [[ -z "$PERF_BENCHMARK" || -z "$PERF_BOT" || -z "$PERF_STORY" || -z "$PERF_ME
 PERF_BENCHMARK="startup.mobile" \
 PERF_BOT="android-pixel4-perf" \
 PERF_STORY="cct_coldish_bbc" \
-PERF_METRIC="messageloop_start_time" '$0 "$@"
+PERF_METRIC="messageloop_start_time" $0 "$@"
 fi
 
 # Determine Chromium src path based on script location.
