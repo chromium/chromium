@@ -23,8 +23,6 @@ source_set("browser") {
     "chrome_root_coordinator.mm",
     "chrome_url_util.h",
     "chrome_url_util.mm",
-    "install_time_util.h",
-    "install_time_util.mm",
     "installation_notifier.h",
     "installation_notifier.mm",
     "ios_chrome_io_thread.h",
@@ -252,7 +250,6 @@ source_set("unit_tests") {
     "browser_about_rewriter_unittest.cc",
     "chrome_browser_provider_observer_bridge_unittest.mm",
     "chrome_url_util_unittest.mm",
-    "install_time_util_unittest.mm",
     "installation_notifier_unittest.mm",
     "notification_promo_unittest.cc",
   ]

@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
-#import "ios/chrome/browser/install_time_util.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
@@ -59,6 +58,10 @@ const int kPostRetryBaseSeconds = 3600;
 const int64_t kPostRetryMaxSeconds = 6 * kPostRetryBaseSeconds;
 
 const char kCurrentArch[] = "arm64";
+
+// 2 is used because 0 is a magic value for Time, and 1 was the pre-M29 value
+// which was migrated to a specific date (crbug.com/270124).
+const int64_t kUnknownInstallDate = 2;
 
 // Default last sent application version when none has been sent yet.
 const char kDefaultLastSentVersion[] = "0.0.0.0";
@@ -577,8 +580,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
       if (is_first_install) {
         install_age = "-1";
       } else if (!installationTime.is_null() &&
-                 installationTime.ToTimeT() !=
-                     install_time_util::kUnknownInstallDate) {
+                 installationTime.ToTimeT() != kUnknownInstallDate) {
         install_age = base::StringPrintf(
             "%d", (base::Time::Now() - installationTime).InDays());
       }

@@ -18,7 +18,6 @@
 #include "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
-#include "ios/chrome/browser/install_time_util.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #include "ios/chrome/common/channel_info.h"
@@ -42,6 +41,7 @@
 namespace {
 
 const char kUserDataDir[] = FILE_PATH_LITERAL(".");
+const int64_t kUnknownInstallDate = 2;
 
 }  // namespace
 
@@ -56,7 +56,7 @@ class OmahaServiceTest : public PlatformTest {
             std::make_unique<TestChromeBrowserStateManager>(
                 base::FilePath(kUserDataDir))) {
     GetApplicationContext()->GetLocalState()->SetInt64(
-        metrics::prefs::kInstallDate, install_time_util::kUnknownInstallDate);
+        metrics::prefs::kInstallDate, kUnknownInstallDate);
     OmahaService::ClearPersistentStateForTests();
   }
 
@@ -178,8 +178,7 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
   std::string content = service.GetPingContent(
       "requestId", "sessionId", version_info::GetVersionNumber(),
-      GetChannelString(),
-      base::Time::FromTimeT(install_time_util::kUnknownInstallDate),
+      GetChannelString(), base::Time::FromTimeT(kUnknownInstallDate),
       OmahaService::USAGE_PING);
   regex_t regex;
   regcomp(&regex, expectedResult, REG_NOSUB);
@@ -552,8 +551,7 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
 
   std::string content = service.GetPingContent(
       "requestId", "sessionId", version_info::GetVersionNumber(),
-      GetChannelString(),
-      base::Time::FromTimeT(install_time_util::kUnknownInstallDate),
+      GetChannelString(), base::Time::FromTimeT(kUnknownInstallDate),
       OmahaService::USAGE_PING);
   regex_t regex;
   regcomp(&regex, expectedResult, REG_NOSUB);

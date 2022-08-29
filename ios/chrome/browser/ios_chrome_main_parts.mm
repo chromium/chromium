@@ -53,7 +53,6 @@
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #include "ios/chrome/browser/flags/about_flags.h"
-#include "ios/chrome/browser/install_time_util.h"
 #include "ios/chrome/browser/ios_thread_profiler.h"
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #include "ios/chrome/browser/metrics/ios_expired_histograms_array.h"
