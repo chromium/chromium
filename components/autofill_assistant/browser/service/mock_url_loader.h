@@ -62,9 +62,14 @@ class MockURLLoader : public ::network::SimpleURLLoader {
   MOCK_METHOD2(AttachStringForUpload,
                void(const std::string& upload_data,
                     const std::string& upload_content_type));
+  MOCK_METHOD1(AttachStringForUpload, void(const std::string& upload_data));
   MOCK_METHOD4(AttachFileForUpload,
                void(const base::FilePath& upload_file_path,
                     const std::string& upload_content_type,
+                    uint64_t offset,
+                    uint64_t length));
+  MOCK_METHOD3(AttachFileForUpload,
+               void(const base::FilePath& upload_file_path,
                     uint64_t offset,
                     uint64_t length));
   MOCK_METHOD2(SetRetryOptions, void(int max_retries, int retry_mode));

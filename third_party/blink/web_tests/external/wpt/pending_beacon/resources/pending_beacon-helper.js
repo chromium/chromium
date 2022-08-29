@@ -8,6 +8,11 @@ function parallelPromiseTest(func, description) {
   }, description);
 }
 
+const BeaconTypes = [
+  {type: PendingPostBeacon, name: 'PendingPostBeacon', expectedMethod: 'POST'},
+  {type: PendingGetBeacon, name: 'PendingGetBeacon', expectedMethod: 'GET'},
+];
+
 /** @enum {string} */
 const BeaconDataType = {
   String: 'String',
@@ -80,8 +85,17 @@ function generatePayload(size) {
   return data;
 }
 
-function generateSetBeaconURL(uuid) {
-  return `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+function generateSetBeaconURL(uuid, options) {
+  const host = (options && options.host) || '';
+  let url = `${host}/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+  if (options && options.expectOrigin) {
+    url = `${url}&expectedOrigin=${options.expectOrigin}`;
+  }
+  if (options && options.expectPreflight) {
+    url = `${url}&expectedPreflight=true`;
+  }
+
+  return url;
 }
 
 async function poll(f, expected) {
@@ -100,7 +114,7 @@ async function poll(f, expected) {
 // If `options.data` is set, it will be used to compare with the data from the
 // response.
 async function expectBeacon(uuid, options) {
-  const expectedCount = options && options.count ? options.count : 1;
+  const expectedCount = (options && options.count) || 1;
 
   const res = await poll(
       async () => {
@@ -139,7 +153,8 @@ function postBeaconSendDataTest(dataType, testData, description, options) {
   parallelPromiseTest(async t => {
     const expectNoData = options && options.expectNoData;
     const uuid = token();
-    const url = generateSetBeaconURL(uuid);
+    const url =
+        generateSetBeaconURL(uuid, (options && options.urlOptions) || {});
     const beacon = new PendingPostBeacon(url);
     assert_equals(beacon.method, 'POST', 'must be POST to call setData().');
 

@@ -37,6 +37,7 @@ using ::base::test::RunOnceCallback;
 using ::network::URLLoaderCompletionStatus;
 using ::testing::_;
 using ::testing::Field;
+using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -316,7 +317,9 @@ TEST_F(ServiceRequestSenderImplTest,
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   EXPECT_CALL(*loader_factory, OnCreateLoader).Times(0);
   EXPECT_CALL(*loader, SetRetryOptions).Times(0);
-  EXPECT_CALL(*loader, AttachStringForUpload).Times(0);
+  EXPECT_CALL(*loader, AttachStringForUpload(Matcher<const std::string&>(_),
+                                             Matcher<const std::string&>(_)))
+      .Times(0);
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .Times(0);
   EXPECT_CALL(*loader, ResponseInfo).Times(0);
@@ -446,7 +449,8 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupSigningDisabledEvent) {
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, AttachStringForUpload(Matcher<const std::string&>(_),
+                                             Matcher<const std::string&>(_)));
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
@@ -527,7 +531,8 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupEnabled) {
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, AttachStringForUpload(Matcher<const std::string&>(_),
+                                             Matcher<const std::string&>(_)));
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .WillOnce(
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
@@ -614,7 +619,8 @@ TEST_F(ServiceRequestSenderImplTest,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, AttachStringForUpload(Matcher<const std::string&>(_),
+                                             Matcher<const std::string&>(_)));
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .WillOnce(
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
@@ -667,7 +673,8 @@ TEST_F(ServiceRequestSenderImplTest, DoesNotRecordCupEventForNonSupportedRpcs) {
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, AttachStringForUpload(Matcher<const std::string&>(_),
+                                             Matcher<const std::string&>(_)));
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)

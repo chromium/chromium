@@ -4,6 +4,8 @@ _BEACON_ID_KEY = b"uuid"
 _BEACON_DATA_PATH = "beacon_data"
 _BEACON_FORM_PAYLOAD_KEY = b"payload"
 _BEACON_BODY_PAYLOAD_KEY = "payload="
+_BEACON_EXPECT_ORIGIN_KEY = b"expectedOrigin"
+_BEACON_EXPECT_PREFLIGHT_KEY = b"expectedPreflight"
 
 
 def main(request, response):
@@ -22,6 +24,23 @@ def main(request, response):
         response.status = 400
         return "Must provide a UUID to store beacon data"
     uuid = request.GET.first(_BEACON_ID_KEY)
+
+    expected_origin = request.GET.get(_BEACON_EXPECT_ORIGIN_KEY)
+    if b"origin" in request.headers:
+        origin = request.headers.get(b"origin")
+        if expected_origin:
+            assert origin == expected_origin, f"expected {expected_origin}, got {origin}"
+        response.headers.set(b"Access-Control-Allow-Origin", origin)
+    else:
+        assert expected_origin is None, f"expected None, got {expected_origin}"
+
+    # Handles preflight request first.
+    if request.method == u"OPTIONS":
+        assert request.GET.get(
+            _BEACON_EXPECT_PREFLIGHT_KEY) == b"true", "Preflight not expected."
+        response.headers.set(b"Access-Control-Allow-Headers", b"content-type")
+        response.headers.set(b"Access-Control-Allow-Methods", b"POST")
+        return response
 
     data = None
     if request.method == u"POST":
@@ -42,4 +61,5 @@ def main(request, response):
             saved_data.append(data)
         request.server.stash.put(
             key=uuid, value=saved_data, path=_BEACON_DATA_PATH)
-    return ((200, "OK"), [], "")
+
+    response.status = 200

@@ -41,7 +41,10 @@ interface PendingBeacon {
   // Sets request data for the pending beacon.
   // It is only allowed when the receiving pending beacon's `BeaconMethod` is
   // kPost.
-  // `content_type` must be empty string or a safelisted one.
+  // `request_body` must
+  //    - Contain only single data element. Complex body is not allowed.
+  //    - Contain NO `kChunkedDataPipe` data element.
+  // `content_type` must be an empty string or a safelisted one.
   SetRequestData(network.mojom.URLRequestBody request_body,
                  string content_type);
 

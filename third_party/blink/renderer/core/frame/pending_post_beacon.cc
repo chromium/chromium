@@ -87,13 +87,14 @@ void PendingPostBeacon::setData(
                       exception_state);
       return;
     }
-    case ContentType::kBlob:
+    case ContentType::kBlob: {
       SetDataInternal(BeaconBlob(data->GetAsBlob()), exception_state);
       return;
+    }
     case ContentType::kReadableStream: {
       exception_state.ThrowTypeError(
           "PendingPostBeacon cannot have a ReadableStream body.");
-      break;
+      return;
     }
   }
   NOTIMPLEMENTED();

@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 
 namespace network {
@@ -94,10 +95,11 @@ class CONTENT_EXPORT PendingBeaconHost
   DOCUMENT_USER_DATA_KEY_DECL();
 };
 
-// Browser-side representation of a pending beacon. These are stored in
-// a PendingBeaconHost. Their lifetime is until they are sent - this happens
-// either when the PendingBeaconHost is destroyed, or the beacon's `SendNow`
-// method is called.
+// `Beacon` is the browser-side representation of a PendingBeacon.
+// It is created and stored in a `PendingBeaconHost`. Hence, their lifetime is
+// until they are sent, which happens in one of the following scenarios:
+//   - When the PendingBeaconHost is destroyed.
+//   - When the beacon's `SendNow()` method is called.
 class Beacon : public blink::mojom::PendingBeacon {
  public:
   // Browser-side pending beacon constructor. Parameters correspond to the
@@ -114,6 +116,13 @@ class Beacon : public blink::mojom::PendingBeacon {
   void Deactivate() override;
 
   // Sets request data for the pending beacon.
+  // It is only allowed when this beacon's `BeaconMethod` is kPost.
+  // `request_body` must
+  //    - Contain only single data element. Complex body is not allowed.
+  //    - Contain NO `kChunkedDataPipe` data element.
+  //    The above restrictions come from how PendingBeaconService handles
+  //    requests.
+  // `content_type` must be an empty string or a safelisted one.
   void SetRequestData(scoped_refptr<network::ResourceRequestBody> request_body,
                       const std::string& content_type) override;
 
@@ -142,11 +151,14 @@ class Beacon : public blink::mojom::PendingBeacon {
  private:
   mojo::Receiver<blink::mojom::PendingBeacon> receiver_;
 
-  // The beacon host that owns this beacon. raw_ptr is safe here as the host's
-  // lifetime will always be longer than the individual beacon's.
+  // Points to the PendingBeaconHost that owns the instance of this beacon.
+  // raw_ptr is safe here as the `beacon_host_`'s lifetime will always be longer
+  // than the individual beacons it owns.
   raw_ptr<PendingBeaconHost> beacon_host_;
+  // The request URL this beacon will be sent to.
   GURL url_;
-  [[maybe_unused]] const blink::mojom::BeaconMethod method_;
+  // The request method that will be used to send this beacon.
+  const blink::mojom::BeaconMethod method_;
 
   // The request content type for POST beacon. If `method_` is GET, this field
   // should not be used.
