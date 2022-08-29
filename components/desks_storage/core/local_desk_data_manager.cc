@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
@@ -55,8 +56,8 @@ constexpr size_t kMaxDeskTemplateCount = 6u;
 constexpr size_t kMaxSaveAndRecallDeskCount = 6u;
 
 // Set of valid desk types.
-const std::set<ash::DeskTemplateType> kDeskTypes = {
-    ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall};
+constexpr auto kDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
+    {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall});
 
 // Reads a file at `fully_qualified_path` into a
 // std::unique_ptr<ash::DeskTemplate> This function returns a `nullptr` if the
