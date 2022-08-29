@@ -47,6 +47,88 @@ export const AdditionalContextQueryParam = {
 };
 
 /**
+ * Builds a RegExp that matches one of the given words. Each word has to match
+ * at word boundary and is not at the end of the tested string. For example,
+ * the word "SIM" would match the string "I have a sim card issue" but not
+ * "I have a simple issue" nor "I have a sim" (because the user might not have
+ * finished typing yet).
+ * @param {!Array<!string>} words
+ * @return {!RegExp}
+ * @protected
+ */
+export function buildWordMatcher(words) {
+  return new RegExp(
+      words.map((word) => '\\b' + word + '\\b[^$]').join('|'), 'i');
+}
+
+/**
+ * Regular expression to check for all variants of blu[e]toot[h] with or
+ * without space between the words; for BT when used as an individual word,
+ * or as two individual characters, and for BLE, BlueZ, and Floss when used
+ * as an individual word. Case insensitive matching.
+ * @type {!RegExp}
+ * @protected
+ */
+const btRegEx = new RegExp(
+    'blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b|\\bfloss\\b|\\bbluez\\b', 'i');
+
+/**
+ * Regular expression to check for all strings indicating that a user can't
+ * connect to a HID or Audio device.
+ * Sample strings this will match:
+ * "I can't connect the speaker!",
+ * "The keyboard has connection problem."
+ * @type {!RegExp}
+ * @protected
+ */
+const cantConnectRegEx = new RegExp(
+    '((headphone|keyboard|mouse|speaker)((?!(connect|pair)).*)(connect|pair))' +
+        '|((connect|pair).*(headphone|keyboard|mouse|speaker))',
+    'i');
+
+/**
+ * Regular expression to check for "tether" or "tethering". Case insensitive
+ * matching.
+ * @type {!RegExp}
+ * @protected
+ */
+const tetherRegEx = new RegExp('tether(ing)?', 'i');
+
+/**
+ * Regular expression to check for "Smart (Un)lock" or "Easy (Un)lock" with
+ * or without space between the words. Case insensitive matching.
+ * @type {!RegExp}
+ * @protected
+ */
+const smartLockRegEx = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
+
+/**
+ * Regular expression to check for keywords related to Nearby Share like
+ * "nearby (share)" or "phone (hub)".
+ * Case insensitive matching.
+ * @type {!RegExp}
+ * @protected
+ */
+const nearbyShareRegEx = new RegExp('nearby|phone', 'i');
+
+/**
+ * Regular expression to check for keywords related to Fast Pair like
+ * "fast pair".
+ * Case insensitive matching.
+ * @type {!RegExp}
+ * @protected
+ */
+const fastPairRegEx = new RegExp('fast[ ]?pair', 'i');
+
+/**
+ * Regular expression to check for Bluetooth device specific keywords.
+ * @type {!RegExp}
+ * @protected
+ */
+const btDeviceRegEx =
+    buildWordMatcher(['apple', 'allegro', 'pixelbud', 'microsoft', 'sony']);
+
+/**
  * @fileoverview
  * 'feedback-flow' manages the navigation among the steps to be taken.
  */
@@ -81,6 +163,12 @@ export class FeedbackFlowElement extends PolymerElement {
      * @protected
      */
     this.feedbackContext_ = null;
+
+    /**
+     * Whether to show the bluetooth Logs checkbox in share data page.
+     * @type {boolean}
+     */
+    this.shouldShowBluetoothCheckbox_;
 
     /** @private {!FeedbackServiceProviderInterface} */
     this.feedbackServiceProvider_ = getFeedbackServiceProvider();
@@ -229,6 +317,9 @@ export class FeedbackFlowElement extends PolymerElement {
       case FeedbackFlowState.SEARCH:
         this.currentState_ = FeedbackFlowState.SHARE_DATA;
         this.description_ = event.detail.description;
+        this.shouldShowBluetoothCheckbox_ = this.feedbackContext_ !== null &&
+            this.feedbackContext_.isInternalAccount &&
+            this.isDescriptionRelatedToBluetooth(this.description_);
         this.fetchScreenshot_();
         // TODO(longbowei): Handle NoResultFound case.
         if (!this.helpContentOutcomeMetricEmitted_) {
@@ -340,6 +431,25 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   setHelpContentClickedForTesting(helpContentClicked) {
     this.helpContentClicked_ = helpContentClicked;
+  }
+
+  /**
+   * Checks if any keywords related to bluetooth have been typed. If they are,
+   * we show the bluetooth logs option, otherwise hide it.
+   * @return {boolean}
+   * @param {!string} textInput The input text for the description textarea.
+   * @protected
+   */
+  isDescriptionRelatedToBluetooth(textInput) {
+    /**
+     * If the user is not signed in with a internal google account, the
+     * bluetooth checkbox should be hidden and skip the relative check.
+     */
+    const isRelatedToBluetooth = btRegEx.test(textInput) ||
+        cantConnectRegEx.test(textInput) || tetherRegEx.test(textInput) ||
+        smartLockRegEx.test(textInput) || nearbyShareRegEx.test(textInput) ||
+        fastPairRegEx.test(textInput) || btDeviceRegEx.test(textInput);
+    return isRelatedToBluetooth;
   }
 }
 

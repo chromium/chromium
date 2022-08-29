@@ -44,6 +44,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     return {
       feedbackContext: {type: FeedbackContext, readOnly: false, notify: true},
       screenshotUrl: {type: String, readOnly: false, notify: true},
+      shouldShowBluetoothCheckbox:
+          {type: Boolean, readOnly: false, notify: true},
     };
   }
 
@@ -59,6 +61,11 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {string}
      */
     this.screenshotUrl;
+
+    /**
+     * @type {boolean}
+     */
+    this.shouldShowBluetoothCheckbox;
 
     /**
      * @type {string}
@@ -110,18 +117,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    */
   hasEmail_() {
     return (this.feedbackContext !== null && !!this.feedbackContext.email);
-  }
-
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  shouldShowBluetoothCheckbox_() {
-    // TODO: add an additional logic to hide bluetooth checkbox if user input
-    // is not relevant to bluetooth.
-    return (
-        this.feedbackContext !== null &&
-        this.feedbackContext.isInternalAccount);
   }
 
   /**

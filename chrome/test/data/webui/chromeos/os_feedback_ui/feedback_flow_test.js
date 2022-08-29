@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {fakeFeedbackContext, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {AdditionalContextQueryParam, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
@@ -13,7 +13,7 @@ import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise, flushTasks} from '../../test_util.js';
+import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
 
 export function FeedbackFlowTestSuite() {
   /** @type {?FeedbackFlowElement} */
@@ -307,6 +307,74 @@ export function FeedbackFlowTestSuite() {
     assertTrue(!!activePage);
     assertEquals('confirmationPage', activePage.id);
     assertEquals(SendReportStatus.kSuccess, activePage.sendReportStatus);
+  });
+
+  // Test the bluetooth logs will show up if logged with internal account and
+  // input description is related.
+  test('ShowBluetoothLogsWithRelatedDescription', async () => {
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    feedbackServiceProvider.setFakeFeedbackContext(
+        fakeInternalUserFeedbackContext);
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
+    await initializePage();
+
+    // Check the bluetooth checkbox component hidden when input is not related
+    // to bluetooth.
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+
+    activePage.shadowRoot.querySelector('textarea').value = 'abc';
+    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    await flushTasks();
+
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('shareDataPage', activePage.id);
+    const bluetoothCheckbox =
+        activePage.shadowRoot.querySelector('#bluetoothCheckboxContainer');
+    assertTrue(!!bluetoothCheckbox);
+    assertFalse(isVisible(bluetoothCheckbox));
+
+    activePage.shadowRoot.querySelector('#buttonBack').click();
+    await flushTasks();
+
+    // Go back to search page and set description input related to bluetooth.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+
+    const descriptionElement = activePage.shadowRoot.querySelector('textarea');
+    descriptionElement.value = 'bluetooth';
+
+    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    await flushTasks();
+
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('shareDataPage', activePage.id);
+
+    assertTrue(!!bluetoothCheckbox);
+    assertTrue(isVisible(bluetoothCheckbox));
+  });
+
+  // Test the bluetooth logs will not show up if not logged with an Internal
+  // google account.
+  test('BluetoothHiddenWithoutInternalAccount', async () => {
+    await initializePage();
+
+    // Set input description related to bluetooth.
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+
+    activePage.shadowRoot.querySelector('textarea').value = 'bluetooth';
+    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    await flushTasks();
+
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('shareDataPage', activePage.id);
+    const bluetoothCheckbox =
+        activePage.shadowRoot.querySelector('#bluetoothCheckboxContainer');
+    assertTrue(!!bluetoothCheckbox);
+    assertFalse(isVisible(bluetoothCheckbox));
   });
 
   // Test the navigation from confirmation page to search page after the

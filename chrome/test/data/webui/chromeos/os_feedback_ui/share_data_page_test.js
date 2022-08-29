@@ -646,31 +646,6 @@ export function shareDataPageTestSuite() {
   });
 
   /**
-   * Test that when not logged as internal google account, the bluetooth
-   * checkbox container is hidden, and sendBluetoothLogs flag is set false.
-   */
-  test('bluetoothCheckboxHiddenWithoutInternalAccount', async () => {
-    await initializePage();
-    page.feedbackContext = fakeFeedbackContext;
-
-    await flushTasks();
-    // Verify the bluetooth checkbox is hidden.
-    assertFalse(isVisible(getElement('#bluetoothCheckboxContainer')));
-
-    // Check the bluetooth checkbox.
-    const bluetoothCheckbox = getElement('#bluetoothLogsCheckbox');
-    assertTrue(!!bluetoothCheckbox);
-    bluetoothCheckbox.checked = true;
-
-    // Send report with the checkbox checked somehow, but without an internal
-    // account. The report should not have sendBluetoothLogs flag.
-    const request = (await clickSendAndWait(page)).report;
-
-    assertFalse(request.sendBluetoothLogs);
-    assertFalse(!!request.feedbackContext.categoryTag);
-  });
-
-  /**
    * Test that sendBluetoothLogs flag is true and categoryTag is marked as
    * 'BluetoothReportWithLogs' when bluetooth logs checkbox is checked.
    */
@@ -683,7 +658,7 @@ export function shareDataPageTestSuite() {
     // checkbox container should be visible.
     assertEquals(
         getElement('#userEmailDropDown').value, 'test.user@google.com');
-    assertTrue(isVisible(getElement('#bluetoothCheckboxContainer')));
+    getElement('#bluetoothCheckboxContainer').hidden = false;
 
     const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
 
@@ -715,7 +690,7 @@ export function shareDataPageTestSuite() {
     // checkbox container should be visible.
     assertEquals(
         getElement('#userEmailDropDown').value, 'test.user@google.com');
-    assertTrue(isVisible(getElement('#bluetoothCheckboxContainer')));
+    getElement('#bluetoothCheckboxContainer').hidden = false;
 
     // BluetoothLogs checkbox is default to be checked.
     const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
