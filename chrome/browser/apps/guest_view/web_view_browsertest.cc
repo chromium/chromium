@@ -4606,17 +4606,14 @@ IN_PROC_BROWSER_TEST_P(WebViewTestNoDomAutomationController,
   TestHelper("testLoadWebviewInsideIframe",
              "web_view/load_webview_inside_iframe", NEEDS_TEST_SERVER);
 
-  ASSERT_TRUE(GetGuestViewManager()->DeprecatedGetLastGuestCreated());
-
-  content::WebContentsDestroyedWatcher watcher(
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated());
+  ASSERT_TRUE(GetGuestViewManager()->GetLastGuestRenderFrameHostCreated());
 
   // Remove the iframe.
   content::ExecuteScriptAsync(GetEmbedderWebContents(),
                               "document.querySelector('iframe').remove()");
 
   // Wait for guest to be destroyed.
-  watcher.Wait();
+  GetGuestViewManager()->WaitForLastGuestDeleted();
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, LoadWebViewAccessibility) {
