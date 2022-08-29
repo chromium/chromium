@@ -13,7 +13,6 @@ group("polymer3_elements") {
     ":active_directory_password_change_module",
     ":checking_downloading_update_module",
     ":gaia_password_changed_module",
-    ":lacros_data_migration_module",
     ":management_transition_module",
     ":offline_login_module",
     ":update_required_card_module",
@@ -28,7 +27,7 @@ js_type_check("closure_compile") {
     ":checking_downloading_update.m",
     ":encryption_migration",
     ":gaia_password_changed.m",
-    ":lacros_data_migration.m",
+    ":lacros_data_migration",
     ":management_transition.m",
     ":offline_login.m",
     ":update_required_card.m",
@@ -83,15 +82,15 @@ js_library("gaia_password_changed.m") {
   extra_deps = [ ":gaia_password_changed_module" ]
 }
 
-js_library("lacros_data_migration.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_migration.m.js" ]
+js_library("lacros_data_migration") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_migration.js" ]
   deps = [
     "../../components:oobe_slide.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/dialogs:oobe_loading_dialog.m",
   ]
-  extra_deps = [ ":lacros_data_migration_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("management_transition.m") {
@@ -169,14 +168,6 @@ polymer_modulizer("gaia_password_changed") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("lacros_data_migration") {
-  js_file = "lacros_data_migration.js"
-  html_file = "lacros_data_migration.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("management_transition") {
   js_file = "management_transition.js"
   html_file = "management_transition.html"
@@ -211,5 +202,8 @@ polymer_modulizer("checking_downloading_update") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "encryption_migration.js" ]
+  js_files = [
+    "encryption_migration.js",
+    "lacros_data_migration.js",
+  ]
 }

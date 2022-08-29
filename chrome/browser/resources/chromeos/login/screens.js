@@ -45,7 +45,7 @@ import './screens/common/wrong_hwid.m.js';
 import './screens/login/active_directory_password_change.m.js';
 import './screens/login/encryption_migration.js';
 import './screens/login/gaia_password_changed.m.js';
-import './screens/login/lacros_data_migration.m.js';
+import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.m.js';
 import './screens/login/offline_login.m.js';
 import './screens/login/update_required_card.m.js';
