@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
+#include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -254,6 +255,10 @@ bool ShouldForceDeferScript() {
 // asynchronously, executed with in-order (crbug.com/1344772).
 bool ShouldForceInOrderScript() {
   return base::FeatureList::IsEnabled(features::kForceInOrderScript);
+}
+
+bool ShouldSelectiveInOrderScript() {
+  return base::FeatureList::IsEnabled(features::kSelectiveInOrderScript);
 }
 }  // namespace
 
@@ -932,6 +937,26 @@ PendingScript* ScriptLoader::PrepareScript(
       case ScriptSchedulingType::kImmediate:
       case ScriptSchedulingType::kParserBlockingInline:
         script_scheduling_type = ScriptSchedulingType::kForceDefer;
+        break;
+      default:
+        break;
+    }
+  }
+
+  // [intervention, https://crbug.com/1356396] Check for external script that
+  // should be in-order. This simply marks the parser blocking scripts as
+  // kInOrder if it's eligible. We use ScriptSchedulingType::kInOrder
+  // rather than kForceInOrder here since we don't preserve evaluation order
+  // between intervened scripts and ordinary parser-blocking/inline scripts.
+  if (ShouldSelectiveInOrderScript() &&
+      IsA<HTMLDocument>(context_window->document())) {
+    switch (script_scheduling_type) {
+      case ScriptSchedulingType::kParserBlocking:
+        // TODO(hiroshige): Remove prepared_pending_script_ access outside
+        // TakePendingScript().
+        DCHECK(prepared_pending_script_);
+        if (prepared_pending_script_->IsEligibleForSelectiveInOrder())
+          script_scheduling_type = ScriptSchedulingType::kInOrder;
         break;
       default:
         break;

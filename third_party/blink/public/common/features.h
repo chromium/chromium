@@ -789,6 +789,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kForceDeferScriptIntervention;
 // execution order is respected. See https://crbug.com/1344772
 BLINK_COMMON_EXPORT extern const base::Feature kForceInOrderScript;
 
+// If enabled, parser-blocking scripts are loaded asynchronously. The target
+// scripts are selectively applied via the allowlist provided from the feature
+// param. See https://crbug.com/1356396
+BLINK_COMMON_EXPORT extern const base::Feature kSelectiveInOrderScript;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kSelectiveInOrderScriptAllowList;
+
 // If enabled, allows MediaStreamVideoSource objects to be restarted by a
 // successful source switch. Normally, switching the source would only allowed
 // on streams that are in started state. However, changing the source also first

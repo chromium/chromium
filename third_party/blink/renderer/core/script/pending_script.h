@@ -133,6 +133,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   virtual void ExecuteScriptBlock();
 
   virtual bool IsEligibleForDelay() const { return false; }
+  virtual bool IsEligibleForSelectiveInOrder() const { return false; }
 
   bool IsWatchingForLoad() const { return client_; }
 

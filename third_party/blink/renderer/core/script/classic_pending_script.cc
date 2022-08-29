@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
+#include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -71,6 +72,25 @@ bool CheckIfEligibleForDelay(const KURL& url,
   return true;
 }
 
+// Check if the src url of the script matches the allowlist provided by
+// SelectiveInOrderScript. Also this function checks if the url is a same site
+// with the document's url, and returns false if it's a same site since 1st
+// party scripts are out of scope of the experiment.
+bool CheckIfEligibleForSelectiveInOrder(const KURL& url,
+                                        const Document& element_document) {
+  scoped_refptr<const SecurityOrigin> src_security_origin =
+      SecurityOrigin::Create(url);
+  if (src_security_origin->IsSameSiteWith(
+          element_document.GetExecutionContext()->GetSecurityOrigin()))
+    return false;
+
+  DEFINE_STATIC_LOCAL(
+      UrlMatcher, url_matcher,
+      (UrlMatcher(features::kSelectiveInOrderScriptAllowList.Get())));
+
+  return url_matcher.Match(url);
+}
+
 }  // namespace
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-classic-script">
@@ -92,7 +112,8 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
           element, TextPosition::MinimumPosition(), KURL(), KURL(), String(),
           ScriptSourceLocationType::kExternalFile, options,
           true /* is_external */,
-          CheckIfEligibleForDelay(url, element_document, *element));
+          CheckIfEligibleForDelay(url, element_document, *element),
+          CheckIfEligibleForSelectiveInOrder(url, element_document));
 
   // [Intervention]
   // For users on slow connections, we want to avoid blocking the parser in
@@ -127,7 +148,8 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
       MakeGarbageCollected<ClassicPendingScript>(
           element, starting_position, source_url, base_url, source_text,
           source_location_type, options, false /* is_external */,
-          false /* is_eligible_for_delay */);
+          false /* is_eligible_for_delay */,
+          false /* is_eligible_for_selective_in_order */);
   pending_script->CheckState();
   return pending_script;
 }
@@ -141,7 +163,8 @@ ClassicPendingScript::ClassicPendingScript(
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
     bool is_external,
-    bool is_eligible_for_delay)
+    bool is_eligible_for_delay,
+    bool is_eligible_for_selective_in_order)
     : PendingScript(element, starting_position),
       options_(options),
       source_url_for_inline_script_(source_url_for_inline_script),
@@ -150,7 +173,8 @@ ClassicPendingScript::ClassicPendingScript(
       source_location_type_(source_location_type),
       is_external_(is_external),
       ready_state_(is_external ? kWaitingForResource : kReady),
-      is_eligible_for_delay_(is_eligible_for_delay) {
+      is_eligible_for_delay_(is_eligible_for_delay),
+      is_eligible_for_selective_in_order_(is_eligible_for_selective_in_order) {
   CHECK(GetElement());
 
   if (is_external_) {

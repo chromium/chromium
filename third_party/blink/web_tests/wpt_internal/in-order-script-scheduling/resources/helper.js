@@ -10,11 +10,20 @@ function checkIfReachedBodyEnd() {
     endelement.textContent = "Detected";
   }
 }
+
+let isLogDOMContentLoadedEnabled = false;
+function enableLogDOMContentLoaded() {
+  isLogDOMContentLoadedEnabled = true;
+}
+
 function logScript(msg) {
   checkIfReachedBodyEnd();
   log(msg);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  logScript("DOMContentLoaded");
+  checkIfReachedBodyEnd();
+  if (isLogDOMContentLoadedEnabled) {
+    logScript("DOMContentLoaded");
+  }
 });

@@ -1552,6 +1552,11 @@ const base::Feature kForceDeferScriptIntervention{
 const base::Feature kForceInOrderScript{"ForceInOrderScript",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSelectiveInOrderScript{"SelectiveInOrderScript",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string> kSelectiveInOrderScriptAllowList{
+    &kSelectiveInOrderScript, "allow_list", ""};
+
 const base::Feature kAllowSourceSwitchOnPausedVideoMediaStream{
     "AllowSourceSwitchOnPausedVideoMediaStream",
     base::FEATURE_ENABLED_BY_DEFAULT};
