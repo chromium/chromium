@@ -16,25 +16,17 @@
 
 namespace {
 
-// `ImageSource` generates an image painted with a highlight border.
-class ImageSource : public gfx::CanvasImageSource {
- public:
-  explicit ImageSource(HighlightBorderOverlay* highlight_border_layer)
-      : gfx::CanvasImageSource(
-            highlight_border_layer->CalculateImageSourceSize()),
-        highlight_border_layer_(highlight_border_layer) {}
-  ImageSource(const ImageSource&) = delete;
-  ImageSource& operator=(const ImageSource&) = delete;
-  ~ImageSource() override = default;
+// A highlight border overlay is featured by its highlight color, border color,
+// and rounded corner radius.
+using HighlightBorderFeatureKey = std::tuple<SkColor, SkColor, int>;
+// Currently, each dark and light mode has only one set of highlight and border
+// colors. The windows that are using HighlightBorderOverlay have three
+// different rounded corner radius. There should be 6 different types of image
+// sources for highlight border.
+constexpr size_t kMaxImageSourceNum = 6;
 
-  // gfx::CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override {
-    highlight_border_layer_->PaintBorder(canvas);
-  }
-
- private:
-  base::raw_ptr<HighlightBorderOverlay> highlight_border_layer_;
-};
+constexpr views::HighlightBorder::Type kBorderType =
+    views::HighlightBorder::Type::kHighlightBorder3;
 
 int GetRoundedCornerRadius(chromeos::WindowStateType type) {
   if (type == chromeos::WindowStateType::kPip)
@@ -43,6 +35,35 @@ int GetRoundedCornerRadius(chromeos::WindowStateType type) {
   return IsNormalWindowStateType(type) ? chromeos::kTopCornerRadiusWhenRestored
                                        : 0;
 }
+
+// `ImageSource` generates an image painted with a highlight border.
+class ImageSource : public gfx::CanvasImageSource {
+ public:
+  ImageSource(SkColor highlight_color,
+              SkColor border_color,
+              int corner_radius,
+              const gfx::Size& size)
+      : gfx::CanvasImageSource(size),
+        highlight_color_(highlight_color),
+        border_color_(border_color),
+        corner_radius_(corner_radius) {}
+  ImageSource(const ImageSource&) = delete;
+  ImageSource& operator=(const ImageSource&) = delete;
+  ~ImageSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    views::HighlightBorder::PaintBorderToCanvas(
+        canvas, highlight_color_, border_color_, gfx::Rect(size()),
+        gfx::RoundedCornersF(corner_radius_), kBorderType,
+        /*use_light_colors=*/false);
+  }
+
+ private:
+  const SkColor highlight_color_;
+  const SkColor border_color_;
+  const int corner_radius_;
+};
 
 }  // namespace
 
@@ -66,15 +87,6 @@ HighlightBorderOverlay::HighlightBorderOverlay(views::Widget* widget)
 HighlightBorderOverlay::~HighlightBorderOverlay() {
   if (window_)
     window_->RemoveObserver(this);
-}
-
-void HighlightBorderOverlay::PaintBorder(gfx::Canvas* canvas) {
-  views::HighlightBorder::PaintBorderToCanvas(
-      canvas, *(widget_->GetContentsView()),
-      gfx::Rect(CalculateImageSourceSize()),
-      gfx::RoundedCornersF(rounded_corner_radius_),
-      views::HighlightBorder::Type::kHighlightBorder3,
-      /*use_light_colors=*/false);
 }
 
 gfx::Size HighlightBorderOverlay::CalculateImageSourceSize() const {
@@ -167,11 +179,36 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
 }
 
 void HighlightBorderOverlay::UpdateNinePatchLayer() {
-  // Configure the nine patch layer.
-  auto* border_image_source = new ImageSource(this);
-  gfx::Size image_source_size = border_image_source->size();
-  layer_.UpdateNinePatchLayerImage(
-      gfx::ImageSkia(base::WrapUnique(border_image_source), image_source_size));
+  // Get the highlight border features.
+  const views::View& view = *(widget_->GetContentsView());
+  SkColor highlight_color = views::HighlightBorder::GetHighlightColor(
+      view, kBorderType, /*use_light_colors=*/false);
+  SkColor border_color = views::HighlightBorder::GetBorderColor(
+      view, kBorderType, /*use_light_colors=*/false);
+  HighlightBorderFeatureKey key(highlight_color, border_color,
+                                rounded_corner_radius_);
+
+  gfx::Size image_source_size = CalculateImageSourceSize();
+
+  static base::NoDestructor<std::map<HighlightBorderFeatureKey, gfx::ImageSkia>>
+      image_source_map;
+  auto iter = image_source_map->find(key);
+  if (iter == image_source_map->end()) {
+    // Create a new image.
+    auto insertion = image_source_map->emplace(
+        key, gfx::ImageSkia(std::make_unique<ImageSource>(
+                                highlight_color, border_color,
+                                rounded_corner_radius_, image_source_size),
+                            image_source_size));
+    DCHECK(insertion.second);
+    // When dynamic color feature launches or HighlightBorderOverlay applies to
+    // more window types, the cache size may increase. Add a dcheck here to
+    // notice the cache size change.
+    DCHECK_LE(image_source_map->size(), kMaxImageSourceNum);
+    iter = insertion.first;
+  }
+
+  layer_.UpdateNinePatchLayerImage(iter->second);
 
   gfx::Rect aperture(image_source_size);
   gfx::Insets border_region = CalculateBorderRegion();
