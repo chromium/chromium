@@ -162,9 +162,10 @@ class FastPairRepositoryImplTest : public AshTestBase {
     saved_device_registry_ = saved_device_registry.get();
 
     fast_pair_repository_ = std::make_unique<FastPairRepositoryImpl>(
-        std::move(device_metadata_fetcher), std::move(footprints_fetcher),
-        std::move(image_decoder), std::move(device_id_map),
-        std::move(device_image_store), std::move(saved_device_registry));
+        adapter_, std::move(device_metadata_fetcher),
+        std::move(footprints_fetcher), std::move(image_decoder),
+        std::move(device_id_map), std::move(device_image_store),
+        std::move(saved_device_registry));
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     ON_CALL(browser_delegate_, GetActivePrefService())
@@ -635,8 +636,49 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_MissingResponse) {
                                        /*success=*/false, 1);
 }
 
-TEST_F(FastPairRepositoryImplTest, IsAccountKeyPairedLocally) {
+TEST_F(FastPairRepositoryImplTest,
+       IsAccountKeyPairedLocally_SavedLocallyNotPaired) {
+  // Simulate a device already saved to the registry. A Fast Pair device can
+  // be saved in the registry even if it is not paired locally because
+  // the SavedDeviceRegistry  tracks devices that have been Fast paired in the
+  // past.
   saved_device_registry_->SaveAccountKey(kTestClassicAddress1, kAccountKey1);
+  EXPECT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+
+  EXPECT_TRUE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey1));
+  EXPECT_FALSE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey2));
+}
+
+TEST_F(FastPairRepositoryImplTest,
+       IsAccountKeyPairedLocally_PairedNotSavedLocally) {
+  // Simulate a device saved to a user's account that matches a device paired
+  // with devices |adapter_| is loaded with. In the init of the |adapter_|, we
+  // mocked `GetDevices` with |device_list_|.
+  nearby::fastpair::FastPairInfo info;
+  auto* device = info.mutable_device();
+  device->set_account_key(
+      std::string(kAccountKey1.begin(), kAccountKey1.end()));
+  device->set_sha256_account_key_public_address(
+      GenerateSha256AccountKeyMacAddress(
+          std::string(kAccountKey1.begin(), kAccountKey1.end()),
+          kTestClassicAddress1));
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  // We want to simulate the cache being updated when it is parsing a
+  // NotDiscoverableAdv, which happens when it is checking an account key.
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  auto run_loop = std::make_unique<base::RunLoop>();
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/false));
+  run_loop->Run();
+
+  // At this point the cache will be updated with any devices Saved to
+  // Footprints. We can continue now checking if it matches any paired devices.
   EXPECT_TRUE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey1));
   EXPECT_FALSE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey2));
 }

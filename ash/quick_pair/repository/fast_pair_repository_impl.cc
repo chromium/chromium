@@ -70,13 +70,14 @@ void FastPairRepositoryImpl::OnGetAdapter(
 }
 
 FastPairRepositoryImpl::FastPairRepositoryImpl(
+    scoped_refptr<device::BluetoothAdapter> adapter,
     std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher,
     std::unique_ptr<FootprintsFetcher> footprints_fetcher,
     std::unique_ptr<FastPairImageDecoder> image_decoder,
     std::unique_ptr<DeviceIdMap> device_id_map,
     std::unique_ptr<DeviceImageStore> device_image_store,
     std::unique_ptr<SavedDeviceRegistry> saved_device_registry)
-    : FastPairRepository(),
+    : adapter_(adapter),
       device_metadata_fetcher_(std::move(device_metadata_fetcher)),
       footprints_fetcher_(std::move(footprints_fetcher)),
       image_decoder_(std::move(image_decoder)),
@@ -147,6 +148,51 @@ void FastPairRepositoryImpl::OnImageDecoded(
 
 bool FastPairRepositoryImpl::IsAccountKeyPairedLocally(
     const std::vector<uint8_t>& account_key) {
+  // Before we check if the |account_key| matches any of the devices saved in
+  // the Saved Device Registry, we fetch all the devices saved to the user's
+  // account and cross check the SHA256(concat(account_key, mac_address)) of
+  // the saved devices with the SHA256(concat(account_key, mac_address)) of any
+  // devices paired to the adapter using the paired device's mac address and
+  // the given |account_key|. If there are any matches, we should add the
+  // (mac_address, account_key) pair to the Saved Device Registry before
+  // completing our check. This handles the edge case where a user pairs a
+  // device already saved to their account from another platform via classic
+  // BT pairing, and the device still emits a not discoverable advertisement,
+  // and we want to prevent showing a Subsequent pairing notification in this
+  // case.
+  for (device::BluetoothDevice* device : adapter_->GetDevices()) {
+    if (!device->IsPaired())
+      continue;
+
+    // Use the paired device's |mac_address| and the given |account_key| to
+    // generate a SHA256(concat(account_key, mac_address)), and use this
+    // SHA256 hash to check if there are any matches with any saved devices in
+    // Footprints.
+    const std::string& mac_address = device->GetAddress();
+    std::string paired_device_hash = GenerateSha256OfAccountKeyAndMacAddress(
+        std::string(account_key.begin(), account_key.end()), mac_address);
+
+    for (const auto& info : user_devices_cache_.fast_pair_info()) {
+      if (info.has_device() &&
+          info.device().has_sha256_account_key_public_address() &&
+          info.device().sha256_account_key_public_address() ==
+              paired_device_hash) {
+        QP_LOG(VERBOSE)
+            << __func__
+            << ": paired device already saved to account at address = "
+            << mac_address << "; adding to registry";
+        saved_device_registry_->SaveAccountKey(mac_address, account_key);
+
+        // We only expect there to be at most one match with |account_key| in
+        // the devices saved to Footprints. An account key is uniquely written
+        // to one device in the pairing flows. Since we found a match and
+        // saved it locally, we can return "true" since the account key matches
+        // a paired device.
+        return true;
+      }
+    }
+  }
+
   return saved_device_registry_->IsAccountKeySavedToRegistry(account_key);
 }
 

@@ -47,6 +47,7 @@ class FastPairRepositoryImpl : public FastPairRepository {
  public:
   FastPairRepositoryImpl();
   FastPairRepositoryImpl(
+      scoped_refptr<device::BluetoothAdapter> adapter,
       std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher,
       std::unique_ptr<FootprintsFetcher> footprints_fetcher,
       std::unique_ptr<FastPairImageDecoder> image_decoder,
