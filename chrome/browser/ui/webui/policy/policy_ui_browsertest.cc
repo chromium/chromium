@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/cfi_buildflags.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -415,8 +416,12 @@ void PolicyUITest::VerifyExportingPolicies(
   EXPECT_EQ(expected, *value_ptr);
 }
 
-#if !defined(NDEBUG)
-// Slow and hangs often in debug builds. https://crbug.com/1338642
+#if !defined(NDEBUG) ||                                          \
+    (BUILDFLAG(IS_LINUX) &&                                      \
+     (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
+      BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
+      BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)))
+// Slow in debug and CFI builds crbug.com/1338642
 #define MAYBE_WritePoliciesToJSONFile DISABLED_WritePoliciesToJSONFile
 #else
 #define MAYBE_WritePoliciesToJSONFile WritePoliciesToJSONFile
