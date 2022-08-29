@@ -12,6 +12,7 @@ jobs:
         uses: tailscale/github-action@e870a1112fcc1faeeeeea3c1b0ce544e5ad01844
         with:
           authkey: ${{ secrets.TAILSCALE_API_KEY }}
+          version: 1.28.0
       - uses: actions/checkout@v2
       - uses: ./.github/actions/release
         env:
