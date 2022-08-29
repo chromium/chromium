@@ -8,6 +8,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/style/typography.h"
 
 SidePanelComboboxModel::Item::Item(SidePanelEntry::Key key,
@@ -32,11 +33,17 @@ void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
   std::sort(entries_.begin(), entries_.end(), [](const auto& a, const auto& b) {
     return a.key.id() < b.key.id();
   });
+  for (auto& observer : observers()) {
+    observer.OnComboboxModelChanged(this);
+  }
 }
 
 void SidePanelComboboxModel::RemoveItem(const SidePanelEntry::Key& entry_key) {
   base::EraseIf(entries_,
                 [entry_key](Item entry) { return entry.key == entry_key; });
+  for (auto& observer : observers()) {
+    observer.OnComboboxModelChanged(this);
+  }
 }
 
 void SidePanelComboboxModel::AddItems(
@@ -46,6 +53,9 @@ void SidePanelComboboxModel::AddItems(
   }
   std::sort(entries_.begin(), entries_.end(),
             [](const auto& a, const auto& b) { return a.key < b.key; });
+  for (auto& observer : observers()) {
+    observer.OnComboboxModelChanged(this);
+  }
 }
 
 void SidePanelComboboxModel::RemoveItems(
@@ -57,6 +67,9 @@ void SidePanelComboboxModel::RemoveItems(
                      [key](auto entry) { return entry.key == key; });
     if (position != entries_.end())
       entries_.erase(position);
+  }
+  for (auto& observer : observers()) {
+    observer.OnComboboxModelChanged(this);
   }
 }
 
