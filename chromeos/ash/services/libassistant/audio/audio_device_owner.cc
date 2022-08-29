@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/sequence_checker.h"
-#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/limits.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"

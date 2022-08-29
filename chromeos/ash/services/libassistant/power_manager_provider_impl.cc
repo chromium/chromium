@@ -9,7 +9,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 

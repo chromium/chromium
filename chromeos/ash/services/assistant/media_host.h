@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/libassistant/public/mojom/media_controller.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"

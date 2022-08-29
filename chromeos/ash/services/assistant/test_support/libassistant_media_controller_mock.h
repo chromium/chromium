@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_LIBASSISTANT_MEDIA_CONTROLLER_MOCK_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_LIBASSISTANT_MEDIA_CONTROLLER_MOCK_H_
 
-#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom.h"
 
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

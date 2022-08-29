@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/services/libassistant/grpc/utils/media_status_utils.h"
 
+#include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 
 namespace chromeos {
 namespace libassistant {

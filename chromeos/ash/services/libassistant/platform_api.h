@@ -9,9 +9,9 @@
 
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/network_provider_impl.h"
+#include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {

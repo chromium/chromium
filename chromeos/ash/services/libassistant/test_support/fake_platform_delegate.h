@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_DELEGATE_H_
 
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 
 namespace chromeos {
 namespace assistant {

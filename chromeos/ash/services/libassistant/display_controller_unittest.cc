@@ -7,8 +7,8 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/assistant/test_support/expect_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_assistant_client.h"
-#include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

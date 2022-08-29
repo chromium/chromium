@@ -6,12 +6,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_assistant_client.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/util_headers.h"
-#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

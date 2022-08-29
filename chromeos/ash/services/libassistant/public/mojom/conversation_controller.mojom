@@ -4,9 +4,9 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/conversation_observer.mojom";
-import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom";
-import "chromeos/services/libassistant/public/mojom/assistant_notification.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/conversation_observer.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/assistant_notification.mojom";
 import "ui/accessibility/mojom/ax_assistant_structure.mojom";
 
 // Interface for controller supporting conversation related functionalities.

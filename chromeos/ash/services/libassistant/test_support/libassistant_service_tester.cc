@@ -5,9 +5,9 @@
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 
 #include "base/base_paths.h"
+#include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/service_controller.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_libassistant_factory.h"
-#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace chromeos {

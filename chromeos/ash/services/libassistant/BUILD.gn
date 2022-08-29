@@ -29,8 +29,8 @@ component("libassistant") {
   ]
 
   public_deps = [
+    "//chromeos/ash/services/libassistant/public/mojom",
     "//chromeos/assistant/internal/proto:assistant",
-    "//chromeos/services/libassistant/public/mojom",
     "//dbus",
   ]
 
@@ -38,8 +38,8 @@ component("libassistant") {
     ":internal",
     ":loader",
     "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/libassistant/public/mojom",
     "//chromeos/assistant/internal:libassistant_shared_headers",
-    "//chromeos/services/libassistant/public/mojom",
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
@@ -159,13 +159,13 @@ source_set("internal") {
     "//chromeos/ash/services/libassistant/grpc:grpc_service",
     "//chromeos/ash/services/libassistant/grpc/external_services:grpc_services_initializer",
     "//chromeos/ash/services/libassistant/grpc/external_services:grpc_services_observer",
+    "//chromeos/ash/services/libassistant/public/mojom",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal/proto:assistant",
     "//chromeos/dbus/power",
-    "//chromeos/services/libassistant/public/mojom",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",
     "//chromeos/version:version",
@@ -206,8 +206,8 @@ source_set("audio") {
     "//base",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/libassistant/grpc:assistant_client",
+    "//chromeos/ash/services/libassistant/public/mojom",
     "//chromeos/assistant/internal:libassistant_shared_headers",
-    "//chromeos/services/libassistant/public/mojom",
     "//media",
     "//media/mojo/mojom",
     "//services/audio/public/cpp",
@@ -249,9 +249,9 @@ source_set("test_support") {
     ":libassistant",
     "//base/test:test_support",
     "//chromeos/ash/services/libassistant/grpc:assistant_client",
+    "//chromeos/ash/services/libassistant/public/mojom",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/assistant/internal/proto:assistant",
-    "//chromeos/services/libassistant/public/mojom",
     "//services/network:test_support",
   ]
 }
@@ -290,13 +290,13 @@ source_set("unit_tests") {
     "//chromeos/ash/components/assistant/test_support:test_support",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/libassistant/grpc:assistant_client",
+    "//chromeos/ash/services/libassistant/public/mojom",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/power",
-    "//chromeos/services/libassistant/public/mojom",
     "//services/audio/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//services/network:test_support",

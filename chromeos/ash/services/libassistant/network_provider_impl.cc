@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/services/network_config/public/mojom/constants.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

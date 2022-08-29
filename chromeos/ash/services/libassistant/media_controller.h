@@ -6,8 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_MEDIA_CONTROLLER_H_
 
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
+#include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
-#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

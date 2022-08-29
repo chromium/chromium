@@ -4,7 +4,7 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/assistant_notification.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/assistant_notification.mojom";
 
 // Interface that allows Libassistant to make notification related changes on
 // ChromeOS.

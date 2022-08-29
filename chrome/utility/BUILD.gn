@@ -203,7 +203,7 @@ static_library("utility") {
         "//chromeos/ash/services/assistant/audio_decoder:lib",
         "//chromeos/ash/services/assistant/public/mojom",
         "//chromeos/ash/services/libassistant",
-        "//chromeos/services/libassistant/public/mojom",
+        "//chromeos/ash/services/libassistant/public/mojom",
       ]
     }
   }

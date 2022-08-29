@@ -4,7 +4,7 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/android_app_info.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom";
 
 // Controls the internal media player of the Libassistant service, which plays
 // podcasts and news.

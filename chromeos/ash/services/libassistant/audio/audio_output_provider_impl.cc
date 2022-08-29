@@ -13,8 +13,8 @@
 #include "base/sequence_checker.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/ash/services/libassistant/audio/audio_stream_handler.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "media/audio/audio_device_description.h"
 
 namespace chromeos {

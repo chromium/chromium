@@ -4,20 +4,20 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom";
-import "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom";
-import "chromeos/services/libassistant/public/mojom/conversation_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/display_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom";
-import "chromeos/services/libassistant/public/mojom/media_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/platform_delegate.mojom";
-import "chromeos/services/libassistant/public/mojom/service_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/settings_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom";
-import "chromeos/services/libassistant/public/mojom/timer_controller.mojom";
-import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/authentication_state_observer.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/conversation_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/display_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/device_settings_delegate.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/timer_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Service is hosted in the browser process if libassistant is not available.

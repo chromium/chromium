@@ -11,8 +11,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 

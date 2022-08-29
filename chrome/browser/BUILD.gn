@@ -5306,7 +5306,7 @@ static_library("browser") {
     }
 
     if (enable_cros_libassistant) {
-      deps += [ "//chromeos/services/libassistant/public/mojom" ]
+      deps += [ "//chromeos/ash/services/libassistant/public/mojom" ]
     }
   } else {  # Non - Ash.
     sources += [

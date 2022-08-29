@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
-#define CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
+#ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
+#define CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 
 #include <cstdint>
 #include <vector>
@@ -11,16 +11,16 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
+#include "chromeos/ash/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
+#include "chromeos/ash/services/libassistant/public/mojom/conversation_observer.mojom-shared.h"
+#include "chromeos/ash/services/libassistant/public/mojom/timer_controller.mojom-shared.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
-#include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
-#include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
-#include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom-shared.h"
-#include "chromeos/services/libassistant/public/mojom/timer_controller.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -221,4 +221,4 @@ struct EnumTraits<chromeos::libassistant::mojom::AssistantTimerState,
 
 }  // namespace mojo
 
-#endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
+#endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_

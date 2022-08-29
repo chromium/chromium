@@ -9,8 +9,8 @@
 #include <string>
 
 #include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
-#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
-#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

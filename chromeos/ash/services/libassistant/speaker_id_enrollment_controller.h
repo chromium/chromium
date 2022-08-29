@@ -7,8 +7,8 @@
 
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
-#include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
-#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {

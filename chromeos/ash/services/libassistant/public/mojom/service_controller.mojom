@@ -4,7 +4,7 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/settings_controller.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
 enum ServiceState {

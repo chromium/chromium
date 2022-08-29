@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_MEDIA_STATUS_UTILS_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_MEDIA_STATUS_UTILS_H_
 
+#include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
-#include "chromeos/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 
 namespace assistant_client {
 struct MediaStatus;

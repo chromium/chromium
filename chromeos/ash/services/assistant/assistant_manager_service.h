@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
-#include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 
 namespace ash::assistant {

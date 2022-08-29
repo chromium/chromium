@@ -6,9 +6,9 @@
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_LIBASSISTANT_SERVICE_H_
 
 #include "chromeos/ash/services/assistant/test_support/fake_service_controller.h"
-#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
-#include "chromeos/services/libassistant/public/mojom/service.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

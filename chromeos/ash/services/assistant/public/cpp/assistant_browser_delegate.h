@@ -21,7 +21,7 @@
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service.mojom-forward.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 namespace ash::assistant {

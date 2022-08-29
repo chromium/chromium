@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_PLATFORM_DELEGATE_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_PLATFORM_DELEGATE_IMPL_H_
 
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash::assistant {

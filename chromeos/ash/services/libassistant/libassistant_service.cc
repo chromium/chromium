@@ -13,8 +13,8 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/libassistant_factory.h"
 #include "chromeos/ash/services/libassistant/libassistant_loader_impl.h"
+#include "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 
 namespace chromeos {
 namespace libassistant {

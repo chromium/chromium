@@ -7,7 +7,7 @@
 
 #include "chromeos/ash/services/libassistant/audio/audio_input_provider_impl.h"
 #include "chromeos/ash/services/libassistant/conversation_state_listener_impl.h"
-#include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

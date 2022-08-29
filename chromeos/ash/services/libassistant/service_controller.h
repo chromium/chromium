@@ -12,10 +12,10 @@
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/public/mojom/service.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 

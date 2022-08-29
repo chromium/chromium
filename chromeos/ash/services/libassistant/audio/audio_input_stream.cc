@@ -6,8 +6,8 @@
 
 #include "base/notreached.h"
 #include "chromeos/ash/services/libassistant/buildflags.h"
-#include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 
 #if BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 #include "chromeos/ash/services/libassistant/audio/fake_input_device.h"

@@ -4,7 +4,7 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/android_app_info.mojom";
+import "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 

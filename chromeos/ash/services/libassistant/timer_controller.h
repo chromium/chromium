@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
-#include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/timer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

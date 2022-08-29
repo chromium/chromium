@@ -10,11 +10,11 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/display_connection.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/ash/services/libassistant/util.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
-#include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 
 namespace chromeos {
 namespace libassistant {

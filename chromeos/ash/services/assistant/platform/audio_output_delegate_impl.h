@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_OUTPUT_DELEGATE_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_OUTPUT_DELEGATE_IMPL_H_
 
-#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

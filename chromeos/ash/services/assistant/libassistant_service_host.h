@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_H_
 
-#include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash::assistant {

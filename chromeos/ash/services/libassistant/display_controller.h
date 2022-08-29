@@ -8,9 +8,9 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
+#include "chromeos/ash/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 

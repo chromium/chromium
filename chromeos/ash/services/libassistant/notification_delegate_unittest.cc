@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 #include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
-#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {

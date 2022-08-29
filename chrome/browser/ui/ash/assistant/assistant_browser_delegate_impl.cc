@@ -37,7 +37,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
