@@ -49,7 +49,7 @@ class FakeDiskMountManager : public MockDiskMountManager {
 class SuspendUnmountManagerTest : public testing::Test {
  public:
   SuspendUnmountManagerTest() {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     suspend_unmount_manager_ =
         std::make_unique<SuspendUnmountManager>(&disk_mount_manager_);
   }
@@ -60,7 +60,7 @@ class SuspendUnmountManagerTest : public testing::Test {
 
   ~SuspendUnmountManagerTest() override {
     suspend_unmount_manager_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:
@@ -89,12 +89,11 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
       false /* on_boot_device */, true /* on_removable_device */,
       kFileSystemType);
   disk_mount_manager_.SetupDefaultReplies();
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
 
-  EXPECT_EQ(
-      1,
-      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
+  EXPECT_EQ(1, chromeos::FakePowerManagerClient::Get()
+                   ->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(2u, disk_mount_manager_.unmounting_mount_paths().size());
   EXPECT_EQ(1, std::count(disk_mount_manager_.unmounting_mount_paths().begin(),
                           disk_mount_manager_.unmounting_mount_paths().end(),
@@ -106,9 +105,8 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
                           disk_mount_manager_.unmounting_mount_paths().end(),
                           kDummyMountPathUnknown));
   disk_mount_manager_.NotifyUnmountDeviceComplete(MountError::kNone);
-  EXPECT_EQ(
-      0,
-      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
+  EXPECT_EQ(0, chromeos::FakePowerManagerClient::Get()
+                   ->num_pending_suspend_readiness_callbacks());
 }
 
 TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
@@ -119,20 +117,19 @@ TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
       false /* is_parent */, false /* has_media */, false /* on_boot_device */,
       true /* on_removable_device */, kFileSystemType);
   disk_mount_manager_.SetupDefaultReplies();
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(
-      1,
-      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
+  EXPECT_EQ(1, chromeos::FakePowerManagerClient::Get()
+                   ->num_pending_suspend_readiness_callbacks());
   ASSERT_EQ(1u, disk_mount_manager_.unmounting_mount_paths().size());
   EXPECT_EQ(kDummyMountPath,
             disk_mount_manager_.unmounting_mount_paths().front());
 
   // Suspend cancelled.
-  FakePowerManagerClient::Get()->SendSuspendDone();
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 
   // Suspend again.
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   ASSERT_EQ(2u, disk_mount_manager_.unmounting_mount_paths().size());
   EXPECT_EQ(kDummyMountPath,

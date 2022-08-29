@@ -1317,12 +1317,14 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, TpmError) {
   OobeScreenWaiter(TpmErrorView::kScreenId).Wait();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 
   test::TapOnPathAndWaitForOobeToBeDestroyed(
       {"tpm-error-message", "restartButton"});
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, OwnerRequired) {

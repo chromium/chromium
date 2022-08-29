@@ -122,7 +122,7 @@ class ShimlessRmaServiceTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kShimlessRMAOsUpdate}, {});
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     // VersionUpdater depends on UpdateEngineClient.
     UpdateEngineClient::InitializeFake();
 
@@ -150,7 +150,7 @@ class ShimlessRmaServiceTest : public testing::Test {
     cros_network_config_test_helper_.reset();
     chromeos::LoginState::Shutdown();
     UpdateEngineClient::Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   void SetupFakeNetwork() {
@@ -1058,7 +1058,8 @@ TEST_F(ShimlessRmaServiceTest, AbortRmaRequestsFullReboot) {
       }));
   run_loop.Run();
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 TEST_F(ShimlessRmaServiceTest,
@@ -1076,7 +1077,8 @@ TEST_F(ShimlessRmaServiceTest,
       }));
   run_loop.Run();
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 TEST_F(ShimlessRmaServiceTest,
@@ -1097,7 +1099,8 @@ TEST_F(ShimlessRmaServiceTest,
   shimless_rma_provider_->ShutDownAfterHardwareError();
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_shutdown_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_shutdown_calls());
 }
 
 TEST_F(ShimlessRmaServiceTest,
@@ -1118,7 +1121,8 @@ TEST_F(ShimlessRmaServiceTest,
   shimless_rma_provider_->ShutDownAfterHardwareError();
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_shutdown_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_shutdown_calls());
 }
 
 TEST_F(ShimlessRmaServiceTest, CriticalErrorRebootRequestsFullReboot) {
@@ -1135,7 +1139,8 @@ TEST_F(ShimlessRmaServiceTest, CriticalErrorRebootRequestsFullReboot) {
       }));
   run_loop.Run();
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 TEST_F(ShimlessRmaServiceTest, SetSameOwner) {

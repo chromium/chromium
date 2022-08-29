@@ -122,9 +122,10 @@ class EncryptionMigrationScreenTest : public testing::Test {
     // Set up fake dbus clients.
     UserDataAuthClient::InitializeFake();
     fake_userdataauth_client_ = FakeUserDataAuthClient::Get();
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
-    PowerPolicyController::Initialize(PowerManagerClient::Get());
+    chromeos::PowerPolicyController::Initialize(
+        chromeos::PowerManagerClient::Get());
 
     // Build dummy user context.
     user_context_.SetAccountId(account_id_);
@@ -144,8 +145,8 @@ class EncryptionMigrationScreenTest : public testing::Test {
   void TearDown() override {
     encryption_migration_screen_.reset();
 
-    PowerPolicyController::Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerPolicyController::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     UserDataAuthClient::Shutdown();
   }
 

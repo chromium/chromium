@@ -21,7 +21,7 @@ namespace ash {
 //
 // This class is implemented as a global singleton, initialized after
 // DBusThreadManager which it depends on.
-class PowerDataCollector : public PowerManagerClient::Observer {
+class PowerDataCollector : public chromeos::PowerManagerClient::Observer {
  public:
   struct PowerSupplySample {
     PowerSupplySample();

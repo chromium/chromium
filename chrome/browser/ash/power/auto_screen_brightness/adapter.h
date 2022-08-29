@@ -37,7 +37,7 @@ class Adapter : public AlsReader::Observer,
                 public BrightnessMonitor::Observer,
                 public Modeller::Observer,
                 public ModelConfigLoader::Observer,
-                public PowerManagerClient::Observer {
+                public chromeos::PowerManagerClient::Observer {
  public:
   // How user manual brightness change will affect Adapter.
   // These values are persisted to logs. Entries should not be renumbered and

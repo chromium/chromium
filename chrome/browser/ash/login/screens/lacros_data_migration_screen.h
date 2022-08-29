@@ -19,8 +19,9 @@ namespace ash {
 
 // A screen that shows loading spinner during user data is copied to lacros
 // directory. The screen is shown during login.
-class LacrosDataMigrationScreen : public BaseScreen,
-                                  public PowerManagerClient::Observer {
+class LacrosDataMigrationScreen
+    : public BaseScreen,
+      public chromeos::PowerManagerClient::Observer {
  public:
   explicit LacrosDataMigrationScreen(LacrosDataMigrationScreenView* view);
   ~LacrosDataMigrationScreen() override;
@@ -83,7 +84,8 @@ class LacrosDataMigrationScreen : public BaseScreen,
   base::RepeatingClosure attempt_restart_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
-  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
       power_manager_subscription_{this};
 
   base::WeakPtrFactory<LacrosDataMigrationScreen> weak_factory_{this};

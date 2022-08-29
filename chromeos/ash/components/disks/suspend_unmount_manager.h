@@ -21,7 +21,7 @@ class DiskMountManager;
 
 // Class to unmount disks at suspend.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) SuspendUnmountManager
-    : public PowerManagerClient::Observer {
+    : public chromeos::PowerManagerClient::Observer {
  public:
   // The ownership of these raw pointers still remains with the caller.
   explicit SuspendUnmountManager(DiskMountManager* disk_mount_manager);

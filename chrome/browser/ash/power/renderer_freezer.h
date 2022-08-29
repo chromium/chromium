@@ -27,9 +27,10 @@ namespace ash {
 // them after the system fully resumes.  This class registers itself as a
 // PowerManagerClient::Observer on creation and unregisters itself on
 // destruction.
-class RendererFreezer : public PowerManagerClient::RenderProcessManagerDelegate,
-                        public content::NotificationObserver,
-                        public content::RenderProcessHostObserver {
+class RendererFreezer
+    : public chromeos::PowerManagerClient::RenderProcessManagerDelegate,
+      public content::NotificationObserver,
+      public content::RenderProcessHostObserver {
  public:
   class Delegate {
    public:

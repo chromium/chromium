@@ -101,7 +101,7 @@ class FakeModeller : public Modeller {
   base::ObserverList<Observer> observers_;
 };
 
-class TestObserver : public PowerManagerClient::Observer {
+class TestObserver : public chromeos::PowerManagerClient::Observer {
  public:
   TestObserver() = default;
   ~TestObserver() override = default;

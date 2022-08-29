@@ -26,14 +26,14 @@ class PowerMetricsReporterTest : public testing::Test {
   ~PowerMetricsReporterTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     PowerMetricsReporter::RegisterLocalStatePrefs(pref_service_.registry());
     ResetReporter();
   }
 
   void TearDown() override {
     reporter_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:

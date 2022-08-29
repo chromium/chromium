@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, ExitFullscreenOnSuspend) {
       ->fullscreen_controller()
       ->ToggleBrowserFullscreenMode();
   EXPECT_TRUE(browser_window->IsFullscreen());
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_FALSE(browser_window->IsFullscreen());
 }

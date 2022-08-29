@@ -29,7 +29,7 @@ FakeServiceContext& FakeServiceContext::set_main_task_runner(
 }
 
 FakeServiceContext& FakeServiceContext::set_power_manager_client(
-    PowerManagerClient* value) {
+    chromeos::PowerManagerClient* value) {
   power_manager_client_ = value;
   return *this;
 }
@@ -101,7 +101,7 @@ FakeServiceContext::main_task_runner() {
   return main_task_runner_;
 }
 
-PowerManagerClient* FakeServiceContext::power_manager_client() {
+chromeos::PowerManagerClient* FakeServiceContext::power_manager_client() {
   DCHECK(power_manager_client_ != nullptr);
   return power_manager_client_;
 }

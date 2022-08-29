@@ -212,7 +212,7 @@ class DeviceStatusCollector : public StatusCollector,
   // update.
   void SampleMemoryUsage();
 
-  // power_manager::PowerManagerClient::Observer:
+  // chromeos::PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& prop) override;
 
  private:

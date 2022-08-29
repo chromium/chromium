@@ -37,7 +37,7 @@ using EventReason = UserChargingEvent::Event::Reason;
 // user charging events. It is currently used to log data and will be
 // extended to do inference in the future.
 class SmartChargingManager : public ui::UserActivityObserver,
-                             public PowerManagerClient::Observer,
+                             public chromeos::PowerManagerClient::Observer,
                              public viz::mojom::VideoDetectorObserver,
                              public session_manager::SessionManagerObserver {
  public:

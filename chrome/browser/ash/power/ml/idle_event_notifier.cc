@@ -58,7 +58,7 @@ IdleEventNotifier::ActivityData::ActivityData(const ActivityData& input_data) {
 }
 
 IdleEventNotifier::IdleEventNotifier(
-    PowerManagerClient* power_manager_client,
+    chromeos::PowerManagerClient* power_manager_client,
     ui::UserActivityDetector* detector,
     mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver)
     : internal_data_(std::make_unique<ActivityDataInternal>()),

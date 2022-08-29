@@ -21,13 +21,13 @@ const int PowerDataCollector::kSampleTimeLimitSec = 24 * 60 * 60;
 void PowerDataCollector::Initialize() {
   // Check that power data collector is initialized only after the
   // PowerManagerClient is initialized.
-  CHECK(PowerManagerClient::Get());
+  CHECK(chromeos::PowerManagerClient::Get());
   CHECK(g_power_data_collector == NULL);
   g_power_data_collector = new PowerDataCollector(true);
 }
 
 void PowerDataCollector::InitializeForTesting() {
-  CHECK(PowerManagerClient::Get());
+  CHECK(chromeos::PowerManagerClient::Get());
   CHECK(g_power_data_collector == NULL);
   g_power_data_collector = new PowerDataCollector(false);
 }
@@ -65,13 +65,13 @@ void PowerDataCollector::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 PowerDataCollector::PowerDataCollector(const bool start_cpu_data_collector) {
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
   if (start_cpu_data_collector)
     cpu_data_collector_.Start();
 }
 
 PowerDataCollector::~PowerDataCollector() {
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 PowerDataCollector::PowerSupplySample::PowerSupplySample()

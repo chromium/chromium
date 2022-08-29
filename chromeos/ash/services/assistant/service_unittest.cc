@@ -74,9 +74,9 @@ class AssistantServiceTest : public testing::Test {
   void SetUp() override {
     CrasAudioHandler::InitializeForTesting();
 
-    PowerManagerClient::InitializeFake();
-    FakePowerManagerClient::Get()->SetTabletMode(
-        PowerManagerClient::TabletMode::OFF, base::TimeTicks());
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::FakePowerManagerClient::Get()->SetTabletMode(
+        chromeos::PowerManagerClient::TabletMode::OFF, base::TimeTicks());
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -106,7 +106,7 @@ class AssistantServiceTest : public testing::Test {
 
   void TearDown() override {
     service_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     CrasAudioHandler::Shutdown();
   }
 
@@ -204,7 +204,7 @@ TEST_F(AssistantServiceTest, RetryRefreshTokenAfterFailure) {
 TEST_F(AssistantServiceTest, RetryRefreshTokenAfterDeviceWakeup) {
   ASSERT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
 
-  FakePowerManagerClient::Get()->SendSuspendDone();
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
   // Token requested immediately after suspend done.
   EXPECT_TRUE(identity_test_env()->IsAccessTokenRequestPending());
 }

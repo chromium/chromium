@@ -166,8 +166,8 @@ class Service::Context : public ServiceContext {
     return parent_->main_task_runner_;
   }
 
-  PowerManagerClient* power_manager_client() override {
-    return PowerManagerClient::Get();
+  chromeos::PowerManagerClient* power_manager_client() override {
+    return chromeos::PowerManagerClient::Get();
   }
 
   std::string primary_account_gaia_id() override {

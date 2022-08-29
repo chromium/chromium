@@ -337,7 +337,7 @@ void SetPowerManagerProperties(
   power_manager::PowerSupplyProperties props = ConstructPowerSupplyProperties(
       power_source, battery_state, is_calculating_battery_time, time_to_full,
       time_to_empty);
-  FakePowerManagerClient::Get()->UpdatePowerProperties(props);
+  chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
 }
 
 void VerifyChargeStatusResult(

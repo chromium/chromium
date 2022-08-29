@@ -101,8 +101,9 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
 
  protected:
   FakeMigrator* fake_migrator() { return fake_migrator_; }
-  FakePowerManagerClient* power_manager_client() {
-    return static_cast<FakePowerManagerClient*>(PowerManagerClient::Get());
+  chromeos::FakePowerManagerClient* power_manager_client() {
+    return static_cast<chromeos::FakePowerManagerClient*>(
+        chromeos::PowerManagerClient::Get());
   }
   void OnAttemptRestartCalled() { is_attempt_restart_called_ = true; }
 

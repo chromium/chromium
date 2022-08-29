@@ -121,9 +121,9 @@ class AssistantManagerServiceImplTest : public testing::Test {
   ~AssistantManagerServiceImplTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
-    FakePowerManagerClient::Get()->SetTabletMode(
-        PowerManagerClient::TabletMode::OFF, base::TimeTicks());
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::FakePowerManagerClient::Get()->SetTabletMode(
+        chromeos::PowerManagerClient::TabletMode::OFF, base::TimeTicks());
 
     mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor;
     delegate_.RequestBatteryMonitor(
@@ -139,7 +139,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
     service_context_ = std::make_unique<FakeServiceContext>();
     service_context_
         ->set_main_task_runner(task_environment().GetMainThreadTaskRunner())
-        .set_power_manager_client(PowerManagerClient::Get())
+        .set_power_manager_client(chromeos::PowerManagerClient::Get())
         .set_assistant_state(&assistant_state_)
         .set_cras_audio_handler(&cras_audio_handler_.Get())
         .set_assistant_alarm_timer_controller(alarm_timer_controller_.get());
@@ -153,7 +153,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   void TearDown() override {
     assistant_manager_service_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   void CreateAssistantManagerServiceImpl(

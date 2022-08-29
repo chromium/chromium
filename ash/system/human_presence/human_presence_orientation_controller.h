@@ -24,7 +24,7 @@ namespace ash {
 class ASH_EXPORT HumanPresenceOrientationController
     : public TabletModeObserver,
       public display::DisplayObserver,
-      public PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:

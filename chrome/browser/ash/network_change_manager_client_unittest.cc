@@ -119,7 +119,7 @@ TEST(NetworkChangeManagerClientTest,
 
   // Initialize DBus clients and clear services so NetworkHandler thinks we're
   // offline.
-  PowerManagerClient::InitializeFake();
+  chromeos::PowerManagerClient::InitializeFake();
   NetworkHandlerTestHelper network_handler_test_helper;
   network_handler_test_helper.service_test()->ClearServices();
 
@@ -134,7 +134,7 @@ TEST(NetworkChangeManagerClientTest,
             net::NetworkChangeNotifier::GetConnectionType());
 
   client.reset();
-  PowerManagerClient::Shutdown();
+  chromeos::PowerManagerClient::Shutdown();
 }
 
 class NetworkChangeManagerClientUpdateTest : public testing::Test {
@@ -150,7 +150,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
   void SetUp() override {
     network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     proxy_ = std::make_unique<NetworkChangeManagerClient>(
         static_cast<net::NetworkChangeNotifierPosix*>(
             network_change_notifier_.get()));
@@ -158,7 +158,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
   void TearDown() override {
     proxy_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     network_change_notifier_.reset();
   }
 

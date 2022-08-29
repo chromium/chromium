@@ -72,7 +72,7 @@ struct SystemEventTimes;
 // applying an update is stored in /var/run/chrome/update_reboot_needed_uptime,
 // making it persist across browser restarts and crashes. Placing the file under
 // /var/run ensures that it gets cleared automatically on every boot.
-class AutomaticRebootManager : public PowerManagerClient::Observer,
+class AutomaticRebootManager : public chromeos::PowerManagerClient::Observer,
                                public UpdateEngineClient::Observer,
                                public ui::UserActivityObserver,
                                public session_manager::SessionManagerObserver {

@@ -35,7 +35,7 @@ using TimeOfDay = base::TimeDelta;
 // IdleEventNotifier listens to signals and notifies its observers when
 // ScreenDimImminent is received from PowerManagerClient. This generates an idle
 // event.
-class IdleEventNotifier : public PowerManagerClient::Observer,
+class IdleEventNotifier : public chromeos::PowerManagerClient::Observer,
                           public ui::UserActivityObserver,
                           public viz::mojom::VideoDetectorObserver {
  public:
@@ -89,7 +89,7 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
   };
 
   IdleEventNotifier(
-      PowerManagerClient* power_client,
+      chromeos::PowerManagerClient* power_client,
       ui::UserActivityDetector* detector,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver);
 

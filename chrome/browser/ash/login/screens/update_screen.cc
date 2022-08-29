@@ -153,9 +153,9 @@ void UpdateScreen::ShowImpl() {
                             weak_factory_.GetWeakPtr()));
   }
   if (!power_manager_subscription_.IsObserving()) {
-    power_manager_subscription_.Observe(PowerManagerClient::Get());
+    power_manager_subscription_.Observe(chromeos::PowerManagerClient::Get());
   }
-  PowerManagerClient::Get()->RequestStatusUpdate();
+  chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (view_) {
     view_->SetCancelUpdateShortcutEnabled(true);
@@ -459,7 +459,7 @@ void UpdateScreen::UpdateBatteryWarningVisibility() {
   if (!view_)
     return;
   const absl::optional<power_manager::PowerSupplyProperties>& proto =
-      PowerManagerClient::Get()->GetLastStatus();
+      chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value())
     return;
   view_->ShowLowBatteryWarningMessage(

@@ -9,12 +9,14 @@
 
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
 #include "base/memory/scoped_refptr.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace chromeos {
+class PowerManagerClient;
+}
 
 namespace ash {
 
@@ -51,7 +53,7 @@ class ServiceContext {
 
   virtual scoped_refptr<base::SequencedTaskRunner> main_task_runner() = 0;
 
-  virtual PowerManagerClient* power_manager_client() = 0;
+  virtual chromeos::PowerManagerClient* power_manager_client() = 0;
 
   // Returns the Gaia ID of the primary account (which is used by the
   // Assistant).

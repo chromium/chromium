@@ -107,7 +107,8 @@ class FeatureStatusProviderImplTest : public testing::Test {
     fake_device_sync_client_.NotifyReady();
 
     session_manager_ = std::make_unique<session_manager::SessionManager>();
-    fake_power_manager_client_ = std::make_unique<FakePowerManagerClient>();
+    fake_power_manager_client_ =
+        std::make_unique<chromeos::FakePowerManagerClient>();
     provider_ = std::make_unique<FeatureStatusProviderImpl>(
         &fake_device_sync_client_, &fake_multidevice_setup_client_,
         &fake_connection_manager_, session_manager_.get(),
@@ -217,7 +218,7 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   FakeObserver fake_observer_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  std::unique_ptr<FakePowerManagerClient> fake_power_manager_client_;
+  std::unique_ptr<chromeos::FakePowerManagerClient> fake_power_manager_client_;
   std::unique_ptr<FeatureStatusProvider> provider_;
 };
 

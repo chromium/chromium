@@ -98,7 +98,7 @@ void SessionTerminationManager::ProcessCryptohomeLoginStatusReply(
 }
 
 void SessionTerminationManager::Reboot() {
-  PowerManagerClient::Get()->RequestRestart(
+  chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "Reboot forced by policy");
 }
 

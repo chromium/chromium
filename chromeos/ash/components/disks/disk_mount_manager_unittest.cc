@@ -497,7 +497,7 @@ class DiskMountManagerTest : public testing::Test {
     CrosDisksClient::InitializeFake();
     fake_cros_disks_client_ =
         static_cast<FakeCrosDisksClient*>(CrosDisksClient::Get());
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     DiskMountManager::Initialize();
 
@@ -512,7 +512,7 @@ class DiskMountManagerTest : public testing::Test {
   void TearDown() override {
     DiskMountManager::GetInstance()->RemoveObserver(observer_.get());
     DiskMountManager::Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     CrosDisksClient::Shutdown();
   }
 

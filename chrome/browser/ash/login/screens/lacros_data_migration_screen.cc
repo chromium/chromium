@@ -75,8 +75,8 @@ void LacrosDataMigrationScreen::ShowImpl() {
     return;
 
   if (!power_manager_subscription_.IsObserving())
-    power_manager_subscription_.Observe(PowerManagerClient::Get());
-  PowerManagerClient::Get()->RequestStatusUpdate();
+    power_manager_subscription_.Observe(chromeos::PowerManagerClient::Get());
+  chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 
   if (!migrator_) {
     const std::string user_id_hash =
@@ -203,7 +203,7 @@ void LacrosDataMigrationScreen::PowerChanged(
 
 void LacrosDataMigrationScreen::UpdateLowBatteryStatus() {
   const absl::optional<power_manager::PowerSupplyProperties>& proto =
-      PowerManagerClient::Get()->GetLastStatus();
+      chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value())
     return;
   view_->SetLowBatteryStatus(

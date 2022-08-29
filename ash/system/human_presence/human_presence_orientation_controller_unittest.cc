@@ -56,7 +56,7 @@ class HumanPresenceOrientationControllerTest : public AshTestBase {
                                           {ash::features::kQuickDim});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
 
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     AshTestBase::SetUp();
 
     orientation_controller_ =

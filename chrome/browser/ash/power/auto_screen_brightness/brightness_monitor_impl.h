@@ -24,7 +24,7 @@ namespace auto_screen_brightness {
 // Real implementation of BrightnessMonitor.
 // It monitors user brightness changes and records the stabilized brightness.
 class BrightnessMonitorImpl : public BrightnessMonitor,
-                              public PowerManagerClient::Observer {
+                              public chromeos::PowerManagerClient::Observer {
  public:
   // Once a user brightness adjustment is received, we wait for
   // |brightness_sample_delay_| to record the final brightness. It can be

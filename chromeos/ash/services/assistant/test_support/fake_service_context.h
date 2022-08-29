@@ -29,7 +29,7 @@ class FakeServiceContext : public ServiceContext {
       AssistantAlarmTimerController*);
   FakeServiceContext& set_main_task_runner(
       scoped_refptr<base::SingleThreadTaskRunner>);
-  FakeServiceContext& set_power_manager_client(PowerManagerClient*);
+  FakeServiceContext& set_power_manager_client(chromeos::PowerManagerClient*);
   FakeServiceContext& set_primary_account_gaia_id(std::string);
   FakeServiceContext& set_assistant_state(AssistantStateBase*);
   FakeServiceContext& set_assistant_notification_controller(
@@ -46,13 +46,13 @@ class FakeServiceContext : public ServiceContext {
   CrasAudioHandler* cras_audio_handler() override;
   DeviceActions* device_actions() override;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() override;
-  PowerManagerClient* power_manager_client() override;
+  chromeos::PowerManagerClient* power_manager_client() override;
   std::string primary_account_gaia_id() override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   AssistantStateBase* assistant_state_ = nullptr;
-  PowerManagerClient* power_manager_client_ = nullptr;
+  chromeos::PowerManagerClient* power_manager_client_ = nullptr;
   std::string gaia_id_ = kGaiaId;
   AssistantAlarmTimerController* assistant_alarm_timer_controller_ = nullptr;
   AssistantNotificationController* assistant_notification_controller_ = nullptr;

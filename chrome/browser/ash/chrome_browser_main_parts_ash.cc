@@ -336,7 +336,8 @@ class DBusServices {
  public:
   explicit DBusServices(
       std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor) {
-    PowerPolicyController::Initialize(PowerManagerClient::Get());
+    chromeos::PowerPolicyController::Initialize(
+        chromeos::PowerManagerClient::Get());
 
     dbus::Bus* system_bus = DBusThreadManager::Get()->IsUsingFakes()
                                 ? nullptr
@@ -556,7 +557,7 @@ class DBusServices {
     mojo_connection_service_.reset();
     ProcessDataCollector::Shutdown();
     PowerDataCollector::Shutdown();
-    PowerPolicyController::Shutdown();
+    chromeos::PowerPolicyController::Shutdown();
     device::BluetoothAdapterFactory::Shutdown();
   }
 
@@ -1219,7 +1220,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         std::make_unique<FreezerCgroupProcessManager>());
 
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
-        PowerManagerClient::Get(), g_browser_process->local_state());
+        chromeos::PowerManagerClient::Get(), g_browser_process->local_state());
 
     g_browser_process->platform_part()->InitializeAutomaticRebootManager();
     user_removal_manager::RemoveUsersIfNeeded();

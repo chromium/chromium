@@ -39,7 +39,7 @@ class LoginLogoutTestHelper {
   ~LoginLogoutTestHelper() = default;
 
   void Init() {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     session_termination_manager_ =
         std::make_unique<SessionTerminationManager>();
     auto user_manager = std::make_unique<FakeChromeUserManager>();
@@ -48,7 +48,7 @@ class LoginLogoutTestHelper {
         std::move(user_manager));
   }
 
-  void Shutdown() { PowerManagerClient::Shutdown(); }
+  void Shutdown() { chromeos::PowerManagerClient::Shutdown(); }
 
   std::unique_ptr<TestingProfile> CreateProfile(user_manager::User* user) {
     TestingProfile::Builder profile_builder;

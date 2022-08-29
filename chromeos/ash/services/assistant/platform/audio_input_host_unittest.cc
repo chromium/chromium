@@ -66,7 +66,9 @@ class ScopedCrasAudioHandler {
 
 class AssistantAudioInputHostTest : public testing::Test {
  public:
-  AssistantAudioInputHostTest() { PowerManagerClient::InitializeFake(); }
+  AssistantAudioInputHostTest() {
+    chromeos::PowerManagerClient::InitializeFake();
+  }
 
   AssistantAudioInputHostTest(const AssistantAudioInputHostTest&) = delete;
   AssistantAudioInputHostTest& operator=(const AssistantAudioInputHostTest&) =
@@ -97,7 +99,7 @@ class AssistantAudioInputHostTest : public testing::Test {
   void CreateNewAudioInputHost() {
     audio_input_host_ = std::make_unique<AudioInputHostImpl>(
         audio_input_controller_.BindNewPipeAndPassRemote(),
-        cras_audio_handler_.Get(), FakePowerManagerClient::Get(),
+        cras_audio_handler_.Get(), chromeos::FakePowerManagerClient::Get(),
         "default-locale");
 
     FlushPendingMojomCalls();
@@ -106,8 +108,8 @@ class AssistantAudioInputHostTest : public testing::Test {
   void DestroyAudioInputHost() { audio_input_host_ = nullptr; }
 
   void ReportLidEvent(LidState state) {
-    FakePowerManagerClient::Get()->SetLidState(state,
-                                               base::TimeTicks::UnixEpoch());
+    chromeos::FakePowerManagerClient::Get()->SetLidState(
+        state, base::TimeTicks::UnixEpoch());
     FlushPendingMojomCalls();
   }
 

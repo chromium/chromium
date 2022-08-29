@@ -61,7 +61,7 @@ namespace ash {
 // delayed until the Internet connectivity is established.
 class UpdateScreen : public BaseScreen,
                      public VersionUpdater::Delegate,
-                     public PowerManagerClient::Observer {
+                     public chromeos::PowerManagerClient::Observer {
  public:
   using TView = UpdateView;
   using Result = VersionUpdater::Result;
@@ -238,7 +238,8 @@ class UpdateScreen : public BaseScreen,
   base::CallbackListSubscription accessibility_subscription_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
-  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
       power_manager_subscription_{this};
 
   base::WeakPtrFactory<UpdateScreen> weak_factory_{this};

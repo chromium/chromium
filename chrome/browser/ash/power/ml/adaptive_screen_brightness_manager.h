@@ -40,7 +40,7 @@ class RecentEventsCounter;
 // periodically and also when the screen brightness changes.
 class AdaptiveScreenBrightnessManager
     : public ui::UserActivityObserver,
-      public PowerManagerClient::Observer,
+      public chromeos::PowerManagerClient::Observer,
       public viz::mojom::VideoDetectorObserver {
  public:
   // Duration of inactivity that marks the end of an activity.

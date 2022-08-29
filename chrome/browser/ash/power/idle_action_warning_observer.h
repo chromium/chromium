@@ -14,7 +14,7 @@ class IdleActionWarningDialogView;
 
 // Listens for notifications that the idle action is imminent and shows a
 // warning dialog to the user.
-class IdleActionWarningObserver : public PowerManagerClient::Observer,
+class IdleActionWarningObserver : public chromeos::PowerManagerClient::Observer,
                                   public views::WidgetObserver {
  public:
   IdleActionWarningObserver();

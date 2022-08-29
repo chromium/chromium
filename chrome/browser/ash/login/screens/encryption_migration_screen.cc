@@ -287,7 +287,7 @@ void EncryptionMigrationScreen::SetupInitialView() {
     StartMigration();
     return;
   }
-  power_manager_observation_.Observe(PowerManagerClient::Get());
+  power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
   CheckAvailableStorage();
 }
 
@@ -369,14 +369,14 @@ void EncryptionMigrationScreen::HandleSkipMigration() {
 
 void EncryptionMigrationScreen::HandleRequestRestartOnLowStorage() {
   RecordUserChoice(UserChoice::USER_CHOICE_RESTART_ON_LOW_STORAGE);
-  PowerManagerClient::Get()->RequestRestart(
+  chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER,
       "login encryption migration low storage");
 }
 
 void EncryptionMigrationScreen::HandleRequestRestartOnFailure() {
   RecordUserChoice(UserChoice::USER_CHOICE_RESTART_ON_FAILURE);
-  PowerManagerClient::Get()->RequestRestart(
+  chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER,
       "login encryption migration failure");
 }
@@ -404,16 +404,16 @@ void EncryptionMigrationScreen::UpdateUIState(
   // When this handler is about to show the READY screen, we should get the
   // latest battery status and show it on the screen.
   if (state == EncryptionMigrationScreenView::READY)
-    PowerManagerClient::Get()->RequestStatusUpdate();
+    chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 
   // We should request wake lock and not shut down on lid close during
   // migration.
   if (state == EncryptionMigrationScreenView::MIGRATING) {
     GetWakeLock()->RequestWakeLock();
-    PowerPolicyController::Get()->SetEncryptionMigrationActive(true);
+    chromeos::PowerPolicyController::Get()->SetEncryptionMigrationActive(true);
   } else {
     GetWakeLock()->CancelWakeLock();
-    PowerPolicyController::Get()->SetEncryptionMigrationActive(false);
+    chromeos::PowerPolicyController::Get()->SetEncryptionMigrationActive(false);
   }
 
   // Record which screen is visible to the user.
@@ -471,7 +471,7 @@ void EncryptionMigrationScreen::WaitBatteryAndMigrate() {
   UpdateUIState(EncryptionMigrationScreenView::READY);
 
   should_migrate_on_enough_battery_ = true;
-  PowerManagerClient::Get()->RequestStatusUpdate();
+  chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 }
 
 void EncryptionMigrationScreen::StartMigration() {
@@ -623,7 +623,7 @@ void EncryptionMigrationScreen::DircryptoMigrationProgress(
                                         *current_battery_percent_)));
       }
       // Restart immediately after successful migration.
-      PowerManagerClient::Get()->RequestRestart(
+      chromeos::PowerManagerClient::Get()->RequestRestart(
           power_manager::REQUEST_RESTART_OTHER,
           "login encryption migration success");
       break;

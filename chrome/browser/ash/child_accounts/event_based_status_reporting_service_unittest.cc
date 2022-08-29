@@ -97,7 +97,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
@@ -136,7 +136,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     arc_test_.TearDown();
     profile_.reset();
     SystemClockClient::Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   void SetConnectionType(network::mojom::ConnectionType type) {
@@ -147,8 +147,8 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
   arc::mojom::AppHost* app_host() { return arc_test_.arc_app_list_prefs(); }
   Profile* profile() { return profile_.get(); }
-  FakePowerManagerClient* power_manager_client() {
-    return FakePowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* power_manager_client() {
+    return chromeos::FakePowerManagerClient::Get();
   }
 
   TestingConsumerStatusReportingService*

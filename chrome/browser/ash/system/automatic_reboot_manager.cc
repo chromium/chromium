@@ -161,7 +161,7 @@ AutomaticRebootManager::AutomaticRebootManager(
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &AutomaticRebootManager::OnAppTerminating, base::Unretained(this)));
 
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
   UpdateEngineClient::Get()->AddObserver(this);
 
   // If no user is logged in, a reboot may be performed whenever the user is
@@ -188,7 +188,7 @@ AutomaticRebootManager::~AutomaticRebootManager() {
   for (auto& observer : observers_)
     observer.WillDestroyAutomaticRebootManager();
 
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   UpdateEngineClient::Get()->RemoveObserver(this);
   if (ui::UserActivityDetector::Get())
     ui::UserActivityDetector::Get()->RemoveObserver(this);
@@ -410,7 +410,7 @@ void AutomaticRebootManager::Reboot() {
   grace_start_timer_.reset();
   grace_end_timer_.reset();
   VLOG(1) << "Rebooting immediately.";
-  PowerManagerClient::Get()->RequestRestart(
+  chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "automatic reboot manager");
 }
 

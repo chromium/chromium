@@ -14,8 +14,8 @@ namespace ash {
 class SessionTerminationManagerTest : public testing::Test {
  public:
   SessionTerminationManagerTest() {
-    PowerManagerClient::InitializeFake();
-    power_client_ = FakePowerManagerClient::Get();
+    chromeos::PowerManagerClient::InitializeFake();
+    power_client_ = chromeos::FakePowerManagerClient::Get();
     CryptohomeMiscClient::InitializeFake();
     SessionManagerClient::InitializeFake();
   }
@@ -26,12 +26,12 @@ class SessionTerminationManagerTest : public testing::Test {
 
   ~SessionTerminationManagerTest() override {
     CryptohomeMiscClient::Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     SessionManagerClient::Shutdown();
   }
 
  protected:
-  FakePowerManagerClient* power_client_;
+  chromeos::FakePowerManagerClient* power_client_;
   SessionTerminationManager session_termination_manager_;
 };
 

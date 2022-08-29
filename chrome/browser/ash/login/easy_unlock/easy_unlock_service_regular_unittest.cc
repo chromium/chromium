@@ -195,7 +195,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
     display::Screen::SetScreenInstance(&test_screen_);
     display::SetInternalDisplayIds({test_screen_.GetPrimaryDisplay().id()});
 
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     // Note: this is necessary because objects owned by EasyUnlockService
     // depend on the BluetoothAdapter -- fetching the real one causes tests
@@ -241,7 +241,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
   void TearDown() override {
     SetScreenLockState(false /* is_locked */);
     easy_unlock_service_regular_->Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     display::Screen::SetScreenInstance(nullptr);
   }

@@ -28,23 +28,23 @@ DarkResumeController::DarkResumeController(
     : wake_lock_provider_(std::move(wake_lock_provider)),
       dark_resume_hard_timeout_(kDefaultDarkResumeHardTimeout) {
   DCHECK(!dark_resume_hard_timeout_.is_zero());
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 DarkResumeController::~DarkResumeController() {
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 void DarkResumeController::PowerManagerInitialized() {
   dark_resume_hard_timeout_ =
-      PowerManagerClient::Get()->GetDarkSuspendDelayTimeout();
+      chromeos::PowerManagerClient::Get()->GetDarkSuspendDelayTimeout();
 }
 
 void DarkResumeController::DarkSuspendImminent() {
   DVLOG(1) << __func__;
   block_suspend_token_ = base::UnguessableToken::Create();
-  PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
-                                          "DarkResumeController");
+  chromeos::PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
+                                                    "DarkResumeController");
   // Schedule task that will check for any wake locks acquired in dark resume.
   DCHECK(!wake_lock_check_timer_.IsRunning());
   wake_lock_check_timer_.Start(
@@ -72,7 +72,7 @@ void DarkResumeController::OnWakeLockDeactivated(
   DVLOG(1) << __func__;
   // The observer is only registered once dark resume starts.
   DCHECK(block_suspend_token_);
-  PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+  chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
   block_suspend_token_ = {};
   ClearDarkResumeState();
 }
@@ -120,7 +120,7 @@ void DarkResumeController::HandleDarkResumeHardTimeout() {
   hard_timeout_timer_.Stop();
   // Enough is enough. Tell power daemon it's okay to suspend.
   DCHECK(block_suspend_token_);
-  PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+  chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
   block_suspend_token_ = {};
   ClearDarkResumeState();
 }

@@ -236,7 +236,7 @@ const base::TimeDelta DeviceScheduledRebootHandler::GetExternalDelay() const {
 
 void DeviceScheduledRebootHandler::RebootDevice(
     const std::string& reboot_description) const {
-  ash::PowerManagerClient::Get()->RequestRestart(
+  chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, reboot_description);
 }
 

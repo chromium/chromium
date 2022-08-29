@@ -43,7 +43,7 @@ class DarkResumeControllerTest : public testing::Test {
         device::mojom::WakeLockReason::kOther, kWakeLockDescription,
         wake_lock_.BindNewPipeAndPassReceiver());
 
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     mojo::PendingRemote<device::mojom::WakeLockProvider> provider_remote;
     wake_lock_provider_.BindReceiver(
@@ -54,7 +54,7 @@ class DarkResumeControllerTest : public testing::Test {
 
   void TearDown() override {
     dark_resume_controller_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:
@@ -74,8 +74,8 @@ class DarkResumeControllerTest : public testing::Test {
     return result_count;
   }
 
-  FakePowerManagerClient* fake_power_manager_client() {
-    return FakePowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* fake_power_manager_client() {
+    return chromeos::FakePowerManagerClient::Get();
   }
 
   base::test::TaskEnvironment task_environment_;

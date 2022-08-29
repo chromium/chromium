@@ -100,16 +100,19 @@ EasyUnlockService* EasyUnlockService::GetForUser(
   return EasyUnlockService::Get(profile);
 }
 
-class EasyUnlockService::PowerMonitor : public PowerManagerClient::Observer {
+class EasyUnlockService::PowerMonitor
+    : public chromeos::PowerManagerClient::Observer {
  public:
   explicit PowerMonitor(EasyUnlockService* service) : service_(service) {
-    PowerManagerClient::Get()->AddObserver(this);
+    chromeos::PowerManagerClient::Get()->AddObserver(this);
   }
 
   PowerMonitor(const PowerMonitor&) = delete;
   PowerMonitor& operator=(const PowerMonitor&) = delete;
 
-  ~PowerMonitor() override { PowerManagerClient::Get()->RemoveObserver(this); }
+  ~PowerMonitor() override {
+    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  }
 
  private:
   // PowerManagerClient::Observer:

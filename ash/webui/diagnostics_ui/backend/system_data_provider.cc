@@ -257,11 +257,11 @@ SystemDataProvider::SystemDataProvider(TelemetryLog* telemetry_log_ptr)
   battery_health_timer_ = std::make_unique<base::RepeatingTimer>();
   cpu_usage_timer_ = std::make_unique<base::RepeatingTimer>();
   memory_usage_timer_ = std::make_unique<base::RepeatingTimer>();
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 SystemDataProvider::~SystemDataProvider() {
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 void SystemDataProvider::GetSystemInfo(GetSystemInfoCallback callback) {
@@ -453,7 +453,7 @@ void SystemDataProvider::OnBatteryInfoProbeResponse(
 void SystemDataProvider::UpdateBatteryChargeStatus() {
   // Fetch updated data from PowerManagerClient
   absl::optional<PowerSupplyProperties> properties =
-      PowerManagerClient::Get()->GetLastStatus();
+      chromeos::PowerManagerClient::Get()->GetLastStatus();
 
   // Fetch updated data from CrosHealthd
   BindCrosHealthdProbeServiceIfNeccessary();

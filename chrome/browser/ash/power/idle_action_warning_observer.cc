@@ -29,24 +29,24 @@ void ReportMetricsForDemoMode(IdleLogoutWarningEvent event) {
     UMA_HISTOGRAM_ENUMERATION("DemoMode.IdleLogoutWarningEvent", event);
 }
 
-PowerPolicyController::Action GetIdleAction(bool on_battery_power) {
+chromeos::PowerPolicyController::Action GetIdleAction(bool on_battery_power) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   int action;
   if (on_battery_power)
     action = prefs->GetInteger(ash::prefs::kPowerBatteryIdleAction);
   else
     action = prefs->GetInteger(ash::prefs::kPowerAcIdleAction);
-  return static_cast<PowerPolicyController::Action>(action);
+  return static_cast<chromeos::PowerPolicyController::Action>(action);
 }
 
 }  // namespace
 
 IdleActionWarningObserver::IdleActionWarningObserver() {
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 IdleActionWarningObserver::~IdleActionWarningObserver() {
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   if (warning_dialog_) {
     warning_dialog_->GetWidget()->RemoveObserver(this);
     warning_dialog_->CloseDialog();
@@ -57,9 +57,10 @@ IdleActionWarningObserver::~IdleActionWarningObserver() {
 void IdleActionWarningObserver::IdleActionImminent(
     base::TimeDelta time_until_idle_action) {
   // Only display warning if idle action is to shut down or logout.
-  PowerPolicyController::Action idle_action = GetIdleAction(on_battery_power_);
-  if (idle_action != PowerPolicyController::ACTION_STOP_SESSION &&
-      idle_action != PowerPolicyController::ACTION_SHUT_DOWN) {
+  chromeos::PowerPolicyController::Action idle_action =
+      GetIdleAction(on_battery_power_);
+  if (idle_action != chromeos::PowerPolicyController::ACTION_STOP_SESSION &&
+      idle_action != chromeos::PowerPolicyController::ACTION_SHUT_DOWN) {
     HideDialogIfPresent();
     return;
   }

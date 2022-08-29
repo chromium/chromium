@@ -45,7 +45,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     mojo::PendingRemote<viz::mojom::VideoDetectorObserver> observer;
     auto periodic_timer = std::make_unique<base::RepeatingTimer>();
@@ -58,7 +58,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     smart_charging_manager_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -82,7 +82,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
     power_manager::PowerSupplyProperties proto;
     proto.set_external_power(power);
     proto.set_battery_percent(battery_percent);
-    FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
+    chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
   }
 
   void ReportBrightnessChangeEvent(const double level) {
@@ -101,14 +101,15 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
         power_manager::SuspendImminent::LID_CLOSED);
   }
 
-  void ReportLidEvent(const PowerManagerClient::LidState state) {
-    FakePowerManagerClient::Get()->SetLidState(state,
-                                               base::TimeTicks::UnixEpoch());
+  void ReportLidEvent(const chromeos::PowerManagerClient::LidState state) {
+    chromeos::FakePowerManagerClient::Get()->SetLidState(
+        state, base::TimeTicks::UnixEpoch());
   }
 
-  void ReportTabletModeEvent(const PowerManagerClient::TabletMode mode) {
-    FakePowerManagerClient::Get()->SetTabletMode(mode,
-                                                 base::TimeTicks::UnixEpoch());
+  void ReportTabletModeEvent(
+      const chromeos::PowerManagerClient::TabletMode mode) {
+    chromeos::FakePowerManagerClient::Get()->SetTabletMode(
+        mode, base::TimeTicks::UnixEpoch());
   }
 
   void ReportVideoStart() { smart_charging_manager_->OnVideoActivityStarted(); }
@@ -325,8 +326,8 @@ TEST_F(SmartChargingManagerTest, VideoDuration) {
 }
 
 TEST_F(SmartChargingManagerTest, DeviceMode) {
-  ReportLidEvent(PowerManagerClient::LidState::OPEN);
-  ReportTabletModeEvent(PowerManagerClient::TabletMode::UNSUPPORTED);
+  ReportLidEvent(chromeos::PowerManagerClient::LidState::OPEN);
+  ReportTabletModeEvent(chromeos::PowerManagerClient::TabletMode::UNSUPPORTED);
 
   ReportPowerChangeEvent(power_manager::PowerSupplyProperties::AC, 15.0f);
   EXPECT_EQ(GetUserChargingEvent().features().device_mode(),

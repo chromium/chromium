@@ -35,7 +35,7 @@ class FeatureStatusProviderImpl
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       secure_channel::ConnectionManager* connection_manager,
       session_manager::SessionManager* session_manager,
-      PowerManagerClient* power_manager_client);
+      chromeos::PowerManagerClient* power_manager_client);
   ~FeatureStatusProviderImpl() override;
 
  private:
@@ -82,7 +82,7 @@ class FeatureStatusProviderImpl
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   secure_channel::ConnectionManager* connection_manager_;
   session_manager::SessionManager* session_manager_;
-  PowerManagerClient* power_manager_client_;
+  chromeos::PowerManagerClient* power_manager_client_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   absl::optional<FeatureStatus> status_;

@@ -24,13 +24,13 @@ void OnRefreshCompleted(bool success) {}
 SuspendUnmountManager::SuspendUnmountManager(
     DiskMountManager* disk_mount_manager)
     : disk_mount_manager_(disk_mount_manager) {
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 SuspendUnmountManager::~SuspendUnmountManager() {
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   if (block_suspend_token_)
-    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+    chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
 }
 
 void SuspendUnmountManager::SuspendImminent(
@@ -50,8 +50,8 @@ void SuspendUnmountManager::SuspendImminent(
     if (block_suspend_token_.is_empty()) {
       block_suspend_token_ = base::UnguessableToken::Create();
       block_suspend_time_ = base::TimeTicks::Now();
-      PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
-                                              "SuspendUnmountManager");
+      chromeos::PowerManagerClient::Get()->BlockSuspend(
+          block_suspend_token_, "SuspendUnmountManager");
     }
     disk_mount_manager_->UnmountPath(
         mount_path, base::BindOnce(&SuspendUnmountManager::OnUnmountComplete,
@@ -75,7 +75,7 @@ void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
   if (unmounting_paths_.erase(mount_path) != 1)
     return;
   if (unmounting_paths_.empty() && block_suspend_token_) {
-    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+    chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
     block_suspend_token_ = {};
 
     auto block_time = base::TimeTicks::Now() - block_suspend_time_;

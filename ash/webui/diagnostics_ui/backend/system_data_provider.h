@@ -28,7 +28,7 @@ namespace diagnostics {
 class TelemetryLog;
 
 class SystemDataProvider : public mojom::SystemDataProvider,
-                           public PowerManagerClient::Observer {
+                           public chromeos::PowerManagerClient::Observer {
  public:
   SystemDataProvider();
   explicit SystemDataProvider(TelemetryLog* telemetry_log_ptr);

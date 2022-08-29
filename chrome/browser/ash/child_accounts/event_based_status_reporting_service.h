@@ -33,7 +33,7 @@ class EventBasedStatusReportingService
       public ArcAppListPrefs::Observer,
       public session_manager::SessionManagerObserver,
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public PowerManagerClient::Observer,
+      public chromeos::PowerManagerClient::Observer,
       public ScreenTimeController::Observer {
  public:
   // These values are persisted to logs. Entries should not be renumbered and

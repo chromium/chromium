@@ -27,7 +27,7 @@ namespace ash {
 // ash (views-based lockscreen).
 class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public ScreenLocker::Delegate,
-                          public PowerManagerClient::Observer,
+                          public chromeos::PowerManagerClient::Observer,
                           public lock_screen_apps::FocusCyclerDelegate {
  public:
   explicit ViewsScreenLocker(ScreenLocker* screen_locker);

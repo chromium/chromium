@@ -88,7 +88,7 @@ void PowerMetricsReporter::RegisterLocalStatePrefs(
 }
 
 PowerMetricsReporter::PowerMetricsReporter(
-    PowerManagerClient* power_manager_client,
+    chromeos::PowerManagerClient* power_manager_client,
     PrefService* local_state_pref_service)
     : power_manager_client_(power_manager_client),
       pref_service_(local_state_pref_service),

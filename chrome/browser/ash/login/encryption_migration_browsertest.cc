@@ -136,7 +136,9 @@ class EncryptionMigrationTestBase
         FakeUserDataAuthClient::Get()->get_id_for_disk_migrated_to_dircrypto());
     EXPECT_FALSE(FakeUserDataAuthClient::Get()->minimal_migration());
 
-    EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+    EXPECT_EQ(
+        0,
+        chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 
     // Simulate successful migration - restart should be requested immediately
     // after success is reported.
@@ -144,7 +146,9 @@ class EncryptionMigrationTestBase
         ::user_data_auth::DircryptoMigrationStatus::
             DIRCRYPTO_MIGRATION_INITIALIZING,
         0 /*current*/, 5 /*total*/);
-    EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+    EXPECT_EQ(
+        0,
+        chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 
     test::OobeJS().ExpectAttributeEQ("indeterminate", kMigrationProgress, true);
 
@@ -152,7 +156,9 @@ class EncryptionMigrationTestBase
         ::user_data_auth::DircryptoMigrationStatus::
             DIRCRYPTO_MIGRATION_IN_PROGRESS,
         3 /*current*/, 5 /*total*/);
-    EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+    EXPECT_EQ(
+        0,
+        chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 
     test::OobeJS().ExpectAttributeEQ("indeterminate", kMigrationProgress,
                                      false);
@@ -163,16 +169,19 @@ class EncryptionMigrationTestBase
         ::user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
         5 /*current*/, 5 /*total*/);
 
-    EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+    EXPECT_EQ(
+        1,
+        chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   }
 
   // Updates the battery percent info reported by the power manager client.
   void SetBatteryPercent(int battery_percent) {
     absl::optional<power_manager::PowerSupplyProperties> properties =
-        FakePowerManagerClient::Get()->GetLastStatus();
+        chromeos::FakePowerManagerClient::Get()->GetLastStatus();
     ASSERT_TRUE(properties.has_value());
     properties->set_battery_percent(battery_percent);
-    FakePowerManagerClient::Get()->UpdatePowerProperties(properties.value());
+    chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(
+        properties.value());
   }
 
   void set_free_space(int64_t free_space) { free_space_ = free_space; }
@@ -361,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
 
   test::TapOnPathAndWaitForOobeToBeDestroyed(kInsufficientSpaceRestartButton);
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
@@ -387,7 +397,8 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
 
   test::TapOnPathAndWaitForOobeToBeDestroyed(kInsufficientSpaceRestartButton);
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
@@ -412,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
       ::user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_FAILED,
       5 /*current*/, 5 /*total*/);
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 
   test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
 
@@ -423,7 +435,8 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
   test::OobeJS().ExpectVisiblePath(kRestartButton);
   test::TapOnPathAndWaitForOobeToBeDestroyed(kRestartButton);
 
-  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, LowBattery) {

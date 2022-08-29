@@ -108,7 +108,7 @@ void RendererFreezer::OnCheckCanFreezeRenderersComplete(bool can_freeze) {
   if (!can_freeze)
     return;
 
-  PowerManagerClient::Get()->SetRenderProcessManagerDelegate(
+  chromeos::PowerManagerClient::Get()->SetRenderProcessManagerDelegate(
       weak_factory_.GetWeakPtr());
 
   registrar_.Add(

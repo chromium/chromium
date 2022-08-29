@@ -40,7 +40,7 @@ void UsageTimeStateNotifier::AddObserver(
   DCHECK(observer);
   if (observers_.empty()) {
     session_manager::SessionManager::Get()->AddObserver(this);
-    PowerManagerClient::Get()->AddObserver(this);
+    chromeos::PowerManagerClient::Get()->AddObserver(this);
     last_state_ = GetCurrentState();
   }
   observers_.AddObserver(observer);
@@ -52,7 +52,7 @@ void UsageTimeStateNotifier::RemoveObserver(
   observers_.RemoveObserver(observer);
   if (observers_.empty()) {
     session_manager::SessionManager::Get()->RemoveObserver(this);
-    PowerManagerClient::Get()->RemoveObserver(this);
+    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   }
 }
 

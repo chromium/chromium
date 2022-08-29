@@ -344,7 +344,7 @@ void AutomaticRebootManagerBasicTest::SetUp() {
   AutomaticRebootManager::RegisterPrefs(local_state_.registry());
 
   update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
-  PowerManagerClient::InitializeFake();
+  chromeos::PowerManagerClient::InitializeFake();
 
   EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
      .WillRepeatedly(ReturnPointee(&is_user_logged_in_));
@@ -367,7 +367,7 @@ void AutomaticRebootManagerBasicTest::TearDown() {
     task_runner_->RunUntilIdle();
   }
 
-  PowerManagerClient::Shutdown();
+  chromeos::PowerManagerClient::Shutdown();
   UpdateEngineClient::Shutdown();
   TestingBrowserProcess::GetGlobal()->SetLocalState(NULL);
 }
@@ -386,8 +386,9 @@ void AutomaticRebootManagerBasicTest::SetRebootAfterUpdate(
       prefs::kRebootAfterUpdate,
       std::make_unique<base::Value>(reboot_after_update));
   task_runner_->RunUntilIdle();
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      expect_reboot ? 1 : 0,
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 void AutomaticRebootManagerBasicTest::SetUptimeLimit(
@@ -402,8 +403,9 @@ void AutomaticRebootManagerBasicTest::SetUptimeLimit(
         std::make_unique<base::Value>(static_cast<int>(limit.InSeconds())));
   }
   task_runner_->RunUntilIdle();
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      expect_reboot ? 1 : 0,
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 void AutomaticRebootManagerBasicTest::NotifyUpdateRebootNeeded() {
@@ -411,22 +413,25 @@ void AutomaticRebootManagerBasicTest::NotifyUpdateRebootNeeded() {
   automatic_reboot_manager_->UpdateStatusChanged(
       update_engine_client_->GetLastStatus());
   task_runner_->RunUntilIdle();
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 void AutomaticRebootManagerBasicTest::NotifyTerminating(bool expect_reboot) {
   automatic_reboot_manager_->OnAppTerminating();
   task_runner_->RunUntilIdle();
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      expect_reboot ? 1 : 0,
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 void AutomaticRebootManagerBasicTest::FastForwardBy(
     const base::TimeDelta& delta,
     bool expect_reboot) {
   task_runner_->FastForwardBy(delta);
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      expect_reboot ? 1 : 0,
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 void AutomaticRebootManagerBasicTest::SleepFor(const base::TimeDelta& delta,
@@ -442,15 +447,17 @@ void AutomaticRebootManagerBasicTest::SleepFor(const base::TimeDelta& delta,
     automatic_reboot_manager_->grace_end_timer_->OnResume();
   }
   task_runner_->RunUntilIdle();
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      expect_reboot ? 1 : 0,
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 void AutomaticRebootManagerBasicTest::FastForwardUntilNoTasksRemain(
     bool expect_reboot) {
   task_runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      expect_reboot ? 1 : 0,
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
 void AutomaticRebootManagerBasicTest::ExpectRebootRequest(
@@ -478,8 +485,9 @@ void AutomaticRebootManagerBasicTest::CreateAutomaticRebootManager(
       task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
   automatic_reboot_manager_observer_.Init(automatic_reboot_manager_.get());
   task_runner_->RunUntilIdle();
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      expect_reboot ? 1 : 0,
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
 
   uptime_processing_delay_ =
       base::TimeTicks() -

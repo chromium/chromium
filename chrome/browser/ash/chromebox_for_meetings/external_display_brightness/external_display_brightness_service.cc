@@ -78,7 +78,7 @@ void ExternalDisplayBrightnessService::OnAdaptorDisconnect() {
 
 void ExternalDisplayBrightnessService::SetExternalDisplayALSBrightness(
     bool enabled) {
-  PowerManagerClient::Get()->SetExternalDisplayALSBrightness(enabled);
+  chromeos::PowerManagerClient::Get()->SetExternalDisplayALSBrightness(enabled);
 }
 
 void ExternalDisplayBrightnessService::OnGetExternalDisplayALSBrightness(
@@ -89,16 +89,17 @@ void ExternalDisplayBrightnessService::OnGetExternalDisplayALSBrightness(
 
 void ExternalDisplayBrightnessService::GetExternalDisplayALSBrightness(
     GetExternalDisplayALSBrightnessCallback callback) {
-  PowerManagerClient::Get()->GetExternalDisplayALSBrightness(base::BindOnce(
-      &ExternalDisplayBrightnessService::OnGetExternalDisplayALSBrightness,
-      std::move(callback)));
+  chromeos::PowerManagerClient::Get()->GetExternalDisplayALSBrightness(
+      base::BindOnce(
+          &ExternalDisplayBrightnessService::OnGetExternalDisplayALSBrightness,
+          std::move(callback)));
 }
 
 void ExternalDisplayBrightnessService::SetExternalDisplayBrightnessPercent(
     double percent) {
   power_manager::SetBacklightBrightnessRequest request;
   request.set_percent(percent);
-  PowerManagerClient::Get()->SetScreenBrightness(request);
+  chromeos::PowerManagerClient::Get()->SetScreenBrightness(request);
 }
 
 void ExternalDisplayBrightnessService::OnGetExternalDisplayBrightnessPercent(
@@ -109,9 +110,10 @@ void ExternalDisplayBrightnessService::OnGetExternalDisplayBrightnessPercent(
 
 void ExternalDisplayBrightnessService::GetExternalDisplayBrightnessPercent(
     GetExternalDisplayBrightnessPercentCallback callback) {
-  PowerManagerClient::Get()->GetScreenBrightnessPercent(base::BindOnce(
-      &ExternalDisplayBrightnessService::OnGetExternalDisplayBrightnessPercent,
-      std::move(callback)));
+  chromeos::PowerManagerClient::Get()->GetScreenBrightnessPercent(
+      base::BindOnce(&ExternalDisplayBrightnessService::
+                         OnGetExternalDisplayBrightnessPercent,
+                     std::move(callback)));
 }
 
 void ExternalDisplayBrightnessService::OnMojoDisconnect() {

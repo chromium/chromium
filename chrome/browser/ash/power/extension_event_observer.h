@@ -40,7 +40,7 @@ namespace ash {
 class ExtensionEventObserver : public ProfileManagerObserver,
                                public extensions::ProcessManagerObserver,
                                public extensions::ExtensionHostObserver,
-                               public PowerManagerClient::Observer {
+                               public chromeos::PowerManagerClient::Observer {
  public:
   class TestApi {
    public:

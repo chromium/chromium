@@ -50,7 +50,8 @@ constexpr apps::InstanceState kInactiveInstanceState =
 void SetScreenOff(bool is_screen_off) {
   power_manager::ScreenIdleState screen_idle_state;
   screen_idle_state.set_off(is_screen_off);
-  FakePowerManagerClient::Get()->SendScreenIdleStateChanged(screen_idle_state);
+  chromeos::FakePowerManagerClient::Get()->SendScreenIdleStateChanged(
+      screen_idle_state);
 }
 
 }  // namespace
@@ -65,7 +66,7 @@ class FamilyUserChromeActivityMetricsTest
   ~FamilyUserChromeActivityMetricsTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     ChromeRenderViewHostTestHarness::SetUp();
     InitiateFamilyUserChromeActivityMetrics();
 
@@ -100,7 +101,7 @@ class FamilyUserChromeActivityMetricsTest
     test_browser_.reset();
     DestroyFamilyUserChromeActivityMetrics();
     ChromeRenderViewHostTestHarness::TearDown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:

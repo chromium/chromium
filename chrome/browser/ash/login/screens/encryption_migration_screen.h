@@ -30,7 +30,7 @@ class LoginFeedback;
 class UserContext;
 
 class EncryptionMigrationScreen : public BaseScreen,
-                                  public PowerManagerClient::Observer,
+                                  public chromeos::PowerManagerClient::Observer,
                                   public UserDataAuthClient::Observer {
  public:
   using TView = EncryptionMigrationScreenView;
@@ -164,7 +164,8 @@ class EncryptionMigrationScreen : public BaseScreen,
       base::ScopedObservation<UserDataAuthClient, UserDataAuthClient::Observer>>
       userdataauth_observer_;
 
-  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
       power_manager_observation_{this};
 
   base::WeakPtrFactory<EncryptionMigrationScreen> weak_ptr_factory_{this};

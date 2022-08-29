@@ -290,12 +290,14 @@ IN_PROC_BROWSER_TEST_F(ResetTest, RestartBeforePowerwash) {
 
   InvokeResetScreen();
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
   ClickRestartButton();
 
-  ASSERT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+  ASSERT_EQ(
+      1, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   ASSERT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kFactoryResetRequested));
@@ -308,7 +310,8 @@ IN_PROC_BROWSER_TEST_F(ResetOobeTest, ResetOnWelcomeScreen) {
   InvokeResetScreen();
 
   ClickResetButton();
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(1, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
 }
@@ -322,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(ResetOobeTest, RequestAndCancleResetOnWelcomeScreen) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
 }
@@ -381,13 +385,15 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTest, ShowAfterBootIfRequested) {
 IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTest, RollbackUnavailable) {
   InvokeResetScreen();
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
   InvokeResetAccelerator();  // No changes
   ClickToConfirmButton();
   ClickResetButton();
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(1, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
   CloseResetScreenAndWait();
@@ -398,7 +404,8 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTest, RollbackUnavailable) {
   InvokeResetScreen();
   ClickToConfirmButton();
   ClickResetButton();
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(2, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
   CloseResetScreenAndWait();
@@ -413,12 +420,14 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback, RollbackAvailable) {
 
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
   ClickToConfirmButton();
   ClickResetButton();
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(1, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
   CloseResetScreenAndWait();
@@ -435,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback, RollbackAvailable) {
   InvokeResetScreen();
   ClickToConfirmButton();
   ClickResetButton();
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(2, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
   CloseResetScreenAndWait();
@@ -445,7 +455,8 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback, RollbackAvailable) {
   InvokeResetAccelerator();  // Shows rollback.
   ClickToConfirmButton();
   ClickResetButton();
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(2, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(1, update_engine_client()->rollback_call_count());
 }
@@ -454,7 +465,8 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
                        ErrorOnRollbackRequested) {
   OobeScreenWaiter(ResetView::kScreenId).Wait();
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
   test::OobeJS().ExpectHasNoClass("revert-promise-view", {kResetScreen});
@@ -463,7 +475,8 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
   ClickToConfirmButton();
   ClickResetButton();
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(1, update_engine_client()->rollback_call_count());
   test::OobeJS().ExpectHasClass("revert-promise-view", {kResetScreen});
@@ -484,7 +497,8 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
 IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback, RevertAfterCancel) {
   OobeScreenWaiter(ResetView::kScreenId).Wait();
 
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+  EXPECT_EQ(
+      0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
   EXPECT_EQ(0, update_engine_client()->rollback_call_count());
 

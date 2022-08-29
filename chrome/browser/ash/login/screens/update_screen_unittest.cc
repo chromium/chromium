@@ -74,7 +74,7 @@ class UpdateScreenUnitTest : public testing::Test {
 
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
@@ -100,7 +100,7 @@ class UpdateScreenUnitTest : public testing::Test {
     mock_error_screen_.reset();
     network_portal_detector::Shutdown();
     network_handler_test_helper_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     UpdateEngineClient::Shutdown();
   }
 
