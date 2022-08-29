@@ -45,6 +45,7 @@ export interface SiteDetailsElement {
   $: {
     confirmClearStorage: CrDialogElement,
     confirmResetSettings: CrDialogElement,
+    fpsMembership: HTMLElement,
     noStorage: HTMLElement,
     storage: HTMLElement,
     usage: HTMLElement,
@@ -105,6 +106,14 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: '',
       },
 
+      /**
+       * The first party set info for a site including owner and members count.
+       */
+      fpsMembership_: {
+        type: String,
+        value: '',
+      },
+
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
         value() {
@@ -131,6 +140,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private origin_: string;
   private storedData_: string;
   private numCookies_: string;
+  private fpsMembership_: string;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
 
@@ -143,8 +153,8 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
 
     this.addWebUIListener(
         'usage-total-changed',
-        (host: string, data: string, cookies: string) => {
-          this.onUsageTotalChanged_(host, data, cookies);
+        (host: string, data: string, cookies: string, fps: string) => {
+          this.onUsageTotalChanged_(host, data, cookies, fps);
         });
 
     this.addWebUIListener(
@@ -205,11 +215,14 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
    * @param host The host that the usage was fetched for.
    * @param usage The string showing how much data the given host is using.
    * @param cookies The string showing how many cookies the given host is using.
+   * @param fpsMembership The string showing first party set membership details.
    */
-  private onUsageTotalChanged_(host: string, usage: string, cookies: string) {
+  private onUsageTotalChanged_(
+      host: string, usage: string, cookies: string, fpsMembership: string) {
     if (this.fetchingForHost_ === host) {
       this.storedData_ = usage;
       this.numCookies_ = cookies;
+      this.fpsMembership_ = fpsMembership;
     }
   }
 

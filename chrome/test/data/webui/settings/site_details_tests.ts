@@ -483,4 +483,43 @@ suite('SiteDetails', function() {
     testElement = createSiteDetails(origin);
     return browserProxy.whenCalled('fetchBlockAutoplayStatus');
   });
+
+  test('check first party set membership label empty string', async function() {
+    const origin = 'https://foo.com:443';
+    browserProxy.setPrefs(prefs);
+    testElement = createSiteDetails(origin);
+
+    const results = await Promise.all([
+      websiteUsageProxy.whenCalled('fetchUsageTotal'),
+    ]);
+
+    const hostRequested = results[0];
+    assertEquals('foo.com', hostRequested);
+    webUIListenerCallback(
+        'usage-total-changed', hostRequested, '1 KB', '10 cookies', '');
+    assertTrue(testElement.$.fpsMembership.hidden);
+    assertEquals('', testElement.$.fpsMembership.textContent!.trim());
+  });
+
+  test(
+      'check first party set membership label populated string',
+      async function() {
+        const origin = 'https://foo.com:443';
+        browserProxy.setPrefs(prefs);
+        testElement = createSiteDetails(origin);
+
+        const results = await Promise.all([
+          websiteUsageProxy.whenCalled('fetchUsageTotal'),
+        ]);
+
+        const hostRequested = results[0];
+        assertEquals('foo.com', hostRequested);
+        webUIListenerCallback(
+            'usage-total-changed', hostRequested, '1 KB', '10 cookies',
+            'Allowed for 1 foo.com site');
+        assertFalse(testElement.$.fpsMembership.hidden);
+        assertEquals(
+            'Allowed for 1 foo.com site',
+            testElement.$.fpsMembership.textContent!.trim());
+      });
 });

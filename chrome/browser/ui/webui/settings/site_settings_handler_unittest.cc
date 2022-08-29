@@ -486,21 +486,25 @@ class SiteSettingsHandlerTest : public testing::Test,
 
   void ValidateUsageInfo(const std::string& expected_usage_host,
                          const std::string& expected_usage_string,
-                         const std::string& expected_cookie_string) {
+                         const std::string& expected_cookie_string,
+                         const std::string& expected_fps_member_count_string) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
-    ASSERT_TRUE(data.arg1()->is_string());
-    EXPECT_EQ("usage-total-changed", data.arg1()->GetString());
+    ASSERT_TRUE(data.arg_nth(0)->is_string());
+    EXPECT_EQ("usage-total-changed", data.arg_nth(0)->GetString());
 
-    ASSERT_TRUE(data.arg2()->is_string());
-    EXPECT_EQ(expected_usage_host, data.arg2()->GetString());
+    ASSERT_TRUE(data.arg_nth(1)->is_string());
+    EXPECT_EQ(expected_usage_host, data.arg_nth(1)->GetString());
 
-    ASSERT_TRUE(data.arg3()->is_string());
-    EXPECT_EQ(expected_usage_string, data.arg3()->GetString());
+    ASSERT_TRUE(data.arg_nth(2)->is_string());
+    EXPECT_EQ(expected_usage_string, data.arg_nth(2)->GetString());
 
-    ASSERT_TRUE(data.arg4()->is_string());
-    EXPECT_EQ(expected_cookie_string, data.arg4()->GetString());
+    ASSERT_TRUE(data.arg_nth(3)->is_string());
+    EXPECT_EQ(expected_cookie_string, data.arg_nth(3)->GetString());
+
+    ASSERT_TRUE(data.arg_nth(4)->is_string());
+    EXPECT_EQ(expected_fps_member_count_string, data.arg_nth(4)->GetString());
   }
 
   void CreateIncognitoProfile() {
@@ -2977,6 +2981,19 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
+      {ConvertEtldToSchemefulSite("google.com"),
+       ConvertEtldToSchemefulSite("google.com")},
+      {ConvertEtldToSchemefulSite("google.com.au"),
+       ConvertEtldToSchemefulSite("google.com")},
+      {ConvertEtldToSchemefulSite("unrelated.com"),
+       ConvertEtldToSchemefulSite("unrelated.com")},
+  };
+
+  EXPECT_CALL(*mock_privacy_sandbox_service(), GetFirstPartySets())
+      .Times(3)
+      .WillRepeatedly(Return(first_party_sets));
+
   // Confirm that usage info only returns unpartitioned storage.
   SetUpCookiesTreeModel();
 
@@ -2987,13 +3004,20 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("www.example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
-  ValidateUsageInfo("www.example.com", "2 B", "1 cookie");
+  ValidateUsageInfo("www.example.com", "2 B", "1 cookie", "");
 
   args.clear();
   args.Append("example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
-  ValidateUsageInfo("example.com", "", "1 cookie");
+  ValidateUsageInfo("example.com", "", "1 cookie", "");
+
+  args.clear();
+  args.Append("google.com");
+  handler()->HandleFetchUsageTotal(args);
+  handler()->OnGetUsageInfo();
+  ValidateUsageInfo("google.com", "", "2 cookies",
+                    "Allowed for 2 google.com sites");
 }
 
 TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {

@@ -15,14 +15,17 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -516,6 +519,53 @@ void RemoveMatchingNodes(CookiesTreeModel* model,
     model->DeleteCookieNode(node);
 }
 
+// Returns the registable domain (eTLD+1) for the `origin`. If it doesn't exist,
+// returns the host.
+std::string GetEtldPlusOne(const url::Origin& origin) {
+  auto eltd_plus_one = net::registry_controlled_domains::GetDomainAndRegistry(
+      origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return eltd_plus_one.empty() ? origin.host() : eltd_plus_one;
+}
+
+// Converts |etld_plus1| into an HTTPS SchemefulSite.
+net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
+  return net::SchemefulSite(GURL(std::string(url::kHttpsScheme) +
+                                 url::kStandardSchemeSeparator + etld_plus1 +
+                                 "/"));
+}
+
+// Iterates over host nodes in `tree_model` which contains all sites that have
+// storage set and uses them to retrieve first party set membership information.
+// Returns a map of site eTLD+1 matched with their FPS owner and count of first
+// party set members.
+std::map<std::string, std::pair<std::string, int>> GetFpsMap(
+    PrivacySandboxService* privacy_sandbox_service,
+    CookiesTreeModel* tree_model) {
+  // Used to count unique eTLD+1 owned by a FPS owner.
+  std::map<std::string, std::set<std::string>> fps_owner_to_members;
+  auto first_party_sets = privacy_sandbox_service->GetFirstPartySets();
+  // Count members by unique eTLD+1 for each first party set.
+  for (const auto& host_node : tree_model->GetRoot()->children()) {
+    std::string etld_plus1 =
+        GetEtldPlusOne(host_node->GetDetailedInfo().origin);
+    auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
+    if (first_party_sets.count(schemeful_site)) {
+      auto fps_owner = first_party_sets[schemeful_site];
+      fps_owner_to_members[fps_owner.GetURL().host()].insert(etld_plus1);
+    }
+  }
+
+  // site eTLD+1 : {owner site eTLD+1, # of sites in that first party set}
+  std::map<std::string, std::pair<std::string, int>> fps_map;
+  for (auto fps : fps_owner_to_members) {
+    // Set fps owner and count of members for each eTLD+1
+    for (auto member : fps.second) {
+      fps_map[member] = {fps.first, fps.second.size()};
+    }
+  }
+
+  return fps_map;
+}
 }  // namespace
 
 SiteSettingsHandler::SiteSettingsHandler(Profile* profile)
@@ -696,6 +746,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   const CookieTreeNode* root = cookies_tree_model_->GetRoot();
   std::string usage_string;
   std::string cookie_string;
+  std::string fps_string;
   for (const auto& site : root->children()) {
     std::string title = base::UTF16ToUTF8(site->GetTitle());
     if (title != usage_host_)
@@ -729,10 +780,24 @@ void SiteSettingsHandler::OnGetUsageInfo() {
       cookie_string = base::UTF16ToUTF8(l10n_util::GetPluralStringFUTF16(
           IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, num_cookies));
     }
+
+    auto fps_map =
+        GetFpsMap(PrivacySandboxServiceFactory::GetForProfile(profile_),
+                  cookies_tree_model_.get());
+    auto etld_plus1 = GetEtldPlusOne(site->GetDetailedInfo().origin);
+    if (fps_map.count(etld_plus1)) {
+      fps_string =
+          base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
+              l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL),
+              "MEMBERS", static_cast<int>(fps_map[etld_plus1].second),
+              "FPS_OWNER", fps_map[etld_plus1].first));
+    }
     break;
   }
   FireWebUIListener("usage-total-changed", base::Value(usage_host_),
-                    base::Value(usage_string), base::Value(cookie_string));
+                    base::Value(usage_string), base::Value(cookie_string),
+                    base::Value(fps_string));
 }
 
 void SiteSettingsHandler::OnContentSettingChanged(
