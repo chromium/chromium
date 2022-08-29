@@ -4,6 +4,8 @@
 
 package org.chromium.base.jank_tracker;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -47,7 +49,8 @@ public class JankMetricUMARecorder {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void recordJankMetrics(String scenarioName, long[] timestampsNs, long[] durationsNs,
                 long[] jankBurstsNs, int missedFrames);
     }

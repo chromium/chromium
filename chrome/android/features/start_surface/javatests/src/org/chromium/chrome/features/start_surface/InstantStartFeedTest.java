@@ -30,14 +30,21 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.jank_tracker.JankMetricUMARecorder;
+import org.chromium.base.jank_tracker.JankMetricUMARecorderJni;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -72,7 +79,21 @@ public class InstantStartFeedTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 0;
 
     @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Mock
+    JankMetricUMARecorder.Natives mJankRecorderNativeMock;
+
+    @Before
+    public void setUp() {
+        mJniMocker.mock(JankMetricUMARecorderJni.TEST_HOOKS, mJankRecorderNativeMock);
+    }
 
     @After
     public void tearDown() {
