@@ -1102,7 +1102,7 @@ void AppListFolderView::UpdatePreferredBounds() {
   }
 }
 
-void AppListFolderView::UpdateShadowForVirtualKeyboard() {
+void AppListFolderView::UpdateShadowBounds() {
   shadow_->SetContentBounds(background_view_->layer()->bounds());
 }
 

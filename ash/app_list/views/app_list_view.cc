@@ -1907,18 +1907,14 @@ void AppListView::OnScreenKeyboardShown(bool shown) {
         GetAppsContainerView()->app_list_folder_view()->GetYOffsetForFolder();
     if (folder_offset != 0) {
       OffsetYPositionOfAppList(folder_offset);
-      GetAppsContainerView()
-          ->app_list_folder_view()
-          ->UpdateShadowForVirtualKeyboard();
+      GetAppsContainerView()->app_list_folder_view()->UpdateShadowBounds();
       offset_to_show_folder_with_onscreen_keyboard_ = true;
     }
   } else if (offset_to_show_folder_with_onscreen_keyboard_) {
     // If the keyboard is closing or a folder isn't being shown, reset
     // the app list's position
     OffsetYPositionOfAppList(0);
-    GetAppsContainerView()
-        ->app_list_folder_view()
-        ->UpdateShadowForVirtualKeyboard();
+    GetAppsContainerView()->app_list_folder_view()->UpdateShadowBounds();
     offset_to_show_folder_with_onscreen_keyboard_ = false;
   }
 
