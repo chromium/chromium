@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
@@ -208,7 +209,9 @@ class PictureInPictureTestWebFrameClient
   std::unique_ptr<WebMediaPlayer> web_media_player_;
 };
 
-class PictureInPictureControllerTest : public RenderingTest {
+// These tests should be for video Picture in Picture.  See below if you'd like
+// to test document Picture in Picture.
+class PictureInPictureControllerVideoTest : public RenderingTest {
  public:
   void SetUp() override {
     client_ = std::make_unique<PictureInPictureTestWebFrameClient>(
@@ -244,6 +247,7 @@ class PictureInPictureControllerTest : public RenderingTest {
   void TearDown() override {
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PictureInPictureService::Name_, {});
+    RenderingTest::TearDown();
   }
 
   HTMLVideoElement* Video() const { return video_.Get(); }
@@ -270,7 +274,7 @@ class PictureInPictureControllerTest : public RenderingTest {
   frame_test_helpers::WebViewHelper helper_;
 };
 
-TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
+TEST_F(PictureInPictureControllerVideoTest, EnterPictureInPictureFiresEvent) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -289,7 +293,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
                          .PictureInPictureElement());
 }
 
-TEST_F(PictureInPictureControllerTest,
+TEST_F(PictureInPictureControllerVideoTest,
        FrameThrottlingIsSetProperlyWithoutSetup) {
   // This test assumes that it throttling is allowed by default.
   ASSERT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
@@ -309,7 +313,7 @@ TEST_F(PictureInPictureControllerTest,
   EXPECT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
 }
 
-TEST_F(PictureInPictureControllerTest, ExitPictureInPictureFiresEvent) {
+TEST_F(PictureInPictureControllerVideoTest, ExitPictureInPictureFiresEvent) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -336,7 +340,7 @@ TEST_F(PictureInPictureControllerTest, ExitPictureInPictureFiresEvent) {
                          .PictureInPictureElement());
 }
 
-TEST_F(PictureInPictureControllerTest, StartObserving) {
+TEST_F(PictureInPictureControllerVideoTest, StartObserving) {
   EXPECT_FALSE(PictureInPictureControllerImpl::From(GetDocument())
                    .IsSessionObserverReceiverBoundForTesting());
 
@@ -355,7 +359,7 @@ TEST_F(PictureInPictureControllerTest, StartObserving) {
                   .IsSessionObserverReceiverBoundForTesting());
 }
 
-TEST_F(PictureInPictureControllerTest, StopObserving) {
+TEST_F(PictureInPictureControllerVideoTest, StopObserving) {
   EXPECT_FALSE(PictureInPictureControllerImpl::From(GetDocument())
                    .IsSessionObserverReceiverBoundForTesting());
 
@@ -381,7 +385,7 @@ TEST_F(PictureInPictureControllerTest, StopObserving) {
                    .IsSessionObserverReceiverBoundForTesting());
 }
 
-TEST_F(PictureInPictureControllerTest, PlayPauseButton_InfiniteDuration) {
+TEST_F(PictureInPictureControllerVideoTest, PlayPauseButton_InfiniteDuration) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -399,7 +403,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_InfiniteDuration) {
                                      event_type_names::kEnterpictureinpicture);
 }
 
-TEST_F(PictureInPictureControllerTest, PlayPauseButton_MediaSource) {
+TEST_F(PictureInPictureControllerVideoTest, PlayPauseButton_MediaSource) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -418,7 +422,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_MediaSource) {
                                      event_type_names::kEnterpictureinpicture);
 }
 
-TEST_F(PictureInPictureControllerTest, PerformMediaPlayerAction) {
+TEST_F(PictureInPictureControllerVideoTest, PerformMediaPlayerAction) {
   frame_test_helpers::WebViewHelper helper;
   helper.Initialize();
 
@@ -437,7 +441,8 @@ TEST_F(PictureInPictureControllerTest, PerformMediaPlayerAction) {
       bounds, blink::mojom::MediaPlayerActionType::kPictureInPicture, true);
 }
 
-TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
+TEST_F(PictureInPictureControllerVideoTest,
+       EnterPictureInPictureAfterResettingWMP) {
   V8TestingScope scope;
 
   EXPECT_NE(nullptr, Video()->GetWebMediaPlayer());
@@ -461,7 +466,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
             dom_exception->code());
 }
 
-TEST_F(PictureInPictureControllerTest,
+TEST_F(PictureInPictureControllerVideoTest,
        EnterPictureInPictureProvideSourceBoundsSetToBoundsInWidget) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
@@ -483,7 +488,7 @@ TEST_F(PictureInPictureControllerTest,
   EXPECT_EQ(Service().source_bounds(), Video()->BoundsInWidget());
 }
 
-TEST_F(PictureInPictureControllerTest,
+TEST_F(PictureInPictureControllerVideoTest,
        EnterPictureInPictureProvideSourceBoundsSetToReplacedContentRect) {
   // Create one image with a size of 10x10px
   SkImageInfo raster_image_info =
@@ -537,7 +542,7 @@ TEST_F(PictureInPictureControllerTest,
   EXPECT_EQ(Service().source_bounds(), gfx::Rect(173, 173, 20, 20));
 }
 
-TEST_F(PictureInPictureControllerTest, VideoIsNotAllowedIfAutoPip) {
+TEST_F(PictureInPictureControllerVideoTest, VideoIsNotAllowedIfAutoPip) {
   EXPECT_EQ(PictureInPictureControllerImpl::Status::kEnabled,
             PictureInPictureControllerImpl::From(GetDocument())
                 .IsElementAllowed(*Video(), /*report_failure=*/false));
@@ -550,7 +555,64 @@ TEST_F(PictureInPictureControllerTest, VideoIsNotAllowedIfAutoPip) {
                 .IsElementAllowed(*Video(), /*report_failure=*/false));
 }
 
-TEST_F(PictureInPictureControllerTest, CreateDocumentPictureInPictureWindow) {
+class PictureInPictureControllerChromeClient
+    : public RenderingTestChromeClient {
+ public:
+  explicit PictureInPictureControllerChromeClient(
+      DummyPageHolder* dummy_page_holder)
+      : dummy_page_holder_(dummy_page_holder) {}
+
+  Page* CreateWindowDelegate(LocalFrame*,
+                             const FrameLoadRequest&,
+                             const AtomicString&,
+                             const WebWindowFeatures&,
+                             network::mojom::blink::WebSandboxFlags,
+                             const SessionStorageNamespaceId&,
+                             bool& consumed_user_gesture) override {
+    return &dummy_page_holder_->GetPage();
+  }
+  MOCK_METHOD(void, SetWindowRect, (const gfx::Rect&, LocalFrame&));
+
+ private:
+  DummyPageHolder* dummy_page_holder_;
+};
+
+// Tests for Document Picture in Picture.
+// Unlike the video tests above, these don't have a widget.  However, that makes
+// it much easier to use RenderingTest more properly to set the ChromeClient.
+// Having the ChromeClient lets us mock SetWindowRect.
+class PictureInPictureControllerDocumentTest : public RenderingTest {
+ public:
+  void SetUp() override {
+    chrome_client_ =
+        MakeGarbageCollected<PictureInPictureControllerChromeClient>(
+            &dummy_page_holder_);
+    RenderingTest::SetUp();
+  }
+
+  Document& GetDocument() const { return *GetFrame().GetDocument(); }
+
+  // Used by RenderingTest.
+  RenderingTestChromeClient& GetChromeClient() const override {
+    return *chrome_client_;
+  }
+
+  // Convenience function to set expectations on the mock.
+  PictureInPictureControllerChromeClient& GetPipChromeClient() const {
+    return *chrome_client_;
+  }
+
+ private:
+  Persistent<PictureInPictureControllerChromeClient> chrome_client_;
+  // This is used by our chrome client to create the PiP window.  We keep
+  // ownership of it here so that it outlives the GC'd objects.  The client
+  // cannot own it because it also has a GC root to the client; everything would
+  // leak if we did so.
+  DummyPageHolder dummy_page_holder_;
+};
+
+TEST_F(PictureInPictureControllerDocumentTest,
+       CreateDocumentPictureInPictureWindow) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .pictureInPictureWindow());
 
@@ -603,6 +665,13 @@ TEST_F(PictureInPictureControllerTest, CreateDocumentPictureInPictureWindow) {
   EXPECT_NE(nullptr, pictureInPictureWindow);
   EXPECT_EQ(url.GetString(),
             pictureInPictureWindow->document()->BaseURL().GetString());
+
+  // Verify that move* and resize* don't call through to the chrome client.
+  EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _)).Times(0);
+  pictureInPictureWindow->document()->domWindow()->moveTo(10, 10);
+  pictureInPictureWindow->document()->domWindow()->moveBy(10, 10);
+  pictureInPictureWindow->document()->domWindow()->resizeTo(10, 10);
+  pictureInPictureWindow->document()->domWindow()->resizeBy(10, 10);
 }
 
 }  // namespace blink
