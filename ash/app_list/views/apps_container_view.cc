@@ -1552,15 +1552,6 @@ void AppsContainerView::UpdateContentsYPosition(float progress) {
   scrollable_container_->SetY(current_suggestion_chip_y +
                               chip_grid_y_distance_);
   page_switcher_->SetY(current_suggestion_chip_y + chip_grid_y_distance_);
-
-  // If app list is in drag, reset transforms that might started animating in
-  // AnimateYPosition().
-  if (contents_view_->app_list_view()->is_in_drag()) {
-    if (suggestion_chip_container_view_)
-      suggestion_chip_container_view_->layer()->SetTransform(gfx::Transform());
-    scrollable_container_->layer()->SetTransform(gfx::Transform());
-    page_switcher_->layer()->SetTransform(gfx::Transform());
-  }
 }
 
 void AppsContainerView::DisableFocusForShowingActiveFolder(bool disabled) {

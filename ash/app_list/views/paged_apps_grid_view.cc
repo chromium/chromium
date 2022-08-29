@@ -984,8 +984,7 @@ bool PagedAppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
       (event.IsMouseEvent() || event.type() == ui::ET_GESTURE_SCROLL_BEGIN) &&
       !IsTabletMode() &&
       ((pagination_model_.selected_page() == 0 &&
-        calculate_offset(event) > 0) ||
-       contents_view_->app_list_view()->is_in_drag())) {
+        calculate_offset(event) > 0))) {
     return false;
   }
 

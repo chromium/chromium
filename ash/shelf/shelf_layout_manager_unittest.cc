@@ -1609,48 +1609,6 @@ TEST_F(ShelfLayoutManagerTest, GestureDragForProductivityLauncher) {
   RunGestureDragTests(bottom_center, shelf_bounds.top_center());
 }
 
-// TODO(https://crbug.com/1286875): This behavior is broken in production. An
-// auto-hidden shelf will close after a short swipe up that fails to show the
-// app list.
-TEST_F(ShelfLayoutManagerTest,
-       DISABLED_ShortSwipeUpOnAutoHideShelfKeepsShelfOpen) {
-  Shelf* shelf = GetPrimaryShelf();
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-
-  auto* generator = GetEventGenerator();
-  constexpr base::TimeDelta kTimeDelta = base::Milliseconds(100);
-  constexpr int kNumScrollSteps = 4;
-
-  // Starts the drag from the center of the shelf's bottom.
-  gfx::Rect shelf_bounds = GetVisibleShelfWidgetBoundsInScreen();
-  gfx::Point start = shelf_bounds.bottom_center();
-  gfx::Vector2d delta;
-
-  // Create a normal unmaximized window, the auto-hide shelf should be hidden.
-  aura::Window* window = CreateTestWindow();
-  window->SetBounds(gfx::Rect(0, 0, 100, 100));
-  window->Show();
-  GetAppListTestHelper()->CheckVisibility(false);
-  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
-  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
-
-  // Swiping up to show the auto-hide shelf.
-  gfx::Point end = shelf_bounds.top_center();
-  generator->GestureScrollSequence(start, end, kTimeDelta, kNumScrollSteps);
-  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
-
-  // Swiping up on the auto-hide shelf to drag up the app list. Close the app
-  // list on drag ended since the short drag distance but keep the previous
-  // shown auto-hide shelf still visible.
-  delta.set_y(AppListView::kDragSnapToClosedThreshold - 10);
-  end = start - delta;
-  generator->GestureScrollSequence(start, end, kTimeDelta, kNumScrollSteps);
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
-  // This line fails, see https://crbug.com/1286875.
-  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
-}
-
 // Swiping on shelf when fullscreen app list is opened should have no effect.
 TEST_F(ShelfLayoutManagerTest, SwipingOnShelfIfAppListOpened) {
   Shelf* shelf = GetPrimaryShelf();
@@ -3031,28 +2989,6 @@ TEST_F(ShelfLayoutManagerTest, NoBackgroundChange) {
   EXPECT_EQ(shelf_background_type, GetShelfWidget()->GetBackgroundType());
 }
 
-TEST_F(ShelfLayoutManagerTest, SwipeUpOnShelfDoesNotShowAppList) {
-  Shelf* shelf = GetPrimaryShelf();
-  ASSERT_EQ(ShelfAlignment::kBottom, shelf->alignment());
-  ASSERT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
-  ASSERT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
-
-  // Start the drag from the center of the shelf's bottom.
-  gfx::Rect shelf_widget_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
-  gfx::Point start = shelf_widget_bounds.bottom_center();
-
-  // Fling up with velocity about the threshold that would show the historical
-  // peeking launcher.
-  StartScroll(start);
-  UpdateScroll(-AppListView::kDragSnapToPeekingThreshold);
-  EndScroll(/*is_fling=*/true,
-            -(AppListView::kDragVelocityFromShelfThreshold + 10));
-  GetAppListTestHelper()->WaitUntilIdle();
-
-  // Launcher did not show.
-  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
-}
-
 // Tests that tapping the home button is successful on the autohidden shelf.
 TEST_F(ShelfLayoutManagerTest, NoTemporaryAutoHideStateWhileOpeningLauncher) {
   // Enable animations and simulate the zero state search called when showing
@@ -4363,6 +4299,58 @@ TEST_P(QuickActionShowBubbleTest, ScrollFromShelfToShowAppList) {
                                        AppListShowSource::kScrollFromShelf,
                                        bucket_scroll_count);
   }
+}
+
+// TODO(https://crbug.com/1286875): This behavior is broken in production. An
+// auto-hidden shelf will close after a short swipe up that fails to show the
+// app list.
+TEST_P(QuickActionShowBubbleTest,
+       DISABLED_ShortSwipeUpOnAutoHideShelfKeepsShelfOpen) {
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  auto* generator = GetEventGenerator();
+  constexpr base::TimeDelta kTimeDelta = base::Milliseconds(100);
+  constexpr int kNumScrollSteps = 4;
+
+  // Starts the drag from the center of the shelf's bottom.
+  gfx::Rect shelf_bounds = GetVisibleShelfWidgetBoundsInScreen();
+  gfx::Point start = shelf_bounds.bottom_center();
+
+  // Create a normal unmaximized window, the auto-hide shelf should be hidden.
+  aura::Window* window = CreateTestWindow();
+  window->SetBounds(gfx::Rect(0, 0, 100, 100));
+  window->Show();
+  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Swiping up to show the auto-hide shelf.
+  gfx::Point end = shelf_bounds.top_center();
+  generator->GestureScrollSequence(start, end, kTimeDelta, kNumScrollSteps);
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Swiping up on the auto-hide shelf to drag up the app list. Scroll Velocity
+  // is not enough to show the app list but keep the previous shown auto-hide
+  // shelf still visible. Starts fling from the navigation_widget.
+  start = GetPrimaryShelf()
+              ->navigation_widget()
+              ->GetContentsView()
+              ->GetBoundsInScreen()
+              .CenterPoint();
+  const int scroll_offset_threshold =
+      ShelfConfig::Get()->mousewheel_scroll_offset_threshold() + 10;
+  gfx::Vector2d offset(0, scroll_offset_threshold);
+  end = start - offset;
+  generator->GestureScrollSequence(
+      start, end,
+      generator->CalculateScrollDurationForFlingVelocity(start, end,
+                                                         /*velocity =*/50, 4),
+      4);
+  GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(false);
+  // This line fails, see https://crbug.com/1286875.
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
 // Tests that the shelf background is opaque in both screens after app list is

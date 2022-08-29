@@ -173,6 +173,7 @@ class ASH_EXPORT ContentsView : public views::View,
 
   // Returns the expected search box bounds based on the app list transition
   // progress.
+  // TODO(crbug.com/1356674): Remove |progress| from parameters.
   gfx::Rect GetSearchBoxExpectedBoundsForProgress(AppListState state,
                                                   float progress) const;
 

@@ -54,8 +54,6 @@ FORWARD_DECLARE_TEST(AppListControllerImplTest,
                      CheckAppListViewBoundsWhenVKeyboardEnabled);
 FORWARD_DECLARE_TEST(AppListControllerImplTest,
                      CheckAppListViewBoundsWhenDismissVKeyboard);
-FORWARD_DECLARE_TEST(AppListControllerImplMetricsTest,
-                     PresentationTimeRecordedForDragInTabletMode);
 
 // The fraction of app list height that the app list must be released at in
 // order to transition to the next state.
@@ -114,10 +112,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     AppListView* const view_;
   };
 
-  // Number of the size of shelf. Used to determine the opacity of items in the
-  // app list during dragging.
-  static constexpr float kNumOfShelfSize = 2.0;
-
   // The opacity of the app list background.
   static constexpr float kAppListOpacity = 0.95;
 
@@ -130,23 +124,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // The duration the AppListView ignores scroll events which could transition
   // its state.
   static constexpr int kScrollIgnoreTimeMs = 500;
-
-  // The snapping threshold for dragging app list from shelf in tablet mode,
-  // measured in DIPs.
-  static constexpr int kDragSnapToFullscreenThreshold = 320;
-
-  // The snapping thresholds for dragging app list from shelf in laptop mode,
-  // measured in DIPs.
-  static constexpr int kDragSnapToClosedThreshold = 120;
-  static constexpr int kDragSnapToPeekingThreshold = 561;
-
-  // The velocity the app list must be dragged from the shelf in order to
-  // transition to the next state, measured in DIPs/event.
-  static constexpr int kDragVelocityFromShelfThreshold = 120;
-
-  // The velocity the app list must be dragged in order to transition to the
-  // next state, measured in DIPs/event.
-  static constexpr int kDragVelocityThreshold = 6;
 
   // The animation duration for app list movement.
   static constexpr int kAppListAnimationDurationMs = 200;
@@ -248,15 +225,8 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void SetStateFromSearchBoxView(bool search_box_is_empty,
                                  bool triggered_by_contents_change);
 
-  // Updates y position and opacity of app list during dragging.
-  void UpdateYPositionAndOpacity(float y_position_in_screen,
-                                 float background_opacity);
-
   // Offsets the y position of the app list (above the screen)
   void OffsetYPositionOfAppList(int offset);
-
-  // Update Y position and opacity of this view's child views during dragging.
-  void UpdateChildViewsYPositionAndOpacity();
 
   // The search box cannot actively listen to all key events. To control and
   // input into the search box when it does not have focus, we need to redirect
@@ -272,9 +242,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // If the on-screen keyboard is shown, hide it. Return whether keyboard was
   // hidden
   bool CloseKeyboardIfVisible();
-
-  // Sets |is_in_drag_| and updates the visibility of app list items.
-  void SetIsInDrag(bool is_in_drag);
 
   // Home launcher can become the focused window without being reset when all
   // open windows are closed in tablet mode. Ensures that correct initial view
@@ -334,11 +301,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Returns a animation metrics reporting callback  for state transition.
   metrics_util::SmoothnessCallback GetStateTransitionMetricsReportCallback();
 
-  // Called when drag in tablet mode starts/proceeds/ends.
-  void OnHomeLauncherDragStart();
-  void OnHomeLauncherDragInProgress();
-  void OnHomeLauncherDragEnd();
-
   // Resets the animation metrics reporter for state transition.
   void ResetTransitionMetricsReporter();
 
@@ -377,8 +339,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void SetShelfHasRoundedCorners(bool shelf_has_rounded_corners);
 
   bool shelf_has_rounded_corners() const { return shelf_has_rounded_corners_; }
-
-  bool is_in_drag() const { return is_in_drag_; }
 
   void set_onscreen_keyboard_shown(bool onscreen_keyboard_shown) {
     onscreen_keyboard_shown_ = onscreen_keyboard_shown;
@@ -425,17 +385,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Closes the AppListView when a click or tap event propogates to the
   // AppListView.
   void HandleClickOrTap(ui::LocatedEvent* event);
-
-  // Initializes |initial_drag_point_|.
-  void StartDrag(const gfx::PointF& location_in_root);
-
-  // Updates the bounds of the widget while maintaining the relative position
-  // of the top of the widget and the gesture.
-  void UpdateDrag(const gfx::PointF& location_in_root);
-
-  // Handles app list state transfers. If the drag was fast enough, ignore the
-  // release position and snap to the next state.
-  void EndDrag(const gfx::PointF& location_in_root);
 
   // Set child views for |target_state|.
   void SetChildViewsForStateTransition(AppListViewState target_state);
@@ -494,9 +443,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Overridden from views::WidgetDelegateView:
   views::View* GetInitiallyFocusedView() override;
 
-  // Gets app list background opacity during dragging.
-  float GetAppListBackgroundOpacityDuringDragging();
-
   const std::vector<SkColor>& GetWallpaperProminentColors();
   void SetBackgroundShieldColor();
 
@@ -522,7 +468,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   gfx::Rect GetPreferredWidgetBoundsForState(AppListViewState state);
 
   // Updates y position of |app_list_background_shield_| based on the
-  // |state| and |is_in_drag_|.
+  // |state|.
   void UpdateAppListBackgroundYPosition(AppListViewState state);
 
   // Reset the subpixel position offset of the |layer| so that it's DP origin
@@ -552,26 +498,8 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Whether the shelf has rounded corners.
   bool shelf_has_rounded_corners_ = false;
 
-  // True if the user is in the process of gesture-dragging on opened app list,
-  // or dragging the app list from shelf.
-  bool is_in_drag_ = false;
-
   // Whether the view is being built.
   bool is_building_ = false;
-
-  // The opacity of app list background during dragging. This ensures a gradual
-  // opacity shift from the shelf opacity while dragging to show the AppListView
-  // from the shelf.
-  float background_opacity_in_drag_ = 0.f;
-
-  // The location of initial gesture event in root window coordinates.
-  gfx::PointF initial_drag_point_;
-
-  // The offset to the widget from dragging location.
-  float drag_offset_;
-
-  // The location of the initial mouse event in root window coordinates.
-  gfx::PointF initial_mouse_drag_point_;
 
   // The velocity of the gesture event.
   float last_fling_velocity_ = 0;
@@ -604,9 +532,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // If true, the contents view is not reset when showing the app list.
   bool disable_contents_reset_when_showing_ = false;
-
-  // Records the presentation time for app launcher dragging.
-  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   // A timer which will reset the app list to the initial page. This timer only
   // goes off when the app list is not visible after a set amount of time.

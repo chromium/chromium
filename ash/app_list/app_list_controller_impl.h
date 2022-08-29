@@ -327,11 +327,6 @@ class ASH_EXPORT AppListControllerImpl
   // Runs `close_assistant_ui_runner_` when it is non-null.
   void MaybeCloseAssistant();
 
-  // Get updated app list view state after dragging from shelf.
-  AppListViewState CalculateStateAfterShelfDrag(
-      const ui::LocatedEvent& event_in_screen,
-      float launcher_above_shelf_bottom_amount) const;
-
   using StateTransitionAnimationCallback =
       base::RepeatingCallback<void(AppListViewState)>;
 

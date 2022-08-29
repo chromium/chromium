@@ -858,20 +858,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 // Test suite for verifying tablet mode apps grid behaviour, parameterized by
-// RTL locale and ProductivityLauncher feature.
-class AppsGridViewTabletTest
-    : public AppsGridViewTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+// RTL locale.
+class AppsGridViewTabletTest : public AppsGridViewTest,
+                               public testing::WithParamInterface<bool> {
  public:
   AppsGridViewTabletTest() {
-    is_rtl_ = std::get<0>(GetParam());
-    is_productivity_launcher_enabled_ = std::get<1>(GetParam());
+    is_rtl_ = GetParam();
+    is_productivity_launcher_enabled_ = true;
     create_as_tablet_mode_ = true;
   }
 };
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppsGridViewTabletTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, AppsGridViewTabletTest, testing::Bool());
 
 // Test suite that tests apps sort works on all apps grid, parameterized by
 // RTL locale and clamshell/tablet mode.
@@ -1182,127 +1179,6 @@ TEST_P(AppsGridViewClamshellTest, ItemTooltip) {
   EXPECT_EQ(base::ASCIIToUTF16(title), title_label->GetText());
 }
 
-TEST_P(AppsGridViewRTLTest, ScrollSequenceHandledByAppListView) {
-  base::HistogramTester histogram_tester;
-
-  model_->PopulateApps(GetTilesPerPage(0) + 1);
-  UpdateLayout();
-  EXPECT_EQ(2, GetPaginationModel()->total_pages());
-
-  gfx::Point apps_grid_view_origin =
-      apps_grid_view_->GetBoundsInScreen().origin();
-  ui::GestureEvent scroll_begin(
-      apps_grid_view_origin.x(), apps_grid_view_origin.y(), 0,
-      base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 1));
-  ui::GestureEvent scroll_update(
-      apps_grid_view_origin.x(), apps_grid_view_origin.y(), 0,
-      base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 0, 10));
-  ui::GestureEvent scroll_end(apps_grid_view_origin.x(),
-                              apps_grid_view_origin.y(), 0, base::TimeTicks(),
-                              ui::GestureEventDetails(ui::ET_GESTURE_END));
-
-  // Drag down on the app grid when on page 1, this should move the AppListView
-  // and not move the AppsGridView.
-  apps_grid_view_->OnGestureEvent(&scroll_begin);
-  EXPECT_FALSE(scroll_begin.handled());
-
-  // Simulate redirecting the event to app list view through views hierarchy.
-  app_list_view_->OnGestureEvent(&scroll_begin);
-  EXPECT_TRUE(scroll_begin.handled());
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
-
-  // The following scroll update events will be sent to the view that handled
-  // the scroll begin event.
-  app_list_view_->OnGestureEvent(&scroll_update);
-  EXPECT_TRUE(scroll_update.handled());
-  ASSERT_TRUE(app_list_view_->is_in_drag());
-  ASSERT_EQ(0, GetPaginationModel()->transition().progress);
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 1);
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 0);
-
-  app_list_view_->OnGestureEvent(&scroll_end);
-  EXPECT_TRUE(scroll_end.handled());
-
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 1);
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 1);
-}
-
-TEST_P(AppsGridViewRTLTest, MouseScrollSequenceHandledByAppListView) {
-  base::HistogramTester histogram_tester;
-
-  model_->PopulateApps(GetTilesPerPage(0) + 1);
-  UpdateLayout();
-  EXPECT_EQ(2, GetPaginationModel()->total_pages());
-
-  const gfx::Point apps_grid_view_origin =
-      apps_grid_view_->GetBoundsInScreen().origin();
-  // Pick a point inside the `AppsGridView`, as well as arbitrary points below
-  // and above it to drag to.
-  gfx::Point drag_start_point = apps_grid_view_origin + gfx::Vector2d(0, 10);
-  gfx::Point below_point = apps_grid_view_origin + gfx::Vector2d(0, 20);
-  gfx::Point above_point = apps_grid_view_origin + gfx::Vector2d(0, -20);
-
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, apps_grid_view_origin,
-                             apps_grid_view_origin, ui::EventTimeForNow(),
-                             ui::EF_LEFT_MOUSE_BUTTON,
-                             ui::EF_LEFT_MOUSE_BUTTON);
-
-  ui::MouseEvent drag_start(ui::ET_MOUSE_DRAGGED, drag_start_point,
-                            drag_start_point, ui::EventTimeForNow(),
-                            ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-
-  ui::MouseEvent drag_below(ui::ET_MOUSE_DRAGGED, below_point, below_point,
-                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                            ui::EF_LEFT_MOUSE_BUTTON);
-
-  ui::MouseEvent drag_above(ui::ET_MOUSE_DRAGGED, above_point, above_point,
-                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                            ui::EF_LEFT_MOUSE_BUTTON);
-
-  // Send a press event to set the `mouse_drag_start_point_` for scrolling
-  apps_grid_view_->OnMouseEvent(&press_event);
-  EXPECT_TRUE(press_event.handled());
-
-  // Drag down on the app grid when on page 1, this should move the
-  // `AppListView` and not move the `AppsGridView`. We have to send two drag
-  // down events, `drag_start` and `drag_below`, to make sure `AppListView` has
-  // its anchor point and starts dragging down. Event is manually passed to
-  // `AppListview` in `AppsGridView::OnMouseEvent`
-  apps_grid_view_->OnMouseEvent(&drag_start);
-  EXPECT_TRUE(drag_start.handled());
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
-
-  apps_grid_view_->OnMouseEvent(&drag_below);
-  EXPECT_TRUE(drag_below.handled());
-  ASSERT_TRUE(app_list_view_->is_in_drag());
-  ASSERT_EQ(0, GetPaginationModel()->transition().progress);
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 1);
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 0);
-
-  // Now drag back up. Because we have dragged the launcher down, we want it to
-  // continue dragging to allow the user to fully expand it. If we don't, the
-  // launcher can end up in a "expanded" state with the launcher not reaching
-  // the top of the screen and the app list scrolling.
-  apps_grid_view_->OnMouseEvent(&drag_above);
-  EXPECT_TRUE(drag_above.handled());
-  ASSERT_TRUE(app_list_view_->is_in_drag());
-  ASSERT_EQ(0, GetPaginationModel()->transition().progress);
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 2);
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 0);
-}
-
 TEST_P(AppsGridViewRTLTest,
        OnGestureEventScrollSequenceHandleByPaginationController) {
   base::HistogramTester histogram_tester;
@@ -1334,7 +1210,6 @@ TEST_P(AppsGridViewRTLTest,
 
   apps_grid_view_->OnGestureEvent(&scroll_update);
   EXPECT_TRUE(scroll_update.handled());
-  ASSERT_FALSE(app_list_view_->is_in_drag());
   ASSERT_NE(0, GetPaginationModel()->transition().progress);
   histogram_tester.ExpectTotalCount(
       "Apps.PaginationTransition.DragScroll.PresentationTime.ClamshellMode", 1);
@@ -4722,7 +4597,6 @@ TEST_P(AppsGridViewTabletTest, Basic) {
 
   apps_grid_view_->OnGestureEvent(&scroll_update);
   EXPECT_TRUE(scroll_update.handled());
-  ASSERT_FALSE(app_list_view_->is_in_drag());
   ASSERT_NE(0, GetPaginationModel()->transition().progress);
   histogram_tester.ExpectTotalCount(
       "Apps.PaginationTransition.DragScroll.PresentationTime.TabletMode", 1);

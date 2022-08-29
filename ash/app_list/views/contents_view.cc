@@ -66,11 +66,6 @@ constexpr int kDefaultSearchBoxTopMarginInPeekingState = 24;
 // The top search box margin (measured from the app list view top bound) when
 // app list view is in peeking state on the apps page.
 constexpr int kSearchBoxTopMarginInPeekingAppsPage = 84;
-
-// The range of app list transition progress in which the expand arrow'
-// opacity changes from 0 to 1.
-constexpr float kExpandArrowOpacityStartProgress = 0.61;
-constexpr float kExpandArrowOpacityEndProgress = 1;
 constexpr int kSearchBarMinWidth = 440;
 
 // Range of the fraction of app list from collapsed to peeking that search box
@@ -478,16 +473,6 @@ void ContentsView::UpdateExpandArrowOpacity(
       !app_list_view_->is_side_shelf() && !app_list_view_->is_tablet_mode();
 
   float target_opacity = target_visibility ? 1.0f : 0.0f;
-  // Update the target opacity for when the app list view is in drag.
-  if (target_opacity && app_list_view_->is_in_drag()) {
-    // NOTE: The expand arrow is only shown for apps page, so it's OK to use the
-    // app list drag progress for apps page.
-    const float progress = app_list_view_->GetAppListTransitionProgress(
-        AppListView::kProgressFlagNone);
-    target_opacity =
-        GetOpacityForProgress(progress, kExpandArrowOpacityStartProgress,
-                              kExpandArrowOpacityEndProgress);
-  }
 
   ui::Layer* const layer = expand_arrow_view_->layer();
   if (transition_duration.is_zero()) {
@@ -544,13 +529,6 @@ void ContentsView::AddLauncherPageInternal(std::unique_ptr<AppListPage> view,
 }
 
 gfx::Rect ContentsView::GetSearchBoxBounds(AppListState state) const {
-  if (app_list_view_->is_in_drag()) {
-    return GetSearchBoxExpectedBoundsForProgress(
-        state, app_list_view_->GetAppListTransitionProgress(
-                   state == AppListState::kStateSearchResults
-                       ? AppListView::kProgressFlagSearchResults
-                       : AppListView::kProgressFlagNone));
-  }
   return GetSearchBoxBoundsForViewState(state, target_view_state());
 }
 
@@ -737,17 +715,9 @@ void ContentsView::UpdateYPositionAndOpacity() {
           ConvertRectToWidgetWithoutTransform(search_box_bounds));
   search_box->GetWidget()->SetBounds(search_rect);
 
-  float progress = 0.0f;
-  if (app_list_view_->is_in_drag()) {
-    progress = app_list_view_->GetAppListTransitionProgress(
-        current_state == AppListState::kStateSearchResults
-            ? AppListView::kProgressFlagSearchResults
-            : AppListView::kProgressFlagNone);
-  } else {
-    progress = AppListView::GetTransitionProgressForState(target_view_state());
-  }
-  const bool restore_opacity = !app_list_view_->is_in_drag() &&
-                               target_view_state() != AppListViewState::kClosed;
+  float progress =
+      AppListView::GetTransitionProgressForState(target_view_state());
+  const bool restore_opacity = target_view_state() != AppListViewState::kClosed;
   const float search_box_opacity =
       restore_opacity
           ? 1.0f
@@ -760,13 +730,6 @@ void ContentsView::UpdateYPositionAndOpacity() {
                                    search_box_bounds);
     page->UpdatePageOpacityForState(current_state, search_box_opacity,
                                     restore_opacity);
-  }
-
-  // If in drag, reset the transforms that might have been set in
-  // AnimateToViewState().
-  if (app_list_view_->is_in_drag()) {
-    search_box->layer()->SetTransform(gfx::Transform());
-    expand_arrow_view_->layer()->SetTransform(gfx::Transform());
   }
 
   target_page_for_last_view_state_update_ = current_state;

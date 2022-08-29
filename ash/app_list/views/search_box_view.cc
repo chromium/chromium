@@ -656,8 +656,7 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
 
 int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
     AppListState state) const {
-  if (state == AppListState::kStateSearchResults && app_list_view_ &&
-      !app_list_view_->is_in_drag()) {
+  if (state == AppListState::kStateSearchResults && app_list_view_) {
     return features::IsProductivityLauncherEnabled()
                ? kExpandedSearchBoxCornerRadiusForProductivityLauncher
                : kSearchBoxBorderCornerRadiusSearchResult;

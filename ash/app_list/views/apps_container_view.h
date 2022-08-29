@@ -75,6 +75,7 @@ class ASH_EXPORT AppsContainerView
 
   // Updates the visibility of the items in this view according to
   // |app_list_state| and |is_in_drag|.
+  // TODO(crbug.com/1356674): Remove |is_in_drag| from parameters.
   void UpdateControlVisibility(AppListViewState app_list_state,
                                bool is_in_drag);
 
