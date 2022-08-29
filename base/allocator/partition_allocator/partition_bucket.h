@@ -108,7 +108,8 @@ struct PartitionBucket {
     // Cannot overflow, num_system_pages_per_slot_span is a bitfield, and 255
     // pages fit in a size_t.
     static_assert(kPartitionNumSystemPagesPerSlotSpanBits <= 8, "");
-    return num_system_pages_per_slot_span << SystemPageShift();
+    return static_cast<size_t>(num_system_pages_per_slot_span)
+           << SystemPageShift();
   }
   PA_ALWAYS_INLINE size_t get_slots_per_span() const {
     size_t ret = GetSlotNumber(get_bytes_per_span());
