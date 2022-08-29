@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
@@ -64,7 +65,8 @@ class SaveUpdatePasswordMessageDelegate {
       absl::optional<AccountInfo> account_info,
       bool update_password);
   void CreateMessage(bool update_password);
-  void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message);
+  void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message,
+                    bool update_password);
 
   // Returns the message description depending on whether the password is being
   // saved or updated and if unified password manager is enabled.
@@ -88,16 +90,13 @@ class SaveUpdatePasswordMessageDelegate {
   void HandleSaveButtonClicked();
   void HandleNeverSaveClicked();
   void HandleUpdateButtonClicked();
-  void DisplayEditDialog();
-  void DisplaySavePasswordDialog(std::u16string current_username,
-                                 std::u16string current_password);
-  void DisplayUpdatePasswordDialog(std::vector<std::u16string> usernames,
-                                   int selected_username_index);
+  void DisplayEditDialog(bool update_password);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
-  void HandleSavePasswordFromDialog(const std::u16string& username,
-                                    const std::u16string& password);
+  bool HasMultipleCredentialsStored();
   void CreatePasswordEditDialog();
   void HandleDialogDismissed(bool dialogAccepted);
+  void HandleSavePasswordFromDialog(const std::u16string& username,
+                                    const std::u16string& password);
 
   void ClearState();
 

@@ -148,12 +148,7 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
 
   update_password_ = update_password;
 
-  bool use_followup_button_text = false;
-  if (update_password) {
-    std::vector<std::u16string> usernames;
-    GetDisplayUsernames(&usernames);
-    use_followup_button_text = usernames.size() > 1;
-  }
+  bool use_followup_button_text = HasMultipleCredentialsStored();
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
       GetPrimaryButtonTextId(update_password, use_followup_button_text)));
 
@@ -166,18 +161,22 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
   }
 
-  if (!update_password)
-    SetupCogMenu(message_);
+  // With detailed dialog feature enabled the cog button is always shown
+  // (it was shown only for Save password dialog before)
+  if (!update_password ||
+      base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails))
+    SetupCogMenu(message_, update_password);
 }
 
 void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
-    std::unique_ptr<messages::MessageWrapper>& message) {
+    std::unique_ptr<messages::MessageWrapper>& message,
+    bool update_password) {
   message->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
   if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
     message->SetSecondaryActionCallback(base::BindRepeating(
         &SaveUpdatePasswordMessageDelegate::DisplayEditDialog,
-        base::Unretained(this)));
+        base::Unretained(this), update_password));
     return;
   }
 
@@ -242,79 +241,6 @@ int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
   return IDS_PASSWORD_MANAGER_CONTINUE_BUTTON;
 }
 
-void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
-    messages::DismissReason dismiss_reason) {
-  message_.reset();
-  if (password_edit_dialog_) {
-    // The user triggered password edit dialog. Don't cleanup internal
-    // datastructures, dialog dismiss callback will perform cleanup.
-    return;
-  }
-  // Record metrics and cleanup state.
-  RecordDismissalReasonMetrics(
-      MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
-  ClearState();
-}
-
-void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
-  passwords_state_.form_manager()->Save();
-}
-
-void SaveUpdatePasswordMessageDelegate::DisplayEditDialog() {
-  const std::u16string& current_username =
-      passwords_state_.form_manager()->GetPendingCredentials().username_value;
-  const std::u16string& current_password =
-      passwords_state_.form_manager()->GetPendingCredentials().password_value;
-  DisplaySavePasswordDialog(std::move(current_username),
-                            std::move(current_password));
-  DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
-}
-
-void SaveUpdatePasswordMessageDelegate::DisplaySavePasswordDialog(
-    std::u16string current_username,
-    std::u16string current_password) {
-  CreatePasswordEditDialog();
-
-  // Password edit dialog factory method can return nullptr when web_contents
-  // is not attached to a window. See crbug.com/1049090 for details.
-  if (!password_edit_dialog_)
-    return;
-
-  password_edit_dialog_->ShowSavePasswordDialog(
-      current_username, current_password, account_email_);
-}
-
-void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
-  passwords_state_.form_manager()->Blocklist();
-  DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
-}
-
-void SaveUpdatePasswordMessageDelegate::HandleUpdateButtonClicked() {
-  std::vector<std::u16string> usernames;
-  int selected_username_index = GetDisplayUsernames(&usernames);
-  if (usernames.size() > 1) {
-    DisplayUpdatePasswordDialog(std::move(usernames), selected_username_index);
-  } else {
-    passwords_state_.form_manager()->Save();
-  }
-}
-
-void SaveUpdatePasswordMessageDelegate::DisplayUpdatePasswordDialog(
-    std::vector<std::u16string> usernames,
-    int selected_username_index) {
-  CreatePasswordEditDialog();
-
-  // Password edit dialog factory method can return nullptr when web_contents
-  // is not attached to a window. See crbug.com/1049090 for details.
-  if (!password_edit_dialog_)
-    return;
-
-  password_edit_dialog_->ShowUpdatePasswordDialog(
-      usernames, selected_username_index,
-      passwords_state_.form_manager()->GetPendingCredentials().password_value,
-      account_email_);
-}
-
 unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
     std::vector<std::u16string>* usernames) {
   unsigned int selected_username_index = 0;
@@ -339,6 +265,74 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
         passwords_state_.form_manager()->GetPendingCredentials()));
   }
   return selected_username_index;
+}
+
+void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
+  passwords_state_.form_manager()->Save();
+}
+
+void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
+  passwords_state_.form_manager()->Blocklist();
+  DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
+}
+
+void SaveUpdatePasswordMessageDelegate::HandleUpdateButtonClicked() {
+  std::vector<std::u16string> usernames;
+  if (HasMultipleCredentialsStored()) {
+    DisplayEditDialog(/*update_password=*/true);
+  } else {
+    passwords_state_.form_manager()->Save();
+  }
+}
+
+void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
+    bool update_password) {
+  const std::u16string& current_username =
+      passwords_state_.form_manager()->GetPendingCredentials().username_value;
+  const std::u16string& current_password =
+      passwords_state_.form_manager()->GetPendingCredentials().password_value;
+
+  CreatePasswordEditDialog();
+
+  // Password edit dialog factory method can return nullptr when web_contents
+  // is not attached to a window. See crbug.com/1049090 for details.
+  if (!password_edit_dialog_)
+    return;
+
+  if (update_password) {
+    std::vector<std::u16string> usernames;
+    int selected_username_index = GetDisplayUsernames(&usernames);
+    password_edit_dialog_->ShowUpdatePasswordDialog(
+        usernames, selected_username_index, current_password, account_email_);
+  } else {
+    password_edit_dialog_->ShowSavePasswordDialog(
+        current_username, current_password, account_email_);
+  }
+
+  DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
+}
+
+void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
+    messages::DismissReason dismiss_reason) {
+  message_.reset();
+  if (password_edit_dialog_) {
+    // The user triggered password edit dialog. Don't cleanup internal
+    // datastructures, dialog dismiss callback will perform cleanup.
+    return;
+  }
+  // Record metrics and cleanup state.
+  RecordDismissalReasonMetrics(
+      MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
+  ClearState();
+}
+
+bool SaveUpdatePasswordMessageDelegate::HasMultipleCredentialsStored() {
+  // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
+  // rather than current_forms which is best_matches without PSL-matched
+  // credentials.
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+      password_forms = passwords_state_.GetCurrentForms();
+  return password_forms.size() > 1;
 }
 
 void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {

@@ -107,15 +107,49 @@ public class PasswordEditDialogControllerTest {
      */
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-    public void testUpdatePasswordDialogPropertiesFeatureEnabled() {
+    public void testUpdatePasswordDialogWithMultipleCredentialsPropertiesFeatureEnabled() {
         createAndShowDialog(true);
+        Resources r = RuntimeEnvironment.getApplication().getResources();
+
+        Assert.assertEquals(
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.TITLE),
+                r.getString(R.string.confirm_username_dialog_title));
+        Assert.assertThat("Usernames don't match",
+                mCustomViewModel.get(PasswordEditDialogProperties.USERNAMES), contains(USERNAMES));
+        Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME,
+                mCustomViewModel.get(PasswordEditDialogProperties.USERNAME));
+        Assert.assertEquals("Password doesn't match", INITIAL_PASSWORD,
+                mCustomViewModel.get(PasswordEditDialogProperties.PASSWORD));
+        Assert.assertNotNull(
+                "Footer is empty", mCustomViewModel.get(PasswordEditDialogProperties.FOOTER));
+        Assert.assertNotNull("There should be a title icon",
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.TITLE_ICON));
+        Assert.assertEquals(mModalDialogManager.getShownDialogModel().get(
+                                    ModalDialogProperties.POSITIVE_BUTTON_TEXT),
+                r.getString(R.string.password_manager_update_button));
+        if (mIsSignedIn) {
+            Assert.assertTrue("Footer should contain user account name",
+                    mCustomViewModel.get(PasswordEditDialogProperties.FOOTER)
+                            .contains(ACCOUNT_NAME));
+        }
+    }
+
+    /**
+     * Tests that properties of update modal dialog and custom view are set correctly
+     * based on passed parameters when the details feature is enabled.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testUpdatePasswordDialogWithSingleCredentialPropertiesFeatureEnabled() {
+        createUpdatePasswordDialogWithSingleUsername();
         Resources r = RuntimeEnvironment.getApplication().getResources();
 
         Assert.assertEquals(
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.TITLE),
                 r.getString(R.string.password_update_dialog_title));
         Assert.assertThat("Usernames don't match",
-                mCustomViewModel.get(PasswordEditDialogProperties.USERNAMES), contains(USERNAMES));
+                mCustomViewModel.get(PasswordEditDialogProperties.USERNAMES),
+                contains(INITIAL_USERNAME));
         Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME,
                 mCustomViewModel.get(PasswordEditDialogProperties.USERNAME));
         Assert.assertEquals("Password doesn't match", INITIAL_PASSWORD,
@@ -278,6 +312,16 @@ public class PasswordEditDialogControllerTest {
             mDialogCoordinator.showSavePasswordDialog(
                     INITIAL_USERNAME, INITIAL_PASSWORD, mIsSignedIn ? ACCOUNT_NAME : null);
         }
+
+        mModalDialogModel = mDialogCoordinator.getDialogModelForTesting();
+        mCustomViewModel = mDialogCoordinator.getDialogViewModelForTesting();
+    }
+
+    private void createUpdatePasswordDialogWithSingleUsername() {
+        mDialogCoordinator = new PasswordEditDialogCoordinator(RuntimeEnvironment.getApplication(),
+                mModalDialogManager, mDialogViewMock, mDelegateMock);
+        mDialogCoordinator.showUpdatePasswordDialog(
+                new String[] {INITIAL_USERNAME}, 0, INITIAL_PASSWORD, ACCOUNT_NAME);
 
         mModalDialogModel = mDialogCoordinator.getDialogModelForTesting();
         mCustomViewModel = mDialogCoordinator.getDialogViewModelForTesting();

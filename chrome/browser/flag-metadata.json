@@ -5171,8 +5171,8 @@
   },
   {
     "name": "password-edit-dialog-with-details",
-    "owners": ["atsvirchkova"],
-    "expiry_milestone": 106
+    "owners": ["atsvirchkova@google.com", "ioanap"],
+    "expiry_milestone": 109
   },
   {
     "name": "password-import",

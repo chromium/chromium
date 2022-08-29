@@ -706,6 +706,50 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
 }
 
 // Verifies that:
+// 1. Update password dialog is shown after clicking on cog button (secondary
+// action) in the message.
+// 2. Updating the password form is executed after clicking on Update button of
+// the dialog.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       TriggerUpdateMessage_CogButton_Accept) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kPasswordEditDialogWithDetails);
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  MockPasswordFormManagerForUI* form_manager_pointer = form_manager.get();
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(*mock_dialog, ShowUpdatePasswordDialog);
+  TriggerPasswordEditDialog();
+
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  EXPECT_CALL(*form_manager_pointer, Save());
+  TriggerDialogAcceptedCallback(/*username=*/kUsername,
+                                /*password=*/kPassword);
+
+  // The real password edit dialog triggers dialog dismissed delegate inside.
+  // Here we use the mock that doesn't do this, so the dismiss is called
+  // manually here.
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+  CommitPasswordFormMetrics();
+  VerifyUkmMetrics(
+      test_ukm_recorder,
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+  histogram_tester.ExpectUniqueSample(
+      kUpdateUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+// Verifies that:
 // 1. Save password dialog is shown after clicking on cog button (secondary
 // action) in the message
 // 2. The dialog is dismissed with negative result after clicking on Cancel

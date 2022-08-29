@@ -143,7 +143,10 @@ class PasswordEditDialogCoordinator {
      */
     void showUpdatePasswordDialog(@NonNull String[] usernames, int selectedUsernameIndex,
             @NonNull String password, @Nullable String account) {
-        mDialogModel = createModalDialogModel(mIsDialogWithDetailsFeatureEnabled
+        // If there is more than one username possible,
+        // the user is asked to confirm the one to be saved.
+        // Otherwise, they are just asked if they want to update the password.
+        mDialogModel = createModalDialogModel(usernames.length < 2
                         ? R.string.password_update_dialog_title
                         : R.string.confirm_username_dialog_title,
                 R.string.password_manager_update_button);
