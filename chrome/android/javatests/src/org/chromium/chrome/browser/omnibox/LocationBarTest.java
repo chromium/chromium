@@ -592,7 +592,7 @@ public class LocationBarTest {
                 () -> { mLocationBarCoordinator.setOmniboxEditingText(url); });
 
         onView(withId(R.id.mic_button))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.delete_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
