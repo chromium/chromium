@@ -45,8 +45,8 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
-#include "headless/embedded_resource_pack_data.h"
-#include "headless/embedded_resource_pack_strings.h"
+#include "headless/embedded_resource_pack_data.h"     // nogncheck
+#include "headless/embedded_resource_pack_strings.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

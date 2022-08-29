@@ -68,7 +68,7 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//headless:headless_non_renderer",  # 2 errors
+  # crbug.com/1158989
   "//headless:headless_renderer",  # 12 errors
   "//headless:headless_shared_sources",  # 2 errors
   "//headless:headless_shell_browser_lib",  # 1 errors
