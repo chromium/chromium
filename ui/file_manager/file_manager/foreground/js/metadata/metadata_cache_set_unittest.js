@@ -4,7 +4,7 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {MetadataCacheSet, MetadataCacheSetStorageForObject} from './metadata_cache_set.js';
+import {MetadataCacheSet} from './metadata_cache_set.js';
 
 /** @const {!Entry} */
 const entryA = /** @type {!Entry} */ ({
@@ -21,7 +21,7 @@ const entryB = /** @type {!Entry} */ ({
 });
 
 export function testMetadataCacheSetBasic() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   const loadRequested = set.createRequests([entryA, entryB], ['property']);
   assertEquals(2, loadRequested.length);
   assertEquals(entryA, loadRequested[0].entry);
@@ -42,7 +42,7 @@ export function testMetadataCacheSetBasic() {
 }
 
 export function testMetadataCacheSetStorePartial() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   set.startRequests(1, set.createRequests([entryA, entryB], ['property']));
 
   assertTrue(set.storeProperties(1, [entryA], [{property: 'valueA'}], []));
@@ -59,7 +59,7 @@ export function testMetadataCacheSetStorePartial() {
 }
 
 export function testMetadataCacheSetCachePartial() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   set.startRequests(1, set.createRequests([entryA], ['property']));
   set.storeProperties(1, [entryA], [{property: 'valueA'}], []);
 
@@ -72,7 +72,7 @@ export function testMetadataCacheSetCachePartial() {
 }
 
 export function testMetadataCacheSetInvalidatePartial() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   set.startRequests(1, set.createRequests([entryA, entryB], ['property']));
   set.invalidate(2, [entryA]);
 
@@ -92,7 +92,7 @@ export function testMetadataCacheSetInvalidatePartial() {
 }
 
 export function testMetadataCacheSetCreateSnapshot() {
-  const setA = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const setA = new MetadataCacheSet(new Map());
   setA.startRequests(1, setA.createRequests([entryA, entryB], ['property']));
   const setB = setA.createSnapshot([entryA]);
   setA.storeProperties(
@@ -117,7 +117,7 @@ export function testMetadataCacheSetCreateSnapshot() {
 }
 
 export function testMetadataCacheSetHasFreshCache() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   assertFalse(set.hasFreshCache([entryA, entryB], ['property']));
 
   set.startRequests(1, set.createRequests([entryA, entryB], ['property']));
@@ -132,12 +132,12 @@ export function testMetadataCacheSetHasFreshCache() {
 }
 
 export function testMetadataCacheSetHasFreshCacheWithEmptyNames() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   assertTrue(set.hasFreshCache([entryA, entryB], []));
 }
 
 export function testMetadataCacheSetClear() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   set.startRequests(1, set.createRequests([entryA], ['propertyA']));
   set.storeProperties(1, [entryA], [{propertyA: 'value'}], []);
   assertTrue(set.hasFreshCache([entryA], ['propertyA']));
@@ -152,7 +152,7 @@ export function testMetadataCacheSetClear() {
 }
 
 export function testMetadataCacheSetUpdateEvent() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   let event = null;
   set.addEventListener('update', inEvent => {
     event = inEvent;
@@ -167,7 +167,7 @@ export function testMetadataCacheSetUpdateEvent() {
 }
 
 export function testMetadataCacheSetClearAll() {
-  const set = new MetadataCacheSet(new MetadataCacheSetStorageForObject({}));
+  const set = new MetadataCacheSet(new Map());
   set.startRequests(1, set.createRequests([entryA, entryB], ['propertyA']));
   set.storeProperties(
       1, [entryA, entryB], [{propertyA: 'value'}, {propertyA: 'value'}], []);

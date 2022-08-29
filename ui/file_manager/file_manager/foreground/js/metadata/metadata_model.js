@@ -9,7 +9,7 @@ import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
-import {MetadataCacheSet, MetadataCacheSetStorageForObject} from './metadata_cache_set.js';
+import {MetadataCacheSet} from './metadata_cache_set.js';
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.js';
@@ -45,8 +45,8 @@ export class MetadataModel {
     /** @private @const {!MetadataProvider} */
     this.rawProvider_ = rawProvider;
 
-    /** @private @const {!MetadataProviderCache} */
-    this.cache_ = new MetadataProviderCache();
+    /** @private @const {!MetadataCacheSet} */
+    this.cache_ = new MetadataCacheSet(new Map());
 
     /** @private @const {!Array<!MetadataProviderCallbackRequest>} */
     this.callbackRequests_ = [];
@@ -276,28 +276,5 @@ class MetadataProviderCallbackRequest {
       return true;
     }
     return false;
-  }
-}
-
-/**
- * Helper wrapper for LRUCache.
- * @final
- */
-class MetadataProviderCache extends MetadataCacheSet {
-  constructor() {
-    super(new MetadataCacheSetStorageForObject({}));
-
-    /**
-     * @private {number}
-     */
-    this.requestIdCounter_ = 0;
-  }
-
-  /**
-   * Generates a unique request ID every time when it is called.
-   * @return {number}
-   */
-  generateRequestId() {
-    return this.requestIdCounter_++;
   }
 }
