@@ -3003,6 +3003,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="4043796890723386527">Impedisci agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
+<translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4061107397839125009">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che non possono mostrare notifiche.
@@ -4441,6 +4442,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuotata.</translation>
 <translation id="5717973246079053225">Disattiva reporting su cloud tramite profilo gestito</translation>
 <translation id="572155275267014074">Impostazioni di Android</translation>
+<translation id="5722577409367087850">Carica l'estensione</translation>
 <translation id="5728154254076636808">Consente la creazione di copie di roaming per i dati dei profili <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">La password Kerberos. Il segnaposto <ph name="PASSWORD_PLACEHOLDER" /> viene sostituito dalla password di accesso.</translation>
 <translation id="5732972008943405952">Importa i dati della compilazione automatica dei moduli dal browser predefinito alla prima esecuzione</translation>
@@ -5128,6 +5130,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6447948611083700881">Backup e ripristino disabilitati</translation>
 <translation id="6449476513004303784">Non consentire agli utenti di gestire i certificati
 </translation>
+<translation id="6452882999388592166">Se impostato su Attivato, l'estensione del componente CryptoToken integrata viene caricata all'avvio. Se impostato su Disattivato o se non viene configurato, CryptoToken non viene caricato all'avvio del browser. Questo criterio è inteso come soluzione alternativa temporanea per i siti non funzionanti perché "chrome.runtime" non è definito come effetto collaterale della rimozione di CryptoToken nella versione M106. I siti web non devono dipendere dalla definizione senza condizioni di "chrome.runtime".</translation>
 <translation id="6453641799812499182">Attiva le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" /></translation>
 <translation id="645425387487868471">Attiva l'accesso forzato per <ph name="PRODUCT_NAME" /></translation>
 <translation id="6455842857207956758">Consente di attivare la sincronizzazione delle password SAML tra più dispositivi Chrome monitorando il valore del token di sincronizzazione delle password e facendo svolgere all'utente la procedura di riautenticazione online se la password è stata aggiornata e deve essere sincronizzata.
@@ -7822,6 +7825,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio è impostato su Falso, solo gli utenti presenti nella lista consentita <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> potranno eseguire l'accesso.
 
       Se il criterio è impostato su Vero o non viene configurato, tutti gli utenti potranno accedere.</translation>
+<translation id="966425658642788645">Applica il comportamento predefinito</translation>
 <translation id="971677226939413180">L'opzione Stampa come immagine non può essere selezionata dagli utenti</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>
 <translation id="979467274961593903">Non consentire l'uso del debug remoto</translation>

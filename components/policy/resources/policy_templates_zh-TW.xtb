@@ -2956,6 +2956,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="4043796890723386527">禁止使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="4051723201852944592">啟用視窗遮蔽功能</translation>
+<translation id="4052529125939620019">啟動時載入 CryptoToken 元件擴充功能</translation>
 <translation id="4053157306171963473">停用裝置活動時間回報功能</translation>
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
 <translation id="4061107397839125009">你可以透過這項政策設定網址模式清單，用於指定無法顯示通知的網站。
@@ -4384,6 +4385,7 @@
       注意：重新啟動裝置及登出帳戶都會清除快取。</translation>
 <translation id="5717973246079053225">停用受管理設定檔的雲端報告功能</translation>
 <translation id="572155275267014074">Android 設定</translation>
+<translation id="5722577409367087850">載入擴充功能</translation>
 <translation id="5728154254076636808">允許建立 <ph name="PRODUCT_NAME" /> 設定檔資料的漫遊複本</translation>
 <translation id="5729308727912841256">Kerberos 密碼。<ph name="PASSWORD_PLACEHOLDER" /> 預留位置會由登入密碼取代。</translation>
 <translation id="5732972008943405952">首次執行時從預設瀏覽器匯入自動填入表單資料</translation>
@@ -5042,6 +5044,7 @@
 <translation id="6440051664870270040">允許同時在多個網站中進行瀏覽及開啟彈出式視窗</translation>
 <translation id="6447948611083700881">備份與還原功能已停用</translation>
 <translation id="6449476513004303784">不允許使用者管理憑證</translation>
+<translation id="6452882999388592166">如果設為啟用，系統會在啟動時載入內建的 CryptoToken 元件擴充功能。如果設為停用或不設定，瀏覽器啟動時就不會載入 CryptoToken。在 M106 中，我們移除了 CryptoToken，因而導致「chrome.runtime」呈現未定義的狀態。這項政策是用於處理網站因此故障的暫時性解決方案。網站不應無條件將「chrome.runtime」視為已定義。</translation>
 <translation id="6453641799812499182">在新版 <ph name="CORS" /> 模式中啟用 <ph name="CORS" /> 檢查安全防護措施</translation>
 <translation id="645425387487868471">啟用 <ph name="PRODUCT_NAME" /> 的強制登入功能</translation>
 <translation id="6455842857207956758">在密碼更新完成且需要同步時，監控密碼同步權杖的值，並讓使用者在線上進行重新驗證，以啟用多部 Chrome 之間的 SAML 密碼同步功能。
@@ -7711,6 +7714,7 @@
       如果將這項政策設為 false，代表只有 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 中的使用者才能登入。
 
       如果將這項政策設為 true 或不設定，則所有使用者都能登入。</translation>
+<translation id="966425658642788645">套用預設行為</translation>
 <translation id="971677226939413180">使用者無法選擇「以圖片形式列印」選項。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>
 <translation id="979467274961593903">禁止使用遠端偵錯功能</translation>

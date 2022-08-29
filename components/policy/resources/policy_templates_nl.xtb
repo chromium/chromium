@@ -2962,6 +2962,7 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="4043796890723386527">Voorkomen dat gebruikers secundaire profielen maken en gebruiken of dat ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="4051723201852944592">Occlusie van vensters aanzetten</translation>
+<translation id="4052529125939620019">De componentextensie CryptoToken laden bij opstarten</translation>
 <translation id="4053157306171963473">Rapportage voor tijd van apparaatactiviteit uitzetten</translation>
 <translation id="4056910949759281379">SPDY-protocol uitzetten</translation>
 <translation id="4061107397839125009">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die geen meldingen mogen bekijken.
@@ -4393,6 +4394,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Opmerking: Het cachegeheugen wordt gewist als je opnieuw opstart en uitlogt.</translation>
 <translation id="5717973246079053225">Cloudrapportage voor beheerde profielen uitzetten</translation>
 <translation id="572155275267014074">Android-instellingen</translation>
+<translation id="5722577409367087850">De extensie laden</translation>
 <translation id="5728154254076636808">Aanmaak van roaming-exemplaren voor <ph name="PRODUCT_NAME" />-profielgegevens aanzetten</translation>
 <translation id="5729308727912841256">Kerberos-wachtwoord. De tijdelijke aanduiding <ph name="PASSWORD_PLACEHOLDER" /> wordt vervangen door het wachtwoord voor inloggen.</translation>
 <translation id="5732972008943405952">Formuliergegevens voor Automatisch invullen importeren uit standaardbrowser bij eerste uitvoering</translation>
@@ -5062,6 +5064,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="6440051664870270040">Toestaan dat sites tegelijkertijd kunnen navigeren en pop-ups kunnen openen</translation>
 <translation id="6447948611083700881">Back-up en herstel staat uit</translation>
 <translation id="6449476513004303784">Gebruikers niet toestaan certificaten te beheren</translation>
+<translation id="6452882999388592166">Als je dit beleid toepast, wordt de ingebouwde componentextensie CryptoToken geladen bij het opstarten. Als je het beleid niet toepast of niet instelt, wordt CryptoToken niet geladen als de browser opstart. Dit beleid is bedoeld als tijdelijke oplossing voor sites die problemen hebben doordat 'chrome.runtime' niet gedefinieerd is als gevolg van de verwijdering van CryptoToken in M106. Websites mogen niet afhankelijk zijn van een zonder voorwaarden gedefinieerde 'chrome.runtime'.</translation>
 <translation id="6453641799812499182"><ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie aanzetten</translation>
 <translation id="645425387487868471">Inloggen voor <ph name="PRODUCT_NAME" /> verplichten</translation>
 <translation id="6455842857207956758">Hiermee wordt SAML-wachtwoordsynchronisatie tussen meerdere Chrome-apparaten aangezet door de waarde van de wachtwoordsynchronisatietoken te monitoren en een gebruiker de online verificatie opnieuw te laten uitvoeren als het wachtwoord is geüpdatet en moet worden gesynchroniseerd.
@@ -7764,6 +7767,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als dit beleid is ingesteld op False, kunnen alleen gebruikers inloggen die zijn opgenomen in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
 
       Als dit beleid is ingesteld op True of niet is ingesteld, kunnen alle gebruikers inloggen.</translation>
+<translation id="966425658642788645">Standaardgedrag toepassen</translation>
 <translation id="971677226939413180">Optie 'Afdrukken als afbeelding' niet beschikbaar voor gebruikersselectie.</translation>
 <translation id="974349541138387272">URI-template van gewenste DNS-over-HTTPS-resolver opgeven</translation>
 <translation id="979467274961593903">Het gebruik van foutopsporing op afstand niet toestaan</translation>

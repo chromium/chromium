@@ -2957,6 +2957,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4051723201852944592">启用窗口遮挡</translation>
+<translation id="4052529125939620019">在浏览器启动时加载 CryptoToken 组件扩展程序</translation>
 <translation id="4053157306171963473">停用设备活动时长报告功能</translation>
 <translation id="4056910949759281379">停用 SPDY 协议</translation>
 <translation id="4061107397839125009">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法显示通知。
@@ -4388,6 +4389,7 @@
       注意：重启设备和退出帐号会清除缓存。</translation>
 <translation id="5717973246079053225">为受管理个人资料停用云报告功能</translation>
 <translation id="572155275267014074">Android 设置</translation>
+<translation id="5722577409367087850">加载该扩展程序</translation>
 <translation id="5728154254076636808">允许创建 <ph name="PRODUCT_NAME" /> 个人资料数据的漫游副本</translation>
 <translation id="5729308727912841256">Kerberos 密码。占位符 <ph name="PASSWORD_PLACEHOLDER" /> 会被登录密码取代。</translation>
 <translation id="5732972008943405952">首次运行时，从默认浏览器导入自动填充表单数据</translation>
@@ -5060,6 +5062,7 @@
 <translation id="6440051664870270040">允许网站在导航的同时打开弹出式窗口</translation>
 <translation id="6447948611083700881">已停用备份和恢复服务</translation>
 <translation id="6449476513004303784">禁止用户管理证书</translation>
+<translation id="6452882999388592166">如果此政策已启用，系统会在浏览器启动时加载内置的 CryptoToken 组件扩展程序。如果此政策已停用或未设置，系统不会在浏览器启动时加载 CryptoToken。此政策旨在作为一种临时的变通方案，用于处理因未定义“chrome.runtime”（这是由于在 M106 中移除 CryptoToken 所致的不良后果）而无法正常运行的网站。网站不得依赖于无条件定义的“chrome.runtime”。</translation>
 <translation id="6453641799812499182">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能</translation>
 <translation id="645425387487868471">为 <ph name="PRODUCT_NAME" /> 启用强制登录功能</translation>
 <translation id="6455842857207956758">允许在多部 Chrome 设备之间同步 SAML 密码，方法是：监控密码同步令牌的值，并在密码已更新且需要同步时要求用户在线重新验证身份。
@@ -7747,6 +7750,7 @@
       如果此政策设为 false，只有 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 中列出的用户才能登录。
 
       如果此政策设为 true 或未配置，所有用户都将能够登录。</translation>
+<translation id="966425658642788645">应用默认行为</translation>
 <translation id="971677226939413180">不提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
 <translation id="979467274961593903">不允许进行远程调试</translation>

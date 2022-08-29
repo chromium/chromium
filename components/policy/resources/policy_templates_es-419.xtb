@@ -3006,6 +3006,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="4043796890723386527">Impedir que los usuarios creen o utilicen perfiles secundarios o usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Habilita la oclusión de ventanas</translation>
+<translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes de tiempo de actividad del dispositivo</translation>
 <translation id="4056910949759281379">Inhabilitar el protocolo SPDY</translation>
 <translation id="4061107397839125009">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden mostrar notificaciones.
@@ -4457,6 +4458,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Nota: Si reinicias el dispositivo y sales de la cuenta, se borrará la caché.</translation>
 <translation id="5717973246079053225">Inhabilitar los informes en la nube de navegadores administrados</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
+<translation id="5722577409367087850">Cargar la extensión</translation>
 <translation id="5728154254076636808">Habilita la creación de las copias de itinerancia para los datos de perfil de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Contraseña de Kerberos. La contraseña de acceso reemplaza al marcador de posición <ph name="PASSWORD_PLACEHOLDER" />.</translation>
 <translation id="5732972008943405952">Importar el formulario de Autocompletar del navegador predeterminado en la primera ejecución</translation>
@@ -5166,6 +5168,7 @@ principal del string usuario-agente en 99.
 <translation id="6440051664870270040">Permitir la navegación y las ventanas emergentes en los sitios al mismo tiempo</translation>
 <translation id="6447948611083700881">Se inhabilitó la funcionalidad de copia de seguridad y restablecimiento</translation>
 <translation id="6449476513004303784">No permitir que los usuarios administren certificados</translation>
+<translation id="6452882999388592166">Si habilitas la política, la extensión del componente CryptoToken integrada se cargará al iniciar el navegador. Si la inhabilitas o no la estableces, CryptoToken no se cargará al iniciar el navegador. Esta política es una solución temporal para los sitios que se inhabilitaron porque "chrome.runtime" quedó indefinido como efecto secundario de la eliminación de CryptoToken en M106. Los sitios web no deben depender de la definición incondicional de "chrome.runtime".</translation>
 <translation id="6453641799812499182">Permite que <ph name="CORS" /> revise las mitigaciones en la nueva implementación de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Permitir forzar el acceso para <ph name="PRODUCT_NAME" /></translation>
 <translation id="6455842857207956758">Permite la sincronización de contraseñas de SAML entre varios dispositivos Chrome mediante la supervisión del valor del token de sincronización de contraseñas y el envío del usuario a la reautenticación en línea si se actualizó la contraseña y debe sincronizarse.
@@ -7887,6 +7890,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si estableces esta política como falsa, solo los usuarios presentes en <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> podrán acceder.
 
       Si la estableces como verdadera o no la configuras, todos los usuarios podrán acceder.</translation>
+<translation id="966425658642788645">Aplicar el comportamiento predeterminado</translation>
 <translation id="971677226939413180">La opción Imprimir como imagen no está disponible para el usuario</translation>
 <translation id="974349541138387272">Especifica la plantilla de URI del agente de resolución de DNS sobre HTTPS</translation>
 <translation id="979467274961593903">No permitir el uso de la depuración remota</translation>
