@@ -7,9 +7,11 @@
 
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/translate/core/browser/translate_driver.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -24,9 +26,11 @@ class NavigationContext;
 
 // HistoryTabHelper updates the history database based on navigation events from
 // its parent WebState.
-class HistoryTabHelper : public history::Context,
-                         public web::WebStateObserver,
-                         public web::WebStateUserData<HistoryTabHelper> {
+class HistoryTabHelper
+    : public history::Context,
+      public web::WebStateObserver,
+      public translate::TranslateDriver::LanguageDetectionObserver,
+      public web::WebStateUserData<HistoryTabHelper> {
  public:
   HistoryTabHelper(const HistoryTabHelper&) = delete;
   HistoryTabHelper& operator=(const HistoryTabHelper&) = delete;
@@ -46,6 +50,10 @@ class HistoryTabHelper : public history::Context,
   // for later (this will generally be set to true while the WebState is used
   // for pre-rendering).
   void SetDelayHistoryServiceNotification(bool delay_notification);
+
+  // TranslateDriver::LanguageDetectionObserver implementation.
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
 
  private:
   friend class web::WebStateUserData<HistoryTabHelper>;
@@ -68,6 +76,15 @@ class HistoryTabHelper : public history::Context,
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;
+
+  // Observes LanguageDetectionObserver, which notifies us when the language of
+  // the contents of the current page has been determined.
+  base::ScopedObservation<
+      translate::TranslateDriver,
+      translate::TranslateDriver::LanguageDetectionObserver,
+      &translate::TranslateDriver::AddLanguageDetectionObserver,
+      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+      translate_observation_{this};
 
   // Hold navigation entries that need to be added to the history database.
   // Pre-rendered WebStates do not write navigation data to the history DB

@@ -4,24 +4,26 @@
 
 #import "ios/chrome/browser/history/history_tab_helper.h"
 
-#include "base/memory/ptr_util.h"
-#include "components/history/core/browser/history_constants.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/ntp_snippets/features.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/memory/ptr_util.h"
+#import "components/history/core/browser/history_constants.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/ntp_snippets/features.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/translate/core/common/language_detection_details.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/complex_tasks/ios_content_record_task_id.h"
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#include "net/http/http_response_headers.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "net/http/http_response_headers.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -169,9 +171,28 @@ void HistoryTabHelper::SetDelayHistoryServiceNotification(
   }
 }
 
+void HistoryTabHelper::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  if (history::HistoryService* hs = GetHistoryService()) {
+    web::NavigationItem* last_committed_item =
+        web_state_->GetNavigationManager()->GetLastCommittedItem();
+    if (last_committed_item) {
+      hs->SetPageLanguageForVisit(
+          /*context_id=*/this, last_committed_item->GetUniqueID(),
+          web_state_->GetLastCommittedURL(), details.adopted_language);
+    }
+  }
+}
+
 HistoryTabHelper::HistoryTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
+
+  // A translate client is not always attached to a web state (e.g. tests).
+  if (ChromeIOSTranslateClient* translate_client =
+          ChromeIOSTranslateClient::FromWebState(web_state)) {
+    translate_observation_.Observe(translate_client->GetTranslateDriver());
+  }
 }
 
 void HistoryTabHelper::DidFinishNavigation(
@@ -277,6 +298,9 @@ void HistoryTabHelper::TitleWasSet(web::WebState* web_state) {
 
 void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
+
+  translate_observation_.Reset();
+
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }
