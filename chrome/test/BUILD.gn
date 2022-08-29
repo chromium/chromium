@@ -2436,6 +2436,7 @@ if (!is_android) {
       deps += [
         ":pdf_extension_test_utils",
         "//components/pdf/browser",
+        "//components/pdf/common",
         "//pdf:features",
         "//pdf/loader",
       ]
@@ -2745,7 +2746,7 @@ if (!is_android) {
 
     if (enable_plugins) {
       sources += [
-        "../browser/chrome_plugin_browsertest.cc",
+        "../browser/plugins/plugin_info_host_impl_browsertest.cc",
         "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
       ]
     }

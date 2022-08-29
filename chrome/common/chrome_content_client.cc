@@ -161,7 +161,7 @@ void ChromeContentClient::AddPepperPlugins(
   content::PepperPluginInfo nacl;
   // The nacl plugin is now built into the Chromium binary.
   nacl.is_internal = true;
-  nacl.path = base::FilePath(ChromeContentClient::kNaClPluginFileName);
+  nacl.path = base::FilePath(nacl::kInternalNaClPluginFileName);
   nacl.name = nacl::kNaClPluginName;
   content::WebPluginMimeType nacl_mime_type(nacl::kNaClPluginMimeType,
                                             nacl::kNaClPluginExtension,

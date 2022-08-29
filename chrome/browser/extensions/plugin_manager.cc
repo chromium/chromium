@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/pepper_plugin_info.h"
@@ -140,7 +139,7 @@ void PluginManager::UpdatePluginListWithNaClModules() {
   // MIME type to plugins which handle NaCl modules in order to allow the
   // individual modules to handle these types.
   static const base::NoDestructor<base::FilePath> path(
-      ChromeContentClient::kNaClPluginFileName);
+      nacl::kInternalNaClPluginFileName);
   const content::PepperPluginInfo* pepper_info =
       PluginService::GetInstance()->GetRegisteredPpapiPluginInfo(*path);
   if (!pepper_info)

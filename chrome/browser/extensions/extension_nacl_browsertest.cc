@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/nacl/common/nacl_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -127,7 +127,7 @@ class NaClExtensionTest : public extensions::ExtensionBrowserTest {
       run_loop.Run();
     }
 
-    static const base::FilePath path(ChromeContentClient::kNaClPluginFileName);
+    static const base::FilePath path(nacl::kInternalNaClPluginFileName);
     content::WebPluginInfo info;
     return PluginService::GetInstance()->GetPluginInfoByPath(path, &info);
   }

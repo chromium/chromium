@@ -69,6 +69,7 @@ class PluginPrefs : public RefcountedKeyedService {
  private:
   friend class base::RefCountedThreadSafe<PluginPrefs>;
   friend class PDFIFrameNavigationThrottleTest;
+  friend class PluginInfoHostImplTest;
   friend class PluginPrefsTest;
   friend class PrintPreviewDialogControllerBrowserTest;
 

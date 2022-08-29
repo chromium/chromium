@@ -1472,7 +1472,7 @@ bool ChromeContentRendererClient::IsOriginIsolatedPepperPlugin(
 
 #if BUILDFLAG(ENABLE_NACL)
   // Don't isolate the NaCl plugin (preserving legacy behavior).
-  if (plugin_path.value() == ChromeContentClient::kNaClPluginFileName)
+  if (plugin_path.value() == nacl::kInternalNaClPluginFileName)
     return false;
 #endif
 

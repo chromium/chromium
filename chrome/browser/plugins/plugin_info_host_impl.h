@@ -97,14 +97,14 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
 
   static void RegisterUserPrefs(user_prefs::PrefRegistrySyncable* registry);
 
- private:
-  void ShutdownOnUIThread();
-
   // chrome::mojom::PluginInfoHost
   void GetPluginInfo(const GURL& url,
                      const url::Origin& origin,
                      const std::string& mime_type,
                      GetPluginInfoCallback callback) override;
+
+ private:
+  void ShutdownOnUIThread();
 
   // |params| wraps the parameters passed to |OnGetPluginInfo|, because
   // |base::Bind| doesn't support the required arity <http://crbug.com/98542>.

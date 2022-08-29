@@ -36,10 +36,6 @@ class ChromeContentClient : public content::ContentClient {
   static const base::FilePath::CharType kNotPresent[];
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-  static const base::FilePath::CharType kNaClPluginFileName[];
-#endif
-
   static const char kPDFExtensionPluginName[];
   static const char kPDFInternalPluginName[];
   static const base::FilePath::CharType kPDFPluginPath[];
