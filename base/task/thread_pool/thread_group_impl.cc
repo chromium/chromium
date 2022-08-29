@@ -20,7 +20,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram.h"
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_token.h"
@@ -51,8 +50,6 @@ namespace internal {
 
 namespace {
 
-constexpr char kNumTasksBeforeDetachHistogramPrefix[] =
-    "ThreadPool.NumTasksBeforeDetach.";
 constexpr size_t kMaxNumberOfWorkers = 256;
 
 // In a background thread group:
@@ -126,11 +123,6 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     must_schedule_adjust_max_tasks_ = true;
   }
 
-  void ScheduleAddHistogramSample(HistogramBase* histogram,
-                                  HistogramBase::Sample sample) {
-    scheduled_histogram_samples_->emplace_back(histogram, sample);
-  }
-
  private:
   class WorkerContainer {
    public:
@@ -191,14 +183,6 @@ class ThreadGroupImpl::ScopedCommandsExecutor
 
     if (must_schedule_adjust_max_tasks_)
       outer_->ScheduleAdjustMaxTasks();
-
-    if (!scheduled_histogram_samples_->empty()) {
-      DCHECK_LE(scheduled_histogram_samples_->size(),
-                kHistogramSampleStackSize);
-      for (auto& scheduled_sample : scheduled_histogram_samples_)
-        scheduled_sample.first->Add(scheduled_sample.second);
-      scheduled_histogram_samples_->clear();
-    }
   }
 
   const raw_ptr<ThreadGroupImpl> outer_;
@@ -206,19 +190,7 @@ class ThreadGroupImpl::ScopedCommandsExecutor
   WorkerContainer workers_to_wake_up_;
   WorkerContainer workers_to_start_;
   bool must_schedule_adjust_max_tasks_ = false;
-
-  // StackVector rather than std::vector avoid heap allocations; size should be
-  // high enough to store the maximum number of histogram samples added to a
-  // given ScopedCommandsExecutor instance.
-  static constexpr size_t kHistogramSampleStackSize = 5;
-  StackVector<std::pair<HistogramBase*, HistogramBase::Sample>,
-              kHistogramSampleStackSize>
-      scheduled_histogram_samples_;
 };
-
-// static
-constexpr size_t
-    ThreadGroupImpl::ScopedCommandsExecutor::kHistogramSampleStackSize;
 
 class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
                                                   public BlockingObserver {
@@ -293,10 +265,6 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
 
   // Accessed only from the worker thread.
   struct WorkerOnly {
-    // Number of tasks executed since the last time the
-    // ThreadPool.NumTasksBeforeDetach histogram was recorded.
-    size_t num_tasks_since_last_detach = 0;
-
     // Associated WorkerThread, if any, initialized in OnMainEntry().
     raw_ptr<WorkerThread> worker_thread_;
 
@@ -368,20 +336,6 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
       thread_group_label_(thread_group_label),
       thread_type_hint_(thread_type_hint),
       idle_workers_stack_cv_for_testing_(lock_.CreateConditionVariable()),
-      // Mimics the UMA_HISTOGRAM_COUNTS_1000 macro. When a worker runs more
-      // than 1000 tasks before detaching, there is no need to know the exact
-      // number of tasks that ran.
-      num_tasks_before_detach_histogram_(
-          histogram_label.empty()
-              ? nullptr
-              : Histogram::FactoryGet(
-                    JoinString(
-                        {kNumTasksBeforeDetachHistogramPrefix, histogram_label},
-                        ""),
-                    1,
-                    1000,
-                    50,
-                    HistogramBase::kUmaTargetedHistogramFlag)),
       tracked_ref_factory_(this) {
   DCHECK(!thread_group_label_.empty());
 }
@@ -649,8 +603,6 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::DidProcessTask(
   DCHECK(read_worker().current_task_priority);
   DCHECK(read_worker().current_shutdown_behavior);
 
-  ++worker_only().num_tasks_since_last_detach;
-
   // A transaction to the TaskSource to reenqueue, if any. Instantiated here as
   // |TaskSource::lock_| is a UniversalPredecessor and must always be acquired
   // prior to acquiring a second lock
@@ -746,12 +698,6 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::CleanupLockRequired(
   DCHECK(!outer_->join_for_testing_started_);
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
 
-  if (outer_->num_tasks_before_detach_histogram_) {
-    executor->ScheduleAddHistogramSample(
-        outer_->num_tasks_before_detach_histogram_,
-        saturated_cast<HistogramBase::Sample>(
-            worker_only().num_tasks_since_last_detach));
-  }
   worker->Cleanup();
   outer_->idle_workers_stack_.Remove(worker);
 
