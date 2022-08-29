@@ -8136,12 +8136,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpdateHistoryEntryPointsInIncognitoDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kUpdateHistoryEntryPointsInIncognito)},
 
-    {"throttle-foreground-timers",
-     flag_descriptions::kThrottleForegroundTimersName,
-     flag_descriptions::kThrottleForegroundTimersDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kThrottleForegroundTimers)},
-
     {"align-wakeups", flag_descriptions::kAlignWakeUpsName,
      flag_descriptions::kAlignWakeUpsDescription, kOsAll,
      FEATURE_VALUE_TYPE(base::kAlignWakeUps)},
