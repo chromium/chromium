@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_data_importer.h"
@@ -102,7 +103,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
   ProfileImportProcess* process_ptr = import_process.get();
   client_->ConfirmSaveAddressProfile(
       process_ptr->import_candidate().value(),
-      base::OptionalOrNullptr(process_ptr->merge_candidate()),
+      base::OptionalToPtr(process_ptr->merge_candidate()),
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr(),

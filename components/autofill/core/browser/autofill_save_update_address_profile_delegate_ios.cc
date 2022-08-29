@@ -8,6 +8,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_util.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/grit/components_scaled_resources.h"
@@ -106,7 +107,7 @@ const AutofillProfile* AutofillSaveUpdateAddressProfileDelegateIOS::GetProfile()
 
 const AutofillProfile*
 AutofillSaveUpdateAddressProfileDelegateIOS::GetOriginalProfile() const {
-  return base::OptionalOrNullptr(original_profile_);
+  return base::OptionalToPtr(original_profile_);
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileInfo(
