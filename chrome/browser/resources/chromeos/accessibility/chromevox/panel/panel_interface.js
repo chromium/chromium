@@ -17,7 +17,7 @@ export class PanelInterface {
    * A callback function to be executed to perform the action from selecting
    * a menu item after the menu has been closed and focus has been restored
    * to the page or wherever it was previously.
-   * @param {?Function} callback
+   * @param {?function() : !Promise} callback
    */
   setPendingCallback(callback) {}
 }
