@@ -13,7 +13,6 @@ group("polymer3_elements") {
     ":active_directory_password_change_module",
     ":checking_downloading_update_module",
     ":gaia_password_changed_module",
-    ":management_transition_module",
     ":offline_login_module",
     ":update_required_card_module",
   ]
@@ -28,7 +27,7 @@ js_type_check("closure_compile") {
     ":encryption_migration",
     ":gaia_password_changed.m",
     ":lacros_data_migration",
-    ":management_transition.m",
+    ":management_transition",
     ":offline_login.m",
     ":update_required_card.m",
   ]
@@ -93,8 +92,8 @@ js_library("lacros_data_migration") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("management_transition.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/management_transition.m.js" ]
+js_library("management_transition") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/management_transition.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -103,7 +102,7 @@ js_library("management_transition.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_modal_dialog.m",
   ]
-  extra_deps = [ ":management_transition_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("offline_login.m") {
@@ -168,14 +167,6 @@ polymer_modulizer("gaia_password_changed") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("management_transition") {
-  js_file = "management_transition.js"
-  html_file = "management_transition.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("offline_login") {
   js_file = "offline_login.js"
   html_file = "offline_login.html"
@@ -205,5 +196,6 @@ html_to_js("web_components") {
   js_files = [
     "encryption_migration.js",
     "lacros_data_migration.js",
+    "management_transition.js",
   ]
 }
