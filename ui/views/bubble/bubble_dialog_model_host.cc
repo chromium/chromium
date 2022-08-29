@@ -25,6 +25,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -37,6 +38,32 @@
 
 namespace views {
 namespace {
+
+BubbleDialogModelHost::ContentsView* SetAndGetContentsView(
+    BubbleDialogModelHost* parent,
+    ui::ModalType modal_type) {
+  auto contents_view_unique =
+      std::make_unique<BubbleDialogModelHost::ContentsView>(parent);
+  BubbleDialogModelHost::ContentsView* contents_view =
+      contents_view_unique.get();
+
+  // TODO(crbug.com/1348165): Non modal dialogs size is not dependent on its
+  // content. Thus, the content has to be manually set by the view inside a
+  // scroll view. Modal dialogs handle their own size via constrained windows,
+  // so we can add a scroll view to the DialogModel directly.
+  if (modal_type == ui::MODAL_TYPE_NONE) {
+    parent->SetContentsView(std::move(contents_view_unique));
+  } else {
+    constexpr int kMaxDialogHeight = 448;
+    auto scroll_view = std::make_unique<views::ScrollView>();
+    scroll_view->ClipHeightTo(0, kMaxDialogHeight);
+    scroll_view->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    scroll_view->SetContents(std::move(contents_view_unique));
+    parent->SetContentsView(std::move(scroll_view));
+  }
+  return contents_view;
+}
 
 BubbleDialogModelHost::FieldType GetFieldTypeForField(
     ui::DialogModelField* field,
@@ -185,8 +212,7 @@ std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
 // into this class. This was done in steps to limit the size of the diff.
 class BubbleDialogModelHost::ContentsView : public View {
  public:
-  ContentsView(BubbleDialogModelHost* parent, ui::DialogModel* model)
-      : parent_(parent) {
+  explicit ContentsView(BubbleDialogModelHost* parent) : parent_(parent) {
     // Note that between-child spacing is manually handled using kMarginsKey.
     SetLayoutManager(
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
@@ -306,8 +332,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     ui::ModalType modal_type)
     : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
-      contents_view_(
-          SetContentsView(std::make_unique<ContentsView>(this, model_.get()))) {
+      contents_view_(SetAndGetContentsView(this, modal_type)) {
   model_->set_host(GetPassKey(), this);
 
   // Note that this needs to be called before IsModalDialog() is called later in
@@ -486,6 +511,10 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
     GetBubbleFrameView()->SetHeaderView(std::move(banner_view));
     SizeToContents();
   }
+}
+
+View* BubbleDialogModelHost::GetContentsViewForTesting() {
+  return contents_view_;
 }
 
 void BubbleDialogModelHost::Close() {

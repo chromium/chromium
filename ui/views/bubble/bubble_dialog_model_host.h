@@ -33,6 +33,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
  public:
   enum class FieldType { kText, kControl, kMenuItem };
 
+  class ContentsView;
+
   class VIEWS_EXPORT CustomView : public ui::DialogModelCustomField::Field {
    public:
     CustomView(std::unique_ptr<View> view, FieldType field_type);
@@ -78,12 +80,13 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   View* GetInitiallyFocusedView() override;
   void OnWidgetInitialized() override;
 
+  View* GetContentsViewForTesting();
+
   // ui::DialogModelHost:
   void Close() override;
   void OnFieldAdded(ui::DialogModelField* field) override;
 
  private:
-  class ContentsView;
   // TODO(pbos): Consider externalizing this functionality into a different
   // format that could feasibly be adopted by LayoutManagers. This is used for
   // BoxLayouts (but could be others) to agree on columns' preferred width as a
