@@ -85,11 +85,11 @@ std::string BaseTelemetryExtensionBrowserTest::public_key() const {
 }
 
 std::string BaseTelemetryExtensionBrowserTest::pwa_page_url() const {
-  return "http://www.google.com";
+  return "http://googlechromelabs.github.io";
 }
 
 std::string BaseTelemetryExtensionBrowserTest::matches_origin() const {
-  return "*://www.google.com/*";
+  return "*://googlechromelabs.github.io/*";
 }
 
 }  // namespace chromeos

@@ -20,7 +20,7 @@ TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
       chromeos::GetChromeOSExtensionInfoForId(google_extension_id);
   EXPECT_THAT(extension_info.manufacturers,
               testing::UnorderedElementsAre("ASUS", "HP"));
-  EXPECT_EQ("*://www.google.com/*", extension_info.pwa_origin);
+  EXPECT_EQ("*://googlechromelabs.github.io/*", extension_info.pwa_origin);
 }
 
 TEST(ChromeOSSystemExtensionInfo, HPExtension) {
@@ -54,7 +54,8 @@ TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {
 
   const auto google_extension_info = chromeos::GetChromeOSExtensionInfoForId(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
-  EXPECT_EQ("*://www.google.com/*", google_extension_info.pwa_origin);
+  EXPECT_EQ("*://googlechromelabs.github.io/*",
+            google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
               testing::UnorderedElementsAre(kManufacturerOverride));
 

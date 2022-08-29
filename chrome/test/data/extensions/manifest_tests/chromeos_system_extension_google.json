@@ -16,7 +16,7 @@
     "chromeos_system_extension": {},
     "externally_connectable": {
       "matches": [
-        "*://www.google.com/*"
+        "*://googlechromelabs.github.io/*"
       ]
     },
     "options_page": "options.html"

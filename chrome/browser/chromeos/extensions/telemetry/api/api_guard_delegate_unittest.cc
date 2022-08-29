@@ -63,13 +63,13 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
     // Make sure the Google extension is allowed for every OEM.
     ExtensionInfoTestParams(
         /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-        /*pwa_page_url=*/"https://www.google.com",
-        /*matches_origin=*/"*://www.google.com/*",
+        /*pwa_page_url=*/"https://googlechromelabs.github.io/",
+        /*matches_origin=*/"*://googlechromelabs.github.io/*",
         /*manufacturer=*/"HP"),
     ExtensionInfoTestParams(
         /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-        /*pwa_page_url=*/"https://www.google.com",
-        /*matches_origin=*/"*://www.google.com/*",
+        /*pwa_page_url=*/"https://googlechromelabs.github.io/",
+        /*matches_origin=*/"*://googlechromelabs.github.io/*",
         /*manufacturer=*/"ASUS"),
     // Make sure the extensions of each OEM are allowed on their device.
     ExtensionInfoTestParams(
