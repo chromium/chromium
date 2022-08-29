@@ -561,8 +561,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   run_loop.Run();
 }
 
+#if !defined(NDEBUG)
+// Flaky timeout in debug builds (crbug.com/1338408).
+#define MAYBE_NoVisitsForUrlInHistory DISABLED_NoVisitsForUrlInHistory
+#else
+#define MAYBE_NoVisitsForUrlInHistory NoVisitsForUrlInHistory
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       NoVisitsForUrlInHistory) {
+                       MAYBE_NoVisitsForUrlInHistory) {
   HistoryVisit history_visit;
   history_visit.url = GURL("https://probablynotarealurl.com/");
   history_visit.text_to_annotate = "sometext";
@@ -611,8 +617,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   }
 }
 
+#if !defined(NDEBUG)
+// Flaky timeout in debug builds (crbug.com/1338408).
+#define MAYBE_OgImagePresent DISABLED_OgImagePresent
+#else
+#define MAYBE_OgImagePresent OgImagePresent
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       OgImagePresent) {
+                       MAYBE_OgImagePresent) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/og_image.html"));
@@ -627,8 +639,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       1);
 }
 
+#if !defined(NDEBUG)
+// Flaky timeout in debug builds (crbug.com/1338408).
+#define MAYBE_OgImagePresentButMalformed DISABLED_OgImagePresentButMalformed
+#else
+#define MAYBE_OgImagePresentButMalformed OgImagePresentButMalformed
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       OgImagePresentButMalformed) {
+                       MAYBE_OgImagePresentButMalformed) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/og_image_malformed.html"));
@@ -644,8 +662,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       1);
 }
 
+#if !defined(NDEBUG)
+// Flaky timeout in debug builds (crbug.com/1338408).
+#define MAYBE_OgImageNotPresent DISABLED_OgImageNotPresent
+#else
+#define MAYBE_OgImageNotPresent OgImageNotPresent
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       OgImageNotPresent) {
+                       MAYBE_OgImageNotPresent) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/no_og_image.html"));
@@ -1077,7 +1101,8 @@ class PageContentAnnotationsServiceModelNotLoadedOnStartupTest
 };
 
 // Flaky on Win 7 Tests x64: crbug.com/1223172
-#if BUILDFLAG(IS_WIN)
+// Flaky timeout in debug builds: crbug.com/1338408.
+#if BUILDFLAG(IS_WIN) || !defined(NDEBUG)
 #define MAYBE_ModelNotAvailableForFirstNavigation \
   DISABLED_ModelNotAvailableForFirstNavigation
 #else
