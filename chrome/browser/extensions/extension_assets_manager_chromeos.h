@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 
 namespace base {
@@ -14,10 +15,6 @@ template <typename T> struct DefaultSingletonTraits;
 }
 
 class PrefRegistrySimple;
-
-namespace base {
-class Value;
-}
 
 namespace extensions {
 
@@ -125,7 +122,7 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   // Clean shared extension with given |id|.
   static bool CleanUpExtension(
       const std::string& id,
-      base::Value* extension_info,
+      base::Value::Dict& extension_info,
       std::multimap<std::string, base::FilePath>* live_extension_paths);
 };
 
