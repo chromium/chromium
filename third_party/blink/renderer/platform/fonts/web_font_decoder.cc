@@ -40,12 +40,15 @@
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/ots/src/include/ots-memory-stream.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace blink {
 
 namespace {
+
+const size_t kMaxDecompressedSizeMb = 128;
 
 class BlinkOTSContext final : public ots::OTSContext {
   DISALLOW_NEW();
@@ -151,16 +154,18 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SharedBuffer* buffer) {
   }
 
   // This is the largest web font size which we'll try to transcode.
-  // TODO(bashi): 30MB seems low. Update the limit if necessary.
-  static const size_t kMaxWebFontSize = 30 * 1024 * 1024;  // 30 MB
-  if (buffer->size() > kMaxWebFontSize) {
-    SetErrorString("Web font size more than 30MB");
+  static const size_t kMaxDecompressedSize =
+      kMaxDecompressedSizeMb * 1024 * 1024;
+  if (buffer->size() > kMaxDecompressedSize) {
+    String error_message =
+        String::Format("Web font size more than %zuMB", kMaxDecompressedSizeMb);
+    SetErrorString(error_message.Utf8().c_str());
     return nullptr;
   }
 
   // Most web fonts are compressed, so the result can be much larger than
   // the original.
-  ots::ExpandingMemoryStream output(buffer->size(), kMaxWebFontSize);
+  ots::ExpandingMemoryStream output(buffer->size(), kMaxDecompressedSize);
   BlinkOTSContext ots_context;
   SharedBuffer::DeprecatedFlatData flattened_buffer(buffer);
 
