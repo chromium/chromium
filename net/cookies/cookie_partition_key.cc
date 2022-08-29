@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -111,7 +112,7 @@ absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
   const SchemefulSite* partition_key_site =
       first_party_set_owner_site
           ? first_party_set_owner_site
-          : base::OptionalOrNullptr(network_isolation_key.GetTopFrameSite());
+          : base::OptionalToPtr(network_isolation_key.GetTopFrameSite());
   if (!partition_key_site)
     return absl::nullopt;
 

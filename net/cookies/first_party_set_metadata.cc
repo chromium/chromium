@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "net/cookies/first_party_set_entry.h"
 
 namespace net {
@@ -35,8 +36,8 @@ bool FirstPartySetMetadata::operator==(
 std::ostream& operator<<(std::ostream& os,
                          const FirstPartySetMetadata& metadata) {
   os << "{" << metadata.context() << ", "
-     << base::OptionalOrNullptr(metadata.frame_entry()) << ", "
-     << base::OptionalOrNullptr(metadata.top_frame_entry()) << "}";
+     << base::OptionalToPtr(metadata.frame_entry()) << ", "
+     << base::OptionalToPtr(metadata.top_frame_entry()) << "}";
   return os;
 }
 

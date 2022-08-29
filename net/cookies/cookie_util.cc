@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
@@ -817,7 +818,7 @@ absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
         request_site,
         force_ignore_top_frame_party
             ? nullptr
-            : base::OptionalOrNullptr(
+            : base::OptionalToPtr(
                   isolation_info.network_isolation_key().GetTopFrameSite()),
         isolation_info.party_context().value(), std::move(callback));
   }

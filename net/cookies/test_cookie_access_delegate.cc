@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -61,8 +62,8 @@ TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
   return RunMaybeAsync(
       FirstPartySetMetadata(
           SamePartyContext(),
-          base::OptionalOrNullptr(FindFirstPartySetOwnerSync(site)),
-          base::OptionalOrNullptr(top_frame_owner)),
+          base::OptionalToPtr(FindFirstPartySetOwnerSync(site)),
+          base::OptionalToPtr(top_frame_owner)),
       std::move(callback));
 }
 
