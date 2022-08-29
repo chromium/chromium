@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/version_info/channel.h"
@@ -149,7 +150,7 @@ StubPasswordManagerClient::GetMetricsRecorder() {
   if (!metrics_recorder_) {
     metrics_recorder_.emplace(GetUkmSourceId());
   }
-  return base::OptionalOrNullptr(metrics_recorder_);
+  return base::OptionalToPtr(metrics_recorder_);
 }
 
 signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager() {

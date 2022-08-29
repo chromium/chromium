@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -795,8 +796,8 @@ void PasswordManager::PresaveGeneratedPassword(
     form_manager->PresaveGeneratedPassword(driver, form, generated_password,
                                            generation_element);
 
-    form_manager->ProvisionallySave(
-        form, driver, base::OptionalOrNullptr(possible_username_));
+    form_manager->ProvisionallySave(form, driver,
+                                    base::OptionalToPtr(possible_username_));
   }
 }
 
