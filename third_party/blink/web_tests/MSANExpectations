@@ -95,6 +95,11 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 # Sheriff 2021-06-02
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
 
+# Sheriff 2022-08-29
+crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-1.html [ Failure ]
+crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-2.html [ Failure ]
+crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure ]
+
 # Flaking on WebKit Linux MSAN
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip ]
