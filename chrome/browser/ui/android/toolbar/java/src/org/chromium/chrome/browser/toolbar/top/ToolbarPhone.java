@@ -1478,7 +1478,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         } else if (mOptionalButtonAnimationRunning) {
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS);
-        } else if (mLocationBar.getStatusCoordinator().isStatusIconAnimating()) {
+        } else if (mLocationBar.getStatusCoordinator() != null
+                && mLocationBar.getStatusCoordinator().isStatusIconAnimating()) {
+            // TODO(https://crbug.com/1356153): It may be possible to remove the above null check.
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS);
         } else {
