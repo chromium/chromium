@@ -20,7 +20,7 @@ class LayoutObject;
 class LocalFrame;
 class Node;
 
-enum ReshapeReason {
+enum class ReshapeReason {
   kComputedStyle,
   kDomContentLoaded,  // DOMCntentLoaded after FCP
   kFcp,               // FCP after DOMContentLoaded
