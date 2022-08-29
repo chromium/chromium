@@ -26,9 +26,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Connect to Tailscale
-        uses: tailscale/github-action@v1
+        uses: tailscale/github-action
         with:
           authkey: ${{ secrets.TAILSCALE_API_KEY }}
+          version: 1.28.0
       - uses: actions/checkout@v2
       - uses: ./.github/actions/build-test-branch
         env:
