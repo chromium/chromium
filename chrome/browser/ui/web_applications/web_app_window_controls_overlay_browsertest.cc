@@ -69,9 +69,6 @@ class WebAppWindowControlsOverlayBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,
                        BasicDisplayOverride) {
-  if (!IsServiceAvailable())
-    GTEST_SKIP();
-
   AppId app_id = InstallTestApp(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_window_controls_overlay.json",
@@ -88,9 +85,6 @@ IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,
                        NoDisplayOverride) {
-  if (!IsServiceAvailable())
-    GTEST_SKIP();
-
   AppId app_id =
       InstallTestApp("/banners/manifest_test_page.html?manifest=manifest.json",
                      /*await_metric=*/false);

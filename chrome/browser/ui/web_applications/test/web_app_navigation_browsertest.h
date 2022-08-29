@@ -50,9 +50,6 @@ class WebAppNavigationBrowserTest : public InProcessBrowserTest {
   GetTestNavigationObserver(const GURL& target_url);
 
  protected:
-  // On Lacros, we require a sufficiently recent Ash version.
-  bool IsServiceAvailable() const;
-
   // Creates an <a> element, sets its href and target to |link_url| and |target|
   // respectively, adds it to the DOM, and clicks on it with |modifiers|.
   // Returns once |target_url| has loaded. |modifiers| should be based on
