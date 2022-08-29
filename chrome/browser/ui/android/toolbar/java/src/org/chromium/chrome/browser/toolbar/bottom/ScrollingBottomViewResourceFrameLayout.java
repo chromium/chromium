@@ -14,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
@@ -34,6 +36,8 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
     /** Snapshot tokens used to be more restrictive about when to allow captures. */
     private @Nullable Object mCurrentSnapshotToken;
     private @Nullable Object mLastCaptureSnapshotToken;
+
+    private @Nullable ConstraintsChecker mConstraintsChecker;
 
     public ScrollingBottomViewResourceFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -57,6 +61,12 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                     if (!super.isDirty()) {
                         return false;
                     }
+
+                    if (mConstraintsChecker != null && mConstraintsChecker.areControlsLocked()) {
+                        mConstraintsChecker.scheduleRequestResourceOnUnlock();
+                        return false;
+                    }
+
                     return mCurrentSnapshotToken != null
                             && !mCurrentSnapshotToken.equals(mLastCaptureSnapshotToken);
                 } else {
@@ -103,5 +113,13 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
      */
     public void onModelTokenChange(@NonNull Object token) {
         mCurrentSnapshotToken = token;
+    }
+
+    /**
+     * @param constraintsSupplier Used to access current constraints of the browser controls.
+     */
+    public void setConstraintsSupplier(ObservableSupplier<Integer> constraintsSupplier) {
+        assert mConstraintsChecker == null;
+        mConstraintsChecker = new ConstraintsChecker(getResourceAdapter(), constraintsSupplier);
     }
 }

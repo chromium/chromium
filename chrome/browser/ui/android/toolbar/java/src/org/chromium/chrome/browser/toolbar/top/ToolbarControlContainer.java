@@ -16,20 +16,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
@@ -324,44 +322,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                     mToolbarContainer.getHeight() - mToolbar.getHeight() - mTabStripHeightPx;
             return ResourceFactory.createToolbarContainerResource(
                     mToolbarRect, mLocationBarRect, shadowHeight);
-        }
-    }
-
-    /**
-     * Watches a constraints supplier for the next time the browser controls are unlocked,
-     * and then tells the {@link ViewResourceAdapter} to generate a resource.
-     */
-    private static class ConstraintsChecker implements Callback<Integer> {
-        @NonNull
-        private final ViewResourceAdapter mViewResourceAdapter;
-        @NonNull
-        private final ObservableSupplier<Integer> mConstraintsSupplier;
-
-        /**
-         * @param viewResourceAdapter The target to notify when a capture is needed.
-         */
-        public ConstraintsChecker(ViewResourceAdapter viewResourceAdapter,
-                ObservableSupplier<Integer> constraintsSupplier) {
-            mViewResourceAdapter = viewResourceAdapter;
-            mConstraintsSupplier = constraintsSupplier;
-        }
-
-        private boolean areControlsLocked() {
-            Integer constraints = mConstraintsSupplier.get();
-            // Treat null (unknown) as locked/SHOWN.
-            return constraints == null || constraints.intValue() == BrowserControlsState.SHOWN;
-        }
-
-        private void scheduleRequestResourceOnUnlock() {
-            mConstraintsSupplier.addObserver(this);
-        }
-
-        @Override
-        public void onResult(Integer result) {
-            if (!areControlsLocked()) {
-                mConstraintsSupplier.removeObserver(this);
-                mViewResourceAdapter.onResourceRequested();
-            }
         }
     }
 
