@@ -119,7 +119,8 @@ void SignedExchangeLoader::OnReceiveEarlyHints(
 
 void SignedExchangeLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
   NOTREACHED();
@@ -139,11 +140,6 @@ void SignedExchangeLoader::OnUploadProgress(
     OnUploadProgressCallback ack_callback) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
-  NOTREACHED();
-}
-
-void SignedExchangeLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  // CachedMetadata for Signed Exchange is not supported.
   NOTREACHED();
 }
 
@@ -335,7 +331,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
   }
 
   client_->OnReceiveResponse(std::move(inner_response_head_shown_to_client),
-                             std::move(consumer_handle));
+                             std::move(consumer_handle), absl::nullopt);
 
   body_data_pipe_adapter_ = std::make_unique<network::SourceStreamToDataPipe>(
       std::move(payload_stream), std::move(producer_handle));

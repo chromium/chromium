@@ -508,7 +508,7 @@ void TestRenderFrameHost::PrepareForCommitInternal(
   // TODO(carlosk): Ideally, it should be possible someday to
   // fully commit the navigation at this call to CallOnResponseStarted.
   url_loader->CallOnResponseStarted(std::move(response),
-                                    std::move(response_body));
+                                    std::move(response_body), absl::nullopt);
 }
 
 void TestRenderFrameHost::SimulateCommitProcessed(

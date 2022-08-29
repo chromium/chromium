@@ -177,7 +177,8 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       head->headers->AddHeader(net::HttpRequestHeaders::kContentType,
                                head->mime_type.c_str());
     }
-    client_->OnReceiveResponse(std::move(head), std::move(consumer_handle));
+    client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
+                               absl::nullopt);
 
     uint32_t write_size = data->size();
     MojoResult result = producer_handle->WriteData(data->front(), &write_size,

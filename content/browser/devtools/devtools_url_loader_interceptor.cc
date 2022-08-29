@@ -252,7 +252,7 @@ struct ResponseMetadata {
   network::mojom::URLResponseHeadPtr head =
       network::mojom::URLResponseHead::New();
   std::unique_ptr<net::RedirectInfo> redirect_info;
-  mojo_base::BigBuffer cached_metadata;
+  absl::optional<mojo_base::BigBuffer> cached_metadata;
   size_t encoded_length = 0;
   size_t transfer_size = 0;
   network::URLLoaderCompletionStatus status;
@@ -363,14 +363,15 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   // network::mojom::URLLoaderClient methods
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body) override;
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
@@ -1006,7 +1007,8 @@ Response InterceptionJob::InnerContinueRequest(
     DCHECK_EQ(State::kResponseReceived, state_);
     DCHECK(!body_reader_);
     client_->OnReceiveResponse(std::move(response_metadata_->head),
-                               std::move(body_));
+                               std::move(body_),
+                               std::move(response_metadata_->cached_metadata));
     response_metadata_.reset();
     loader_->ResumeReadingBodyFromNet();
     client_receiver_.Resume();
@@ -1250,10 +1252,8 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
     DCHECK_EQ(num_bytes, body_size);
   }
   client_->OnReceiveResponse(std::move(response_metadata_->head),
-                             std::move(consumer_handle));
-  if (response_metadata_->cached_metadata.size() != 0)
-    client_->OnReceiveCachedMetadata(
-        std::move(response_metadata_->cached_metadata));
+                             std::move(consumer_handle),
+                             std::move(response_metadata_->cached_metadata));
 
   if (response_metadata_->transfer_size)
     client_->OnTransferSizeUpdated(response_metadata_->transfer_size);
@@ -1482,11 +1482,13 @@ void InterceptionJob::OnReceiveEarlyHints(
 
 void InterceptionJob::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   state_ = State::kResponseReceived;
   DCHECK(!response_metadata_);
   if (!(stage_ & InterceptionStage::RESPONSE)) {
-    client_->OnReceiveResponse(std::move(head), std::move(body));
+    client_->OnReceiveResponse(std::move(head), std::move(body),
+                               std::move(cached_metadata));
     return;
   }
   loader_->PauseReadingBodyFromNet();
@@ -1501,6 +1503,7 @@ void InterceptionJob::OnReceiveResponse(
                            request.url, head->headers.get(), head->mime_type));
 
   response_metadata_ = std::make_unique<ResponseMetadata>(std::move(head));
+  response_metadata_->cached_metadata = std::move(cached_metadata);
 
   NotifyClient(std::move(request_info));
 }
@@ -1530,13 +1533,6 @@ void InterceptionJob::OnUploadProgress(int64_t current_position,
   if (!report_upload_)
     return;
   client_->OnUploadProgress(current_position, total_size, std::move(callback));
-}
-
-void InterceptionJob::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  if (ShouldBypassForResponse())
-    client_->OnReceiveCachedMetadata(std::move(data));
-  else
-    response_metadata_->cached_metadata = std::move(data);
 }
 
 void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {

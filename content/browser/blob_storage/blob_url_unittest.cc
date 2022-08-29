@@ -195,7 +195,7 @@ class BlobURLTest : public testing::Test {
     expected_error_code_ = expected_error_code;
     expected_response_ = "";
     TestRequest("GET", net::HttpRequestHeaders());
-    EXPECT_TRUE(response_metadata_.empty());
+    EXPECT_FALSE(response_metadata_.has_value());
   }
 
   void TestRequest(const std::string& method,
@@ -349,7 +349,7 @@ class BlobURLTest : public testing::Test {
   std::string response_;
   int response_error_code_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-  std::string response_metadata_;
+  absl::optional<std::string> response_metadata_;
 
   int expected_error_code_;
   int expected_status_code_;
@@ -495,7 +495,7 @@ TEST_F(BlobURLTest, TestGetRangeRequest1) {
   TestRequest("GET", extra_headers);
 
   EXPECT_EQ(6, response_headers_->GetContentLength());
-  EXPECT_TRUE(response_metadata_.empty());
+  EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t first = 0, last = 0, length = 0;
   EXPECT_TRUE(response_headers_->GetContentRangeFor206(&first, &last, &length));
@@ -516,7 +516,7 @@ TEST_F(BlobURLTest, TestGetRangeRequest2) {
   TestRequest("GET", extra_headers);
 
   EXPECT_EQ(10, response_headers_->GetContentLength());
-  EXPECT_TRUE(response_metadata_.empty());
+  EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t total = GetTotalBlobLength();
   int64_t first = 0, last = 0, length = 0;
@@ -538,7 +538,7 @@ TEST_F(BlobURLTest, TestGetRangeRequest3) {
   TestRequest("GET", extra_headers);
 
   EXPECT_EQ(3, response_headers_->GetContentLength());
-  EXPECT_TRUE(response_metadata_.empty());
+  EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t first = 0, last = 0, length = 0;
   EXPECT_TRUE(response_headers_->GetContentRangeFor206(&first, &last, &length));
@@ -558,7 +558,7 @@ TEST_F(BlobURLTest, TestExtraHeaders) {
   std::string content_type;
   EXPECT_TRUE(response_headers_->GetMimeType(&content_type));
   EXPECT_EQ(kTestContentType, content_type);
-  EXPECT_TRUE(response_metadata_.empty());
+  EXPECT_FALSE(response_metadata_.has_value());
   size_t iter = 0;
   std::string content_disposition;
   EXPECT_TRUE(response_headers_->EnumerateHeader(&iter, "Content-Disposition",
@@ -576,7 +576,7 @@ TEST_F(BlobURLTest, TestSideData) {
   EXPECT_EQ(static_cast<int>(std::size(kTestDataHandleData2) - 1),
             response_headers_->GetContentLength());
 
-  EXPECT_EQ(std::string(kTestDiskCacheSideData), response_metadata_);
+  EXPECT_EQ(std::string(kTestDiskCacheSideData), *response_metadata_);
 }
 
 TEST_F(BlobURLTest, TestZeroSizeSideData) {
@@ -589,7 +589,7 @@ TEST_F(BlobURLTest, TestZeroSizeSideData) {
   EXPECT_EQ(static_cast<int>(std::size(kTestDataHandleData2) - 1),
             response_headers_->GetContentLength());
 
-  EXPECT_TRUE(response_metadata_.empty());
+  EXPECT_FALSE(response_metadata_.has_value());
 }
 
 TEST_F(BlobURLTest, BrokenBlob) {

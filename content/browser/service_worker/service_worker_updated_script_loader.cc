@@ -163,7 +163,8 @@ void ServiceWorkerUpdatedScriptLoader::OnReceiveEarlyHints(
 
 void ServiceWorkerUpdatedScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   NOTREACHED();
 }
 
@@ -178,11 +179,6 @@ void ServiceWorkerUpdatedScriptLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
   NOTREACHED();
-}
-
-void ServiceWorkerUpdatedScriptLoader::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  client_->OnReceiveCachedMetadata(std::move(data));
 }
 
 void ServiceWorkerUpdatedScriptLoader::OnTransferSizeUpdated(
@@ -248,7 +244,7 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
 
   // Pass the consumer handle to the client.
   client_->OnReceiveResponse(std::move(client_response),
-                             std::move(client_consumer));
+                             std::move(client_consumer), absl::nullopt);
 
   client_producer_watcher_.Watch(
       client_producer_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,

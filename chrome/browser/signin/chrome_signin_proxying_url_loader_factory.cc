@@ -151,8 +151,10 @@ class ProxyingURLLoaderFactory::InProgressRequest
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     target_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body) override;
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
 
@@ -161,10 +163,6 @@ class ProxyingURLLoaderFactory::InProgressRequest
                         OnUploadProgressCallback callback) override {
     target_client_->OnUploadProgress(current_position, total_size,
                                      std::move(callback));
-  }
-
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
-    target_client_->OnReceiveCachedMetadata(std::move(data));
   }
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
@@ -394,12 +392,14 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
 
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   // Even though |head| is const we can get a non-const pointer to the headers
   // and modifications we made are passed to the target client.
   ProxyResponseAdapter adapter(this, head->headers.get());
   factory_->delegate_->ProcessResponse(&adapter, GURL() /* redirect_url */);
-  target_client_->OnReceiveResponse(std::move(head), std::move(body));
+  target_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                    std::move(cached_metadata));
 }
 
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(

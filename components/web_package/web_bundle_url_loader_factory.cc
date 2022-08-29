@@ -103,8 +103,10 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
     wrapped_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     std::string error_message;
     if (!CheckWebBundleServingConstraints(*response_head, error_message)) {
       if (factory_) {
@@ -123,7 +125,8 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
     mojo::ScopedDataPipeConsumerHandle consumer;
     if (body)
       consumer = HandleReceiveBody(std::move(body));
-    wrapped_->OnReceiveResponse(std::move(response_head), std::move(consumer));
+    wrapped_->OnReceiveResponse(std::move(response_head), std::move(consumer),
+                                std::move(cached_metadata));
   }
 
   void OnReceiveRedirect(
@@ -148,10 +151,6 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
                         OnUploadProgressCallback ack_callback) override {
     wrapped_->OnUploadProgress(current_position, total_size,
                                std::move(ack_callback));
-  }
-
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
-    wrapped_->OnReceiveCachedMetadata(std::move(data));
   }
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
@@ -231,7 +230,8 @@ class WebBundleURLLoaderFactory::URLLoader : public network::mojom::URLLoader {
 
   void OnResponse(network::mojom::URLResponseHeadPtr response,
                   mojo::ScopedDataPipeConsumerHandle consumer) {
-    client_->OnReceiveResponse(std::move(response), std::move(consumer));
+    client_->OnReceiveResponse(std::move(response), std::move(consumer),
+                               absl::nullopt);
   }
 
   void OnFail(net::Error error) {
@@ -268,7 +268,8 @@ class WebBundleURLLoaderFactory::URLLoader : public network::mojom::URLLoader {
       return;
     }
     producer.reset();
-    client_->OnReceiveResponse(std::move(response_head), std::move(consumer));
+    client_->OnReceiveResponse(std::move(response_head), std::move(consumer),
+                               absl::nullopt);
 
     // CORB responses are reported as a success.
     CompleteBlockedResponse(net::OK, absl::nullopt);

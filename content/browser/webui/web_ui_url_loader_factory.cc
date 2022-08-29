@@ -145,8 +145,8 @@ void ReadData(
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(client_remote));
 
-  client->OnReceiveResponse(std::move(headers),
-                            std::move(pipe_consumer_handle));
+  client->OnReceiveResponse(std::move(headers), std::move(pipe_consumer_handle),
+                            absl::nullopt);
 
   network::URLLoaderCompletionStatus status(net::OK);
   status.encoded_data_length = output_size;

@@ -249,8 +249,8 @@ class SlowDownloadInterceptor {
     ASSERT_EQ(MOJO_RESULT_OK, result);
     ASSERT_EQ(data.size(), write_size);
     ASSERT_TRUE(consumer_handle.is_valid());
-    params->client->OnReceiveResponse(std::move(head),
-                                      std::move(consumer_handle));
+    params->client->OnReceiveResponse(
+        std::move(head), std::move(consumer_handle), absl::nullopt);
   }
 
   const std::map<std::string, Handler> handlers_;

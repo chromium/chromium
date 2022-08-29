@@ -72,8 +72,8 @@ void TestURLLoaderFactory::NotifyClientOnReceiveResponse(
   for (const auto& header : extra_headers)
     response->headers->SetHeader(header.first, header.second);
 
-  client_remote_->OnReceiveResponse(std::move(response),
-                                    mojo::ScopedDataPipeConsumerHandle());
+  client_remote_->OnReceiveResponse(
+      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
 }
 
 void TestURLLoaderFactory::NotifyClientOnComplete(int error_code) {

@@ -104,7 +104,8 @@ void PrefetchProxyFromStringURLLoader::BindAndStart(
     return;
   }
 
-  client_->OnReceiveResponse(std::move(head_), std::move(consumer_handle));
+  client_->OnReceiveResponse(std::move(head_), std::move(consumer_handle),
+                             absl::nullopt);
 
   producer_handle_ = std::move(producer_handle);
 

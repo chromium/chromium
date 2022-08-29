@@ -401,7 +401,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveEarlyHints(
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT_WITH_FLOW0(
       "extensions",
       "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
@@ -411,6 +412,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   current_body_ = std::move(body);
+  current_cached_metadata_ = std::move(cached_metadata);
   if (current_request_uses_header_client_) {
     // Use the cookie headers we got from OnHeadersReceived as that'll contain
     // Set-Cookie if it existed. Re-adding cookie headers here does not
@@ -479,11 +481,6 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnUploadProgress(
     OnUploadProgressCallback callback) {
   target_client_->OnUploadProgress(current_position, total_size,
                                    std::move(callback));
-}
-
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  target_client_->OnReceiveCachedMetadata(std::move(data));
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
@@ -1200,7 +1197,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   ExtensionWebRequestEventRouter::GetInstance()->OnResponseStarted(
       factory_->browser_context_, &info_.value(), net::OK);
   target_client_->OnReceiveResponse(current_response_.Clone(),
-                                    std::move(current_body_));
+                                    std::move(current_body_),
+                                    std::move(current_cached_metadata_));
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::

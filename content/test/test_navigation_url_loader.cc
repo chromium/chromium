@@ -88,7 +88,8 @@ void TestNavigationURLLoader::CallOnRequestRedirected(
 
 void TestNavigationURLLoader::CallOnResponseStarted(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle response_body) {
+    mojo::ScopedDataPipeConsumerHandle response_body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   if (!response_head->parsed_headers)
     response_head->parsed_headers = network::mojom::ParsedHeaders::New();
   // Create a bidirectionnal communication pipe between a URLLoader and a

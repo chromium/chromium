@@ -99,8 +99,11 @@ interface URLLoaderClient {
   // Called when the response head is received.
   // The loader is expected to close its end of the pipe after finishing
   // writing the body, so that the client knows when it is done reading.
+  // Optionally, the response can contain cached metadata, such as a V8 code
+  // cache.
   OnReceiveResponse(URLResponseHead head,
-                    handle<data_pipe_consumer>? body);
+                    handle<data_pipe_consumer>? body,
+                    mojo_base.mojom.BigBuffer? cached_metadata);
 
   // Called when the request has been redirected. The receiver is expected to
   // call FollowRedirect or cancel the request.
@@ -111,9 +114,6 @@ interface URLLoaderClient {
   // The implementation should call the response closure when the client is
   // ready to receive the next upload progress.
   OnUploadProgress(int64 current_position, int64 total_size) => ();
-
-  // Called when cached metadata from a resource request is ready.
-  OnReceiveCachedMetadata(mojo_base.mojom.BigBuffer data);
 
   // Called when the transfer size is updated. This is only called if
   // |report_raw_headers| is set or the renderer has permission to read the

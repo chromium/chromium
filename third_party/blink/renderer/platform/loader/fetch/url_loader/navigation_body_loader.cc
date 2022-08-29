@@ -61,7 +61,8 @@ void NavigationBodyLoader::OnReceiveEarlyHints(
 
 void NavigationBodyLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
   NOTREACHED();
 }
@@ -78,20 +79,6 @@ void NavigationBodyLoader::OnUploadProgress(int64_t current_position,
                                             OnUploadProgressCallback callback) {
   // This has already happened in the browser process.
   NOTREACHED();
-}
-
-void NavigationBodyLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  // Even if IsolatedCodeCaching is landed, this code is still used by
-  // ServiceWorker.
-  // TODO(horo, kinuko): Make a test to cover this function.
-  // TODO(https://crbug.com/930000): Add support for inline script code caching
-  // with the service worker service.
-  base::UmaHistogramBoolean(
-      base::StrCat({"V8.InlineCodeCache.",
-                    is_main_frame_ ? "MainFrame" : "Subframe",
-                    ".CacheTimesMatch"}),
-      true);
-  client_->BodyCodeCacheReceived(std::move(data));
 }
 
 void NavigationBodyLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {

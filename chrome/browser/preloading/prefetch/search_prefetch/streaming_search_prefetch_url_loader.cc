@@ -192,7 +192,8 @@ void StreamingSearchPrefetchURLLoader::OnReceiveEarlyHints(
 
 void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   bool can_be_served = CanServePrefetchRequest(head->headers);
 
   if (is_activated_) {
@@ -204,11 +205,15 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     base::UmaHistogramBoolean(histogram_name, can_be_served);
   }
 
+  // Cached metadata is not supported for navigation loader.
+  cached_metadata.reset();
+
   // Once we are using the fallback path, just forward calls.
   if (is_in_fallback_) {
     DCHECK(!streaming_prefetch_request_);
     DCHECK(forwarding_client_);
-    forwarding_client_->OnReceiveResponse(std::move(head), std::move(body));
+    forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                          absl::nullopt);
     return;
   }
 
@@ -231,7 +236,8 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   }
 
   if (forwarding_client_) {
-    forwarding_client_->OnReceiveResponse(std::move(head), std::move(body));
+    forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                          absl::nullopt);
     return;
   }
 
@@ -280,11 +286,6 @@ void StreamingSearchPrefetchURLLoader::OnUploadProgress(
     OnUploadProgressCallback callback) {
   // We only handle GETs.
   NOTREACHED();
-}
-
-void StreamingSearchPrefetchURLLoader::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  // Do nothing. This is not supported for navigation loader.
 }
 
 void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
@@ -350,8 +351,8 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
       base::BindRepeating(&StreamingSearchPrefetchURLLoader::OnHandleReady,
                           weak_factory_.GetWeakPtr()));
 
-  forwarding_client_->OnReceiveResponse(std::move(resource_response_),
-                                        std::move(consumer_handle));
+  forwarding_client_->OnReceiveResponse(
+      std::move(resource_response_), std::move(consumer_handle), absl::nullopt);
 
   PushData();
 }

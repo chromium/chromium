@@ -571,8 +571,8 @@ void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
   ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  downstream_request->client->OnReceiveResponse(std::move(head),
-                                                std::move(consumer_handle));
+  downstream_request->client->OnReceiveResponse(
+      std::move(head), std::move(consumer_handle), absl::nullopt);
   downstream_data_pipe_ = std::move(producer_handle);
 }
 
@@ -637,7 +637,7 @@ void SpeechRecognitionEngineTest::CloseMockDownstream(
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(headers));
     downstream_request->client->OnReceiveResponse(
-        std::move(head), mojo::ScopedDataPipeConsumerHandle());
+        std::move(head), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
     // Wait for the response to be handled.
     base::RunLoop().RunUntilIdle();
     return;

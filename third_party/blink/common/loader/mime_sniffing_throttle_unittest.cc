@@ -88,7 +88,7 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
     is_resumed_ = true;
     // Resume from OnReceiveResponse() with a customized response header.
     destination_loader_client()->OnReceiveResponse(
-        std::move(updated_response_head_), std::move(body_));
+        std::move(updated_response_head_), std::move(body_), absl::nullopt);
   }
 
   void SetPriority(net::RequestPriority priority) override { NOTIMPLEMENTED(); }

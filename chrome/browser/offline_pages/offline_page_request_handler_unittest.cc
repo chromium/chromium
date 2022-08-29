@@ -170,8 +170,10 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     response_body_ = std::move(body);
     observer_->OnReceiveResponse(std::move(response_head));
   }
@@ -181,8 +183,6 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
       network::mojom::URLResponseHeadPtr response_head) override {
     observer_->OnReceiveRedirect(redirect_info.new_url);
   }
-
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
 

@@ -197,10 +197,12 @@ void ServiceWorkerMainResourceLoader::CommitResponseHeaders() {
 }
 
 void ServiceWorkerMainResourceLoader::CommitResponseBody(
-    mojo::ScopedDataPipeConsumerHandle response_body) {
+    mojo::ScopedDataPipeConsumerHandle response_body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TransitionToStatus(Status::kSentBody);
   url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                        std::move(response_body));
+                                        std::move(response_body),
+                                        std::move(cached_metadata));
 }
 
 void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
@@ -214,7 +216,7 @@ void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
   }
 
   producer_handle.reset();  // The data pipe is empty.
-  CommitResponseBody(std::move(consumer_handle));
+  CommitResponseBody(std::move(consumer_handle), absl::nullopt);
   CommitCompleted(net::OK, "No body exists.");
 }
 
@@ -396,7 +398,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         "stream response");
     stream_waiter_ = std::make_unique<StreamWaiter>(
         this, std::move(body_as_stream->callback_receiver));
-    CommitResponseBody(std::move(body_as_stream->stream));
+    CommitResponseBody(std::move(body_as_stream->stream), absl::nullopt);
     // StreamWaiter will call CommitCompleted() when done.
     return;
   }
@@ -420,7 +422,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
         "blob response");
 
-    CommitResponseBody(std::move(data_pipe));
+    CommitResponseBody(std::move(data_pipe), absl::nullopt);
     // We continue in OnBlobReadingComplete().
     return;
   }

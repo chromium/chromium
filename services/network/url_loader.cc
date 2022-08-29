@@ -2159,8 +2159,8 @@ void URLLoader::SendResponseToClient() {
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response_->emitted_extra_info = emitted_devtools_raw_request_;
 
-  url_loader_client_.Get()->OnReceiveResponse(response_->Clone(),
-                                              std::move(consumer_handle_));
+  url_loader_client_.Get()->OnReceiveResponse(
+      response_->Clone(), std::move(consumer_handle_), absl::nullopt);
 }
 
 void URLLoader::CompletePendingWrite(bool success) {
@@ -2451,8 +2451,8 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
   }
   producer_handle.reset();
 
-  url_loader_client_.Get()->OnReceiveResponse(response_->Clone(),
-                                              std::move(consumer_handle));
+  url_loader_client_.Get()->OnReceiveResponse(
+      response_->Clone(), std::move(consumer_handle), absl::nullopt);
 
   // Tell the real URLLoaderClient that the response has been completed.
   if (corb_detachable_) {

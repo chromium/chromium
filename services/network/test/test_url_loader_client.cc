@@ -19,7 +19,6 @@ TestURLLoaderClient::~TestURLLoaderClient() = default;
 void TestURLLoaderClient::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   EXPECT_FALSE(has_received_response_);
-  EXPECT_FALSE(has_received_cached_metadata_);
   EXPECT_FALSE(has_received_completion_);
   has_received_early_hints_ = true;
   early_hints_.push_back(std::move(early_hints));
@@ -27,11 +26,17 @@ void TestURLLoaderClient::OnReceiveEarlyHints(
 
 void TestURLLoaderClient::OnReceiveResponse(
     mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   EXPECT_FALSE(has_received_response_);
   EXPECT_FALSE(has_received_completion_);
   has_received_response_ = true;
   response_head_ = std::move(response_head);
+  if (cached_metadata) {
+    cached_metadata_ =
+        std::string(reinterpret_cast<const char*>(cached_metadata->data()),
+                    cached_metadata->size());
+  }
   if (quit_closure_for_on_receive_response_)
     std::move(quit_closure_for_on_receive_response_).Run();
 
@@ -43,7 +48,6 @@ void TestURLLoaderClient::OnReceiveResponse(
 void TestURLLoaderClient::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     mojom::URLResponseHeadPtr response_head) {
-  EXPECT_FALSE(has_received_cached_metadata_);
   EXPECT_FALSE(response_body_.is_valid());
   EXPECT_FALSE(has_received_response_);
   // Use ClearHasReceivedRedirect to accept more redirects.
@@ -54,16 +58,6 @@ void TestURLLoaderClient::OnReceiveRedirect(
   response_head_ = std::move(response_head);
   if (quit_closure_for_on_receive_redirect_)
     std::move(quit_closure_for_on_receive_redirect_).Run();
-}
-
-void TestURLLoaderClient::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  EXPECT_FALSE(has_received_cached_metadata_);
-  EXPECT_FALSE(has_received_completion_);
-  has_received_cached_metadata_ = true;
-  cached_metadata_ =
-      std::string(reinterpret_cast<const char*>(data.data()), data.size());
-  if (quit_closure_for_on_receive_cached_metadata_)
-    std::move(quit_closure_for_on_receive_cached_metadata_).Run();
 }
 
 void TestURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -129,14 +123,6 @@ void TestURLLoaderClient::RunUntilRedirectReceived() {
     return;
   base::RunLoop run_loop;
   quit_closure_for_on_receive_redirect_ = run_loop.QuitClosure();
-  run_loop.Run();
-}
-
-void TestURLLoaderClient::RunUntilCachedMetadataReceived() {
-  if (has_received_cached_metadata_)
-    return;
-  base::RunLoop run_loop;
-  quit_closure_for_on_receive_cached_metadata_ = run_loop.QuitClosure();
   run_loop.Run();
 }
 

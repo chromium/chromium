@@ -123,7 +123,8 @@ class MockNetwork {
     MojoResult result = producer->WriteData(
         response.body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     CHECK_EQ(MOJO_RESULT_OK, result);
-    client->OnReceiveResponse(std::move(response_head), std::move(consumer));
+    client->OnReceiveResponse(std::move(response_head), std::move(consumer),
+                              absl::nullopt);
 
     network::URLLoaderCompletionStatus status;
     status.error_code = net::OK;

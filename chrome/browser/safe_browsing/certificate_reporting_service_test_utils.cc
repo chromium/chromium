@@ -313,8 +313,8 @@ void CertificateReportingServiceTestHelper::SendResponse(
   head->headers = new net::HttpResponseHeaders(
       "HTTP/1.1 200 OK\nContent-type: text/html\n\n");
   head->mime_type = "text/html";
-  client_remote->OnReceiveResponse(std::move(head),
-                                   mojo::ScopedDataPipeConsumerHandle());
+  client_remote->OnReceiveResponse(
+      std::move(head), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
   client_remote->OnComplete(network::URLLoaderCompletionStatus());
 }
 

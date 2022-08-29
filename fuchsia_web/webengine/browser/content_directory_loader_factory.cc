@@ -245,7 +245,8 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
       return;
     }
 
-    client_->OnReceiveResponse(std::move(response), std::move(consumer_handle));
+    client_->OnReceiveResponse(std::move(response), std::move(consumer_handle),
+                               absl::nullopt);
 
     // Start reading the contents of |mmap_| into the response DataPipe.
     body_writer_ =

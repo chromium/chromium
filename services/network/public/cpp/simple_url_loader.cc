@@ -342,11 +342,12 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
   // mojom::URLLoaderClient implementation;
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(mojom::URLResponseHeadPtr response_head,
-                         mojo::ScopedDataPipeConsumerHandle body) override;
+  void OnReceiveResponse(
+      mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr response_head) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
@@ -1720,7 +1721,8 @@ void SimpleURLLoaderImpl::OnReceiveEarlyHints(
 
 void SimpleURLLoaderImpl::OnReceiveResponse(
     mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (request_state_->response_info) {
     // The final headers have already been received, so the URLLoader is
@@ -1799,10 +1801,6 @@ void SimpleURLLoaderImpl::OnReceiveRedirect(
   url_loader_->FollowRedirect(removed_headers, {} /* modified_headers */,
                               {} /* modified_cors_exempt_headers */,
                               {} /* new_url */);
-}
-
-void SimpleURLLoaderImpl::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  // Ignored.
 }
 
 void SimpleURLLoaderImpl::OnTransferSizeUpdated(int32_t transfer_size_diff) {}

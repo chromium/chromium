@@ -70,15 +70,15 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
     // network::mojom::URLLoaderClient overrides:
     MOCK_METHOD1(OnReceiveEarlyHints,
                  void(const network::mojom::EarlyHintsPtr));
-    MOCK_METHOD2(OnReceiveResponse,
+    MOCK_METHOD3(OnReceiveResponse,
                  void(const network::mojom::URLResponseHeadPtr,
-                      mojo::ScopedDataPipeConsumerHandle));
+                      mojo::ScopedDataPipeConsumerHandle,
+                      absl::optional<mojo_base::BigBuffer>));
     MOCK_METHOD2(OnReceiveRedirect,
                  void(const net::RedirectInfo&,
                       network::mojom::URLResponseHeadPtr));
     MOCK_METHOD3(OnUploadProgress,
                  void(int64_t, int64_t, base::OnceCallback<void()> callback));
-    MOCK_METHOD1(OnReceiveCachedMetadata, void(mojo_base::BigBuffer));
     MOCK_METHOD1(OnTransferSizeUpdated, void(int32_t));
     MOCK_METHOD1(OnComplete, void(const network::URLLoaderCompletionStatus&));
 
@@ -239,7 +239,7 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_after_redirect;
   MockURLLoaderClient mock_client_after_redirect(
       client_after_redirect.InitWithNewPipeAndPassReceiver());
-  EXPECT_CALL(mock_client_after_redirect, OnReceiveResponse(_, _));
+  EXPECT_CALL(mock_client_after_redirect, OnReceiveResponse(_, _, _));
 
   if (!base::FeatureList::IsEnabled(
           features::kSignedHTTPExchangePingValidity)) {
@@ -258,7 +258,7 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
     EXPECT_CALL(mock_client_after_redirect, OnComplete(_));
     ping_loader_client()->OnReceiveResponse(
         network::mojom::URLResponseHead::New(),
-        mojo::ScopedDataPipeConsumerHandle());
+        mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
     ping_loader_client()->OnComplete(
         network::URLLoaderCompletionStatus(net::OK));
     run_loop.Run();

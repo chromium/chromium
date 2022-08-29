@@ -179,11 +179,13 @@ void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
     OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                      mojo::ScopedDataPipeConsumerHandle body) {
+                      mojo::ScopedDataPipeConsumerHandle body,
+                      absl::optional<mojo_base::BigBuffer> cached_metadata) {
   if (head) {
     head_ = head->Clone();
   }
-  target_client_->OnReceiveResponse(std::move(head), std::move(body));
+  target_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                    std::move(cached_metadata));
 }
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
@@ -199,11 +201,6 @@ void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::OnUploadProgress(
     OnUploadProgressCallback callback) {
   target_client_->OnUploadProgress(current_position, total_size,
                                    std::move(callback));
-}
-
-void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
-    OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  target_client_->OnReceiveCachedMetadata(std::move(data));
 }
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::

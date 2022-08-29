@@ -1122,10 +1122,6 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponse) {
   StartRequest(factory, request, &loader, &client);
   client->RunUntilResponseReceived();
 
-  // This needs to come after the response, not the before, as some consumers
-  // such as ScriptResource depend on that.
-  ASSERT_FALSE(client->has_received_cached_metadata());
-
   auto expected_info = CreateResponseInfoFromServiceWorker();
   auto& info = client->response_head();
   expected_info->response_time = response_time;
@@ -1136,8 +1132,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponse) {
   EXPECT_EQ(39, info->content_length);
 
   // Test the cached metadata.
-  client->RunUntilCachedMetadataReceived();
-  EXPECT_EQ(client->cached_metadata(),
+  EXPECT_EQ(*client->cached_metadata(),
             std::string(kMetadata.begin(), kMetadata.end()));
 
   client->RunUntilComplete();
@@ -1199,7 +1194,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponseWithoutMetadata) {
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client->response_body_release(), &response));
   EXPECT_EQ(kResponseBody, response);
-  EXPECT_FALSE(client->has_received_cached_metadata());
+  EXPECT_FALSE(client->cached_metadata().has_value());
 
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
@@ -1249,7 +1244,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponseNonScript) {
 
   // Even though the blob has metadata, verify that the client didn't receive
   // it because this is not a script resource.
-  EXPECT_TRUE(client->cached_metadata().empty());
+  EXPECT_FALSE(client->cached_metadata().has_value());
 
   // Test the body.
   std::string response;

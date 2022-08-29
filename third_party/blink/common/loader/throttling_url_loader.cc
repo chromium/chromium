@@ -366,6 +366,7 @@ void ThrottlingURLLoader::RestartWithFactory(
   start_info_->url_loader_factory = std::move(factory);
   start_info_->options = url_loader_options;
   body_.reset();
+  cached_metadata_.reset();
   StartNow();
 }
 
@@ -658,7 +659,8 @@ void ThrottlingURLLoader::OnReceiveEarlyHints(
 
 void ThrottlingURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
   DCHECK(deferring_throttles_.empty());
@@ -666,6 +668,7 @@ void ThrottlingURLLoader::OnReceiveResponse(
                response_url_.possibly_invalid_spec());
   did_receive_response_ = true;
   body_ = std::move(body);
+  cached_metadata_ = std::move(cached_metadata);
 
   // Dispatch BeforeWillProcessResponse().
   if (!throttles_.empty()) {
@@ -719,8 +722,8 @@ void ThrottlingURLLoader::OnReceiveResponse(
     }
   }
 
-  forwarding_client_->OnReceiveResponse(std::move(response_head),
-                                        std::move(body_));
+  forwarding_client_->OnReceiveResponse(
+      std::move(response_head), std::move(body_), std::move(cached_metadata_));
 }
 
 void ThrottlingURLLoader::OnReceiveRedirect(
@@ -836,13 +839,6 @@ void ThrottlingURLLoader::OnUploadProgress(
                                        std::move(ack_callback));
 }
 
-void ThrottlingURLLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
-  DCHECK(!loader_completed_);
-
-  forwarding_client_->OnReceiveCachedMetadata(std::move(data));
-}
-
 void ThrottlingURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
@@ -950,7 +946,8 @@ void ThrottlingURLLoader::Resume() {
     case DEFERRED_RESPONSE: {
       client_receiver_.Resume();
       forwarding_client_->OnReceiveResponse(
-          std::move(response_info_->response_head), std::move(body_));
+          std::move(response_info_->response_head), std::move(body_),
+          std::move(cached_metadata_));
       // Note: |this| may be deleted here.
       break;
     }

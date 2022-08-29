@@ -297,7 +297,8 @@ void ObjectNavigationFallbackBodyLoader::OnReceiveEarlyHints(
 
 void ObjectNavigationFallbackBodyLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   // Should have already happened.
   NOTREACHED();
 }
@@ -315,11 +316,6 @@ void ObjectNavigationFallbackBodyLoader::OnUploadProgress(
     OnUploadProgressCallback) {
   // Should have already happened.
   NOTREACHED();
-}
-
-void ObjectNavigationFallbackBodyLoader::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  // Not needed so implementation omitted.
 }
 
 void ObjectNavigationFallbackBodyLoader::OnTransferSizeUpdated(

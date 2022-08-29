@@ -816,7 +816,9 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
 
 void NavigationURLLoaderImpl::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle response_body) {
+    mojo::ScopedDataPipeConsumerHandle response_body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+  DCHECK(!cached_metadata);
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
                         resource_request_->is_outermost_main_frame);
   head_ = std::move(head);
@@ -981,11 +983,6 @@ void NavigationURLLoaderImpl::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback callback) {
-  NOTREACHED();
-}
-
-void NavigationURLLoaderImpl::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
   NOTREACHED();
 }
 

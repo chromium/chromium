@@ -80,12 +80,14 @@ class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
     url_loader_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     DCHECK(url_loader_client_.is_bound());
     url_loader_client_->OnReceiveResponse(
-        rewrite_header_callback_.Run(std::move(response_head)),
-        std::move(body));
+        rewrite_header_callback_.Run(std::move(response_head)), std::move(body),
+        std::move(cached_metadata));
   }
 
   void OnReceiveRedirect(
@@ -102,11 +104,6 @@ class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
     DCHECK(url_loader_client_.is_bound());
     url_loader_client_->OnUploadProgress(current_position, total_size,
                                          std::move(ack_callback));
-  }
-
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
-    DCHECK(url_loader_client_.is_bound());
-    url_loader_client_->OnReceiveCachedMetadata(std::move(data));
   }
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
@@ -591,11 +588,13 @@ void ServiceWorkerSubresourceLoader::CommitResponseHeaders() {
 }
 
 void ServiceWorkerSubresourceLoader::CommitResponseBody(
-    mojo::ScopedDataPipeConsumerHandle response_body) {
+    mojo::ScopedDataPipeConsumerHandle response_body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TransitionToStatus(Status::kSentBody);
   // TODO(kinuko): Fill the ssl_info.
   url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                        std::move(response_body));
+                                        std::move(response_body),
+                                        std::move(cached_metadata));
 }
 
 void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
@@ -608,7 +607,7 @@ void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
   }
 
   producer_handle.reset();  // The data pipe is empty.
-  CommitResponseBody(std::move(consumer_handle));
+  CommitResponseBody(std::move(consumer_handle), absl::nullopt);
   CommitCompleted(net::OK);
 }
 
@@ -799,13 +798,7 @@ void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
   side_data_reading_complete_ = true;
 
   DCHECK(data_pipe.is_valid());
-  CommitResponseBody(std::move(data_pipe));
-
-  // See https://crbug.com/1294238. The cached meta data needs to be sent after
-  // the response head.
-  if (metadata.has_value()) {
-    url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
-  }
+  CommitResponseBody(std::move(data_pipe), std::move(metadata));
 
   // If the blob reading completed before the side data reading, then we
   // must manually finalize the blob reading now.

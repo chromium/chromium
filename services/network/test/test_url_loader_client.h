@@ -38,11 +38,12 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   ~TestURLLoaderClient() override;
 
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(mojom::URLResponseHeadPtr response_head,
-                         mojo::ScopedDataPipeConsumerHandle body) override;
+  void OnReceiveResponse(
+      mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr response_head) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
@@ -55,9 +56,6 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   bool has_received_upload_progress() const {
     return has_received_upload_progress_;
   }
-  bool has_received_cached_metadata() const {
-    return has_received_cached_metadata_;
-  }
   bool has_received_completion() const { return has_received_completion_; }
   bool has_received_disconnect() const { return has_received_disconnect_; }
   const mojom::URLResponseHeadPtr& response_head() const {
@@ -68,7 +66,9 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
     return response_head_->ssl_info;
   }
   const net::RedirectInfo& redirect_info() const { return redirect_info_; }
-  const std::string& cached_metadata() const { return cached_metadata_; }
+  const absl::optional<std::string>& cached_metadata() const {
+    return cached_metadata_;
+  }
   mojo::DataPipeConsumerHandle response_body() { return response_body_.get(); }
   mojo::ScopedDataPipeConsumerHandle response_body_release() {
     return std::move(response_body_);
@@ -95,7 +95,6 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
 
   void RunUntilResponseReceived();
   void RunUntilRedirectReceived();
-  void RunUntilCachedMetadataReceived();
   void RunUntilResponseBodyArrived();
   void RunUntilComplete();
   void RunUntilDisconnect();
@@ -107,20 +106,18 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   mojo::Receiver<mojom::URLLoaderClient> receiver_{this};
   mojom::URLResponseHeadPtr response_head_;
   net::RedirectInfo redirect_info_;
-  std::string cached_metadata_;
+  absl::optional<std::string> cached_metadata_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   URLLoaderCompletionStatus completion_status_;
   bool has_received_early_hints_ = false;
   bool has_received_response_ = false;
   bool has_received_redirect_ = false;
   bool has_received_upload_progress_ = false;
-  bool has_received_cached_metadata_ = false;
   bool has_received_completion_ = false;
   bool has_received_disconnect_ = false;
 
   base::OnceClosure quit_closure_for_on_receive_response_;
   base::OnceClosure quit_closure_for_on_receive_redirect_;
-  base::OnceClosure quit_closure_for_on_receive_cached_metadata_;
   base::OnceClosure quit_closure_for_on_start_loading_response_body_;
   base::OnceClosure quit_closure_for_on_complete_;
   base::OnceClosure quit_closure_for_disconnect_;

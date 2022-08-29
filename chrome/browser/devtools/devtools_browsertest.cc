@@ -1810,7 +1810,7 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
   EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
   params->client->OnReceiveResponse(std::move(response),
-                                    std::move(consumer_handle));
+                                    std::move(consumer_handle), absl::nullopt);
   params->client->OnComplete(network::URLLoaderCompletionStatus());
   return true;
 }

@@ -288,7 +288,8 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
       return;
     }
     head_.response_start = base::TimeTicks::Now();
-    client_->OnReceiveResponse(head_.Clone(), std::move(consumer_handle));
+    client_->OnReceiveResponse(head_.Clone(), std::move(consumer_handle),
+                               absl::nullopt);
 
     data_producer_ = std::make_unique<FileSystemReaderDataPipeProducer>(
         std::move(producer_handle), std::move(stream_reader), size,

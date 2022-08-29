@@ -278,7 +278,7 @@ void TestURLLoaderFactory::SimulateResponse(
 
   if ((response_flags & kSendHeadersOnNetworkError) ||
       status.error_code == net::OK) {
-    client->OnReceiveResponse(std::move(head), std::move(body));
+    client->OnReceiveResponse(std::move(head), std::move(body), absl::nullopt);
   }
 
   client->OnComplete(status);

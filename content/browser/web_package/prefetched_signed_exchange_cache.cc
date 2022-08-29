@@ -289,7 +289,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
       return;
     }
     client_->OnReceiveResponse(std::move(response_),
-                               std::move(pipe_consumer_handle));
+                               std::move(pipe_consumer_handle), absl::nullopt);
 
     // Send a dummy OnComplete message.
     network::URLLoaderCompletionStatus status =
@@ -346,7 +346,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
             std::make_unique<storage::BlobDataHandle>(*blob_data_handle_)));
 
     client_->OnReceiveResponse(std::move(response_),
-                               std::move(pipe_consumer_handle));
+                               std::move(pipe_consumer_handle), absl::nullopt);
   }
 
   void BlobReaderComplete(net::Error result) {

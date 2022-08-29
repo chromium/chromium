@@ -232,9 +232,11 @@ void WorkerScriptLoader::OnReceiveEarlyHints(
 
 void WorkerScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  client_->OnReceiveResponse(std::move(response_head), std::move(body));
+  client_->OnReceiveResponse(std::move(response_head), std::move(body),
+                             std::move(cached_metadata));
 }
 
 void WorkerScriptLoader::OnReceiveRedirect(
@@ -258,11 +260,6 @@ void WorkerScriptLoader::OnUploadProgress(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   client_->OnUploadProgress(current_position, total_size,
                             std::move(ack_callback));
-}
-
-void WorkerScriptLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  client_->OnReceiveCachedMetadata(std::move(data));
 }
 
 void WorkerScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {

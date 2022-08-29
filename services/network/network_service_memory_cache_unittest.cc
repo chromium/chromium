@@ -167,7 +167,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
     mojo::Remote<mojom::URLLoaderClient> client(std::move(pending_client));
     mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
-    client->OnReceiveResponse(std::move(response_head), /*body=*/{});
+    client->OnReceiveResponse(std::move(response_head), /*body=*/{},
+                              absl::nullopt);
     client->OnComplete(URLLoaderCompletionStatus(net::OK));
   }
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override {

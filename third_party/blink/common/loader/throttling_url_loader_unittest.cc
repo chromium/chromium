@@ -79,7 +79,8 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
 
   void NotifyClientOnReceiveResponse() {
     client_remote_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                                      mojo::ScopedDataPipeConsumerHandle());
+                                      mojo::ScopedDataPipeConsumerHandle(),
+                                      absl::nullopt);
   }
 
   void NotifyClientOnReceiveRedirect() {
@@ -202,8 +203,10 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     on_received_response_called_++;
     if (on_received_response_callback_)
       std::move(on_received_response_callback_).Run();
@@ -218,7 +221,6 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override {}
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     on_complete_called_++;

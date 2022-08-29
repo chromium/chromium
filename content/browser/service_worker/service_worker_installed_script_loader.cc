@@ -72,10 +72,8 @@ void ServiceWorkerInstalledScriptLoader::OnStarted(
             *response_head));
   }
 
-  client_->OnReceiveResponse(std::move(response_head), std::move(body_handle));
-  if (metadata) {
-    client_->OnReceiveCachedMetadata(std::move(*metadata));
-  }
+  client_->OnReceiveResponse(std::move(response_head), std::move(body_handle),
+                             std::move(metadata));
   // We continue in OnFinished().
 }
 

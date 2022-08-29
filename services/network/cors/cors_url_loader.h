@@ -98,14 +98,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body) override;
+  void OnReceiveResponse(
+      mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         base::OnceCallback<void()> callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const URLLoaderCompletionStatus& status) override;
 

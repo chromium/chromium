@@ -39,7 +39,7 @@ void AboutURLLoaderFactory::CreateLoaderAndStart(
   }
 
   client_remote->OnReceiveResponse(std::move(response_head),
-                                   std::move(consumer));
+                                   std::move(consumer), absl::nullopt);
   client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 }
 

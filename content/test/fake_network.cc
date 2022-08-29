@@ -112,7 +112,8 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
            mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
   producer_handle->WriteData(response_info.body.data(), &bytes_written,
                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  client->OnReceiveResponse(std::move(response), std::move(consumer_handle));
+  client->OnReceiveResponse(std::move(response), std::move(consumer_handle),
+                            absl::nullopt);
 
   network::URLLoaderCompletionStatus status;
   status.error_code = response_info.error_code;

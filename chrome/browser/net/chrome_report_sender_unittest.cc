@@ -47,8 +47,8 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
     head->headers =
         net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\n\n");
     head->mime_type = "text/html";
-    client_remote->OnReceiveResponse(std::move(head),
-                                     mojo::ScopedDataPipeConsumerHandle());
+    client_remote->OnReceiveResponse(
+        std::move(head), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
     client_remote->OnComplete(network::URLLoaderCompletionStatus());
   }
 

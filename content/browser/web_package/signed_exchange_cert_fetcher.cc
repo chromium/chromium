@@ -237,7 +237,8 @@ void SignedExchangeCertFetcher::OnReceiveEarlyHints(
 
 void SignedExchangeCertFetcher::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::OnReceiveResponse");
   if (devtools_proxy_) {
@@ -314,12 +315,6 @@ void SignedExchangeCertFetcher::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // Cert fetching doesn't have request body.
-  NOTREACHED();
-}
-
-void SignedExchangeCertFetcher::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  // Cert fetching doesn't use cached metadata.
   NOTREACHED();
 }
 

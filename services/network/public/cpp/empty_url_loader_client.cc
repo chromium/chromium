@@ -65,7 +65,8 @@ void EmptyURLLoaderClient::OnReceiveEarlyHints(
 
 void EmptyURLLoaderClient::OnReceiveResponse(
     const mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   if (!body)
     return;
 
@@ -85,8 +86,6 @@ void EmptyURLLoaderClient::OnUploadProgress(int64_t current_position,
                                             OnUploadProgressCallback callback) {
   std::move(callback).Run();
 }
-
-void EmptyURLLoaderClient::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {}
 
 void EmptyURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {}
 

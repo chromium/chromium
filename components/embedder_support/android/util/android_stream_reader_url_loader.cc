@@ -351,7 +351,7 @@ void AndroidStreamReaderURLLoader::SendResponseToClient() {
   cache_response_ =
       response_delegate_->ShouldCacheResponse(response_head_.get());
   client_->OnReceiveResponse(std::move(response_head_),
-                             std::move(consumer_handle_));
+                             std::move(consumer_handle_), absl::nullopt);
 }
 
 void AndroidStreamReaderURLLoader::ReadMore() {

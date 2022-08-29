@@ -100,14 +100,15 @@ class ObjectNavigationFallbackBodyLoader
 
   // URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr,
-                         mojo::ScopedDataPipeConsumerHandle body) override;
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo&,
                          network::mojom::URLResponseHeadPtr) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 

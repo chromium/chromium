@@ -118,10 +118,10 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
     EXPECT_TRUE(test_client_.has_received_response());
     EXPECT_FALSE(test_client_.has_received_redirect());
     EXPECT_FALSE(test_client_.has_received_upload_progress());
-    EXPECT_FALSE(test_client_.has_received_cached_metadata());
 
     ASSERT_TRUE(test_client_.response_head()->headers);
     ASSERT_TRUE(test_client_.response_body());
+    ASSERT_FALSE(test_client_.cached_metadata().has_value());
 
     EXPECT_EQ(expected_response_code,
               test_client_.response_head()->headers->response_code());

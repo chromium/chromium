@@ -86,7 +86,7 @@ void NetworkServiceMemoryCacheURLLoader::Start(
 
   // Start sending the response.
   client_->OnReceiveResponse(std::move(response_head),
-                             std::move(consumer_handle));
+                             std::move(consumer_handle), absl::nullopt);
 
   // Set up data pipe producer.
   producer_handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(

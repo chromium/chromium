@@ -119,7 +119,8 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveEarlyHints(
 
 void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(forwarding_client_);
   if (can_fallback_) {
     if (!head->headers) {
@@ -141,8 +142,12 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
       search_prefetch_service_->UpdateServeTime(resource_request_->url);
   }
 
+  // Cached metadata is not supported for navigation loader.
+  cached_metadata.reset();
+
   can_fallback_ = false;
-  forwarding_client_->OnReceiveResponse(std::move(head), std::move(body));
+  forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                        absl::nullopt);
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnReceiveRedirect(
@@ -163,11 +168,6 @@ void CacheAliasSearchPrefetchURLLoader::OnUploadProgress(
     OnUploadProgressCallback callback) {
   // We only handle GETs.
   NOTREACHED();
-}
-
-void CacheAliasSearchPrefetchURLLoader::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  // Do nothing. This is not supported for navigation loader.
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(

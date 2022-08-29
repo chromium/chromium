@@ -35,10 +35,13 @@ class URLLoaderClientCheckedRemote final {
     void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) {
       client_->OnReceiveEarlyHints(std::move(early_hints));
     }
-    void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                           mojo::ScopedDataPipeConsumerHandle body) {
+    void OnReceiveResponse(
+        network::mojom::URLResponseHeadPtr head,
+        mojo::ScopedDataPipeConsumerHandle body,
+        absl::optional<mojo_base::BigBuffer> cached_metadata) {
       on_receive_response_called_ = true;
-      client_->OnReceiveResponse(std::move(head), std::move(body));
+      client_->OnReceiveResponse(std::move(head), std::move(body),
+                                 std::move(cached_metadata));
     }
     void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                            network::mojom::URLResponseHeadPtr head) {
@@ -50,9 +53,6 @@ class URLLoaderClientCheckedRemote final {
         network::mojom::URLLoaderClient::OnUploadProgressCallback callback) {
       client_->OnUploadProgress(current_position, total_size,
                                 std::move(callback));
-    }
-    void OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-      client_->OnReceiveCachedMetadata(std::move(data));
     }
     void OnTransferSizeUpdated(int32_t transfer_size_diff) {
       client_->OnTransferSizeUpdated(transfer_size_diff);

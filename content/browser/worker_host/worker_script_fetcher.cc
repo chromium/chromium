@@ -626,8 +626,10 @@ void WorkerScriptFetcher::OnReceiveEarlyHints(
 
 void WorkerScriptFetcher::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!cached_metadata);
   response_head_ = std::move(response_head);
   if (!body)
     return;
@@ -710,10 +712,6 @@ void WorkerScriptFetcher::OnReceiveRedirect(
 void WorkerScriptFetcher::OnUploadProgress(int64_t current_position,
                                            int64_t total_size,
                                            OnUploadProgressCallback callback) {
-  NOTREACHED();
-}
-
-void WorkerScriptFetcher::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
   NOTREACHED();
 }
 

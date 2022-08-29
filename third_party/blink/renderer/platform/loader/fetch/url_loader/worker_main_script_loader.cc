@@ -130,7 +130,8 @@ void WorkerMainScriptLoader::OnReceiveEarlyHints(
 
 void WorkerMainScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle handle) {
+    mojo::ScopedDataPipeConsumerHandle handle,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
   NOTREACHED();
 }
@@ -149,9 +150,6 @@ void WorkerMainScriptLoader::OnUploadProgress(
   // This has already happened in the browser process.
   NOTREACHED();
 }
-
-void WorkerMainScriptLoader::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {}
 
 void WorkerMainScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 }

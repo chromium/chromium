@@ -232,11 +232,9 @@ void BlobURLLoader::HeadersCompleted(
   // services/network/url_loader.h
 
   client_->OnReceiveResponse(std::move(response),
-                             std::move(response_body_consumer_handle_));
+                             std::move(response_body_consumer_handle_),
+                             std::move(metadata));
   sent_headers_ = true;
-
-  if (metadata.has_value())
-    client_->OnReceiveCachedMetadata(std::move(metadata.value()));
 }
 
 }  // namespace storage

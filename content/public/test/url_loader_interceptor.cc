@@ -185,9 +185,12 @@ class URLLoaderClientInterceptor : public network::mojom::URLLoaderClient {
     original_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
-    original_client_->OnReceiveResponse(std::move(head), std::move(body));
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+    original_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                        std::move(cached_metadata));
   }
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -200,10 +203,6 @@ class URLLoaderClientInterceptor : public network::mojom::URLLoaderClient {
                         base::OnceCallback<void()> callback) override {
     original_client_->OnUploadProgress(current_position, total_size,
                                        std::move(callback));
-  }
-
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
-    original_client_->OnReceiveCachedMetadata(std::move(data));
   }
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
@@ -614,7 +613,8 @@ void URLLoaderInterceptor::WriteResponse(
                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
-  client->OnReceiveResponse(std::move(response), std::move(consumer_handle));
+  client->OnReceiveResponse(std::move(response), std::move(consumer_handle),
+                            absl::nullopt);
 
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = body.size();

@@ -574,7 +574,8 @@ TEST_F(NavigatorTest, NoContent) {
       std::string(kNoContentHeaders, std::size(kNoContentHeaders)));
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
-                              mojo::ScopedDataPipeConsumerHandle());
+                              mojo::ScopedDataPipeConsumerHandle(),
+                              absl::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.
@@ -599,7 +600,8 @@ TEST_F(NavigatorTest, NoContent) {
       std::string(kResetContentHeaders, std::size(kResetContentHeaders)));
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
-                              mojo::ScopedDataPipeConsumerHandle());
+                              mojo::ScopedDataPipeConsumerHandle(),
+                              absl::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.

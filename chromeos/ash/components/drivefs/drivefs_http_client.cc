@@ -101,8 +101,10 @@ class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     DCHECK(IsFirstCall(CallbackState::kResponseReceived));
     std::vector<mojom::HttpHeaderPtr> headers;
     size_t iter = 0;
@@ -130,8 +132,6 @@ class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
                         OnUploadProgressCallback ack_callback) override {
     std::move(ack_callback).Run();
   }
-
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
 

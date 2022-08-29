@@ -130,17 +130,16 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
     client_->OnUploadProgress(current_position, total_size,
                               std::move(ack_callback));
   }
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
-    client_->OnReceiveCachedMetadata(std::move(data));
-  }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     client_->OnTransferSizeUpdated(transfer_size_diff);
   }
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     client_->OnReceiveEarlyHints(std::move(early_hints));
   }
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     if (devtools_enabled_) {
       // Make a deep copy of URLResponseHead before posting it to a task.
       auto deep_copied_response = head.Clone();
@@ -153,7 +152,8 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
           base::BindOnce(&NotifyNavigationPreloadResponseReceived, url_,
                          std::move(deep_copied_response)));
     }
-    client_->OnReceiveResponse(std::move(head), std::move(body));
+    client_->OnReceiveResponse(std::move(head), std::move(body),
+                               std::move(cached_metadata));
   }
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {

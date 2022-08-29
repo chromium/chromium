@@ -492,7 +492,8 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
   mojo::ScopedDataPipeProducerHandle body_producer;
   ASSERT_EQ(MOJO_RESULT_OK,
             mojo::CreateDataPipe(&options, body_producer, body_consumer));
-  client->OnReceiveResponse(std::move(head), std::move(body_consumer));
+  client->OnReceiveResponse(std::move(head), std::move(body_consumer),
+                            absl::nullopt);
   mojo::BlockingCopyFromString(body_from_net, body_producer);
   body_producer.reset();
 
@@ -794,7 +795,8 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
     EXPECT_EQ(MOJO_RESULT_OK,
               producer->WriteData(body_from_net.data(), &bytes_written,
                                   MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
-    request->client->OnReceiveResponse(std::move(head), std::move(consumer));
+    request->client->OnReceiveResponse(std::move(head), std::move(consumer),
+                                       absl::nullopt);
   }
 
   // Blocked on reading the header from the storage due to the asynchronous

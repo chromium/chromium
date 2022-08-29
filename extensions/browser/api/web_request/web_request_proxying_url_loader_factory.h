@@ -109,14 +109,15 @@ class WebRequestProxyingURLLoaderFactory
     // network::mojom::URLLoaderClient:
     void OnReceiveEarlyHints(
         network::mojom::EarlyHintsPtr early_hints) override;
-    void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                           mojo::ScopedDataPipeConsumerHandle body) override;
+    void OnReceiveResponse(
+        network::mojom::URLResponseHeadPtr head,
+        mojo::ScopedDataPipeConsumerHandle body,
+        absl::optional<mojo_base::BigBuffer> cached_metadata) override;
     void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                            network::mojom::URLResponseHeadPtr head) override;
     void OnUploadProgress(int64_t current_position,
                           int64_t total_size,
                           OnUploadProgressCallback callback) override;
-    void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
     void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
     void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
@@ -227,6 +228,7 @@ class WebRequestProxyingURLLoaderFactory
     // ExtensionWebRequestEventRouter) through much of the request's lifetime.
     network::mojom::URLResponseHeadPtr current_response_;
     mojo::ScopedDataPipeConsumerHandle current_body_;
+    absl::optional<mojo_base::BigBuffer> current_cached_metadata_;
     scoped_refptr<net::HttpResponseHeaders> override_headers_;
     GURL redirect_url_;
 

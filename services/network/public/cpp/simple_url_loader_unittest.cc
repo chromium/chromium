@@ -2103,7 +2103,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle));
+                                     std::move(consumer_handle), absl::nullopt);
           break;
         }
         case TestLoaderEvent::kReceived401Response: {
@@ -2116,7 +2116,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle));
+                                     std::move(consumer_handle), absl::nullopt);
           break;
         }
         case TestLoaderEvent::kReceived501Response: {
@@ -2129,7 +2129,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle));
+                                     std::move(consumer_handle), absl::nullopt);
           break;
         }
         case TestLoaderEvent::kReceivedResponseNoData: {
@@ -2139,7 +2139,8 @@ class MockURLLoader : public network::mojom::URLLoader {
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   net::HttpUtil::AssembleRawHeaders(headers));
           client_->OnReceiveResponse(std::move(response_info),
-                                     mojo::ScopedDataPipeConsumerHandle());
+                                     mojo::ScopedDataPipeConsumerHandle(),
+                                     absl::nullopt);
           break;
         }
         case TestLoaderEvent::kBodyDataRead: {

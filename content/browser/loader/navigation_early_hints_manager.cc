@@ -328,8 +328,10 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   // mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body) override {
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     if (!head->network_accessed && head->was_fetched_via_cache) {
       // Cancel the client since the response is already stored in the cache.
       result_.was_canceled = true;
@@ -354,7 +356,6 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
                         OnUploadProgressCallback callback) override {
     NOTREACHED();
   }
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     if (result_.was_canceled || result_.error_code.has_value()) {

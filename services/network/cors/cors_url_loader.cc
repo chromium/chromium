@@ -484,8 +484,10 @@ void CorsURLLoader::OnReceiveEarlyHints(mojom::EarlyHintsPtr early_hints) {
     forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
 }
 
-void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head,
-                                      mojo::ScopedDataPipeConsumerHandle body) {
+void CorsURLLoader::OnReceiveResponse(
+    mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
@@ -516,8 +518,8 @@ void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head,
   response_head->timing_allow_passed = !timing_allow_failed_flag_;
   response_head->has_authorization_covered_by_wildcard_on_preflight =
       has_authorization_covered_by_wildcard_;
-  forwarding_client_->OnReceiveResponse(std::move(response_head),
-                                        std::move(body));
+  forwarding_client_->OnReceiveResponse(
+      std::move(response_head), std::move(body), std::move(cached_metadata));
 }
 
 void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -636,13 +638,6 @@ void CorsURLLoader::OnUploadProgress(int64_t current_position,
   DCHECK(forwarding_client_);
   forwarding_client_->OnUploadProgress(current_position, total_size,
                                        std::move(ack_callback));
-}
-
-void CorsURLLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  DCHECK(network_loader_);
-  DCHECK(forwarding_client_);
-  DCHECK(!deferred_redirect_url_);
-  forwarding_client_->OnReceiveCachedMetadata(std::move(data));
 }
 
 void CorsURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {

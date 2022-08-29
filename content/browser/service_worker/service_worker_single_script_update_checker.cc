@@ -199,7 +199,8 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveEarlyHints(
 
 void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle consumer) {
+    mojo::ScopedDataPipeConsumerHandle consumer,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse", this,
@@ -290,9 +291,6 @@ void ServiceWorkerSingleScriptUpdateChecker::OnUploadProgress(
   // The network request for update checking shouldn't have upload data.
   NOTREACHED();
 }
-
-void ServiceWorkerSingleScriptUpdateChecker::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {}
 
 void ServiceWorkerSingleScriptUpdateChecker::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {}
