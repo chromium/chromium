@@ -1,5 +1,7 @@
 # Chrome Security Update FAQ
 
+_Bookmark this page as https://g.co/chrome/security-update-faq_
+
 ## TL:DR
 
 Almost all Chrome updates contain security fixes, and should be prioritized
