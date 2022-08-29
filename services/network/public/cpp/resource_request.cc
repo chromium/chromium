@@ -6,6 +6,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "net/log/net_log_source.h"
@@ -304,7 +305,7 @@ ScopedResourceRequestCrashKeys::ScopedResourceRequestCrashKeys(
     const network::ResourceRequest& request)
     : url_(GetRequestUrlCrashKey(), request.url.possibly_invalid_spec()),
       request_initiator_(GetRequestInitiatorCrashKey(),
-                         base::OptionalOrNullptr(request.request_initiator)),
+                         base::OptionalToPtr(request.request_initiator)),
       resource_type_(GetRequestResourceTypeCrashKey(),
                      base::NumberToString(request.resource_type)) {}
 

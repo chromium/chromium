@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/first_party_sets_mojom_traits.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
@@ -128,8 +129,8 @@ bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
     return false;
 
   *out_metadata =
-      net::FirstPartySetMetadata(context, base::OptionalOrNullptr(frame_entry),
-                                 base::OptionalOrNullptr(top_frame_entry));
+      net::FirstPartySetMetadata(context, base::OptionalToPtr(frame_entry),
+                                 base::OptionalToPtr(top_frame_entry));
 
   return true;
 }

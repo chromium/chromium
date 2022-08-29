@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -59,9 +60,9 @@ namespace debug {
 ScopedRequestInitiatorOriginLockCrashKey::
     ScopedRequestInitiatorOriginLockCrashKey(
         const absl::optional<url::Origin>& request_initiator_origin_lock)
-    : ScopedOriginCrashKey(
-          GetRequestInitiatorOriginLockCrashKey(),
-          base::OptionalOrNullptr(request_initiator_origin_lock)) {}
+    : ScopedOriginCrashKey(GetRequestInitiatorOriginLockCrashKey(),
+                           base::OptionalToPtr(request_initiator_origin_lock)) {
+}
 
 ScopedRequestInitiatorOriginLockCrashKey::
     ~ScopedRequestInitiatorOriginLockCrashKey() = default;
