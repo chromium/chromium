@@ -69,11 +69,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private buildNode_(nodeId: number): Node|null {
-    const htmlTag = chrome.readAnything.getHtmlTag(nodeId);
+    let htmlTag = chrome.readAnything.getHtmlTag(nodeId);
     // Text nodes do not have an html tag.
     if (!htmlTag.length) {
       const textContent = chrome.readAnything.getTextContent(nodeId);
       return document.createTextNode(textContent);
+    }
+    // getHtmlTag might return '#document' which is not a valid to pass to
+    // createElement.
+    if (htmlTag === '#document') {
+      htmlTag = 'div';
     }
 
     const element = document.createElement(htmlTag);
@@ -117,7 +122,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // would create a shadow node element representing each AXNode, because
     // experimentation found the shadow node creation to be ~8-10x slower than
     // constructing and appending nodes directly to the container element.
-    for (const nodeId of chrome.readAnything.contentNodeIds) {
+    for (const nodeId of chrome.readAnything.displayNodeIds) {
       const node = this.buildNode_(nodeId);
       if (node) {
         container.appendChild(node);

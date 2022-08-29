@@ -820,4 +820,94 @@ TEST(AXNodeTest, IsGridCellReadOnlyOrDisabled) {
   EXPECT_TRUE(gridcell_3_node->IsReadOnlyOrDisabled());
 }
 
+TEST(AXNodeTest, GetLowestCommonAncestor) {
+  // ++kRootWebArea
+  // ++++kParagraph
+  // ++++++kStaticText
+  // ++++kParagraph
+  // ++++++kLink
+  // ++++++++kStaticText
+  // ++++++kButton
+
+  // Numbers at the end of variable names indicate their position under the
+  // root.
+  AXNodeData root;
+  AXNodeData paragraph_0;
+  AXNodeData static_text_0_0;
+  AXNodeData paragraph_1;
+  AXNodeData link_1_0;
+  AXNodeData static_text_1_0_0;
+  AXNodeData button_1_1;
+
+  root.id = 1;
+  paragraph_0.id = 2;
+  static_text_0_0.id = 3;
+  paragraph_1.id = 4;
+  link_1_0.id = 5;
+  static_text_1_0_0.id = 6;
+  button_1_1.id = 7;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {paragraph_0.id, paragraph_1.id};
+
+  paragraph_0.role = ax::mojom::Role::kParagraph;
+  paragraph_0.child_ids = {static_text_0_0.id};
+
+  static_text_0_0.role = ax::mojom::Role::kStaticText;
+  static_text_0_0.SetName("static_text_0_0");
+
+  paragraph_1.role = ax::mojom::Role::kParagraph;
+  paragraph_1.child_ids = {link_1_0.id, button_1_1.id};
+
+  link_1_0.role = ax::mojom::Role::kLink;
+  link_1_0.AddState(ax::mojom::State::kLinked);
+  link_1_0.child_ids = {static_text_1_0_0.id};
+
+  static_text_1_0_0.role = ax::mojom::Role::kStaticText;
+  static_text_1_0_0.SetName("static_text_1_0_0");
+
+  button_1_1.role = ax::mojom::Role::kButton;
+  button_1_1.SetName("button_1_1");
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root,        paragraph_0, static_text_0_0,
+                         paragraph_1, link_1_0,    static_text_1_0_0,
+                         button_1_1};
+  initial_state.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Application";
+  initial_state.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
+
+  AXNode* root_node = tree.GetFromId(root.id);
+  AXNode* paragraph_0_node = tree.GetFromId(paragraph_0.id);
+  AXNode* static_text_0_0_node = tree.GetFromId(static_text_0_0.id);
+  AXNode* paragraph_1_node = tree.GetFromId(paragraph_1.id);
+  AXNode* link_1_0_node = tree.GetFromId(link_1_0.id);
+  AXNode* static_text_1_0_0_node = tree.GetFromId(static_text_1_0_0.id);
+  AXNode* button_1_1_node = tree.GetFromId(button_1_1.id);
+
+  // The lowest common ancestor of a node and itself is itself.
+  ASSERT_EQ(root_node, root_node->GetLowestCommonAncestor(*root_node));
+  ASSERT_EQ(paragraph_0_node,
+            paragraph_0_node->GetLowestCommonAncestor(*paragraph_0_node));
+
+  // Lowest common ancestor is reflexive.
+  ASSERT_EQ(paragraph_1_node,
+            link_1_0_node->GetLowestCommonAncestor(*button_1_1_node));
+  ASSERT_EQ(paragraph_1_node,
+            button_1_1_node->GetLowestCommonAncestor(*link_1_0_node));
+
+  // Finds the lowest common ancestor for two nodes not on the same level.
+  ASSERT_EQ(root_node, static_text_1_0_0_node->GetLowestCommonAncestor(
+                           *static_text_0_0_node));
+  ASSERT_EQ(link_1_0_node,
+            static_text_1_0_0_node->GetLowestCommonAncestor(*link_1_0_node));
+}
+
 }  // namespace ui

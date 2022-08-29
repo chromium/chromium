@@ -244,6 +244,8 @@ class AX_EXPORT AXNode final {
   // software to handle the event on the other end.
   bool CanFireEvents() const;
 
+  AXNode* GetLowestCommonAncestor(const AXNode& other);
+
   // Returns an optional integer indicating the logical order of this node
   // compared to another node, or returns an empty optional if the nodes are not
   // comparable. Nodes are not comparable if they do not share a common

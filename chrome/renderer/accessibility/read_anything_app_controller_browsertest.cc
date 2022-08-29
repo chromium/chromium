@@ -32,6 +32,12 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     basic_snapshot_.nodes[1].id = 2;
     basic_snapshot_.nodes[2].id = 3;
     basic_snapshot_.nodes[3].id = 4;
+
+    // Create simple AXTreeData with selection.
+    basic_tree_data_with_selection_.sel_anchor_object_id = 2;
+    basic_tree_data_with_selection_.sel_focus_object_id = 3;
+    basic_tree_data_with_selection_.sel_anchor_offset = 0;
+    basic_tree_data_with_selection_.sel_focus_offset = 0;
   }
 
   void SetThemeForTesting(const std::string& font_name,
@@ -46,8 +52,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->OnAXTreeDistilled(snapshot, content_node_ids);
   }
 
-  std::vector<ui::AXNodeID> ContentNodeIds() {
-    return controller_->ContentNodeIds();
+  std::vector<ui::AXNodeID> DisplayNodeIds() {
+    return controller_->DisplayNodeIds();
   }
 
   std::string FontName() { return controller_->FontName(); }
@@ -74,7 +80,13 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetUrl(ax_node_id);
   }
 
+  bool SelectionContainsNode(ui::AXNodeID ax_node_id) {
+    ui::AXNode* ax_node = controller_->GetAXNode(ax_node_id);
+    return controller_->SelectionContainsNode(ax_node);
+  }
+
   ui::AXTreeUpdate basic_snapshot_;
+  ui::AXTreeData basic_tree_data_with_selection_;
 
  private:
   // ReadAnythingAppController constructor and destructor are private so it's
@@ -94,16 +106,34 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
   EXPECT_EQ(background, BackgroundColor());
 }
 
-TEST_F(ReadAnythingAppControllerTest, ContentNodeIds) {
+TEST_F(ReadAnythingAppControllerTest, DisplayNodeIds_NoSelection) {
   std::vector<ui::AXNodeID> content_node_ids = {2, 4};
   OnAXTreeDistilled(basic_snapshot_, content_node_ids);
-  EXPECT_EQ(content_node_ids.size(), ContentNodeIds().size());
+  EXPECT_EQ(content_node_ids.size(), DisplayNodeIds().size());
   for (size_t i = 0; i < content_node_ids.size(); i++) {
-    EXPECT_EQ(content_node_ids[i], ContentNodeIds()[i]);
+    EXPECT_EQ(content_node_ids[i], DisplayNodeIds()[i]);
   }
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetChildren) {
+TEST_F(ReadAnythingAppControllerTest,
+       DisplayNodeIds_WithSelectionAndContentNodeIds) {
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {2, 4});
+  EXPECT_EQ(1u, DisplayNodeIds().size());
+  EXPECT_EQ(basic_snapshot_.root_id, DisplayNodeIds()[0]);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       DisplayNodeIds_WithSelectionButNoContentNodeIds) {
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_EQ(1u, DisplayNodeIds().size());
+  EXPECT_EQ(basic_snapshot_.root_id, DisplayNodeIds()[0]);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetChildren_NoSelection) {
   basic_snapshot_.nodes[2].role = ax::mojom::Role::kNone;
   OnAXTreeDistilled(basic_snapshot_, {});
   EXPECT_EQ(2u, GetChildren(1).size());
@@ -112,6 +142,39 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren) {
   EXPECT_EQ(0u, GetChildren(4).size());
 
   EXPECT_EQ(2, GetChildren(1)[0]);
+  EXPECT_EQ(4, GetChildren(1)[1]);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetChildren_WithSelection) {
+  // Create selection from node 3-4.
+  basic_tree_data_with_selection_.sel_anchor_object_id = 3;
+  basic_tree_data_with_selection_.sel_focus_object_id = 4;
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_EQ(2u, GetChildren(1).size());
+  EXPECT_EQ(0u, GetChildren(2).size());
+  EXPECT_EQ(0u, GetChildren(3).size());
+  EXPECT_EQ(0u, GetChildren(4).size());
+
+  EXPECT_EQ(3, GetChildren(1)[0]);
+  EXPECT_EQ(4, GetChildren(1)[1]);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetChildren_WithBackwardSelection) {
+  // Create backward selection from node 4-3.
+  basic_tree_data_with_selection_.sel_is_backward = true;
+  basic_tree_data_with_selection_.sel_anchor_object_id = 4;
+  basic_tree_data_with_selection_.sel_focus_object_id = 3;
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_EQ(2u, GetChildren(1).size());
+  EXPECT_EQ(0u, GetChildren(2).size());
+  EXPECT_EQ(0u, GetChildren(3).size());
+  EXPECT_EQ(0u, GetChildren(4).size());
+
+  EXPECT_EQ(3, GetChildren(1)[0]);
   EXPECT_EQ(4, GetChildren(1)[1]);
 }
 
@@ -131,7 +194,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag) {
   EXPECT_EQ(ul, GetHtmlTag(4));
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetTextContent) {
+TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   std::string text_content = "Hello";
   std::string missing_text_content = "";
   std::string more_text_content = " world";
@@ -151,6 +214,88 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent) {
   EXPECT_EQ(more_text_content, GetTextContent(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetTextContent_With2NodeSelection) {
+  std::string text_content_1 = "Hello";
+  std::string text_content_2 = " world";
+  std::string text_content_3 = " friend";
+  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[1].SetName(text_content_1);
+  basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[2].SetName(text_content_2);
+  basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[3].SetName(text_content_3);
+  basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
+  // Create selection from node 2-3.
+  basic_tree_data_with_selection_.sel_anchor_object_id = 2;
+  basic_tree_data_with_selection_.sel_focus_object_id = 3;
+  basic_tree_data_with_selection_.sel_anchor_offset = 1;
+  basic_tree_data_with_selection_.sel_focus_offset = 3;
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_EQ("Hello world friend", GetTextContent(1));
+  EXPECT_EQ("ello", GetTextContent(2));
+  EXPECT_EQ(" wo", GetTextContent(3));
+  EXPECT_EQ(" friend", GetTextContent(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetTextContent_With3NodeSelection) {
+  std::string text_content_1 = "Hello";
+  std::string text_content_2 = " world";
+  std::string text_content_3 = " friend";
+  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[1].SetName(text_content_1);
+  basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[2].SetName(text_content_2);
+  basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[3].SetName(text_content_3);
+  basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
+  // Create selection from node 2-4.
+  basic_tree_data_with_selection_.sel_anchor_object_id = 2;
+  basic_tree_data_with_selection_.sel_focus_object_id = 4;
+  basic_tree_data_with_selection_.sel_anchor_offset = 1;
+  basic_tree_data_with_selection_.sel_focus_offset = 3;
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_EQ("Hello world friend", GetTextContent(1));
+  EXPECT_EQ("ello", GetTextContent(2));
+  EXPECT_EQ(" world", GetTextContent(3));
+  EXPECT_EQ(" fr", GetTextContent(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithBackwardSelection) {
+  std::string text_content_1 = "Hello";
+  std::string text_content_2 = " world";
+  std::string text_content_3 = " friend";
+  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[1].SetName(text_content_1);
+  basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[2].SetName(text_content_2);
+  basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
+  basic_snapshot_.nodes[3].SetName(text_content_3);
+  basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
+  // Create backward selection from node 4-3.
+  basic_tree_data_with_selection_.sel_is_backward = true;
+  basic_tree_data_with_selection_.sel_anchor_object_id = 4;
+  basic_tree_data_with_selection_.sel_focus_object_id = 3;
+  basic_tree_data_with_selection_.sel_anchor_offset = 5;
+  basic_tree_data_with_selection_.sel_focus_offset = 2;
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_EQ("Hello world friend", GetTextContent(1));
+  EXPECT_EQ("Hello", GetTextContent(2));
+  EXPECT_EQ("orld", GetTextContent(3));
+  EXPECT_EQ(" frie", GetTextContent(4));
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   std::string url = "http://www.google.com";
   std::string invalid_url = "cats";
@@ -165,4 +310,27 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   EXPECT_EQ(url, GetUrl(2));
   EXPECT_EQ(invalid_url, GetUrl(3));
   EXPECT_EQ(missing_url, GetUrl(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, SelectionContainsNode) {
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_TRUE(SelectionContainsNode(1));
+  EXPECT_TRUE(SelectionContainsNode(2));
+  EXPECT_TRUE(SelectionContainsNode(3));
+  EXPECT_FALSE(SelectionContainsNode(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, SelectionContainsNode_BackwardSelection) {
+  basic_tree_data_with_selection_.sel_is_backward = true;
+  basic_tree_data_with_selection_.sel_anchor_object_id = 3;
+  basic_tree_data_with_selection_.sel_focus_object_id = 2;
+  basic_snapshot_.has_tree_data = true;
+  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+  OnAXTreeDistilled(basic_snapshot_, {});
+  EXPECT_TRUE(SelectionContainsNode(1));
+  EXPECT_TRUE(SelectionContainsNode(2));
+  EXPECT_TRUE(SelectionContainsNode(3));
+  EXPECT_FALSE(SelectionContainsNode(4));
 }

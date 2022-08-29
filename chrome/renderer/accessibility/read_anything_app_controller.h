@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace content {
@@ -71,7 +72,7 @@ class ReadAnythingAppController
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
   // gin templates:
-  std::vector<ui::AXNodeID> ContentNodeIds();
+  std::vector<ui::AXNodeID> DisplayNodeIds();
   std::string FontName();
   float FontSize();
   SkColor ForegroundColor();
@@ -109,6 +110,12 @@ class ReadAnythingAppController
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id);
 
+  // Returns whether the node is part of the selection. Returns true for partial
+  // containment as well; it also returns true if part of the node is part of
+  // the selection (e.g. a node in which some children are part of the selection
+  // and others are not).
+  bool SelectionContainsNode(ui::AXNode* ax_node);
+
   content::RenderFrame* render_frame_;
   mojo::Remote<read_anything::mojom::PageHandlerFactory> page_handler_factory_;
   mojo::Remote<read_anything::mojom::PageHandler> page_handler_;
@@ -117,6 +124,13 @@ class ReadAnythingAppController
   // State
   std::unique_ptr<ui::AXTree> tree_;
   std::vector<ui::AXNodeID> content_node_ids_;
+  std::vector<ui::AXNodeID> selection_node_ids_;
+  ui::AXSelection selection_;
+  bool has_selection_ = false;
+  ui::AXNode* start_node_ = nullptr;
+  ui::AXNode* end_node_ = nullptr;
+  int32_t start_offset_ = -1;
+  int32_t end_offset_ = -1;
   std::string font_name_;
   float font_size_;
   SkColor foreground_color_;

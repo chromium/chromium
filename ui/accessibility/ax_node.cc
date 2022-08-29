@@ -633,6 +633,23 @@ bool AXNode::CanFireEvents() const {
   return !IsChildOfLeaf();
 }
 
+AXNode* AXNode::GetLowestCommonAncestor(const AXNode& other) {
+  if (this == &other)
+    return this;
+
+  AXNode* common_ancestor = nullptr;
+  base::stack<AXNode*> our_ancestors = GetAncestorsCrossingTreeBoundary();
+  base::stack<AXNode*> other_ancestors =
+      other.GetAncestorsCrossingTreeBoundary();
+  while (!our_ancestors.empty() && !other_ancestors.empty() &&
+         our_ancestors.top() == other_ancestors.top()) {
+    common_ancestor = our_ancestors.top();
+    our_ancestors.pop();
+    other_ancestors.pop();
+  }
+  return common_ancestor;
+}
+
 absl::optional<int> AXNode::CompareTo(const AXNode& other) const {
   if (this == &other)
     return 0;

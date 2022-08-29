@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_AX_SELECTION_H_
 #define UI_ACCESSIBILITY_AX_SELECTION_H_
 
+#include "ui/accessibility/ax_export.h"
+
 namespace ui {
 
 // A data structure that can store either the selected range of nodes in the
