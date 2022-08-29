@@ -100,6 +100,22 @@ suite('PrivacyHubSubpageTests', function() {
         'Microphone toggle should be focused for settingId=1117.');
   });
 
+  test('Deep link to Geolocation toggle on privacy hub', async () => {
+    const params = new URLSearchParams();
+    params.append('settingId', '1118');
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
+
+    flush();
+
+    const deepLinkElement =
+        privacyHubSubpage.shadowRoot.querySelector('#geolocationToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Geolocation toggle should be focused for settingId=1118.');
+  });
+
   test('Update camera setting sub-label', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '1116');

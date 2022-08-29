@@ -95,6 +95,7 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
         value: () => new Set([
           Setting.kCameraOnOff,
           Setting.kMicrophoneOnOff,
+          Setting.kGeolocationOnOff,
         ]),
       },
 

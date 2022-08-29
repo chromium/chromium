@@ -208,6 +208,7 @@ enum Setting {
   kQuickDim = 1115,
   kCameraOnOff = 1116,
   kMicrophoneOnOff = 1117,
+  kGeolocationOnOff = 1118,
 
   // Languages and Input section.
   kAddLanguage = 1200,

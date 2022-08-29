@@ -331,6 +331,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"microphoneToggleTitle", IDS_OS_SETTINGS_MICROPHONE_TOGGLE_TITLE},
       {"microphoneToggleSublabelActive",
        IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_HARDWARE_TOGGLE_ACTIVE_SUBTEXT},
+      {"geolocationToggleTitle", IDS_OS_SETTINGS_GEOLOCATION_TOGGLE_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -478,7 +479,8 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::kPrivacyHubSubpagePath);
   RegisterNestedSettingBulk(
       mojom::Subpage::kPrivacyHub,
-      {{mojom::Setting::kCameraOnOff, mojom::Setting::kMicrophoneOnOff}},
+      {{mojom::Setting::kCameraOnOff, mojom::Setting::kMicrophoneOnOff,
+        mojom::Setting::kGeolocationOnOff}},
       generator);
 }
 

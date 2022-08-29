@@ -13,3 +13,9 @@
     sub-label="[[microphoneHardwareToggleActiveSubLabel_]]"
     disabled="[[microphoneHardwareToggleActive_]]">
 </settings-toggle-button>
+<settings-toggle-button
+    pref="{{prefs.ash.user.geolocation_allowed}}"
+    id="geolocationToggle"
+    label="$i18n{geolocationToggleTitle}"
+    deep-link-focus-id$="[[Setting.kGeolocationOnOff]]">
+</settings-toggle-button>
