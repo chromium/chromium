@@ -41,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/page_transition_types.h"
 
 using base::ASCIIToUTF16;
 using base::Time;
@@ -1362,7 +1363,7 @@ std::unique_ptr<HistoryURLProviderParams> BuildHistoryURLProviderParams(
   history_match.url_info.set_url(GURL(url_text));
   history_match.match_in_scheme = match_in_scheme;
   auto params = std::make_unique<HistoryURLProviderParams>(
-      input, input, true, AutocompleteMatch(), nullptr, nullptr, true);
+      input, input, true, AutocompleteMatch(), nullptr, nullptr, true, nullptr);
   params->matches.push_back(history_match);
 
   return params;
@@ -1474,6 +1475,12 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
   ASSERT_GT(matches_.size(), 0u);
   EXPECT_EQ(GURL("http://www.google.com/"), matches_[0].destination_url);
   EXPECT_TRUE(matches_[0].from_keyword);
+
+  // Ensure keyword and transition are set properly to keep user in keyword
+  // mode.
+  EXPECT_EQ(matches_[0].keyword, u"@history");
+  EXPECT_TRUE(PageTransitionCoreTypeIs(matches_[0].transition,
+                                       ui::PAGE_TRANSITION_KEYWORD));
 }
 
 TEST_F(HistoryURLProviderTest, MaxMatches) {

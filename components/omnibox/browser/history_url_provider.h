@@ -108,7 +108,8 @@ struct HistoryURLProviderParams {
                            const AutocompleteMatch& what_you_typed_match,
                            const TemplateURL* default_search_provider,
                            const SearchTermsData* search_terms_data,
-                           bool allow_deleting_browser_history);
+                           bool allow_deleting_browser_history,
+                           const TemplateURL* starter_pack_engine);
   ~HistoryURLProviderParams();
   HistoryURLProviderParams(const HistoryURLProviderParams&) = delete;
   HistoryURLProviderParams& operator=(const HistoryURLProviderParams&) = delete;
@@ -187,6 +188,8 @@ struct HistoryURLProviderParams {
   // True if the user is allowed to delete browser history. Stored here because
   // we aren't allowed to read user preferences from the History sequence.
   const bool allow_deleting_browser_history;
+
+  const TemplateURL* starter_pack_engine;
 };
 
 // This class is an autocomplete provider and is also a pseudo-internal

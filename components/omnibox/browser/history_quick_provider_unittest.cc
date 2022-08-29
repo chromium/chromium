@@ -972,6 +972,12 @@ TEST_F(HistoryQuickProviderTest, KeywordModeExtractUserInput) {
   ASSERT_GT(matches.size(), 0u);
   EXPECT_EQ(GURL("http://www.google.com/"), matches[0].destination_url);
   EXPECT_TRUE(matches[0].from_keyword);
+
+  // Ensure keyword and transition are set properly to keep user in keyword
+  // mode.
+  EXPECT_EQ(matches[0].keyword, u"@history");
+  EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
+                                       ui::PAGE_TRANSITION_KEYWORD));
 }
 
 TEST_F(HistoryQuickProviderTest,

@@ -60,6 +60,7 @@ class HistoryQuickProvider : public HistoryProvider {
 
   AutocompleteInput autocomplete_input_;
   raw_ptr<InMemoryURLIndex> in_memory_url_index_;  // Not owned by this class.
+  const TemplateURL* starter_pack_engine_;
 
   // This provider is disabled when true.
   static bool disabled_;

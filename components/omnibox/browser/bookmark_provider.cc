@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -25,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
 using bookmarks::BookmarkNode;
@@ -43,14 +45,7 @@ void BookmarkProvider::Start(const AutocompleteInput& input,
   if (input.focus_type() != OmniboxFocusType::DEFAULT || input.text().empty())
     return;
 
-  // Remove the keyword from input if we're in keyword mode for a starter pack
-  // engine.
-  const AutocompleteInput adjusted_input =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client_->GetTemplateURLService())
-          .first;
-
-  DoAutocomplete(adjusted_input);
+  DoAutocomplete(input);
 }
 
 BookmarkProvider::~BookmarkProvider() = default;
@@ -63,6 +58,12 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Retrieve enough bookmarks so that we have a reasonable probability of
   // suggesting the one that the user desires.
   const size_t kMaxBookmarkMatches = 50;
+
+  // Remove the keyword from input if we're in keyword mode for a starter pack
+  // engine.
+  const auto [adjusted_input, starter_pack_engine] =
+      KeywordProvider::AdjustInputForStarterPackEngines(
+          input, client_->GetTemplateURLService());
 
   // GetBookmarksMatching returns bookmarks matching the user's
   // search terms using the following rules:
@@ -85,10 +86,10 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // complete details of how searches are performed against the user's
   // bookmarks.
   std::vector<TitledUrlMatch> matches =
-      GetMatchesWithBookmarkPaths(input, kMaxBookmarkMatches);
+      GetMatchesWithBookmarkPaths(adjusted_input, kMaxBookmarkMatches);
   if (matches.empty())
     return;  // There were no matches.
-  const std::u16string fixed_up_input(FixupUserInput(input).second);
+  const std::u16string fixed_up_input(FixupUserInput(adjusted_input).second);
   for (auto& bookmark_match : matches) {
     if (OmniboxFieldTrial::ShouldDisableCGIParamMatching()) {
       RemoveQueryParamKeyMatches(bookmark_match);
@@ -100,16 +101,25 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
     // AutocompleteMatch is created and added to matches_.
     int relevance = CalculateBookmarkMatchRelevance(bookmark_match);
     if (relevance > 0) {
-      matches_.push_back(TitledUrlMatchToAutocompleteMatch(
+      AutocompleteMatch match = TitledUrlMatchToAutocompleteMatch(
           bookmark_match, AutocompleteMatchType::BOOKMARK_TITLE, relevance,
-          this, client_->GetSchemeClassifier(), input, fixed_up_input));
+          this, client_->GetSchemeClassifier(), adjusted_input, fixed_up_input);
+      // If the input was in a starter pack keyword scope, set the `keyword` and
+      // `transition` appropriately to avoid popping the user out of keyword
+      // mode.
+      if (starter_pack_engine) {
+        match.keyword = starter_pack_engine->keyword();
+        match.transition = ui::PAGE_TRANSITION_KEYWORD;
+      }
+
+      matches_.push_back(match);
     }
   }
 
   // In keyword mode, it's possible we only provide results from one or two
   // autocomplete provider(s), so it's sometimes necessary to show more results
   // than provider_max_matches_.
-  size_t max_matches = InKeywordMode(input)
+  size_t max_matches = InKeywordMode(adjusted_input)
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
 

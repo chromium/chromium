@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
@@ -35,6 +36,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/page_transition_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
 
@@ -57,9 +59,9 @@ void HistoryQuickProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  autocomplete_input_ = KeywordProvider::AdjustInputForStarterPackEngines(
-                            input, client()->GetTemplateURLService())
-                            .first;
+  std::tie(autocomplete_input_, starter_pack_engine_) =
+      KeywordProvider::AdjustInputForStarterPackEngines(
+          input, client()->GetTemplateURLService());
 
   // TODO(pkasting): We should just block here until this loads.  Any time
   // someone unloads the history backend, we'll get inconsistent inline
@@ -295,6 +297,13 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);
     match.SetAllowedToBeDefault(autocomplete_input_);
+  }
+
+  // If the input was in a starter pack keyword scope, set the `keyword` and
+  // `transition` appropriately to avoid popping the user out of keyword mode.
+  if (starter_pack_engine_) {
+    match.keyword = starter_pack_engine_->keyword();
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
   }
 
   if (InKeywordMode(autocomplete_input_)) {

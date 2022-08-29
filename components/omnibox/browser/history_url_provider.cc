@@ -46,6 +46,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
@@ -360,7 +361,8 @@ HistoryURLProviderParams::HistoryURLProviderParams(
     const AutocompleteMatch& what_you_typed_match,
     const TemplateURL* default_search_provider,
     const SearchTermsData* search_terms_data,
-    bool allow_deleting_browser_history)
+    bool allow_deleting_browser_history,
+    const TemplateURL* starter_pack_engine)
     : origin_task_runner(base::SequencedTaskRunnerHandle::Get()),
       input(input),
       input_before_fixup(input_before_fixup),
@@ -374,7 +376,8 @@ HistoryURLProviderParams::HistoryURLProviderParams(
               ? new TemplateURL(default_search_provider->data())
               : nullptr),
       search_terms_data(SearchTermsData::MakeSnapshot(search_terms_data)),
-      allow_deleting_browser_history(allow_deleting_browser_history) {}
+      allow_deleting_browser_history(allow_deleting_browser_history),
+      starter_pack_engine(starter_pack_engine) {}
 
 HistoryURLProviderParams::~HistoryURLProviderParams() = default;
 
@@ -423,10 +426,9 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  AutocompleteInput autocomplete_input =
+  const auto [autocomplete_input, starter_pack_engine] =
       KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService())
-          .first;
+          input, client()->GetTemplateURLService());
 
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.
@@ -495,7 +497,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   std::unique_ptr<HistoryURLProviderParams> params(new HistoryURLProviderParams(
       fixed_up_input, autocomplete_input, trim_http, what_you_typed_match,
       default_search_provider, search_terms_data,
-      client()->AllowDeletingBrowserHistory()));
+      client()->AllowDeletingBrowserHistory(), starter_pack_engine));
 
   // Pass 1: Get the in-memory URL database, and use it to find and promote
   // the inline autocomplete match, if any.
@@ -1160,6 +1162,13 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
 
   if (InKeywordMode(params.input)) {
     match.from_keyword = true;
+  }
+
+  // If the input was in a starter pack keyword scope, set the `keyword` and
+  // `transition` appropriately to avoid popping the user out of keyword mode.
+  if (params.starter_pack_engine) {
+    match.keyword = params.starter_pack_engine->keyword();
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
   }
 
   RecordAdditionalInfoFromUrlRow(info, &match);
