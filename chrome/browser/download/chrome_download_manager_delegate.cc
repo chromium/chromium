@@ -42,7 +42,6 @@
 #include "chrome/browser/download/mixed_content_download_blocking.h"
 #include "chrome/browser/download/save_package_file_picker.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -1711,18 +1710,6 @@ download::QuarantineConnectionCallback
 ChromeDownloadManagerDelegate::GetQuarantineConnectionCallback() {
   return base::BindRepeating(
       &ChromeDownloadManagerDelegate::ConnectToQuarantineService);
-}
-
-std::unique_ptr<download::DownloadItemRenameHandler>
-ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
-    download::DownloadItem* download_item) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-  return enterprise_connectors::FileSystemRenameHandler::CreateIfNeeded(
-      download_item);
-#else
-  return nullptr;
-#endif
 }
 
 void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
