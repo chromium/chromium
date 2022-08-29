@@ -2766,7 +2766,6 @@ crbug.com/1299212 fast/forms/month/month-picker-input-change-events.html [ Pass 
 crbug.com/1299212 fast/forms/time/time-picker-input-change-events.html [ Pass Timeout ]
 crbug.com/1299212 fast/forms/week/week-picker-input-change-events.html [ Crash Pass Timeout ]
 # This might be just flaky on Windows:
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/* [ Failure Pass Timeout ]
 crbug.com/1299212 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html [ Failure Pass Timeout ]
 # These appear to be flaky at least on Linux:
 crbug.com/1299212 [ Linux ] fast/forms/week/week-picker-ax.html [ Failure Pass ]
@@ -3443,7 +3442,6 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/navigation-timing/nav2_test_respon
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/navigation-timing/nav2_test_response_end_and_duration_before_during_and_after_load_event.html [ Skip Timeout ]
 crbug.com/1270841 [ Mac ] external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac11 ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-19.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/scroll-unification-unified-autoplay/external/wpt/feature-policy/feature-policy-header-policy-declined.https.sub.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-locks/bfcache/abort.tentative.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/workers/modules/shared-worker-import-csp.html [ Skip Timeout ]
@@ -4117,7 +4115,6 @@ crbug.com/874837 [ Win ] ietestcenter/css3/bordersbackgrounds/background-attachm
 crbug.com/874837 [ Linux ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
 
 # Sheiff failures 2021-04-09
-crbug.com/1197444 [ Linux ] virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Crash Failure Pass ]
 
 crbug.com/715718 external/wpt/media-source/mediasource-remove.html [ Failure Pass ]
 
@@ -4485,7 +4482,6 @@ crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs-forbidden
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs.html [ Skip ]
 crbug.com/874162 [ Mac ] fast/events/selection-autoscroll-borderbelt.html [ Skip ]
 
-crbug.com/1198842 [ Linux ] virtual/scroll-unification/fast/events/selection-autoscroll-borderbelt.html [ Pass Timeout ]
 
 # Passes in threaded mode, fails without it. This is a real bug.
 crbug.com/1112183 fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
@@ -4915,42 +4911,7 @@ crbug.com/1080997 fast/scrolling/events/scrollend-event-fired-to-scrolled-elemen
 crbug.com/829028 [ Mac ] editing/caret/in-multicol-child.html [ Failure ]
 
 # Failing tests because of enabling scroll unification flag
-crbug.com/476553 virtual/scroll-unification/external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Failure Pass ]
-crbug.com/476553 virtual/scroll-unification/fast/events/hit-test-counts.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/mouse-cursor-change.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/remove-child-onscroll.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/scroll-without-mouse-lacks-mousemove-events.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/focus-selectionchange-on-tap.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-click-common-ancestor.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-frame-removed.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/scrolling/resize-corner-tracking-touch.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/scrolling/subpixel-overflow-mouse-drag.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/http/tests/misc/destroy-middle-click-locked-target-crash.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/http/tests/misc/scroll-cross-origin-iframes.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/plugins/gesture-events-scrolled.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/plugins/gesture-events.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/plugins/mouse-click-iframe-to-plugin.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/plugins/sequential-focus.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/plugins/transformed-events.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/scrollbars/listbox-scrollbar-combinations.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-layout_ng_block_frag/fast/forms/fieldset/fieldset-legend-change.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/auto-scrollbar-fades-out.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/basic-scrollbar.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/disabled-scrollbar.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/hidden-scrollbars-invisible.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/listbox-scrollbar-combinations.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbars-within-overflow-scroll.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/scrollbar-buttons.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/scrollbar-corner-colors.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/scrollbar-orientation.html [ Crash Failure Pass Timeout ]
 
-crbug.com/1253630 [ Win ] virtual/scroll-unification-overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure Pass ]
 crbug.com/1098383 [ Mac ] fast/events/scrollbar-double-click.html [ Failure Pass ]
 
 # DevTools roll
@@ -4995,7 +4956,6 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrol
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
 
 #fast/scroll-behavior/
-crbug.com/1345498 [ Mac10.14 ] virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/smooth-scroll/mousewheel-scroll.html [ Failure Pass Timeout ]
 
 ### END PERCENT BASED SCROLLING TEST FAILURES
 
@@ -5456,36 +5416,9 @@ crbug.com/1190905 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-li
 
 # Sheriff 2021-03-31
 # Failing tests because of enabling scroll unification flag
-crbug.com/1194446 virtual/scroll-unification/fast/events/platform-wheelevent-paging-x-in-scrolling-div.html [ Crash Failure Pass Timeout ]
-crbug.com/1194446 virtual/scroll-unification/fast/events/scale-and-scroll-div.html [ Crash Failure Pass Timeout ]
-crbug.com/1194446 virtual/scroll-unification/fast/events/platform-wheelevent-paging-y-in-scrolling-div.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-active-state.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-mouse-events.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/overflow-scroll-animates.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/scroll-snap/snap-to-target-on-layout-change.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/scrollbars/auto-scrollbar-fades-out.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-frame-scrollbar.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/pointerevents/multi-pointer-preventdefault.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/scrollbars/hidden-scrollbars-invisible.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/scrolling/overflow-scrollability.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-paragraph-end.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll-mainframe.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-snap-points-1.html [ Failure Pass ]
 
 # Sheriff 2021-04-01
 # More failing tests because of enabling scroll unification flag
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-should-not-stop-on-keypress.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-scrolled.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-upwards-propagation-overflow-hidden-body.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/frame-scroll-fake-mouse-move.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-nonscrollable-iframe-in-scrollable-div.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-hover-clear.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/mouse-event-from-touch-source-device-event-sender.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-fully-scrolled-iframe-propagates.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/events/mouse-event-buttons-attribute.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-04-06
 crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iteration-event-destroy-renderer.html [ Failure Pass Timeout ]
@@ -5528,7 +5461,6 @@ crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-wo
 crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
 
 # Sheriff 2021-04-12
-crbug.com/1198103 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll.html [ Pass Timeout ]
 
 crbug.com/1193979 [ Mac ] fast/events/tabindex-focus-blur-all.html [ Failure Pass ]
 crbug.com/1196201 fast/events/mouse-event-source-device-event-sender.html [ Failure Pass ]
@@ -5537,12 +5469,8 @@ crbug.com/1196201 fast/events/mouse-event-source-device-event-sender.html [ Fail
 crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout ]
 
 # Sheriff 2021-04-14
-crbug.com/1198828 [ Win ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Failure Pass ]
-crbug.com/1198828 [ Linux ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Failure Pass ]
 
 # Sheriff 2021-04-15
-crbug.com/1199380 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Skip ]
-crbug.com/1194460 virtual/scroll-unification/fast/events/mouseenter-mouseleave-chained-listeners.html [ Skip ]
 crbug.com/1196118 plugins/mouse-move-over-plugin-in-frame.html [ Failure Pass ]
 crbug.com/1199528 http/tests/inspector-protocol/css/css-edit-redirected-css.js [ Failure Pass ]
 crbug.com/1196317 [ Mac ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
@@ -5556,14 +5484,11 @@ crbug.com/1201365 virtual/portals/http/tests/inspector-protocol/portals/device-e
 crbug.com/1191990 http/tests/serviceworker/clients-openwindow.html [ Failure Pass ]
 
 # Sheriff 2021-04-23
-crbug.com/1202051 virtual/scroll-unification/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
-crbug.com/1202051 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
 
 # Image pixels are sometimes different on Fuchsia.
 crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
 
 # Sheriff 2021-04-26
-crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-04-29
 crbug.com/1203963 [ Mac10.14 ] external/wpt/webusb/idlharness.https.any.html [ Failure Pass Timeout ]
@@ -5578,7 +5503,6 @@ crbug.com/1093041 fast/canvas/color-space/canvas-createImageBitmap-rec2020.html 
 crbug.com/1093041 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-05-10
-crbug.com/1207337 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Failure Pass ]
 
 # Sheriff 2021-05-04
 crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.worker.html [ Pass Timeout ]
@@ -5610,7 +5534,6 @@ crbug.com/1209223 [ Mac ] external/wpt/url/a-element.html [ Pass Timeout ]
 crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Pass Timeout ]
 
 # Sheriff 2021-05-17
-crbug.com/1193920 virtual/scroll-unification/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Pass Timeout ]
 crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
 crbug.com/1199522 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure Pass ]
 
@@ -5812,7 +5735,6 @@ crbug.com/1197464 [ Mac ] plugins/refcount-leaks.html [ Failure Pass ]
 crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
 # Sheriff 2021-07-07
-crbug.com/1227092 [ Win ] virtual/scroll-unification/fast/events/selection-autoscroll-borderbelt.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-12
 crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Pass Timeout ]
@@ -5825,7 +5747,6 @@ crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/m
 crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Skip ]
 
 # Sheriff 2021-07-13
-crbug.com/1228959 [ Linux ] virtual/scroll-unification/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
 
 # A number of http/tests/inspector-protocol/network tests are flaky.
 crbug.com/1196027 http/tests/inspector-protocol/network/request-interception.js [ Failure Pass ]
@@ -6043,9 +5964,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/accessibility/edi
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] virtual/scroll-unification/plugins/missing-plugin.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/scroll-unification/plugins/multiple-plugins.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] virtual/scroll-unification/plugins/multiple-plugins.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/layers/clip-rects-transformed-2.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] fast/layers/clip-rects-transformed-2.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/page-frames.js [ Failure Pass ]
@@ -6106,11 +6024,9 @@ crbug.com/1249176 [ Mac12-arm64 ] media/autoplay/webaudio-audio-context-init.htm
 crbug.com/1046784 [ Mac12 ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure Pass ]
 
 # Sheriff 2021-09-16
-crbug.com/1250457 [ Mac ] virtual/scroll-unification/plugins/plugin-map-data-to-src.html [ Failure ]
 crbug.com/1250457 [ Mac ] storage/websql/open-database-set-empty-version.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/portals/http/tests/devtools/portals/portals-console.js [ Failure Pass Timeout ]
 crbug.com/1250457 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseudo.html [ Timeout ]
-crbug.com/1250457 [ Mac ] virtual/scroll-unification/fast/events/space-scroll-textinput-canceled.html [ Timeout ]
 
 crbug.com/1249622 external/wpt/largest-contentful-paint/initially-invisible-images.html [ Failure ]
 crbug.com/1249622 virtual/initially-invisible-images-lcp/external/wpt/largest-contentful-paint/initially-invisible-images.html [ Pass ]
@@ -6175,10 +6091,8 @@ crbug.com/930462 external/wpt/animation-worklet/worklet-animation-pause-resume.h
 crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Skip ]
 
 # Sheriff 2021-09-29
-crbug.com/1254163 [ Mac ] virtual/scroll-unification/ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure ]
 
 # Sheriff 2021-10-01
-crbug.com/1255014 [ Linux ] virtual/scroll-unification-overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure Pass ]
 crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure Pass ]
 
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
@@ -6197,7 +6111,6 @@ crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableVal
 # Sheriff 2021-10-12
 crbug.com/1259133 [ Mac10.14 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 crbug.com/1259133 [ Mac10.14 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
-crbug.com/1259277 [ Linux ] virtual/scroll-unification/fast/events/message-port-multi.html [ Failure Pass ]
 
 # Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
 crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-data-url-navigation.https.html [ Timeout ]
@@ -6254,12 +6167,10 @@ crbug.com/1180993 external/wpt/mediacapture-record/passthrough/MediaRecorder-pas
 crbug.com/1186771 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
 crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure Pass ]
 crbug.com/1271336 external/wpt/native-io/detach_iframe_during_open.https.window.html [ Crash Pass ]
-crbug.com/1197465 virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Skip ]
 
 # Sheriff 2021-11-22
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Failure Pass Timeout ]
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Timeout ]
-crbug.com/1272376 virtual/scroll-unification/plugins/plugin-document-back-forward.html [ Failure Pass ]
 crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Failure Pass ]
 
 # Flaky on mac
@@ -6311,7 +6222,6 @@ crbug.com/1276208 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alph
 crbug.com/1276290 [ Mac ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Skip ]
 
 # Sheriff 2021-12-03
-crbug.com/1198781 [ Linux ] virtual/scroll-unification-layout_ng_block_frag/fast/forms/fieldset/fieldset-custom-scrollbar.html [ Failure Pass ]
 
 crbug.com/1277973 http/tests/xmlhttprequest/uri-resolution-opera-open-007.html [ Crash Failure Pass ]
 
@@ -6372,7 +6282,6 @@ crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Time
 # Sheriff 2022-01-07
 crbug.com/1285438 fast/layers/clip-rects-transformed.html [ Failure Pass ]
 crbug.com/1285431 [ Mac ] virtual/backface-visibility-interop/compositing/overflow/transform-should-update-absolute-clip-rects.html [ Crash Failure Pass ]
-crbug.com/1285437 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-browser-navigate.js [ Crash Failure Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-navigate.js [ Crash Failure Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-subresource.js [ Crash Failure Pass Timeout ]
@@ -6860,7 +6769,6 @@ crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoratio
 crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style.html [ Skip ]
 
 # Sheriff 2022-07-28
-crbug.com/1348053 crbug.com/1348275 [ Mac ] virtual/scroll-unification/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 # Flaky timeouts on WebKit Linux MSAN
 crbug.com/1348118 [ Linux ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Pass Timeout ]
 # Failure on all platforms was added before, see crbug.com/1306770
@@ -6912,7 +6820,6 @@ crbug.com/1352576 [ Linux ] external/wpt/content-security-policy/media-src/media
 crbug.com/1352607 external/wpt/css/css-transitions/transition-base-response-002.html [ Failure Pass ]
 
 # Sheriff 2022-08-17
-crbug.com/1342623 [ Win ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Failure Pass ]
 crbug.com/1340167 fast/loader/iframe-navigation-stealing-focus.html [ Pass Timeout ]
 
 # Sheriff 2022-08-18
