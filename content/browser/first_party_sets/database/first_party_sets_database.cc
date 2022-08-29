@@ -124,8 +124,9 @@ bool FirstPartySetsDatabase::SetPublicSets(
     return false;
 
   static constexpr char kDeleteSql[] = "DELETE FROM public_sets";
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  if (!statement.Run())
+  sql::Statement delete_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+  if (!delete_statement.Run())
     return false;
 
   for (const auto& [site, entry] : sets) {
@@ -134,13 +135,13 @@ bool FirstPartySetsDatabase::SetPublicSets(
     static constexpr char kInsertSql[] =
         "INSERT INTO public_sets(site,primary_site,site_type)"
         "VALUES(?,?,?)";
-    sql::Statement statement(
+    sql::Statement insert_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-    statement.BindString(0, site.Serialize());
-    statement.BindString(1, entry.primary().Serialize());
-    statement.BindInt(2, static_cast<int>(entry.site_type()));
+    insert_statement.BindString(0, site.Serialize());
+    insert_statement.BindString(1, entry.primary().Serialize());
+    insert_statement.BindInt(2, static_cast<int>(entry.site_type()));
 
-    if (!statement.Run())
+    if (!insert_statement.Run())
       return false;
   }
   return transaction.Commit();
@@ -215,9 +216,10 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
 
   static constexpr char kDeleteSql[] =
       "DELETE FROM policy_modifications WHERE browser_context_id=?";
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  statement.BindString(0, browser_context_id);
-  if (!statement.Run())
+  sql::Statement delete_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+  delete_statement.BindString(0, browser_context_id);
+  if (!delete_statement.Run())
     return false;
 
   for (const auto& [site, owner] : modificatons) {
@@ -225,17 +227,17 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
     static constexpr char kInsertSql[] =
         "INSERT INTO policy_modifications(browser_context_id,site,site_owner)"
         "VALUES(?,?,?)";
-    sql::Statement statement(
+    sql::Statement insert_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-    statement.BindString(0, browser_context_id);
-    statement.BindString(1, site.Serialize());
+    insert_statement.BindString(0, browser_context_id);
+    insert_statement.BindString(1, site.Serialize());
     if (owner.has_value()) {
-      statement.BindString(2, owner.value().primary().Serialize());
+      insert_statement.BindString(2, owner.value().primary().Serialize());
     } else {
-      statement.BindNull(2);
+      insert_statement.BindNull(2);
     }
 
-    if (!statement.Run())
+    if (!insert_statement.Run())
       return false;
   }
   return transaction.Commit();

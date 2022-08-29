@@ -23,8 +23,9 @@ absl::optional<net::FirstPartySetEntry> FindOwner(
     const FirstPartySetsHandlerDatabaseHelper::PolicyCustomization&
         policy_sets) {
   absl::optional<net::FirstPartySetEntry> owner;
-  if (const auto it = policy_sets.find(site); it != policy_sets.end()) {
-    owner = it->second;
+  if (const auto policy_it = policy_sets.find(site);
+      policy_it != policy_sets.end()) {
+    owner = policy_it->second;
   } else if (const auto it = sets.find(site); it != sets.end()) {
     owner = it->second;
   }

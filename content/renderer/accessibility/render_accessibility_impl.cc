@@ -980,7 +980,6 @@ void RenderAccessibilityImpl::AddImageAnnotations(
       continue;
 
     if (ui::IsImage(node.role)) {
-      WebAXObject src = WebAXObject::FromWebDocumentByID(document, node.id);
       AddImageAnnotationsForNode(src, &node);
     } else if ((ui::IsLink(node.role) || ui::IsPlatformDocument(node.role)) &&
                node.GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
