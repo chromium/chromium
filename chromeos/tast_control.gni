@@ -270,9 +270,6 @@ tast_disabled_tests_from_chrome_all = [
   # http://b/242172965
   "crostini.SSHFSMount.bullseye_stable",
   "crostini.SSHFSMount.buster_stable",
-
-  # https://crbug.com/1354215
-  "lacros.Basic",
 ]
 
 # To create filters to be used on specific builders add them like this:
