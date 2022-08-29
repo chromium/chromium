@@ -183,6 +183,65 @@ For technical limitation, this is now a mandatory permission, meaning the
 chrome extension’s manifest.json needs to include it in the permissions list in
 order to have access to serial numbers.
 
+## Setup a secure connection on localhost
+
+The Telemetry Extension enforces `https` as the protocol for communicating with
+the PWA. During development, this leads to a rejection of a PWA hosted under
+`http://localhost/` or another origin that does not have a valid certificate
+that is trusted by Chrome. The following steps describe how to set up a secure
+development PWA under crostini (Linux on ChromeOS). For this guide we assume
+`localhost` as the host. Please note that the `openssl` commands for this
+guide were taken from
+[this](https://www.section.io/engineering-education/how-to-get-ssl-https-for-localhost/)
+blog post.
+
+* Setup crostini (`Settings>Developers>Linux development environment`) and make
+sure that "My Files" are shared with Linux (right click on the "My Files" folder
+and then select "Share with Linux").
+* Navigate to a shared folder under `mnt/chromeos/..` and run the following
+command to create a root certificate:
+```
+openssl genrsa -out CA.key -des3 2048
+```
+* Using this key, generate a root certificate:
+```
+openssl req -x509 -sha256 -new -nodes -days 3650 -key CA.key -out CA.pem
+```
+* Next up, create a file named `localhost.ext` with the following content:
+```
+authorityKeyIdentifier = keyid,issuer
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = localhost
+IP.1 = 127.0.0.1
+```
+* Now create a key and a Certificate Signing Request (CSR) for localhost using
+the following commands:
+```
+openssl genrsa -out localhost.key -des3 2048
+openssl req -new -key localhost.key -out localhost.csr
+```
+* Finally generate a Certificate for localhost with the following command:
+```
+openssl x509 -req -in localhost.csr -CA ../CA.pem -CAkey ../CA.key -CAcreateserial -days 3650 -sha256 -extfile localhost.ext -out localhost.crt
+```
+* For your convenience create a decrypted version of your key for localhost.
+This can be used by your development instance.
+````
+openssl rsa -in localhost.key -out localhost.decrypted.key
+````
+
+You can now use the generated key and certificate for localhost in your
+development environment. In order for Chrome to trust the key used by your
+application, you need to add the CA root certificate to Chrome.
+Under `Settings>Privacy and security>Security>Manage certificates` you are
+able to set the root CA. Just select the `Authorities` tab and click `Import`.
+Select the generated `CA.pem` file and click open. Now your Chrome instance
+and testing environment trust each other.
+
 # FAQs
 
 Q: I found a bug, how do I report it?<br>
