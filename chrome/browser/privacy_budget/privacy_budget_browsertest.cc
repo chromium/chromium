@@ -20,26 +20,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/privacy_budget_browsertest_util.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/fake_server.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/ukm/ukm_test_helper.h"
-#include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -50,8 +40,6 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
@@ -387,74 +375,9 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 namespace {
 
 // Test class that allows to enable UKM recording.
-class PrivacyBudgetBrowserTestWithUkmRecording : private EnableRandomSampling,
-                                                 public SyncTest {
- public:
-  PrivacyBudgetBrowserTestWithUkmRecording() : SyncTest(SINGLE_CLIENT) {}
-
-  static ukm::UkmService* ukm_service() {
-    return g_browser_process->GetMetricsServicesManager()->GetUkmService();
-  }
-
-  static PrefService* local_state() { return g_browser_process->local_state(); }
-
-  bool EnableUkmRecording() {
-    // 1. Enable sync.
-    Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
-    sync_test_harness_ = metrics::test::InitializeProfileForSync(
-        profile, GetFakeServer()->AsWeakPtr());
-    EXPECT_TRUE(sync_test_harness_->SetupSync());
-
-    // 2. Signal consent for UKM reporting.
-    unified_consent::UnifiedConsentService* consent_service =
-        UnifiedConsentServiceFactory::GetForProfile(profile);
-    if (consent_service != nullptr)
-      consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-
-    // 3. Enable metrics reporting.
-    is_metrics_reporting_enabled_ = true;
-    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-        &is_metrics_reporting_enabled_);
-
-    // UpdateUploadPermissions causes the MetricsServicesManager to look at the
-    // consent signals and re-evaluate whether reporting should be enabled.
-    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-        true);
-
-    // The following sequence synchronously completes UkmService initialization
-    // (if it wasn't initialized yet) and flushes any accumulated metrics.
-    ukm::UkmTestHelper ukm_test_helper(ukm_service());
-    ukm_test_helper.BuildAndStoreLog();
-    std::unique_ptr<ukm::Report> report_to_discard =
-        ukm_test_helper.GetUkmReport();
-
-    ukm_service()->SetSamplingForTesting(1);
-    return ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled();
-  }
-
-  bool DisableUkmRecording() {
-    EXPECT_TRUE(is_metrics_reporting_enabled_)
-        << "DisableUkmRecording() should only be called after "
-           "EnableUkmRecording()";
-    is_metrics_reporting_enabled_ = false;
-    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-        true);
-    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-        nullptr);
-    return !ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled();
-  }
-
-  void TearDown() override {
-    if (is_metrics_reporting_enabled_) {
-      ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-          nullptr);
-    }
-  }
-
- private:
-  bool is_metrics_reporting_enabled_ = false;
-  std::unique_ptr<SyncServiceImplHarness> sync_test_harness_;
-};
+class PrivacyBudgetBrowserTestWithUkmRecording
+    : private EnableRandomSampling,
+      public PrivacyBudgetBrowserTestBaseWithUkmRecording {};
 
 }  // namespace
 

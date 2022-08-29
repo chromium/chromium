@@ -5,7 +5,6 @@
 #include "base/barrier_closure.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/privacy_budget_browsertest_util.h"
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
@@ -124,4 +123,73 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTestWithTestRecorder,
   EXPECT_THAT(metrics, IsSupersetOf({
                            Key(expected_surface.ToUkmMetricHash()),
                        }));
+}
+
+namespace {
+
+// Test class that allows to enable UKM recording.
+class PrivacyBudgetReidScoreBrowserTestWithUkmRecording
+    : private EnableReidEstimation,
+      public PrivacyBudgetBrowserTestBaseWithUkmRecording {};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTestWithUkmRecording,
+                       ReidIsReported) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+  ASSERT_TRUE(EnableUkmRecording());
+
+  constexpr blink::IdentifiableToken kDummyToken = 1;
+  constexpr blink::IdentifiableSurface kUserAgentSurface =
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kWebFeature,
+          blink::mojom::WebFeature::kNavigatorUserAgent);
+  constexpr blink::IdentifiableSurface kLanguageSurface =
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kWebFeature,
+          blink::mojom::WebFeature::kNavigatorLanguage);
+
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+
+  blink::IdentifiabilityMetricBuilder(ukm::UkmRecorder::GetNewSourceID())
+      .Add(kUserAgentSurface, kDummyToken)
+      .Add(kLanguageSurface, kDummyToken)
+      .Record(ukm_recorder);
+
+  blink::IdentifiabilitySampleCollector::Get()->Flush(ukm_recorder);
+
+  // Wait for the metrics to come down the pipe.
+  content::RunAllTasksUntilIdle();
+
+  ukm::UkmTestHelper ukm_test_helper(ukm_service());
+  ukm_test_helper.BuildAndStoreLog();
+  std::unique_ptr<ukm::Report> ukm_report = ukm_test_helper.GetUkmReport();
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+  ASSERT_TRUE(ukm_report);
+  ASSERT_NE(ukm_report->entries_size(), 0);
+
+  std::map<uint64_t, int64_t> seen_metrics;
+  for (const auto& entry : ukm_report->entries()) {
+    ASSERT_TRUE(entry.has_event_hash());
+    if (entry.event_hash() != ukm::builders::Identifiability::kEntryNameHash) {
+      continue;
+    }
+    for (const auto& metric : entry.metrics()) {
+      ASSERT_TRUE(metric.has_metric_hash());
+      ASSERT_TRUE(metric.has_value());
+      seen_metrics.insert({metric.metric_hash(), metric.value()});
+    }
+  }
+
+  // Calculate the reid surface key manually.
+  constexpr auto kReidScoreType =
+      blink::IdentifiableSurface::Type::kReidScoreEstimator;
+  std::vector<uint64_t> tokens{kUserAgentSurface.ToUkmMetricHash(),
+                               kLanguageSurface.ToUkmMetricHash()};
+  auto expected_surface = blink::IdentifiableSurface::FromTypeAndToken(
+      kReidScoreType, base::make_span(tokens));
+
+  const std::pair<uint64_t, int64_t> kExpectedReidEntry{
+      expected_surface.ToUkmMetricHash(), 1u};
+  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedReidEntry));
 }
