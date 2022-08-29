@@ -2448,13 +2448,6 @@ const char kMBIModeDescription[] =
     "Enables independent agent cluster scheduling, via the "
     "AgentSchedulingGroup infrastructure.";
 
-const char kIntensiveWakeUpThrottlingName[] =
-    "Throttle Javascript timers in background.";
-const char kIntensiveWakeUpThrottlingDescription[] =
-    "When enabled, wake ups from DOM Timers are limited to 1 per minute in a "
-    "page that has been hidden for 5 minutes. For additional details, see "
-    "https://www.chromestatus.com/feature/4718288976216064.";
-
 const char kSafetyCheckPermissionsName[] = "Permission Modules on Safety Check";
 const char kSafetyCheckPermissionsDescription[] =
     "When enabled, adds permission modules to Safety Check on desktop. "

@@ -1374,9 +1374,6 @@ extern const char kRoundedDisplayDescription[];
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 
-extern const char kIntensiveWakeUpThrottlingName[];
-extern const char kIntensiveWakeUpThrottlingDescription[];
-
 extern const char kSafetyCheckPermissionsName[];
 extern const char kSafetyCheckPermissionsDescription[];
 
