@@ -1301,11 +1301,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     if (features::GetBrowsingContextMode() ==
         features::BrowsingContextStateImplementationType::
             kLegacyOneToOneWithFrameTreeNode) {
-      // Navigate back. Isolated into non-isolated.
-      // This DCHECKs currently because of https://crbug.com/1264104,
-      // remove the death check and add a simple load wait when the
-      // bug is fixed.
-      EXPECT_DCHECK_DEATH(web_contents()->GetController().GoBack());
+      // TODO(https://crbug.com/1264104): Navigate back. Isolated into
+      // non-isolated. Add a simple load wait when the bug is fixed.
+      return;
     } else {
       // Swapping BrowsingContextState on cross-origin navigations resolves
       // https://crbug.com/1264104, as we store proxies for isolated pages
