@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
@@ -58,7 +59,7 @@ TEST(AttributionRegistrationParsingTest, ParseAggregationKeys) {
 
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(AttributionAggregationKeys::FromJSON(
-                  base::OptionalOrNullptr(test_case.json)),
+                  base::OptionalToPtr(test_case.json)),
               test_case.expected)
         << test_case.description;
   }
@@ -228,7 +229,7 @@ TEST(AttributionRegistrationParsingTest, ParseFilterData) {
 
   for (auto& test_case : kTestCases) {
     EXPECT_EQ(AttributionFilterData::FromSourceJSON(
-                  base::OptionalOrNullptr(test_case.json)),
+                  base::OptionalToPtr(test_case.json)),
               test_case.expected)
         << test_case.description;
   }
