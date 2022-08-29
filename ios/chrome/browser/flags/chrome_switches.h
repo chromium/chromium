@@ -5,6 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_FLAGS_CHROME_SWITCHES_H_
 #define IOS_CHROME_BROWSER_FLAGS_CHROME_SWITCHES_H_
 
-#import "ios/chrome/browser/chrome_switches.h"
+// Defines all the command-line switches used by iOS Chrome.
+
+namespace switches {
+
+extern const char kDisableIOSPasswordSuggestions[];
+extern const char kDisableThirdPartyKeyboardWorkaround[];
+
+extern const char kEnableIOSHandoffToOtherDevices[];
+extern const char kEnableSpotlightActions[];
+extern const char kEnableThirdPartyKeyboardWorkaround[];
+extern const char kEnableDiscoverFeed[];
+extern const char kEnableUpgradeSigninPromo[];
+
+extern const char kUserAgent[];
+
+}  // namespace switches
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_CHROME_SWITCHES_H_

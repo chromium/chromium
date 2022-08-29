@@ -27,8 +27,6 @@ source_set("browser") {
     "install_time_util.mm",
     "installation_notifier.h",
     "installation_notifier.mm",
-    "ios_chrome_field_trials.h",
-    "ios_chrome_field_trials.mm",
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
     "notification_promo.cc",
@@ -116,13 +114,7 @@ source_set("browser") {
 
 source_set("utils") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "chrome_switches.cc",
-    "chrome_switches.h",
-    "procedural_block_types.h",
-    "system_flags.h",
-    "system_flags.mm",
-  ]
+  sources = [ "procedural_block_types.h" ]
   deps = [
     "//base",
     "//build:branding_buildflags",

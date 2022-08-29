@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ios_chrome_field_trials.h"
+#import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
 
 #import "base/check.h"
 #import "base/path_service.h"

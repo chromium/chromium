@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/chrome_switches.h"
+#include "ios/chrome/browser/flags/chrome_switches.h"
 
 namespace switches {
 
