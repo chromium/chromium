@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
-<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#phase-algorithm">
+<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timelines">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -32,16 +31,10 @@
 promise_test(async (t) => {
   let div = document.createElement('div');
   div.setAttribute('id', 'scroller');
+  div.style.scrollTimeline = 'timeline';
   div.innerHTML = '<div id=contents></div>';
-  let style = document.createElement('style');
-  style.textContent = `
-    @scroll-timeline timeline {
-      source: selector(#scroller);
-    }
-  `;
   try {
-    container.insertBefore(style, element);
-    container.insertBefore(div, style);
+    container.insertBefore(div, element);
 
     // The source has no layout box at the time the scroll timeline is created.
     assert_equals(getComputedStyle(element).width, '0px');
@@ -51,7 +44,6 @@ promise_test(async (t) => {
     // The timeline should now be active, and the animation should apply:
     assert_equals(getComputedStyle(element).width, '100px');
   } finally {
-    style.remove();
     div.remove();
   }
 }, 'Animation does not apply when timeline is initially inactive');
