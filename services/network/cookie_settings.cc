@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "net/base/features.h"
@@ -124,7 +125,7 @@ bool CookieSettings::IsCookieAccessible(
       GetCookieSettingWithMetadata(
           url,
           GetFirstPartyURL(site_for_cookies,
-                           base::OptionalOrNullptr(top_frame_origin)),
+                           base::OptionalToPtr(top_frame_origin)),
           IsThirdPartyRequest(url, site_for_cookies), QueryReason::kCookies),
       cookie.IsSameParty(), cookie.IsPartitioned(), /*record_metrics=*/true);
 }
@@ -164,7 +165,7 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
   //
   // We don't record metrics here, since this isn't actually accessing a cookie.
   CookieSettingWithMetadata metadata = GetCookieSettingWithMetadata(
-      url, site_for_cookies, base::OptionalOrNullptr(top_frame_origin),
+      url, site_for_cookies, base::OptionalToPtr(top_frame_origin),
       QueryReason::kCookies);
   if (IsHypotheticalCookieAllowed(metadata,
                                   same_party_cookie_context_type ==

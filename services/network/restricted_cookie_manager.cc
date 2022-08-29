@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
@@ -342,7 +343,7 @@ RestrictedCookieManager::RestrictedCookieManager(
       first_party_set_metadata_(std::move(first_party_set_metadata)),
       cookie_partition_key_(net::CookiePartitionKey::FromNetworkIsolationKey(
           isolation_info.network_isolation_key(),
-          base::OptionalOrNullptr(
+          base::OptionalToPtr(
               first_party_set_metadata_.top_frame_entry().has_value()
                   ? absl::make_optional(
                         first_party_set_metadata_.top_frame_entry()->primary())
@@ -385,7 +386,7 @@ void RestrictedCookieManager::OnGotFirstPartySetMetadataForTesting(
   first_party_set_metadata_ = std::move(first_party_set_metadata);
   cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
       isolation_info_.network_isolation_key(),
-      base::OptionalOrNullptr(
+      base::OptionalToPtr(
           first_party_set_metadata_.top_frame_entry().has_value()
               ? absl::make_optional(
                     first_party_set_metadata_.top_frame_entry()->primary())
