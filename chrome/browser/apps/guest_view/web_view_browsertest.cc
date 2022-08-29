@@ -5463,11 +5463,12 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWebViewTest,
                        SpecialSchemeChromeGuest) {
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* guest_frame_host = GetGuestRenderFrameHost();
+  ASSERT_TRUE(guest_frame_host);
 
-  EXPECT_FALSE(guest->GetLastCommittedURL().SchemeIs(content::kGuestScheme));
-  EXPECT_TRUE(guest->GetSiteInstance()->IsGuest());
+  EXPECT_FALSE(
+      guest_frame_host->GetLastCommittedURL().SchemeIs(content::kGuestScheme));
+  EXPECT_TRUE(guest_frame_host->GetSiteInstance()->IsGuest());
 
   // We'll try to fetch a local page with Access-Control-Allow-Origin: *, to
   // avoid having origin issues on top of privateness issues.
@@ -5481,7 +5482,7 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWebViewTest,
   // `network::mojom::IPAddressSpace::kUnknown`).
   // For now, unknown -> local is not blocked, so this fetch succeeds. See also
   // https://crbug.com/1178814.
-  EXPECT_EQ(true, content::EvalJs(guest,
+  EXPECT_EQ(true, content::EvalJs(guest_frame_host,
                                   content::JsReplace(
                                       "fetch($1).then(response => response.ok)",
                                       fetch_url)));
