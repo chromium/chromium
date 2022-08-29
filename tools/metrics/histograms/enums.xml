@@ -58419,6 +58419,7 @@ from previous Chrome versions.
   <int value="-677978627" label="ZeroCopyTabCapture:enabled"/>
   <int value="-677938988" label="AssistantConsentSimplifiedText:disabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
+  <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
   <int value="-671992446" label="TranslateRankerEnforcement:disabled"/>
@@ -58907,6 +58908,7 @@ from previous Chrome versions.
   <int value="-361053631" label="CaptivePortalUI2022:disabled"/>
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>
+  <int value="-359886807" label="AppPreloadService:disabled"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
   <int value="-357250869"
       label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>

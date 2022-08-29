@@ -68,6 +68,11 @@ extern const base::Feature kAppManagementAppDetails;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAppPreloadService;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppProvisioningStatic;
 #endif
 
