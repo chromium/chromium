@@ -989,23 +989,23 @@ TEST_F(SystemRoutineControllerTest, CancelMemoryReleasesWakeLock) {
 }
 
 TEST_F(SystemRoutineControllerTest, ResetReceiverOnDisconnect) {
-  ASSERT_FALSE(system_routine_controller_->ReceiverIsBound());
+  ASSERT_FALSE(system_routine_controller_->IsReceiverBoundForTesting());
   mojo::Remote<mojom::SystemRoutineController> remote;
   system_routine_controller_->BindInterface(
       remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(system_routine_controller_->ReceiverIsBound());
+  ASSERT_TRUE(system_routine_controller_->IsReceiverBoundForTesting());
 
   // Unbind remote to trigger disconnect and disconnect handler.
   remote.reset();
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(system_routine_controller_->ReceiverIsBound());
+  ASSERT_FALSE(system_routine_controller_->IsReceiverBoundForTesting());
 
   // Test intent is to ensure interface can be rebound when application is
   // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
   // will reset the receiver to its unbound state.
   system_routine_controller_->BindInterface(
       remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(system_routine_controller_->ReceiverIsBound());
+  ASSERT_TRUE(system_routine_controller_->IsReceiverBoundForTesting());
 }
 
 TEST_F(SystemRoutineControllerTest, SendRoutineResultDoesNotCrash) {

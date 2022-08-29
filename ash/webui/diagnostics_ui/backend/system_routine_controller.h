@@ -52,7 +52,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
       mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver);
   // Handler for when remote attached to |receiver_| disconnects.
   void OnBoundInterfaceDisconnect();
-  bool ReceiverIsBound();
+  bool IsReceiverBoundForTesting();
 
   void SetWakeLockProviderForTesting(
       mojo::Remote<device::mojom::WakeLockProvider> provider) {

@@ -171,14 +171,14 @@ void SystemRoutineController::GetSupportedRoutines(
 
 void SystemRoutineController::BindInterface(
     mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver) {
-  DCHECK(!ReceiverIsBound());
+  receiver_.reset();
   receiver_.Bind(std::move(pending_receiver));
   receiver_.set_disconnect_handler(
       base::BindOnce(&SystemRoutineController::OnBoundInterfaceDisconnect,
                      base::Unretained(this)));
 }
 
-bool SystemRoutineController::ReceiverIsBound() {
+bool SystemRoutineController::IsReceiverBoundForTesting() {
   return receiver_.is_bound();
 }
 
