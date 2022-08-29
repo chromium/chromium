@@ -97,18 +97,15 @@ enum ExternalItemState {
   EXTERNAL_ITEM_MAX_ITEMS
 };
 
-bool IsManifestCorrupt(const base::DictionaryValue* manifest) {
-  if (!manifest)
-    return false;
-
+bool IsManifestCorrupt(const base::DictionaryValue& manifest) {
   // Because of bug #272524 sometimes manifests got mangled in the preferences
   // file, one particularly bad case resulting in having both a background page
   // and background scripts values. In those situations we want to reload the
   // manifest from the extension to fix this.
   const base::Value* background_page;
   const base::Value* background_scripts;
-  return manifest->Get(manifest_keys::kBackgroundPage, &background_page) &&
-      manifest->Get(manifest_keys::kBackgroundScripts, &background_scripts);
+  return manifest.Get(manifest_keys::kBackgroundPage, &background_page) &&
+         manifest.Get(manifest_keys::kBackgroundScripts, &background_scripts);
 }
 
 ManifestReloadReason ShouldReloadExtensionManifest(const ExtensionInfo& info) {
@@ -117,13 +114,16 @@ ManifestReloadReason ShouldReloadExtensionManifest(const ExtensionInfo& info) {
   if (Manifest::IsUnpackedLocation(info.extension_location))
     return UNPACKED_DIR;
 
+  if (!info.extension_manifest)
+    return NOT_NEEDED;
+
   // Reload the manifest if it needs to be relocalized.
   if (extension_l10n_util::ShouldRelocalizeManifest(
-          info.extension_manifest.get()))
+          info.extension_manifest->GetDict()))
     return NEEDS_RELOCALIZATION;
 
   // Reload if the copy of the manifest in the preferences is corrupt.
-  if (IsManifestCorrupt(info.extension_manifest.get()))
+  if (IsManifestCorrupt(*info.extension_manifest))
     return CORRUPT_PREFERENCES;
 
   return NOT_NEEDED;

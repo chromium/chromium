@@ -227,7 +227,7 @@ scoped_refptr<Extension> LoadExtension(
     return nullptr;
 
   if (!extension_l10n_util::LocalizeExtension(
-          extension_path, manifest.get(),
+          extension_path, &manifest->GetDict(),
           extension_l10n_util::GetGzippedMessagesPermissionForLocation(
               location),
           error)) {

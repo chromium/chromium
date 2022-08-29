@@ -578,7 +578,7 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
   // with std::u16string
   std::string utf8_error;
   if (!extension_l10n_util::LocalizeExtension(
-          extension_root_, final_manifest_dict.get(),
+          extension_root_, &final_manifest_dict->GetDict(),
           extension_l10n_util::GzippedMessagesPermission::kDisallow,
           &utf8_error)) {
     ReportFailure(

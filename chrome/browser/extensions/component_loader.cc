@@ -124,7 +124,7 @@ std::unique_ptr<base::DictionaryValue> LoadManifestOnFileThread(
     // from a read-only rootfs partition, so it is safe to set
     // |gzip_permission| to kAllowForTrustedSource.
     bool localized = extension_l10n_util::LocalizeExtension(
-        root_directory, manifest.get(),
+        root_directory, &manifest->GetDict(),
         extension_l10n_util::GzippedMessagesPermission::kAllowForTrustedSource,
         &error);
     CHECK(localized) << error;
