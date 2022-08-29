@@ -60,9 +60,6 @@ crbug.com/1271392 [ Linux ] external/wpt/service-workers/service-worker/navigati
 crbug.com/1350279 [ Linux ] external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Failure Pass ]
 
 # Sheriff 2022-08-29
-crbug.com/1356276 [ Linux ] virtual/async-script-scheduling-apply-to-cross-site-only/wpt_internal/async-script-scheduling/execution-order.sub.html [ Failure ]
-
-# Sheriff 2022-08-29
 crbug.com/1357182 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html [ Failure Pass ]
 
 ###########################################################################

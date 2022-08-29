@@ -183,10 +183,13 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
       // execution aren't removed, we eventually want to trigger
       // script-execution anyway for compatibility reasons, since waiting too
       // long for the milestones can cause compatibility issues.
+      // |pending_script| has to be wrapped by WrapWeakPersistent because the
+      // following delayed task should not persist a PendingScript.
       task_runner_->PostDelayedTask(
           FROM_HERE,
           WTF::Bind(&ScriptRunner::RemoveDelayReasonFromScript,
-                    WrapWeakPersistent(this), WrapPersistent(pending_script),
+                    WrapWeakPersistent(this),
+                    WrapWeakPersistent(pending_script),
                     DelayReason::kMilestone),
           features::kDelayAsyncScriptExecutionLimitParam.Get());
     }
