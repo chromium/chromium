@@ -73,10 +73,10 @@ LacrosWebAppsController::LacrosWebAppsController(Profile* profile)
       publisher_helper_(profile,
                         provider_,
                         /*swa_manager=*/nullptr,
-                        apps::AppType::kWeb,
                         this,
                         /*observe_media_requests=*/true) {
   DCHECK(provider_);
+  DCHECK_EQ(publisher_helper_.app_type(), apps::AppType::kWeb);
 }
 
 LacrosWebAppsController::~LacrosWebAppsController() = default;

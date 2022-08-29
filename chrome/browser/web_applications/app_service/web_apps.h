@@ -80,7 +80,7 @@ class WebApps : public apps::PublisherBase,
   Profile* profile() const { return profile_; }
   WebAppProvider* provider() const { return provider_; }
 
-  apps::AppType app_type() { return app_type_; }
+  apps::AppType app_type() { return publisher_helper_.app_type(); }
 
   WebAppPublisherHelper& publisher_helper() { return publisher_helper_; }
 
@@ -208,10 +208,6 @@ class WebApps : public apps::PublisherBase,
 
   // app_service_ is owned by the object that owns this object.
   raw_ptr<apps::mojom::AppService> app_service_;
-
-  // The app type of the publisher. The app type is kSystemWeb if the web apps
-  // are serving from Lacros, and the app type is kWeb for all other cases.
-  const apps::AppType app_type_;
 
   // Specifies whether the web app registry becomes ready.
   bool is_ready_ = false;

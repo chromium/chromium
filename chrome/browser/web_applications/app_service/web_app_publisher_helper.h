@@ -125,12 +125,13 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   WebAppPublisherHelper(Profile* profile,
                         WebAppProvider* provider,
                         ash::SystemWebAppManager* swa_manager,
-                        apps::AppType app_type,
                         Delegate* delegate,
                         bool observe_media_requests);
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
   WebAppPublisherHelper& operator=(const WebAppPublisherHelper&) = delete;
   ~WebAppPublisherHelper() override;
+
+  static apps::AppType GetWebAppType();
 
   // Indicates if |permission_type| is supported by Web Applications.
   static bool IsSupportedWebAppPermissionType(

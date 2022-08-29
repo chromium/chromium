@@ -400,13 +400,12 @@ WebAppPublisherHelper::WebAppPublisherHelper(
     Profile* profile,
     WebAppProvider* provider,
     ash::SystemWebAppManager* swa_manager,
-    apps::AppType app_type,
     Delegate* delegate,
     bool observe_media_requests)
     : profile_(profile),
       provider_(provider),
       swa_manager_(swa_manager),
-      app_type_(app_type),
+      app_type_(GetWebAppType()),
       delegate_(delegate) {
   DCHECK(profile_);
   DCHECK(delegate_);
@@ -414,6 +413,21 @@ WebAppPublisherHelper::WebAppPublisherHelper(
 }
 
 WebAppPublisherHelper::~WebAppPublisherHelper() = default;
+
+// static
+apps::AppType WebAppPublisherHelper::GetWebAppType() {
+// After moving the ordinary Web Apps to Lacros chrome, the remaining web
+// apps in ash Chrome will be only System Web Apps. Change the app type
+// to kSystemWeb for this case and the kWeb app type will be published from
+// the publisher for Lacros web apps.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (crosapi::browser_util::IsLacrosEnabled() && IsWebAppsCrosapiEnabled()) {
+    return apps::AppType::kSystemWeb;
+  }
+#endif
+
+  return apps::AppType::kWeb;
+}
 
 // static
 bool WebAppPublisherHelper::IsSupportedWebAppPermissionType(

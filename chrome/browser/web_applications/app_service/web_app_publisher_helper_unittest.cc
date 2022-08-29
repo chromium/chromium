@@ -100,7 +100,7 @@ class WebAppPublisherHelperTest : public testing::Test {
 
     publisher_ = std::make_unique<WebAppPublisherHelper>(
         profile(), provider_,
-        /*swa_manager=*/swa_manager_ptr, apps::AppType::kWeb, &no_op_delegate_,
+        /*swa_manager=*/swa_manager_ptr, &no_op_delegate_,
         /*observe_media_requests=*/false);
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
