@@ -30,9 +30,11 @@ extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGattObjectFormat[];
 
 // Other interfaces
 extern DEVICE_BLUETOOTH_EXPORT const char kSocketManagerInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGattClientInterface[];
 
 namespace adapter {
 extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
@@ -111,6 +113,43 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnIncomingSocketClosed[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnHandleIncomingConnection[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnOutgoingConnectionResult[];
 }  // namespace socket_manager
+
+namespace gatt {
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterClient[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterClient[];
+extern DEVICE_BLUETOOTH_EXPORT const char kClientConnect[];
+extern DEVICE_BLUETOOTH_EXPORT const char kClientDisconnect[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRefreshDevice[];
+extern DEVICE_BLUETOOTH_EXPORT const char kDiscoverServices[];
+extern DEVICE_BLUETOOTH_EXPORT const char kDiscoverServiceByUuid[];
+extern DEVICE_BLUETOOTH_EXPORT const char kReadCharacteristic[];
+extern DEVICE_BLUETOOTH_EXPORT const char kReadUsingCharacteristicUuid[];
+extern DEVICE_BLUETOOTH_EXPORT const char kWriteCharacteristic[];
+extern DEVICE_BLUETOOTH_EXPORT const char kReadDescriptor[];
+extern DEVICE_BLUETOOTH_EXPORT const char kWriteDescriptor[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterForNotification[];
+extern DEVICE_BLUETOOTH_EXPORT const char kBeginReliableWrite[];
+extern DEVICE_BLUETOOTH_EXPORT const char kEndReliableWrite[];
+extern DEVICE_BLUETOOTH_EXPORT const char kReadRemoteRssi[];
+extern DEVICE_BLUETOOTH_EXPORT const char kConfigureMtu[];
+extern DEVICE_BLUETOOTH_EXPORT const char kConnectionParameterUpdate[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kOnClientRegistered[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnClientConnectionState[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnPhyUpdate[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnPhyRead[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnSearchComplete[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnCharacteristicRead[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnCharacteristicWrite[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnExecuteWrite[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDescriptorRead[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnNotify[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnReadRemoteRssi[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnConfigureMtu[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnConnectionUpdated[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnServiceChanged[];
+}  // namespace gatt
 
 // BluetoothDevice structure for DBus apis.
 struct DEVICE_BLUETOOTH_EXPORT FlossDeviceId {
@@ -228,6 +267,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
     kWakelockError,
   };
 
+  enum class BluetoothTransport {
+    kAuto = 0,
+    kBrEdr = 1,
+    kLe = 2,
+  };
+
   // Error: DBus error.
   static const char kErrorDBus[];
 
@@ -330,9 +375,24 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
     return ReadDBusParam(&variant_reader, value);
   }
 
-  // Container type needs to be explicitly listed here.
+  // Specialization for vector of anything.
   template <typename T>
-  static bool ReadDBusParam(dbus::MessageReader* reader, std::vector<T>* value);
+  static bool ReadDBusParam(dbus::MessageReader* reader,
+                            std::vector<T>* value) {
+    dbus::MessageReader subreader(nullptr);
+    if (!reader->PopArray(&subreader))
+      return false;
+
+    while (subreader.HasMoreData()) {
+      T element;
+      if (!ReadDBusParam<T>(&subreader, &element))
+        return false;
+
+      value->emplace_back(std::move(element));
+    }
+
+    return true;
+  }
 
   // Optional container type needs to be explicitly implemented here.
   template <typename T>

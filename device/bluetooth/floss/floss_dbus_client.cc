@@ -109,6 +109,44 @@ const char kOnHandleIncomingConnection[] = "OnHandleIncomingConnection";
 const char kOnOutgoingConnectionResult[] = "OnOutgoingConnectionResult";
 }  // namespace socket_manager
 
+namespace gatt {
+const char kRegisterClient[] = "RegisterClient";
+const char kUnregisterClient[] = "UnregisterClient";
+const char kClientConnect[] = "ClientConnect";
+const char kClientDisconnect[] = "ClientDisconnect";
+const char kRefreshDevice[] = "RefreshDevice";
+const char kDiscoverServices[] = "DiscoverServices";
+const char kDiscoverServiceByUuid[] = "DiscoverServiceByUuid";
+const char kReadCharacteristic[] = "ReadCharacteristic";
+const char kReadUsingCharacteristicUuid[] = "ReadUsingCharacteristicUuid";
+const char kWriteCharacteristic[] = "WriteCharacteristic";
+const char kReadDescriptor[] = "ReadDescriptor";
+const char kWriteDescriptor[] = "WriteDescriptor";
+const char kRegisterForNotification[] = "RegisterForNotification";
+const char kBeginReliableWrite[] = "BeginReliableWrite";
+const char kEndReliableWrite[] = "EndReliableWrite";
+const char kReadRemoteRssi[] = "ReadRemoteRssi";
+const char kConfigureMtu[] = "ConfigureMtu";
+const char kConnectionParameterUpdate[] = "ConnectionParameterUpdate";
+const char kCallbackInterface[] =
+    "org.chromium.bluetooth.BluetoothGattClientCallback";
+
+const char kOnClientRegistered[] = "OnClientRegistered";
+const char kOnClientConnectionState[] = "OnClientConnectionState";
+const char kOnPhyUpdate[] = "OnPhyUpdate";
+const char kOnPhyRead[] = "OnPhyRead";
+const char kOnSearchComplete[] = "OnSearchComplete";
+const char kOnCharacteristicRead[] = "OnCharacteristicRead";
+const char kOnCharacteristicWrite[] = "OnCharacteristicWrite";
+const char kOnExecuteWrite[] = "OnExecuteWrite";
+const char kOnDescriptorRead[] = "OnDescriptorRead";
+const char kOnNotify[] = "OnNotify";
+const char kOnReadRemoteRssi[] = "OnReadRemoteRssi";
+const char kOnConfigureMtu[] = "OnConfigureMtu";
+const char kOnConnectionUpdated[] = "OnConnectionUpdated";
+const char kOnServiceChanged[] = "OnServiceChanged";
+}  // namespace gatt
+
 namespace {
 constexpr char kDeviceIdNameKey[] = "name";
 constexpr char kDeviceIdAddressKey[] = "address";
@@ -224,6 +262,12 @@ const DBusTypeInfo& GetDBusTypeInfo<FlossDeviceId>() {
 template <>
 const DBusTypeInfo& GetDBusTypeInfo<device::BluetoothUUID>() {
   static DBusTypeInfo info{"ay", "BluetoothUUID"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<std::vector<uint8_t>>() {
+  static DBusTypeInfo info{"ay", "std::vector<uint8_t>"};
   return info;
 }
 
@@ -401,26 +445,6 @@ template bool FlossDBusClient::ReadDBusParam<base::ScopedFD>(
     absl::optional<base::ScopedFD>* fd);
 
 // static
-// Specialization for vector of anything.
-template <typename T>
-bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
-                                    std::vector<T>* value) {
-  dbus::MessageReader subreader(nullptr);
-  if (!reader->PopArray(&subreader))
-    return false;
-
-  while (subreader.HasMoreData()) {
-    T element;
-    if (!FlossDBusClient::ReadDBusParam<T>(&subreader, &element))
-      return false;
-
-    value->push_back(element);
-  }
-
-  return true;
-}
-
-// static
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     FlossDeviceId* device) {
@@ -496,6 +520,12 @@ template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const base::ScopedFD& fd) {
   writer->AppendFileDescriptor(fd.get());
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const dbus::ObjectPath& path) {
+  writer->AppendObjectPath(path);
 }
 
 template <>
