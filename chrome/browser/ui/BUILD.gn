@@ -5516,6 +5516,8 @@ static_library("ui") {
       "views/javascript_app_modal_event_blocker.h",
       "web_applications/app_browser_controller.cc",
       "web_applications/app_browser_controller.h",
+      "web_applications/diagnostics/app_type_initialized_event.cc",
+      "web_applications/diagnostics/app_type_initialized_event.h",
       "web_applications/draggable_region_host_impl.cc",
       "web_applications/draggable_region_host_impl.h",
       "web_applications/share_target_utils.cc",

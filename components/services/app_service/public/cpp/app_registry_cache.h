@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
     // The apps::AppUpdate argument shouldn't be accessed after OnAppUpdate
     // returns.
-    virtual void OnAppUpdate(const AppUpdate& update) = 0;
+    virtual void OnAppUpdate(const AppUpdate& update) {}
 
     // Called when the publisher for |app_type| has finished initiating apps.
     // Note that this will not be called for app types initialized prior to this
