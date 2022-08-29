@@ -1748,14 +1748,16 @@ class AuctionRunnerTest : public testing::Test,
       std::vector<std::string> trusted_bidding_signals_keys,
       absl::optional<GURL> ad_url,
       absl::optional<std::vector<GURL>> ad_component_urls = absl::nullopt) {
-    std::vector<blink::InterestGroup::Ad> ads;
+    absl::optional<std::vector<blink::InterestGroup::Ad>> ads;
     // Give only kBidder1 an InterestGroupAd ad with non-empty metadata, to
     // better test the `ad_metadata` output.
     if (ad_url) {
+      ads.emplace();
       if (owner == kBidder1) {
-        ads.emplace_back(blink::InterestGroup::Ad(*ad_url, R"({"ads": true})"));
+        ads->emplace_back(
+            blink::InterestGroup::Ad(*ad_url, R"({"ads": true})"));
       } else {
-        ads.emplace_back(blink::InterestGroup::Ad(*ad_url, absl::nullopt));
+        ads->emplace_back(blink::InterestGroup::Ad(*ad_url, absl::nullopt));
       }
     }
 
