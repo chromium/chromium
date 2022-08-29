@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,59 +9,54 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/local_script_store.h"
+#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
+#include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
-
-struct LocalScriptStore {
-  // Temporary boilerplate, this struct becomes a proper class in the child CL
-  ~LocalScriptStore();
-  LocalScriptStore(const LocalScriptStore&);
-  LocalScriptStore(LocalScriptStore&&);
-  LocalScriptStore& operator=(const LocalScriptStore&) = default;
-  LocalScriptStore& operator=(LocalScriptStore&&) = default;
-  LocalScriptStore(std::vector<GetNoRoundtripScriptsByHashPrefixResponseProto::
-                                   MatchInfo::RoutineScript> routines,
-                   std::string domain,
-                   SupportsScriptResponseProto supports_site_response);
-
-  // Contains pairs of [AutobotResponses, SupportedRoutine].
-  // TODO change SupportedRoutine to simply script_path
-  std::vector<
-      GetNoRoundtripScriptsByHashPrefixResponseProto::MatchInfo::RoutineScript>
-      routines;
-
-  // The domain that this LocalScriptStore is valid for
-  std::string domain;
-
-  // The results of SupportsScript for this domain/intent match
-  SupportsScriptResponseProto supports_site_response;
-};
 
 // An offline version of the service that fetches all actions at once and then
 // serves scripts without roundtrips.
 class NoRoundTripService : public Service {
  public:
-  // Convenience method for creating an offline service.
-  static std::unique_ptr<NoRoundTripService> Create(
-      const LocalScriptStore& script_store);
+  // Constructs a NoRoundTripService, does not make any call to the server, the
+  // calls are instead made in the first call to GetScripts.
+  NoRoundTripService(std::unique_ptr<ServiceRequestSender> request_sender,
+                     const GURL& get_scripts_endpoint,
+                     Client* client);
 
-  explicit NoRoundTripService(const LocalScriptStore& script_store);
   NoRoundTripService(const NoRoundTripService&) = delete;
   NoRoundTripService& operator=(const NoRoundTripService&) = delete;
   ~NoRoundTripService() override;
 
-  // Return the SupportsSite response from the local script store.
+  // Factory methods to create a NoRoundTrip service, all endpoint are
+  // initialised, but no RPC is made.
+  [[nodiscard]] static std::unique_ptr<NoRoundTripService> Create(
+      content::BrowserContext* context,
+      Client* client);
+  [[nodiscard]] static std::unique_ptr<NoRoundTripService> Create(
+      content::BrowserContext* context,
+      Client* client,
+      const ServerUrlFetcher& url_fetcher);
+
+  // Runs an RPC to GetNoRoundTripScriptsByHash, stores the results in the local
+  // store and finally calls the callback with a fabricated GetActionsResponse
+  // created from the local script store.
   void GetScriptsForUrl(
       const GURL& url,
       const TriggerContext& trigger_context,
       ServiceRequestSender::ResponseCallback callback) override;
 
-  // Return the action given a script_path from the local script store.
+  // Calls the callback with a fabricated GetActionsResponse created given a
+  // script_path from the local script store.
   void GetActions(const std::string& script_path,
                   const GURL& url,
                   const TriggerContext& trigger_context,
@@ -69,7 +64,7 @@ class NoRoundTripService : public Service {
                   const std::string& script_payload,
                   ServiceRequestSender::ResponseCallback callback) override;
 
-  // This call will not work with the local script store.
+  // This call will always call the callback with an empty response.
   void GetNextActions(
       const TriggerContext& trigger_context,
       const std::string& previous_global_payload,
@@ -79,7 +74,6 @@ class NoRoundTripService : public Service {
       const RoundtripNetworkStats& network_stats,
       ServiceRequestSender::ResponseCallback callback) override;
 
-  // This call will return the script store config from the local script store.
   void SetScriptStoreConfig(
       const ScriptStoreConfig& script_store_config) override;
 
@@ -104,9 +98,40 @@ class NoRoundTripService : public Service {
                       const std::string& payload,
                       ServiceRequestSender::ResponseCallback callback) override;
 
+  // Retrieves the script store, used for testing.
+  const LocalScriptStore* GetStore() const;
+
+  // Initializes a NoRoundTripService, only used for testing purposes.
+  // Does not initializes RPC endpoints and the client.
+  explicit NoRoundTripService(std::unique_ptr<LocalScriptStore> script_store);
+
  private:
+  // Callback to run on receiving a response from
+  // OnNoRoundTripByHashPrefixRequest
+  void OnNoRountripByHashPrefixResponse(
+      const GURL& url,
+      ServiceRequestSender::ResponseCallback callback,
+      int http_status,
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
+
+  // Create a GetNoRoundtrip request given the url and the script parameters.
+  [[nodiscard]] static std::string CreateGetNoRoundtripRequest(
+      const GURL& url,
+      const ScriptParameters& script_parameters);
+
+  // RPC endpoint
+  GURL get_scripts_endpoint_;
+
+  raw_ptr<Client> client_;
+
   ScriptStoreConfig script_store_config_;
-  const LocalScriptStore script_store_;
+
+  std::unique_ptr<LocalScriptStore> script_store_;
+
+  std::unique_ptr<ServiceRequestSender> request_sender_;
+
+  base::WeakPtrFactory<NoRoundTripService> weak_ptr_factory_{this};
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_NO_ROUND_TRIP_SERVICE_H_

@@ -157,7 +157,8 @@ bool TriggerContext::GetIsExternallyTriggered() const {
 }
 
 bool TriggerContext::GetSkipAutofillAssistantOnboarding() const {
-  return skip_autofill_assistant_onboarding_;
+  return skip_autofill_assistant_onboarding_ ||
+         script_parameters_->GetIsNoRoundtrip().value_or(false);
 }
 
 }  // namespace autofill_assistant

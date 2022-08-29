@@ -19,6 +19,8 @@ const char kTriggersEndpoint[] = "/v1/triggers";
 const char kCapabilitiesByHashEndpoint[] = "/v1/capabilitiesByHashPrefix2";
 const char kUserDataEndpoint[] = "/v1/userData";
 const char kProgressEndpoint[] = "/v1/reportProgress";
+const char kSelfContainedByHashEndpoint[] =
+    "/v1/noRoundTripScriptsByHashPrefix";
 }  // namespace
 
 namespace autofill_assistant {
@@ -76,6 +78,12 @@ GURL ServerUrlFetcher::GetReportProgressEndpoint() const {
   GURL::Replacements trigger_replacements;
   trigger_replacements.SetPathStr(kProgressEndpoint);
   return server_url_.ReplaceComponents(trigger_replacements);
+}
+
+GURL ServerUrlFetcher::GetNoRoundTripScriptsByHashEndpoint() const {
+  GURL::Replacements no_roundtrip_hash_replacements;
+  no_roundtrip_hash_replacements.SetPathStr(kSelfContainedByHashEndpoint);
+  return server_url_.ReplaceComponents(no_roundtrip_hash_replacements);
 }
 
 }  // namespace autofill_assistant

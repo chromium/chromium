@@ -16,6 +16,7 @@ enum class RpcType {
   GET_TRIGGER_SCRIPTS_BY_HASH_PREFIX,
   GET_USER_DATA,
   REPORT_PROGRESS,
+  GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX,
 };
 }  // namespace autofill_assistant
 

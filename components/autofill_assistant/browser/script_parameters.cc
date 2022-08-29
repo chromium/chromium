@@ -79,6 +79,9 @@ const char kDisableRpcSigningParamaterName[] = "DISABLE_RPC_SIGNING";
 // expect the model to be used.
 const char kSendAnnotateDomModelVersion[] = "SEND_ANNOTATE_DOM_MODEL_VERSION";
 
+// Whether this script does not requires a round trip.
+const char kIsNoRoundTrip[] = "IS_NO_ROUND_TRIP";
+
 // The list of non sensitive script parameters that client requests are allowed
 // to send to the backend i.e., they do not require explicit approval in the
 // autofill-assistant onboarding. Even so, please always reach out to Chrome
@@ -328,6 +331,10 @@ absl::optional<std::string> ScriptParameters::GetDetailsTotalPriceLabel()
 
 absl::optional<std::string> ScriptParameters::GetDetailsTotalPrice() const {
   return GetParameter(kDetailsTotalPrice);
+}
+
+absl::optional<bool> ScriptParameters::GetIsNoRoundtrip() const {
+  return GetTypedParameter<bool>(parameters_, kIsNoRoundTrip);
 }
 
 void ScriptParameters::UpdateDeviceOnlyParameters(

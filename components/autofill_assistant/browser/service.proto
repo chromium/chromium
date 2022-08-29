@@ -268,7 +268,7 @@ message GetCapabilitiesByHashPrefixResponseProto {
   repeated MatchInfoProto match_info = 1;
 }
 
-message GetNoRoundtripScriptsByHashPrefixRequestProto {
+message GetNoRoundTripScriptsByHashPrefixRequestProto {
   // The number of leading bits to consider from hash_prefix. The remaining
   // trailing bits from hash_prefix should be ignored.
   optional uint32 hash_prefix_length = 1;
@@ -285,14 +285,14 @@ message GetNoRoundtripScriptsByHashPrefixRequestProto {
   repeated ScriptParameterProto script_parameters = 4;
 }
 
-message GetNoRoundtripScriptsByHashPrefixResponseProto {
+message GetNoRoundTripScriptsByHashPrefixResponseProto {
   // CUP-signed version of this proto. When set, the rest of the fields in
   // ScriptActionRequestProto should be ignored.
   optional CUPResponseData cup_data = 1;
 
   message MatchInfo {
     message RoutineScript {
-      optional SupportedScriptProto routine = 1;
+      optional string script_path = 1;
       // The set of actions to execute. If the last executed action is not a
       // stop action or a stop action inside a JS flow action the script will
       // fail.

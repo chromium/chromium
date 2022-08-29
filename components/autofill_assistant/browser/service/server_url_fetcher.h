@@ -31,6 +31,8 @@ class ServerUrlFetcher {
   virtual GURL GetCapabilitiesByHashEndpoint() const;
   // Returns the endpoint to send the GetUserData RPC to.
   virtual GURL GetUserDataEndpoint() const;
+  // Returns the endpoint to send the GetNoroundtripScriptsByHash RPC to.
+  virtual GURL GetNoRoundTripScriptsByHashEndpoint() const;
   // Returns the endpoint to send the ReportProgress RPC to.
   virtual GURL GetReportProgressEndpoint() const;
 

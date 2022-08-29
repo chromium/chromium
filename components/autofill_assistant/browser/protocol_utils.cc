@@ -166,6 +166,40 @@ std::string ProtocolUtils::CreateTriggerScriptsByHashRequest(
 }
 
 // static
+std::string ProtocolUtils::CreateGetNoRoundTripScriptsByHashRequest(
+    const uint32_t hash_prefix_length,
+    const uint64_t hash_prefix,
+    const ClientContextProto& client_context,
+    const ScriptParameters& script_parameters) {
+  GetNoRoundTripScriptsByHashPrefixRequestProto request;
+  request.set_hash_prefix_length(hash_prefix_length);
+  request.set_hash_prefix(hash_prefix);
+  *request.mutable_script_parameters() =
+      script_parameters.ToProto(/* only_non_sensitive_allowlisted = */ true);
+
+  ClientContextProto non_sensitive_context;
+  if (client_context.has_locale()) {
+    non_sensitive_context.set_locale(client_context.locale());
+  }
+  if (client_context.has_country()) {
+    non_sensitive_context.set_country(client_context.country());
+  }
+  if (client_context.chrome().has_chrome_version()) {
+    non_sensitive_context.mutable_chrome()->set_chrome_version(
+        client_context.chrome().chrome_version());
+  }
+  if (client_context.has_platform_type()) {
+    non_sensitive_context.set_platform_type(client_context.platform_type());
+  }
+  *request.mutable_client_context() = non_sensitive_context;
+
+  std::string serialized_request;
+  bool success = request.SerializeToString(&serialized_request);
+  DCHECK(success);
+  return serialized_request;
+}
+
+// static
 void ProtocolUtils::AddScript(const SupportedScriptProto& script_proto,
                               std::vector<std::unique_ptr<Script>>* scripts) {
   auto script = std::make_unique<Script>();

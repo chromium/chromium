@@ -21,6 +21,8 @@
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
+#include "components/autofill_assistant/browser/service/local_script_store.h"
+#include "components/autofill_assistant/browser/service/no_round_trip_service.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
@@ -74,6 +76,11 @@ void ClientHeadless::Start(
     return;
   }
   script_ended_callback_ = std::move(script_ended_callback);
+  if (trigger_context->GetScriptParameters().GetIsNoRoundtrip().value_or(
+          false)) {
+    service =
+        NoRoundTripService::Create(web_contents_->GetBrowserContext(), this);
+  }
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, tick_clock_, runtime_manager_,
       std::move(service), std::move(web_controller), ukm_recorder_,

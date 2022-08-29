@@ -30,6 +30,8 @@
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
+#include "components/autofill_assistant/browser/service/local_script_store.h"
+#include "components/autofill_assistant/browser/service/no_round_trip_service.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
@@ -145,7 +147,7 @@ bool ClientAndroid::IsVisible() const {
 void ClientAndroid::Start(
     const GURL& url,
     std::unique_ptr<TriggerContext> trigger_context,
-    std::unique_ptr<Service> test_service_to_inject,
+    std::unique_ptr<Service> service,
     const base::android::JavaRef<jobject>& joverlay_coordinator,
     const absl::optional<TriggerScriptProto>& trigger_script) {
   // When Start() is called, AA_START should have been measured. From now on,
@@ -162,7 +164,13 @@ void ClientAndroid::Start(
   Java_AutofillAssistantClient_chooseAccountAsyncIfNecessary(
       base::android::AttachCurrentThread(), java_object_, jaccount_name);
 
-  CreateController(std::move(test_service_to_inject), trigger_script);
+  if (trigger_context->GetScriptParameters().GetIsNoRoundtrip().value_or(
+          false)) {
+    service =
+        NoRoundTripService::Create(GetWebContents()->GetBrowserContext(), this);
+  }
+
+  CreateController(std::move(service), trigger_script);
 
   // If an overlay is already shown, then show the rest of the UI.
   if (joverlay_coordinator) {

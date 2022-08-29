@@ -71,6 +71,7 @@ class ScriptParameters {
   bool GetUseAssistantUi() const;
   absl::optional<std::string> GetFieldTrialGroup(
       const int field_trial_slot) const;
+  absl::optional<bool> GetIsNoRoundtrip() const;
 
   // Details parameters.
   absl::optional<bool> GetDetailsShowInitial() const;

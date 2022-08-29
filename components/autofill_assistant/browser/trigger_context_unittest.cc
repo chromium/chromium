@@ -58,6 +58,21 @@ TEST(TriggerContextTest, Create) {
             TriggerScriptProto::SHOPPING_CART_FIRST_TIME_USER);
 }
 
+TEST(TriggerContextTest, SkipOnboardingForNoRoundtripScripts) {
+  TriggerContext context = {std::make_unique<ScriptParameters>(
+                                base::flat_map<std::string, std::string>{
+                                    {"IS_NO_ROUND_TRIP", "true"}}),
+                            "exps",
+                            /* is_cct = */ true,
+                            /* onboarding_shown = */ true,
+                            /* is_direct_action = */ true,
+                            /* initial_url = */ "https://www.example.com",
+                            /* is_in_chrome_triggered = */ true,
+                            /* is_externally_triggered = */ true,
+                            /* skip_autofill_assistant_onboarding = */ false};
+  EXPECT_TRUE(context.GetSkipAutofillAssistantOnboarding());
+}
+
 TEST(TriggerContextTest, MergeEmpty) {
   TriggerContext empty;
   TriggerContext merged = {{&empty, &empty}};
