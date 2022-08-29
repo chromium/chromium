@@ -21,7 +21,8 @@ CloudUploadPageHandler::CloudUploadPageHandler(
 CloudUploadPageHandler::~CloudUploadPageHandler() = default;
 
 void CloudUploadPageHandler::GetUploadPath(GetUploadPathCallback callback) {
-  std::move(callback).Run(GenerateDestinationPath(profile_));
+  std::move(callback).Run(
+      CloudUploadHandler::GenerateUploadFolderPath(profile_));
 }
 
 void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {

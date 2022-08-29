@@ -4,20 +4,37 @@
 
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
 
 namespace chromeos::cloud_upload {
 namespace {
 
+void OpenUrlOnUploadDone(GURL hosted_url) {
+  if (!hosted_url.is_valid()) {
+    LOG(ERROR) << "Invalid hosted URL";
+    return;
+  }
+  if (!ash::NewWindowDelegate::GetPrimary()) {
+    LOG(ERROR) << "Failed to get window delegate";
+    return;
+  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      hosted_url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
 void OnUploadActionReceived(Profile* profile,
                             const storage::FileSystemURL& file_url,
                             const std::string& action) {
   if (action == kUserActionUpload) {
-    UploadToCloud(profile, file_url);
+    CloudUploadHandler::UploadToCloud(profile, file_url,
+                                      base::BindOnce(&OpenUrlOnUploadDone));
   }
 }
 
