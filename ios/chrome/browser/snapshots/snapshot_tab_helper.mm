@@ -125,7 +125,7 @@ void SnapshotTabHelper::PageLoaded(
   // Snapshots taken while page is loading will eventually be stale. It
   // is important that another snapshot is taken after the new
   // page has loaded to replace the stale snapshot. The
-  // |IOS.PageLoadedSnapshotResult| histogram shows the outcome of
+  // `IOS.PageLoadedSnapshotResult` histogram shows the outcome of
   // snapshot attempts when the page is loaded after having taken
   // a stale snapshot.
   switch (load_completion_status) {

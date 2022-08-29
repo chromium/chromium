@@ -63,7 +63,7 @@ using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
 namespace {
 
-// Returns whether the |image| dominant color is |color|.
+// Returns whether the `image` dominant color is `color`.
 bool IsDominantColorForImage(UIImage* image, UIColor* color) {
   UIColor* dominant_color =
       DominantColorForImage(gfx::Image(image), /*opacity=*/1.0);

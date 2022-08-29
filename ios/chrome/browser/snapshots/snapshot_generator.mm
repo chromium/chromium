@@ -38,7 +38,7 @@ struct SnapshotInfo {
   NSArray<UIView*>* overlays;
 };
 
-// Returns YES if |view| or any view it contains is a WKWebView.
+// Returns YES if `view` or any view it contains is a WKWebView.
 BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   if ([view isKindOfClass:[WKWebView class]])
     return YES;
@@ -196,14 +196,14 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                canTakeSnapshotForWebState:self.webState];
 }
 
-// Returns a snapshot of |baseView| with |frameInBaseView|.
+// Returns a snapshot of `baseView` with `frameInBaseView`.
 - (UIImage*)snapshotBaseView:(UIView*)baseView
              frameInBaseView:(CGRect)frameInBaseView {
   DCHECK(baseView);
   DCHECK(!CGRectIsEmpty(frameInBaseView));
 
   // Disable the automatic view dimming UIKit performs if a view is presented
-  // modally over |baseView|.
+  // modally over `baseView`.
   baseView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
 
   // Note: When not using device scale, the output image size may slightly
@@ -218,19 +218,19 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                         -frameInBaseView.origin.y);
   BOOL snapshotSuccess = YES;
 
-  // |drawViewHierarchyInRect:| has undefined behavior when the view is not
+  // `drawViewHierarchyInRect:` has undefined behavior when the view is not
   // in the visible view hierarchy. In practice, when this method is called
   // on a view that is part of view controller containment and not in the view
   // hierarchy, an UIViewControllerHierarchyInconsistency exception will be
   // thrown.
   if (baseView.window && ViewHierarchyContainsWKWebView(baseView)) {
-    // TODO(crbug.com/636188): |-drawViewHierarchyInRect:afterScreenUpdates:| is
+    // TODO(crbug.com/636188): `-drawViewHierarchyInRect:afterScreenUpdates:` is
     // buggy causing GPU glitches, screen redraws during animations, broken
     // pinch to dismiss on tablet, etc.
     snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
                                      afterScreenUpdates:YES];
   } else {
-    // |-renderInContext:| is buggy for WKWebView, which is used for some
+    // `-renderInContext:` is buggy for WKWebView, which is used for some
     // Chromium pages such as "No internet" or "Site can't be reached".
     [[baseView layer] renderInContext:context];
   }
@@ -248,8 +248,8 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   return image;
 }
 
-// Returns an image of the |baseImage| overlaid with |overlays| with the given
-// |frameInWindow|.
+// Returns an image of the `baseImage` overlaid with `overlays` with the given
+// `frameInWindow`.
 - (UIImage*)snapshotWithOverlays:(NSArray<UIView*>*)overlays
                        baseImage:(UIImage*)baseImage
                    frameInWindow:(CGRect)frameInWindow {
@@ -280,7 +280,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   return snapshot;
 }
 
-// Updates the snapshot cache with |snapshot|.
+// Updates the snapshot cache with `snapshot`.
 - (void)updateSnapshotCacheWithImage:(UIImage*)snapshot {
   if (snapshot) {
     [self.snapshotCache setImage:snapshot withSnapshotID:self.tabID];
@@ -290,7 +290,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   }
 }
 
-// Draws |overlays| onto |context| at offsets relative to the window.
+// Draws `overlays` onto `context` at offsets relative to the window.
 - (void)drawOverlays:(NSArray<UIView*>*)overlays context:(CGContext*)context {
   for (UIView* overlay in overlays) {
     CGContextSaveGState(context);

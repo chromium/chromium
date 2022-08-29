@@ -76,8 +76,8 @@ const CGFloat kJPEGImageQuality = 1.0;  // Highest quality. No compression.
 // starting to evict elements.
 const NSUInteger kLRUCacheMaxCapacity = 6;
 
-// Returns the path of the image for |snapshot_id|, in |cache_directory|,
-// of type |image_type| and scale |image_scale|.
+// Returns the path of the image for `snapshot_id`, in `cache_directory`,
+// of type `image_type` and scale `image_scale`.
 base::FilePath ImagePath(NSString* snapshot_id,
                          ImageType image_type,
                          ImageScale image_scale,
@@ -540,7 +540,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   _backgroundingColorImage = [_lruCache objectForKey:snapshotID];
 }
 
-// Remove all but adjacent UIImages from |lruCache_|.
+// Remove all but adjacent UIImages from `lruCache_`.
 - (void)handleLowMemory {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSMutableDictionary<NSString*, UIImage*>* dictionary =
@@ -556,13 +556,13 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                   forKey:snapshotID];
 }
 
-// Remove all UIImages from |lruCache_|.
+// Remove all UIImages from `lruCache_`.
 - (void)handleEnterBackground {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [_lruCache removeAllObjects];
 }
 
-// Restore adjacent UIImages to |lruCache_|.
+// Restore adjacent UIImages to `lruCache_`.
 - (void)handleBecomeActive {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   for (NSString* snapshotID in self.pinnedIDs)
@@ -571,8 +571,8 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                             }];
 }
 
-// Save grey image to |greyImageDictionary_| and call into most recent
-// |_mostRecentGreyBlock| if |_mostRecentGreySnapshotID| matches |snapshotID|.
+// Save grey image to `greyImageDictionary_` and call into most recent
+// `_mostRecentGreyBlock` if `_mostRecentGreySnapshotID` matches `snapshotID`.
 - (void)saveGreyImage:(UIImage*)greyImage forSnapshotID:(NSString*)snapshotID {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (greyImage)

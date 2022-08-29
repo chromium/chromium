@@ -26,7 +26,7 @@ const char* kOrientationDescriptions[] = {
     "PortraitUpsideDown",
 };
 
-// Delete all files in |paths|.
+// Delete all files in `paths`.
 void DeleteAllFiles(std::vector<base::FilePath> paths) {
   for (const auto& path : paths) {
     base::DeleteFile(path);

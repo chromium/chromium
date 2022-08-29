@@ -14,9 +14,9 @@ class FilePath;
 @class NSString;
 
 @interface SnapshotCache (Internal)
-// Returns filepath to the color snapshot of |snapshotID|.
+// Returns filepath to the color snapshot of `snapshotID`.
 - (base::FilePath)imagePathForSnapshotID:(NSString*)snapshotID;
-// Returns filepath to the greyscale snapshot of |snapshotID|.
+// Returns filepath to the greyscale snapshot of `snapshotID`.
 - (base::FilePath)greyImagePathForSnapshotID:(NSString*)snapshotID;
 @end
 

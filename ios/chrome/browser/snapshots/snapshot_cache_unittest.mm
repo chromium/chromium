@@ -84,7 +84,7 @@ class SnapshotCacheTest : public PlatformTest {
 
   SnapshotCache* GetSnapshotCache() { return snapshotCache_; }
 
-  // Adds a fake snapshot file into |directory| using |snapshot_id| in the
+  // Adds a fake snapshot file into `directory` using `snapshot_id` in the
   // filename.
   base::FilePath AddSnapshotFileToDirectory(const base::FilePath directory,
                                             NSString* snapshot_id) {
@@ -112,7 +112,7 @@ class SnapshotCacheTest : public PlatformTest {
     return UIGraphicsGetImageFromCurrentImageContext();
   }
 
-  // Generates an image of |size|, filled with a random color.
+  // Generates an image of `size`, filled with a random color.
   UIImage* GenerateRandomImage(CGSize size) {
     UIGraphicsBeginImageContextWithOptions(size, /*opaque=*/NO,
                                            UIScreen.mainScreen.scale);
@@ -165,13 +165,13 @@ class SnapshotCacheTest : public PlatformTest {
     EXPECT_FALSE(foundImage);
   }
 
-  // Loads kSnapshotCount color images into the cache.  If |waitForFilesOnDisk|
+  // Loads kSnapshotCount color images into the cache.  If `waitForFilesOnDisk`
   // is YES, will not return until the images have been written to disk.
   void LoadAllColorImagesIntoCache(bool waitForFilesOnDisk) {
     LoadColorImagesIntoCache(kSnapshotCount, waitForFilesOnDisk);
   }
 
-  // Loads |count| color images into the cache.  If |waitForFilesOnDisk|
+  // Loads `count` color images into the cache.  If `waitForFilesOnDisk`
   // is YES, will not return until the images have been written to disk.
   void LoadColorImagesIntoCache(NSUInteger count, bool waitForFilesOnDisk) {
     SnapshotCache* cache = GetSnapshotCache();
@@ -194,7 +194,7 @@ class SnapshotCacheTest : public PlatformTest {
     }
   }
 
-  // Waits for the first |count| grey images for |snapshotIDs_| to be placed in
+  // Waits for the first `count` grey images for `snapshotIDs_` to be placed in
   // the cache.
   void WaitForGreyImagesInCache(NSUInteger count) {
     SnapshotCache* cache = GetSnapshotCache();
@@ -573,7 +573,7 @@ TEST_F(SnapshotCacheTest, GreyImageAllInBackground) {
     [cache saveGreyInBackgroundForSnapshotID:[snapshotIDs_ objectAtIndex:i]];
   }
 
-  // Waits for the grey images for |snapshotIDs_| to be written to disk, which
+  // Waits for the grey images for `snapshotIDs_` to be written to disk, which
   // happens in a background thread.
   FlushRunLoops();
 
@@ -652,7 +652,7 @@ TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
 }
 
 // Tests that image immediately deletes when calling
-// |-removeImageWithSnapshotID:|.
+// `-removeImageWithSnapshotID:`.
 TEST_F(SnapshotCacheTest, ImageDeleted) {
   SnapshotCache* cache = GetSnapshotCache();
   UIImage* image =
@@ -665,7 +665,7 @@ TEST_F(SnapshotCacheTest, ImageDeleted) {
   EXPECT_FALSE(base::PathExists(image_path));
 }
 
-// Tests that all images are deleted when calling |-removeAllImages|.
+// Tests that all images are deleted when calling `-removeAllImages`.
 TEST_F(SnapshotCacheTest, AllImagesDeleted) {
   SnapshotCache* cache = GetSnapshotCache();
   UIImage* image =

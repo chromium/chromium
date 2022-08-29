@@ -12,8 +12,8 @@
 // Interface for listening to events occurring to the SnapshotCache.
 @protocol SnapshotCacheObserver
 @optional
-// Tells the observing object that the |snapshotCache| was updated with a new
-// snapshot corresponding to |identifier|.
+// Tells the observing object that the `snapshotCache` was updated with a new
+// snapshot corresponding to `identifier`.
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
     didUpdateSnapshotForIdentifier:(NSString*)identifier;
 @end
