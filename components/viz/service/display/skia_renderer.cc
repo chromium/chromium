@@ -1609,6 +1609,11 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   // draw calls into the canvas.
   if (quad->material == DrawQuad::Material::kPictureContent)
     return;
+
+  // DebugBorderDrawQuads draw a path so they must be explicitly clipped.
+  if (quad->material == DrawQuad::Material::kDebugBorder)
+    return;
+
   // Intersection with scissor and a quadrilateral is not necessarily a quad,
   // so don't complicate things
   if (draw_region.has_value())
