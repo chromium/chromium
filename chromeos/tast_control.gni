@@ -70,9 +70,6 @@ tast_disabled_tests_from_chrome_all = [
   "ui.ChromeCrashReporterMetrics.success_breakpad",
   "ui.ChromeCrashReporterMetrics.miss_breakpad",
 
-  # https://crbug.com/1269124: Flaky.
-  "quicksettings.LockScreen.no_battery",
-
   # https://crbug.com/1273485: Flaky.
   "printer.ProxyAdd.epson_software_collate",
   "printer.ProxyAdd.epson_software_uncollated",
@@ -85,9 +82,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1311242
   "policy.ImagesForURLCheck.allowlist",
-
-  # https://crbug.com/1281645
-  "quicksettings.LockScreen",
 
   # https://crbug.com/1282372
   "security.SELinuxFilesARC",
