@@ -152,10 +152,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   };
   virtual Type GetType() const;
 
-  // Workaround for StreamTexture which must be re-copied on each access.
-  // TODO(ericrk): Remove this once SharedImage transition is complete.
-  virtual bool HasMutableState() const;
-
   // Returns the NativePixmap backing the GLImage. If not backed by a
   // NativePixmap, returns null.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();

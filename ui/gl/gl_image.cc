@@ -126,10 +126,6 @@ GLImage::GetAHardwareBuffer() {
 }
 #endif
 
-bool GLImage::HasMutableState() const {
-  return true;
-}
-
 scoped_refptr<gfx::NativePixmap> GLImage::GetNativePixmap() {
   return nullptr;
 }

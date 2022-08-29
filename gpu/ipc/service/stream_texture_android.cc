@@ -328,10 +328,6 @@ void StreamTexture::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
   // TODO(ericrk): Add OnMemoryDump for GLImages. crbug.com/514914
 }
 
-bool StreamTexture::HasMutableState() const {
-  return false;
-}
-
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 StreamTexture::GetAHardwareBuffer() {
   DCHECK(texture_owner_);

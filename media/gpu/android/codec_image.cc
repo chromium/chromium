@@ -259,10 +259,6 @@ CodecImage::GetAHardwareBuffer() {
   return output_buffer_renderer_->texture_owner()->GetAHardwareBuffer();
 }
 
-bool CodecImage::HasMutableState() const {
-  return false;
-}
-
 CodecImageHolder::CodecImageHolder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<CodecImage> codec_image,
