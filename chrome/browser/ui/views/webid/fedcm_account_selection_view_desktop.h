@@ -30,7 +30,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionView:
   void Show(const std::string& rp_etld_plus_one,
             const std::string& idp_etld_plus_one,
-            base::span<const Account> accounts,
+            const std::vector<Account>& accounts,
             const content::IdentityProviderMetadata& idp_metadata,
             const content::ClientIdData& client_data,
             Account::SignInMode sign_in_mode) override;

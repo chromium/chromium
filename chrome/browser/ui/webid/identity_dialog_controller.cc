@@ -54,7 +54,7 @@ void IdentityDialogController::ShowAccountsDialog(
   // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
   // support multiple IDPs.
   GURL idp_url = identity_provider_data[0].idp_config_url;
-  base::span<const content::IdentityRequestAccount> accounts =
+  std::vector<content::IdentityRequestAccount> accounts =
       identity_provider_data[0].accounts;
   content::IdentityProviderMetadata idp_metadata =
       identity_provider_data[0].idp_metadata;

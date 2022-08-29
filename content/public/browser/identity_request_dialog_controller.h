@@ -86,14 +86,14 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
 
 struct CONTENT_EXPORT IdentityProviderData {
   IdentityProviderData(const GURL& idp_config_url,
-                       base::span<const IdentityRequestAccount> accounts,
+                       const std::vector<IdentityRequestAccount>& accounts,
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientIdData& client_id_data);
   IdentityProviderData(const IdentityProviderData& other);
   ~IdentityProviderData();
 
   GURL idp_config_url;
-  base::span<const IdentityRequestAccount> accounts;
+  std::vector<IdentityRequestAccount> accounts;
   IdentityProviderMetadata idp_metadata;
   ClientIdData client_id_data;
 };

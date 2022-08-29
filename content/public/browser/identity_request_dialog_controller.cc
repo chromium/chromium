@@ -52,7 +52,7 @@ IdentityProviderMetadata::IdentityProviderMetadata(
 
 IdentityProviderData::IdentityProviderData(
     const GURL& idp_config_url,
-    base::span<const IdentityRequestAccount> accounts,
+    const std::vector<IdentityRequestAccount>& accounts,
     const IdentityProviderMetadata& idp_metadata,
     const ClientIdData& client_id_data)
     : idp_config_url{idp_config_url},

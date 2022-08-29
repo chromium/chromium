@@ -66,7 +66,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     JNIEnv* env,
-    base::span<const Account> accounts) {
+    const std::vector<Account>& accounts) {
   ScopedJavaLocalRef<jclass> account_clazz = base::android::GetClass(
       env, "org/chromium/chrome/browser/ui/android/webid/data/Account");
   ScopedJavaLocalRef<jobjectArray> array(
@@ -117,7 +117,7 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 void AccountSelectionViewAndroid::Show(
     const std::string& rp_for_display,
     const std::string& idp_for_display,
-    base::span<const Account> accounts,
+    const std::vector<Account>& accounts,
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
     Account::SignInMode sign_in_mode) {

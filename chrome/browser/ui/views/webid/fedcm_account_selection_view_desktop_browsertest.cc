@@ -29,7 +29,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    std::vector<const content::IdentityRequestAccount> accounts = {
+    std::vector<content::IdentityRequestAccount> accounts = {
         {"id", "email", "name", "given_name", GURL::EmptyGURL()}};
     content::IdentityProviderMetadata idp_metadata;
     content::ClientIdData client_data(GURL::EmptyGURL(), GURL::EmptyGURL());
