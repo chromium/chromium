@@ -29,6 +29,8 @@
  *     read the name.
  * @property {number} size - Byte size of this node and its children.
  * @property {number|undefined} padding - Padding bytes used by this node.
+ * @property {number|undefined} beforeSize - Diff mode only: Byte size of the
+ *     node and its children in the "before" binary.
  * @property {number|undefined} address - Start address of this node.
  * @property {number} flags - A bit field to store symbol properties.
  * @property {number} numAliases - Number of aliases for the symbol.

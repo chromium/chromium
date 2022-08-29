@@ -5,6 +5,7 @@
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <list>
 #include <sstream>
@@ -130,6 +131,12 @@ float Symbol::PssWithoutPadding() const {
 
 float Symbol::PaddingPss() const {
   return static_cast<float>(Padding()) / NumAliases();
+}
+
+float Symbol::BeforePss() const {
+  // This function should only used for diff mode.
+  assert(false);
+  return 0.0f;
 }
 
 DiffStatus Symbol::GetDiffStatus() const {
@@ -267,6 +274,10 @@ float DeltaSymbol::PaddingPss() const {
   return 0;
 }
 
+float DeltaSymbol::BeforePss() const {
+  return before_ ? before_->Pss() : 0.0f;
+}
+
 DiffStatus DeltaSymbol::GetDiffStatus() const {
   if (!before_) {
     return DiffStatus::kAdded;
@@ -354,11 +365,10 @@ bool DeltaSizeInfo::IsSparse() const {
 }
 
 void TreeNode::WriteIntoJson(
-    int depth,
+    const JsonWriteOptions& opts,
     std::function<bool(const TreeNode* const& l, const TreeNode* const& r)>
         compare_func,
-    bool is_sparse,
-    bool method_count_mode,
+    int depth,
     Json::Value* out) {
   if (symbol) {
     (*out)["container"] = std::string(symbol->ContainerName());
@@ -382,7 +392,7 @@ void TreeNode::WriteIntoJson(
     }
   } else {
     (*out)["idPath"] = id_path.ToString();
-    if (!is_sparse && !children.empty()) {
+    if (!opts.is_sparse && !children.empty()) {
       // Add tag to containers in which all child symbols were added/removed.
       DiffStatus diff_status = node_stats.GetGlobalDiffStatus();
       if (diff_status != DiffStatus::kUnchanged) {
@@ -399,6 +409,9 @@ void TreeNode::WriteIntoJson(
   type += static_cast<char>(biggest_section);
   (*out)["type"] = type;
   (*out)["size"] = size;
+  if (opts.diff_mode) {
+    (*out)["beforeSize"] = before_size;
+  }
   if (padding) {
     (*out)["padding"] = padding;
   }
@@ -406,7 +419,7 @@ void TreeNode::WriteIntoJson(
     (*out)["address"] = address;
   }
   (*out)["flags"] = flags;
-  node_stats.WriteIntoJson(method_count_mode, &(*out)["childStats"]);
+  node_stats.WriteIntoJson(opts, &(*out)["childStats"]);
 
   const size_t kMaxChildNodesToExpand = 1000;
   if (children.size() > kMaxChildNodesToExpand) {
@@ -422,8 +435,8 @@ void TreeNode::WriteIntoJson(
     // TODO: Support additional compare functions.
     std::sort(children.begin(), children.end(), compare_func);
     for (unsigned int i = 0; i < children.size(); i++) {
-      children[i]->WriteIntoJson(depth - 1, compare_func, is_sparse,
-                                 method_count_mode, &(*out)["children"][i]);
+      children[i]->WriteIntoJson(opts, compare_func, depth - 1,
+                                 &(*out)["children"][i]);
     }
   }
 }
@@ -450,8 +463,10 @@ NodeStats::NodeStats(const BaseSymbol& symbol) {
   }
 }
 
-void NodeStats::WriteIntoJson(bool method_count_mode, Json::Value* out) const {
+void NodeStats::WriteIntoJson(const JsonWriteOptions& opts,
+                              Json::Value* out) const {
   (*out) = Json::Value(Json::objectValue);
+  bool is_diff_count = opts.diff_mode && opts.method_count_mode;
   for (const auto kv : child_stats) {
     const std::string sectionId = std::string(1, static_cast<char>(kv.first));
     const Stat stats = kv.second;
@@ -463,11 +478,7 @@ void NodeStats::WriteIntoJson(bool method_count_mode, Json::Value* out) const {
     // Count is used to store value for "method count" mode.
     // Why? Because that's how it was implemented in the (now removed) .ndjson
     // worker.
-    int count = stats.count;
-    bool is_diff = stats.added > 0 || stats.removed > 0 || stats.changed > 0;
-    if (method_count_mode && is_diff) {
-      count = stats.added - stats.removed;
-    }
+    int count = is_diff_count ? stats.added - stats.removed : stats.count;
     (*out)[sectionId]["count"] = count;
   }
 }

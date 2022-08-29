@@ -18,7 +18,7 @@ constexpr const char kPathSep = '/';
 constexpr const char kNoPath[] = "(No path)";
 }  // namespace
 
-TreeBuilder::TreeBuilder(SizeInfo* size_info) {
+TreeBuilder::TreeBuilder(SizeInfo* size_info) : diff_mode_(false) {
   symbols_.reserve(size_info->raw_symbols.size());
   for (const Symbol& sym : size_info->raw_symbols) {
     symbols_.push_back(&sym);
@@ -26,7 +26,7 @@ TreeBuilder::TreeBuilder(SizeInfo* size_info) {
   size_info_ = size_info;
 }
 
-TreeBuilder::TreeBuilder(DeltaSizeInfo* size_info) {
+TreeBuilder::TreeBuilder(DeltaSizeInfo* size_info) : diff_mode_(true) {
   symbols_.reserve(size_info->delta_symbols.size());
   for (const DeltaSymbol& sym : size_info->delta_symbols) {
     symbols_.push_back(&sym);
@@ -129,9 +129,14 @@ Json::Value TreeBuilder::Open(const char* path) {
               << std::endl;
     exit(1);
   }
+
+  JsonWriteOptions opts = {
+      .is_sparse = size_info_->IsSparse(),
+      .diff_mode = diff_mode_,
+      .method_count_mode = method_count_mode_,
+  };
   Json::Value v;
-  node->WriteIntoJson(1, node_sort_func, size_info_->IsSparse(),
-                      method_count_mode_, &v);
+  node->WriteIntoJson(opts, node_sort_func, 1, &v);
   return v;
 }
 
@@ -166,6 +171,9 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
     symbol_node->address = sym->Address();
     symbol_node->node_stats = NodeStats(*sym);
     symbol_node->symbol = sym;
+    if (diff_mode_) {
+      symbol_node->before_size = sym->BeforePss();
+    }
     symbol_nodes.push_back(symbol_node);
   }
 
@@ -229,6 +237,9 @@ void TreeBuilder::AttachToParent(TreeNode* child, TreeNode* parent) {
   TreeNode* node = child;
   while (node->parent) {
     node->parent->size += child->size;
+    if (diff_mode_) {
+      node->parent->before_size += child->before_size;
+    }
     node->parent->padding += child->padding;
     node->parent->node_stats += child->node_stats;
     node = node->parent;

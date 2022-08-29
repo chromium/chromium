@@ -394,10 +394,15 @@ function _makeSizeTextGetter() {
 
     } else {
       const bytes = node.size;
-
-      let description = `${formatNumber(bytes)} bytes`;
+      const descriptionToks = [];
+      if ('beforeSize' in node) {
+        const before = formatNumber(node.beforeSize);
+        const after = formatNumber(node.beforeSize + bytes);
+        descriptionToks.push(`(${before} → ${after})`);  // '→' is '\u2192'.
+      }
+      descriptionToks.push(`${formatNumber(bytes)} bytes`);
       if (node.numAliases && node.numAliases > 1) {
-        description += ` for 1 of ${node.numAliases} aliases`;
+        descriptionToks.push(`for 1 of ${node.numAliases} aliases`);
       }
 
       const unit = state.get('byteunit') || 'KiB';
@@ -409,7 +414,7 @@ function _makeSizeTextGetter() {
       const suffixElement = dom.textElement('small', unit);
 
       return {
-        description,
+        description: descriptionToks.join(' '),
         element: dom.createFragment([textNode, suffixElement]),
         value: bytes,
       };
