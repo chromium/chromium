@@ -841,15 +841,19 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  bool last_used_native_api = false;
+  bool jump_to_native_ui = false;
 #if BUILDFLAG(IS_WIN)
-  PrefService* const prefs =
-      user_prefs::UserPrefs::Get(GetRenderFrameHost()->GetBrowserContext());
-  last_used_native_api = prefs->GetBoolean(kWebAuthnLastOperationWasNativeAPI);
+  // Conditional requests always show the Chrome UI first because the UI is
+  // triggered from "Use passkey from another device" in autofill, and it would
+  // be confusing if the caBLE option wasn't presented after that.
+  if (!is_conditional_) {
+    PrefService* const prefs =
+        user_prefs::UserPrefs::Get(GetRenderFrameHost()->GetBrowserContext());
+    jump_to_native_ui = prefs->GetBoolean(kWebAuthnLastOperationWasNativeAPI);
+  }
 #endif
 
-  dialog_model_->StartFlow(std::move(data), is_conditional_,
-                           last_used_native_api);
+  dialog_model_->StartFlow(std::move(data), is_conditional_, jump_to_native_ui);
 
   if (g_observer) {
     g_observer->UIShown(this);
