@@ -135,6 +135,23 @@ void RestoreRequestBody(network::ResourceRequestBody* body,
 
   elements[0] = network::DataElement(std::move(original_body));
 }
+
+// As a workaround for the future timestamp set by the sender, we adjust the
+// time if it happens for a machine without a timer consistent across
+// processes.  (See crbug.com/1342408)
+blink::mojom::ServiceWorkerFetchEventTimingPtr AdjustTimingIfNeededCrBug1342408(
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (base::TimeTicks::IsConsistentAcrossProcesses() ||
+      timing->respond_with_settled_time <= now) {
+    return timing;
+  }
+  auto diff = timing->respond_with_settled_time - now;
+  timing->dispatch_event_time -= diff;
+  timing->respond_with_settled_time -= diff;
+  return timing;
+}
+
 }  // namespace
 
 // A ServiceWorkerStreamCallback implementation which waits for completion of
@@ -404,6 +421,9 @@ void ServiceWorkerSubresourceLoader::OnResponseStream(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
+  // TODO(crbug.com/1342408): remove the following workaround when we can always
+  // expect CPUs have invariant TSC.
+  timing = AdjustTimingIfNeededCrBug1342408(std::move(timing));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerSubresourceLoader::OnResponseStream",
       TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
