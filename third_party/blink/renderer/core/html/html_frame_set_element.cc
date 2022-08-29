@@ -75,11 +75,7 @@ const Vector<LayoutUnit>& RowSizes(const LayoutBox& box) {
 }  // namespace
 
 HTMLFrameSetElement::HTMLFrameSetElement(Document& document)
-    : HTMLElement(html_names::kFramesetTag, document),
-      border_(0),
-      border_set_(false),
-      frameborder_(true),
-      frameborder_set_(false) {
+    : HTMLElement(html_names::kFramesetTag, document) {
   SetHasCustomStyleCallbacks();
   UseCounter::Count(document, WebFeature::kHTMLFrameSetElement);
 }
@@ -128,15 +124,12 @@ void HTMLFrameSetElement::ParseAttribute(
       if (EqualIgnoringASCIICase(value, "no") ||
           EqualIgnoringASCIICase(value, "0")) {
         frameborder_ = false;
-        frameborder_set_ = true;
       } else if (EqualIgnoringASCIICase(value, "yes") ||
                  EqualIgnoringASCIICase(value, "1")) {
         frameborder_ = true;
-        frameborder_set_ = true;
       }
     } else {
-      frameborder_ = false;
-      frameborder_set_ = false;
+      frameborder_.reset();
     }
     DirtyEdgeInfoAndFullPaintInvalidation();
     for (auto& frame_set :
@@ -148,9 +141,8 @@ void HTMLFrameSetElement::ParseAttribute(
   } else if (name == html_names::kBorderAttr) {
     if (!value.IsNull()) {
       border_ = value.ToInt();
-      border_set_ = true;
     } else {
-      border_set_ = false;
+      border_.reset();
     }
     if (auto* box = GetLayoutBox()) {
       box->SetNeedsLayoutAndFullPaintInvalidation(
@@ -282,8 +274,8 @@ void HTMLFrameSetElement::ParseAttribute(
 }
 
 bool HTMLFrameSetElement::HasFrameBorder() const {
-  if (frameborder_set_)
-    return frameborder_;
+  if (frameborder_.has_value())
+    return *frameborder_;
   if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
     return frame_set->HasFrameBorder();
   return true;
@@ -300,10 +292,10 @@ bool HTMLFrameSetElement::NoResize() const {
 int HTMLFrameSetElement::Border(const ComputedStyle& style) const {
   if (!HasFrameBorder())
     return 0;
-  if (border_set_) {
-    return border_ == 0
+  if (border_.has_value()) {
+    return *border_ == 0
                ? 0
-               : std::max(ClampTo<int>(border_ * style.EffectiveZoom()), 1);
+               : std::max(ClampTo<int>(*border_ * style.EffectiveZoom()), 1);
   }
   if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
     return frame_set->Border(style);
