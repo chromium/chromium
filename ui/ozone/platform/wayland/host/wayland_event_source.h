@@ -117,7 +117,8 @@ class WaylandEventSource : public PlatformEventSource,
                              wl::EventDispatchPolicy dispatch_policy) override;
   void OnPointerButtonEvent(EventType evtype,
                             int changed_button,
-                            WaylandWindow* window = nullptr) override;
+                            WaylandWindow* window,
+                            wl::EventDispatchPolicy dispatch_policy) override;
   void OnPointerMotionEvent(const gfx::PointF& location) override;
   void OnPointerAxisEvent(const gfx::Vector2dF& offset) override;
   void OnPointerFrameEvent() override;

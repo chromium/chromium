@@ -493,7 +493,8 @@ void WaylandWindowDragController::HandleDropAndResetState() {
   if (*drag_source_ == DragSource::kMouse) {
     if (pointer_grab_owner_) {
       pointer_delegate_->OnPointerButtonEvent(
-          ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, pointer_grab_owner_);
+          ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, pointer_grab_owner_,
+          wl::EventDispatchPolicy::kImmediate);
     }
   } else {
     auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();

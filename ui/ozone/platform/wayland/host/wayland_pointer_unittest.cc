@@ -146,6 +146,7 @@ TEST_P(WaylandPointerTest, Leave) {
 
   wl_pointer_send_button(pointer_->resource(), 4, 1004, BTN_LEFT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_->resource());
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(2);
   EXPECT_CALL(other_delegate, DispatchEvent(_)).Times(2);
 
@@ -185,8 +186,11 @@ TEST_P(WaylandPointerTest, Motion) {
 
 TEST_P(WaylandPointerTest, MotionDragged) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_button(pointer_->resource(), 2, 1002, BTN_MIDDLE,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_->resource());
 
   Sync();
 
@@ -392,6 +396,7 @@ TEST_P(WaylandPointerTest, FlingVertical) {
 
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_->resource());
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3;
@@ -447,6 +452,7 @@ TEST_P(WaylandPointerTest, FlingHorizontal) {
 
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_->resource());
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3;
@@ -502,6 +508,7 @@ TEST_P(WaylandPointerTest, FlingCancel) {
 
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_->resource());
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3, event4;
@@ -569,6 +576,7 @@ TEST_P(WaylandPointerTest, FlingDiagonal) {
 
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_->resource());
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3;

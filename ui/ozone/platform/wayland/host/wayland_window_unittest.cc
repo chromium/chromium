@@ -3182,6 +3182,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   wl_pointer_send_frame(pointer_resource);
   wl_pointer_send_button(pointer_resource, 4u /*serial*/, 1, BTN_LEFT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_resource);
   EXPECT_CALL(delegate, DispatchEvent(_)).Times(2);
   Sync();
   Mock::VerifyAndClearExpectations(&delegate);
@@ -3731,12 +3732,15 @@ TEST_P(WaylandWindowTest, MAYBE_ChangeFocusDuringDispatch) {
   wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_button(pointer->resource(), 2, 1004, BTN_LEFT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer->resource());
 
   int count = 0;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
     count++;
     if (event->type() == ui::ET_MOUSE_PRESSED) {
       wl_pointer_send_leave(pointer->resource(), 3, surface_->resource());
+      wl_pointer_send_frame(pointer->resource());
+
       wl_pointer_send_enter(pointer->resource(), 4, other_surface->resource(),
                             0, 0);
       wl_pointer_send_frame(pointer->resource());

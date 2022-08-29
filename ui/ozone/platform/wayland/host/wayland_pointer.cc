@@ -19,6 +19,21 @@
 
 namespace ui {
 
+namespace {
+
+// Remove this method when Compositors other than Exo comply with
+// `wl_pointer.frame`.
+wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
+  return
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      wl::EventDispatchPolicy::kOnFrame;
+#else
+      wl::EventDispatchPolicy::kImmediate;
+#endif
+}
+
+}  // namespace
+
 WaylandPointer::WaylandPointer(wl_pointer* pointer,
                                WaylandConnection* connection,
                                Delegate* delegate)
@@ -130,7 +145,9 @@ void WaylandPointer::Button(void* data,
     pointer->connection_->serial_tracker().UpdateSerial(
         wl::SerialType::kMousePress, serial);
   }
-  pointer->delegate_->OnPointerButtonEvent(type, changed_button);
+  pointer->delegate_->OnPointerButtonEvent(type, changed_button,
+                                           /*window=*/nullptr,
+                                           EventDispatchPolicyForPlatform());
 }
 
 // static

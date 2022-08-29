@@ -94,6 +94,7 @@ void WaylandDragDropTest::SendPointerButton(
                            : WL_POINTER_BUTTON_STATE_RELEASED;
   wl_pointer_send_button(pointer_->resource(), serial, NextTime(), button,
                          state);
+  wl_pointer_send_frame(pointer_->resource());
 }
 
 void WaylandDragDropTest::SendTouchDown(WaylandWindow* window,

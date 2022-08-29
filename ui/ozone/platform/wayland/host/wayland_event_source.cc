@@ -283,9 +283,11 @@ void WaylandEventSource::OnPointerFocusChanged(
     std::move(closure).Run();
 }
 
-void WaylandEventSource::OnPointerButtonEvent(EventType type,
-                                              int changed_button,
-                                              WaylandWindow* window) {
+void WaylandEventSource::OnPointerButtonEvent(
+    EventType type,
+    int changed_button,
+    WaylandWindow* window,
+    wl::EventDispatchPolicy dispatch_policy) {
   DCHECK(type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED);
   DCHECK(HasAnyPointerButtonFlag(changed_button));
 
@@ -294,23 +296,38 @@ void WaylandEventSource::OnPointerButtonEvent(EventType type,
   if (window)
     window_manager_->SetPointerFocusedWindow(window);
 
+  auto closure =
+      window ? base::BindOnce(
+                   [](WaylandWindowManager* wwm, WaylandWindow* window) {
+                     wwm->SetPointerFocusedWindow(window);
+                   },
+                   window_manager_, prev_focused_window)
+             : base::NullCallback();
+
   pointer_flags_ = type == ET_MOUSE_PRESSED
                        ? (pointer_flags_ | changed_button)
                        : (pointer_flags_ & ~changed_button);
   last_pointer_button_pressed_ = changed_button;
-  // MouseEvent's flags should contain the button that was released too.
-  int flags = pointer_flags_ | keyboard_modifiers_ | changed_button;
-  MouseEvent event(type, pointer_location_, pointer_location_,
-                   EventTimeForNow(), flags, changed_button,
-                   PointerDetailsForDispatching());
 
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
   // A window may be deleted when the event arrived from the server.
-  if (target)
-    SetTargetAndDispatchEvent(&event, target);
+  if (target) {
+    // MouseEvent's flags should contain the button that was released too.
+    int flags = pointer_flags_ | keyboard_modifiers_ | changed_button;
+    MouseEvent event(type, pointer_location_, pointer_location_,
+                     EventTimeForNow(), flags, changed_button,
+                     PointerDetailsForDispatching());
+    if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
+      SetTargetAndDispatchEvent(&event, target);
+    } else {
+      pointer_frames_.push_back(
+          std::make_unique<FrameData>(event, std::move(closure)));
+      return;
+    }
+  }
 
-  if (window)
-    window_manager_->SetPointerFocusedWindow(prev_focused_window);
+  if (!closure.is_null())
+    std::move(closure).Run();
 }
 
 void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
