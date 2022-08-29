@@ -1702,9 +1702,9 @@ virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-with-incomple
 virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html
 virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html
 virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html
+virtual/prerender/external/wpt/speculation-rules/prerender/restriction-encrypted-media.https.html
 virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html
 virtual/prerender/wpt_internal/prerender/csp-prefetch-src-allow.html
-virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html
 virtual/restrict-gamepad/external/wpt/gamepad/idlharness-extensions.https.window.html
 virtual/scalefactor200/css3/filters/backdrop-filter-boundary.html
 virtual/scalefactor200/css3/filters/effect-blur-hw.html

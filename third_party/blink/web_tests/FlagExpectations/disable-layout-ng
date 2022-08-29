@@ -1787,7 +1787,7 @@ crbug.com/1349326 fast/table/percent-widths-total-less-than-one.html [ Failure P
 crbug.com/1231658 transforms/transformed-caret.html [ Failure Pass ]
 
 crbug.com/591099 fast/forms/time/time-appearance-basic.html [ Failure ]
-crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html [ Failure ]
+crbug.com/591099 virtual/prerender/external/wpt/speculation-rules/prerender/restriction-encrypted-media.https.html [ Failure ]
 crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-media-play.html [ Failure ]
 
 # unblock wpt-importer

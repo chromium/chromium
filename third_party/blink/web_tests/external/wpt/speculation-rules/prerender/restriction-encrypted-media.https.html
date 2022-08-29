@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<title>Access to the Encrypted Media API is deferred with unsupported config
-</title>
+<title>Access to the Encrypted Media API is deferred</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -8,6 +7,7 @@
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   const uid = token();
@@ -21,7 +21,7 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/encrypted-media.https.html?config=unsupport&uid=${uid}`;
+  const url = `resources/encrypted-media.https.html?config=support&uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
@@ -35,10 +35,9 @@ promise_test(async t => {
       prerendering: false
     },
     {
-      event: 'navigator.requestMediaKeySystemAccess rejected: ' +
-             'NotSupportedError',
+      event: 'finished waiting navigator.requestMediaKeySystemAccess',
       prerendering: false
-    }
+    },
   ];
   assert_equals(result.length, expected.length);
   for (let i = 0; i < result.length; i++) {
@@ -49,8 +48,8 @@ promise_test(async t => {
 
   // Send a close signal to PrerenderEventCollector on the prerendered page.
   new PrerenderChannel('close', uid).postMessage('');
-}, `the access to the Encrypted Media API should be deferred with the
-    unsupported configurations until the prerendered page is activated`);
+}, `the access to the Encrypted Media API should be deferred until the
+    prerendered page is activated`);
 
 </script>
 </body>

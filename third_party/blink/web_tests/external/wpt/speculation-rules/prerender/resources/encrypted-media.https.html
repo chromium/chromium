@@ -18,7 +18,10 @@ if (!isPrerendering) {
 
   const config = [{
       initDataTypes:  ['keyids', 'webm' ,'cenc'],
-      audioCapabilities: [{contentType: 'audio/mp4; codecs="mp4a.40.2"'}]
+      audioCapabilities: [
+        {contentType: 'audio/mp4; codecs="mp4a.40.2"'},
+        {contentType: 'audio/webm; codecs="opus"'}
+      ]
   }];
 
   const fakeConfig = [{
