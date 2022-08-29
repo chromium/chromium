@@ -110,9 +110,22 @@ void CaptionsHandler::OnSodaInstallError(
     return;
   }
 
+  std::u16string error_message;
+  switch (error_code) {
+    case speech::SodaInstaller::ErrorCode::kUnspecifiedError: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR);
+      break;
+    }
+    case speech::SodaInstaller::ErrorCode::kNeedsReboot: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR_REBOOT_REQUIRED);
+      break;
+    }
+  }
+
   FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringUTF16(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR)),
+                    base::Value(error_message),
                     base::Value(speech::GetLanguageName(language_code)));
 }
 

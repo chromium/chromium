@@ -25,8 +25,11 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
    Downloading... <ph name="PERCENT">$1<ex>17</ex></ph>%
   </message>
-  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR" desc="Generic message when Live Caption files can’t be downloaded.">
    Can't download speech files. Try again later.
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR_REBOOT_REQUIRED" desc="Error message shown when a OS reboot is required to install the Live Caption files.">
+    Restart needed to install speech files.
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME" desc="A11y name for the Global Media Controls dialog.">
    Global Media Controls
