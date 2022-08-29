@@ -213,6 +213,16 @@ class ArcAppsPublisherTest : public testing::Test {
         ->PreferredAppsList();
   }
 
+  std::vector<arc::mojom::SupportedLinksPackagePtr> CreateSupportedLinks(
+      const std::string& package_name) {
+    std::vector<arc::mojom::SupportedLinksPackagePtr> result;
+    auto link = arc::mojom::SupportedLinksPackage::New();
+    link->package_name = package_name;
+    result.push_back(std::move(link));
+
+    return result;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -240,11 +250,8 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
   VerifyIntentFilters(app_id, {kTestAuthority});
-  std::vector<arc::mojom::SupportedLinksPtr> added_links;
-  added_links.emplace_back(absl::in_place, package_name,
-                           CreateFilterList(package_name, {kTestAuthority}));
   intent_helper()->OnSupportedLinksChanged(
-      std::move(added_links), {},
+      CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
   FlushMojoCalls();
@@ -293,11 +300,8 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksDefaultBrowserBehavior) {
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
   VerifyIntentFilters(app_id, {kTestAuthority});
-  std::vector<arc::mojom::SupportedLinksPtr> added_links;
-  added_links.emplace_back(absl::in_place, package_name,
-                           CreateFilterList(package_name, {kTestAuthority}));
   intent_helper()->OnSupportedLinksChanged(
-      std::move(added_links), {},
+      CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
   FlushMojoCalls();
@@ -323,11 +327,8 @@ TEST_F(ArcAppsPublisherTest,
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
   VerifyIntentFilters(app_id, {kTestAuthority});
-  std::vector<arc::mojom::SupportedLinksPtr> added_links;
-  added_links.emplace_back(absl::in_place, package_name,
-                           CreateFilterList(package_name, {kTestAuthority}));
   intent_helper()->OnSupportedLinksChanged(
-      std::move(added_links), {},
+      CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
   FlushMojoCalls();
 
@@ -339,12 +340,8 @@ TEST_F(ArcAppsPublisherTest,
       package_name,
       CreateFilterList(package_name, {kTestAuthority, kTestAuthority2}));
   VerifyIntentFilters(app_id, {kTestAuthority, kTestAuthority2});
-  std::vector<arc::mojom::SupportedLinksPtr> added_links2;
-  added_links2.emplace_back(
-      absl::in_place, package_name,
-      CreateFilterList(package_name, {kTestAuthority, kTestAuthority2}));
   intent_helper()->OnSupportedLinksChanged(
-      std::move(added_links2), {},
+      CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
   FlushMojoCalls();
 
@@ -370,11 +367,8 @@ TEST_F(ArcAppsPublisherTest,
   // installed.
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
-  std::vector<arc::mojom::SupportedLinksPtr> added_links;
-  added_links.emplace_back(absl::in_place, package_name,
-                           CreateFilterList(package_name, {kTestAuthority}));
   intent_helper()->OnSupportedLinksChanged(
-      std::move(added_links), {},
+      CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kUserPreference);
 
   FlushMojoCalls();
@@ -402,12 +396,8 @@ TEST_F(ArcAppsPublisherTest,
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       arc::kPlayStorePackage,
       CreateFilterList(arc::kPlayStorePackage, {kTestAuthority}));
-  std::vector<arc::mojom::SupportedLinksPtr> added_links;
-  added_links.emplace_back(
-      absl::in_place, arc::kPlayStorePackage,
-      CreateFilterList(arc::kPlayStorePackage, {kTestAuthority}));
   intent_helper()->OnSupportedLinksChanged(
-      std::move(added_links), {},
+      CreateSupportedLinks(arc::kPlayStorePackage), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
   FlushMojoCalls();

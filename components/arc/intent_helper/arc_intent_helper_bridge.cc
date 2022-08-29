@@ -322,8 +322,8 @@ void ArcIntentHelperBridge::IsChromeAppEnabled(
 }
 
 void ArcIntentHelperBridge::OnSupportedLinksChanged(
-    std::vector<arc::mojom::SupportedLinksPtr> added_packages,
-    std::vector<arc::mojom::SupportedLinksPtr> removed_packages,
+    std::vector<arc::mojom::SupportedLinksPackagePtr> added_packages,
+    std::vector<arc::mojom::SupportedLinksPackagePtr> removed_packages,
     arc::mojom::SupportedLinkChangeSource source) {
   for (auto& observer : observer_list_)
     observer.OnArcSupportedLinksChanged(added_packages, removed_packages,

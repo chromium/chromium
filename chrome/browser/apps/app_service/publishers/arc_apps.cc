@@ -1627,16 +1627,9 @@ void ArcApps::OnIntentFiltersUpdated(
   }
 }
 
-// This method calls App Service directly with a list of intent filters received
-// from ARC, rather than going through AppServiceProxy's
-// SetSupportedlinksPreference method. This is because recent changes to app
-// intent filters (such as after an install or update) may not have propagated
-// to AppServiceProxy's AppRegistryCache yet.
-// TODO(crbug.com/1265315): Use AppServiceProxy to set the preference once app
-// changes are synchronous within Ash.
 void ArcApps::OnArcSupportedLinksChanged(
-    const std::vector<arc::mojom::SupportedLinksPtr>& added,
-    const std::vector<arc::mojom::SupportedLinksPtr>& removed,
+    const std::vector<arc::mojom::SupportedLinksPackagePtr>& added,
+    const std::vector<arc::mojom::SupportedLinksPackagePtr>& removed,
     arc::mojom::SupportedLinkChangeSource source) {
   mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
   if (!app_service.is_bound()) {
@@ -1651,7 +1644,7 @@ void ArcApps::OnArcSupportedLinksChanged(
   for (const auto& supported_link : added) {
     std::string app_id =
         prefs->GetAppIdByPackageName(supported_link->package_name);
-    if (app_id.empty() || !supported_link->filters.has_value()) {
+    if (app_id.empty()) {
       continue;
     }
 
@@ -1670,16 +1663,7 @@ void ArcApps::OnArcSupportedLinksChanged(
       continue;
     }
 
-    apps::IntentFilters app_service_filters;
-    for (const auto& arc_filter : supported_link->filters.value()) {
-      auto converted = apps_util::CreateIntentFilterForArc(arc_filter);
-      if (apps_util::IsSupportedLinkForApp(app_id, converted)) {
-        app_service_filters.push_back(std::move(converted));
-      }
-    }
-
-    proxy()->SetSupportedLinksPreference(app_id,
-                                         std::move(app_service_filters));
+    proxy()->SetSupportedLinksPreference(app_id);
   }
 
   for (const auto& supported_link : removed) {

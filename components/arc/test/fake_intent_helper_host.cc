@@ -47,8 +47,8 @@ void FakeIntentHelperHost::IsChromeAppEnabled(
     arc::mojom::ChromeApp app,
     IsChromeAppEnabledCallback callback) {}
 void FakeIntentHelperHost::OnSupportedLinksChanged(
-    std::vector<arc::mojom::SupportedLinksPtr> added_packages,
-    std::vector<arc::mojom::SupportedLinksPtr> removed_packages,
+    std::vector<arc::mojom::SupportedLinksPackagePtr> added_packages,
+    std::vector<arc::mojom::SupportedLinksPackagePtr> removed_packages,
     arc::mojom::SupportedLinkChangeSource source) {}
 void FakeIntentHelperHost::OnDownloadAdded(
     const std::string& relative_path,

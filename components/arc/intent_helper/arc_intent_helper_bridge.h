@@ -105,8 +105,8 @@ class ArcIntentHelperBridge : public KeyedService,
   void IsChromeAppEnabled(arc::mojom::ChromeApp app,
                           IsChromeAppEnabledCallback callback) override;
   void OnSupportedLinksChanged(
-      std::vector<arc::mojom::SupportedLinksPtr> added_packages,
-      std::vector<arc::mojom::SupportedLinksPtr> removed_packages,
+      std::vector<arc::mojom::SupportedLinksPackagePtr> added_packages,
+      std::vector<arc::mojom::SupportedLinksPackagePtr> removed_packages,
       arc::mojom::SupportedLinkChangeSource source) override;
   void OnDownloadAdded(const std::string& relative_path,
                        const std::string& owner_package_name) override;
