@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
@@ -47,6 +48,7 @@ source_set("browser_tests") {
   deps = [
     ":window_management",
     "//chrome/browser/ash/system_extensions",
+    "//chrome/browser/ash/system_extensions/api/test_support",
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -57,5 +59,6 @@ source_set("browser_tests") {
   data = [
     "//third_party/blink/web_tests/resources/testharness.js",
     "//third_party/blink/web_tests/resources/testharness-helpers.js",
+    "//chrome/browser/ash/system_extensions/api/window_management/test/",
   ]
 }

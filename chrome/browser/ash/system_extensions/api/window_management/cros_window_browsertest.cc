@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/system_extensions/api/test_support/system_extensions_api_browsertest.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
@@ -143,15 +144,38 @@ base::FilePath GetWindowManagerExtensionDir() {
       .Append("window_manager_extension");
 }
 
-class CrosWindowBrowserTest : public InProcessBrowserTest {
+static constexpr const char kTestsDir[] =
+    "chrome/browser/ash/system_extensions/api/window_management/test";
+static constexpr const char kManifestTemplate[] = R"(
+{
+  "name": "Test Window Manager Extension",
+  "short_name": "Test",
+  "service_worker_url": "/%s",
+  "id": "01020304",
+  "type": "echo"
+})";
+
+class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
  public:
-  CrosWindowBrowserTest() {
+  CrosWindowManagementBrowserTest()
+      : SystemExtensionsApiBrowserTest({
+            .tests_dir = kTestsDir,
+            .manifest_template = kManifestTemplate,
+        }) {}
+};
+
+// Deprecated. Use CrosWindowManagementBrowserTest instead.
+// TODO(b/242264794): Remove once all tests are migrated to
+// CrosWindowManagementBrowserTest.
+class CrosWindowLegacyBrowserTest : public InProcessBrowserTest {
+ public:
+  CrosWindowLegacyBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kSystemExtensions);
 
     installation_ =
         TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
-  ~CrosWindowBrowserTest() override = default;
+  ~CrosWindowLegacyBrowserTest() override = default;
 
   // TODO(b/210737979):
   // Remove switch toggles when service workers are supported on
@@ -264,7 +288,7 @@ class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosScreenPropertiesTest) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosScreenPropertiesTest) {
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-1280x720,1280+600-1920x1080");
 
@@ -300,7 +324,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMoveTo) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMoveTo) {
   const char test_code[] = R"(
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
@@ -317,7 +341,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMoveBy) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMoveBy) {
   const char test_code[] = R"(
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
@@ -332,7 +356,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowResizeTo) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowResizeTo) {
   const char test_code[] = R"(
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
@@ -349,7 +373,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowResizeBy) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowResizeBy) {
   const char test_code[] = R"(
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
@@ -363,7 +387,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetFullscreen) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowSetFullscreen) {
   const char test_code[] = R"(
 async function cros_test() {
   // Check that the window begins in a non-fullscreen state.
@@ -378,7 +402,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, FullscreenMinMax) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, FullscreenMinMax) {
   const char test_code[] = R"(
 async function cros_test() {
   // Check that window begins in non-fullscreen state.
@@ -402,7 +426,8 @@ async function cros_test() {
 
 // When unsetting fullscreen from a previously normal or maximized window,
 // the window state should return to its previous state.
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, UnsetFullscreenNonMinimized) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
+                       UnsetFullscreenNonMinimized) {
   const char test_code[] = R"(
 async function cros_test() {
   await assertWindowState("normal");
@@ -423,7 +448,7 @@ async function cros_test() {
 
 // When unsetting fullscreen from a previously minimized window,
 // the window state should return to the last non-minimized state.
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, UnsetFullscreenMinimized) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, UnsetFullscreenMinimized) {
   const char test_code[] = R"(
 async function cros_test() {
   await assertWindowState("normal");
@@ -460,7 +485,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMaximize) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMaximize) {
   const char test_code[] = R"(
 async function cros_test() {
   await assertWindowState("normal");
@@ -475,7 +500,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMinimize) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowMinimize) {
   const char test_code[] = R"(
 async function cros_test() {
   await assertWindowState("normal");
@@ -491,7 +516,7 @@ async function cros_test() {
 }
 
 // Checks that focusing a non-visible unfocused window correctly sets focus.
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowFocusSingle) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowFocusSingle) {
   const char test_code[] = R"(
 async function cros_test() {
   await assertWindowState("normal");
@@ -513,7 +538,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowFocusMulti) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowFocusMulti) {
   // Open browser instance to take focus.
   chrome::NewWindow(browser());
 
@@ -611,7 +636,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowClose) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowClose) {
   // Open browser instance to close outside of service worker.
   chrome::NewWindow(browser());
 
@@ -656,7 +681,8 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CacheGetWindowsReturnsProperty) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
+                       CacheGetWindowsReturnsProperty) {
   const char test_code[] = R"(
 async function cros_test() {
   let returnedWindows = await chromeos.windowManagement.getWindows();
@@ -676,7 +702,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSWACrashTest) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowSWACrashTest) {
   // Finish installation of Sample SWA.
   installation_->WaitForAppInstall();
 
@@ -731,7 +757,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
                        CrosWindowPendingCallsToGetAllWindowsShouldNotCrash) {
   const char test_code[] = R"(
 async function cros_test() {
@@ -745,7 +771,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
                        CrosWindowPendingCallsToGetWindowShouldNotCrash) {
   const char test_code[] = R"(
 async function cros_test() {
@@ -760,7 +786,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest,
                        CrosWindowPendingCallsToGetWidgetShouldNotCrash) {
   const char test_code[] = R"(
 async function cros_test() {
@@ -776,25 +802,12 @@ async function cros_test() {
 }
 
 // Tests that the CrosWindowManagement object is an EventTarget.
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowManagementEventTarget) {
-  const char test_code[] = R"(
-async function cros_test() {
-  assert_true(chromeos.windowManagement instanceof EventTarget);
-
-  return new Promise(resolve => {
-    chromeos.windowManagement.addEventListener('testevent', e => {
-      assert_equals(e.target, chromeos.windowManagement);
-      resolve();
-    });
-    chromeos.windowManagement.dispatchEvent(new Event('testevent'));
-  });
-}
-  )";
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       CrosWindowManagementEventTarget) {
+  RunTest("cros_window_manager_event_target.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosAcceleratorEventIdl) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosAcceleratorEventIdl) {
   const char test_code[] = R"(
 async function cros_test() {
   assert_true(chromeos.CrosAcceleratorEvent !== undefined, 'event');
@@ -811,7 +824,7 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowEventIdl) {
+IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowEventIdl) {
   const char test_code[] = R"(
 async function cros_test() {
   let windows = await chromeos.windowManagement.getWindows();

@@ -1,0 +1,89 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/*
+ * This file implements code to integrate browser tests with testharness.js
+ *
+ * It attaches a completion callback that notifies the browser that all tests
+ * have completed and their status.
+ *
+ * For more documentation about the callback functions and the
+ * parameters they are called with, see testharness.js, or the docs at:
+ * https://web-platform-tests.org/writing-tests/testharness-api.html
+ */
+(() => {
+  const TestHarnessResult = systemExtensionsTest.mojom.TestHarnessResult;
+  const TestHarnessStatus = systemExtensionsTest.mojom.TestHarnessStatus;
+  const TestResult = systemExtensionsTest.mojom.TestResult;
+  const TestStatus = systemExtensionsTest.mojom.TestStatus;
+
+  const testRunner = new systemExtensionsTest.mojom.TestRunnerRemote;
+  testRunner.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
+
+  setup({
+    // The default output formats test results into an HTML table, but for
+    // the System Extensions, we output the test results to the console.
+    'output': false,
+    // Chromium browser tests have their own timeout.
+    'explicit_timeout': true
+  });
+
+  // Converts the status returned by the testharness API into a
+  // system_extensions_test.mojom.TestStatus. Needed because the names are not
+  // exposed by testharness.js. These values are defined internally in
+  // testharness.js as Test.statuses.
+  function convertTestStatus(testStatus) {
+    switch (testStatus) {
+      case 0:
+        return TestStatus.kPass;
+      case 1:
+        return TestStatus.kFail;
+      case 2:
+        return TestStatus.kTimeout;
+      case 3:
+        return TestStatus.kNotRun;
+      case 4:
+        return TestStatus.kPreconditionFailed;
+    }
+    assert_unreached('unrecognized test status');
+  }
+
+  // Converts the status returned by the testharness API into a
+  // system_extensions_test.mojom.TestharnessStatus. Needed because the names
+  // are not exposed by testharness.js. These values are defined internally in
+  // testharness.js as TestsStatus.statuses.
+  function convertTestHarnessStatus(testharnessStatus) {
+    switch (testharnessStatus) {
+      case 0:
+        return TestHarnessStatus.kOk;
+      case 1:
+        return TestHarnessStatus.kError;
+      case 2:
+        return TestHarnessStatus.kTimeout;
+      case 3:
+        return TestHarnessStatus.kPreconditionFailed;
+    }
+    assert_unreached('unrecognized test harness status');
+  }
+
+  add_completion_callback((tests, testharnessStatus) => {
+    const testResults = []
+    for (const test of tests) {
+      const testResult = new TestResult();
+      testResult.name = test.name;
+      testResult.message = test.message;
+      testResult.stack = test.stack;
+      testResult.status = convertTestStatus(test.status);
+      testResults.push(testResult);
+    }
+
+    const testharnessResult = new TestHarnessResult();
+    testharnessResult.message = testharnessStatus.message;
+    testharnessResult.stack = testharnessStatus.stack;
+    testharnessResult.status = convertTestHarnessStatus(
+      testharnessStatus.status);
+
+    testRunner.onCompletion(testResults, testharnessResult);
+  });
+})();
