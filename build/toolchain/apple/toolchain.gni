@@ -638,17 +638,6 @@ template("apple_toolchain") {
           _extra_flags += " -module-cache-path '$_module_cache_path'"
         }
 
-        # Enable hack to convert `__has_feature(modules)` to 0. This is needed
-        # to build with -std=c++20 when using clang ToT. Since the check does
-        # evaluate to 0 when building with -std=c++17 and Chromium does not yet
-        # support building with -fmodules, it is safe to enable the workaround
-        # even if -std=c++20 is not yet used.
-        #
-        # TODO(https://crbug.com/1284275): remove this hack when building with
-        # -std=c++20 does not enable the modules support or when enabling the
-        # modules support works with ToT clang.
-        _extra_flags += " -enable-cxx20-hack"
-
         command =
             "$_env_vars $python_path $_tool -module-name {{module_name}} " +
             "-root-dir " + rebase_path("//", root_build_dir) + " " +

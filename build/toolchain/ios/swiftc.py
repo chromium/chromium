@@ -148,30 +148,6 @@ def compile_module(module, sources, settings, extras, tmpdir):
   if process.returncode:
     sys.exit(process.returncode)
 
-  # The swiftc compiler generates an header file that use clang modules
-  # if the support is available. However, it appears that clang always
-  # return 1 when __has_features(modules) when -std=c++20 is enabled,
-  # even if modules are explicitly disabled with -fno-modules. Moreover
-  # it appears that enabling modules when compiling Objective-C++ does
-  # not work with ToT clang (selectors are not visible) while it work
-  # if using Apple version of clang.
-  #
-  # Until those issues are resolved, the swiftc.py wrapper exposes a
-  # flag to modify the generated bridging header to replace the checks
-  # for modules by a constant (i.e. pretending the modules support is
-  # not available).
-  #
-  # TODO(crbug.com/1284275): Remove this hack when it is either possible
-  # to enable modules with ToT clang, clang is fixed to not enable the
-  # module support by default when -std=c++20 or both.
-  if settings.enable_cxx20_hack:
-    with open(settings.header_path, 'r') as header_file:
-      header_contents = header_file.read()
-
-    header_contents = header_contents.replace('__has_feature(modules)', '0')
-    with open(settings.header_path, 'w') as header_file:
-      header_file.write(header_contents)
-
   # The swiftc compiler generates depfile that uses absolute paths, but
   # ninja requires paths in depfiles to be identical to paths used in
   # the build.ninja files.
@@ -277,9 +253,6 @@ def main(args):
                       dest='enable_cxx_interop',
                       action='store_true',
                       help='allow importing C++ modules into Swift')
-  parser.add_argument('-enable-cxx20-hack',
-                      action='store_true',
-                      help='enable hack to allow compilation with -std=c++20')
 
   parsed, extras = parser.parse_known_args(args)
   with tempfile.TemporaryDirectory() as tmpdir:
