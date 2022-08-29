@@ -50,7 +50,7 @@ class ConsolidatedConsentScreen
   using TView = ConsolidatedConsentScreenView;
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  ConsolidatedConsentScreen(ConsolidatedConsentScreenView* view,
+  ConsolidatedConsentScreen(base::WeakPtr<ConsolidatedConsentScreenView> view,
                             const ScreenExitCallback& exit_callback);
   ~ConsolidatedConsentScreen() override;
   ConsolidatedConsentScreen(const ConsolidatedConsentScreen&) = delete;
@@ -58,10 +58,6 @@ class ConsolidatedConsentScreen
       delete;
 
   static std::string GetResultString(Result result);
-
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(ConsolidatedConsentScreenView* view);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -89,7 +85,7 @@ class ConsolidatedConsentScreen
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
@@ -129,7 +125,7 @@ class ConsolidatedConsentScreen
 
   std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
 
-  ConsolidatedConsentScreenView* view_ = nullptr;
+  base::WeakPtr<ConsolidatedConsentScreenView> view_;
 
   ScreenExitCallback exit_callback_;
 

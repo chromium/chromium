@@ -7,6 +7,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_CONSOLIDATED_CONSENT_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_CONSOLIDATED_CONSENT_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -23,9 +25,11 @@ const char kCrosEulaDefaultUrl[] =
 
 // Interface for dependency injection between ConsolidatedConsentScreen and its
 // WebUI representation.
-class ConsolidatedConsentScreenView {
+class ConsolidatedConsentScreenView
+    : public base::SupportsWeakPtr<ConsolidatedConsentScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"consolidated-consent"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "consolidated-consent", "ConsolidatedConsentScreen"};
 
   struct ScreenConfig {
     ScreenConfig();
@@ -49,13 +53,7 @@ class ConsolidatedConsentScreenView {
   virtual ~ConsolidatedConsentScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(const ScreenConfig& config) = 0;
-
-  // Binds |screen| to the view.
-  virtual void Bind(ash::ConsolidatedConsentScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
+  virtual void Show(base::Value::Dict data) = 0;
 
   // Updates the UI of the opt-ins.
   // When an opt-in is managed, its toggle would be disabled.
@@ -84,28 +82,15 @@ class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
 
  private:
   // ConsolidatedConsentScreenView
-  void Show(const ScreenConfig& config) override;
-  void Bind(ash::ConsolidatedConsentScreen* screen) override;
-  void Unbind() override;
+  void Show(base::Value::Dict data) override;
   void SetUsageMode(bool enabled, bool managed) override;
   void SetBackupMode(bool enabled, bool managed) override;
   void SetLocationMode(bool enabled, bool managed) override;
   void SetUsageOptinOptinHidden(bool hidden) override;
 
-  // content::WebUIMessageHandler:
-  void RegisterMessages() override;
-
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
-  void HandleAccept(bool enable_stats_usage,
-                    bool enable_backup_restore,
-                    bool enable_location_services,
-                    const std::string& tos_content);
-
-  ash::ConsolidatedConsentScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

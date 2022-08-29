@@ -773,7 +773,7 @@ WizardController::CreateScreens() {
 
   if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
     append(std::make_unique<ConsolidatedConsentScreen>(
-        oobe_ui->GetView<ConsolidatedConsentScreenHandler>(),
+        oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
                             weak_factory_.GetWeakPtr())));
 

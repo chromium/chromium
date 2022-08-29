@@ -688,7 +688,9 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   onAcceptClick_() {
     this.RecordUMAHistogramForUserActions_(
         ConsolidatedConsentUserAction.ACCEPT_BUTTON);
-    chrome.send('ToSAccept', [
+
+    this.userActed([
+      'tos-accept',
       this.usageChecked,
       this.backupChecked,
       this.locationChecked,

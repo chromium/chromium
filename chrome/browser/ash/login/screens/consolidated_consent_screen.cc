@@ -11,7 +11,9 @@
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -55,6 +57,7 @@ using sync_pb::UserConsentTypes;
 namespace ash {
 namespace {
 constexpr const char kBackDemoButtonClicked[] = "back";
+constexpr const char kAcceptButtonClicked[] = "tos-accept";
 
 std::string GetGoogleEulaOnlineUrl() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -94,30 +97,18 @@ std::string ConsolidatedConsentScreen::GetResultString(Result result) {
 }
 
 ConsolidatedConsentScreen::ConsolidatedConsentScreen(
-    ConsolidatedConsentScreenView* view,
+    base::WeakPtr<ConsolidatedConsentScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(ConsolidatedConsentScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
 }
 
 ConsolidatedConsentScreen::~ConsolidatedConsentScreen() {
-  if (view_) {
-    view_->Unbind();
-  }
-
   for (auto& observer : observer_list_)
     observer.OnConsolidatedConsentScreenDestroyed();
-}
-
-void ConsolidatedConsentScreen::OnViewDestroyed(
-    ConsolidatedConsentScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
@@ -173,27 +164,47 @@ void ConsolidatedConsentScreen::ShowImpl() {
       base::BindOnce(&ConsolidatedConsentScreen::OnOwnershipStatusCheckDone,
                      weak_factory_.GetWeakPtr()));
 
-  ConsolidatedConsentScreenView::ScreenConfig config;
-  config.is_arc_enabled = arc::IsArcTermsOfServiceOobeNegotiationNeeded();
-  config.is_demo = arc::IsArcDemoModeSetupFlow();
-  config.is_tos_hidden = chrome::enterprise_util::IsProfileAffiliated(profile);
-  config.is_child_account = is_child_account_;
-  config.country_code = base::CountryCodeForCurrentTimezone();
-  config.google_eula_url = GetGoogleEulaOnlineUrl();
-  config.cros_eula_url = GetCrosEulaOnlineUrl();
-  view_->Show(config);
+  base::Value::Dict data;
+
+  // If ARC is enabled, show the ARC ToS and the related opt-ins.
+  data.Set("isArcEnabled", arc::IsArcTermsOfServiceOobeNegotiationNeeded());
+  // In demo mode, don't show any opt-ins related to ARC and allow showing the
+  // offline ARC ToS if the online version failed to load.
+  data.Set("isDemo", arc::IsArcDemoModeSetupFlow());
+  // Child accounts have alternative strings for the opt-ins.
+  data.Set("isChildAccount", is_child_account_);
+  // If the user is affiliated with the device management domain, ToS should be
+  // hidden.
+  data.Set("isTosHidden",
+           chrome::enterprise_util::IsProfileAffiliated(profile));
+  // Country code is needed to load the ARC ToS.
+  data.Set("countryCode", base::CountryCodeForCurrentTimezone());
+  // URL for EULA, the URL should include the locale.
+  data.Set("googleEulaUrl", GetGoogleEulaOnlineUrl());
+  // URL for Chrome and ChromeOS additional terms of service, the URL should
+  // include the locale.
+  data.Set("crosEulaUrl", GetCrosEulaOnlineUrl());
+  view_->Show(std::move(data));
 }
 
 void ConsolidatedConsentScreen::HideImpl() {
   pref_handler_.reset();
 }
 
-void ConsolidatedConsentScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
-  if (action_id == kBackDemoButtonClicked)
+void ConsolidatedConsentScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+  if (action_id == kBackDemoButtonClicked) {
     exit_callback_.Run(Result::BACK_DEMO);
-  else
-    BaseScreen::OnUserActionDeprecated(action_id);
+  } else if (action_id == kAcceptButtonClicked) {
+    CHECK_EQ(args.size(), 5);
+    const bool enable_usage = args[1].GetBool();
+    const bool enable_backup = args[2].GetBool();
+    const bool enable_location = args[3].GetBool();
+    const std::string& tos_content = args[4].GetString();
+    OnAccept(enable_usage, enable_backup, enable_location, tos_content);
+  } else {
+    BaseScreen::OnUserAction(args);
+  }
 }
 
 void ConsolidatedConsentScreen::AddObserver(Observer* observer) {
