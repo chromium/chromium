@@ -6,6 +6,7 @@
 
 #include "base/stl_util.h"
 #include "base/test/mock_callback.h"
+#include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,7 +80,7 @@ TEST_P(DragDropBubbleTestWithParam, NotifyBlocked) {
 
   EXPECT_CALL(notifier, ShowBlockBubble);
 
-  notifier.NotifyBlockedAction(&data_src, base::OptionalOrNullptr(data_dst));
+  notifier.NotifyBlockedAction(&data_src, base::OptionalToPtr(data_dst));
 }
 
 TEST_P(DragDropBubbleTestWithParam, ProceedWarnOnDrop) {
@@ -95,8 +96,7 @@ TEST_P(DragDropBubbleTestWithParam, ProceedWarnOnDrop) {
   EXPECT_CALL(notifier, ShowWarningBubble);
 
   ::testing::StrictMock<base::MockOnceClosure> callback;
-  notifier.WarnOnDrop(&data_src, base::OptionalOrNullptr(data_dst),
-                      callback.Get());
+  notifier.WarnOnDrop(&data_src, base::OptionalToPtr(data_dst), callback.Get());
 
   EXPECT_CALL(notifier,
               CloseWidget(testing::_,
@@ -119,8 +119,7 @@ TEST_P(DragDropBubbleTestWithParam, CancelWarnOnDrop) {
   EXPECT_CALL(notifier, ShowWarningBubble);
 
   ::testing::StrictMock<base::MockOnceClosure> callback;
-  notifier.WarnOnDrop(&data_src, base::OptionalOrNullptr(data_dst),
-                      callback.Get());
+  notifier.WarnOnDrop(&data_src, base::OptionalToPtr(data_dst), callback.Get());
 
   EXPECT_CALL(notifier,
               CloseWidget(testing::_,
