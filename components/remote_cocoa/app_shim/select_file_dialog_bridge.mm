@@ -4,7 +4,9 @@
 
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 
+#include <AppKit/AppKit.h>
 #include <CoreServices/CoreServices.h>
+#include <Foundation/Foundation.h>
 #include <stddef.h>
 
 #include "base/files/file_util.h"
@@ -489,10 +491,32 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
         index = 1;
       }
     } else {
-      NSArray* urls = [static_cast<NSOpenPanel*>(panel_) URLs];
-      for (NSURL* url in urls)
-        if ([url isFileURL])
-          paths.push_back(base::mac::NSStringToFilePath([url path]));
+      // This does not use ObjCCast because the underlying object could be a
+      // non-exported AppKit type (https://crbug.com/995476).
+      NSOpenPanel* open_panel = static_cast<NSOpenPanel*>(panel_);
+
+      for (NSURL* url in open_panel.URLs) {
+        if (!url.isFileURL)
+          continue;
+        NSString* path = url.path;
+
+        // There is a bug in macOS where, despite a request to disallow file
+        // selection, files/packages are able to be selected. If indeed file
+        // selection was disallowed, drop any files selected.
+        // https://crbug.com/1357523, FB11405008
+        if (!open_panel.canChooseFiles) {
+          BOOL is_directory;
+          BOOL exists =
+              [[NSFileManager defaultManager] fileExistsAtPath:path
+                                                   isDirectory:&is_directory];
+          BOOL is_package =
+              [[NSWorkspace sharedWorkspace] isFilePackageAtPath:path];
+          if (!exists || !is_directory || is_package)
+            continue;
+        }
+
+        paths.push_back(base::mac::NSStringToFilePath(path));
+      }
     }
   }
 
