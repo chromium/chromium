@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -37,12 +38,13 @@ void RegisterAccessCodeProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAccessCodeCastDeviceAdditionTime);
 }
 
-bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
-  return pref_service->GetBoolean(prefs::kAccessCodeCastEnabled);
+bool GetAccessCodeCastEnabledPref(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kAccessCodeCastEnabled) &&
+         MediaRouterEnabled(profile);
 }
 
-base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
-  if (!GetAccessCodeCastEnabledPref(pref_service) ||
+base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile) {
+  if (!GetAccessCodeCastEnabledPref(profile) ||
       !base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
     return base::Seconds(0);
   }
@@ -59,7 +61,7 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
   }
   // Return the value set by the policy pref.
   return base::Seconds(
-      pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
+      profile->GetPrefs()->GetInteger(prefs::kAccessCodeCastDeviceDuration));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

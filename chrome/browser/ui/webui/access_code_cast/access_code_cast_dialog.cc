@@ -159,11 +159,10 @@ void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
   const int kDefaultWidth = 448;
   const int kDefaultHeight = 271;
   const int kRememberDevicesHeight = 310;
-  base::TimeDelta duration_pref = GetAccessCodeDeviceDurationPref(
-      context_->GetPrefs());
+  base::TimeDelta duration_pref = GetAccessCodeDeviceDurationPref(context_);
   bool rememberDevices = duration_pref != base::Seconds(0);
   size->SetSize(kDefaultWidth,
-      rememberDevices ? kRememberDevicesHeight : kDefaultHeight);
+                rememberDevices ? kRememberDevicesHeight : kDefaultHeight);
 }
 
 std::string AccessCodeCastDialog::GetDialogArgs() const {

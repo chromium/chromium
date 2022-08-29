@@ -19,6 +19,8 @@ static_library("access_code_cast_feature") {
   ]
   public_deps = [ "//base" ]
   deps = [
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
     "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",

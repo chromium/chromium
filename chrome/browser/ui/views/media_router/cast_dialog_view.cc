@@ -494,7 +494,7 @@ bool CastDialogView::HasCastAndDialSinks() const {
 
 bool CastDialogView::IsAccessCodeCastingEnabled() const {
   return base::FeatureList::IsEnabled(features::kAccessCodeCastUI) &&
-         GetAccessCodeCastEnabledPref(profile_->GetPrefs());
+         GetAccessCodeCastEnabledPref(profile_);
 }
 
 // static

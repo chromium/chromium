@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -21,76 +22,101 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
-TEST(AccessCodeCastFeatureTest, GetAccessCodeCastEnabledPref) {
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  pref_service->registry()->RegisterBooleanPref(prefs::kAccessCodeCastEnabled,
-                                                false);
-  EXPECT_FALSE(GetAccessCodeCastEnabledPref(pref_service.get()));
+
+class AccessCodeCastFeatureTest : public ::testing::Test {
+ public:
+  AccessCodeCastFeatureTest() = default;
+  AccessCodeCastFeatureTest(const AccessCodeCastFeatureTest&) = delete;
+  ~AccessCodeCastFeatureTest() override = default;
+  AccessCodeCastFeatureTest& operator=(const AccessCodeCastFeatureTest&) =
+      delete;
+  void TearDown() override { ClearMediaRouterStoredPrefsForTesting(); }
+
+ protected:
+  content::BrowserTaskEnvironment test_environment_;
+};
+
+TEST_F(AccessCodeCastFeatureTest, GetAccessCodeCastEnabledPref) {
+  TestingProfile profile;
+  profile.GetTestingPrefService()->SetManagedPref(
+      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(true));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(false));
+
+  EXPECT_FALSE(GetAccessCodeCastEnabledPref(&profile));
 
   // Setting the pref to true should now return true.
-  pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
-                               std::make_unique<base::Value>(true));
-  EXPECT_TRUE(GetAccessCodeCastEnabledPref(pref_service.get()));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(true));
+  EXPECT_TRUE(GetAccessCodeCastEnabledPref(&profile));
 
   // Removing the set value should now return the default value (false).
-  pref_service->RemoveManagedPref(prefs::kAccessCodeCastEnabled);
-  EXPECT_FALSE(GetAccessCodeCastEnabledPref(pref_service.get()));
+  profile.GetTestingPrefService()->RemoveManagedPref(
+      prefs::kAccessCodeCastEnabled);
+  EXPECT_FALSE(GetAccessCodeCastEnabledPref(&profile));
 }
 
-TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPref) {
+TEST_F(AccessCodeCastFeatureTest,
+       GetAccessCodeCastEnabledPrefMediaRouterDisabled) {
+  TestingProfile profile;
+  profile.GetTestingPrefService()->SetManagedPref(
+      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(false));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(true));
+
+  EXPECT_FALSE(GetAccessCodeCastEnabledPref(&profile));
+}
+
+TEST_F(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPref) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAccessCodeCastRememberDevices}, {});
   const int non_default = 10;
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  pref_service->registry()->RegisterBooleanPref(prefs::kAccessCodeCastEnabled,
-                                                false);
-  pref_service->registry()->RegisterIntegerPref(
-      prefs::kAccessCodeCastDeviceDuration, 0);
 
-  pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
-                               std::make_unique<base::Value>(true));
+  TestingProfile profile;
+  profile.GetTestingPrefService()->SetManagedPref(
+      ::prefs::kEnableMediaRouter, std::make_unique<base::Value>(true));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(false));
 
   // Defaults to 0.
-  EXPECT_EQ(base::Seconds(0),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
+  EXPECT_EQ(base::Seconds(0), GetAccessCodeDeviceDurationPref(&profile));
 
   // Setting to a non-zero value should cause the return value to match.
-  pref_service->SetManagedPref(prefs::kAccessCodeCastDeviceDuration,
-                               std::make_unique<base::Value>(non_default));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(true));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastDeviceDuration,
+      std::make_unique<base::Value>(non_default));
   EXPECT_EQ(base::Seconds(non_default),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
+            GetAccessCodeDeviceDurationPref(&profile));
 
   // Disabling the feature overall in policy now makes this return 0.
-  pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
-                               std::make_unique<base::Value>(false));
-  EXPECT_EQ(base::Seconds(0),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(false));
+  EXPECT_EQ(base::Seconds(0), GetAccessCodeDeviceDurationPref(&profile));
 
-  pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
-                               std::make_unique<base::Value>(true));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(true));
   // Removing the set value should return the default.
-  pref_service->RemoveManagedPref(prefs::kAccessCodeCastDeviceDuration);
-  EXPECT_EQ(base::Seconds(0),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
+  profile.GetTestingPrefService()->RemoveManagedPref(
+      prefs::kAccessCodeCastDeviceDuration);
+  EXPECT_EQ(base::Seconds(0), GetAccessCodeDeviceDurationPref(&profile));
 }
 
-TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPrefSwitchEnabled) {
+TEST_F(AccessCodeCastFeatureTest,
+       GetAccessCodeDeviceDurationPrefSwitchEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAccessCodeCastRememberDevices}, {});
   EnableCommandLineSupportForTesting();
   const int non_default = 10;
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  pref_service->registry()->RegisterBooleanPref(prefs::kAccessCodeCastEnabled,
-                                                false);
-  pref_service->registry()->RegisterIntegerPref(
-      prefs::kAccessCodeCastDeviceDuration, 0);
 
-  pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
-                               std::make_unique<base::Value>(true));
+  TestingProfile profile;
+
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(true));
 
   // Defaults to 0.
-  EXPECT_EQ(base::Seconds(0),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
+  EXPECT_EQ(base::Seconds(0), GetAccessCodeDeviceDurationPref(&profile));
 
   // Setting to a non-zero value should cause the return value to match.
   // Additionally set the value using a switch from the command line.
@@ -98,6 +124,6 @@ TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPrefSwitchEnabled) {
   command_line->AppendSwitchASCII(switches::kAccessCodeCastDeviceDurationSwitch,
                                   base::NumberToString(non_default));
   EXPECT_EQ(base::Seconds(non_default),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
+            GetAccessCodeDeviceDurationPref(&profile));
 }
 }  // namespace media_router
