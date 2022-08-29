@@ -233,6 +233,12 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // block layout algorithm, to perform the final OOF layout and positioning.
   void MoveOutOfFlowDescendantCandidatesToDescendants();
 
+  // Propagate |child|'s anchor for the CSS Anchor Positioning to |this|
+  // builder. This includes the anchor of the |child| itself and anchors
+  // propagated to the |child| from its descendants.
+  void PropagateChildAnchors(const NGPhysicalFragment& child,
+                             const LogicalOffset& child_offset);
+
   // Propagate the OOF descendants from a fragment to the builder. Since the OOF
   // descendants on the fragment are NGPhysicalOutOfFlowPositionedNodes, we
   // first have to create NGLogicalOutOfFlowPositionedNodes copies before

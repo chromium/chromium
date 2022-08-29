@@ -1879,6 +1879,13 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     return;
   }
 
+  // Propagate new data to the |container_builder_|. |AppendOutOfFlowResult|
+  // will add the |result| to the fragmentainer, and replace the fragmentainer
+  // in the |container_builder_|. |ReplaceChild| can't compute the differences
+  // of the new and the old fragments, so it skips all propagations usually done
+  // in |AddChild|.
+  container_builder_->PropagateChildAnchors(
+      physical_fragment, oof_offset + relative_offset + offset_adjustment);
   LayoutUnit containing_block_adjustment =
       container_builder_->BlockOffsetAdjustmentForFragmentainer(
           fragmentainer_consumed_block_size_);

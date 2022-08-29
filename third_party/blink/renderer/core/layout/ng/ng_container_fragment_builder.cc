@@ -34,6 +34,30 @@ void NGContainerFragmentBuilder::ReplaceChild(
   children_[index] = NGLogicalLink{std::move(&new_child), offset};
 }
 
+void NGContainerFragmentBuilder::PropagateChildAnchors(
+    const NGPhysicalFragment& child,
+    const LogicalOffset& child_offset) {
+  if (child.IsBox()) {
+    // Set the child's `anchor-name` before propagating its descendants', so
+    // that ancestors have precedence over their descendants.
+    if (const AtomicString& anchor_name = child.Style().AnchorName();
+        !anchor_name.IsNull()) {
+      DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+      anchor_query_.Set(anchor_name, child,
+                        LogicalRect{child_offset, child.Size().ConvertToLogical(
+                                                      GetWritingMode())});
+    }
+  }
+
+  // Propagate any descendants' anchor references.
+  if (const NGPhysicalAnchorQuery* anchor_query = child.AnchorQuery()) {
+    const WritingModeConverter converter(GetWritingDirection(), child.Size());
+    anchor_query_.SetFromPhysical(
+        *anchor_query, converter, child_offset,
+        /* is_invalid */ child.IsOutOfFlowPositioned());
+  }
+}
+
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
 void NGContainerFragmentBuilder::PropagateChildData(
@@ -42,19 +66,9 @@ void NGContainerFragmentBuilder::PropagateChildData(
     LogicalOffset relative_offset,
     const NGInlineContainer<LogicalOffset>* inline_container,
     absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
-  // Set the child's `anchor-name` before propagating its descendants', so
-  // that ancestors have precedence over their descendants. Descendants' anchors
-  // are propagated in |PropagateOOFPositionedInfo| below.
-  if (child.IsBox()) {
-    if (const AtomicString& anchor_name = child.Style().AnchorName();
-        !anchor_name.IsNull()) {
-      DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
-      anchor_query_.Set(
-          anchor_name, child,
-          LogicalRect{child_offset + relative_offset,
-                      child.Size().ConvertToLogical(GetWritingMode())});
-    }
-  }
+  // Propagate anchors from the |child|. Anchors are in |OutOfFlowData| but the
+  // |child| itself may have an anchor.
+  PropagateChildAnchors(child, child_offset + relative_offset);
 
   if (adjustment_for_oof_propagation &&
       child.NeedsOOFPositionedInfoPropagation()) {
@@ -400,13 +414,6 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         }));
     oof_positioned_candidates_.emplace_back(node, static_position,
                                             new_inline_container);
-  }
-
-  // Collect any anchor references.
-  if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
-    anchor_query_.SetFromPhysical(
-        *anchor_query, converter, adjusted_offset,
-        /* is_invalid */ fragment.IsOutOfFlowPositioned());
   }
 
   NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();
