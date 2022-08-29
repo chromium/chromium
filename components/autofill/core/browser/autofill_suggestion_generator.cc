@@ -368,16 +368,12 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
                              suggestion_nickname, obfuscation_length),
                          Suggestion::Text::IsPrimary(true));
 
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillRemoveCardExpiryFromDownstreamSuggestion)) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      suggestion_label = credit_card.GetInfo(
-          AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);
+    suggestion_label = credit_card.GetInfo(
+        AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);
 #else
-      suggestion_label = credit_card.DescriptiveExpiration(app_locale);
+    suggestion_label = credit_card.DescriptiveExpiration(app_locale);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    }
-
   } else if (credit_card.number().empty()) {
     DCHECK_EQ(credit_card.record_type(), CreditCard::LOCAL_CARD);
     if (credit_card.HasNonEmptyValidNickname()) {
@@ -407,7 +403,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   }
 
   if (!suggestion_label.empty())
-    suggestion.labels = {{Suggestion::Text(suggestion_label)}};
+    suggestion.labels = {{Suggestion::Text(std::move(suggestion_label))}};
 
   // For virtual cards, use issuer's card art icon instead of network icon.
   if (virtual_card_option) {

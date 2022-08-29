@@ -188,12 +188,6 @@ const base::Feature kAutofillParseVcnCardOnFileStandaloneCvcFields{
 const base::Feature kAutofillSaveCardDismissOnNavigation{
     "AutofillSaveCardDismissOnNavigation", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled, the expiration date of the card will not be shown in the
-// Autofill Suggestions.
-const base::Feature kAutofillRemoveCardExpiryFromDownstreamSuggestion{
-    "AutofillRemoveCardExpiryFromDownstreamSuggestion",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, the Save Card infobar supports editing before submitting.
 const base::Feature kAutofillSaveCardInfobarEditSupport{
     "AutofillSaveCardInfobarEditSupport", base::FEATURE_ENABLED_BY_DEFAULT};
