@@ -823,7 +823,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies that if the cache entry contains inconsistent extension version,
 // the crx installation fails and download of a new crx file is attempted.
-IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, CrxVersionInconsistencyInCache) {
+//
+// TODO(crbug.com/1357637): Fix this test. It doesn't alway pass.
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
+                       DISABLED_CrxVersionInconsistencyInCache) {
   base::ScopedAllowBlockingForTesting allow_io;
   // Intercepts the call to download the crx file and responds with the test crx
   // file.
