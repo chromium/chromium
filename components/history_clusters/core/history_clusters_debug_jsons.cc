@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 
 namespace history_clusters {
 
@@ -38,6 +39,11 @@ std::string GetDebugJSONForVisits(
         "openerVisitId",
         static_cast<int>(visit.opener_visit_of_redirect_chain_start));
     debug_visit.Set("searchTerms", visit.content_annotations.search_terms);
+    debug_visit.Set(
+        "urlForDeduping",
+        visit.content_annotations.search_normalized_url.is_empty()
+            ? ComputeURLForDeduping(visit.url_row.url()).spec()
+            : visit.content_annotations.search_normalized_url.spec());
     debug_visits_list.Append(std::move(debug_visit));
   }
 
