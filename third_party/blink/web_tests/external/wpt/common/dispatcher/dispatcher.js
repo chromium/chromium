@@ -37,7 +37,15 @@ const randomDelay = () => {
 // └───────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴────┘
 const limiter = concurrencyLimiter(6);
 
-const send = async function(uuid, message) {
+// While requests to different remote contexts can go in parallel, we need to
+// ensure that requests to each remote context are done in order. This maps a
+// uuid to a queue of requests to send. A queue is processed until it is empty
+// and then is deleted from the map.
+const sendQueues = new Map();
+
+// Sends a single item (with rate-limiting) and calls the associated resolver
+// when it is successfully sent.
+const sendItem = async function (uuid, resolver, message) {
   await limiter(async () => {
     // Requests might be dropped. Retry until getting a confirmation it has been
     // processed.
@@ -47,15 +55,45 @@ const send = async function(uuid, message) {
           method: 'POST',
           body: message
         })
-        if (await response.text() == "done")
+        if (await response.text() == "done") {
+          resolver();
           return;
+        }
       } catch (fetch_error) {}
       await randomDelay();
     };
   });
 }
 
-const receive = async function(uuid) {
+// While the queue is non-empty, send the next item. This is async and new items
+// may be added to the queue while others are being sent.
+const processQueue = async function (uuid, queue) {
+  while (queue.length) {
+    const [resolver, message] = queue.shift();
+    await sendItem(uuid, resolver, message);
+  }
+  // The queue is empty, delete it.
+  sendQueues.delete(uuid);
+}
+
+const send = async function (uuid, message) {
+  const itemSentPromise = new Promise((resolve) => {
+    const item = [resolve, message];
+    if (sendQueues.has(uuid)) {
+      // There is already a queue for `uuid`, just add to it and it will be processed.
+      sendQueues.get(uuid).push(item);
+    } else {
+      // There is no queue for `uuid`, create it and start processing.
+      const queue = [item];
+      sendQueues.set(uuid, queue);
+      processQueue(uuid, queue);
+    }
+  });
+  // Wait until the item has been successfully sent.
+  await itemSentPromise;
+}
+
+const receive = async function (uuid) {
   while(1) {
     let data = "not ready";
     try {

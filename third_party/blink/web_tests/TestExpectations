@@ -5029,10 +5029,6 @@ crbug.com/1317067 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1317067 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/a-user-click-during-pageshow.html [ Timeout ]
 crbug.com/1317067 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/a-user-click-during-load.html [ Timeout ]
 
-# Flaky on both linux and mac.
-crbug.com/1350611 [ Mac ] external/wpt/html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html [ Failure Pass Timeout ]
-crbug.com/1350611 [ Linux ] external/wpt/html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html [ Failure Pass Timeout ]
-
 # Tests time out, and also give different results.
 crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screenx.html [ Skip Timeout ]
 crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerheight.html [ Skip Timeout ]
