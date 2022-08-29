@@ -2411,14 +2411,6 @@ if (!is_android) {
       ]
     }
 
-    # https://crbug.com/1252812 The intent picker (launch icon) actions
-    # are not working on Lacros. Remove the lacros exclusion when fixed.
-    if (is_chromeos && !is_chromeos_lacros) {
-      sources += [
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
-      ]
-    }
-
     if (build_with_tflite_lib) {
       sources += [ "../browser/permissions/prediction_service_browsertest.cc" ]
       deps += [ "//components/permissions/prediction_service" ]
@@ -3996,6 +3988,7 @@ if (!is_android) {
         "../browser/ui/views/plugin_vm/plugin_vm_installer_view_browsertest.cc",
         "../browser/ui/views/tabs/tab_scrubber_chromeos_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder_browsertest.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_ui_browsertest.cc",
         "../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest-inl.h",
@@ -4745,6 +4738,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
+      "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
     ]
 
