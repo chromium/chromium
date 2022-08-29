@@ -78,20 +78,20 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
 // Tests that an event logged by the BrowserAgent is returned with events for
 // the associated `browser_state_`.
 TEST_F(BreadcrumbManagerBrowserAgentTest, LogEvent) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents().size());
 
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   InsertWebState(browser_.get());
 
-  EXPECT_EQ(1ul, breadcrumb_service_->GetEvents(0).size());
+  EXPECT_EQ(1ul, breadcrumb_service_->GetEvents().size());
 }
 
 // Tests that events logged through BrowserAgents associated with different
 // Browser instances are returned with events for the associated
 // `browser_state_` and are uniquely identifiable.
 TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents().size());
 
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
@@ -106,7 +106,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
   // Insert WebState into `browser2`.
   InsertWebState(browser2.get());
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   EXPECT_EQ(2ul, events.size());
 
   // Seperately compare the start and end of the event strings to ensure
@@ -140,7 +140,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
         InsertWebState(browser_.get());
       }));
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(1ul, events.size());
   EXPECT_NE(std::string::npos, events.front().find("Inserted 2 tabs"))
       << events.front();
@@ -154,7 +154,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
         /*index=*/0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
   }));
 
-  events = breadcrumb_service_->GetEvents(0);
+  events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(2ul, events.size());
   EXPECT_NE(std::string::npos, events.back().find("Closed 2 tabs"))
       << events.back();
@@ -177,7 +177,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptAlertOverlay) {
       /*default_text_field_value=*/nil));
   queue->CancelAllRequests();
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(1ul, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOverlay))
@@ -203,7 +203,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptConfirmOverlay) {
       /*default_text_field_value=*/nil));
   queue->CancelAllRequests();
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(1ul, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOverlay))
@@ -229,7 +229,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptPromptOverlay) {
       /*default_text_field_value=*/nil));
   queue->CancelAllRequests();
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(1ul, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOverlay))
@@ -252,7 +252,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, HttpAuthOverlay) {
           GURL::EmptyGURL(), "message", "default text"));
   queue->CancelAllRequests();
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(1ul, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOverlay))
@@ -275,7 +275,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AppLaunchOverlay) {
       /*is_repeated_request=*/false));
   queue->CancelAllRequests();
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(1ul, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOverlay))
@@ -297,7 +297,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AlertOverlay) {
   queue->AddRequest(
       OverlayRequest::CreateWithConfig<ConfirmDownloadReplacingRequest>());
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  std::list<std::string> events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(1ul, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOverlay))
@@ -309,13 +309,13 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AlertOverlay) {
 
   // Switching tabs should log new overlay presentations.
   InsertWebState(browser_.get());
-  events = breadcrumb_service_->GetEvents(0);
+  events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(2ul, events.size());
   EXPECT_NE(std::string::npos, events.back().find("Insert active Tab"))
       << events.back();
 
   browser_->GetWebStateList()->ActivateWebStateAt(0);
-  events = breadcrumb_service_->GetEvents(0);
+  events = breadcrumb_service_->GetEvents();
   ASSERT_EQ(4ul, events.size());
   auto activation = std::next(events.begin(), 2);
   EXPECT_NE(std::string::npos, activation->find(kBreadcrumbOverlay))

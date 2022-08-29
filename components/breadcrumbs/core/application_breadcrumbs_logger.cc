@@ -56,7 +56,7 @@ ApplicationBreadcrumbsLogger::GetPersistentStorageManager() const {
 }
 
 std::list<std::string> ApplicationBreadcrumbsLogger::GetEventsForTesting() {
-  return breadcrumb_manager_.GetEvents(/*event_count_limit=*/0);
+  return breadcrumb_manager_.GetEvents();
 }
 
 void ApplicationBreadcrumbsLogger::AddEvent(const std::string& event) {

@@ -122,7 +122,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
     if (![value isKindOfClass:[NSString class]]) {
       return NO;
     }
-    const std::list<std::string> events = breadcrumb_service->GetEvents(0);
+    const std::list<std::string> events = breadcrumb_service->GetEvents();
     std::string expected_breadcrumbs;
     for (const auto& event : events) {
       expected_breadcrumbs += event + "\n";

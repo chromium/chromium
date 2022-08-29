@@ -39,7 +39,7 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
   }
 
   std::list<std::string> GetEvents() const {
-    return breadcrumb_service_->GetEvents(/*event_count_limit=*/0);
+    return breadcrumb_service_->GetEvents();
   }
 
  private:

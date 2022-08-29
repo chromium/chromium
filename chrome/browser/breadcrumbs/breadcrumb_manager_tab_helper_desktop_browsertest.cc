@@ -59,15 +59,14 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
 // Tests download navigation.
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
   const size_t num_startup_breadcrumbs =
-      breadcrumb_service_->GetEvents(/*event_count_limit=*/0).size();
+      breadcrumb_service_->GetEvents().size();
 
   const GURL url =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
                                 base::FilePath().AppendASCII("a_zip_file.zip"));
   ui_test_utils::DownloadURL(browser(), url);
 
-  const std::list<std::string> events =
-      breadcrumb_service_->GetEvents(/*event_count_limit=*/0);
+  const std::list<std::string> events = breadcrumb_service_->GetEvents();
   // Breadcrumbs should have been logged for starting and finishing the
   // navigation, and the navigation should be labeled as a download.
   ASSERT_EQ(2ul, events.size() - num_startup_breadcrumbs);
@@ -125,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperSecurityStateBrowserTest,
       browser(), https_server_.GetURL("/ssl/google.html")));
 
   // The breadcrumb event for broken authentication should have been logged.
-  auto events = breadcrumb_service_->GetEvents(/*event_count_limit=*/0);
+  auto events = breadcrumb_service_->GetEvents();
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded));
   events.pop_back();
