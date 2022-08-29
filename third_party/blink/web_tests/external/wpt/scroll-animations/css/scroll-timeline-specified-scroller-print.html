@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html class="reftest-wait">
-<title>The scroll-timeline at rule with a specified scroller for print</title>
-<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
+<title>A scroll timeline with a specified scroller for print</title>
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-timelines">
 <link rel="help" href="https://drafts.csswg.org/css-animations-2/#animation-timeline">
-<meta name="assert" content="CSS animation correctly updates values when using the a specified scroller">
-<link rel="match" href="at-scroll-timeline-specified-scroller-print-ref.html">
+<meta name="assert" content="CSS animation correctly updates values when using a specified scroller">
+<link rel="match" href="scroll-timeline-specified-scroller-print-ref.html">
 
 <style>
   @keyframes anim {
@@ -12,13 +12,8 @@
     to { transform: translateX(100px); }
   }
 
-  @scroll-timeline timeline {
-    source: selector(#scroller);
-    orientation: auto;
-    scroll-offsets: none;
-  }
-
   #scroller {
+    scroll-timeline: timeline;
     overflow: scroll;
     width: 100px;
     height: 100px;
