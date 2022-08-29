@@ -7042,9 +7042,6 @@ void Document::FinishedParsing() {
       }
     }
 
-    if (frame->GetFrameScheduler())
-      frame->GetFrameScheduler()->OnDomContentLoaded();
-
     if (ShouldMarkFontPerformance())
       FontPerformance::MarkDomContentLoaded();
 

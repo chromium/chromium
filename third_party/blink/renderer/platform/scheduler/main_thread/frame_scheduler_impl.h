@@ -122,7 +122,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
 
   void OnFirstContentfulPaintInMainFrame() override;
-  void OnDomContentLoaded() override;
   void OnFirstMeaningfulPaint() override;
   void OnLoad() override;
   bool IsWaitingForContentfulPaint() const;
@@ -343,10 +342,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   TraceableState<PageVisibilityState, TracingCategory::kInfo>
       page_visibility_for_tracing_;
 
-  TraceableState<bool, TracingCategory::kInfo> waiting_for_dom_content_loaded_;
   TraceableState<bool, TracingCategory::kInfo> waiting_for_contentful_paint_;
   TraceableState<bool, TracingCategory::kInfo> waiting_for_meaningful_paint_;
-  TraceableState<bool, TracingCategory::kInfo> waiting_for_load_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> loading_power_mode_voter_;
 

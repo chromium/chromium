@@ -150,10 +150,6 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   virtual void DidCommitProvisionalLoad(bool is_web_history_inert_commit,
                                         NavigationType navigation_type) = 0;
 
-  // Tells the scheduler that the "DOMContentLoaded" event has occurred for this
-  // frame.
-  virtual void OnDomContentLoaded() = 0;
-
   // Tells the scheduler that the first contentful paint has occurred for this
   // frame. Only for main frames.
   virtual void OnFirstContentfulPaintInMainFrame() = 0;

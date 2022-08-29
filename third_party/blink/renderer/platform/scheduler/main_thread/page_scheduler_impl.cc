@@ -493,16 +493,6 @@ void PageSchedulerImpl::OnTraceLogEnabled() {
   }
 }
 
-void PageSchedulerImpl::OnFirstContentfulPaintInMainFrame() {
-  // Now we get the FCP notification here only for the main frame, notify all
-  // frames within the page to recompute priority for JS timer tasks.
-  if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading) &&
-      kDeprioritizeDOMTimersPhase.Get() ==
-          DeprioritizeDOMTimersPhase::kFirstContentfulPaint) {
-    NotifyFrames();
-  }
-}
-
 bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {
   return std::any_of(frame_schedulers_.begin(), frame_schedulers_.end(),
                      [](const FrameSchedulerImpl* fs) {

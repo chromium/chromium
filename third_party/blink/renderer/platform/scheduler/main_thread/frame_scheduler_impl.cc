@@ -168,11 +168,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           "FrameScheduler.PageVisibility",
           &tracing_controller_,
           PageVisibilityStateToString),
-      waiting_for_dom_content_loaded_(
-          true,
-          "FrameScheduler.WaitingForDOMContentLoaded",
-          &tracing_controller_,
-          YesNoStateToString),
       waiting_for_contentful_paint_(true,
                                     "FrameScheduler.WaitingForContentfulPaint",
                                     &tracing_controller_,
@@ -181,10 +176,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
                                     "FrameScheduler.WaitingForMeaningfulPaint",
                                     &tracing_controller_,
                                     YesNoStateToString),
-      waiting_for_load_(true,
-                        "FrameScheduler.WaitingForLoad",
-                        &tracing_controller_,
-                        YesNoStateToString),
       loading_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Loading")) {
@@ -594,20 +585,8 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
     loading_power_mode_voter_->ResetVoteAfterTimeout(
         power_scheduler::PowerModeVoter::kStuckLoadingTimeout);
 
-    waiting_for_dom_content_loaded_ = true;
     waiting_for_contentful_paint_ = true;
     waiting_for_meaningful_paint_ = true;
-    waiting_for_load_ = true;
-
-    // If DeprioritizeDOMTimersDuringPageLoading is enabled, UpdatePolicy()
-    // needs to be called to change JavaScript timer task queues to low priority
-    // during reload and other navigations.
-    //
-    // TODO(shaseley): Think about merging this with MainThreadSchedulerImpl's
-    // policy update.
-    if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading)) {
-      UpdatePolicy();
-    }
   }
 
   if (is_outermost_main_frame && !is_same_document) {
@@ -835,18 +814,7 @@ SchedulingLifecycleState FrameSchedulerImpl::CalculateLifecycleState(
 void FrameSchedulerImpl::OnFirstContentfulPaintInMainFrame() {
   waiting_for_contentful_paint_ = false;
   DCHECK_EQ(GetFrameType(), FrameScheduler::FrameType::kMainFrame);
-  parent_page_scheduler_->OnFirstContentfulPaintInMainFrame();
   main_thread_scheduler_->OnMainFramePaint();
-}
-
-void FrameSchedulerImpl::OnDomContentLoaded() {
-  waiting_for_dom_content_loaded_ = false;
-
-  if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading) &&
-      kDeprioritizeDOMTimersPhase.Get() ==
-          DeprioritizeDOMTimersPhase::kOnDOMContentLoaded) {
-    UpdatePolicy();
-  }
 }
 
 void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
@@ -861,19 +829,6 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
 }
 
 void FrameSchedulerImpl::OnLoad() {
-  waiting_for_load_ = false;
-
-  // FrameSchedulerImpl::OnFirstContentfulPaint() is NOT guaranteed to be called
-  // during the loading process, so we also try to do the recomputation in case
-  // of the DeprioritizeDOMTimersPhase::kFirstContentfulPaint option.
-  if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading) &&
-      (kDeprioritizeDOMTimersPhase.Get() ==
-           DeprioritizeDOMTimersPhase::kOnLoad ||
-       kDeprioritizeDOMTimersPhase.Get() ==
-           DeprioritizeDOMTimersPhase::kFirstContentfulPaint)) {
-    UpdatePolicy();
-  }
-
   loading_power_mode_voter_->ResetVoteAfterTimeout(
       power_scheduler::PowerModeVoter::kLoadingTimeout);
 }
@@ -1040,23 +995,6 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
       MainThreadTaskQueue::QueueTraits::PrioritisationType::
           kHighPriorityLocalFrame) {
     return TaskQueue::QueuePriority::kHighestPriority;
-  }
-
-  // Deprioritize JS timer tasks to speed up the page loading process.
-  if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading) &&
-      task_queue->GetPrioritisationType() ==
-          MainThreadTaskQueue::QueueTraits::PrioritisationType::
-              kJavaScriptTimer &&
-      waiting_for_load_ &&
-      (kDeprioritizeDOMTimersPhase.Get() ==
-           DeprioritizeDOMTimersPhase::kOnLoad ||
-       (kDeprioritizeDOMTimersPhase.Get() ==
-            DeprioritizeDOMTimersPhase::kOnDOMContentLoaded &&
-        waiting_for_dom_content_loaded_) ||
-       (kDeprioritizeDOMTimersPhase.Get() ==
-            DeprioritizeDOMTimersPhase::kFirstContentfulPaint &&
-        parent_page_scheduler_->IsWaitingForMainFrameContentfulPaint()))) {
-    return TaskQueue::QueuePriority::kLowPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==

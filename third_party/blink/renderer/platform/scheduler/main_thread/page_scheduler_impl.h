@@ -112,8 +112,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   void OnTraceLogEnabled();
 
-  void OnFirstContentfulPaintInMainFrame();
-
   // Virtual for testing.
   virtual bool IsWaitingForMainFrameContentfulPaint() const;
   virtual bool IsWaitingForMainFrameMeaningfulPaint() const;

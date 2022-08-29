@@ -94,22 +94,6 @@ base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
       kForegroundTimersThrottledWakeUpIntervalMills.Get());
 }
 
-const base::Feature kDeprioritizeDOMTimersDuringPageLoading{
-    "DeprioritizeDOMTimersDuringPageLoading",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::FeatureParam<DeprioritizeDOMTimersPhase>::Option
-    kDeprioritizeDOMTimersPhaseOptions[] = {
-        {DeprioritizeDOMTimersPhase::kOnDOMContentLoaded, "ondomcontentloaded"},
-        {DeprioritizeDOMTimersPhase::kFirstContentfulPaint, "fcp"},
-        {DeprioritizeDOMTimersPhase::kOnLoad, "onload"}};
-
-const base::FeatureParam<DeprioritizeDOMTimersPhase>
-    kDeprioritizeDOMTimersPhase{&kDeprioritizeDOMTimersDuringPageLoading,
-                                "phase",
-                                DeprioritizeDOMTimersPhase::kOnDOMContentLoaded,
-                                &kDeprioritizeDOMTimersPhaseOptions};
-
 const base::Feature kThreadedScrollPreventRenderingStarvation{
     "ThreadedScrollPreventRenderingStarvation",
     base::FEATURE_DISABLED_BY_DEFAULT};

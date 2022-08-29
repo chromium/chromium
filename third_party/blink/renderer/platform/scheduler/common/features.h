@@ -132,26 +132,6 @@ const base::Feature kMbiCompositorTaskRunnerPerAgentSchedulingGroup{
 // feature is enabled.
 PLATFORM_EXPORT base::TimeDelta GetForegroundTimersThrottledWakeUpInterval();
 
-// Deprioritizes JS timer tasks during a particular phase of page loading.
-PLATFORM_EXPORT extern const base::Feature
-    kDeprioritizeDOMTimersDuringPageLoading;
-
-// The phase in which we deprioritize JS timer tasks.
-enum class DeprioritizeDOMTimersPhase {
-  // Until the DOMContentLoaded event is fired.
-  kOnDOMContentLoaded,
-  // Until First Contentful Paint is reached.
-  kFirstContentfulPaint,
-  // Until the load event is fired.
-  kOnLoad,
-};
-
-PLATFORM_EXPORT extern const base::FeatureParam<
-    DeprioritizeDOMTimersPhase>::Option kDeprioritizeDOMTimersPhaseOptions[];
-
-PLATFORM_EXPORT extern const base::FeatureParam<DeprioritizeDOMTimersPhase>
-    kDeprioritizeDOMTimersPhase;
-
 // Finch flag for preventing rendering starvation during threaded scrolling.
 // With this feature enabled, the existing delay-based rendering anti-starvation
 // applies, and the compositor task queue priority is controlled with the
