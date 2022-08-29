@@ -240,6 +240,7 @@ void WebAppInstallFinalizer::UninstallExternalWebApp(
   DCHECK(started_);
 
   DCHECK(external_install_source == WebAppManagement::Type::kSystem ||
+         external_install_source == WebAppManagement::Type::kKiosk ||
          external_install_source == WebAppManagement::Type::kPolicy ||
          external_install_source == WebAppManagement::Type::kSubApp ||
          external_install_source == WebAppManagement::Type::kWebAppStore ||

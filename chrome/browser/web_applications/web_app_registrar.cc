@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -80,7 +81,8 @@ bool WebAppRegistrar::IsPlaceholderApp(
         .IsPlaceholderApp(app_id);
   }
 
-  DCHECK(source_type == WebAppManagement::kPolicy);
+  DCHECK(source_type == WebAppManagement::kPolicy ||
+         source_type == WebAppManagement::kKiosk);
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app)
     return false;
@@ -104,7 +106,8 @@ absl::optional<AppId> WebAppRegistrar::LookupPlaceholderAppId(
         .LookupPlaceholderAppId(install_url);
   }
 
-  DCHECK(source_type == WebAppManagement::kPolicy);
+  DCHECK(source_type == WebAppManagement::kPolicy ||
+         source_type == WebAppManagement::kKiosk);
   absl::optional<AppId> app_id = LookUpAppIdByInstallUrl(install_url);
   if (app_id.has_value() && IsPlaceholderApp(app_id.value(), source_type))
     return app_id;

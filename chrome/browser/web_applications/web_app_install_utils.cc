@@ -1067,7 +1067,7 @@ bool CanWebAppUpdateIdentity(const WebApp* web_app) {
           features::kWebAppManifestPolicyAppIdentityUpdate)) {
     return true;
   }
-  return web_app->IsPreinstalledApp();
+  return web_app->IsPreinstalledApp() || web_app->IsKioskInstalledApp();
 }
 
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
