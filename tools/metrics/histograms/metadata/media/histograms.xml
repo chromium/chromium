@@ -60,6 +60,17 @@ chromium-metrics-reviews@google.com.
   <variant name="RendererImpl"/>
 </variants>
 
+<!-- The names should match media::GetCodecNameForUMA(). -->
+
+<variants name="VideoCodec">
+  <variant name="AV1"/>
+  <variant name="DolbyVision"/>
+  <variant name="H264"/>
+  <variant name="HEVC"/>
+  <variant name="VP8"/>
+  <variant name="VP9"/>
+</variants>
+
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
     enum="MediaStatus" expires_after="2022-12-25">
   <owner>vikassoni@chromium.org</owner>
@@ -3857,7 +3868,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.PipelineStatus.AudioVideo.{Codec}.{Pipeline}"
+<histogram name="Media.PipelineStatus.AudioVideo.{VideoCodec}.{Pipeline}"
     enum="PipelineStatus" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -3865,17 +3876,9 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev@chromium.org</owner>
   <summary>
     Status of the media pipeline at the end of its lifecycle for audio-video
-    streams with {Codec} video codec using {Pipeline}.
+    streams with {VideoCodec} video codec using {Pipeline}.
   </summary>
-  <token key="Codec">
-    <variant name="AV1"/>
-    <variant name="DolbyVision"/>
-    <variant name="H264"/>
-    <variant name="HEVC"/>
-    <variant name="Other" summary="other"/>
-    <variant name="VP8"/>
-    <variant name="VP9"/>
-  </token>
+  <token key="VideoCodec" variants="VideoCodec"/>
   <token key="Pipeline">
     <variant name="DDS.HW"
         summary="RendererImpl with hardware decoder and

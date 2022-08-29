@@ -16,6 +16,8 @@
 namespace media {
 
 // The names come from src/third_party/ffmpeg/libavcodec/codec_desc.c
+// TODO(crbug.com/1357080): The returned strings are used by ChunkDemuxer in
+// the code logic as well in tests. Merge with GetCodecNameForUMA() if possible.
 std::string GetCodecName(VideoCodec codec) {
   switch (codec) {
     case VideoCodec::kUnknown:
@@ -40,6 +42,36 @@ std::string GetCodecName(VideoCodec codec) {
       return "vp9";
     case VideoCodec::kAV1:
       return "av1";
+  }
+  NOTREACHED();
+  return "";
+}
+
+// Reported as part of some UMA names. NEVER change existing strings!
+std::string GetCodecNameForUMA(VideoCodec codec) {
+  switch (codec) {
+    case VideoCodec::kUnknown:
+      return "Unknown";
+    case VideoCodec::kH264:
+      return "H264";
+    case VideoCodec::kHEVC:
+      return "HEVC";
+    case VideoCodec::kDolbyVision:
+      return "DolbyVision";
+    case VideoCodec::kVC1:
+      return "VC1";
+    case VideoCodec::kMPEG2:
+      return "MPEG2Video";
+    case VideoCodec::kMPEG4:
+      return "MPEG4";
+    case VideoCodec::kTheora:
+      return "Theora";
+    case VideoCodec::kVP8:
+      return "VP8";
+    case VideoCodec::kVP9:
+      return "VP9";
+    case VideoCodec::kAV1:
+      return "AV1";
   }
   NOTREACHED();
   return "";
