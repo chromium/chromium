@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -175,7 +176,7 @@ class ScopedExternalConnectionInfoCrashKeys {
       : target_id_(GetTargetIdCrashKey(), info.target_id),
         source_endpoint_(info.source_endpoint),
         source_origin_(GetSourceOriginCrashKey(),
-                       base::OptionalOrNullptr(info.source_origin)),
+                       base::OptionalToPtr(info.source_origin)),
         source_url_(GetSourceUrlCrashKey(),
                     info.source_url.possibly_invalid_spec()) {}
 
