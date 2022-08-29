@@ -66,10 +66,11 @@ public class FirstRunUtils {
 
     /**
      * Sets the EULA/Terms of Services state as "ACCEPTED".
-     * @param allowCrashUpload True if the user allows to upload crash dumps and collect stats.
+     * @param allowMetricsAndCrashUploading True if the user allows to upload crash dumps and
+     *         collect stats.
      */
-    static void acceptTermsOfService(boolean allowCrashUpload) {
-        UmaSessionStats.changeMetricsReportingConsent(allowCrashUpload);
+    static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
+        UmaSessionStats.changeMetricsReportingConsent(allowMetricsAndCrashUploading);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();

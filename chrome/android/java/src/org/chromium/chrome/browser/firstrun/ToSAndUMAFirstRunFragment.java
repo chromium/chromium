@@ -58,7 +58,7 @@ public class ToSAndUMAFirstRunFragment
     private boolean mNativeInitialized;
     private boolean mPolicyServiceInitialized;
     private boolean mTosButtonClicked;
-    private boolean mAllowCrashUpload;
+    private boolean mAllowMetricsAndCrashUploading;
     private boolean mUserInteractedWithUmaCheckbox;
 
     private Button mAcceptButton;
@@ -95,7 +95,7 @@ public class ToSAndUMAFirstRunFragment
         // Register event listeners.
         mAcceptButton.setOnClickListener((v) -> onTosButtonClicked());
         mSendReportCheckBox.setOnCheckedChangeListener(((compoundButton, isChecked) -> {
-            mAllowCrashUpload = isChecked;
+            mAllowMetricsAndCrashUploading = isChecked;
             mUserInteractedWithUmaCheckbox = true;
         }));
 
@@ -166,13 +166,13 @@ public class ToSAndUMAFirstRunFragment
         assert !isWaitingForNativeAndPolicyInit();
 
         setSpinnerVisible(false);
-        mSendReportCheckBox.setChecked(mAllowCrashUpload);
+        mSendReportCheckBox.setChecked(mAllowMetricsAndCrashUploading);
     }
 
     /** Implements {@link FreUMADialogCoordinator.Listener} */
     @Override
-    public void onAllowCrashUploadChecked(boolean allowCrashUpload) {
-        mAllowCrashUpload = allowCrashUpload;
+    public void onAllowMetricsAndCrashUploadingChecked(boolean allowMetricsAndCrashUploading) {
+        mAllowMetricsAndCrashUploading = allowMetricsAndCrashUploading;
     }
 
     private void updateView() {
@@ -273,13 +273,14 @@ public class ToSAndUMAFirstRunFragment
         // which case a previous call to this method has already checked the checkbox expected
         // initial state.
         if (!mUserInteractedWithUmaCheckbox) {
-            mAllowCrashUpload = getUmaCheckBoxInitialState();
-            mSendReportCheckBox.setChecked(mAllowCrashUpload);
+            mAllowMetricsAndCrashUploading = getUmaCheckBoxInitialState();
+            mSendReportCheckBox.setChecked(mAllowMetricsAndCrashUploading);
         }
 
         if (!canShowUmaCheckBox()) {
             if (!umaDialogMayBeShown) {
-                mAllowCrashUpload = (sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild())
+                mAllowMetricsAndCrashUploading =
+                        (sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild())
                         && !isMetricsReportingDisabledByPolicy;
             }
             mSendReportCheckBox.setVisibility(View.GONE);
@@ -289,7 +290,7 @@ public class ToSAndUMAFirstRunFragment
     private void openUmaDialog() {
         new FreUMADialogCoordinator(requireContext(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
-                mAllowCrashUpload);
+                mAllowMetricsAndCrashUploading);
     }
 
     private void onPolicyServiceInitialized(boolean onDevicePolicyFound) {
@@ -337,7 +338,7 @@ public class ToSAndUMAFirstRunFragment
             RecordHistogram.recordTimesHistogram("MobileFre.TosFragment.SpinnerVisibleDuration",
                     SystemClock.elapsedRealtime() - mTosAcceptedTime);
         }
-        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
+        getPageDelegate().acceptTermsOfService(mAllowMetricsAndCrashUploading);
         getPageDelegate().advanceToNextPage();
     }
 

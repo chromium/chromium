@@ -525,14 +525,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void acceptTermsOfService(boolean allowCrashUpload) {
+    public void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
         assert mNativeInitializationPromise.isFulfilled();
 
         // If default is true then it corresponds to opt-out and false corresponds to opt-in.
         UmaUtils.recordMetricsReportingDefaultOptIn(!DEFAULT_METRICS_AND_CRASH_REPORTING);
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.TosAccepted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
-        FirstRunUtils.acceptTermsOfService(allowCrashUpload);
+        FirstRunUtils.acceptTermsOfService(allowMetricsAndCrashUploading);
         FirstRunStatus.setSkipWelcomePage(true);
         flushPersistentData();
 

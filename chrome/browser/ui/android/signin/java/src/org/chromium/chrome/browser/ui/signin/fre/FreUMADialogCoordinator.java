@@ -29,7 +29,7 @@ public class FreUMADialogCoordinator {
      * Callback for the switch in the dialog.
      */
     public interface Listener {
-        void onAllowCrashUploadChecked(boolean isChecked);
+        void onAllowMetricsAndCrashUploadingChecked(boolean allowMetricsAndCrashUploading);
     }
 
     private final ModalDialogManager mDialogManager;
@@ -41,7 +41,7 @@ public class FreUMADialogCoordinator {
      */
     @MainThread
     public FreUMADialogCoordinator(Context context, ModalDialogManager modalDialogManager,
-            Listener listener, boolean allowCrashUpload) {
+            Listener listener, boolean allowMetricsAndCrashUploading) {
         mView = LayoutInflater.from(context).inflate(R.layout.fre_uma_dialog, null);
         mDialogManager = modalDialogManager;
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -54,9 +54,10 @@ public class FreUMADialogCoordinator {
             mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTION_ON_CONTENT);
         });
         final Switch umaSwitch = mView.findViewById(R.id.fre_uma_dialog_switch);
-        umaSwitch.setChecked(allowCrashUpload);
+        umaSwitch.setChecked(allowMetricsAndCrashUploading);
         umaSwitch.setOnCheckedChangeListener(
-                (compoundButton, isChecked) -> listener.onAllowCrashUploadChecked(isChecked));
+                (compoundButton,
+                        isChecked) -> listener.onAllowMetricsAndCrashUploadingChecked(isChecked));
 
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }

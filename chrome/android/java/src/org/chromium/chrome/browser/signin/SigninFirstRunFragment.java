@@ -148,8 +148,8 @@ public class SigninFirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void acceptTermsOfService(boolean allowCrashUpload) {
-        getPageDelegate().acceptTermsOfService(allowCrashUpload);
+    public void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
+        getPageDelegate().acceptTermsOfService(allowMetricsAndCrashUploading);
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
