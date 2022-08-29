@@ -1,6 +1,3 @@
-traceimpl_dependent_scope.cpp:9:1: warning: [blink-gc] Class 'Empty' should be either garbage collected, or declare one of STACK_ALLOCATED(), STATIC_ONLY(), DISALLOW_NEW(), USING_FAST_MALLOC()
-struct Empty {};
-^
 In file included from traceimpl_dependent_scope.cpp:5:
 ./traceimpl_dependent_scope.h:37:3: warning: [blink-gc] Base class 'Base<int>' of derived class 'DerivedMissingTrace<int>' requires tracing.
   void Trace(Visitor* visitor) const override {
@@ -11,4 +8,4 @@ In file included from traceimpl_dependent_scope.cpp:5:
 ./traceimpl_dependent_scope.h:68:3: warning: [blink-gc] Base class 'Y' of derived class 'MixinTwoBasesMissingTrace<blink::X, blink::Y>' requires tracing.
   void Trace(Visitor* visitor) const override {
   ^
-4 warnings generated.
+3 warnings generated.

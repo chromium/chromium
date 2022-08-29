@@ -13,8 +13,6 @@ void TemplatedObject<T>::Trace(Visitor* visitor) const {
 }
 
 class Test {
-  DISALLOW_NEW();
-
  public:
   static void test() {
     HeapObject* obj = MakeGarbageCollected<HeapObject>();

@@ -133,10 +133,6 @@ const char kTraceMethodOfStackAllocatedParentNote[] =
     "[blink-gc] The stack allocated class %0 provides an unnecessary "
     "trace method:";
 
-const char kUsingDefaultMalloc[] =
-    "[blink-gc] Class %0 should be either garbage collected, or declare one of"
-    " STACK_ALLOCATED(), STATIC_ONLY(), DISALLOW_NEW(), USING_FAST_MALLOC()";
-
 const char kMemberInStackAllocated[] =
     "[blink-gc] Member field %0 in stack allocated class declared here (use "
     "raw pointer or reference instead):";
@@ -221,8 +217,6 @@ DiagnosticsReporter::DiagnosticsReporter(
       getErrorLevel(), kIteratorToGCManagedCollectionNote);
   diag_trace_method_of_stack_allocated_parent_ = diagnostic_.getCustomDiagID(
       getErrorLevel(), kTraceMethodOfStackAllocatedParentNote);
-  diag_using_default_malloc_ =
-      diagnostic_.getCustomDiagID(getErrorLevel(), kUsingDefaultMalloc);
   diag_member_in_stack_allocated_class_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kMemberInStackAllocated);
   diag_member_on_stack_ =
@@ -501,11 +495,6 @@ void DiagnosticsReporter::TraceMethodForStackAllocatedClass(
     CXXMethodDecl* trace) {
   ReportDiagnostic(trace->getBeginLoc(),
                    diag_trace_method_of_stack_allocated_parent_)
-      << info->record();
-}
-
-void DiagnosticsReporter::UsingDefaultMalloc(RecordInfo* info) {
-  ReportDiagnostic(info->record()->getBeginLoc(), diag_using_default_malloc_)
       << info->record();
 }
 

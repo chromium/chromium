@@ -15,16 +15,11 @@ public:
 };
 
 class NonPolymorphicBase {
- protected:
-  NonPolymorphicBase() = default;
 };
 
 class PolymorphicBase {
- public:
-  virtual void foo();
-
- protected:
-  PolymorphicBase() = default;
+public:
+    virtual void foo();
 };
 
 class IsLeftMostPolymorphic
