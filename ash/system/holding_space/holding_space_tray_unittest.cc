@@ -2658,6 +2658,13 @@ TEST_P(HoldingSpaceTrayIconTest, TrayButtonWithRebrandIcon) {
            .bitmap()));
 }
 
+TEST_P(HoldingSpaceTrayIconTest, CheckTrayTooltipText) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()),
+            IsHoldingSpaceRebrandEnabled() ? u"Quick Files" : u"Tote");
+}
+
 // Base class for tests of the holding space downloads section parameterized by:
 // * the set of holding space item types which are expected to appear there.
 class HoldingSpaceTrayDownloadsSectionTest

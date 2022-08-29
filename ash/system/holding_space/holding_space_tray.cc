@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -309,7 +310,9 @@ views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
 }
 
 std::u16string HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
+  return features::IsHoldingSpaceRebrandEnabled()
+             ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REBRAND)
+             : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {
