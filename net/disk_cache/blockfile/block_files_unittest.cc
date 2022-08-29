@@ -30,8 +30,11 @@ int NumberOfFiles(const base::FilePath& path) {
 
 namespace disk_cache {
 
-// Flaky on ChromeOS: https://crbug.com/1156795
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Flaky on ChromeOS: https://crbug.com/1156795
+#define MAYBE_BlockFiles_Grow DISABLED_BlockFiles_Grow
+#elif BUILDFLAG(IS_FUCHSIA)
+// Too slow on Fuchsia: https://crbug.com/1354793
 #define MAYBE_BlockFiles_Grow DISABLED_BlockFiles_Grow
 #else
 #define MAYBE_BlockFiles_Grow BlockFiles_Grow
