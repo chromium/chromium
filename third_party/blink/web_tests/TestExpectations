@@ -6825,6 +6825,7 @@ crbug.com/1354013 virtual/threaded-no-composited-antialiasing/animations/sample-
 
 # Sheriff 2022-08-19
 crbug.com/1354433 [ Mac ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Failure Pass ]
+crbug.com/1354433 [ Linux ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Failure Pass ]
 
 # Sheriff 2022-08-24
 crbug.com/1356118 [ Mac ] virtual/fenced-frame-shadow-dom/external/wpt/html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html [ Failure Pass ]
