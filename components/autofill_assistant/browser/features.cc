@@ -112,6 +112,11 @@ const base::Feature kAutofillAssistantLoadDFMForTriggerScripts{
 const base::Feature kAutofillAssistantProactiveHelp{
     "AutofillAssistantProactiveHelp", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables assistant UI (once the feature is enabled, scripts need to use the
+// USE_ASSISTANT_UI=true flag to use the assistant UI).
+const base::Feature kAutofillAssistantRemoteAssistantUi{
+    "AutofillAssistantRemoteAssistantUi", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used to configure URL heuristics for upcoming new features.
 extern const base::Feature kAutofillAssistantUrlHeuristic1{
     "AutofillAssistantUrlHeuristic1", base::FEATURE_DISABLED_BY_DEFAULT};

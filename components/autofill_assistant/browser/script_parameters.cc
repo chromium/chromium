@@ -109,6 +109,7 @@ const char kDetailsTotalPriceLabel[] = "DETAILS_TOTAL_PRICE_LABEL";
 const char kDetailsTotalPrice[] = "DETAILS_TOTAL_PRICE";
 const char kRunHeadless[] = "RUN_HEADLESS";
 const char kFieldTrialPrefix[] = "FIELD_TRIAL_";
+const char kUseAssistantUi[] = "USE_ASSISTANT_UI";
 
 ScriptParameters::ScriptParameters(
     const base::flat_map<std::string, std::string>& parameters) {
@@ -265,8 +266,12 @@ absl::optional<bool> ScriptParameters::GetSendAnnotateDomModelVersion() const {
   return GetTypedParameter<bool>(parameters_, kSendAnnotateDomModelVersion);
 }
 
-absl::optional<bool> ScriptParameters::GetRunHeadless() const {
-  return GetTypedParameter<bool>(parameters_, kRunHeadless);
+bool ScriptParameters::GetRunHeadless() const {
+  return GetTypedParameter<bool>(parameters_, kRunHeadless).value_or(false);
+}
+
+bool ScriptParameters::GetUseAssistantUi() const {
+  return GetTypedParameter<bool>(parameters_, kUseAssistantUi).value_or(false);
 }
 
 absl::optional<std::string> ScriptParameters::GetFieldTrialGroup(

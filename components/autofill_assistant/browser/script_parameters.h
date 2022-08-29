@@ -67,7 +67,8 @@ class ScriptParameters {
   std::vector<std::string> GetExperiments() const;
   absl::optional<bool> GetDisableRpcSigning() const;
   absl::optional<bool> GetSendAnnotateDomModelVersion() const;
-  absl::optional<bool> GetRunHeadless() const;
+  bool GetRunHeadless() const;
+  bool GetUseAssistantUi() const;
   absl::optional<std::string> GetFieldTrialGroup(
       const int field_trial_slot) const;
 

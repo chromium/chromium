@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/android/trigger_script_bridge_android.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/headless/client_headless.h"
 #include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
@@ -294,6 +295,7 @@ void StarterDelegateAndroid::CreateJavaDependenciesIfNecessary() {
 
 void StarterDelegateAndroid::HeadlessControllerDoneCallback(
     HeadlessScriptController::ScriptResult result) {
+  assistant_ui_delegate_.reset();
   headless_script_controller_.reset();
 }
 
@@ -314,11 +316,21 @@ void StarterDelegateAndroid::Start(
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url, GetIsCustomTab());
 
-  if (trigger_context->GetScriptParameters().GetRunHeadless()) {
+  const bool use_assistant_ui =
+      base::FeatureList::IsEnabled(
+          features::kAutofillAssistantRemoteAssistantUi) &&
+      trigger_context->GetScriptParameters().GetUseAssistantUi();
+  const bool run_headless =
+      trigger_context->GetScriptParameters().GetRunHeadless();
+  if (use_assistant_ui || run_headless) {
+    if (use_assistant_ui) {
+      assistant_ui_delegate_ = std::make_unique<AssistantUiActionDelegate>();
+    }
     auto client = std::make_unique<ClientHeadless>(
         &GetWebContents(), starter_->GetCommonDependencies(),
-        /* action_extension_delegate= */ nullptr, GetWebsiteLoginManager(),
-        base::DefaultTickClock::GetInstance(),
+        /* action_extension_delegate= */
+        use_assistant_ui ? assistant_ui_delegate_.get() : nullptr,
+        GetWebsiteLoginManager(), base::DefaultTickClock::GetInstance(),
         RuntimeManager::GetForWebContents(&GetWebContents())->GetWeakPtr(),
         ukm::UkmRecorder::Get(),
         starter_->GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
