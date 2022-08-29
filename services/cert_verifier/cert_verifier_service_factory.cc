@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -107,7 +108,7 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
     mojom::CertVerifierCreationParamsPtr creation_params) {
   net::ChromeRootStoreData* root_store_data = nullptr;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  root_store_data = base::OptionalOrNullptr(root_store_data_);
+  root_store_data = base::OptionalToPtr(root_store_data_);
 #endif
 
   internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
