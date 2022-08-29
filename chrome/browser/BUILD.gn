@@ -6409,8 +6409,6 @@ static_library("browser") {
       "download/download_status_updater_linux.cc",
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
-      "themes/theme_service_aura_linux.cc",
-      "themes/theme_service_aura_linux.h",
     ]
     deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
 
@@ -6711,6 +6709,8 @@ static_library("browser") {
       "chrome_browser_main_extra_parts_linux.cc",
       "chrome_browser_main_extra_parts_linux.h",
       "obsolete_system/obsolete_system_linux.cc",
+      "themes/theme_service_aura_linux.cc",
+      "themes/theme_service_aura_linux.h",
     ]
   }
 

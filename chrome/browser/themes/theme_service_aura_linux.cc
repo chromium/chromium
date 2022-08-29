@@ -11,11 +11,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/image/image.h"
-#include "ui/native_theme/native_theme_aura.h"
-
-#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
-#endif
+#include "ui/native_theme/native_theme_aura.h"
 
 namespace {
 
@@ -53,27 +50,21 @@ void SystemThemeLinux::StartUsingTheme() {
 void SystemThemeLinux::StopUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, false);
   // Have the former theme notify its observers of change.
-#if BUILDFLAG(IS_LINUX)
   if (auto* linux_ui = ui::LinuxUi::instance())
     linux_ui->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
-#endif
 }
 
 bool SystemThemeLinux::GetColor(int id, SkColor* color) const {
-#if BUILDFLAG(IS_LINUX)
   if (auto* linux_ui = ui::LinuxUi::instance()) {
     return linux_ui->GetColor(
         id, color, pref_service_->GetBoolean(prefs::kUseCustomChromeFrame));
   }
-#endif
   return false;
 }
 
 bool SystemThemeLinux::GetDisplayProperty(int id, int* result) const {
-#if BUILDFLAG(IS_LINUX)
   if (auto* linux_ui = ui::LinuxUi::instance())
     return linux_ui->GetDisplayProperty(id, result);
-#endif
   return false;
 }
 

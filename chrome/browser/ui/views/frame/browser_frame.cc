@@ -47,22 +47,15 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/display/screen.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX)
+#include "ui/display/screen.h"
 #include "ui/linux/linux_ui.h"
 #endif
 
 namespace {
 
-bool IsUsingGtkTheme(Profile* profile) {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsUsingLinuxSystemTheme(Profile* profile) {
+#if BUILDFLAG(IS_LINUX)
   return ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme();
 #else
   return false;
@@ -244,11 +237,11 @@ bool BrowserFrame::GetAccelerator(int command_id,
 const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   Browser* browser = browser_view_->browser();
   auto* app_controller = browser->app_controller();
-  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (app_controller && (!IsUsingGtkTheme(browser->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeProvider();
   }
@@ -262,11 +255,11 @@ BrowserFrame::GetCustomTheme() const {
   if (browser->profile()->IsIncognitoProfile())
     return nullptr;
   auto* app_controller = browser->app_controller();
-  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (app_controller && (!IsUsingGtkTheme(browser->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeSupplier();
   }
@@ -277,9 +270,7 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   chrome::SaveWindowWorkspace(browser_view_->browser(), GetWorkspace());
   chrome::SaveWindowVisibleOnAllWorkspaces(browser_view_->browser(),
                                            IsVisibleOnAllWorkspaces());
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // If the window was sent to a different workspace, prioritize it if
   // it was sent to the current workspace and deprioritize it
   // otherwise.  This is done by MoveBrowsersInWorkspaceToFront()
@@ -392,7 +383,7 @@ void BrowserFrame::OnTouchUiChanged() {
 }
 
 void BrowserFrame::SelectNativeTheme() {
-  // Select between regular, dark and GTK theme.
+  // Select between regular, dark and system theme.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
   if (browser_view_->browser()->profile()->IsIncognitoProfile()) {
@@ -404,7 +395,7 @@ void BrowserFrame::SelectNativeTheme() {
 
 #if BUILDFLAG(IS_LINUX)
   const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
-  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
@@ -419,10 +410,8 @@ void BrowserFrame::SelectNativeTheme() {
 bool BrowserFrame::RegenerateFrameOnThemeChange(
     BrowserThemeChangeType theme_change_type) {
   bool need_regenerate = false;
-  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
-  // switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // GTK and user theme changes can both change frame buttons, so the frame
+#if BUILDFLAG(IS_LINUX)
+  // System and user theme changes can both change frame buttons, so the frame
   // always needs to be regenerated on Linux.
   need_regenerate = true;
 #endif
