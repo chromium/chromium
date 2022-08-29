@@ -547,11 +547,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETATTRIBUTEVALUE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETATTRIBUTEVALUE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(value);
-  // Use a cloned range so that GetAttributeValue does not introduce
-  // side-effects while normalizing the original range.
-  AXPositionInstance normalized_start = start()->Clone();
-  AXPositionInstance normalized_end = end()->Clone();
-  NormalizeTextRange(normalized_start, normalized_end);
 
   base::win::VariantVector attribute_value;
 
@@ -567,12 +562,12 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
   // attributes, but it appears to be reasonable enough for the readonly one.
   //
   // To determine if the range encompasses *only* a generated newline, we need
-  // to validate that both the start and end endpoints are around a paragraph
-  // boundary and that, when normalized, the range would be a degenerate range.
+  // to validate that both the start and end endpoints are around the same
+  // paragraph boundary.
   if (attribute_id == UIA_IsReadOnlyAttributeId &&
       start()->anchor_id() != end()->anchor_id() &&
       start()->AtEndOfParagraph() && end()->AtStartOfParagraph() &&
-      *normalized_start == *normalized_end) {
+      *start()->AsLeafTextPositionBeforeCharacter() == *end()) {
     AXPlatformNodeWin* common_anchor = GetLowestAccessibleCommonPlatformNode();
     DCHECK(common_anchor);
 
@@ -585,6 +580,12 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     *value = attribute_value.ReleaseAsScalarVariant();
     return S_OK;
   }
+
+  // Use a cloned range so that GetAttributeValue does not introduce
+  // side-effects while normalizing the original range.
+  AXPositionInstance normalized_start = start()->Clone();
+  AXPositionInstance normalized_end = end()->Clone();
+  NormalizeTextRange(normalized_start, normalized_end);
 
   // The range is inclusive, so advance our endpoint to the next position
   const auto end_leaf_text_position = normalized_end->AsLeafTextPosition();

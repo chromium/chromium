@@ -7385,6 +7385,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // ++++5 kGenericContainer editable
   // ++++++6 kImage
   // ++++++7 kTextField editable
+  // ++++8 kGenericContainer
+  // ++++++9 kTextField editable
+  // ++++++10 kTextField editable
   AXNodeData root_1;
   AXNodeData generic_container_2;
   AXNodeData image_3;
@@ -7392,6 +7395,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   AXNodeData generic_container_5;
   AXNodeData image_6;
   AXNodeData text_field_7;
+  AXNodeData generic_container_8;
+  AXNodeData text_field_9;
+  AXNodeData text_field_10;
 
   root_1.id = 1;
   generic_container_2.id = 2;
@@ -7400,9 +7406,13 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   generic_container_5.id = 5;
   image_6.id = 6;
   text_field_7.id = 7;
+  generic_container_8.id = 8;
+  text_field_9.id = 9;
+  text_field_10.id = 10;
 
   root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {generic_container_2.id, generic_container_5.id};
+  root_1.child_ids = {generic_container_2.id, generic_container_5.id,
+                      generic_container_8.id};
 
   generic_container_2.role = ax::mojom::Role::kGenericContainer;
   generic_container_2.child_ids = {image_3.id, text_field_4.id};
@@ -7425,6 +7435,17 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   text_field_7.role = ax::mojom::Role::kTextField;
   text_field_7.AddState(ax::mojom::State::kEditable);
 
+  generic_container_8.role = ax::mojom::Role::kGenericContainer;
+  generic_container_8.child_ids = {text_field_9.id, text_field_10.id};
+
+  text_field_9.role = ax::mojom::Role::kTextField;
+  text_field_9.AddState(ax::mojom::State::kEditable);
+  text_field_9.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  text_field_10.role = ax::mojom::Role::kTextField;
+  text_field_10.AddState(ax::mojom::State::kEditable);
+
   ui::AXTreeUpdate update;
   ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.root_id = root_1.id;
@@ -7432,7 +7453,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.has_tree_data = true;
   update.nodes = {root_1,       generic_container_2, image_3,
                   text_field_4, generic_container_5, image_6,
-                  text_field_7};
+                  text_field_7, generic_container_8, text_field_9,
+                  text_field_10};
   Init(update);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
@@ -7469,6 +7491,25 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   expected_variant.Set(false);
   EXPECT_UIA_TEXTATTRIBUTE_EQ(range_2, UIA_IsReadOnlyAttributeId,
+                              expected_variant);
+  expected_variant.Reset();
+
+  // This is testing a corner case when the range spans two text fields
+  // separated by a paragraph boundary. This case used to not work because we
+  // were relying on NormalizeTextRange to handle generated newlines and
+  // normalization doesn't work when the range spans text fields.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range_3;
+  CreateTextRangeProviderWin(
+      range_3, owner, tree_id,
+      /*start_anchor_id*/ text_field_9.id, /*start_offset*/ 1,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ text_field_10.id, /*end_offset*/ 0,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range_3, /*expected_text*/ L"\n");
+
+  expected_variant.Set(true);
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(range_3, UIA_IsReadOnlyAttributeId,
                               expected_variant);
   expected_variant.Reset();
 }
