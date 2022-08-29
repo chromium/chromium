@@ -5,6 +5,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/bind.h"
@@ -14,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
@@ -439,7 +441,7 @@ void ExternalProtocolHandler::LaunchUrl(
   if (web_contents)  // Maybe NULL during testing.
     profile = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   BlockState block_state = GetBlockStateWithDelegate(
-      escaped_url.scheme(), base::OptionalOrNullptr(initiating_origin),
+      escaped_url.scheme(), base::OptionalToPtr(initiating_origin),
       g_external_protocol_handler_delegate, profile);
   if (block_state == BLOCK) {
     AddMessageToConsole(
