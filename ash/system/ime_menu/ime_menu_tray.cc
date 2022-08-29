@@ -64,6 +64,10 @@ const int kSettingsButtonId = 2;
 // Insets for the title view (dp).
 constexpr auto kTitleViewPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 
+// Insets for the bubble view to fix the overlapping
+// between the floating menu and the IME tray in kiosk session (dp).
+constexpr auto kKioskBubbleViewPadding = gfx::Insets::TLBR(-19, 0, -23, 0);
+
 // Returns the height range of ImeListView.
 gfx::Range GetImeListViewRange() {
   const int max_items = 5;
@@ -345,13 +349,16 @@ ImeMenuTray::~ImeMenuTray() {
 }
 
 void ImeMenuTray::ShowImeMenuBubbleInternal() {
+  gfx::Insets bubble_anchor_insets =
+      IsKioskSession() ? kKioskBubbleViewPadding : GetBubbleAnchorInsets();
+
   TrayBubbleView::InitParams init_params;
   init_params.delegate = GetWeakPtr();
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
-  init_params.anchor_rect.Inset(GetBubbleAnchorInsets());
+  init_params.anchor_rect.Inset(bubble_anchor_insets);
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
