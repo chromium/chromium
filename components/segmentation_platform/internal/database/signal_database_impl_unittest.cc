@@ -253,6 +253,12 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
                                    base::DoNothing());
   db_->LoadCallback(true);
   db_->UpdateCallback(true);
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, day1,
+                                   base::DoNothing());
+  db_->LoadCallback(true);
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, day1,
+                                   base::DoNothing());
+  db_->LoadCallback(true);
 
   signal_db_->GetSamples(signal_type, name_hash, day1.UTCMidnight(),
                          day2.UTCMidnight(),
@@ -268,7 +274,6 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   signal_db_->CompactSamplesForDay(signal_type, name_hash, day2,
                                    base::DoNothing());
   db_->LoadCallback(true);
-  db_->UpdateCallback(true);
 
   signal_db_->GetSamples(signal_type, name_hash, day2.UTCMidnight(),
                          day3.UTCMidnight(),
@@ -281,6 +286,9 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   // Compact samples for the day3 and verify. There should be no change since
   // there are no samples.
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, day3,
+                                   base::DoNothing());
+  db_->LoadCallback(true);
   signal_db_->CompactSamplesForDay(signal_type, name_hash, day3,
                                    base::DoNothing());
   db_->LoadCallback(true);

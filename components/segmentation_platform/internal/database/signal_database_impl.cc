@@ -250,7 +250,7 @@ void SignalDatabaseImpl::OnGetSamplesForCompaction(
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
   TRACE_EVENT("segmentation_platform",
               "SignalDatabaseImpl::OnGetSamplesForCompaction");
-  if (!success || !entries || entries->empty()) {
+  if (!success || !entries || entries->empty() || entries->size() == 1) {
     std::move(callback).Run(success);
     return;
   }
@@ -267,7 +267,11 @@ void SignalDatabaseImpl::OnGetSamplesForCompaction(
       new_sample->CopyFrom(signal_data.samples(i));
     }
 
-    keys_to_delete->emplace_back(pair.first);
+    // If the database was already compacted, and some entry was added with
+    // older timestamp, then append signals, and do not delete the key.
+    if (pair.first != compact_key) {
+      keys_to_delete->emplace_back(pair.first);
+    }
   }
 
   // Write to DB.
