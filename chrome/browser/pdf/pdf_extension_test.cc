@@ -3201,15 +3201,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest,
   WaitForSavedPdf(save_path);
 }
 
-// Flaky, http://crbug.com/1269103
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SaveWithPolicyUniqueTimeSuffix \
-  DISABLED_SaveWithPolicyUniqueTimeSuffix
-#else
-#define MAYBE_SaveWithPolicyUniqueTimeSuffix SaveWithPolicyUniqueTimeSuffix
-#endif
+// TODO(crbug.com/1269103): Make this test non-flaky.
 IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest,
-                       MAYBE_SaveWithPolicyUniqueTimeSuffix) {
+                       DISABLED_SaveWithPolicyUniqueTimeSuffix) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   CreateConflictingFilenames(GetDownloadDir().AppendASCII("combobox_form.pdf"),
