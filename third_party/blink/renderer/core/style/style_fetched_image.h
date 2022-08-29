@@ -83,6 +83,8 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   void Trace(Visitor*) const override;
 
+  bool IsOriginClean() const { return origin_clean_; }
+
  private:
   bool IsEqual(const StyleImage&) const override;
   void Prefinalize();

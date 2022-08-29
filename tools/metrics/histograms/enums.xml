@@ -41213,6 +41213,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4342" label="DeferredShaping2ReshapedByInspector"/>
   <int value="4343" label="DeferredShaping2ReshapedByPrinting"/>
   <int value="4344" label="DeferredShaping2ReshapedByScrolling"/>
+  <int value="4345" label="LCPCandidateImageFromOriginDirtyStyle"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

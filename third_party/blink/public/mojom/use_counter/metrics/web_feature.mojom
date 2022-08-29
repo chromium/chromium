@@ -3663,6 +3663,7 @@ enum WebFeature {
   kDeferredShaping2ReshapedByInspector = 4342,
   kDeferredShaping2ReshapedByPrinting = 4343,
   kDeferredShaping2ReshapedByScrolling = 4344,
+  kLCPCandidateImageFromOriginDirtyStyle = 4345,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

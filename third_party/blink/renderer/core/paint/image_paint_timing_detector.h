@@ -71,6 +71,11 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   bool queue_animated_paint = false;
   // LCP rect information, only populated when tracing is enabled.
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
+
+  // A non-style image, or a style image that comes from an origin-clean style.
+  // Images that come from origin-dirty styles should have some limitations on
+  // what they report.
+  bool origin_clean = true;
 };
 
 typedef std::pair<const LayoutObject*, const MediaTiming*> RecordId;
