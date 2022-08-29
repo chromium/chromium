@@ -6190,6 +6190,11 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     You can restore your previous apps
   </message>
 
+  <!-- Strings for multi-capture -->
+  <message name="IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE" desc="This is the message of the notification when an application starts capturing multiple surfaces.">
+    Your system administrator has allowed <ph name="APP_ORIGIN">$1</ph> to record your screen
+  </message>
+
   <!-- Strings for Projector-->
   <message name="IDS_PROJECTOR_APP_NAME" desc="Name for the Projector app in the launcher">
     Screencast
