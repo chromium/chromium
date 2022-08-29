@@ -129,8 +129,7 @@ class DropdownItemViewInfoListManager {
                 ? SuggestionCommonProperties.FormFactor.TABLET
                 : SuggestionCommonProperties.FormFactor.PHONE;
         DropdownItemViewInfo prevSuggestionWithBackground = null;
-        // Note: we consider the Omnibox as part of the background rounding group.
-        boolean inDropdownItemBackgroundRoundingGroup = true;
+        boolean inDropdownItemBackgroundRoundingGroup = false;
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
             final PropertyModel model = item.model;

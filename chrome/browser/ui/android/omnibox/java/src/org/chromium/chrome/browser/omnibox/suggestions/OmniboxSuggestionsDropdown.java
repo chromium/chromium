@@ -23,6 +23,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -193,16 +194,23 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             }
         });
 
+        boolean shouldShowModernizeVisualUpdate =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         final Resources resources = context.getResources();
-        int paddingSide = OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+        int paddingSide = shouldShowModernizeVisualUpdate
                 ? resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_side)
                 : 0;
         int paddingBottom =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
         ViewCompat.setPaddingRelative(this, paddingSide, 0, paddingSide, paddingBottom);
 
-        mStandardBgColor = ChromeColors.getDefaultThemeColor(context, false);
-        mIncognitoBgColor = ChromeColors.getDefaultThemeColor(context, true);
+        mStandardBgColor = shouldShowModernizeVisualUpdate
+                ? ChromeColors.getSurfaceColor(
+                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation)
+                : ChromeColors.getDefaultThemeColor(context, false);
+        mIncognitoBgColor = shouldShowModernizeVisualUpdate
+                ? context.getColor(R.color.omnibox_dropdown_bg_incognito)
+                : ChromeColors.getDefaultThemeColor(context, true);
     }
 
     /** Get the Android View implementing suggestion list. */
@@ -545,5 +553,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         setPadding(mTempPosition[0], getPaddingTop(),
                 mAnchorView.getWidth() - mAlignmentView.getWidth() - mTempPosition[0],
                 getPaddingBottom());
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public int getStandardBgColor() {
+        return mStandardBgColor;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public int getIncognitoBgColor() {
+        return mIncognitoBgColor;
     }
 }

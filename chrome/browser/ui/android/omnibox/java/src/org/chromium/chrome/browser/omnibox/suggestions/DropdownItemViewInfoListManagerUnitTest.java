@@ -374,4 +374,56 @@ public class DropdownItemViewInfoListManagerUnitTest {
         verifyModelEquals(list);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
     }
+
+    @Test
+    @SmallTest
+    public void suggestionsListRoundedCorners() {
+        final int groupId = 1;
+        when(mHeaderProcessor.allowBackgroundRounding()).thenReturn(false);
+        when(mBasicSuggestionProcessor.allowBackgroundRounding()).thenReturn(true);
+
+        List<DropdownItemViewInfo> list = Arrays.asList(
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId),
+                new DropdownItemViewInfo(mHeaderProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId));
+
+        mManager.setSourceViewInfoList(list, new SparseArray<GroupDetails>());
+        verifyModelEquals(list);
+
+        //
+        // ******************** <--- rounded corner
+        // * basic suggestion *
+        // ******************** <--- rounded corner
+        //                      <--- no corner
+        //  header suggestion
+        //                      <--- no corner
+        // ******************** <--- rounded corner
+        // * basic suggestion *
+        // ******************** <--- sharped corner
+        // ******************** <--- sharped corner
+        // * basic suggestion *
+        // ******************** <--- rounded corner
+        //
+        Assert.assertTrue(
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
+        Assert.assertTrue(mSuggestionModels.get(0).model.get(
+                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertFalse(
+                mSuggestionModels.get(1).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
+        Assert.assertFalse(mSuggestionModels.get(1).model.get(
+                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertTrue(
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
+        Assert.assertFalse(mSuggestionModels.get(2).model.get(
+                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertFalse(
+                mSuggestionModels.get(3).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
+        Assert.assertTrue(mSuggestionModels.get(3).model.get(
+                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+    }
 }
