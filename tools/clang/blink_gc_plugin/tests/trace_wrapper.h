@@ -27,9 +27,6 @@ class B : public GarbageCollected<B> {
  public:
   void Trace(Visitor* visitor) const;
   void TraceAfterDispatch(Visitor*) const {}
-
- protected:
-  B() = default;
 };
 
 class C : public B {
