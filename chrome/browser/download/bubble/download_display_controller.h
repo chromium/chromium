@@ -152,6 +152,7 @@ class DownloadDisplayController
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   IconInfo icon_info_;
+  bool fullscreen_notification_shown_ = false;
   bool download_completed_while_fullscreen_ = false;
   // DownloadDisplayController and DownloadBubbleUIController have the same
   // lifetime. Both are owned, constructed together, and destructed together by
