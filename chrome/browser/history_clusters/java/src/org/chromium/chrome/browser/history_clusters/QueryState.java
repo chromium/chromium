@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.history_clusters;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
+
+import java.util.Objects;
 
 /**
  * Class representing the state of the search UI. There are two meaningful properties: whether a
@@ -41,5 +45,19 @@ public class QueryState {
 
     boolean isSearching() {
         return mIsSearching;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mIsSearching, mIsSearching, mSearchEmptyString);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof QueryState)) return false;
+        QueryState other = (QueryState) obj;
+
+        return other.mIsSearching == mIsSearching && TextUtils.equals(mQuery, other.mQuery)
+                && TextUtils.equals(mSearchEmptyString, other.mSearchEmptyString);
     }
 }
