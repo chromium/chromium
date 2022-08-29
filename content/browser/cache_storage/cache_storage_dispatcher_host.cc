@@ -634,7 +634,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
  public:
   CacheStorageImpl(
       CacheStorageDispatcherHost* host,
-      const blink::StorageKey& storage_key,
       const absl::optional<storage::BucketLocator>& bucket,
       bool incognito,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
@@ -642,7 +641,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           coep_reporter,
       storage::mojom::CacheStorageOwner owner)
       : host_(host),
-        storage_key_(storage_key),
         bucket_(bucket),
         cross_origin_embedder_policy_(cross_origin_embedder_policy),
         coep_reporter_(std::move(coep_reporter)),
@@ -679,12 +677,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         TRACE_ID_GLOBAL(trace_id),
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-    // Return error if failed to retrieve bucket from QuotaManager.
-    if (!bucket_.has_value()) {
-      std::move(callback).Run(std::vector<std::u16string>());
-      return;
-    }
-
     auto cb = base::BindOnce(
         [](base::TimeTicks start_time, int64_t trace_id,
            blink::mojom::CacheStorage::KeysCallback callback,
@@ -705,6 +697,12 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           std::move(callback).Run(string16s);
         },
         base::TimeTicks::Now(), trace_id, std::move(callback));
+
+    // Return error if failed to retrieve bucket from QuotaManager.
+    if (!bucket_.has_value()) {
+      std::move(cb).Run(std::vector<std::string>());
+      return;
+    }
 
     GetOrCreateCacheStorage(base::BindOnce(
         [](int64_t trace_id, content::CacheStorage::EnumerateCachesCallback cb,
@@ -868,6 +866,8 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
                 blink::mojom::MatchResult::NewStatus(error));
             return;
           }
+          DCHECK(self->bucket_.has_value());
+
           TRACE_EVENT_WITH_FLOW1(
               "CacheStorage",
               "CacheStorageDispatchHost::CacheStorageImpl::Match::Callback",
@@ -879,7 +879,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           // against the requesting document's origin and
           // Cross-Origin-Embedder-Policy (COEP).
           if (ResponseBlockedByCrossOriginResourcePolicy(
-                  response.get(), self->storage_key_.origin(),
+                  response.get(), self->bucket_->storage_key.origin(),
                   self->cross_origin_embedder_policy_, self->coep_reporter_)) {
             std::move(callback).Run(blink::mojom::MatchResult::NewStatus(
                 CacheStorageError::kErrorCrossOriginResourcePolicy));
@@ -970,6 +970,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
             std::move(callback).Run(blink::mojom::OpenResult::NewStatus(error));
             return;
           }
+          DCHECK(self->bucket_.has_value());
 
           mojo::PendingAssociatedRemote<blink::mojom::CacheStorageCache>
               pending_remote;
@@ -980,7 +981,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
                 coep_reporter.InitWithNewPipeAndPassReceiver());
           }
           auto cache_impl = std::make_unique<CacheImpl>(
-              self->host_, std::move(cache_handle), self->storage_key_,
+              self->host_, std::move(cache_handle), self->bucket_->storage_key,
               self->cross_origin_embedder_policy_, std::move(coep_reporter),
               self->owner_);
           self->host_->AddCacheReceiver(
@@ -1059,7 +1060,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
     // check in `CacheStorageManager::OpenCacheStorage()`.
     if (host_->WasNotifiedOfBucketDataDeletion(bucket_.value())) {
       host_->UpdateOrCreateBucket(
-          storage_key_,
+          bucket_->storage_key,
           base::BindOnce(&CacheStorageImpl::UpdateOrCreateBucketCallback,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
       return;
@@ -1073,7 +1074,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   // Owns this.
   const raw_ptr<CacheStorageDispatcherHost> host_;
 
-  const blink::StorageKey storage_key_;
   // absl::nullopt when bucket retrieval has failed.
   absl::optional<storage::BucketLocator> bucket_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
@@ -1089,7 +1089,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
 CacheStorageDispatcherHost::CacheStorageDispatcherHost(
     CacheStorageContextImpl* context,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
-    : context_(context), quota_manager_proxy_(quota_manager_proxy) {
+    : context_(context), quota_manager_proxy_(std::move(quota_manager_proxy)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -1106,19 +1106,22 @@ void CacheStorageDispatcherHost::AddReceiver(
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (bucket.has_value() && WasNotifiedOfBucketDataDeletion(bucket.value())) {
-    // The list of deleted buckets gets added to each time
-    // `CacheStorageManager::DeleteBucketData()` is called, but it's not
-    // guaranteed that this means the bucket was actually deleted. To avoid
-    // a bucket being mistakenly considered deleted forever, treat a
-    // call to `CacheStorageDispatcherHost::AddReceiver` with a given bucket
-    // locator to be a signal that the corresponding bucket has not actually
-    // been deleted.
-    deleted_buckets_.erase(bucket.value());
+  if (bucket.has_value()) {
+    DCHECK_EQ(bucket->storage_key, storage_key);
+    if (WasNotifiedOfBucketDataDeletion(bucket.value())) {
+      // The list of deleted buckets gets added to each time
+      // `CacheStorageManager::DeleteBucketData()` is called, but it's not
+      // guaranteed that this means the bucket was actually deleted. To avoid
+      // a bucket being mistakenly considered deleted forever, treat a
+      // call to `CacheStorageDispatcherHost::AddReceiver` with a given bucket
+      // locator to be a signal that the corresponding bucket has not actually
+      // been deleted.
+      deleted_buckets_.erase(bucket.value());
+    }
   }
   bool incognito = context_ ? context_->is_incognito() : false;
   auto impl = std::make_unique<CacheStorageImpl>(
-      this, storage_key, bucket, incognito, cross_origin_embedder_policy,
+      this, bucket, incognito, cross_origin_embedder_policy,
       std::move(coep_reporter), owner);
   receivers_.Add(std::move(impl), std::move(receiver));
 }

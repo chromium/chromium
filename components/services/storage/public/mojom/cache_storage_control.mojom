@@ -22,9 +22,11 @@ enum CacheStorageOwner {
 // Observer interface for receiving callbacks after cache storage changes.
 interface CacheStorageObserver {
   // Called when caches are created or deleted.
+  // TODO(crbug.com/1218097): Pass bucket information also.
   OnCacheListChanged(blink.mojom.StorageKey storage_key);
 
   // Called when the content of a cache has been modified.
+  // TODO(crbug.com/1218097): Pass bucket information also.
   OnCacheContentChanged(blink.mojom.StorageKey storage_key,
                         string cache_name);
 };
@@ -38,6 +40,7 @@ interface CacheStorageObserver {
 interface CacheStorageControl {
   // Binds a CacheStorage receiver to the CacheStorageControl to access
   // the cache storage for a particular storage key and owner.
+  // TODO(crbug.com/1218097): Allow custom bucket names.
   AddReceiver(
       network.mojom.CrossOriginEmbedderPolicy policy,
       pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
