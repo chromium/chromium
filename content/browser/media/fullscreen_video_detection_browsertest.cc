@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include "build/build_config.h"
 
 #include "base/path_service.h"
 #include "content/browser/media/media_browsertest.h"
@@ -222,7 +223,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, DetachAttachDuringFullscreen) {
 
 // The test changes visibility of the <video> and observes
 // how it gets and loses effectively-fullscreen status.
-IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, HideVideoTag) {
+// TODO(crbug.com/1352246): Re-enable this test
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_HideVideoTag DISABLED_HideVideoTag
+#else
+#define MAYBE_HideVideoTag HideVideoTag
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, MAYBE_HideVideoTag) {
   auto* web_contents = shell()->web_contents();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/fullscreen.html")));
