@@ -77,6 +77,8 @@ AutocompleteMatch NewOpenTabResult(const std::string& url) {
 
 }  // namespace
 
+// http://crbug.com/1357483
+#define OmniboxProviderTest DISABLED_OmniboxProviderTest
 class OmniboxProviderTest : public testing::Test {
  public:
   OmniboxProviderTest() {
