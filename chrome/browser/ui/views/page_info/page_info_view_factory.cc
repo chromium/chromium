@@ -168,7 +168,9 @@ PageInfoViewFactory::CreateAdPersonalizationPageView() {
 // TODO(crbug.com/1346305): Use translatable strings instead of hardcoded one.
 std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(u"Cookies", presenter_->GetSimpleSiteName()),
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
+          presenter_->GetSimpleSiteName()),
       std::make_unique<PageInfoCookiesContentView>(presenter_));
 }
 

@@ -107,16 +107,25 @@ void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
 
 void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
+  const bool is_fps_allowed =
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxFirstPartySetsUI) &&
+      cookie_info.fps_info;
+
+  // TODO(crbug.com/1346305): After merge with data flow for third-party cookies
+  // move it inside the if clause.
+  const auto blocked_sites_count_message_id =
+      is_fps_allowed
+          ? IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT
+          : IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT_WHEN_FPS_BLOCKED;
+  const std::u16string num_blocked_sites_text =
+      l10n_util::GetPluralStringFUTF16(blocked_sites_count_message_id,
+                                       cookie_info.blocked_sites_count);
+
   const std::u16string num_allowed_sites_text =
       l10n_util::GetPluralStringFUTF16(
           IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
           cookie_info.allowed_sites_count);
-
-  // TODO(crbug.com/1346305): Add different text when FPS blocked.
-  const std::u16string num_blocked_sites_text =
-      l10n_util::GetPluralStringFUTF16(
-          IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
-          cookie_info.blocked_sites_count);
 
   // Create the cookie dialog button and blocking third-party cookies button
   // if they don't yet exist. Those methods get called each time site data is
@@ -128,9 +137,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
   // Update the text displaying the number of blocked sites.
   blocking_third_party_cookies_subtitle_label_->SetText(num_blocked_sites_text);
 
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxFirstPartySetsUI) &&
-      cookie_info.fps_info) {
+  if (is_fps_allowed) {
     const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
         IDS_PAGE_INFO_FPS_BUTTON_TITLE, cookie_info.fps_info->owner_name);
 
@@ -193,7 +200,7 @@ void PageInfoCookiesContentView::InitFPSButton() {
   PageInfo::PermissionInfo info;
   info.type = ContentSettingsType::COOKIES;
   info.setting = CONTENT_SETTING_ALLOW;
-  // TODO(crbug.com/1346305): Change to the correct icon.
+  // TODO(crbug.com/1346305): Change to the correct icon, after it's decided.
   const ui::ImageModel icon_fps = PageInfoViewFactory::GetPermissionIcon(info);
 
   const std::u16string& tooltip =
@@ -213,6 +220,7 @@ void PageInfoCookiesContentView::InitFPSButton() {
 }
 
 void PageInfoCookiesContentView::FPSSettingsButtonClicked(ui::Event const&) {
-  // TODO(crbug.com/1346305): Add passing current FPS owner to filter by it.
+  // TODO(crbug.com/1346305): Add passing current FPS owner to filter by it,
+  // after it's implemented.
   presenter_->OpenAllSitesView();
 }
