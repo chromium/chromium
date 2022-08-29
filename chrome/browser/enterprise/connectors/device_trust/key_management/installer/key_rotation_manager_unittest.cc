@@ -48,6 +48,7 @@ const char kDmToken[] = "dm_token";
 
 constexpr HttpResponseCode kSuccessCode = 200;
 constexpr HttpResponseCode kHardFailureCode = 400;
+constexpr HttpResponseCode kKeyConflictFailureCode = 409;
 constexpr HttpResponseCode kTransientFailureCode = 500;
 
 }  // namespace
@@ -116,14 +117,14 @@ TEST_P(KeyRotationManagerTest, Rotate_Hw_WithKey) {
             captured_body = body;
             std::move(callback).Run(kSuccessCode);
           }));
-  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData()).Times(1);
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::SUCCEEDED, future.Get());
 
   // Validate body.
   enterprise_management::DeviceManagementRequest request;
@@ -172,14 +173,14 @@ TEST_P(KeyRotationManagerTest, Rotate_Hw_NoKey) {
                           base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kSuccessCode);
       }));
-  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData()).Times(1);
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::SUCCEEDED, future.Get());
 
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(status_histogram_name(),
@@ -215,14 +216,14 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_NoKey) {
                           base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kSuccessCode);
       }));
-  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData()).Times(1);
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::SUCCEEDED, future.Get());
 
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(status_histogram_name(),
@@ -260,9 +261,9 @@ TEST_P(KeyRotationManagerTest, Rotate_NoKey_CreateKeyPairFails) {
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
 
   // Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
@@ -299,9 +300,9 @@ TEST_P(KeyRotationManagerTest, Rotate_Key_CreateKeyPairFails) {
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
 
   // Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
@@ -311,10 +312,10 @@ TEST_P(KeyRotationManagerTest, Rotate_Key_CreateKeyPairFails) {
 }
 
 // Tests a failed key rotation flow when a hardware key provider is available
-// and no key previously existed and the network request permanetly failed.
-// Also, in this case the registry should be cleared.
+// and no key previously existed and the network request permanently failed.
+// Also, in this case the persisted key should be cleared.
 TEST_P(KeyRotationManagerTest,
-       Rotate_Hw_WithoutKey_NetworkFails_ClearRegistry) {
+       Rotate_Hw_WithoutKey_NetworkFails_ClearPersistedKey) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake hardware keys.
@@ -355,9 +356,9 @@ TEST_P(KeyRotationManagerTest,
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
 
   // Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
@@ -368,10 +369,68 @@ TEST_P(KeyRotationManagerTest,
 }
 
 // Tests a failed key rotation flow when a hardware key provider is available
-// and no key previously existed and the network request transiently
-// fails. Also, in this case the registry should be cleared.
+// and no key previously existed and the network request permanently failed
+// because of a key signature error. Also, in this case the persisted key should
+// be cleared.
 TEST_P(KeyRotationManagerTest,
-       Rotate_Hw_WithoutKey_ExhaustedNetworkFails_ClearRegistry) {
+       Rotate_Hw_WithoutKey_NetworkFails_InvalidSignature_ClearPersistedKey) {
+  base::HistogramTester histogram_tester;
+
+  // The factory creates instances backed by fake hardware keys.
+  auto mock_persistence_delegate =
+      scoped_factory_.CreateMockedHardwareDelegate();
+
+  InSequence s;
+
+  // The mocked delegate is already set-up to return a working hardware key
+  // and provider. Force it to not return a key.
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair()).WillOnce(Invoke([]() {
+    return nullptr;
+  }));
+
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*mock_persistence_delegate, CreateKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate,
+              StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, _))
+      .WillOnce(Return(true));
+
+  GURL dm_server_url(kDmServerUrl);
+  auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+  EXPECT_CALL(*mock_network_delegate,
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kKeyConflictFailureCode);
+      }));
+
+  EXPECT_CALL(
+      *mock_persistence_delegate,
+      StoreKeyPair(BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()))
+      .WillOnce(Return(true));
+
+  auto manager = KeyRotationManager::CreateForTesting(
+      std::move(mock_network_delegate), std::move(mock_persistence_delegate));
+
+  base::test::TestFuture<KeyRotationManager::Result> future;
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED_KEY_CONFLICT, future.Get());
+
+  // Should expect one failed attempt to rotate a key on first try.
+  histogram_tester.ExpectUniqueSample(
+      status_histogram_name(), RotationStatus::FAILURE_CANNOT_UPLOAD_KEY, 1);
+  histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
+  histogram_tester.ExpectUniqueSample(http_code_histogram_name(),
+                                      kKeyConflictFailureCode, 1);
+}
+
+// Tests a failed key rotation flow when a hardware key provider is available
+// and no key previously existed and the network request transiently
+// fails. Also, in this case the persisted key should be cleared.
+TEST_P(KeyRotationManagerTest,
+       Rotate_Hw_WithoutKey_ExhaustedNetworkFails_ClearPersistedKey) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake hardware keys.
@@ -411,9 +470,9 @@ TEST_P(KeyRotationManagerTest,
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
 
   // Should expect one failed attempt to rotate a key with max tries.
   histogram_tester.ExpectUniqueSample(
@@ -448,14 +507,14 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey) {
                           base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kSuccessCode);
       }));
-  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData()).Times(1);
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::SUCCEEDED, future.Get());
 
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(status_histogram_name(),
@@ -489,9 +548,9 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey_StoreFailed) {
 
   GURL dm_server_url(kDmServerUrl);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
 
   // Should expect one failed attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(
@@ -526,6 +585,52 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey_NetworkFails_RestoreFails) {
                           base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kHardFailureCode);
       }));
+  EXPECT_CALL(*mock_persistence_delegate,
+              StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY,
+                           Not(original_key_wrapped)))
+      .WillOnce(Return(false));  // Restore of old key fails.
+  auto manager = KeyRotationManager::CreateForTesting(
+      std::move(mock_network_delegate), std::move(mock_persistence_delegate));
+  base::test::TestFuture<KeyRotationManager::Result> future;
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
+
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
+  // Should expect one failed attempt to rotate a key on first try.
+  histogram_tester.ExpectUniqueSample(
+      status_histogram_name(),
+      RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED, 1);
+  histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
+}
+
+// Tests a key rotation flow where the network request fails and the subsequent
+// attempt to restore the old key also fails because of an invalid signature
+// error.
+TEST_P(KeyRotationManagerTest,
+       Rotate_NoHw_WithKey_NetworkFails_InvalidSignature_RestoreFails) {
+  base::HistogramTester histogram_tester;
+
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
+  auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
+  InSequence s;
+
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_persistence_delegate, CreateKeyPair());
+  EXPECT_CALL(
+      *mock_persistence_delegate,
+      StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
+      .WillOnce(Return(true));  // Store of new key fails.
+
+  GURL dm_server_url(kDmServerUrl);
+  auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+  EXPECT_CALL(*mock_network_delegate,
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kKeyConflictFailureCode);
+      }));
 
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY,
@@ -534,9 +639,9 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey_NetworkFails_RestoreFails) {
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED_KEY_CONFLICT, future.Get());
 
   // Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
@@ -583,9 +688,9 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey_ExhaustedNetworkFailure) {
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
 
   // Should expect one failed attempt to rotate a key with max tries.
   histogram_tester.ExpectUniqueSample(
@@ -618,9 +723,9 @@ TEST_P(KeyRotationManagerTest, Rotate_StoreFailed_InvalidFilePermissions) {
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<KeyRotationManager::Result> future;
   manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
 
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(

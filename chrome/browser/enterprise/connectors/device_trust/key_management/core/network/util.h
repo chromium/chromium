@@ -13,6 +13,7 @@ namespace enterprise_connectors {
 enum class UploadKeyStatus {
   kSucceeded,
   kFailed,
+  kFailedKeyConflict,
   kFailedRetryable,
 };
 

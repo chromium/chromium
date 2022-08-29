@@ -27,4 +27,10 @@ bool MacDeviceTrustConnectorService::IsConnectorEnabled() const {
          !local_prefs_->GetBoolean(kDeviceTrustDisableKeyCreationPref);
 }
 
+void MacDeviceTrustConnectorService::OnConnectorEnabled() {
+  if (!local_prefs_->GetBoolean(kDeviceTrustDisableKeyCreationPref)) {
+    BrowserDeviceTrustConnectorService::OnConnectorEnabled();
+  }
+}
+
 }  // namespace enterprise_connectors

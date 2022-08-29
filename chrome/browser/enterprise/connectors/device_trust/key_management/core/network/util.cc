@@ -6,6 +6,15 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+// This error occurs when a public key already exists on the server for the
+// current device, and the key in the upload request is not signed by the key
+// that already exists.
+constexpr KeyNetworkDelegate::HttpResponseCode kKeyConflictCode = 409;
+
+}  // namespace
+
 class KeyNetworkDelegate;
 
 UploadKeyStatus ParseUploadKeyStatus(
@@ -14,8 +23,11 @@ UploadKeyStatus ParseUploadKeyStatus(
   if (status_leading_digit == 2)
     return UploadKeyStatus::kSucceeded;
 
-  if (status_leading_digit == 4)
-    return UploadKeyStatus::kFailed;
+  if (status_leading_digit == 4) {
+    return response_code == kKeyConflictCode
+               ? UploadKeyStatus::kFailedKeyConflict
+               : UploadKeyStatus::kFailed;
+  }
 
   return UploadKeyStatus::kFailedRetryable;
 }

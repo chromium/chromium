@@ -80,6 +80,15 @@ TEST_P(MacDeviceTrustConnectorServiceTest, IsConnectorEnabled) {
   EXPECT_EQ(is_attestation_flow_enabled(), service->IsConnectorEnabled());
 }
 
+// Tests that key manager is initialized only when key creation is not disabled.
+TEST_P(MacDeviceTrustConnectorServiceTest, OnConnectorEnabled) {
+  auto service = CreateService();
+  EXPECT_CALL(mock_key_manager_, StartInitialization())
+      .Times(is_key_creation_enabled() ? 1 : 0);
+
+  service->OnConnectorEnabled();
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          MacDeviceTrustConnectorServiceTest,
                          testing::Combine(testing::Bool(),

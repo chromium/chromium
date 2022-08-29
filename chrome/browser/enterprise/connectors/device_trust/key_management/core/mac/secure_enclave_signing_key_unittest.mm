@@ -104,6 +104,32 @@ TEST_F(SecureEnclaveSigningKeyTest, GenerateSigningKeySlowly) {
   EXPECT_FALSE(unexportable_key);
 }
 
+// Tests that the FromWrappedSigningKeySlowly returns a nullptr when the wrapped
+// key label is empty.
+TEST_F(SecureEnclaveSigningKeyTest,
+       FromWrappedSigningKeySlowly_EmptyWrappedKey) {
+  auto permanent_key_provider = SecureEnclaveSigningKeyProvider(
+      (SecureEnclaveClient::KeyType::kPermanent));
+  base::span<const uint8_t> empty_span;
+  EXPECT_FALSE(permanent_key_provider.FromWrappedSigningKeySlowly(empty_span));
+}
+
+// Tests that the FromWrappedSigningKeySlowly returns a nullptr when the wrapped
+// key label is invalid and does not match the provider key type.
+TEST_F(SecureEnclaveSigningKeyTest,
+       FromWrappedSigningKeySlowly_InvalidWrappedKeyLabel) {
+  auto permanent_key_provider = SecureEnclaveSigningKeyProvider(
+      (SecureEnclaveClient::KeyType::kPermanent));
+  EXPECT_FALSE(permanent_key_provider.FromWrappedSigningKeySlowly(
+      base::as_bytes(base::make_span(
+          std::string(constants::kTemporaryDeviceTrustSigningKeyLabel)))));
+
+  auto temp_key_provider = SecureEnclaveSigningKeyProvider(
+      (SecureEnclaveClient::KeyType::kTemporary));
+  EXPECT_FALSE(temp_key_provider.FromWrappedSigningKeySlowly(base::as_bytes(
+      base::make_span(std::string(constants::kDeviceTrustSigningKeyLabel)))));
+}
+
 // Tests that the FromWrappedSigningKeySlowly invokes the SE client's
 // CopyStoredKey method only when the wrapped key label matches the key
 // provider type and the provider is a permanent key provider.

@@ -58,17 +58,17 @@ void KeyRotationManagerImpl::Rotate(
     const GURL& dm_server_url,
     const std::string& dm_token,
     const std::string& nonce,
-    base::OnceCallback<void(bool)> result_callback) {
+    base::OnceCallback<void(Result)> result_callback) {
   if (dm_token.size() > kMaxDMTokenLength) {
     SYSLOG(ERROR) << "DMToken length out of bounds";
-    std::move(result_callback).Run(false);
+    std::move(result_callback).Run(Result::FAILED);
     return;
   }
 
   if (!persistence_delegate_->CheckRotationPermissions()) {
     RecordRotationStatus(nonce,
                          RotationStatus::FAILURE_INCORRECT_FILE_PERMISSIONS);
-    std::move(result_callback).Run(false);
+    std::move(result_callback).Run(Result::FAILED);
     return;
   }
 
@@ -78,7 +78,7 @@ void KeyRotationManagerImpl::Rotate(
                          RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not generate a "
                      "new signing key.";
-    std::move(result_callback).Run(false);
+    std::move(result_callback).Run(Result::FAILED);
     return;
   }
 
@@ -87,7 +87,7 @@ void KeyRotationManagerImpl::Rotate(
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_STORE_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not write to "
                      "signing key storage.";
-    std::move(result_callback).Run(false);
+    std::move(result_callback).Run(Result::FAILED);
     return;
   }
 
@@ -98,7 +98,7 @@ void KeyRotationManagerImpl::Rotate(
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not build the "
                      "upload key request.";
-    std::move(result_callback).Run(false);
+    std::move(result_callback).Run(Result::FAILED);
     return;
   }
 
@@ -150,7 +150,7 @@ bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
 void KeyRotationManagerImpl::OnDmServerResponse(
     const std::string& nonce,
     std::unique_ptr<SigningKeyPair> new_key_pair,
-    base::OnceCallback<void(bool)> result_callback,
+    base::OnceCallback<void(Result)> result_callback,
     KeyNetworkDelegate::HttpResponseCode response_code) {
   RecordUploadCode(nonce, response_code);
   auto upload_key_status = ParseUploadKeyStatus(response_code);
@@ -178,13 +178,19 @@ void KeyRotationManagerImpl::OnDmServerResponse(
     RecordRotationStatus(nonce, status);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not send public "
                      "key to DM server.";
-    std::move(result_callback).Run(false);
+    if (upload_key_status == UploadKeyStatus::kFailedKeyConflict) {
+      std::move(result_callback)
+          .Run(KeyRotationManager::Result::FAILED_KEY_CONFLICT);
+      return;
+    }
+
+    std::move(result_callback).Run(KeyRotationManager::Result::FAILED);
     return;
   }
   persistence_delegate_->CleanupTemporaryKeyData();
   key_pair_ = std::move(new_key_pair);
   RecordRotationStatus(nonce, RotationStatus::SUCCESS);
-  std::move(result_callback).Run(true);
+  std::move(result_callback).Run(KeyRotationManager::Result::SUCCEEDED);
 }
 
 }  // namespace enterprise_connectors

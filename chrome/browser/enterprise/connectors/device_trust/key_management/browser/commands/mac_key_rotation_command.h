@@ -11,6 +11,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 
+class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -19,8 +21,9 @@ namespace enterprise_connectors {
 
 class MacKeyRotationCommand : public KeyRotationCommand {
  public:
-  explicit MacKeyRotationCommand(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  MacKeyRotationCommand(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService* local_prefs);
 
   ~MacKeyRotationCommand() override;
 
@@ -30,8 +33,11 @@ class MacKeyRotationCommand : public KeyRotationCommand {
  private:
   friend class MacKeyRotationCommandTest;
 
-  explicit MacKeyRotationCommand(
+  MacKeyRotationCommand(
+      PrefService* local_prefs,
       std::unique_ptr<KeyRotationManager> key_rotation_manager);
+
+  base::raw_ptr<PrefService> local_prefs_;
 
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
 

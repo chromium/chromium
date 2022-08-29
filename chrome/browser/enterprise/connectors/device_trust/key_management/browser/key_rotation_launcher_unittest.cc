@@ -20,6 +20,7 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,9 +50,9 @@ class KeyRotationLauncherTest : public testing::Test {
   }
 
   std::unique_ptr<KeyRotationLauncher> CreateLauncher() {
-    return KeyRotationLauncher::Create(&fake_dm_token_storage_,
-                                       &fake_device_management_service_,
-                                       test_shared_loader_factory_);
+    return KeyRotationLauncher::Create(
+        &fake_dm_token_storage_, &fake_device_management_service_,
+        test_shared_loader_factory_, &local_prefs_);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -65,6 +66,7 @@ class KeyRotationLauncherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
+  TestingPrefServiceSimple local_prefs_;
 };
 
 TEST_F(KeyRotationLauncherTest, LaunchKeyRotation) {

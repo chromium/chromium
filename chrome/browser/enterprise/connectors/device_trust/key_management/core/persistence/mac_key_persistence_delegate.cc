@@ -34,6 +34,14 @@ bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
   // to permanent key storage when failure occurs during the key rotation. This
   // is because key storage is handled by the SecureEnclaveSigningKey upon key
   // creation.
+  if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
+    DCHECK_EQ(wrapped.size(), 0u);
+
+    // A previous signing key did not exist so the newly created signing key
+    // stored in the permanent key storage is deleted.
+    return client_->DeleteKey(SecureEnclaveClient::KeyType::kPermanent);
+  }
+
   auto key_type = SecureEnclaveClient::GetTypeFromWrappedKey(
       base::make_span(wrapped.data(), wrapped.size()));
 

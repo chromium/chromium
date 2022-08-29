@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/mock_key_rotation_command.h"
+#include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -30,7 +31,8 @@ void ScopedKeyRotationCommandFactory::SetMock(
 
 std::unique_ptr<KeyRotationCommand>
 ScopedKeyRotationCommandFactory::CreateCommand(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService* local_prefs) {
   if (mock_key_rotation_command_) {
     return std::move(mock_key_rotation_command_);
   }

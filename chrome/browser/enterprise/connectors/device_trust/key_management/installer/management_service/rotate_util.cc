@@ -85,8 +85,8 @@ bool RotateDeviceTrustKey(
       dm_server_url, *dm_token, *decoded_nonce,
       base::BindOnce(
           [](bool& rotation_result, base::OnceClosure quit_closure,
-             bool result) {
-            rotation_result = result;
+             KeyRotationManager::Result result) {
+            rotation_result = (result == KeyRotationManager::Result::SUCCEEDED);
             std::move(quit_closure).Run();
           },
           std::ref(rotation_result), run_loop.QuitClosure()));

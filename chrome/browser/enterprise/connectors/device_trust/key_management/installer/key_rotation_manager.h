@@ -21,6 +21,13 @@ class KeyNetworkDelegate;
 // installer.
 class KeyRotationManager {
  public:
+  //  Status of the key rotation.
+  enum class Result {
+    SUCCEEDED,
+    FAILED,
+    FAILED_KEY_CONFLICT,
+  };
+
   virtual ~KeyRotationManager() = default;
 
   static std::unique_ptr<KeyRotationManager> Create(
@@ -40,7 +47,7 @@ class KeyRotationManager {
   virtual void Rotate(const GURL& dm_server_url,
                       const std::string& dm_token,
                       const std::string& nonce,
-                      base::OnceCallback<void(bool)> result_callback) = 0;
+                      base::OnceCallback<void(Result)> result_callback) = 0;
 };
 
 }  // namespace enterprise_connectors

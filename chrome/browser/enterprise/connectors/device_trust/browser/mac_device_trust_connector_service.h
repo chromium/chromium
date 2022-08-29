@@ -34,6 +34,10 @@ class MacDeviceTrustConnectorService
   // Returns whether the Device Trust connector is enabled or not.
   bool IsConnectorEnabled() const override;
 
+  // Hook that is called to notify that the policy changed and the connector
+  // became, or is still, enabled.
+  void OnConnectorEnabled() override;
+
  private:
   base::raw_ptr<PrefService> local_prefs_;
 };

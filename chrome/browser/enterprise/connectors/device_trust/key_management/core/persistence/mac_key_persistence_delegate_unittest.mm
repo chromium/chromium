@@ -115,42 +115,17 @@ TEST_F(MacKeyPersistenceDelegateTest, StoreKeyPair_OSKey_Failure) {
 }
 
 // Tests that storing a key with an unspecified trust level invokes the clients'
-// UpdateStoredKeyLabel method when the wrapped data is correct.
+// DeleteKey method with the correct key type.
 TEST_F(MacKeyPersistenceDelegateTest, StoreKeyPair_UnspecifiedKey_Success) {
   InSequence s;
 
-  EXPECT_CALL(*mock_secure_enclave_client_, UpdateStoredKeyLabel(_, _))
-      .Times(0);
-  EXPECT_TRUE(persistence_delegate_->StoreKeyPair(
-      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED,
-      CreateWrappedKeyLabel(constants::kDeviceTrustSigningKeyLabel)));
-
-  // Correct wrapped data consists of the wrapped temporary key label.
-  EXPECT_CALL(*mock_secure_enclave_client_, UpdateStoredKeyLabel(_, _))
-      .WillOnce([](SecureEnclaveClient::KeyType current_key_type,
-                   SecureEnclaveClient::KeyType new_key_type) {
-        EXPECT_EQ(SecureEnclaveClient::KeyType::kTemporary, current_key_type);
-        EXPECT_EQ(SecureEnclaveClient::KeyType::kPermanent, new_key_type);
+  EXPECT_CALL(*mock_secure_enclave_client_, DeleteKey(_))
+      .WillOnce([](SecureEnclaveClient::KeyType current_key_type) {
+        EXPECT_EQ(SecureEnclaveClient::KeyType::kPermanent, current_key_type);
         return true;
       });
   EXPECT_TRUE(persistence_delegate_->StoreKeyPair(
-      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED,
-      CreateWrappedKeyLabel(constants::kTemporaryDeviceTrustSigningKeyLabel)));
-}
-
-// Tests that storing a key with an unspecified trust level fails when the
-// clients' UpdateStoredKeyLabel method returns false.
-TEST_F(MacKeyPersistenceDelegateTest, StoreKeyPair_UnspecifiedKey_Failure) {
-  EXPECT_CALL(*mock_secure_enclave_client_, UpdateStoredKeyLabel(_, _))
-      .WillOnce([](SecureEnclaveClient::KeyType current_key_type,
-                   SecureEnclaveClient::KeyType new_key_type) {
-        EXPECT_EQ(SecureEnclaveClient::KeyType::kTemporary, current_key_type);
-        EXPECT_EQ(SecureEnclaveClient::KeyType::kPermanent, new_key_type);
-        return false;
-      });
-  EXPECT_FALSE(persistence_delegate_->StoreKeyPair(
-      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED,
-      CreateWrappedKeyLabel(constants::kTemporaryDeviceTrustSigningKeyLabel)));
+      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
 }
 
 // Tests that storing a hardware generated key invokes the clients'

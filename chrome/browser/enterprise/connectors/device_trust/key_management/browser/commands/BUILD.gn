@@ -15,6 +15,7 @@ source_set("commands") {
   public_deps = [ "//base" ]
 
   deps = [
+    "//components/prefs",
     "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
   ]
@@ -72,6 +73,7 @@ source_set("test_support") {
 
   public_deps = [
     ":commands",
+    "//components/prefs",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//third_party/abseil-cpp:absl",
@@ -109,11 +111,14 @@ source_set("unit_tests") {
     sources = [ "mac_key_rotation_command_unittest.cc" ]
 
     deps += [
+      "//chrome/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//components/prefs",
+      "//components/prefs:test_support",
     ]
   }
 }
