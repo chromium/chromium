@@ -6191,13 +6191,6 @@ ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
 }
 
 ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  // Access the promise first to ensure it is created so that the proper state
-  // can be changed when it is resolved or rejected.
-  ScriptPromise promise = resolver->Promise();
-
   if (!GetFrame()) {
     FireRequestStorageAccessHistogram(RequestStorageResult::REJECTED_NO_ORIGIN);
 
@@ -6208,6 +6201,13 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
                           "requestStorageAccess Cannot be used unless the "
                           "document is fully active."));
   }
+
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  // Access the promise first to ensure it is created so that the proper state
+  // can be changed when it is resolved or rejected.
+  ScriptPromise promise = resolver->Promise();
 
   const bool has_user_gesture =
       LocalFrame::HasTransientUserActivation(GetFrame());
