@@ -4506,6 +4506,10 @@ CSSStyleSheet& Document::ElementSheet() {
   return *elem_sheet_;
 }
 
+bool Document::InPostLifecycleSteps() const {
+  return View() && View()->InPostLifecycleSteps();
+}
+
 void Document::MaybeHandleHttpRefresh(const String& content,
                                       HttpRefreshType http_refresh_type) {
   if (is_view_source_ || !dom_window_)

@@ -406,6 +406,7 @@ class CORE_EXPORT LocalFrameView final
   // schedule another animation frame here, but the layout tree should not be
   // invalidated.
   void RunPostLifecycleSteps();
+  bool InPostLifecycleSteps() const;
 
   void ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
@@ -1056,8 +1057,8 @@ class CORE_EXPORT LocalFrameView final
   LayoutUnit current_viewport_bottom_ = kIndefiniteSize;
   LayoutUnit current_minimum_top_;
   bool allow_deferred_shaping_ = false;
-
   bool can_have_scrollbars_;
+  bool in_post_lifecycle_steps_ = false;
 
   bool has_pending_layout_;
   LayoutSubtreeRootList layout_subtree_root_list_;

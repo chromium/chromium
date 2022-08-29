@@ -1028,7 +1028,13 @@ DocumentLifecycle& LocalFrameView::Lifecycle() const {
   return frame_->GetDocument()->Lifecycle();
 }
 
+bool LocalFrameView::InPostLifecycleSteps() const {
+  return GetFrame().LocalFrameRoot().View()->in_post_lifecycle_steps_;
+}
+
 void LocalFrameView::RunPostLifecycleSteps() {
+  base::AutoReset<bool> in_post_lifecycle_steps(&in_post_lifecycle_steps_,
+                                                true);
   AllowThrottlingScope allow_throttling(*this);
   RunIntersectionObserverSteps();
   if (mobile_friendliness_checker_)

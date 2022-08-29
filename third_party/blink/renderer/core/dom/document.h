@@ -1568,6 +1568,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsStopped() const {
     return lifecycle_.GetState() == DocumentLifecycle::kStopped;
   }
+  bool InPostLifecycleSteps() const;
 
   enum HttpRefreshType { kHttpRefreshFromHeader, kHttpRefreshFromMetaTag };
   void MaybeHandleHttpRefresh(const String&, HttpRefreshType);

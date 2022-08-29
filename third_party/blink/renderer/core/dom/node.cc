@@ -1150,6 +1150,7 @@ void Node::SetIsLink(bool is_link) {
 
 void Node::SetNeedsStyleInvalidation() {
   DCHECK(IsContainerNode());
+  DCHECK(!GetDocument().InPostLifecycleSteps());
   SetFlag(kNeedsStyleInvalidationFlag);
   MarkAncestorsWithChildNeedsStyleInvalidation();
 }
@@ -1334,6 +1335,7 @@ void Node::MarkAncestorsWithChildNeedsReattachLayoutTree() {
 void Node::SetNeedsReattachLayoutTree() {
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(GetDocument().GetStyleEngine().MarkReattachAllowed());
+  DCHECK(!GetDocument().InPostLifecycleSteps());
   DCHECK(IsElementNode() || IsTextNode());
   DCHECK(InActiveDocument());
   SetFlag(kNeedsReattachLayoutTree);
@@ -1343,6 +1345,7 @@ void Node::SetNeedsReattachLayoutTree() {
 void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
                                const StyleChangeReasonForTracing& reason) {
   DCHECK(!GetDocument().GetStyleEngine().InRebuildLayoutTree());
+  DCHECK(!GetDocument().InPostLifecycleSteps());
   DCHECK(change_type != kNoStyleChange);
   DCHECK(IsElementNode() || IsTextNode());
 
