@@ -171,24 +171,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that all items are accessible on the home page.
 // This is currently needed to prevent this test case from being ignored.
-// TODO(crbug.com/1339419): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testAccessibility DISABLED_testAccessibility
-#else
-#define MAYBE_testAccessibility testAccessibility
-#endif
-- (void)MAYBE_testAccessibility {
+- (void)testAccessibility {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that the collections shortcut are displayed and working.
-// TODO(crbug.com/1339419): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testCollectionShortcuts DISABLED_testCollectionShortcuts
-#else
-#define MAYBE_testCollectionShortcuts testCollectionShortcuts
-#endif
-- (void)MAYBE_testCollectionShortcuts {
+- (void)testCollectionShortcuts {
   // Check the Bookmarks.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -244,13 +232,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that when loading an invalid URL, the NTP is still displayed.
 // Prevents regressions from https://crbug.com/1063154 .
-// TODO(crbug.com/1339419): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testInvalidURL DISABLED_testInvalidURL
-#else
-#define MAYBE_testInvalidURL testInvalidURL
-#endif
-- (void)MAYBE_testInvalidURL {
+- (void)testInvalidURL {
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad, because key '-' could not be "
@@ -645,13 +627,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 // Tests that tapping the fake omnibox moves the collection.
-// TODO(crbug.com/1326523): enable once fixed on ios15-sdk-sim
-- (void)DISABLED_testTapFakeOmniboxScroll {
-  // Disable the test on iOS 15.3 due to build failure.
-  // TODO(crbug.com/1306515): enable the test with fix.
-  if (@available(iOS 15.3, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.3.");
-  }
+- (void)testTapFakeOmniboxScroll {
   // Get the collection and its layout.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
@@ -684,13 +660,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that tapping the fake omnibox then unfocusing it moves the collection
 // back to where it was.
-// TODO(crbug.com/1326523): enable once fixed on ios15-sdk-sim
-- (void)DISABLED_testTapFakeOmniboxScrollScrolled {
-  // Disable the test on iOS 15.3 due to build failure.
-  // TODO(crbug.com/1306515): enable the test with fix.
-  if (@available(iOS 15.3, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.3.");
-  }
+- (void)testTapFakeOmniboxScrollScrolled {
   // Get the collection and its layout.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
@@ -740,13 +710,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                             [NSString stringWithFormat:@"%i", 3])];
 }
 
-// TODO(crbug.com/1339419): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testFavicons DISABLED_testFavicons
-#else
-#define MAYBE_testFavicons testFavicons
-#endif
-- (void)MAYBE_testFavicons {
+- (void)testFavicons {
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -888,15 +852,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that initial position and content are maintained when rotating
 // the device back and forth.
-// TODO(crbug.com/1339419): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testInitialPositionAndOrientationChange \
-  DISABLED_testInitialPositionAndOrientationChange
-#else
-#define MAYBE_testInitialPositionAndOrientationChange \
-  testInitialPositionAndOrientationChange
-#endif
-- (void)MAYBE_testInitialPositionAndOrientationChange {
+- (void)testInitialPositionAndOrientationChange {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
   [self testNTPInitialPositionAndContent:collectionView];
@@ -982,13 +938,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 // Test to ensure that NTP for incognito mode works properly.
-// TODO(crbug.com/1339419): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testIncognitoMode DISABLED_testIncognitoMode
-#else
-#define MAYBE_testIncognitoMode testIncognitoMode
-#endif
-- (void)MAYBE_testIncognitoMode {
+- (void)testIncognitoMode {
   // Checks that default NTP is not incognito.
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
