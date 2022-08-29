@@ -1570,10 +1570,10 @@ class Safari(Browser):
         requirement = re.compile(
             r"""(?x)  # (extended regexp syntax for comments)
             ^\s*Requires\s+macOS\s+  # Starting with the magic string
-            ([0-9\.]+)  # A macOS version number of numbers and dots
+            ([0-9]+(?:\.[0-9]+)*)  # A macOS version number of numbers and dots
             (?:\s+beta(?:\s+[0-9]+)?)?  # Optionally a beta, itself optionally with a number (no dots!)
             (?:\s+or\s+later)?  # Optionally an 'or later'
-            \.\s*$  # Ending with a literal dot
+            \.?\s*$  # Optionally ending with a literal dot
             """
         )
 
