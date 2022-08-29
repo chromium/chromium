@@ -1,9 +1,6 @@
 name: Build/Test
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
 
 jobs:
   build-test:
