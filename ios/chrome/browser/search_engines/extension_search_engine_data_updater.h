@@ -10,7 +10,7 @@
 class TemplateURLService;
 
 // Extensions need to know data about the current default search provider. This
-// class observes that change and writes the necessary data to |NSUserDefaults|.
+// class observes that change and writes the necessary data to `NSUserDefaults`.
 class ExtensionSearchEngineDataUpdater : public TemplateURLServiceObserver {
  public:
   explicit ExtensionSearchEngineDataUpdater(TemplateURLService* urlService);

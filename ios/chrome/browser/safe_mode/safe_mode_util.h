@@ -12,7 +12,7 @@ namespace safe_mode_util {
 
 // Returns a list of the paths of all images (e.g., dynamic libraries)
 // currently loaded.
-// If |path_filter| is non-NULL, only paths starting with |path_filter| will be
+// If `path_filter` is non-NULL, only paths starting with `path_filter` will be
 // returned.
 std::vector<std::string> GetLoadedImages(const char* path_filter);
 

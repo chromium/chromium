@@ -16,7 +16,7 @@
 // PDF content of the captured window scene.
 @interface ScreenshotDelegate : NSObject <UIScreenshotServiceDelegate>
 
-// Init the ScreenshotDelegate and set the |browserInterfaceProvider| to
+// Init the ScreenshotDelegate and set the `browserInterfaceProvider` to
 // generate PDF screenshots from.
 - (instancetype)initWithBrowserInterfaceProvider:
     (id<BrowserInterfaceProvider>)browserInterfaceProvider

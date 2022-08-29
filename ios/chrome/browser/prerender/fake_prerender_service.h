@@ -16,7 +16,7 @@ class FakePrerenderService : public PrerenderService {
   ~FakePrerenderService() override;
 
   // Sets the WebState being prerendered.  Subsequent calls to
-  // IsWebStatePrerendered() will return true for |web_state|.
+  // IsWebStatePrerendered() will return true for `web_state`.
   void set_prerender_web_state(web::WebState* web_state) {
     prerender_web_state_ = web_state;
   }

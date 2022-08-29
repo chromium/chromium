@@ -69,13 +69,13 @@ class SearchEngineJsTest : public PlatformTest,
     web_state_->SetKeepRenderProcessAlive(true);
   }
 
-  // Stores paramaeters passed to |SetSearchableUrl|.
+  // Stores paramaeters passed to `SetSearchableUrl`.
   struct ReceivedSearchableUrl {
     web::WebState* web_state;
     GURL searchable_url;
   };
 
-  // Stores paramaeters passed to |AddTemplateURLByOSDD|.
+  // Stores paramaeters passed to `AddTemplateURLByOSDD`.
   struct ReceivedTemplateUrlByOsdd {
     web::WebState* web_state;
     GURL template_page_url;
@@ -118,9 +118,9 @@ class SearchEngineJsTest : public PlatformTest,
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
-  // Details about the last received |SetSearchableUrl| call.
+  // Details about the last received `SetSearchableUrl` call.
   ReceivedSearchableUrl last_received_searchable_url_;
-  // Details about the last received |AddTemplateURLByOSDD| call.
+  // Details about the last received `AddTemplateURLByOSDD` call.
   ReceivedTemplateUrlByOsdd last_received_template_url_by_osdd_;
 };
 

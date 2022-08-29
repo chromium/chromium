@@ -41,7 +41,7 @@ class SearchEngineTabHelper
 
   ~SearchEngineTabHelper() override;
 
-  // Saves the page |url| generated from a <form> submission to create the
+  // Saves the page `url` generated from a <form> submission to create the
   // TemplateURL when the submission leads to a successful navigation.
   void SetSearchableUrl(GURL url);
 
@@ -53,7 +53,7 @@ class SearchEngineTabHelper
 
   explicit SearchEngineTabHelper(web::WebState* web_state);
 
-  // Adds a TemplateURL by |searchable_url|.
+  // Adds a TemplateURL by `searchable_url`.
   void AddTemplateURLBySearchableURL(const GURL& searchable_url);
 
   // WebStateObserver implementation.
@@ -68,7 +68,7 @@ class SearchEngineTabHelper
                         bool icon_url_changed,
                         const gfx::Image& image) override;
 
-  // Manages observation relationship between |this| and WebFaviconDriver.
+  // Manages observation relationship between `this` and WebFaviconDriver.
   base::ScopedObservation<favicon::FaviconDriver,
                           favicon::FaviconDriverObserver>
       favicon_driver_observation_{this};

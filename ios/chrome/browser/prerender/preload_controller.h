@@ -44,15 +44,15 @@ class WebState;
 // destroyed.
 - (void)browserStateDestroyed;
 
-// Prerenders the given |url| with the given |transition|.  Normally, prerender
+// Prerenders the given `url` with the given `transition`.  Normally, prerender
 // requests are fulfilled after a short delay, to prevent unnecessary prerenders
-// while the user is typing.  If |immediately| is YES, this method starts
-// prerendering immediately, with no delay. |currentWebState| is used to create
-// a new WebState for the prerender with the same session. |immediately| should
+// while the user is typing.  If `immediately` is YES, this method starts
+// prerendering immediately, with no delay. `currentWebState` is used to create
+// a new WebState for the prerender with the same session. `immediately` should
 // be set to YES only when there is a very high confidence that the user will
-// navigate to the given |url|.
+// navigate to the given `url`.
 //
-// If there is already an existing request for |url|, this method does nothing
+// If there is already an existing request for `url`, this method does nothing
 // and does not reset the delay timer.  If there is an existing request for a
 // different URL, this method cancels that request and queues this request
 // instead.
@@ -65,7 +65,7 @@ class WebState;
 // Cancels any outstanding prerender requests and destroys any prerendered Tabs.
 - (void)cancelPrerender;
 
-// Returns whether |webState| is the WebState used for pre-rendering.
+// Returns whether `webState` is the WebState used for pre-rendering.
 - (BOOL)isWebStatePrerendered:(web::WebState*)webState;
 
 // Returns the currently prerendered WebState, or nil if none exists.  After

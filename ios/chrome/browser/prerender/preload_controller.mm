@@ -89,7 +89,7 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   return trial && trial->group_name() == kPrerenderTabEvictionTrialGroup;
 }
 
-// Returns whether |url| can be prerendered.
+// Returns whether `url` can be prerendered.
 bool CanPrerenderURL(const GURL& url) {
   // Prerendering is only enabled for http and https URLs.
   return url.is_valid() &&
@@ -250,7 +250,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   std::unique_ptr<web::JavaScriptDialogPresenter> _dialogPresenter;
 
   // A weak pointer to the webState that will be replaced with the prerendered
-  // one. This is needed by |startPrerender| to build the new webstate with the
+  // one. This is needed by `startPrerender` to build the new webstate with the
   // same sessions.
   web::WebState* _webStateToReplace;
 
@@ -260,7 +260,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 // The ChromeBrowserState passed on initialization.
 @property(nonatomic) ChromeBrowserState* browserState;
 
-// Redefine property as readwrite.  The URL that is prerendered in |_webState|.
+// Redefine property as readwrite.  The URL that is prerendered in `_webState`.
 // This can be different from the value returned by WebState last committed
 // navigation item, for example in cases where there was a redirect.
 //
@@ -299,10 +299,10 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 // Called to start any scheduled prerendering requests.
 - (void)startPrerender;
 
-// Destroys the preview Tab and resets |prerenderURL_| to the empty URL.
+// Destroys the preview Tab and resets `prerenderURL_` to the empty URL.
 - (void)destroyPreviewContents;
 
-// Removes any scheduled prerender requests and resets |scheduledURL| to the
+// Removes any scheduled prerender requests and resets `scheduledURL` to the
 // empty URL.
 - (void)removeScheduledPrerenderRequests;
 
@@ -427,7 +427,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 
   [self removeScheduledPrerenderRequests];
   _webStateToReplace = currentWebState;
-  // Observing the |_webStateToReplace| to make sure that if it's destructed
+  // Observing the `_webStateToReplace` to make sure that if it's destructed
   // the pre-rendering will be canceled.
   if (_webStateToReplace) {
     _webStateToReplace->AddObserver(_webStateToReplaceObserver.get());
@@ -556,7 +556,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
-  // the |_webStateToReplace| is observed for destruction event only.
+  // the `_webStateToReplace` is observed for destruction event only.
   if (_webStateToReplace == webState)
     return;
   DCHECK_EQ(webState, _webState.get());
@@ -566,7 +566,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
-  // the |_webStateToReplace| is observed for destruction event only.
+  // the `_webStateToReplace` is observed for destruction event only.
   if (_webStateToReplace == webState)
     return;
 
@@ -682,7 +682,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   [self destroyPreviewContents];
   self.prerenderedURL = self.scheduledURL;
   std::unique_ptr<PrerenderRequest> request = std::move(_scheduledRequest);
-  // No need to observer the destruction of the |_webStateToReplace| anymore
+  // No need to observer the destruction of the `_webStateToReplace` anymore
   // as it will be used here.
   if (_webStateToReplace) {
     _webStateToReplace->RemoveObserver(_webStateToReplaceObserver.get());

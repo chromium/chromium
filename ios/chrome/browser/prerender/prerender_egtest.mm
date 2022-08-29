@@ -302,7 +302,7 @@ GREYElementInteraction* RequestDesktopButton() {
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }
@@ -323,7 +323,7 @@ GREYElementInteraction* RequestDesktopButton() {
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }

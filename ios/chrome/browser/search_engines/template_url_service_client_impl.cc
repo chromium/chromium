@@ -28,10 +28,10 @@ TemplateURLServiceClientImpl::~TemplateURLServiceClientImpl() {}
 
 void TemplateURLServiceClientImpl::Shutdown() {
   // TemplateURLServiceClientImpl is owned by TemplateURLService which is a
-  // KeyedService with a dependency on HistoryService, thus |history_service_|
+  // KeyedService with a dependency on HistoryService, thus `history_service_`
   // outlives the ChromeTemplateURLServiceClient.
   //
-  // Remove self from |history_service_| observers in the shutdown phase of the
+  // Remove self from `history_service_` observers in the shutdown phase of the
   // two-phases since KeyedService are not supposed to use a dependend service
   // after the Shutdown call.
   if (history_service_) {

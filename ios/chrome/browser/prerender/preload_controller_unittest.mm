@@ -34,7 +34,7 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
   TestNetworkChangeNotifier& operator=(const TestNetworkChangeNotifier&) =
       delete;
 
-  // Simulates a change of the connection type to |type|. This will notify any
+  // Simulates a change of the connection type to `type`. This will notify any
   // objects that are NetworkChangeNotifiers.
   void SimulateNetworkConnectionChange(
       net::NetworkChangeNotifier::ConnectionType type) {

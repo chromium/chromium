@@ -25,13 +25,13 @@
 
 namespace {
 
-// Returns true if the |item|'s transition type is FORM_SUBMIT.
+// Returns true if the `item`'s transition type is FORM_SUBMIT.
 bool IsFormSubmit(const web::NavigationItem* item) {
   return ui::PageTransitionCoreTypeIs(item->GetTransitionType(),
                                       ui::PAGE_TRANSITION_FORM_SUBMIT);
 }
 
-// Generates a keyword from |item|. This code is based on:
+// Generates a keyword from `item`. This code is based on:
 // https://cs.chromium.org/chromium/src/chrome/browser/ui/search_engines/search_engine_tab_helper.cc
 std::u16string GenerateKeywordFromNavigationItem(
     const web::NavigationItem* item) {
@@ -97,9 +97,9 @@ void SearchEngineTabHelper::OnFaviconUpdated(
     url_service->UpdateProviderFavicons(potential_search_url, icon_url);
 }
 
-// When the page is loaded, checks if |searchable_url_| has a value generated
+// When the page is loaded, checks if `searchable_url_` has a value generated
 // from the <form> submission before the navigation. If true, and the navigation
-// is successful, adds a TemplateURL by |searchable_url_|. |searchable_url_|
+// is successful, adds a TemplateURL by `searchable_url_`. `searchable_url_`
 // will be set to empty in the end.
 void SearchEngineTabHelper::DidFinishNavigation(
     web::WebState* web_state,
@@ -127,7 +127,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
   // keyword.
 
   // Make sure that the page is the current page and other basic checks.
-  // When |page_url| has file: scheme, this method doesn't work because of
+  // When `page_url` has file: scheme, this method doesn't work because of
   // http://b/issue?id=863583. For that reason, this doesn't check and allow
   // urls referring to osdd urls with same schemes.
   if (!osdd_url.is_valid() || !osdd_url.SchemeIsHTTPOrHTTPS())
@@ -159,7 +159,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
     return;
 
   // Download the OpenSearch description document. If this is successful, a
-  // new keyword will be created when done. For |render_frame_id| arg, it's used
+  // new keyword will be created when done. For `render_frame_id` arg, it's used
   // by network::ResourceRequest::render_frame_id, we don't use Blink so leave
   // it to be the default value defined here:
   //   https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=194;
@@ -171,7 +171,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
                          /* request_id */ 0);
 }
 
-// Creates a TemplateURL by |searchable_url| and adds it to TemplateURLService.
+// Creates a TemplateURL by `searchable_url` and adds it to TemplateURLService.
 // This code is based on:
 // https://cs.chromium.org/chromium/src/chrome/browser/ui/search_engines/search_engine_tab_helper.cc
 void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
