@@ -68,8 +68,9 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
     }
   }
   for (DWORD i = 0; i < usage->cUsageIdentifier; i++) {
-    if (base::StringPiece(usage->rgpszUsageIdentifier[i]) ==
-        szOID_PKIX_KP_SERVER_AUTH) {
+    base::StringPiece eku = base::StringPiece(usage->rgpszUsageIdentifier[i]);
+    if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
+        (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {
       return true;
     }
   }

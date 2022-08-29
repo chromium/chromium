@@ -208,6 +208,60 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
   }
 }
 
+// Repeat the GetTrustRestrictedEKU test but use szOID_ANY_ENHANCED_KEY_USAGE
+// instead of szOID_PKIX_KP_SERVER_AUTH
+TEST(TrustStoreWin, GetTrustRestrictedEKUAnyUsage) {
+  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD,
+                                           szOID_ANY_ENHANCED_KEY_USAGE));
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootEByE,
+                                           szOID_PKIX_KP_CLIENT_AUTH));
+  ASSERT_TRUE(
+      AddToStoreWithEKURestriction(root_store.get(), kMultiRootCByD, nullptr));
+  ASSERT_TRUE(AddToStoreWithEKURestriction(
+      intermediate_store.get(), kMultiRootCByE, szOID_PKIX_KP_CLIENT_AUTH));
+  ASSERT_TRUE(AddToStoreWithEKURestriction(
+      intermediate_store.get(), kMultiRootCByD, szOID_ANY_ENHANCED_KEY_USAGE));
+  std::unique_ptr<TrustStoreWin> trust_store_win =
+      TrustStoreWin::CreateForTesting(std::move(root_store),
+                                      std::move(intermediate_store),
+                                      std::move(disallowed_store));
+
+  constexpr struct TestData {
+    base::StringPiece file_name;
+    CertificateTrustType expected_result;
+  } kTestData[] = {
+      // Root cert with EKU szOID_ANY_ENHANCED_KEY_USAGE usage set should be
+      // trusted.
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
+      // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
+      // cert for server auth.
+      {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
+      // Root cert with no EKU usages but is also an intermediate cert that is
+      // allowed for server auth, so we let it be used for path building.
+      {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
+      // Intermediate cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow
+      // usage of cert for server auth.
+      {kMultiRootCByE, CertificateTrustType::DISTRUSTED},
+      // Unknown cert has unspecified trust.
+      {kMultiRootFByE, CertificateTrustType::UNSPECIFIED},
+  };
+  for (const auto& test_data : kTestData) {
+    SCOPED_TRACE(test_data.file_name);
+    auto parsed_cert = ParseCertFromFile(test_data.file_name);
+    ASSERT_TRUE(parsed_cert);
+    CertificateTrust trust =
+        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
+    EXPECT_EQ(test_data.expected_result, trust.type);
+  }
+}
+
 // Test if duplicate certs are added to the root and intermediate stores,
 // possibly with different EKU usages.
 TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
