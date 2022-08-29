@@ -180,7 +180,20 @@ public final class StatusMediatorUnitTest {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
 
         mMediator.setUrlHasFocus(false);
-        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertFalse(mMediator.shouldDisplaySearchEngineIcon());
+    }
+
+    @Test
+    @SmallTest
+    public void searchEngineLogoTablet() {
+        setupStatusMediator(/* isTablet= */ true);
+        mMediator.setUrlHasFocus(true);
+
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertTrue(mMediator.shouldDisplaySearchEngineIcon());
+
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
         Assert.assertFalse(mMediator.shouldDisplaySearchEngineIcon());
     }

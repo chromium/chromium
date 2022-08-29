@@ -170,6 +170,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
         mTextOffsetAdjustedScale = mTextOffsetThreshold == 1 ? 1 : (1 - mTextOffsetThreshold);
 
         mIsTablet = isTablet;
+        mShowStatusIconWhenUrlFocused = mIsTablet;
+
         mPermissionDialogController = permissionDialogController;
         mPermissionDialogController.addObserver(this);
 
