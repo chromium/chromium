@@ -27,16 +27,6 @@ class WebrtcFrameSchedulerConstantRate : public WebrtcFrameScheduler {
 
   ~WebrtcFrameSchedulerConstantRate() override;
 
-  // VideoChannelStateObserver implementation.
-  void OnKeyFrameRequested() override;
-  void OnTargetBitrateChanged(int bitrate_kbps) override;
-  void OnFrameEncoded(
-      WebrtcVideoEncoder::EncodeResult encode_result,
-      const WebrtcVideoEncoder::EncodedFrame* encoded_frame) override;
-  void OnEncodedFrameSent(
-      webrtc::EncodedImageCallback::Result result,
-      const WebrtcVideoEncoder::EncodedFrame& frame) override;
-
   // WebrtcFrameScheduler implementation.
   void Start(const base::RepeatingClosure& capture_callback) override;
   void Pause(bool pause) override;

@@ -19,33 +19,6 @@ WebrtcFrameSchedulerConstantRate::~WebrtcFrameSchedulerConstantRate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void WebrtcFrameSchedulerConstantRate::OnKeyFrameRequested() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void WebrtcFrameSchedulerConstantRate::OnTargetBitrateChanged(
-    int bitrate_kbps) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void WebrtcFrameSchedulerConstantRate::OnFrameEncoded(
-    WebrtcVideoEncoder::EncodeResult encode_result,
-    const WebrtcVideoEncoder::EncodedFrame* encoded_frame) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (encoded_frame && encoded_frame->stats) {
-    // This scheduler cannot estimate this delay. Set it to 0 so the client can
-    // still calculate the derived stats.
-    encoded_frame->stats->send_pending_delay = base::TimeDelta();
-  }
-}
-
-void WebrtcFrameSchedulerConstantRate::OnEncodedFrameSent(
-    webrtc::EncodedImageCallback::Result result,
-    const WebrtcVideoEncoder::EncodedFrame& frame) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
 void WebrtcFrameSchedulerConstantRate::Start(
     const base::RepeatingClosure& capture_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

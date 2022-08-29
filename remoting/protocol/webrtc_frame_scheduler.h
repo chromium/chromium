@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_H_
 
 #include "base/callback_forward.h"
-#include "remoting/protocol/video_channel_state_observer.h"
 
 namespace webrtc {
 class DesktopFrame;
@@ -17,10 +16,10 @@ namespace remoting::protocol {
 // An abstract interface for frame schedulers, which are responsible for
 // scheduling when video frames are captured and for defining encoding
 // parameters for each frame.
-class WebrtcFrameScheduler : public VideoChannelStateObserver {
+class WebrtcFrameScheduler {
  public:
   WebrtcFrameScheduler() = default;
-  ~WebrtcFrameScheduler() override = default;
+  virtual ~WebrtcFrameScheduler() = default;
 
   // Starts the scheduler. |capture_callback| will be called whenever a new
   // frame should be captured.

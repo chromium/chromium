@@ -68,11 +68,6 @@ class WebrtcVideoStream::Core : public webrtc::DesktopCapturer::Callback {
   void Pause(bool pause);
   void SelectSource(webrtc::ScreenId id);
 
-  // Mimics the remoting::VideoChannelStateObserver interface but only
-  // implements the methods the outer class needs to call.
-  void OnKeyFrameRequested();
-  void OnTargetBitrateChanged(int bitrate_kbps);
-
   // Called by the video track source to set the max frame rate for the stream.
   void SetMaxFramerateFps(int max_framerate_fps);
 
@@ -180,16 +175,6 @@ void WebrtcVideoStream::Core::SelectSource(webrtc::ScreenId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   screen_id_ = id;
   capturer_->SelectSource(id);
-}
-
-void WebrtcVideoStream::Core::OnKeyFrameRequested() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  scheduler_.OnKeyFrameRequested();
-}
-
-void WebrtcVideoStream::Core::OnTargetBitrateChanged(int bitrate_kbps) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  scheduler_.OnTargetBitrateChanged(bitrate_kbps);
 }
 
 void WebrtcVideoStream::Core::SetMaxFramerateFps(int max_framerate_fps) {
@@ -320,23 +305,10 @@ void WebrtcVideoStream::SetObserver(Observer* observer) {
 
 void WebrtcVideoStream::OnKeyFrameRequested() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Unretained is sound as |core_| is owned by |this| and destroyed on
-  // |core_task_runner_|.
-  core_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WebrtcVideoStream::Core::OnKeyFrameRequested,
-                                base::Unretained(core_.get())));
 }
 
 void WebrtcVideoStream::OnTargetBitrateChanged(int bitrate_kbps) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Unretained is sound as |core_| is owned by |this| and destroyed on
-  // |core_task_runner_|.
-  core_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebrtcVideoStream::Core::OnTargetBitrateChanged,
-                     base::Unretained(core_.get()), bitrate_kbps));
 }
 
 void WebrtcVideoStream::OnFrameEncoded(

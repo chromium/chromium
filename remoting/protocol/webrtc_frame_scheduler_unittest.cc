@@ -22,9 +22,7 @@ namespace remoting::protocol {
 
 class WebrtcFrameSchedulerTest : public ::testing::Test {
  public:
-  WebrtcFrameSchedulerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        frame_(DesktopSize(1, 1)) {}
+  WebrtcFrameSchedulerTest() = default;
   ~WebrtcFrameSchedulerTest() override = default;
 
   void InitConstantRateScheduler() {
@@ -37,24 +35,19 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
     capture_callback_count_++;
 
     if (simulate_capture_) {
-      // Simulate a completed capture and encode.
       scheduler_->OnFrameCaptured(&frame_);
-      WebrtcVideoEncoder::EncodedFrame encoded_frame;
-      encoded_frame.key_frame = false;
-      encoded_frame.data = webrtc::EncodedImageBuffer::Create(1);
-      scheduler_->OnFrameEncoded(WebrtcVideoEncoder::EncodeResult::SUCCEEDED,
-                                 &encoded_frame);
     }
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<WebrtcFrameScheduler> scheduler_;
 
   int capture_callback_count_ = 0;
   bool simulate_capture_ = true;
-  BasicDesktopFrame frame_;
+  BasicDesktopFrame frame_{DesktopSize(1, 1)};
 };
 
 TEST_F(WebrtcFrameSchedulerTest, NoCapturesIfZeroFps) {
