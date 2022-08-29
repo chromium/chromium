@@ -725,7 +725,7 @@ const base::Feature kSearchEnginePromoNewDeviceV2{
     "SearchEnginePromo.NewDeviceVer2", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMostRecentTabOnBackgroundCloseTab{
-    "MostRecentTabOnBackgroundCloseTab", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MostRecentTabOnBackgroundCloseTab", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kNewInstanceFromDraggedLink{
     "NewInstanceFromDraggedLink", base::FEATURE_ENABLED_BY_DEFAULT};
