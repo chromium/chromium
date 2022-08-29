@@ -346,6 +346,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // this frame.
   bool has_pixel_moving_foreground_filters_ = false;
 
+  // Track skipped non-root render passes in DrawRenderPass.
+  base::flat_set<AggregatedRenderPassId> skipped_render_pass_ids_;
+
   bool visible_ = false;
   bool disable_color_checks_for_testing_ = false;
 

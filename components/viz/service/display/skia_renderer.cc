@@ -560,6 +560,17 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
   }
 }
 
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+struct SkiaRenderer::RenderPassOverlayParams {
+  AggregatedRenderPassId render_pass_id;
+  RenderPassBacking render_pass_backing;
+  AggregatedRenderPassDrawQuad rpdq;
+  SharedQuadState shared_quad_state;
+  cc::FilterOperations filters;
+  cc::FilterOperations backdrop_filters;
+};
+#endif
+
 enum class SkiaRenderer::BypassMode {
   // The RenderPass's contents' blendmode would have made a transparent black
   // image and the RenderPass's own blend mode does not effect transparent black
@@ -919,8 +930,9 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // Delete render pass overlay backings from the previous frame that will not
   // be used again.
-  for (auto& backing : available_render_pass_overlay_backings_) {
-    skia_output_surface_->DestroySharedImage(backing.mailbox);
+  for (auto& overlay : available_render_pass_overlay_backings_) {
+    skia_output_surface_->DestroySharedImage(
+        overlay.render_pass_backing.mailbox);
   }
   available_render_pass_overlay_backings_.clear();
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
@@ -995,16 +1007,15 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
   for (const auto& mailbox : released_overlays) {
     // If this mailbox is for render pass overlay, mark the released render pass
     // overlay backing as available to be re-used.
-    auto backing_iter =
+    auto it =
         std::find_if(in_flight_render_pass_overlay_backings_.begin(),
                      in_flight_render_pass_overlay_backings_.end(),
-                     [&mailbox](const RenderPassBacking& backing) {
-                       return backing.mailbox == mailbox;
+                     [&mailbox](const RenderPassOverlayParams& overlay) {
+                       return overlay.render_pass_backing.mailbox == mailbox;
                      });
-    if (backing_iter != in_flight_render_pass_overlay_backings_.end()) {
-      available_render_pass_overlay_backings_.push_back(
-          std::move(*backing_iter));
-      in_flight_render_pass_overlay_backings_.erase(backing_iter);
+    if (it != in_flight_render_pass_overlay_backings_.end()) {
+      available_render_pass_overlay_backings_.push_back(*it);
+      in_flight_render_pass_overlay_backings_.erase(it);
     }
 
     auto iter = std::find_if(awaiting_release_overlay_locks_.begin(),
@@ -2952,7 +2963,9 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
 
   // A real render pass that was turned into an image
   auto iter = render_pass_backings_.find(quad->render_pass_id);
-  DCHECK(render_pass_backings_.end() != iter);
+  DCHECK(render_pass_backings_.end() != iter)
+      << "Could not find render pass id # " << quad->render_pass_id
+      << " in the render pass overlay backings";
   // This function is called after AllocateRenderPassResourceIfNeeded, so
   // there should be backing ready.
   RenderPassBacking& backing = iter->second;
@@ -3152,42 +3165,139 @@ void SkiaRenderer::FlushOutputSurface() {
 }
 
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-SkiaRenderer::RenderPassBacking&
+bool SkiaRenderer::CanSkipRenderPassOverlay(
+    AggregatedRenderPassId render_pass_id,
+    const AggregatedRenderPassDrawQuad* rpdq,
+    RenderPassOverlayParams** output_render_pass_overlay) {
+  // The render pass draw quad can be skipped if (1) the render pass has no
+  // damage and is skipped in DirectRender and (2) the parameters of drawing the
+  // render pass has not changed.
+
+  // Check if the render pass has been re-drawn.
+  if (skipped_render_pass_ids_.count(render_pass_id) == 0)
+    return false;
+
+  // Every time a new render_pass_overlay is allocated, it's added to the back
+  // of the list. In order to get the render_pass_overlay of the previous frame,
+  // loop through the list in a reverse order since there might be multiple
+  // render pass overlays with the same render pass id.
+  RenderPassOverlayParams* overlay_found = nullptr;
+  bool Found_in_available_backings = false;
+  for (auto rit = in_flight_render_pass_overlay_backings_.rbegin();
+       rit != in_flight_render_pass_overlay_backings_.rend(); ++rit) {
+    if (rit->render_pass_id == render_pass_id) {
+      overlay_found = &*rit;
+      break;
+    }
+  }
+
+  // The backing of the previous frame might be complete and moved to
+  // available_render_pass_overlay_backings_ when this frame starts.
+  std::vector<RenderPassOverlayParams>::iterator it_to_delete;
+  if (!overlay_found) {
+    int index = 0;
+    for (auto rit = available_render_pass_overlay_backings_.rbegin();
+         rit != available_render_pass_overlay_backings_.rend();
+         ++rit, ++index) {
+      if (rit->render_pass_id == render_pass_id) {
+        Found_in_available_backings = true;
+        // Cannot use reverse_iterator. Convert it to const_iterator.
+        it_to_delete =
+            available_render_pass_overlay_backings_.begin() +
+            (available_render_pass_overlay_backings_.size() - index - 1);
+        overlay_found = &*rit;
+        break;
+      }
+    }
+  }
+
+  if (!overlay_found) {
+    return false;
+  }
+
+  // Compare RenderPassDrawQuads of the previous frame and the current frame.
+  const cc::FilterOperations* filters = FiltersForPass(render_pass_id);
+  const cc::FilterOperations* backdrop_filters =
+      BackdropFiltersForPass(render_pass_id);
+  overlay_found->rpdq.shared_quad_state = &(overlay_found->shared_quad_state);
+
+  bool no_change_in_rpdq = overlay_found->rpdq.Equals(*rpdq);
+  bool no_change_in_filters =
+      filters ? (overlay_found->filters == *filters)
+              : (overlay_found->filters == cc::FilterOperations());
+  bool no_change_in_backdrop_filters =
+      backdrop_filters
+          ? (overlay_found->backdrop_filters == *backdrop_filters)
+          : (overlay_found->backdrop_filters == cc::FilterOperations());
+
+  if (no_change_in_rpdq && no_change_in_filters &&
+      no_change_in_backdrop_filters) {
+    if (Found_in_available_backings) {
+      in_flight_render_pass_overlay_backings_.push_back(*overlay_found);
+      available_render_pass_overlay_backings_.erase(it_to_delete);
+      *output_render_pass_overlay =
+          &in_flight_render_pass_overlay_backings_.back();
+    } else {
+      *output_render_pass_overlay = overlay_found;
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+
+SkiaRenderer::RenderPassOverlayParams*
 SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     AggregatedRenderPassId render_pass_id,
     const AggregatedRenderPassDrawQuad* rpdq,
     ResourceFormat buffer_format,
     gfx::ColorSpace color_space,
     gfx::Size buffer_size) {
+  RenderPassOverlayParams overlay_params;
   auto it = std::find_if(available_render_pass_overlay_backings_.begin(),
                          available_render_pass_overlay_backings_.end(),
-                         [&buffer_format, &buffer_size,
-                          &color_space](const RenderPassBacking& backing) {
+                         [&buffer_format, &buffer_size, &color_space](
+                             const RenderPassOverlayParams& overlay) {
+                           auto& backing = overlay.render_pass_backing;
                            return backing.format == buffer_format &&
                                   backing.size == buffer_size &&
                                   backing.color_space == color_space;
                          });
-
-  gpu::Mailbox mailbox;
   if (it == available_render_pass_overlay_backings_.end()) {
     // Allocate the image for render pass overlay if there is no existing
     // available one.
     constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY |
                                    gpu::SHARED_IMAGE_USAGE_RASTER;
-    mailbox = skia_output_surface_->CreateSharedImage(
+    auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, kOverlayUsage,
         gpu::kNullSurfaceHandle);
-    in_flight_render_pass_overlay_backings_.push_back(
-        RenderPassBacking{buffer_size, /*generate_mipmap=*/false, color_space,
-                          buffer_format, mailbox, /*is_root=*/false});
+    overlay_params.render_pass_backing = {
+        buffer_size, /*generate_mipmap=*/false, color_space, buffer_format,
+        mailbox,     /*is_root=*/false};
   } else {
-    mailbox = it->mailbox;
-    in_flight_render_pass_overlay_backings_.push_back(std::move(*it));
+    overlay_params = *it;
     available_render_pass_overlay_backings_.erase(it);
   }
 
-  return in_flight_render_pass_overlay_backings_.back();
+  // Add current rpdq to RenderPassOverlayParams.
+  overlay_params.render_pass_id = render_pass_id;
+  overlay_params.shared_quad_state.SetAll(*rpdq->shared_quad_state);
+  overlay_params.rpdq.SetAll(*rpdq);
+
+  if (const cc::FilterOperations* filters = FiltersForPass(render_pass_id);
+      filters) {
+    overlay_params.filters = *filters;
+  }
+  if (const cc::FilterOperations* backdrop_filters =
+          BackdropFiltersForPass(render_pass_id);
+      backdrop_filters) {
+    overlay_params.backdrop_filters = *backdrop_filters;
+  }
+
+  in_flight_render_pass_overlay_backings_.push_back(overlay_params);
+
+  return &in_flight_render_pass_overlay_backings_.back();
 }
 
 void SkiaRenderer::PrepareRenderPassOverlay(
@@ -3332,12 +3442,22 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       cc::MathUtil::CheckedRoundUp(filter_bounds.width(), kBufferMultiple),
       cc::MathUtil::CheckedRoundUp(filter_bounds.height(), kBufferMultiple));
 
-  const RenderPassBacking& dst_overlay_backing =
-      GetOrCreateRenderPassOverlayBacking(
-          quad->render_pass_id, quad, buffer_format, color_space, buffer_size);
+  RenderPassOverlayParams* overlay_params = nullptr;
+  bool can_skip_render_pass =
+      CanSkipRenderPassOverlay(quad->render_pass_id, quad, &overlay_params);
+  if (!can_skip_render_pass) {
+    overlay_params = GetOrCreateRenderPassOverlayBacking(
+        quad->render_pass_id, quad, buffer_format, color_space, buffer_size);
+  }
+  DCHECK(overlay_params);
 
+  const RenderPassBacking& dst_overlay_backing =
+      overlay_params->render_pass_backing;
   overlay->mailbox = dst_overlay_backing.mailbox;
 
+  // Still call BeginPaintRenderPass/EndPaint when skipping the render pass, so
+  // we get the notification (DidReceiveReleasedOverlays) for releaseing the
+  // mailbox of the skipped rendering.
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
       quad->render_pass_id, dst_overlay_backing.size,
       dst_overlay_backing.format, /*mipmap=*/false,
@@ -3349,55 +3469,60 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     return;
   }
 
-  // Clear the backing to ARGB(0,0,0,0).
-  current_canvas_->clear(SkColorSetARGB(0, 0, 0, 0));
+  if (!can_skip_render_pass) {
+    // Clear the backing to ARGB(0,0,0,0).
+    current_canvas_->clear(SkColorSetARGB(0, 0, 0, 0));
 
-  // Adjust the |content_device_transform| to make sure filter extends are drawn
-  // inside of the buffer.
-  params.content_device_transform.Translate(-filter_bounds.x(),
-                                            -filter_bounds.y());
+    // Adjust the |content_device_transform| to make sure filter extends are
+    // drawn inside of the buffer.
+    params.content_device_transform.Translate(-filter_bounds.x(),
+                                              -filter_bounds.y());
 
-  // Also adjust the |rounded_corner_bounds| to the new location.
-  if (params.mask_filter_info) {
-    params.mask_filter_info->Transform(params.content_device_transform);
-  }
+    // Also adjust the |rounded_corner_bounds| to the new location.
+    if (params.mask_filter_info) {
+      params.mask_filter_info->Transform(params.content_device_transform);
+    }
 
-  // When Render Pass has a single quad inside we would draw that directly.
-  if (bypass != render_pass_bypass_quads_.end()) {
-    if (bypass_mode == BypassMode::kDrawTransparentQuad) {
-      DrawColoredQuad(SkColors::kTransparent, &rpdq_params, &params);
-    } else if (bypass_mode == BypassMode::kDrawBypassQuad) {
-      DrawQuadInternal(bypass->second, &rpdq_params, &params);
+    // When Render Pass has a single quad inside we would draw that directly.
+    if (bypass != render_pass_bypass_quads_.end()) {
+      if (bypass_mode == BypassMode::kDrawTransparentQuad) {
+        DrawColoredQuad(SkColors::kTransparent, &rpdq_params, &params);
+      } else if (bypass_mode == BypassMode::kDrawBypassQuad) {
+        DrawQuadInternal(bypass->second, &rpdq_params, &params);
+      } else {
+        NOTREACHED();
+      }
     } else {
-      NOTREACHED();
-    }
-  } else {
-    DCHECK(src_quad_backing);
-    auto content_image = skia_output_surface_->MakePromiseSkImageFromRenderPass(
-        quad->render_pass_id, src_quad_backing->size, src_quad_backing->format,
-        src_quad_backing->generate_mipmap,
-        RenderPassBackingSkColorSpace(*src_quad_backing),
-        src_quad_backing->mailbox);
-    if (!content_image) {
-      DLOG(ERROR) << "MakePromiseSkImageFromRenderPass() in "
-                     "PrepareRenderPassOverlay() failed.";
-      EndPaint(/*failed=*/true);
-      return;
-    }
+      DCHECK(src_quad_backing);
+      auto content_image =
+          skia_output_surface_->MakePromiseSkImageFromRenderPass(
+              quad->render_pass_id, src_quad_backing->size,
+              src_quad_backing->format, src_quad_backing->generate_mipmap,
+              RenderPassBackingSkColorSpace(*src_quad_backing),
+              src_quad_backing->mailbox);
+      if (!content_image) {
+        DLOG(ERROR) << "MakePromiseSkImageFromRenderPass() in "
+                       "PrepareRenderPassOverlay() failed.";
+        EndPaint(/*failed=*/true);
+        return;
+      }
 
-    if (src_quad_backing->generate_mipmap) {
-      params.sampling =
-          SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
+      if (src_quad_backing->generate_mipmap) {
+        params.sampling =
+            SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
+      }
+
+      params.vis_tex_coords = cc::MathUtil::ScaleRectProportional(
+          quad->tex_coord_rect, gfx::RectF(quad->rect), params.visible_rect);
+
+      gfx::RectF valid_texel_bounds(content_image->width(),
+                                    content_image->height());
+
+      SkPaint paint = params.paint(GetContentColorFilter());
+
+      DrawSingleImage(content_image.get(), valid_texel_bounds, &rpdq_params,
+                      &paint, &params);
     }
-
-    params.vis_tex_coords = cc::MathUtil::ScaleRectProportional(
-        quad->tex_coord_rect, gfx::RectF(quad->rect), params.visible_rect);
-    gfx::RectF valid_texel_bounds(content_image->width(),
-                                  content_image->height());
-
-    SkPaint paint = params.paint(GetContentColorFilter());
-    DrawSingleImage(content_image.get(), valid_texel_bounds, &rpdq_params,
-                    &paint, &params);
   }
   current_canvas_ = nullptr;
 

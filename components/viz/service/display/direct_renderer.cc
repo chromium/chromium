@@ -414,6 +414,7 @@ void DirectRenderer::DrawFrame(
   current_frame()->render_passes_in_draw_order = nullptr;
   current_frame()->root_render_pass = nullptr;
 
+  skipped_render_pass_ids_.clear();
   render_passes_in_draw_order->clear();
   render_pass_filters_.clear();
   render_pass_backdrop_filters_.clear();
@@ -602,8 +603,11 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
 
 void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   TRACE_EVENT0("viz", "DirectRenderer::DrawRenderPass");
-  if (CanSkipRenderPass(render_pass))
+  if (CanSkipRenderPass(render_pass)) {
+    skipped_render_pass_ids_.insert(render_pass->id);
     return;
+  }
+
   UseRenderPass(render_pass);
 
   // TODO(crbug.com/582554): This change applies only when Vulkan is enabled and

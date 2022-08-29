@@ -115,6 +115,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   enum class BypassMode;
   struct DrawQuadParams;
   struct DrawRPDQParams;
+  struct RenderPassOverlayParams;
   class ScopedSkImageBuilder;
   class ScopedYUVSkImageBuilder;
 
@@ -276,7 +277,12 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   };
 
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  RenderPassBacking& GetOrCreateRenderPassOverlayBacking(
+  bool CanSkipRenderPassOverlay(
+      AggregatedRenderPassId render_pass_id,
+      const AggregatedRenderPassDrawQuad* rpdq,
+      RenderPassOverlayParams** output_render_pass_overlay);
+
+  RenderPassOverlayParams* GetOrCreateRenderPassOverlayBacking(
       AggregatedRenderPassId render_pass_id,
       const AggregatedRenderPassDrawQuad* rpdq,
       ResourceFormat buffer_format,
@@ -429,10 +435,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   base::flat_set<OverlayLock, OverlayLockComparator>
       awaiting_release_overlay_locks_;
 
-  // Tracks render pass overlay backings that are currently in use and available
-  // for re-using via mailboxes. RenderPassBacking.generate_mipmap is not used.
-  std::vector<RenderPassBacking> in_flight_render_pass_overlay_backings_;
-  std::vector<RenderPassBacking> available_render_pass_overlay_backings_;
+  // Tracks RenderPassDrawQuad and render pass overlay backings that are
+  // currently in use and available for re-using via mailboxes.
+  // RenderPassBacking.generate_mipmap is not used.
+  std::vector<RenderPassOverlayParams> in_flight_render_pass_overlay_backings_;
+  std::vector<RenderPassOverlayParams> available_render_pass_overlay_backings_;
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
   gfx::ColorConversionSkFilterCache color_filter_cache_;
