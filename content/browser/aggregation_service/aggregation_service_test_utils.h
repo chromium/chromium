@@ -69,6 +69,11 @@ AggregatableReportRequest CreateExampleRequest(
     mojom::AggregationServiceMode aggregation_mode =
         mojom::AggregationServiceMode::kDefault);
 
+AggregatableReportRequest CreateExampleRequestWithReportTime(
+    base::Time report_time,
+    mojom::AggregationServiceMode aggregation_mode =
+        mojom::AggregationServiceMode::kDefault);
+
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
 AggregatableReport CloneAggregatableReport(const AggregatableReport& report);
