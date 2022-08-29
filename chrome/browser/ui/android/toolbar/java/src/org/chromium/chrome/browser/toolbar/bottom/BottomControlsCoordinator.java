@@ -100,7 +100,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
         layoutManager.addSceneOverlay(sceneLayer);
 
         if (mContentDelegate != null) {
-            mContentDelegate.initializeWithNative(activity, mMediator::setBottomControlsVisible);
+            mContentDelegate.initializeWithNative(
+                    activity, mMediator::setBottomControlsVisible, root::onModelTokenChange);
         }
     }
 
