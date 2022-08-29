@@ -5,7 +5,6 @@
 #include "ash/system/message_center/unified_message_list_view.h"
 #include <string>
 
-#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/system/message_center/ash_notification_view.h"
@@ -138,15 +137,16 @@ class UnifiedMessageListView::MessageViewContainer
                           message_center_style::kSeperatorColor));
     }
 
-    int message_center_notification_corner_radius =
+    const int message_center_notification_corner_radius =
         features::IsNotificationsRefreshEnabled()
-            ? kMessageCenterNotificationCornerRadius
+            ? kMessageCenterNotificationInnerCornerRadius
             : 0;
-    const int top_radius = is_top ? kBubbleCornerRadius
-                                  : message_center_notification_corner_radius;
-    const int bottom_radius = is_bottom
-                                  ? kBubbleCornerRadius
-                                  : message_center_notification_corner_radius;
+    const int top_radius = is_top
+                               ? kMessageCenterNotificationTopBottomCornerRadius
+                               : message_center_notification_corner_radius;
+    const int bottom_radius =
+        is_bottom ? kMessageCenterNotificationTopBottomCornerRadius
+                  : message_center_notification_corner_radius;
     message_view_->UpdateCornerRadius(top_radius, bottom_radius);
     control_view_->UpdateCornerRadius(top_radius, bottom_radius);
   }
@@ -156,7 +156,7 @@ class UnifiedMessageListView::MessageViewContainer
     need_update_corner_radius_ = true;
 
     int corner_radius = features::IsNotificationsRefreshEnabled()
-                            ? kMessageCenterNotificationCornerRadius
+                            ? kMessageCenterNotificationInnerCornerRadius
                             : 0;
     message_view_->UpdateCornerRadius(corner_radius, corner_radius);
   }
@@ -280,7 +280,9 @@ class UnifiedMessageListView::MessageViewContainer
 
     need_update_corner_radius_ = false;
 
-    message_view_->UpdateCornerRadius(kBubbleCornerRadius, kBubbleCornerRadius);
+    message_view_->UpdateCornerRadius(
+        kMessageCenterNotificationTopBottomCornerRadius,
+        kMessageCenterNotificationTopBottomCornerRadius);
 
     // Also update `above_view_`'s bottom and `below_view_`'s top corner radius
     // when sliding.
@@ -290,14 +292,16 @@ class UnifiedMessageListView::MessageViewContainer
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
     if (above_view_)
       above_view_->message_view()->UpdateCornerRadius(
-          kMessageCenterNotificationCornerRadius, kBubbleCornerRadius);
+          kMessageCenterNotificationInnerCornerRadius,
+          kMessageCenterNotificationTopBottomCornerRadius);
 
     below_view_ = (index == list_child_views.size() - 1)
                       ? nullptr
                       : AsMVC(list_child_views[index + 1]);
     if (below_view_)
       below_view_->message_view()->UpdateCornerRadius(
-          kBubbleCornerRadius, kMessageCenterNotificationCornerRadius);
+          kMessageCenterNotificationTopBottomCornerRadius,
+          kMessageCenterNotificationInnerCornerRadius);
   }
 
   void OnSlideEnded(const std::string& notification_id) override {

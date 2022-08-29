@@ -24,8 +24,10 @@ constexpr auto kGroupedNotificationContainerExpandedInsets =
 
 constexpr int kMessagePopupCornerRadius = 16;
 
-constexpr int kMessageCenterNotificationCornerRadius = 2;
+constexpr int kMessageCenterNotificationInnerCornerRadius = 2;
 constexpr int kMessageCenterScrollViewCornerRadius = 12;
+constexpr int kMessageCenterNotificationTopBottomCornerRadius =
+    kMessageCenterScrollViewCornerRadius;
 constexpr int kMessageCenterPadding = 8;
 constexpr int kMessageCenterBottomPadding = 8;
 constexpr int kMessageListNotificationSpacing = 2;
