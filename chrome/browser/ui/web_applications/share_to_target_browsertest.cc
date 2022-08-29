@@ -89,21 +89,6 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
     return contents;
   }
 
-  bool IsServiceAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // If ash is does not contain the relevant test controller functionality,
-    // then there's nothing to do for this test.
-    if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-            crosapi::mojom::TestController::Uuid_) <
-        static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                             kSetSelectedSharesheetAppMinVersion)) {
-      LOG(WARNING) << "Unsupported ash version.";
-      return false;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    return true;
-  }
-
   void InstallWebAppFromManifest(const GURL& app_url) {
     DCHECK(app_id_.empty());
     app_id_ = web_app::InstallWebAppFromManifest(browser(), app_url);
@@ -136,9 +121,6 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPosterWebApp) {
-  if (!IsServiceAvailable())
-    return;
-
   const GURL app_url = https_server()->GetURL("/web_share_target/poster.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
@@ -155,9 +137,6 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPosterWebApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToChartsWebApp) {
-  if (!IsServiceAvailable())
-    return;
-
   const GURL app_url = https_server()->GetURL("/web_share_target/charts.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
@@ -170,9 +149,6 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToChartsWebApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareImage) {
-  if (!IsServiceAvailable())
-    return;
-
   const GURL app_url =
       https_server()->GetURL("/web_share_target/multimedia.html");
   InstallWebAppFromManifest(app_url);
@@ -184,9 +160,6 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareImage) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareMultimedia) {
-  if (!IsServiceAvailable())
-    return;
-
   const GURL app_url =
       https_server()->GetURL("/web_share_target/multimedia.html");
   InstallWebAppFromManifest(app_url);
@@ -202,9 +175,6 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareMultimedia) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPartialWild) {
-  if (!IsServiceAvailable())
-    return;
-
   const GURL app_url =
       https_server()->GetURL("/web_share_target/partial-wild.html");
   InstallWebAppFromManifest(app_url);

@@ -202,25 +202,9 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Lacros tests may be run with an old version of ash-chrome where the lacros
-  // service or the sharesheet interface are not available.
-  bool IsServiceAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* const service = chromeos::LacrosService::Get();
-    return service && service->IsAvailable<crosapi::mojom::Sharesheet>();
-#else
-    return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
-
-    // If the lacros service or the sharesheet interface are not
-    // available on this version of ash-chrome, this test suite will no-op.
-    if (!IsServiceAvailable())
-      return;
 
     // Replace the production sharesheet with a fake for testing.
     mojo::Remote<crosapi::mojom::Sharesheet>& remote =
