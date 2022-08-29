@@ -699,32 +699,53 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
   stream_ << "Check failed: " << condition << ". ";
 }
 
+#if !defined(OFFICIAL_BUILD)
+// static
+void LogMessage::AppendCrashInfoForDevBuilds(std::ostream& out) {
+  // `!BUILDFLAG(IS_NACL)` because `base::debug::OutputCrashKeysToStream` and
+  // `base::debug::StackTrace` are not available in NaCl (i.e. `//base/BUILD.gn`
+  // removes their .cc files `if (is_nacl)`; see also r319987).
+  //
+  // Unclear why _exactly_ `!BUILDFLAG(IS_AIX)` was added in r467484, nor why
+  // `!defined(__UCLIBC__)` was added in r343626.
+#if !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && !BUILDFLAG(IS_AIX)
+  // Include a newline to separate from the main log message.
+  //
+  // Using "\n" instead of `std::endl` because the latter flushes, and the LLVM
+  // style guide (yes, I know this is not LLVM but) recommends the former
+  // instead of the latter for that reason.
+  out << "\n";
+
+  // Include a stack trace.
+  base::debug::StackTrace stack_trace;
+  stack_trace.OutputToStream(&out);
+  base::debug::TaskTrace task_trace;
+  if (!task_trace.empty())
+    task_trace.OutputToStream(&out);
+
+  // Include the IPC context, if any.
+  // TODO(chrisha): Integrate with symbolization once those tools exist!
+  const auto* task = base::TaskAnnotator::CurrentTaskForThread();
+  if (task && task->ipc_hash) {
+    out << "IPC message handler context: "
+        << base::StringPrintf("0x%08X", task->ipc_hash) << "\n";
+  }
+
+  // Include the crash keys, if any.
+  base::debug::OutputCrashKeysToStream(out);
+#endif
+}
+#endif
+
 LogMessage::~LogMessage() {
   size_t stack_start = stream_.str().length();
-#if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
-    !BUILDFLAG(IS_AIX)
+#if !defined(OFFICIAL_BUILD)
   if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
     // Include a stack trace on a fatal, unless a debugger is attached.
-    base::debug::StackTrace stack_trace;
-    stream_ << std::endl;  // Newline to separate from log message.
-    stack_trace.OutputToStream(&stream_);
-    base::debug::TaskTrace task_trace;
-    if (!task_trace.empty())
-      task_trace.OutputToStream(&stream_);
-
-    // Include the IPC context, if any.
-    // TODO(chrisha): Integrate with symbolization once those tools exist!
-    const auto* task = base::TaskAnnotator::CurrentTaskForThread();
-    if (task && task->ipc_hash) {
-      stream_ << "IPC message handler context: "
-              << base::StringPrintf("0x%08X", task->ipc_hash) << std::endl;
-    }
-
-    // Include the crash keys, if any.
-    base::debug::OutputCrashKeysToStream(stream_);
+    AppendCrashInfoForDevBuilds(stream_);
   }
 #endif
-  stream_ << std::endl;
+  stream_ << "\n";
   std::string str_newline(stream_.str());
   TRACE_LOG_MESSAGE(
       file_, base::StringPiece(str_newline).substr(message_start_), line_);
