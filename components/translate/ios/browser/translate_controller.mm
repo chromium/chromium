@@ -4,12 +4,14 @@
 
 #import "components/translate/ios/browser/translate_controller.h"
 
+#include <cmath>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/json/string_escape.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/translate/core/common/translate_util.h"
@@ -32,10 +34,42 @@
 namespace translate {
 
 namespace {
+
 // Prefix for the translate javascript commands. Must be kept in sync with
 // translate_ios.js.
 const char kCommandPrefix[] = "translate";
+
+// Extracts a TranslateErrors value from `value` for the given `key`. Returns
+// absl::nullopt if the value is missing or not convertible to TranslateErrors.
+absl::optional<TranslateErrors::Type> FindTranslateErrorsKey(
+    const base::Value& value,
+    base::StringPiece key) {
+  // Does `value` contains a double value for `key`?
+  const absl::optional<double> found_value = value.FindDoubleKey(key);
+  if (!found_value.has_value())
+    return absl::nullopt;
+
+  // Does the double value convert to an integral value? This is to reject
+  // values like `1.3` that do not represent an enumerator.
+  const double double_value = found_value.value();
+  if (double_value != std::trunc(double_value))
+    return absl::nullopt;
+
+  // Is the value in range? It is safe to convert the enumerator values to
+  // `double` as IEEE754 floating point can safely represent all integral
+  // values below 2**53 as they have 53 bits for the mantissa.
+  constexpr double kMinValue = static_cast<double>(TranslateErrors::NONE);
+  constexpr double kMaxValue = static_cast<double>(TranslateErrors::TYPE_LAST);
+  if (double_value < kMinValue || kMaxValue < double_value)
+    return absl::nullopt;
+
+  // Since `double_value` has no fractional part, is in range for the
+  // enumeration and the enumeration has no holes between enumerators,
+  // it is safe to cast the value to the enumeration.
+  return static_cast<TranslateErrors::Type>(double_value);
 }
+
+}  // anonymous namespace
 
 TranslateController::TranslateController(web::WebState* web_state,
                                          JsTranslateManager* manager)
@@ -106,18 +140,14 @@ bool TranslateController::OnJavascriptCommandReceived(
 }
 
 bool TranslateController::OnTranslateReady(const base::Value& command) {
-  absl::optional<double> error_code = command.FindDoubleKey("errorCode");
-  if (!error_code.has_value() || *error_code < TranslateErrors::NONE ||
-      *error_code >= TranslateErrors::TRANSLATE_ERROR_MAX) {
+  absl::optional<TranslateErrors::Type> error_type =
+      FindTranslateErrorsKey(command, "errorCode");
+  if (!error_type.has_value())
     return false;
-  }
 
   absl::optional<double> load_time;
   absl::optional<double> ready_time;
-
-  const TranslateErrors::Type error_type =
-      static_cast<TranslateErrors::Type>(*error_code);
-  if (error_type == TranslateErrors::NONE) {
+  if (*error_type == TranslateErrors::NONE) {
     load_time = command.FindDoubleKey("loadTime");
     ready_time = command.FindDoubleKey("readyTime");
     if (!load_time.has_value() || !ready_time.has_value()) {
@@ -125,25 +155,21 @@ bool TranslateController::OnTranslateReady(const base::Value& command) {
     }
   }
   if (observer_) {
-    observer_->OnTranslateScriptReady(error_type, load_time.value_or(0.),
+    observer_->OnTranslateScriptReady(*error_type, load_time.value_or(0.),
                                       ready_time.value_or(0.));
   }
   return true;
 }
 
 bool TranslateController::OnTranslateComplete(const base::Value& command) {
-  absl::optional<double> error_code = command.FindDoubleKey("errorCode");
-  if (!error_code.has_value() || *error_code < TranslateErrors::NONE ||
-      *error_code >= TranslateErrors::TRANSLATE_ERROR_MAX) {
+  absl::optional<TranslateErrors::Type> error_type =
+      FindTranslateErrorsKey(command, "errorCode");
+  if (!error_type.has_value())
     return false;
-  }
 
   const std::string* source_language = nullptr;
   absl::optional<double> translation_time;
-
-  const TranslateErrors::Type error_type =
-      static_cast<TranslateErrors::Type>(*error_code);
-  if (error_type == TranslateErrors::NONE) {
+  if (*error_type == TranslateErrors::NONE) {
     source_language = command.FindStringKey("pageSourceLanguage");
     translation_time = command.FindDoubleKey("translationTime");
     if (!source_language || !translation_time.has_value()) {
@@ -153,7 +179,7 @@ bool TranslateController::OnTranslateComplete(const base::Value& command) {
 
   if (observer_) {
     observer_->OnTranslateComplete(
-        error_type, source_language ? *source_language : std::string(),
+        *error_type, source_language ? *source_language : std::string(),
         translation_time.value_or(0.));
   }
   return true;
