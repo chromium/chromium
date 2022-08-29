@@ -28,6 +28,11 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
   if (browser_state->IsOffTheRecord()) {
     return false;
   }
+  // Price drop annotations are only enabled for en_US
+  NSLocale* current_locale = [NSLocale currentLocale];
+  if (![@"en_US" isEqualToString:current_locale.localeIdentifier]) {
+    return false;
+  }
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
   AuthenticationService* authentication_service =
