@@ -2086,6 +2086,13 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
   EXPECT_EQ(*result_location,
             *result_selection_controller->selected_location_details());
 
+  // Make sure that the action view is shown.
+  generator->MoveMouseTo(action_view->GetBoundsInScreen().left_center());
+  EXPECT_TRUE(action_view->GetVisible());
+
+  // Ensure layout after the action view visibility has been updated.
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+
   // Click remove suggestion action button again.
   generator->MoveMouseTo(action_view->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
