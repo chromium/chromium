@@ -5075,10 +5075,10 @@ crbug.com/v8/11992 external/wpt/wasm/jsapi/exception/* [ Skip ]
 crbug.com/v8/11992 external/wpt/wasm/jsapi/tag/* [ Skip ]
 
 # Assorted virtual/threaded/.../wpt/scroll-animations tests
-crbug.com/1279648 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-quirks-mode.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-writing-mode-rl.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors.html [ Failure ]
+crbug.com/1279648 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-iframe.html [ Failure ]
+crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-quirks-mode.html [ Failure ]
+crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-writing-mode-rl.html [ Failure ]
+crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-frame-size-changed.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-inline-orientation.html [ Failure ]
 
