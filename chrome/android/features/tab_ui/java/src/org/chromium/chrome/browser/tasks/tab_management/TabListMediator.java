@@ -511,8 +511,8 @@ class TabListMediator {
         }
 
         @Override
-        public void onFaviconUpdated(Tab updatedTab, Bitmap icon) {
-            updateFaviconForTab(PseudoTab.fromTab(updatedTab), icon);
+        public void onFaviconUpdated(Tab updatedTab, Bitmap icon, GURL iconUrl) {
+            updateFaviconForTab(PseudoTab.fromTab(updatedTab), icon, iconUrl);
         }
 
         @Override
@@ -1362,7 +1362,7 @@ class TabListMediator {
 
         setupPersistedTabDataFetcherForTab(pseudoTab, index);
 
-        updateFaviconForTab(pseudoTab, null);
+        updateFaviconForTab(pseudoTab, null, null);
         boolean forceUpdate = isSelected && !quickMode;
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
@@ -1691,7 +1691,7 @@ class TabListMediator {
 
         setupPersistedTabDataFetcherForTab(pseudoTab, index);
 
-        updateFaviconForTab(pseudoTab, null);
+        updateFaviconForTab(pseudoTab, null, null);
 
         if (mThumbnailProvider != null && mVisible) {
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),
@@ -1870,7 +1870,7 @@ class TabListMediator {
     }
 
     @VisibleForTesting
-    void updateFaviconForTab(PseudoTab pseudoTab, @Nullable Bitmap icon) {
+    void updateFaviconForTab(PseudoTab pseudoTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
         int modelIndex = mModel.indexFromId(pseudoTab.getId());
         if (modelIndex == Tab.INVALID_TAB_ID) return;
         List<Tab> relatedTabList = getRelatedTabsForId(pseudoTab.getId());
@@ -1911,8 +1911,8 @@ class TabListMediator {
         }
 
         // If there is an available icon, we fetch favicon synchronously; otherwise asynchronously.
-        if (icon != null) {
-            TabFavicon favicon = mTabListFaviconProvider.getFaviconFromBitmap(icon);
+        if (icon != null && iconUrl != null) {
+            TabFavicon favicon = mTabListFaviconProvider.getFaviconFromBitmap(icon, iconUrl);
             mModel.get(modelIndex).model.set(TabProperties.FAVICON, favicon);
             return;
         }

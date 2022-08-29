@@ -106,8 +106,9 @@ public interface TabObserver {
      * Called when the favicon of a {@link Tab} has been updated.
      * @param tab The notifying {@link Tab}.
      * @param icon The favicon that was received.
+     * @param iconUrl The URL that the icon was fetched from.
      */
-    void onFaviconUpdated(Tab tab, Bitmap icon);
+    void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl);
 
     /**
      * Called when the title of a {@link Tab} changes.

@@ -283,9 +283,10 @@ public class TabListFaviconProvider {
     /**
      * Synchronously get the processed favicon, assuming it is not recolor allowed.
      * @param icon The favicon that was received.
+     * @param iconUrl The url the favicon came from.
      * @return The processed {@link TabFavicon}.
      */
-    TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon) {
+    TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon, @NonNull GURL iconUrl) {
         return new TabFavicon(processBitmap(icon, mIsTabStrip));
     }
 

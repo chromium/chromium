@@ -57,7 +57,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onRestoreFailed(Tab tab) {}
 
     @Override
-    public void onFaviconUpdated(Tab tab, Bitmap icon) {}
+    public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {}
 
     @Override
     public void onTitleUpdated(Tab tab) {}

@@ -333,6 +333,7 @@ public class TabListMediatorUnitTest {
     private String mTab2Domain;
     private String mTab3Domain;
     private String mNewDomain;
+    private GURL mFaviconUrl;
 
     @Before
     public void setUp() {
@@ -352,6 +353,7 @@ public class TabListMediatorUnitTest {
         mTab2Domain = TAB2_URL.getHost().replace("www.", "");
         mTab3Domain = TAB3_URL.getHost().replace("www.", "");
         mNewDomain = JUnitTestGURLs.getGURL(NEW_URL).getHost().replace("www.", "");
+        mFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
 
         TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.setForTesting(true);
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE, TAB1_URL);
@@ -394,7 +396,9 @@ public class TabListMediatorUnitTest {
         doNothing()
                 .when(mTabListFaviconProvider)
                 .getFaviconForUrlAsync(anyObject(), anyBoolean(), mCallbackCaptor.capture());
-        doReturn(mFavicon).when(mTabListFaviconProvider).getFaviconFromBitmap(any(Bitmap.class));
+        doReturn(mFavicon)
+                .when(mTabListFaviconProvider)
+                .getFaviconFromBitmap(any(Bitmap.class), any(GURL.class));
         doReturn(mTab1).when(mTabModelSelector).getTabById(TAB1_ID);
         doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
@@ -510,7 +514,7 @@ public class TabListMediatorUnitTest {
         mModel.get(0).model.set(TabProperties.FAVICON, null);
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
 
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
 
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON));
     }
@@ -522,7 +526,7 @@ public class TabListMediatorUnitTest {
         mModel.get(0).model.set(TabProperties.FAVICON, null);
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
 
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
 
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON));
     }
@@ -537,7 +541,7 @@ public class TabListMediatorUnitTest {
         TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         doReturn(Arrays.asList(mTab1, newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB1_ID));
 
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
 
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
     }
@@ -548,7 +552,7 @@ public class TabListMediatorUnitTest {
         mModel.get(0).model.set(TabProperties.FAVICON, null);
         mModel.get(1).model.set(TabProperties.FAVICON, null);
 
-        mMediator.updateFaviconForTab(PseudoTab.fromTab(mTab2), null);
+        mMediator.updateFaviconForTab(PseudoTab.fromTab(mTab2), null, null);
         assertThat(mModel.indexFromId(TAB2_ID), equalTo(1));
         // Before executing callback, there is a deletion in tab list model which makes the index
         // stale.
@@ -2941,7 +2945,7 @@ public class TabListMediatorUnitTest {
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
         createTabGroup(tabs, TAB1_ID);
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
         List<GURL> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
         verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
         mCallbackCaptor.getValue().onResult(mFavicon);
@@ -2953,7 +2957,7 @@ public class TabListMediatorUnitTest {
         TabImpl tab5 = prepareTab(1, "tab 5", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
         tabs.addAll(Arrays.asList(tab4, tab5));
         createTabGroup(tabs, TAB2_ID);
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
         urls = new ArrayList<>(Arrays.asList(TAB2_URL, TAB1_URL, TAB3_URL, TAB2_URL));
 
         verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
@@ -2977,7 +2981,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(group1, TAB2_ID);
         assertEquals(1, mModel.indexFromId(TAB2_ID));
 
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
 
         // Simulate selecting another Tab within TabGroup before callback in
         // getComposedFaviconImageAsync triggers
@@ -3004,7 +3008,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(group1, TAB2_ID);
         assertEquals(1, mModel.indexFromId(TAB2_ID));
 
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
 
         // Simulate closing mTab1 at index 0 before callback in getComposedFaviconImageAsync
         // triggers.
@@ -3031,7 +3035,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(group1, TAB2_ID);
         assertEquals(1, mModel.indexFromId(TAB2_ID));
 
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap);
+        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
 
         // Simulate TabListMediator reset with null before callback in getComposedFaviconImageAsync
         // triggers.
