@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>The default scroll-timeline at rule with animation moving from end point</title>
-<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
+<title>Root-scrolling timeline with animation moving from end point</title>
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-notation">
 <link rel="help" href="https://drafts.csswg.org/web-animations/#update-an-animations-finished-state">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,11 +12,6 @@
   @keyframes anim {
     from { width: 100px; }
     to { width: 200px; }
-  }
-
-  @scroll-timeline timeline {
-    source: auto;
-    orientation: auto;
   }
 
   .fill-vh {
@@ -36,7 +31,7 @@ promise_test(async t => {
   scroller.scrollTop = 0;
   await waitForNextFrame();
 
-  div.style.animation = 'anim 100s linear timeline';
+  div.style.animation = 'anim 100s linear scroll(root)';
   const anim = div.getAnimations()[0];
   await anim.ready;
   assert_percents_equal(anim.timeline.currentTime, 0,
