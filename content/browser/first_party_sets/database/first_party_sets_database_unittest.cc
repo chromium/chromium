@@ -25,7 +25,7 @@ namespace content {
 
 namespace {
 
-static const size_t kTableCount = 4u;
+static const size_t kTableCount = 5u;
 
 int VersionFromMetaTable(sql::Database& db) {
   // Get version.
@@ -63,6 +63,12 @@ class FirstPartySetsDatabaseTest : public testing::Test {
     path = path.AppendASCII(sql_file_name);
     EXPECT_TRUE(base::PathExists(path));
     return path;
+  }
+
+  size_t CountPublicSetsEntries(sql::Database* db) {
+    size_t size = 0;
+    EXPECT_TRUE(sql::test::CountTableRows(db, "public_sets", &size));
+    return size;
   }
 
   size_t CountBrowserContextSitesToClearEntries(sql::Database* db) {
@@ -118,13 +124,15 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // Create a db handle to the existing db file to verify schemas.
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
-  // [policy_modifications], [browser_context_sites_to_clear],
+  // [public_sets], [policy_modifications], [browser_context_sites_to_clear],
   // [browser_contexts_cleared], and [meta].
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(1, VersionFromMetaTable(db));
   // [idx_marked_at_run_sites], [idx_cleared_at_run_browser_contexts], and
   // [sqlite_autoindex_meta_1].
   EXPECT_EQ(3u, sql::test::CountSQLIndices(&db));
+  // `site`, `primary`, `site_type`.
+  EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "public_sets"));
   // `browser_context_id`, `site`, `marked_at_run`.
   EXPECT_EQ(
       3u, sql::test::CountTableColumns(&db, "browser_context_sites_to_clear"));
@@ -132,6 +140,7 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "browser_contexts_cleared"));
   // `browser_context_id`, `site`, `site_owner`.
   EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "policy_modifications"));
+  EXPECT_EQ(0u, CountPublicSetsEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(0u, CountPolicyModificationsEntries(&db));
@@ -150,6 +159,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
+  EXPECT_EQ(2u, CountPublicSetsEntries(&db));
   EXPECT_EQ(1, VersionFromMetaTable(db));
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
@@ -176,6 +186,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_TooOld_Fail) {
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(0, VersionFromMetaTable(db));
+  EXPECT_EQ(2u, CountPublicSetsEntries(&db));
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
@@ -200,6 +211,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_TooNew_Fail) {
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(2u, CountPublicSetsEntries(&db));
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
@@ -226,6 +238,105 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_InvalidRunCount_Fail) {
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
                                 FirstPartySetsDatabase::InitStatus::kCorrupted,
                                 1);
+}
+
+TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
+  const std::string site = "https://aaa.test";
+  const std::string primary = "https://bbb.test";
+
+  FirstPartySetsDatabase::FlattenedSets input = {
+      {net::SchemefulSite(GURL(site)),
+       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                               net::SiteType::kAssociated, absl::nullopt)},
+      {net::SchemefulSite(GURL(primary)),
+       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                               net::SiteType::kPrimary, absl::nullopt)}};
+
+  OpenDatabase();
+  // Trigger the lazy-initialization.
+  EXPECT_TRUE(db()->SetPublicSets(input));
+  CloseDatabase();
+
+  sql::Database db;
+  EXPECT_TRUE(db.Open(db_path()));
+  EXPECT_EQ(2u, CountPublicSetsEntries(&db));
+
+  static constexpr char kSelectSql[] =
+      "SELECT site,primary_site,site_type FROM public_sets";
+  sql::Statement s(db.GetUniqueStatement(kSelectSql));
+  EXPECT_TRUE(s.Step());
+  EXPECT_EQ(site, s.ColumnString(0));
+  EXPECT_EQ(primary, s.ColumnString(1));
+  EXPECT_EQ(1, s.ColumnInt(2));
+
+  EXPECT_TRUE(s.Step());
+  EXPECT_EQ(primary, s.ColumnString(0));
+  EXPECT_EQ(primary, s.ColumnString(1));
+  EXPECT_EQ(0, s.ColumnInt(2));
+
+  EXPECT_FALSE(s.Step());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+    ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
+    ASSERT_EQ(2u, CountPublicSetsEntries(&db));
+
+    static constexpr char kSelectSql[] =
+        "SELECT site,primary_site,site_type FROM public_sets";
+    sql::Statement s(db.GetUniqueStatement(kSelectSql));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://aaa.test", s.ColumnString(0));
+    ASSERT_EQ("https://bbb.test", s.ColumnString(1));
+    ASSERT_EQ(1, s.ColumnInt(2));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://bbb.test", s.ColumnString(0));
+    ASSERT_EQ("https://bbb.test", s.ColumnString(1));
+    ASSERT_EQ(0, s.ColumnInt(2));
+  }
+
+  const std::string site = "https://site1.test";
+  const std::string primary = "https://site2.test";
+
+  FirstPartySetsDatabase::FlattenedSets input = {
+      {net::SchemefulSite(GURL(site)),
+       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                               net::SiteType::kAssociated, absl::nullopt)},
+      {net::SchemefulSite(GURL(primary)),
+       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                               net::SiteType::kPrimary, absl::nullopt)}};
+
+  OpenDatabase();
+  // Trigger the lazy-initialization.
+  EXPECT_TRUE(db()->SetPublicSets(input));
+  CloseDatabase();
+
+  // Verify the inserted data overwrote the pre-existing data.
+  sql::Database db;
+  EXPECT_TRUE(db.Open(db_path()));
+  EXPECT_EQ(2u, CountPublicSetsEntries(&db));
+
+  static constexpr char kSelectSql[] =
+      "SELECT site,primary_site,site_type FROM public_sets";
+  sql::Statement s(db.GetUniqueStatement(kSelectSql));
+  EXPECT_TRUE(s.Step());
+  EXPECT_EQ(site, s.ColumnString(0));
+  EXPECT_EQ(primary, s.ColumnString(1));
+  EXPECT_EQ(1, s.ColumnInt(2));
+
+  EXPECT_TRUE(s.Step());
+  EXPECT_EQ(primary, s.ColumnString(0));
+  EXPECT_EQ(primary, s.ColumnString(1));
+  EXPECT_EQ(0, s.ColumnInt(2));
+
+  EXPECT_FALSE(s.Step());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_NoPreExistingDB) {
@@ -300,7 +411,7 @@ TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_PreExistingDB) {
   // Verify the inserted data.
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
-  EXPECT_EQ(kTableCount, CountBrowserContextSitesToClearEntries(&db));
+  EXPECT_EQ(4u, CountBrowserContextSitesToClearEntries(&db));
 
   const char kSelectSql[] =
       "SELECT site, marked_at_run FROM browser_context_sites_to_clear "
@@ -647,6 +758,33 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
       };
   OpenDatabase();
   EXPECT_THAT(db()->FetchPolicyModifications("b2"), res);
+}
+
+TEST_F(FirstPartySetsDatabaseTest, GetPublicSets_NoPreExistingDB) {
+  OpenDatabase();
+  EXPECT_THAT(db()->GetPublicSets(), IsEmpty());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, GetPublicSets) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    EXPECT_TRUE(db.Open(db_path()));
+    EXPECT_EQ(2u, CountPublicSetsEntries(&db));
+  }
+  FirstPartySetsDatabase::FlattenedSets res = {
+      {net::SchemefulSite(GURL("https://aaa.test")),
+       net::FirstPartySetEntry({net::SchemefulSite(GURL("https://bbb.test"))},
+                               net::SiteType::kAssociated, absl::nullopt)},
+      {net::SchemefulSite(GURL("https://bbb.test")),
+       net::FirstPartySetEntry({net::SchemefulSite(GURL("https://bbb.test"))},
+                               net::SiteType::kPrimary, absl::nullopt)},
+  };
+  OpenDatabase();
+  EXPECT_THAT(db()->GetPublicSets(), res);
 }
 
 }  // namespace content

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,6 +38,8 @@ namespace content {
 // singleton only and is already sequence-safe.
 class CONTENT_EXPORT FirstPartySetsDatabase {
  public:
+  using FlattenedSets = FirstPartySetParser::SetsMap;
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class InitStatus {
@@ -64,6 +67,11 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   FirstPartySetsDatabase& operator=(const FirstPartySetsDatabase&&) = delete;
   ~FirstPartySetsDatabase();
 
+  // Stores the public First-Party Sets into database, and returns true on
+  // success.  Note that calling this method will wipe out the pre-existing
+  // data in the table.
+  [[nodiscard]] bool SetPublicSets(const FlattenedSets& sets);
+
   // Stores the `sites` to be cleared for the `browser_context_id` into
   // database, and returns true on success.
   [[nodiscard]] bool InsertSitesToClear(
@@ -83,6 +91,11 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
       const base::flat_map<net::SchemefulSite,
                            absl::optional<net::FirstPartySetEntry>>&
           modificatons);
+
+  // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
+  // fetching methods when having query errors
+
+  [[nodiscard]] FlattenedSets GetPublicSets();
 
   // Gets the list of sites to clear for the `browser_context_id`.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
