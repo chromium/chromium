@@ -4,17 +4,34 @@
 
 import("//third_party/wayland/wayland_protocol.gni")
 
-wayland_protocol("gtk_shell_protocol") {
-  sources = [ "gtk/gdk/wayland/protocol/gtk-shell.xml" ]
+# ATTENTION! Please keep these rules alphabetized!
+
+wayland_protocol("alpha_compositing_protocol") {
+  sources = [ "unstable/alpha-compositing/alpha-compositing-unstable-v1.xml" ]
+}
+
+wayland_protocol("cursor_shapes_protocol") {
+  sources = [ "unstable/cursor-shapes/cursor-shapes-unstable-v1.xml" ]
+}
+
+wayland_protocol("extended_drag") {
+  sources = [ "unstable/extended-drag/extended-drag-unstable-v1.xml" ]
+}
+
+wayland_protocol("fullscreen_shell_protocol") {
+  sources = [ "src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml" ]
+}
+
+wayland_protocol("gaming_input_protocol") {
+  sources = [ "unstable/gaming-input/gaming-input-unstable-v2.xml" ]
 }
 
 wayland_protocol("gtk_primary_selection_protocol") {
   sources = [ "unstable/gtk-primary-selection/gtk-primary-selection.xml" ]
 }
 
-wayland_protocol("primary_selection_protocol") {
-  sources =
-      [ "src/unstable/primary-selection/primary-selection-unstable-v1.xml" ]
+wayland_protocol("gtk_shell_protocol") {
+  sources = [ "gtk/gdk/wayland/protocol/gtk-shell.xml" ]
 }
 
 wayland_protocol("idle_inhibit_protocol") {
@@ -23,6 +40,122 @@ wayland_protocol("idle_inhibit_protocol") {
 
 wayland_protocol("input_method_protocol") {
   sources = [ "src/unstable/input-method/input-method-unstable-v1.xml" ]
+}
+
+wayland_protocol("input_timestamps_protocol") {
+  sources = [ "src/unstable/input-timestamps/input-timestamps-unstable-v1.xml" ]
+}
+
+wayland_protocol("keyboard_configuration_protocol") {
+  sources = [ "unstable/keyboard/keyboard-configuration-unstable-v1.xml" ]
+}
+
+wayland_protocol("keyboard_extension_protocol") {
+  sources = [ "unstable/keyboard/keyboard-extension-unstable-v1.xml" ]
+}
+
+wayland_protocol("keyboard_shortcuts_inhibit_protocol") {
+  sources = [ "src/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml" ]
+}
+
+wayland_protocol("linux_dmabuf_protocol") {
+  sources = [ "src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml" ]
+}
+
+wayland_protocol("linux_explicit_synchronization_protocol") {
+  sources = [ "src/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml" ]
+}
+
+wayland_protocol("notification_shell_protocol") {
+  sources = [ "unstable/notification-shell/notification-shell-unstable-v1.xml" ]
+}
+
+wayland_protocol("org_kde_kwin_idle") {
+  sources = [ "kde/src/protocols/idle.xml" ]
+}
+
+wayland_protocol("pointer_constraints_protocol") {
+  sources =
+      [ "src/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml" ]
+}
+
+wayland_protocol("pointer_gestures_protocol") {
+  sources = [ "src/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml" ]
+}
+
+wayland_protocol("presentation_time_protocol") {
+  sources = [ "src/stable/presentation-time/presentation-time.xml" ]
+}
+
+wayland_protocol("primary_selection_protocol") {
+  sources =
+      [ "src/unstable/primary-selection/primary-selection-unstable-v1.xml" ]
+}
+
+wayland_protocol("relative_pointer_protocol") {
+  sources = [ "src/unstable/relative-pointer/relative-pointer-unstable-v1.xml" ]
+}
+
+wayland_protocol("remote_shell_protocol") {
+  sources = [
+    "unstable/remote-shell/remote-shell-unstable-v1.xml",
+    "unstable/remote-shell/remote-shell-unstable-v2.xml",
+  ]
+}
+
+wayland_protocol("secure_output_protocol") {
+  sources = [ "unstable/secure-output/secure-output-unstable-v1.xml" ]
+}
+
+wayland_protocol("stylus_protocol") {
+  sources = [ "unstable/stylus/stylus-unstable-v2.xml" ]
+}
+
+wayland_protocol("stylus_tools_protocol") {
+  sources = [ "unstable/stylus-tools/stylus-tools-unstable-v1.xml" ]
+}
+
+wayland_protocol("text_input_extension_protocol") {
+  sources = [ "unstable/text-input/text-input-extension-unstable-v1.xml" ]
+}
+
+wayland_protocol("text_input_protocol") {
+  sources = [ "src/unstable/text-input/text-input-unstable-v1.xml" ]
+}
+
+wayland_protocol("touchpad_haptics_protocol") {
+  sources = [ "unstable/touchpad-haptics/touchpad-haptics-unstable-v1.xml" ]
+}
+
+wayland_protocol("viewporter_protocol") {
+  sources = [ "src/stable/viewporter/viewporter.xml" ]
+}
+
+wayland_protocol("vsync_feedback_protocol") {
+  sources = [ "unstable/vsync-feedback/vsync-feedback-unstable-v1.xml" ]
+}
+
+wayland_protocol("wayland_drm_protocol") {
+  sources = [ "mesa/wayland-drm/wayland-drm.xml" ]
+}
+
+wayland_protocol("weston_test") {
+  sources = [ "unstable/weston-test/weston-test.xml" ]
+}
+
+wayland_protocol("xdg_activation") {
+  sources = [ "src/staging/xdg-activation/xdg-activation-v1.xml" ]
+}
+
+wayland_protocol("xdg_decoration_protocol") {
+  sources = [ "src/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml" ]
+}
+
+wayland_protocol("xdg_foreign") {
+  sources = [
+    "src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
+    "src/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
+  ]
 }
 
 wayland_protocol("xdg_output_protocol") {
@@ -34,135 +167,4 @@ wayland_protocol("xdg_shell_protocol") {
     "src/stable/xdg-shell/xdg-shell.xml",
     "src/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
   ]
-}
-
-wayland_protocol("linux_dmabuf_protocol") {
-  sources = [ "src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml" ]
-}
-
-wayland_protocol("xdg_decoration_protocol") {
-  sources = [ "src/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml" ]
-}
-
-wayland_protocol("viewporter_protocol") {
-  sources = [ "src/stable/viewporter/viewporter.xml" ]
-}
-
-wayland_protocol("presentation_time_protocol") {
-  sources = [ "src/stable/presentation-time/presentation-time.xml" ]
-}
-
-wayland_protocol("vsync_feedback_protocol") {
-  sources = [ "unstable/vsync-feedback/vsync-feedback-unstable-v1.xml" ]
-}
-
-wayland_protocol("secure_output_protocol") {
-  sources = [ "unstable/secure-output/secure-output-unstable-v1.xml" ]
-}
-
-wayland_protocol("alpha_compositing_protocol") {
-  sources = [ "unstable/alpha-compositing/alpha-compositing-unstable-v1.xml" ]
-}
-
-wayland_protocol("remote_shell_protocol") {
-  sources = [
-    "unstable/remote-shell/remote-shell-unstable-v1.xml",
-    "unstable/remote-shell/remote-shell-unstable-v2.xml",
-  ]
-}
-
-wayland_protocol("gaming_input_protocol") {
-  sources = [ "unstable/gaming-input/gaming-input-unstable-v2.xml" ]
-}
-
-wayland_protocol("stylus_protocol") {
-  sources = [ "unstable/stylus/stylus-unstable-v2.xml" ]
-}
-
-wayland_protocol("pointer_gestures_protocol") {
-  sources = [ "src/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml" ]
-}
-
-wayland_protocol("pointer_constraints_protocol") {
-  sources =
-      [ "src/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml" ]
-}
-
-wayland_protocol("relative_pointer_protocol") {
-  sources = [ "src/unstable/relative-pointer/relative-pointer-unstable-v1.xml" ]
-}
-
-wayland_protocol("keyboard_configuration_protocol") {
-  sources = [ "unstable/keyboard/keyboard-configuration-unstable-v1.xml" ]
-}
-
-wayland_protocol("stylus_tools_protocol") {
-  sources = [ "unstable/stylus-tools/stylus-tools-unstable-v1.xml" ]
-}
-
-wayland_protocol("keyboard_extension_protocol") {
-  sources = [ "unstable/keyboard/keyboard-extension-unstable-v1.xml" ]
-}
-
-wayland_protocol("keyboard_shortcuts_inhibit_protocol") {
-  sources = [ "src/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml" ]
-}
-
-wayland_protocol("input_timestamps_protocol") {
-  sources = [ "src/unstable/input-timestamps/input-timestamps-unstable-v1.xml" ]
-}
-
-wayland_protocol("cursor_shapes_protocol") {
-  sources = [ "unstable/cursor-shapes/cursor-shapes-unstable-v1.xml" ]
-}
-
-wayland_protocol("text_input_protocol") {
-  sources = [ "src/unstable/text-input/text-input-unstable-v1.xml" ]
-}
-
-wayland_protocol("text_input_extension_protocol") {
-  sources = [ "unstable/text-input/text-input-extension-unstable-v1.xml" ]
-}
-
-wayland_protocol("notification_shell_protocol") {
-  sources = [ "unstable/notification-shell/notification-shell-unstable-v1.xml" ]
-}
-
-wayland_protocol("fullscreen_shell_protocol") {
-  sources = [ "src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml" ]
-}
-
-wayland_protocol("linux_explicit_synchronization_protocol") {
-  sources = [ "src/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml" ]
-}
-
-wayland_protocol("wayland_drm_protocol") {
-  sources = [ "mesa/wayland-drm/wayland-drm.xml" ]
-}
-
-wayland_protocol("xdg_activation") {
-  sources = [ "src/staging/xdg-activation/xdg-activation-v1.xml" ]
-}
-
-wayland_protocol("xdg_foreign") {
-  sources = [
-    "src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
-    "src/unstable/xdg-foreign/xdg-foreign-unstable-v2.xml",
-  ]
-}
-
-wayland_protocol("extended_drag") {
-  sources = [ "unstable/extended-drag/extended-drag-unstable-v1.xml" ]
-}
-
-wayland_protocol("weston_test") {
-  sources = [ "unstable/weston-test/weston-test.xml" ]
-}
-
-wayland_protocol("org_kde_kwin_idle") {
-  sources = [ "kde/src/protocols/idle.xml" ]
-}
-
-wayland_protocol("touchpad_haptics_protocol") {
-  sources = [ "unstable/touchpad-haptics/touchpad-haptics-unstable-v1.xml" ]
 }
