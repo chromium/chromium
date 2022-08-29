@@ -123,6 +123,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE |
            AddTabTypes::ADD_PINNED));
     }
+    SetWebContentsIsPinnedHomeTab(target_tabstrip->GetWebContentsAt(0));
   } else {
     MaybeAddPinnedHomeTab(target_browser, app_id);
     target_tabstrip->AppendWebContents(
@@ -237,6 +238,11 @@ void SetWebContentsActingAsApp(content::WebContents* contents,
   helper->set_acting_as_app(true);
 }
 
+void SetWebContentsIsPinnedHomeTab(content::WebContents* contents) {
+  auto* helper = WebAppTabHelper::FromWebContents(contents);
+  helper->set_is_pinned_home_tab(true);
+}
+
 void SetAppPrefsForWebContents(content::WebContents* web_contents) {
   web_contents->GetMutableRendererPrefs()->can_accept_load_drops = false;
   web_contents->SyncRendererPrefs();
@@ -312,6 +318,13 @@ void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id) {
     home_tab_nav_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
     home_tab_nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
     Navigate(&home_tab_nav_params);
+
+    content::WebContents* const web_contents =
+        home_tab_nav_params.navigated_or_inserted_contents;
+
+    if (web_contents) {
+      SetWebContentsIsPinnedHomeTab(web_contents);
+    }
   }
 }
 

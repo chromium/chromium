@@ -87,6 +87,17 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
                app_browser->tab_strip_model()->GetActiveWebContents()};
   }
 
+  void OpenUrlAndWait(Browser* app_browser, GURL url) {
+    TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+    content::WaitForLoadStop(tab_strip->GetActiveWebContents());
+
+    NavigateParams params(app_browser, url,
+                          ui::PageTransition::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    ui_test_utils::NavigateToURL(&params);
+  }
+
   SkColor GetTabColor(BrowserView* browser_view) {
     return browser_view->tabstrip()->GetTabBackgroundColor(
         TabActive::kActive, BrowserFrameActiveState::kActive);
@@ -384,6 +395,80 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
             registrar().GetAppStartUrl(app_id));
   EXPECT_EQ(tab_strip->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NavigationThrottle) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  // Navigate to a non home tab URL.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+
+  // Expect URL to have opened in new tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetVisibleURL(),
+            embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+
+  // Navigate to home tab URL with query params.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL(
+                     "/web_apps/tab_strip_customizations.html?some_query"));
+
+  // Expect navigation to happen in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            embedded_test_server()->GetURL(
+                "/web_apps/tab_strip_customizations.html?some_query"));
+
+  // Navigate to home tab URL with hash ref.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL(
+                     "/web_apps/tab_strip_customizations.html#some_hash"));
+
+  // Expect navigation to happen in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            embedded_test_server()->GetURL(
+                "/web_apps/tab_strip_customizations.html#some_hash"));
+
+  // Navigate to a non home tab URL.
+  OpenUrlAndWait(app_browser, embedded_test_server()->GetURL(
+                                  "/web_apps/get_manifest.html?blah"));
+
+  // Expect URL to have opened in new tab.
+  EXPECT_EQ(tab_strip->count(), 3);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            embedded_test_server()->GetURL(
+                "/web_apps/tab_strip_customizations.html#some_hash"));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetVisibleURL(),
+            embedded_test_server()->GetURL("/web_apps/get_manifest.html?blah"));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(2)->GetVisibleURL(),
+            embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+
+  // Navigate to home tab URL.
+  OpenUrlAndWait(app_browser, start_url);
+
+  // Expect navigation to happen in home tab.
+  EXPECT_EQ(tab_strip->count(), 3);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
 }
 
 }  // namespace web_app

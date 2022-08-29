@@ -48,6 +48,11 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   bool acting_as_app() const { return acting_as_app_; }
   void set_acting_as_app(bool acting_as_app) { acting_as_app_ = acting_as_app; }
 
+  bool is_pinned_home_tab() const { return is_pinned_home_tab_; }
+  void set_is_pinned_home_tab(bool is_pinned_home_tab) {
+    is_pinned_home_tab_ = is_pinned_home_tab;
+  }
+
   WebAppLaunchQueue& EnsureLaunchQueue();
 
   // content::WebContentsObserver:
@@ -93,6 +98,9 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // when an app is first installed and reparented from tab to window. It should
   // be false if a user types the app's URL into a normal browser window.
   bool acting_as_app_ = false;
+
+  // True when this tab is the pinned home tab of a tabbed web app.
+  bool is_pinned_home_tab_ = false;
 
   // The audio focus group id is used to group media sessions together for apps.
   // We store the applied group id locally on the helper for testing.

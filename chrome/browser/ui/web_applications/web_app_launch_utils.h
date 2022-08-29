@@ -51,6 +51,9 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 void SetWebContentsActingAsApp(content::WebContents* contents,
                                const AppId& app_id);
 
+// Marks the web contents as being the pinned home tab of a tabbed web app.
+void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);
+
 // Set preferences that are unique to app windows.
 void SetAppPrefsForWebContents(content::WebContents* web_contents);
 

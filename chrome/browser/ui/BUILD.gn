@@ -5522,6 +5522,8 @@ static_library("ui") {
       "web_applications/share_target_utils.h",
       "web_applications/sub_apps_service_impl.cc",
       "web_applications/sub_apps_service_impl.h",
+      "web_applications/tabbed_web_app_navigation_throttle.cc",
+      "web_applications/tabbed_web_app_navigation_throttle.h",
       "web_applications/web_app_browser_controller.cc",
       "web_applications/web_app_browser_controller.h",
       "web_applications/web_app_dialog_manager.cc",
