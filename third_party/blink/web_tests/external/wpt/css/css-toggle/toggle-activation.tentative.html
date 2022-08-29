@@ -157,7 +157,62 @@ promise_test(async function() {
   e.click();
   assert_true(e.matches(":toggle(test-states 0)"));
   assert_equals(cs.getPropertyValue("--test-states"), "0");
-}, "states used from toggle or toggle specifier as appropriate");
+}, "states used from toggle or toggle specifier as appropriate (integer)");
+
+promise_test(async function() {
+  let e = await set_up_single_toggle_in(container, "test-states [one two] at 0");
+  let cs = getComputedStyle(e);
+  let t = e.toggles.get("test-states");
+  assert_equals(t.value, 0);
+  assert_true(e.matches(":toggle(test-states 0)"));
+  assert_true(e.matches(":toggle(test-states one)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "0");
+  e.click();
+  assert_equals(t.value, "two");
+  assert_true(e.matches(":toggle(test-states 1)"));
+  assert_true(e.matches(":toggle(test-states two)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "1");
+  e.click();
+  assert_equals(t.value, "one");
+  assert_true(e.matches(":toggle(test-states 0)"));
+  assert_true(e.matches(":toggle(test-states one)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "0");
+  e.style.toggleRoot = "test-states [zero one two] at 2";
+  await wait_for_toggle_creation(e);
+  assert_equals(t.value, "one");
+  assert_true(e.matches(":toggle(test-states 0)"));
+  assert_true(e.matches(":toggle(test-states one)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "0");
+  e.click();
+  assert_equals(t.value, "two");
+  assert_true(e.matches(":toggle(test-states 1)"));
+  assert_true(e.matches(":toggle(test-states two)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "1");
+  e.click();
+  assert_equals(t.value, "zero");
+  assert_true(e.matches(":toggle(test-states zero)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "");
+  e.style.toggleRoot = "";
+  await wait_for_toggle_creation(e);
+  assert_equals(t.value, "zero");
+  assert_true(e.matches(":toggle(test-states zero)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "");
+  e.click();
+  assert_equals(t.value, "one");
+  assert_true(e.matches(":toggle(test-states 0)"));
+  assert_true(e.matches(":toggle(test-states one)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "0");
+  e.click();
+  assert_equals(t.value, "two");
+  assert_true(e.matches(":toggle(test-states 1)"));
+  assert_true(e.matches(":toggle(test-states two)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "1");
+  e.click();
+  assert_equals(t.value, "one");
+  assert_true(e.matches(":toggle(test-states 0)"));
+  assert_true(e.matches(":toggle(test-states one)"));
+  assert_equals(cs.getPropertyValue("--test-states"), "0");
+}, "states used from toggle or toggle specifier as appropriate (names)");
 
 promise_test(async function() {
   container.innerHTML = `

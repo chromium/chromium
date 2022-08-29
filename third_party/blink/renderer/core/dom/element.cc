@@ -9106,8 +9106,8 @@ void Element::ChangeToggle(CSSToggle* t,
       }
     }
 
-    if (t->StateSet().IsNames()) {
-      const auto& names = t->StateSet().AsNames();
+    if (states.IsNames()) {
+      const auto& names = states.AsNames();
       if (index < names.size()) {
         t->SetValue(State(names[index]));
       } else {
