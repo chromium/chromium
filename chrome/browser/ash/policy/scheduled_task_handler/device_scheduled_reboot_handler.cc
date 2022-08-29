@@ -83,6 +83,15 @@ void DeviceScheduledRebootHandler::SetRebootDelayForTest(
   reboot_delay_for_testing_ = reboot_delay;
 }
 
+absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+DeviceScheduledRebootHandler::GetScheduledRebootDataForTest() const {
+  return scheduled_reboot_data_;
+}
+
+bool DeviceScheduledRebootHandler::IsRebootSkippedForTest() const {
+  return skip_reboot_;
+}
+
 void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
   // If no policy exists, state should have been reset and this callback
   // shouldn't have fired.
@@ -166,7 +175,21 @@ void DeviceScheduledRebootHandler::StartRebootTimer() {
       base::BindOnce(&DeviceScheduledRebootHandler::OnRebootTimerExpired,
                      base::Unretained(this)),
       GetExternalDelay());
+}
 
+void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
+    ScopedWakeLock scoped_wake_lock,
+    bool result) {
+  // If reboot timer failed to start, reset notifications if scheduled and
+  // |scheduled_reboot_data_|. The reboot will be scheduled again when the new
+  // policy comes or Chrome is restarted.
+  if (!result) {
+    LOG(ERROR) << "Failed to start reboot timer";
+    notifications_scheduler_->ResetState();
+    skip_reboot_ = false;
+    scheduled_reboot_data_ = absl::nullopt;
+    return;
+  }
   // Set |skip_reboot_| flag if the grace time should be applied.
   skip_reboot_ = notifications_scheduler_->ShouldApplyGraceTime(
       scheduled_task_executor_->GetScheduledTaskTime());
@@ -180,17 +203,6 @@ void DeviceScheduledRebootHandler::StartRebootTimer() {
                          base::Unretained(this)),
           scheduled_task_executor_->GetScheduledTaskTime());
     }
-  }
-}
-
-void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
-    ScopedWakeLock scoped_wake_lock,
-    bool result) {
-  // If reboot timer failed to start, reset state. The reboot will be scheduled
-  // again when the new policy comes or Chrome is restarted.
-  if (!result) {
-    LOG(ERROR) << "Failed to start reboot timer";
-    ResetState();
   }
 }
 

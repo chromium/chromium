@@ -35,8 +35,16 @@ const PowerManagerClient::TimerId kErrorId = -2;
 
 }  // namespace
 
+bool NativeTimer::simulate_timer_creation_failure_for_testing_ = false;
+
 NativeTimer::NativeTimer(const std::string& tag)
     : timer_id_(kNotCreatedId), tag_(tag) {
+  // Simulate timer creation failure for testing.
+  if (simulate_timer_creation_failure_for_testing_) {
+    timer_id_ = kErrorId;
+    return;
+  }
+
   // Create a socket pair, one end will be sent to the power daemon the other
   // socket will be used to listen for the timer firing.
   base::ScopedFD powerd_fd;
@@ -124,6 +132,10 @@ void NativeTimer::Start(base::TimeTicks absolute_expiration_time,
       base::BindOnce(&NativeTimer::OnStartTimer, weak_factory_.GetWeakPtr(),
                      std::move(timer_expiration_callback),
                      std::move(result_callback)));
+}
+
+void NativeTimer::SimulateTimerCreationFailureForTesting() {
+  simulate_timer_creation_failure_for_testing_ = true;
 }
 
 void NativeTimer::OnCreateTimer(

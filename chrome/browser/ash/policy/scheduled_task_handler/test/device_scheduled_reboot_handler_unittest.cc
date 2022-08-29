@@ -10,12 +10,15 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
+#include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_scheduled_task_executor.h"
@@ -35,7 +38,14 @@ namespace policy {
 namespace {
 constexpr char kRebootTaskTimeFieldName[] = "reboot_time";
 constexpr base::TimeDelta kExternalRebootDelay = base::Seconds(100);
+constexpr char kESTTimeZoneID[] = "America/New_York";
 }
+using ::testing::_;
+#define EXPECT_ERROR_LOG(matcher)                                \
+  if (DLOG_IS_ON(ERROR)) {                                       \
+    EXPECT_CALL(log_, Log(logging::LOG_ERROR, _, _, _, matcher)) \
+        .WillOnce(testing::Return(true)); /* suppress logging */ \
+  }
 
 class DeviceScheduledRebootHandlerForTest
     : public DeviceScheduledRebootHandler {
@@ -623,4 +633,78 @@ TEST_F(DeviceScheduledRebootHandlerTest, SimulateNotificationButtonClick) {
   EXPECT_FALSE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
 }
 
+class ScheduledRebootTimerFailureTest : public testing::Test {
+ public:
+  ScheduledRebootTimerFailureTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
+        base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
+                            base::Unretained(&wake_lock_provider_)));
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::FakePowerManagerClient::Get()->set_tick_clock(
+        task_environment_.GetMockTickClock());
+    auto task_executor =
+        std::make_unique<ScheduledTaskExecutorImpl>("test_tag");
+    scheduled_task_executor_ = task_executor.get();
+    auto notifications_scheduler =
+        std::make_unique<FakeRebootNotificationsScheduler>(
+            task_environment_.GetMockClock(),
+            task_environment_.GetMockTickClock(), nullptr);
+    notifications_scheduler_ = notifications_scheduler.get();
+    device_scheduled_reboot_handler_ =
+        std::make_unique<DeviceScheduledRebootHandlerForTest>(
+            ash::CrosSettings::Get(), std::move(task_executor),
+            std::move(notifications_scheduler));
+  }
+
+  ~ScheduledRebootTimerFailureTest() override {
+    device_scheduled_reboot_handler_.reset();
+    chromeos::PowerManagerClient::Shutdown();
+    ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
+        base::NullCallback());
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  ScheduledTaskExecutorImpl* scheduled_task_executor_;
+  std::unique_ptr<DeviceScheduledRebootHandlerForTest>
+      device_scheduled_reboot_handler_;
+  ash::ScopedTestingCrosSettings cros_settings_;
+  device::TestWakeLockProvider wake_lock_provider_;
+  FakeRebootNotificationsScheduler* notifications_scheduler_;
+  base::test::MockLog log_;
+};
+
+TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
+  // Schedule reboot in 30 minutes.
+  base::TimeDelta delay_from_now = base::Minutes(30);
+  auto time_zone_ = base::WrapUnique(icu::TimeZone::createTimeZone(
+      icu::UnicodeString::fromUTF8(kESTTimeZoneID)));
+  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
+      *time_zone_.get(), task_environment_.GetMockClock()->Now(),
+      delay_from_now, ScheduledTaskExecutor::Frequency::kDaily,
+      kRebootTaskTimeFieldName);
+
+  // Simulate timer creation failure.
+  chromeos::NativeTimer::SimulateTimerCreationFailureForTesting();
+  int expected_close_notification_calls =
+      notifications_scheduler_->GetCloseNotificationCalls() + 1;
+
+  // Verify timer start failure once the policy is set. Notification scheduler
+  // should close all pending notifications and reset state.
+  EXPECT_ERROR_LOG(testing::HasSubstr("Failed to start reboot timer"));
+  log_.StartCapturingLogs();
+  cros_settings_.device_settings()->Set(
+      ash::kDeviceScheduledReboot,
+      std::move(policy_and_next_reboot_time.first));
+
+  // Verify that the notifications are closed.
+  EXPECT_EQ(notifications_scheduler_->GetCloseNotificationCalls(),
+            expected_close_notification_calls);
+  // Verify that the state is reset.
+  EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
+            absl::nullopt);
+  EXPECT_EQ(device_scheduled_reboot_handler_->IsRebootSkippedForTest(), false);
+}
 }  // namespace policy
