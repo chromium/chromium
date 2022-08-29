@@ -13,14 +13,20 @@ class NeedsDispatch : public GarbageCollected<NeedsDispatch> {
  public:
   void Trace(Visitor*) const;
   // Needs a TraceAfterDispatch method.
-  void FinalizeGarbageCollectedObject(){};
+  void FinalizeGarbageCollectedObject() {}
+
+ protected:
+  NeedsDispatch() = default;
 };
 
 class NeedsFinalizedBase : public GarbageCollected<NeedsFinalizedBase> {
-public:
- void Trace(Visitor*) const {};
- void TraceAfterDispatch(Visitor*) const {};
- void FinalizeGarbageCollectedObject(){};
+ public:
+  void Trace(Visitor*) const {}
+  void TraceAfterDispatch(Visitor*) const {}
+  void FinalizeGarbageCollectedObject() {}
+
+ protected:
+  NeedsFinalizedBase() = default;
 };
 
 class A : GarbageCollected<A> {

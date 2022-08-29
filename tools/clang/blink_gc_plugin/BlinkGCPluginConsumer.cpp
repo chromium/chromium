@@ -307,11 +307,8 @@ void BlinkGCPluginConsumer::CheckDefaultMalloc(RecordInfo* info) {
   }
 
   // Don't check if the class can't construct.
-  if (info->record()->isAbstract() ||
-      (info->IsConsideredAbstract() &&
-       !info->record()->needsImplicitDefaultConstructor())) {
+  if (info->record()->isAbstract() || info->IsConsideredAbstract())
     return;
-  }
 
   if (info->IsGCDerived() || info->DeclaresNewOperator())
     return;
