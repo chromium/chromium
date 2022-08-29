@@ -8,6 +8,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -122,7 +123,7 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       profile->GetPrefs()->GetBoolean(
           prefs::kExternalProtocolDialogShowAlwaysOpenCheckbox) &&
       ExternalProtocolHandler::MayRememberAllowDecisionsForThisOrigin(
-          base::OptionalOrNullptr(initiating_origin_));
+          base::OptionalToPtr(initiating_origin_));
 
   if (show_remember_selection_checkbox) {
     message_box_view_->SetCheckBoxLabel(l10n_util::GetStringFUTF16(
