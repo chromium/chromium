@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
@@ -60,7 +61,7 @@ void SignInFatalErrorScreen::ShowImpl() {
   if (!view_)
     return;
 
-  view_->Show(error_state_, base::OptionalOrNullptr(extra_error_info_));
+  view_->Show(error_state_, base::OptionalToPtr(extra_error_info_));
 }
 
 void SignInFatalErrorScreen::HideImpl() {}
