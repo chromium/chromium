@@ -138,13 +138,15 @@
 
 </style>
 <div class="item" style$="[[getItemPlaceholderAnimationDelay_(index)]]">
-  <img clear-src
-      hidden
-      is-google-photos
+  <img aria-hidden="true"
       auto-src="[[src.url]]"
-      aria-hidden="true"
+      clear-src
+      hidden$="[[isImageHidden_(loading_, error_)]]"
       id="image"
-      is="cr-auto-img">
+      is-google-photos
+      is="cr-auto-img"
+      on-error="onImgError_"
+      on-load="onImgLoad_">
   <div class="wallpaper-grid-item-border"></div>
   <template is="dom-if" if="[[isTextVisible_(primaryText, secondaryText)]]">
     <div class="text">

@@ -81,3 +81,15 @@ export function toString16(value: string): String16 {
   }
   return {data};
 }
+
+/**
+ * Returns a svg data url. This is useful in tests to force img on-load events
+ * to fire so that wallpaper-grid-item resolves its loading state.
+ */
+export function createSvgDataUrl(id: string): string {
+  return 'data:image/svg+xml;utf8,' +
+      '<svg xmlns="http://www.w3.org/2000/svg" ' +
+      `height="100px" width="100px" id="${id}">` +
+      '<rect fill="red" height="100px" width="100px"></rect>' +
+      '</svg>';
+}

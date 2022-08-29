@@ -44,15 +44,23 @@ export class WallpaperGridItem extends PolymerElement {
         observer: 'onSelectedChanged_',
       },
 
-      placeholder: {
+      loading_: {
+        type: Boolean,
+        value: true,
+        observer: 'onLoadingChanged_',
+      },
+
+      error_: {
         type: Boolean,
         value: false,
-        reflectToAttribute: true,
       },
     };
   }
 
-  /** The source for the image to render for the grid item. */
+  /**
+   * The source for the image to render for the grid item. Will display a
+   * placeholder loading animation if src is undefined.
+   */
   src: Url|undefined;
 
   /** The index of the grid item within its parent grid. */
@@ -70,20 +78,19 @@ export class WallpaperGridItem extends PolymerElement {
    */
   selected: boolean|undefined;
 
-  /**
-   * Whether to show a loading animation instead of the real image. Defaults to
-   * false. Will also set a placeholder html attribute.
-   */
-  placeholder: boolean;
+  // Received a new image that has not been downloaded yet for display.
+  private loading_: boolean;
+
+  // Image failed to download.
+  private error_: boolean;
 
   // Invoked on changes to |imageSrc|.
-  private onImageSrcChanged_(src: WallpaperGridItem['src']) {
-    // Hide the |image| element until it has successfully loaded. Note that it
-    // is intentional that the |image| element remain hidden on failure.
-    this.$.image.setAttribute('hidden', '');
-    this.$.image.onload = (src && src.url.length) ?
-        () => this.$.image.removeAttribute('hidden') :
-        null;
+  private onImageSrcChanged_(_: WallpaperGridItem['src']) {
+    // Set loading status if src has just changed while we wait for new image.
+    this.setProperties({
+      loading_: true,
+      error_: false,
+    });
   }
 
   private onSelectedChanged_(selected: boolean|undefined) {
@@ -92,6 +99,29 @@ export class WallpaperGridItem extends PolymerElement {
     } else {
       this.removeAttribute('aria-selected');
     }
+  }
+
+  private onLoadingChanged_(loading: boolean) {
+    if (loading) {
+      this.setAttribute('placeholder', '');
+    } else {
+      this.removeAttribute('placeholder');
+    }
+  }
+
+  private onImgError_() {
+    this.setProperties({loading_: false, error_: true});
+  }
+
+  private onImgLoad_() {
+    this.setProperties({loading_: false, error_: false});
+  }
+
+  private isImageHidden_(loading: boolean, error: boolean) {
+    // Do not show the image while loading because it has an ugly white frame.
+    // Do not show the image on error either because it has an ugly broken red
+    // icon symbol.
+    return loading || error;
   }
 
   /** Returns the delay to use for the grid item's placeholder animation. */

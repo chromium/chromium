@@ -9,7 +9,7 @@ import {fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -119,14 +119,16 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       id: '1',
       title: 'foo',
       photoCount: 2,
-      preview: {url: 'foo.com'},
+      // Use svg data urls so that img on-load event fires and removes the
+      // placeholder attribute.
+      preview: {url: createSvgDataUrl('svg-1')},
     };
 
     const otherAlbum: GooglePhotosAlbum = {
       id: '2',
       title: 'bar',
       photoCount: 1,
-      preview: {url: 'bar.com'},
+      preview: {url: createSvgDataUrl('svg-2')},
     };
 
     const photosByAlbumId: Record<string, GooglePhotosPhoto[]> = {
@@ -136,7 +138,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
           dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
           name: 'foo',
           date: {data: []},
-          url: {url: 'foo.com'},
+          url: {url: createSvgDataUrl('svg-3')},
           location: 'home1',
         },
         {
@@ -144,7 +146,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
           dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
           name: 'bar',
           date: {data: []},
-          url: {url: 'bar.com'},
+          url: {url: createSvgDataUrl('svg-4')},
           location: 'home2',
         },
       ],
@@ -154,7 +156,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
           dedupKey: 'd99eedfa-43e5-4bca-8882-b881222b8db9',
           name: 'baz',
           date: {data: []},
-          url: {url: 'baz.com'},
+          url: {url: createSvgDataUrl('svg-5')},
           location: 'home3',
         },
       ],
@@ -169,15 +171,17 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
         initElement(GooglePhotosPhotosByAlbumId, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
 
-    // Initially no album id selected. Photos should be absent.
     const photoSelector =
         'wallpaper-grid-item:not([hidden]):not([placeholder]).photo';
-    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+    assertEquals(
+        querySelectorAll(photoSelector)!.length, 0,
+        'Initially no album id selected so photos should be absent');
 
-    // Select an album id. Photos should be absent since albums have not loaded.
     googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', album.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+    assertEquals(
+        querySelectorAll(photoSelector)!.length, 0,
+        'photos should be absent since albums have not loaded');
 
     // Load albums. Photos should be absent since they are not loaded.
     personalizationStore.data.wallpaper.googlePhotos.albums =
@@ -189,8 +193,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
         await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos'),
         [/*itemId=*/ null, /*albumId=*/ album.id, /*resumeToken=*/ null]);
 
-    // Start loading photos for the selected album id. Photos should still be
-    // absent since they are still not loaded.
+    // Start loading photos for the selected album id.
     personalizationStore.data.wallpaper.loading.googlePhotos.photosByAlbumId = {
       ...personalizationStore.data.wallpaper.loading.googlePhotos
           .photosByAlbumId,
@@ -198,7 +201,9 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+    assertEquals(
+        querySelectorAll(photoSelector)!.length, 0,
+        'photos should still be absent since they are still not loaded');
 
     // Load photos for an album id other than that which is selected. Photos
     // should still be absent since they are still not loaded for the selected
@@ -214,7 +219,9 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+    assertEquals(
+        querySelectorAll(photoSelector)!.length, 0,
+        'photos still not loaded for selected album id');
 
     // Finish loading photos for the selected album id. Photos should now be
     // present since they are finished loading for the selected album id.
@@ -230,9 +237,13 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     const photosEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
-    assertEquals(photosEls.length, photosByAlbumId[album.id]?.length);
+    assertEquals(
+        photosEls.length, photosByAlbumId[album.id]?.length,
+        'correct number of photo elements for album');
     photosEls.forEach((photoEl, i) => {
-      assertEquals(photoEl.src, photosByAlbumId[album.id]![i]!.url);
+      assertEquals(
+          photoEl.src, photosByAlbumId[album.id]![i]!.url,
+          `correct url for album.id ${album.id} index ${i}`);
     });
 
     // Select the other album id for which data is already loaded. Photos should
@@ -242,13 +253,15 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(
         querySelectorAll(photoSelector)!.length,
-        photosByAlbumId[otherAlbum.id]?.length);
+        photosByAlbumId[otherAlbum.id]?.length,
+        'correct number of photos visible for other album id');
 
-    // Un-select the album id. Photos should be absent since no album id is
-    // selected.
+    // Un-select the album id.
     googlePhotosPhotosByAlbumIdElement.removeAttribute('album-id');
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+    assertEquals(
+        querySelectorAll(photoSelector)!.length, 0,
+        'photos should be absent since no album id selected');
   });
 
   test('displays photo selected', async () => {
@@ -423,15 +436,15 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     const photosCount = 5;
     const album: GooglePhotosAlbum =
         {id: '1', title: '', photoCount: photosCount, preview: {url: ''}};
-    const photos: GooglePhotosPhoto[] =
-        Array.from({length: photosCount}, (_, i) => ({
-                                            id: `id-${i}`,
-                                            dedupKey: `dedupKey-${i}`,
-                                            name: `name-${i}`,
-                                            date: {data: []},
-                                            url: {url: `url-${i}`},
-                                            location: `location-${i}`,
-                                          }));
+    const photos: GooglePhotosPhoto[] = Array.from(
+        {length: photosCount}, (_, i) => ({
+                                 id: `id-${i}`,
+                                 dedupKey: `dedupKey-${i}`,
+                                 name: `name-${i}`,
+                                 date: {data: []},
+                                 url: {url: createSvgDataUrl(`svg-${i}`)},
+                                 location: `location-${i}`,
+                               }));
 
     // Initialize |googlePhotosPhotosByAlbumIdElement|.
     googlePhotosPhotosByAlbumIdElement =

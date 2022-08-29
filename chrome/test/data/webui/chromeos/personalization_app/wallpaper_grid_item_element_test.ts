@@ -7,10 +7,10 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {initElement, teardownElement} from './personalization_app_test_utils.js';
+import {createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
 
 suite('WallpaperGridItemTest', function() {
   let wallpaperGridItemElement: WallpaperGridItem|null;
@@ -33,6 +33,10 @@ suite('WallpaperGridItemTest', function() {
     wallpaperGridItemElement = initElement(WallpaperGridItem);
     await waitAfterNextRender(wallpaperGridItemElement);
 
+    assertTrue(
+        wallpaperGridItemElement.hasAttribute('placeholder'),
+        'placeholder attribute is set when no src is supplied');
+
     // Verify state.
     const img = querySelector('img');
     assertEquals(img?.getAttribute('auto-src'), null);
@@ -46,39 +50,45 @@ suite('WallpaperGridItemTest', function() {
   });
 
   test('displays image', async () => {
-    const src: Url = {
-      url: 'data:image/svg+xml;utf8,' +
-          '<svg xmlns="http://www.w3.org/2000/svg" height="100px" width="100px">' +
-          '<rect fill="red" height="100px" width="100px"></rect>' +
-          '</svg>',
-    };
+    const src: Url = {url: createSvgDataUrl('svg-test')};
 
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
+    const img = querySelector('img');
+    assertTrue(img!.hasAttribute('hidden'), 'image should be hidden at first');
+    assertTrue(
+        wallpaperGridItemElement.hasAttribute('placeholder'),
+        'placeholder attribute set while image is loading');
     await waitAfterNextRender(wallpaperGridItemElement);
 
+    assertFalse(
+        wallpaperGridItemElement.hasAttribute('placeholder'),
+        'placeholder attribute removed');
+
     // Verify state. Note that |img| is shown as |imageSrc| has already loaded.
-    const img = querySelector('img');
-    assertEquals(img?.getAttribute('auto-src'), src.url);
-    assertEquals(img?.getAttribute('aria-hidden'), 'true');
-    assertEquals(img?.hasAttribute('clear-src'), true);
-    assertEquals(img?.hasAttribute('hidden'), false);
-    assertEquals(img?.hasAttribute('is-google-photos'), true);
+    assertEquals(
+        img?.getAttribute('auto-src'), src.url, 'auto-src set to correct url');
+    assertEquals(
+        img?.getAttribute('aria-hidden'), 'true', 'img is always aria-hidden');
+    assertEquals(
+        img?.hasAttribute('clear-src'), true, 'clear-src attribute always set');
+    assertFalse(
+        img!.hasAttribute('hidden'),
+        'no longer hidden because image has loaded');
+    assertEquals(
+        img?.hasAttribute('is-google-photos'), true,
+        'is-google-photos is always set');
 
     // Update state. Note that |img| is hidden as |imageSrc| hasn't yet loaded.
     const newSrc: Url = {url: src.url.replace('red', 'blue')};
     wallpaperGridItemElement.src = newSrc;
-    assertEquals(img?.getAttribute('auto-src'), newSrc.url);
-    assertEquals(img?.hasAttribute('hidden'), true);
-
-    // Verify that once |imageSrc| has loaded, |img| will be shown.
-    await new Promise<void>(resolve => {
-      setInterval(() => {
-        if (!img?.hasAttribute('hidden')) {
-          resolve();
-        }
-      }, 100);
-    });
+    assertTrue(
+        wallpaperGridItemElement.hasAttribute('placeholder'),
+        'placeholder attribute set while new image is loading');
+    assertEquals(img?.getAttribute('auto-src'), newSrc.url, 'new url is set');
+    assertTrue(
+        img!.hasAttribute('hidden'),
+        'image should be hidden because src changed');
   });
 
   test('displays primary text', async () => {
