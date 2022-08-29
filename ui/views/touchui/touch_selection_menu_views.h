@@ -25,7 +25,7 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   enum ButtonViewId : int { kEllipsisButton = 1 };
 
   TouchSelectionMenuViews(TouchSelectionMenuRunnerViews* owner,
-                          ui::TouchSelectionMenuClient* client,
+                          base::WeakPtr<ui::TouchSelectionMenuClient> client,
                           aura::Window* context);
 
   TouchSelectionMenuViews(const TouchSelectionMenuViews&) = delete;
@@ -66,7 +66,7 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   void WindowClosing() override;
 
   raw_ptr<TouchSelectionMenuRunnerViews> owner_;
-  const raw_ptr<ui::TouchSelectionMenuClient, DanglingUntriaged> client_;
+  const base::WeakPtr<ui::TouchSelectionMenuClient> client_;
 };
 
 }  // namespace views

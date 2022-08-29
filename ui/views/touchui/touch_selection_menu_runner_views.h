@@ -58,7 +58,7 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
   bool IsMenuAvailable(
       const ui::TouchSelectionMenuClient* client) const override;
   void CloseMenu() override;
-  void OpenMenu(ui::TouchSelectionMenuClient* client,
+  void OpenMenu(base::WeakPtr<ui::TouchSelectionMenuClient> client,
                 const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size,
                 aura::Window* context) override;

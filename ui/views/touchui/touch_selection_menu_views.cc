@@ -45,7 +45,7 @@ constexpr int kSpacingBetweenButtons = 2;
 
 TouchSelectionMenuViews::TouchSelectionMenuViews(
     TouchSelectionMenuRunnerViews* owner,
-    ui::TouchSelectionMenuClient* client,
+    base::WeakPtr<ui::TouchSelectionMenuClient> client,
     aura::Window* context)
     : BubbleDialogDelegateView(nullptr, BubbleBorder::BOTTOM_CENTER),
       owner_(owner),
@@ -126,6 +126,7 @@ void TouchSelectionMenuViews::CloseMenu() {
 TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
 
 void TouchSelectionMenuViews::CreateButtons() {
+  DCHECK(client_);
   for (const auto& command : kMenuCommands) {
     if (client_->IsCommandIdEnabled(command.command_id)) {
       CreateButton(
@@ -184,11 +185,13 @@ void TouchSelectionMenuViews::WindowClosing() {
 
 void TouchSelectionMenuViews::ButtonPressed(int command,
                                             const ui::Event& event) {
+  DCHECK(client_);
   CloseMenu();
   client_->ExecuteCommand(command, event.flags());
 }
 
 void TouchSelectionMenuViews::EllipsisPressed(const ui::Event& event) {
+  DCHECK(client_);
   CloseMenu();
   client_->RunContextMenu();
 }

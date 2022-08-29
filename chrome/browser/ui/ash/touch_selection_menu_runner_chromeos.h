@@ -43,13 +43,13 @@ class TouchSelectionMenuRunnerChromeOS
 
   // Tries to establish connection with ARC to perform text classification. True
   // if a query to ARC was made, false otherwise.
-  bool RequestTextSelection(ui::TouchSelectionMenuClient* client,
+  bool RequestTextSelection(base::WeakPtr<ui::TouchSelectionMenuClient> client,
                             const gfx::Rect& anchor_rect,
                             const gfx::Size& handle_image_size,
                             aura::Window* context);
 
   // views::TouchSelectionMenuRunnerViews.
-  void OpenMenu(ui::TouchSelectionMenuClient* client,
+  void OpenMenu(base::WeakPtr<ui::TouchSelectionMenuClient> client,
                 const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size,
                 aura::Window* context) override;

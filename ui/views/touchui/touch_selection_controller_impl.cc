@@ -638,7 +638,7 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
     return;
 
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      this, menu_anchor, GetMaxHandleImageSize(),
+      GetWeakPtr(), menu_anchor, GetMaxHandleImageSize(),
       client_view_->GetNativeView());
 }
 

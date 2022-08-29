@@ -27,7 +27,7 @@ constexpr size_t kSmallIconSizeInDip = 16;
 
 TouchSelectionMenuChromeOS::TouchSelectionMenuChromeOS(
     views::TouchSelectionMenuRunnerViews* owner,
-    ui::TouchSelectionMenuClient* client,
+    base::WeakPtr<ui::TouchSelectionMenuClient> client,
     aura::Window* context,
     arc::mojom::TextSelectionActionPtr action)
     : views::TouchSelectionMenuViews(owner, client, context),

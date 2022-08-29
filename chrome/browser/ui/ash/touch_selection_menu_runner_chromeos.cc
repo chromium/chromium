@@ -50,15 +50,16 @@ void TouchSelectionMenuRunnerChromeOS::OpenMenuWithTextSelectionAction(
 
   // The menu manages its own lifetime and deletes itself when closed.
   TouchSelectionMenuChromeOS* menu = new TouchSelectionMenuChromeOS(
-      this, client.get(), tracker->Pop(), std::move(top_action));
+      this, client, tracker->Pop(), std::move(top_action));
   ShowMenu(menu, anchor_rect, handle_image_size);
 }
 
 bool TouchSelectionMenuRunnerChromeOS::RequestTextSelection(
-    ui::TouchSelectionMenuClient* client,
+    base::WeakPtr<ui::TouchSelectionMenuClient> client,
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
     aura::Window* context) {
+  DCHECK(client);
   const std::string converted_text =
       base::UTF16ToUTF8(client->GetSelectedText());
   if (converted_text.empty())
@@ -100,13 +101,13 @@ bool TouchSelectionMenuRunnerChromeOS::RequestTextSelection(
           screen->GetDisplayNearestWindow(context).device_scale_factor()),
       base::BindOnce(
           &TouchSelectionMenuRunnerChromeOS::OpenMenuWithTextSelectionAction,
-          weak_ptr_factory_.GetWeakPtr(), client->GetWeakPtr(), anchor_rect,
+          weak_ptr_factory_.GetWeakPtr(), client, anchor_rect,
           handle_image_size, std::move(tracker)));
   return true;
 }
 
 void TouchSelectionMenuRunnerChromeOS::OpenMenu(
-    ui::TouchSelectionMenuClient* client,
+    base::WeakPtr<ui::TouchSelectionMenuClient> client,
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
     aura::Window* context) {
@@ -114,7 +115,7 @@ void TouchSelectionMenuRunnerChromeOS::OpenMenu(
 
   // If there are no commands to show in the menu finish right away. Also if
   // classification is possible delegate creating/showing a new menu.
-  if (!views::TouchSelectionMenuRunnerViews::IsMenuAvailable(client) ||
+  if (!views::TouchSelectionMenuRunnerViews::IsMenuAvailable(client.get()) ||
       RequestTextSelection(client, anchor_rect, handle_image_size, context)) {
     return;
   }

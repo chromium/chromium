@@ -20,7 +20,7 @@ class TouchSelectionMenuRunnerViews;
 class TouchSelectionMenuChromeOS : public views::TouchSelectionMenuViews {
  public:
   TouchSelectionMenuChromeOS(views::TouchSelectionMenuRunnerViews* owner,
-                             ui::TouchSelectionMenuClient* client,
+                             base::WeakPtr<ui::TouchSelectionMenuClient> client,
                              aura::Window* context,
                              arc::mojom::TextSelectionActionPtr action);
 

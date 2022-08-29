@@ -75,7 +75,7 @@ class TestTouchSelectionMenuRunner : public ui::TouchSelectionMenuRunner {
     return true;
   }
 
-  void OpenMenu(ui::TouchSelectionMenuClient* client,
+  void OpenMenu(base::WeakPtr<ui::TouchSelectionMenuClient> client,
                 const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size,
                 aura::Window* context) override {

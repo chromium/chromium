@@ -66,13 +66,14 @@ bool TouchSelectionMenuRunnerViews::IsMenuAvailable(
 }
 
 void TouchSelectionMenuRunnerViews::OpenMenu(
-    ui::TouchSelectionMenuClient* client,
+    base::WeakPtr<ui::TouchSelectionMenuClient> client,
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
     aura::Window* context) {
+  DCHECK(client);
   CloseMenu();
 
-  if (!TouchSelectionMenuViews::IsMenuAvailable(client))
+  if (!TouchSelectionMenuViews::IsMenuAvailable(client.get()))
     return;
 
   menu_ = new TouchSelectionMenuViews(this, client, context);
