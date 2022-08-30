@@ -273,6 +273,17 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
   return false;
 }
 
+// The transition to/from nullptr style can affect subsequent siblings
+// if they reference a named timeline which appeared/disappeared.
+static bool AffectsScrollAnimations(const ComputedStyle* old_style,
+                                    const ComputedStyle* new_style) {
+  if (old_style && !old_style->ScrollTimelineName().IsEmpty())
+    return true;
+  if (new_style && !new_style->ScrollTimelineName().IsEmpty())
+    return true;
+  return false;
+}
+
 bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
                                             const ComputedStyle* old_style,
                                             const ComputedStyle* new_style) {
@@ -343,8 +354,11 @@ ComputedStyle::Difference ComputedStyle::ComputeDifference(
     const ComputedStyle* new_style) {
   if (old_style == new_style)
     return Difference::kEqual;
-  if (!old_style || !new_style)
+  if (!old_style || !new_style) {
+    if (AffectsScrollAnimations(old_style, new_style))
+      return Difference::kSiblingDescendantAffecting;
     return Difference::kInherited;
+  }
 
   // For inline elements, the new computed first line style will be |new_style|
   // inheriting from the parent's first line style. If |new_style| is different
