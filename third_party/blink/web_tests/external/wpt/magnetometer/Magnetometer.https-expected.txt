@@ -15,6 +15,7 @@ PASS Magnetometer: no exception is thrown when calling start() on already starte
 PASS Magnetometer: no exception is thrown when calling stop() on already stopped sensor.
 PASS Magnetometer: Test that fresh reading is fetched on start().
 PASS Magnetometer: frequency hint works.
+PASS Magnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors.
 PASS Magnetometer: throw 'TypeError' if frequency is invalid.
 PASS Magnetometer: sensor reading is correct when options.referenceFrame is 'screen'.
 PASS Magnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values.
@@ -34,6 +35,7 @@ FAIL UncalibratedMagnetometer: no exception is thrown when calling start() on al
 FAIL UncalibratedMagnetometer: no exception is thrown when calling stop() on already stopped sensor. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: Test that fresh reading is fetched on start(). assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: frequency hint works. assert_implements: UncalibratedMagnetometer is not supported. undefined
+FAIL UncalibratedMagnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: throw 'TypeError' if frequency is invalid. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: sensor reading is correct when options.referenceFrame is 'screen'. assert_implements: UncalibratedMagnetometer is not supported. undefined
 FAIL UncalibratedMagnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values. assert_implements: UncalibratedMagnetometer is not supported. undefined
