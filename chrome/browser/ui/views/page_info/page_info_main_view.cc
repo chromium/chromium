@@ -576,8 +576,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
 
   PageInfoHoverButton* about_this_site_button = nullptr;
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo) &&
-      base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo)) {
     const auto& description =
         info.has_description()
             ? base::UTF8ToUTF16(info.description().description())

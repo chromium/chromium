@@ -34,11 +34,11 @@ class AboutThisSideSidePanelCoordinator
   ~AboutThisSideSidePanelCoordinator() override;
 
   // Registers ATS entry in the side panel but does not show it.
-  void RegisterEntry(const GURL& more_about_url);
+  void RegisterEntry(const content::OpenURLParams& params);
 
   // Registers ATS entry in the side panel and shows side panel with ATS
   // selected if its not shown.
-  void RegisterEntryAndShow(const GURL& more_about_url);
+  void RegisterEntryAndShow(const content::OpenURLParams& params);
 
  private:
   friend class content::WebContentsUserData<AboutThisSideSidePanelCoordinator>;

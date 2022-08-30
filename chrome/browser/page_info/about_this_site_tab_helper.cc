@@ -95,9 +95,14 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
   if (status != AboutThisSiteStatus::kValid)
     return;
 
-  RegisterAboutThisSiteSidePanel(
-      web_contents(),
-      GURL(about_this_site_metadata->site_info().more_about().url()));
+  content::OpenURLParams url_params(
+      net::AppendOrReplaceQueryParameter(
+          GURL(about_this_site_metadata->site_info().more_about().url()),
+          page_info::AboutThisSiteRenderModeParameterName,
+          page_info::AboutThisSiteRenderModeParameterValue),
+      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  RegisterAboutThisSiteSidePanel(web_contents(), url_params);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper);
