@@ -218,11 +218,16 @@ Compromised renderers shouldn’t be able to:
   from a content script), as seen by a recipient of a
   `chrome.runtime.sendMessage`.
   See also [MessageSender documentation](https://developers.chrome.com/extensions/runtime#type-MessageSender) and [content script security guidance](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/0ei-UCHNm34).
+- Spoof the id of a Chrome extension initiating
+  [native messaging](https://developer.chrome.com/docs/apps/nativeMessaging/)
+  communication.
 
 Protection techniques:
 - Using `CanAccessDataForOrigin` to verify IPCs sent by a renderer process
   (e.g. in `RenderFrameProxyHost::OnRouteMessageEvent` or
   `BroadcastChannelProvider::ConnectToChannel`).
+- Using `ContentScriptTracker` to check if IPCs from a given renderer process
+  can legitimately claim to act on behalf content scripts of a given extension.
 
 
 ## JavaScript code cache

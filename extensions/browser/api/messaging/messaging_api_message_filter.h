@@ -14,6 +14,7 @@ struct ExtensionMsg_TabTargetConnectionInfo;
 
 namespace content {
 class BrowserContext;
+class RenderProcessHost;
 }
 
 namespace extensions {
@@ -39,6 +40,11 @@ class MessagingAPIMessageFilter : public content::BrowserMessageFilter {
   ~MessagingAPIMessageFilter() override;
 
   void Shutdown();
+
+  // Returns the process that the IPC came from, or `nullptr` if the IPC should
+  // be dropped (in case the IPC arrived racily after the process or its
+  // BrowserContext already got destructed).
+  content::RenderProcessHost* GetRenderProcessHost();
 
   // content::BrowserMessageFilter implementation:
   void OverrideThreadForMessage(const IPC::Message& message,
