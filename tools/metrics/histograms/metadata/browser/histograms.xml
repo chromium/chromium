@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Assistant"/>
   <variant name="Bookmarks"/>
   <variant name="CustomizeChrome"/>
+  <variant name="Extension"/>
   <variant name="Feed"/>
   <variant name="HistoryClusters"/>
   <variant name="Lens"/>
