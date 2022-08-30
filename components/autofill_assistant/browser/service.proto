@@ -3686,6 +3686,8 @@ message JsFlowProto {
   // The JS flow to execute in a sandbox. If present
   // ActionsResponseProto::js_flow_library needs to be evaluated first.
   optional string js_flow = 1;
+
+  reserved 2;
 }
 
 // Action which forwards a proto to the owner of the |HeadlessScriptController|
