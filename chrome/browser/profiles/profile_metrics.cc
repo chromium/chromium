@@ -499,7 +499,7 @@ void ProfileMetrics::LogSystemProfileKeyedServicesCount(Profile* profile) {
   DCHECK(profile->IsSystemProfile());
 
   std::string histogram_name = "Profile.KeyedService.Count.SystemProfile";
-  histogram_name += profile->IsOffTheRecord() ? "OTR" : "Original";
+  histogram_name += profile->IsOffTheRecord() ? "OTR-M-107" : "Original-M-107";
   base::UmaHistogramCounts1000(histogram_name,
                                GetTotalKeyedServiceCount(profile));
 }
