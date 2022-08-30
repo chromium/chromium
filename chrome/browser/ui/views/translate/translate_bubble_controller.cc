@@ -138,6 +138,8 @@ void TranslateBubbleController::OnPartialTranslateWaitExpired(
       FROM_HERE, base::Milliseconds(2000),
       base::BindOnce(
           [](base::WeakPtr<TranslateBubbleController> controller) {
+            if (!controller->partial_translate_bubble_view_)
+              return;
             controller->partial_translate_bubble_view_->SetViewState(
                 PartialTranslateBubbleModel::ViewState::
                     VIEW_STATE_AFTER_TRANSLATE,
