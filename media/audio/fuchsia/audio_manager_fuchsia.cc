@@ -31,6 +31,16 @@ AudioManagerFuchsia::AudioManagerFuchsia(
 
 AudioManagerFuchsia::~AudioManagerFuchsia() = default;
 
+void AudioManagerFuchsia::ShutdownOnAudioThread() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  AudioManagerBase::ShutdownOnAudioThread();
+
+  // Teardown the AudioDeviceEnumerator channel before the audio
+  // thread, which it is bound to, stops.
+  enumerator_ = nullptr;
+}
+
 bool AudioManagerFuchsia::HasAudioOutputDevices() {
   return HasAudioDevice(false);
 }

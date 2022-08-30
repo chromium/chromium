@@ -24,6 +24,7 @@ class AudioManagerFuchsia : public AudioManagerBase {
   ~AudioManagerFuchsia() override;
 
   // Implementation of AudioManager.
+  void ShutdownOnAudioThread() override;
   bool HasAudioOutputDevices() override;
   bool HasAudioInputDevices() override;
   void GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
