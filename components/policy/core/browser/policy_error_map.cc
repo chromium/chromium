@@ -18,6 +18,16 @@
 
 namespace policy {
 
+namespace {
+
+std::u16string ConvertReplacementToUTF16(const std::string& replacement) {
+  if (!base::IsStringUTF8(replacement))
+    return u"<invalid Unicode string>";
+  return base::UTF8ToUTF16(replacement);
+}
+
+}  // namespace
+
 class PolicyErrorMap::PendingError {
  public:
   PendingError(const std::string& policy_name,
@@ -71,14 +81,14 @@ class PolicyErrorMap::PendingError {
       if (replacement_a_.empty() && replacement_b_.empty())
         return l10n_util::GetStringUTF16(message_id_);
       if (replacement_b_.empty()) {
-        return l10n_util::GetStringFUTF16(message_id_,
-                                          base::ASCIIToUTF16(replacement_a_));
+        return l10n_util::GetStringFUTF16(
+            message_id_, ConvertReplacementToUTF16(replacement_a_));
       }
-      return l10n_util::GetStringFUTF16(message_id_,
-                                        base::ASCIIToUTF16(replacement_a_),
-                                        base::ASCIIToUTF16(replacement_b_));
+      return l10n_util::GetStringFUTF16(
+          message_id_, ConvertReplacementToUTF16(replacement_a_),
+          ConvertReplacementToUTF16(replacement_b_));
     }
-    return base::ASCIIToUTF16(replacement_a_);
+    return ConvertReplacementToUTF16(replacement_a_);
   }
 
  private:
