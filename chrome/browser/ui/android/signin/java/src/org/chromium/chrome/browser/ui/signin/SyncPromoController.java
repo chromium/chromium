@@ -84,6 +84,8 @@ public class SyncPromoController {
     private static final int MAX_TOTAL_PROMO_SHOW_COUNT = 100;
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
+    private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
+            "SyncAndroidNTPPromoMaxImpressions";
 
     /** Suffix strings for promo shown count preference and histograms. */
     @StringDef({AccessPointId.BOOKMARKS, AccessPointId.NTP, AccessPointId.RECENT_TABS,
@@ -183,13 +185,24 @@ public class SyncPromoController {
         return firstShownTime > 0 && currentTime - firstShownTime >= timeSinceFirstShownLimitMs;
     }
 
+    private static int getNTPMaxImpressions() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
+                    SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS, 5);
+        }
+        return StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.getValue();
+    }
+
     private static boolean canShowNTPPromo() {
-        final int maxImpressions =
-                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.getValue();
-        if (timeElapsedSinceFirstShownExceedsLimit()
-                || SharedPreferencesManager.getInstance().readInt(getPromoShowCountPreferenceName(
-                           SigninAccessPoint.NTP_CONTENT_SUGGESTIONS))
-                        >= maxImpressions) {
+        int promoShowCount = SharedPreferencesManager.getInstance().readInt(
+                getPromoShowCountPreferenceName(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+        if (promoShowCount >= getNTPMaxImpressions()) {
+            return false;
+        }
+
+        if (timeElapsedSinceFirstShownExceedsLimit()) {
             return false;
         }
 

@@ -38,7 +38,10 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
  * Tests for {@link SyncPromoController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
+@Features.DisableFeatures({
+        ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
+        ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
+})
 public class SyncPromoControllerTest {
     private static final int TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS = 100;
     private static final long TIME_SINCE_FIRST_SHOWN_LIMIT_MS =

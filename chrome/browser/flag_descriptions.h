@@ -2237,6 +2237,9 @@ extern const char kStrictSiteIsolationDescription[];
 extern const char kStylusWritingToInputName[];
 extern const char kStylusWritingToInputDescription[];
 
+extern const char kSyncAndroidLimitNTPPromoImpressionsName[];
+extern const char kSyncAndroidLimitNTPPromoImpressionsDescription[];
+
 extern const char kSyncAndroidPromosWithAlternativeTitleName[];
 extern const char kSyncAndroidPromosWithAlternativeTitleDescription[];
 

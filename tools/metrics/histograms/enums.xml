@@ -57438,6 +57438,8 @@ from previous Chrome versions.
   <int value="-1275552094" label="SpectreVariant2Mitigation:disabled"/>
   <int value="-1274502866" label="AllowDisableMouseAcceleration:enabled"/>
   <int value="-1273786900" label="SyncAndroidPromosWithTitle:disabled"/>
+  <int value="-1272990935"
+      label="SyncAndroidLimitNTPPromoImpressions:disabled"/>
   <int value="-1272593346" label="NewTabLoadingAnimation:disabled"/>
   <int value="-1271921284" label="WebViewThreadSafeMedia:enabled"/>
   <int value="-1271563519" label="enable-appcontainer"/>
@@ -62616,6 +62618,7 @@ from previous Chrome versions.
   <int value="1959148757" label="OffMainThreadFetch:enabled"/>
   <int value="1961068026"
       label="EnableEphemeralGuestProfilesOnDesktop:enabled"/>
+  <int value="1961148488" label="SyncAndroidLimitNTPPromoImpressions:enabled"/>
   <int value="1961425320" label="force-qtkit"/>
   <int value="1961717207" label="PageInfoAboutThisSite:enabled"/>
   <int value="1962485086" label="DesktopPWAsLocalUpdating:enabled"/>
