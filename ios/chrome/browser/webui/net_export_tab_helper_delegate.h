@@ -13,7 +13,7 @@ class NetExportTabHelper;
 // A delegate for the NetExportTabHelper that displays UI that sends emails.
 @protocol NetExportTabHelperDelegate<NSObject>
 
-// Shows the Mail Composer UI. |context| provides information to populate the
+// Shows the Mail Composer UI. `context` provides information to populate the
 // email.
 - (void)netExportTabHelper:(NetExportTabHelper*)tabHelper
     showMailComposerWithContext:(ShowMailComposerContext*)context;

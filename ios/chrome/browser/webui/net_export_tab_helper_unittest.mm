@@ -22,8 +22,8 @@
 // A test object that conforms to the NetExportTabHelperDelegate protocol.
 @interface TestNetExportTabHelperDelegate : NSObject<NetExportTabHelperDelegate>
 
-// The last context passed to |netExportTabHelper:showMailComposerWithContext:|.
-// |lastContext| is nil if |netExportTabHelper:showMailComposerWithContext:| has
+// The last context passed to `netExportTabHelper:showMailComposerWithContext:`.
+// `lastContext` is nil if `netExportTabHelper:showMailComposerWithContext:` has
 // never been called.
 @property(nonatomic, readonly, strong) ShowMailComposerContext* lastContext;
 
@@ -74,8 +74,8 @@ TEST_F(NetExportTabHelperTest, TestInitialState) {
   NetExportTabHelper* helper = NetExportTabHelper::FromWebState(web_state());
 
   EXPECT_TRUE(helper);
-  // |lastContext| should not exist yet, as
-  // |netExportTabHelper:showMailComposerWithContext:| has not been called.
+  // `lastContext` should not exist yet, as
+  // `netExportTabHelper:showMailComposerWithContext:` has not been called.
   EXPECT_FALSE(delegate_.lastContext);
 }
 

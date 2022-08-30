@@ -18,7 +18,7 @@ class NetExportTabHelper : public web::WebStateUserData<NetExportTabHelper> {
 
   ~NetExportTabHelper() override;
 
-  // Shows a Mail Composer which allows the sending of an email. |context|
+  // Shows a Mail Composer which allows the sending of an email. `context`
   // contains information for populating the email.
   void ShowMailComposer(ShowMailComposerContext* context);
 
