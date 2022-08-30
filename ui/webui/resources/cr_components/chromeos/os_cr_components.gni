@@ -86,5 +86,7 @@ cr_components_migrated_imports = [
   "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html",
   "ui/webui/resources/cr_elements/policy/cr_policy_indicator.html",
   "ui/webui/resources/cr_elements/policy/cr_tooltip_icon.html",
+  "ui/webui/resources/html/cr/ui/focus_row_behavior.html",
+  "ui/webui/resources/html/cr/ui/focus_without_ink.html",
   "ui/webui/resources/html/list_property_update_behavior.html",
 ]

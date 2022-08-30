@@ -233,7 +233,7 @@ js_library("network_list_item.m") {
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_types.m",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
+    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
   ]
   extra_deps = [ ":network_list_item_module" ]
 }
@@ -380,7 +380,7 @@ js_library("network_siminfo.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

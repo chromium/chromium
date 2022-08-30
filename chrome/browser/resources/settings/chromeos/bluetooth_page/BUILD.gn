@@ -22,7 +22,7 @@ js_library("bluetooth_device_list_item") {
     ":bluetooth_page_browser_proxy",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
+    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
   ]
   externs_list = [
     "$externs_path/bluetooth.js",

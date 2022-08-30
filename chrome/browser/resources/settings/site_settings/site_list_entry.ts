@@ -16,7 +16,7 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';

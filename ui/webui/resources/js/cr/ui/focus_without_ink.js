@@ -3,18 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js'
-// #import {isIOS} from 'chrome://resources/js/cr.m.js'
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isIOS} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-cr.define('cr.ui', function() {
-  /* #ignore */ if (cr.ui.focusWithoutInk) {
-    /* #ignore */ return;
-  /* #ignore */ }
 
   let hideInk = false;
 
-  assert(!cr.isIOS, 'pointerdown doesn\'t work on iOS');
+  assert(!isIOS, 'pointerdown doesn\'t work on iOS');
 
   document.addEventListener('pointerdown', function() {
     hideInk = true;
@@ -31,7 +27,7 @@ cr.define('cr.ui', function() {
    * helpful to show focus ripples in that case. This is Polymer-specific.
    * @param {!Element} toFocus
    */
-  /* #export */ const focusWithoutInk = function(toFocus) {
+  export const focusWithoutInk = function(toFocus) {
     // |toFocus| does not have a 'noink' property, so it's unclear whether the
     // element has "ink" and/or whether it can be suppressed. Just focus().
     if (!('noink' in toFocus) || !hideInk) {
@@ -47,7 +43,3 @@ cr.define('cr.ui', function() {
     toFocus.noink = noink;
   };
 
-  // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
-  return {focusWithoutInk: focusWithoutInk};
-});

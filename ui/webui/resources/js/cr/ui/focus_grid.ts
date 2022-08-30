@@ -5,7 +5,7 @@
 // clang-format off
 import {assert} from '../../assert.m.js';
 
-import {FocusRow, FocusRowDelegate} from './focus_row.m.js';
+import {FocusRow, FocusRowDelegate} from './focus_row.js';
 // clang-format on
 
 /**

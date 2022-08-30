@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('cr.ui', function() {
   /**
    * The class name to set on the document element.
    * @const
    */
   const CLASS_NAME = 'focus-outline-visible';
 
-  /** @type {!Map<!Document, !cr.ui.FocusOutlineManager>} */
+  /** @type {!Map<!Document, !FocusOutlineManager>} */
   const docsToManager = new Map();
 
   /**
@@ -26,7 +25,7 @@ cr.define('cr.ui', function() {
    * it.
    *
    */
-  /* #export */ class FocusOutlineManager {
+  export class FocusOutlineManager {
     /**
      * @param {!Document} doc The document to attach the focus outline manager
      *     to.
@@ -73,7 +72,7 @@ cr.define('cr.ui', function() {
     /**
      * Gets a per document singleton focus outline manager.
      * @param {!Document} doc The document to get the |FocusOutlineManager| for.
-     * @return {!cr.ui.FocusOutlineManager} The per document singleton focus
+     * @return {!FocusOutlineManager} The per document singleton focus
      *     outline manager.
      */
     static forDocument(doc) {
@@ -86,7 +85,3 @@ cr.define('cr.ui', function() {
     }
   }
 
-  // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
-  return {FocusOutlineManager: FocusOutlineManager};
-});

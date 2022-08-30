@@ -13,7 +13,7 @@ import './certificate_provisioning_entry.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
+import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
 

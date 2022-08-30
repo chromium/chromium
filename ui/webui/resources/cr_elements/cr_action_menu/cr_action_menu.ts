@@ -8,9 +8,9 @@ import {FlattenedNodesObserver, PolymerElement} from '//resources/polymer/v3_0/p
 
 import {assert} from '../../js/assert.m.js';
 import {isMac, isWindows} from '../../js/cr.m.js';
-import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
-import {FocusRow} from '../../js/cr/ui/focus_row.m.js';
-import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
+import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.js';
+import {FocusRow} from '../../js/cr/ui/focus_row.js';
+import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.js';
 import {getDeepActiveElement} from '../../js/util.m.js';
 
 import {getTemplate} from './cr_action_menu.html.js';

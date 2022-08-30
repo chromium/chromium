@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../../js/assert.m.js';
-import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
+import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.js';
 
 export class CrMenuSelector extends HTMLElement {
   static get is() {

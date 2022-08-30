@@ -16,7 +16,7 @@ import '../settings_shared.css.js';
 import './startup_url_dialog.js';
 
 import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

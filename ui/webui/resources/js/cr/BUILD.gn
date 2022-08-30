@@ -48,10 +48,10 @@ if (is_chromeos_ash) {
 }
 
 group("modulize") {
-  public_deps = [
-    ":modulize_local",
-    "ui:modulize",
-  ]
+  public_deps = [ ":modulize_local" ]
+  if (is_chromeos_ash) {
+    public_deps += [ "ui:modulize" ]
+  }
 }
 
 js_modulizer("modulize_local") {

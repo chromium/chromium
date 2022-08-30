@@ -26,8 +26,6 @@ generate_grd("build_grdp") {
       "cr/ui.html",
       "cr/ui/array_data_model.html",
       "cr/ui/focus_manager.html",
-      "cr/ui/focus_outline_manager.html",
-      "cr/ui/focus_row.html",
       "cr/ui/list.html",
       "cr/ui/list_item.html",
       "cr/ui/list_selection_controller.html",
@@ -43,8 +41,6 @@ generate_grd("build_grdp") {
 
     if (is_chromeos_ash) {
       input_files += [
-        "cr/ui/focus_without_ink.html",
-        "cr/ui/focus_row_behavior.html",
         "i18n_behavior.html",
         "web_ui_listener_behavior.html",
       ]

@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js'
-// #import {EventTracker} from 'chrome://resources/js/event_tracker.m.js'
-// #import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.m.js'
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
-cr.define('cr.ui', function() {
   /**
    * A class to manage focus between given horizontally arranged elements.
    *
@@ -21,13 +20,13 @@ cr.define('cr.ui', function() {
    * changes to a node inside |this.boundary_|. If |boundary| isn't specified,
    * any focus change deactivates the row.
    */
-  /* #export */ class FocusRow {
+  export class FocusRow {
     /**
      * @param {!Element} root The root of this focus row. Focus classes are
      *     applied to |root| and all added elements must live within |root|.
      * @param {?Element} boundary Focus events are ignored outside of this
      *     element.
-     * @param {cr.ui.FocusRowDelegate=} delegate An optional event
+     * @param {FocusRowDelegate=} delegate An optional event
      *     delegate.
      */
     constructor(root, boundary, delegate) {
@@ -37,11 +36,11 @@ cr.define('cr.ui', function() {
       /** @private {!Element} */
       this.boundary_ = boundary || document.documentElement;
 
-      /** @type {cr.ui.FocusRowDelegate|undefined} */
+      /** @type {FocusRowDelegate|undefined} */
       this.delegate = delegate;
 
-      /** @protected {!cr.EventTracker} */
-      this.eventTracker = new cr.EventTracker();
+      /** @protected {!EventTracker} */
+      this.eventTracker = new EventTracker();
     }
 
     /**
@@ -157,7 +156,7 @@ cr.define('cr.ui', function() {
      */
     getElements() {
       return Array.from(this.root.querySelectorAll('[focus-type]'))
-          .map(cr.ui.FocusRow.getFocusableElement);
+          .map(FocusRow.getFocusableElement);
     }
 
     /**
@@ -194,7 +193,7 @@ cr.define('cr.ui', function() {
 
     /** @return {!Array<!HTMLElement>} Registered, focusable elements. */
     getFocusableElements() {
-      return this.getElements().filter(cr.ui.FocusRow.isFocusable);
+      return this.getElements().filter(FocusRow.isFocusable);
     }
 
     /**
@@ -274,7 +273,7 @@ cr.define('cr.ui', function() {
      */
     onKeydown_(e) {
       const elements = this.getFocusableElements();
-      const currentElement = cr.ui.FocusRow.getFocusableElement(
+      const currentElement = FocusRow.getFocusableElement(
           /** @type {!HTMLElement} */ (e.currentTarget));
       const elementIndex = elements.indexOf(currentElement);
       assert(elementIndex >= 0);
@@ -328,18 +327,18 @@ cr.define('cr.ui', function() {
 
 
   /** @interface */
-  /* #export */ class FocusRowDelegate {
+  export class FocusRowDelegate {
     /**
      * Called when a key is pressed while on a FocusRow's item. If true is
      * returned, further processing is skipped.
-     * @param {!cr.ui.FocusRow} row The row that detected a keydown.
+     * @param {!FocusRow} row The row that detected a keydown.
      * @param {!Event} e
      * @return {boolean} Whether the event was handled.
      */
     onKeydown(row, e) {}
 
     /**
-     * @param {!cr.ui.FocusRow} row
+     * @param {!FocusRow} row
      * @param {!Event} e
      */
     onFocus(row, e) {}
@@ -352,9 +351,3 @@ cr.define('cr.ui', function() {
     getCustomEquivalent(sampleElement) {}
   }
 
-  // #cr_define_end
-  return {
-    FocusRow,
-    FocusRowDelegate,
-  };
-});

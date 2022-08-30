@@ -11,25 +11,29 @@ import("../../cr.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js/cr/ui"
 preprocess_src_manifest = "preprocessed_src_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+if (is_chromeos_ash) {
+  preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+}
 
 generate_grd("build_grdp") {
   grd_prefix = "webui_js_cr_ui"
   out_grd = "$target_gen_dir/resources.grdp"
   public_deps = [ ":preprocess" ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_gen_manifest",
-    "$target_gen_dir/$preprocess_src_manifest",
-  ]
+  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
+  if (is_chromeos_ash) {
+    manifest_files += [ "$target_gen_dir/$preprocess_gen_manifest" ]
+  }
   resource_path_prefix = "js/cr/ui"
 }
 
 group("preprocess") {
   public_deps = [
-    ":preprocess_generated",
     ":preprocess_src",
     ":preprocess_src_ts",
   ]
+  if (is_chromeos_ash) {
+    public_deps += [ ":preprocess_generated" ]
+  }
 }
 
 # TS files are passed to a separate target so that they are not listed in the
@@ -49,12 +53,19 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
 
-  in_files = [ "keyboard_shortcut_list.js" ]
+  in_files = [
+    "keyboard_shortcut_list.js",
+    "focus_row.js",
+    "focus_outline_manager.js",
+  ]
 
   if (!is_android) {
-    # The files below are deprecated, and are included on non-CrOS builds only
-    # for the old NTP (chrome://apps) page.
     in_files += [
+      "focus_row_behavior.js",
+      "focus_without_ink.js",
+
+      # The files below are deprecated, and are included on non-CrOS builds only
+      # for the old NTP (chrome://apps) page.
       "command.js",
       "context_menu_handler.js",
       "menu_button.js",
@@ -68,10 +79,6 @@ preprocess_if_expr("preprocess_src") {
     in_files += [
       "array_data_model.js",
       "focus_manager.js",
-      "focus_outline_manager.js",
-      "focus_row.js",
-      "focus_row_behavior.js",
-      "focus_without_ink.js",
       "grid.js",
       "list_item.js",
       "list.js",
@@ -84,25 +91,16 @@ preprocess_if_expr("preprocess_src") {
   }
 }
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":modulize" ]
-  in_folder = target_gen_dir
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "focus_outline_manager.m.js",
-    "focus_row.m.js",
-  ]
+# TODO (rbpotter): The files in the following target are all exclusive to file
+# manager. Check them in and move to ui/file_manager/.
+if (is_chromeos_ash) {
+  preprocess_if_expr("preprocess_generated") {
+    deps = [ ":modulize" ]
+    in_folder = target_gen_dir
+    out_folder = "$preprocess_folder"
+    out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
 
-  if (!is_android) {
-    in_files += [
-      "focus_row_behavior.m.js",
-      "focus_without_ink.m.js",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    in_files += [
+    in_files = [
       "array_data_model.m.js",
       "grid.m.js",
       "list_item.m.js",
@@ -127,10 +125,6 @@ if (is_chromeos_ash) {
     deps = [
       ":array_data_model",
       ":focus_manager",
-      ":focus_outline_manager",
-      ":focus_row",
-      ":focus_row_behavior",
-      ":focus_without_ink",
       ":grid",
       ":list",
       ":list_item",
@@ -151,102 +145,67 @@ if (is_chromeos_ash) {
     deps = [ "../..:cr" ]
   }
 
-  js_library("focus_outline_manager") {
+  js_library("grid") {
+    deps = [ ":list" ]
+  }
+
+  js_library("list") {
+    deps = [
+      ":array_data_model",
+      ":list_item",
+      ":list_selection_controller",
+      ":list_selection_model",
+    ]
+  }
+
+  js_library("list_item") {
     deps = [ "../..:cr" ]
   }
 
-  if (is_chromeos_ash) {
-    js_library("focus_row_behavior") {
-      deps = [
-        ":focus_row",
-        ":focus_without_ink",
-      ]
-    }
-  }
-
-  js_library("focus_row") {
+  js_library("list_selection_controller") {
     deps = [
-      "../..:assert",
-      "../..:cr",
-      "../..:event_tracker",
-      "../..:util",
-    ]
-  }
-
-  js_library("focus_without_ink") {
-    deps = [
-      "..:ui",
+      ":list_selection_model",
       "../..:cr",
     ]
   }
 
-  if (is_chromeos_ash) {
-    js_library("grid") {
-      deps = [ ":list" ]
-    }
+  js_library("list_selection_model") {
+    deps = [
+      "..:event_target",
+      "../..:cr",
+    ]
   }
 
-  if (is_chromeos_ash) {
-    js_library("list") {
-      deps = [
-        ":array_data_model",
-        ":list_item",
-        ":list_selection_controller",
-        ":list_selection_model",
-      ]
-    }
-
-    js_library("list_item") {
-      deps = [ "../..:cr" ]
-    }
-
-    js_library("list_selection_controller") {
-      deps = [
-        ":list_selection_model",
-        "../..:cr",
-      ]
-    }
-
-    js_library("list_selection_model") {
-      deps = [
-        "..:event_target",
-        "../..:cr",
-      ]
-    }
-
-    js_library("list_single_selection_model") {
-      deps = [
-        "..:event_target",
-        "../..:cr",
-      ]
-    }
+  js_library("list_single_selection_model") {
+    deps = [
+      "..:event_target",
+      "../..:cr",
+    ]
   }
 }
 
-js_modulizer("modulize") {
-  input_files = [
-    "array_data_model.js",
-    "focus_outline_manager.js",
-    "focus_row.js",
-    "focus_row_behavior.js",
-    "focus_without_ink.js",
-    "grid.js",
-    "list.js",
-    "list_item.js",
-    "list_selection_controller.js",
-    "list_selection_model.js",
-    "list_single_selection_model.js",
-  ]
-  namespace_rewrites = cr_namespace_rewrites
+if (is_chromeos_ash) {
+  js_modulizer("modulize") {
+    input_files = [
+      "array_data_model.js",
+      "grid.js",
+      "list.js",
+      "list_item.js",
+      "list_selection_controller.js",
+      "list_selection_model.js",
+      "list_single_selection_model.js",
+    ]
+    namespace_rewrites = cr_namespace_rewrites
+  }
 }
 
 js_type_check("ui_resources_modules") {
   is_polymer3 = true
   deps = [
-    ":focus_outline_manager.m",
-    ":focus_row.m",
-    ":focus_row_behavior.m",
-    ":focus_without_ink.m",
+    ":focus_outline_manager",
+    ":focus_row",
+    ":focus_row_behavior",
+    ":focus_without_ink",
   ]
   if (is_chromeos_ash) {
     deps += [
@@ -306,42 +265,31 @@ if (is_chromeos_ash) {
   }
 }
 
-js_library("focus_outline_manager.m") {
-  sources =
-      [ "$root_gen_dir/ui/webui/resources/js/cr/ui/focus_outline_manager.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("focus_outline_manager") {
 }
 
-js_library("focus_row.m") {
+js_library("focus_row") {
   deps = [
     "../..:assert.m",
     "../..:event_tracker.m",
     "../..:util.m",
   ]
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/focus_row.m.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("focus_row_behavior.m") {
+js_library("focus_row_behavior") {
   deps = [
-    ":focus_row.m",
-    ":focus_without_ink.m",
+    ":focus_row",
+    ":focus_without_ink",
     "../..:assert.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  sources =
-      [ "$root_gen_dir/ui/webui/resources/js/cr/ui/focus_row_behavior.m.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("focus_without_ink.m") {
+js_library("focus_without_ink") {
   deps = [
     "../..:assert.m",
     "../..:cr.m",
   ]
-  sources =
-      [ "$root_gen_dir/ui/webui/resources/js/cr/ui/focus_without_ink.m.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
 if (is_chromeos_ash) {
