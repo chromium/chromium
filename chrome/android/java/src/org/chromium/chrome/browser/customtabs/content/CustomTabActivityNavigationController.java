@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
@@ -212,19 +213,22 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
 
         RecordUserAction.record("CustomTabs.SystemBack");
         if (mTabProvider.getTab() == null) return false;
+        if (!BackPressManager.isEnabled()) {
+            // If enabled, BackPressManager, rather than this class, will trigger their custom
+            // logic of handling back press.
+            if (mFullscreenManager.get().getPersistentFullscreenMode()) {
+                mFullscreenManager.get().exitPersistentFullscreenMode();
+                return true;
+            }
 
-        if (mFullscreenManager.get().getPersistentFullscreenMode()) {
-            mFullscreenManager.get().exitPersistentFullscreenMode();
-            return true;
+            final WebContents webContents = mTabProvider.getTab().getWebContents();
+            if (webContents != null) {
+                RenderFrameHost focusedFrame = webContents.getFocusedFrame();
+                if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) return true;
+            }
+
+            if (mToolbarManager != null && mToolbarManager.back()) return true;
         }
-
-        final WebContents webContents = mTabProvider.getTab().getWebContents();
-        if (webContents != null) {
-            RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-            if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) return true;
-        }
-
-        if (mToolbarManager != null && mToolbarManager.back()) return true;
 
         if (mTabController.onlyOneTabRemaining()) {
             // If we're closing the last tab, just finish the Activity manually. If we had called
