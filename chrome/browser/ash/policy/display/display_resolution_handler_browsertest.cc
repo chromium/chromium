@@ -64,35 +64,22 @@ const gfx::Size kDefaultSecondDisplayResolution(1920, 1080);
 const int kDefaultDisplayScale = 100;
 
 PolicyValue GetPolicySetting() {
-  const base::DictionaryValue* resolution_pref = nullptr;
+  const base::Value::Dict* resolution_pref = nullptr;
   ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                           &resolution_pref);
   EXPECT_TRUE(resolution_pref) << "DeviceDisplayResolution setting is not set";
-  const base::Value* width = resolution_pref->FindKeyOfType(
-      {ash::kDeviceDisplayResolutionKeyExternalWidth},
-      base::Value::Type::INTEGER);
-  const base::Value* height = resolution_pref->FindKeyOfType(
-      {ash::kDeviceDisplayResolutionKeyExternalHeight},
-      base::Value::Type::INTEGER);
-  const base::Value* external_scale = resolution_pref->FindKeyOfType(
-      {ash::kDeviceDisplayResolutionKeyExternalScale},
-      base::Value::Type::INTEGER);
-  const base::Value* use_native = resolution_pref->FindKeyOfType(
-      {ash::kDeviceDisplayResolutionKeyExternalUseNative},
-      base::Value::Type::BOOLEAN);
-  const base::Value* internal_scale = resolution_pref->FindKeyOfType(
-      {ash::kDeviceDisplayResolutionKeyInternalScale},
-      base::Value::Type::INTEGER);
   PolicyValue result;
-  if (width)
-    result.external_width = width->GetInt();
-  if (height)
-    result.external_height = height->GetInt();
-  if (external_scale)
-    result.external_scale_percentage = external_scale->GetInt();
-  if (internal_scale)
-    result.internal_scale_percentage = internal_scale->GetInt();
-  if (use_native && use_native->GetBool())
+  result.external_width =
+      resolution_pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalWidth);
+  result.external_height =
+      resolution_pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalHeight);
+  result.external_scale_percentage =
+      resolution_pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalScale);
+  result.internal_scale_percentage =
+      resolution_pref->FindInt(ash::kDeviceDisplayResolutionKeyInternalScale);
+  const absl::optional<bool> use_native = resolution_pref->FindBool(
+      ash::kDeviceDisplayResolutionKeyExternalUseNative);
+  if (use_native && *use_native)
     result.use_native = true;
   return result;
 }

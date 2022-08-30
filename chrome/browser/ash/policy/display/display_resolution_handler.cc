@@ -46,12 +46,10 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
   // Get settings for the internal display from
   // |ash::kDeviceDisplayResolution| setting value.
   static std::unique_ptr<InternalDisplaySettings> FromPolicySetting(
-      const base::DictionaryValue* pref) {
-    const base::Value* scale_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyInternalScale,
-                            base::Value::Type::INTEGER);
-    return scale_value ? std::make_unique<InternalDisplaySettings>(
-                             scale_value->GetInt())
+      const base::Value::Dict* pref) {
+    const absl::optional<int> scale_value =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyInternalScale);
+    return scale_value ? std::make_unique<InternalDisplaySettings>(*scale_value)
                        : nullptr;
   }
 };
@@ -112,34 +110,27 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
   // Get settings for the external displays from
   // |ash::kDeviceDisplayResolution| setting value;
   static std::unique_ptr<ExternalDisplaySettings> FromPolicySetting(
-      const base::DictionaryValue* pref) {
-    const base::Value* width_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalWidth,
-                            base::Value::Type::INTEGER);
-    const base::Value* height_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalHeight,
-                            base::Value::Type::INTEGER);
-    const base::Value* scale_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalScale,
-                            base::Value::Type::INTEGER);
-    const base::Value* use_native_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalUseNative,
-                            base::Value::Type::BOOLEAN);
-
+      const base::Value::Dict* pref) {
     auto result = std::make_unique<ExternalDisplaySettings>();
 
     // Scale can be used for both native and non-native modes
-    if (scale_value)
-      result->scale_percentage = scale_value->GetInt();
+    result->scale_percentage =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalScale);
 
-    if (use_native_value && use_native_value->GetBool()) {
+    const absl::optional<bool> use_native_value =
+        pref->FindBool(ash::kDeviceDisplayResolutionKeyExternalUseNative);
+    if (use_native_value && *use_native_value) {
       result->use_native = true;
       return result;
     }
 
+    const absl::optional<int> width_value =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalWidth);
+    const absl::optional<int> height_value =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalHeight);
     if (width_value && height_value) {
-      result->width = width_value->GetInt();
-      result->height = height_value->GetInt();
+      result->width = *width_value;
+      result->height = *height_value;
       return result;
     }
 
@@ -160,7 +151,7 @@ const char* DisplayResolutionHandler::SettingName() {
 // |internal_display_settings_|. Also updates |policy_enabled_| flag.
 void DisplayResolutionHandler::OnSettingUpdate() {
   policy_enabled_ = false;
-  const base::DictionaryValue* resolution_pref = nullptr;
+  const base::Value::Dict* resolution_pref = nullptr;
   ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                           &resolution_pref);
   if (!resolution_pref)
@@ -173,11 +164,11 @@ void DisplayResolutionHandler::OnSettingUpdate() {
 
   bool new_recommended = false;
   policy_enabled_ = new_external_config || new_internal_config;
-  const base::Value* recommended_value = resolution_pref->FindKeyOfType(
-      ash::kDeviceDisplayResolutionKeyRecommended, base::Value::Type::BOOLEAN);
+  const absl::optional<bool> recommended_value =
+      resolution_pref->FindBool(ash::kDeviceDisplayResolutionKeyRecommended);
 
   if (recommended_value)
-    new_recommended = recommended_value->GetBool();
+    new_recommended = *recommended_value;
 
   // We should reset locally stored settings and clear list of already updated
   // displays if any of the policy values were updated.

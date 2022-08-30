@@ -643,13 +643,12 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
                                 : MojoOptionalBool::kFalse;
       }
 
-      const base::ListValue* usb_detachable_allow_list;
+      const base::Value::List* usb_detachable_allow_list;
       if (cros_settings->GetList(ash::kUsbDetachableAllowlist,
                                  &usb_detachable_allow_list)) {
         mojom::UsbDetachableAllowlistPtr allow_list =
             mojom::UsbDetachableAllowlist::New();
-        for (const auto& entry :
-             usb_detachable_allow_list->GetListDeprecated()) {
+        for (const auto& entry : *usb_detachable_allow_list) {
           mojom::UsbDeviceIdPtr usb_device_id = mojom::UsbDeviceId::New();
           absl::optional<int> vid =
               entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid);

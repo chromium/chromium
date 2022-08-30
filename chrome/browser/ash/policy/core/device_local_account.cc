@@ -238,14 +238,13 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
   // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
   std::vector<DeviceLocalAccount> accounts;
 
-  const base::ListValue* list = NULL;
-  cros_settings->GetList(ash::kAccountsPrefDeviceLocalAccounts, &list);
-  if (!list)
+  const base::Value::List* list = nullptr;
+  if (!cros_settings->GetList(ash::kAccountsPrefDeviceLocalAccounts, &list))
     return accounts;
 
   std::set<std::string> account_ids;
-  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
-    const base::Value& entry = list->GetListDeprecated()[i];
+  for (size_t i = 0; i < list->size(); ++i) {
+    const base::Value& entry = (*list)[i];
     if (!entry.is_dict()) {
       LOG(ERROR) << "Corrupt entry in device-local account list at index " << i
                  << ".";

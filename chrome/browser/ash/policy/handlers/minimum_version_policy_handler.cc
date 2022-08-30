@@ -224,24 +224,24 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
     return;
   }
 
-  const base::DictionaryValue* policy_value;
+  const base::Value::Dict* policy_value;
   if (!cros_settings_->GetDictionary(ash::kDeviceMinimumVersion,
                                      &policy_value)) {
     VLOG(1) << "Revoke policy - policy is unset or value is incorrect.";
     HandleUpdateNotRequired();
     return;
   }
-  const base::Value* entries = policy_value->FindListKey(kRequirements);
-  if (!entries || entries->GetListDeprecated().empty()) {
+  const base::Value::List* entries = policy_value->FindList(kRequirements);
+  if (!entries || entries->empty()) {
     VLOG(1) << "Revoke policy - empty policy requirements.";
     HandleUpdateNotRequired();
     return;
   }
-  auto restricted = policy_value->FindBoolKey(kUnmanagedUserRestricted);
+  auto restricted = policy_value->FindBool(kUnmanagedUserRestricted);
   unmanaged_user_restricted_ = restricted.value_or(false);
 
   std::vector<std::unique_ptr<MinimumVersionRequirement>> configs;
-  for (const auto& item : entries->GetListDeprecated()) {
+  for (const auto& item : *entries) {
     const base::DictionaryValue* dict;
     if (item.GetAsDictionary(&dict)) {
       std::unique_ptr<MinimumVersionRequirement> instance =

@@ -111,10 +111,10 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
 
 void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
   auto* cros_settings = CrosSettings::Get();
-  const base::ListValue* login_screen_input_methods = nullptr;
+  const base::Value::List* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
-      login_screen_input_methods->GetListDeprecated().empty()) {
+      login_screen_input_methods->empty()) {
     StopEnforcingPolicyInputMethods();
     return;
   }
@@ -126,8 +126,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
     allowed_input_method_ids.push_back(user_input_method_id);
   }
 
-  for (const auto& input_method_entry :
-       login_screen_input_methods->GetListDeprecated()) {
+  for (const auto& input_method_entry : *login_screen_input_methods) {
     if (input_method_entry.is_string())
       allowed_input_method_ids.push_back(input_method_entry.GetString());
   }

@@ -351,10 +351,10 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
   // TOOD(huangs): Figure out how to do the following in Lacros, which does not
   // have access to ash::CrosSettings (https://crbug.com/1219329).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::ListValue* policy_list;
+  const base::Value::List* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
-    for (const auto& entry : policy_list->GetListDeprecated()) {
+    for (const auto& entry : *policy_list) {
       if (entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid) == vid &&
           entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid) == pid) {
         return true;

@@ -89,9 +89,9 @@ class CrosSettings {
   bool GetDouble(const std::string& path, double* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;
   bool GetList(const std::string& path,
-               const base::ListValue** out_value) const;
+               const base::Value::List** out_value) const;
   bool GetDictionary(const std::string& path,
-                     const base::DictionaryValue** out_value) const;
+                     const base::Value::Dict** out_value) const;
 
   // Checks if the given username is on the list of users allowed to sign-in to
   // this device. |wildcard_match| may be nullptr. If it's present, it'll be set
@@ -112,7 +112,7 @@ class CrosSettings {
                        bool* wildcard_match) const;
 
   // Same as above, but receives already populated user list.
-  static bool FindEmailInList(const base::Value::ConstListView& list,
+  static bool FindEmailInList(const base::Value::List& list,
                               const std::string& email,
                               bool* wildcard_match);
 

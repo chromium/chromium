@@ -334,18 +334,18 @@ void TriggerShowLoginWizardFinish(
 // if no policy-specified locale is set.
 std::string GetManagedLoginScreenLocale() {
   auto* cros_settings = CrosSettings::Get();
-  const base::ListValue* login_screen_locales = nullptr;
+  const base::Value::List* login_screen_locales = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenLocales, &login_screen_locales))
     return std::string();
 
   // Currently, only the first element is used. The setting is a list for future
   // compatibility, if dynamically switching locales on the login screen will be
   // implemented.
-  if (login_screen_locales->GetListDeprecated().empty() ||
-      !login_screen_locales->GetListDeprecated()[0].is_string())
+  if (login_screen_locales->empty() ||
+      !login_screen_locales->front().is_string())
     return std::string();
 
-  return login_screen_locales->GetListDeprecated()[0].GetString();
+  return login_screen_locales->front().GetString();
 }
 
 // Disables virtual keyboard overscroll. Login UI will scroll user pods

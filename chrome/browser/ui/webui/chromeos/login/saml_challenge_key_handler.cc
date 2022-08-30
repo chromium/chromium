@@ -103,7 +103,7 @@ void SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl(const GURL& url) {
       base::BindOnce(&SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl,
                      weak_factory_.GetWeakPtr(), url));
 
-  const base::ListValue* patterns = nullptr;
+  const base::Value::List* patterns = nullptr;
   switch (status) {
     case CrosSettingsProvider::TRUSTED:
       if (!settings->GetList(kDeviceWebBasedAttestationAllowedUrls,
@@ -120,7 +120,7 @@ void SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl(const GURL& url) {
       break;
   }
 
-  if (!patterns || !UrlMatchesPattern(url, patterns->GetList())) {
+  if (!patterns || !UrlMatchesPattern(url, *patterns)) {
     ReturnResult(attestation::TpmChallengeKeyResult::MakeError(
         attestation::TpmChallengeKeyResultCode::
             kDeviceWebBasedAttestationUrlError));

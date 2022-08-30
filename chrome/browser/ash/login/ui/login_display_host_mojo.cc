@@ -85,10 +85,10 @@ bool AllAllowlistedUsersPresent() {
   if (allow_family_link)
     return false;
 
-  const base::ListValue* allowlist = nullptr;
+  const base::Value::List* allowlist = nullptr;
   if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist)
     return false;
-  for (const base::Value& i : allowlist->GetListDeprecated()) {
+  for (const base::Value& i : *allowlist) {
     const std::string* allowlisted_user = i.GetIfString();
     // NB: Wildcards in the allowlist are also detected as not present here.
     if (!allowlisted_user || !user_manager::UserManager::Get()->IsKnownUser(
