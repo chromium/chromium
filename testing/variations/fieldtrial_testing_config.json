@@ -4057,21 +4057,6 @@
             ]
         }
     ],
-    "DriveFsBidirectionalNativeMessaging": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DriveFsBidirectionalNativeMessaging"
-                    ]
-                }
-            ]
-        }
-    ],
     "EarlyExitOnNoopClassOrStyleChange": [
         {
             "platforms": [
