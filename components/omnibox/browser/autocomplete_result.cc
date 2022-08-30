@@ -89,6 +89,11 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
   constexpr size_t kDefaultMaxZeroSuggestMatches = 15;
 #elif BUILDFLAG(IS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
+  // By default, iPad has the same max as iPhone.
+  // `kDefaultMaxAutocompleteMatches` defines a hard limit on the number of
+  // autocomplete suggestions on iPad, so if an experiment defines
+  // MaxZeroSuggestMatches to 15, it would be 15 on iPhone and 10 on iPad.
+  constexpr size_t kMaxAutocompleteMatchesOnIPad = 10;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
   // By default, iPad has the same max as iPhone. `kMaxZeroSuggestMatchesOnIPad`
   // defines a hard limit on the number of ZPS suggestions on iPad, so if an
@@ -134,6 +139,12 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
       OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam,
       kDefaultMaxAutocompleteMatches);
   DCHECK(kMaxAutocompletePositionValue > field_trial_value);
+#if BUILDFLAG(IS_IOS)
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    field_trial_value =
+        std::min(field_trial_value, kMaxAutocompleteMatchesOnIPad);
+  }
+#endif
   return field_trial_value;
 }
 
