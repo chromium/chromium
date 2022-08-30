@@ -4438,13 +4438,13 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
 
   // Ensure that the <webview> process isn't considered an extension process,
   // even though the last committed URL is an extension URL.
-  content::WebContents* guest =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+  content::RenderFrameHost* guest =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   GURL guest_url(guest->GetLastCommittedURL());
   EXPECT_TRUE(guest_url.SchemeIs(extensions::kExtensionScheme));
 
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
-  auto* guest_process = guest->GetPrimaryMainFrame()->GetProcess();
+  auto* guest_process = guest->GetProcess();
   EXPECT_FALSE(process_map->Contains(guest_process->GetID()));
   EXPECT_TRUE(
       process_map->GetExtensionsInProcess(guest_process->GetID()).empty());
