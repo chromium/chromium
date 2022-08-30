@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
+#include "base/unguessable_token.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -35,6 +36,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
@@ -251,6 +253,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void ResolveTransferToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       ResolvedTokenCallback callback);
+
+  // Generates a unique serialization of a URL, which can be used to check
+  // handles for equality. This is not cryptographically secure.
+  std::string SerializeURL(const storage::FileSystemURL& url,
+                           FileSystemAccessPermissionContext::HandleType type);
 
   base::WeakPtr<FileSystemAccessManagerImpl> AsWeakPtr();
 
@@ -503,6 +510,14 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const storage::FileSystemURL& url,
       GetEntryFromDataTransferTokenCallback token_resolved_callback,
       FileSystemAccessPermissionContext::HandleType file_type);
+
+  // `root_permission_path` is path that the user selected in a file or
+  // directory picker which led to the site having access to this URL. All
+  // permissions related to the URL are based on this path.
+  std::string SerializeURLWithPermissionRoot(
+      const storage::FileSystemURL& url,
+      FileSystemAccessPermissionContext::HandleType type,
+      const base::FilePath& root_permission_path);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

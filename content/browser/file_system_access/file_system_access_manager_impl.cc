@@ -25,6 +25,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -54,6 +55,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
@@ -750,22 +752,11 @@ base::FilePath DeserializePath(const std::string& bytes) {
   return base::FilePath(s);
 }
 
-}  // namespace
-
-void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
-    SerializeHandleCallback callback,
-    FileSystemAccessTransferTokenImpl* resolved_token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!resolved_token) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  const storage::FileSystemURL& url = resolved_token->url();
-
+std::string SerializeURLImpl(const storage::FileSystemURL& url,
+                             FileSystemAccessPermissionContext::HandleType type,
+                             base::FilePath root_permission_path) {
   FileSystemAccessHandleData data;
-  data.set_handle_type(resolved_token->type() == HandleType::kFile
+  data.set_handle_type(type == HandleType::kFile
                            ? FileSystemAccessHandleData::kFile
                            : FileSystemAccessHandleData::kDirectory);
 
@@ -782,21 +773,19 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
         is_external ? data.mutable_external() : data.mutable_local();
 
     base::FilePath url_path = is_external ? url.virtual_path() : url.path();
-    base::FilePath root_path = resolved_token->GetWriteGrant()->GetPath();
-    if (root_path.empty())
-      root_path = url_path;
-
-    file_data->set_root_path(SerializePath(root_path));
+    if (root_permission_path.empty())
+      root_permission_path = url_path;
+    file_data->set_root_path(SerializePath(root_permission_path));
 
     base::FilePath relative_path;
     // We want `relative_path` to be the path of the file or directory
-    // relative to `root_path`. FilePath::AppendRelativePath gets us that,
-    // but fails if the path we're looking for is equal to the `root_path`.
-    // So special case that case (in which case relative path would be empty
-    // anyway).
-    if (root_path != url_path) {
+    // relative to `root_permission_path`. FilePath::AppendRelativePath gets us
+    // that, but fails if the path we're looking for is equal to the
+    // `root_permission_path`. So special case that case (in which case relative
+    // path would be empty anyway).
+    if (root_permission_path != url_path) {
       bool relative_path_result =
-          root_path.AppendRelativePath(url_path, &relative_path);
+          root_permission_path.AppendRelativePath(url_path, &relative_path);
       DCHECK(relative_path_result);
     }
 
@@ -816,6 +805,40 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
   std::string value;
   bool success = data.SerializeToString(&value);
   DCHECK(success);
+  return value;
+}
+
+}  // namespace
+
+std::string FileSystemAccessManagerImpl::SerializeURL(
+    const storage::FileSystemURL& url,
+    HandleType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return SerializeURLImpl(url, type,
+                          /*root_permission_path=*/base::FilePath());
+}
+
+std::string FileSystemAccessManagerImpl::SerializeURLWithPermissionRoot(
+    const storage::FileSystemURL& url,
+    HandleType type,
+    const base::FilePath& root_permission_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return SerializeURLImpl(url, type, root_permission_path);
+}
+
+void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
+    SerializeHandleCallback callback,
+    FileSystemAccessTransferTokenImpl* resolved_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!resolved_token) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto value = SerializeURLWithPermissionRoot(
+      resolved_token->url(), resolved_token->type(),
+      resolved_token->GetWriteGrant()->GetPath());
   std::vector<uint8_t> result(value.begin(), value.end());
   std::move(callback).Run(result);
 }
