@@ -1162,7 +1162,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.GetPackState.LanguageCode"
-    enum="LanguagePackLanguageCodes" expires_after="2023-01-01">
+    enum="LanguagePackLanguageCodes" expires_after="2023-01-30">
   <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
@@ -1173,7 +1173,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallComplete.Success"
-    enum="BooleanSuccess" expires_after="2022-12-11">
+    enum="BooleanSuccess" expires_after="2023-01-30">
   <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
@@ -1184,7 +1184,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.BasePackStateResponse"
-    enum="LanguagePackMojoPackState" expires_after="2022-12-11">
+    enum="LanguagePackMojoPackState" expires_after="2023-01-30">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1194,7 +1194,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.GetPackInfo.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2022-12-04">
+    enum="LanguagePackMojoFeatureId" expires_after="2023-01-30">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1204,7 +1204,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.InstallBasePack.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2022-12-11">
+    enum="LanguagePackMojoFeatureId" expires_after="2023-01-30">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1214,7 +1214,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.InstallPack.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2022-12-11">
+    enum="LanguagePackMojoFeatureId" expires_after="2023-01-30">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1224,7 +1224,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.PackStateResponse"
-    enum="LanguagePackMojoPackState" expires_after="2022-10-01">
+    enum="LanguagePackMojoPackState" expires_after="2023-01-30">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1234,7 +1234,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.UninstallComplete.Success"
-    enum="BooleanSuccess" expires_after="2022-10-01">
+    enum="BooleanSuccess" expires_after="2023-01-30">
   <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
