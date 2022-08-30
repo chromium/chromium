@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEFERRED_SHAPING_H_
 
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
 namespace blink {
@@ -19,7 +20,7 @@ class DeferredShapingViewportScope {
   DeferredShapingViewportScope(LocalFrameView& view,
                                const LayoutView& layout_view);
   ~DeferredShapingViewportScope() {
-    view_.SetCurrentViewportBottom(PassKey(), previous_value_);
+    ds_controller_.SetCurrentViewportBottom(PassKey(), previous_value_);
   }
 
   DeferredShapingViewportScope(DeferredShapingViewportScope&&) = delete;
@@ -28,7 +29,7 @@ class DeferredShapingViewportScope {
       delete;
 
  private:
-  LocalFrameView& view_;
+  DeferredShapingController& ds_controller_;
   const LayoutUnit previous_value_;
 };
 
@@ -46,9 +47,11 @@ class DeferredShapingMinimumTopScope {
   // |minimum_top| - The value to be set to CurrentMinimumTop().
   DeferredShapingMinimumTopScope(const NGLayoutInputNode input_node,
                                  LayoutUnit minimum_top)
-      : view_(input_node.GetLayoutBox()->GetFrameView()),
-        previous_value_(view_->CurrentMinimumTop()) {
-    view_->SetCurrentMinimumTop(PassKey(), minimum_top);
+      : controller_(&input_node.GetLayoutBox()
+                         ->GetFrameView()
+                         ->GetDeferredShapingController()),
+        previous_value_(controller_->CurrentMinimumTop()) {
+    controller_->SetCurrentMinimumTop(PassKey(), minimum_top);
   }
 
   // |input_node| - Source of LocalFrameView. It's ok to specify any layout
@@ -57,19 +60,21 @@ class DeferredShapingMinimumTopScope {
   [[nodiscard]] static DeferredShapingMinimumTopScope CreateDelta(
       const NGLayoutInputNode input_node,
       LayoutUnit delta) {
-    auto& view = *input_node.GetLayoutBox()->GetFrameView();
-    return DeferredShapingMinimumTopScope(input_node,
-                                          view.CurrentMinimumTop() + delta);
+    auto& ds_controller = input_node.GetLayoutBox()
+                              ->GetFrameView()
+                              ->GetDeferredShapingController();
+    return DeferredShapingMinimumTopScope(
+        input_node, ds_controller.CurrentMinimumTop() + delta);
   }
 
   DeferredShapingMinimumTopScope(DeferredShapingMinimumTopScope&& other)
-      : view_(other.view_), previous_value_(other.previous_value_) {
-    other.view_ = nullptr;
+      : controller_(other.controller_), previous_value_(other.previous_value_) {
+    other.controller_ = nullptr;
   }
 
   ~DeferredShapingMinimumTopScope() {
-    if (view_)
-      view_->SetCurrentMinimumTop(PassKey(), previous_value_);
+    if (controller_)
+      controller_->SetCurrentMinimumTop(PassKey(), previous_value_);
   }
 
   DeferredShapingMinimumTopScope(const DeferredShapingMinimumTopScope&) =
@@ -78,7 +83,7 @@ class DeferredShapingMinimumTopScope {
       const DeferredShapingMinimumTopScope&) = delete;
 
  private:
-  LocalFrameView* view_;
+  DeferredShapingController* controller_;
   const LayoutUnit previous_value_;
 };
 
@@ -92,13 +97,14 @@ class DeferredShapingDisallowScope {
  public:
   explicit DeferredShapingDisallowScope(LocalFrameView& view,
                                         bool disable = true)
-      : view_(view), previous_value_(view.AllowDeferredShaping()) {
+      : controller_(view.GetDeferredShapingController()),
+        previous_value_(controller_.AllowDeferredShaping()) {
     if (disable)
-      view_.SetAllowDeferredShaping(PassKey(), false);
+      controller_.SetAllowDeferredShaping(PassKey(), false);
   }
 
   ~DeferredShapingDisallowScope() {
-    view_.SetAllowDeferredShaping(PassKey(), previous_value_);
+    controller_.SetAllowDeferredShaping(PassKey(), previous_value_);
   }
 
   DeferredShapingDisallowScope(DeferredShapingDisallowScope&&) = delete;
@@ -107,7 +113,7 @@ class DeferredShapingDisallowScope {
       delete;
 
  private:
-  LocalFrameView& view_;
+  DeferredShapingController& controller_;
   const bool previous_value_;
 };
 

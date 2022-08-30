@@ -833,18 +833,20 @@ void LocalFrameView::PerformLayout() {
       if (HasOrthogonalWritingModeRoots())
         LayoutOrthogonalWritingModeRoots();
 
+      DeferredShapingController& ds_controller = GetDeferredShapingController();
       bool default_allow_deferred_shaping =
-          GetDeferredShapingController().DefaultAllowDeferredShaping() &&
+          ds_controller.DefaultAllowDeferredShaping() &&
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
           !frame_->PagePopupOwner() && !auto_size_info_ &&
           !GetScrollableArea()->HasPendingHistoryRestoreScrollOffset();
       if (!default_allow_deferred_shaping)
-        GetDeferredShapingController().DisallowDeferredShaping();
-      base::AutoReset<bool> deferred_shaping(
-          &allow_deferred_shaping_,
-          default_allow_deferred_shaping && !document->Printing());
+        ds_controller.DisallowDeferredShaping();
+      using PassKey = base::PassKey<LocalFrameView>;
+      ds_controller.SetAllowDeferredShaping(
+          PassKey(), default_allow_deferred_shaping && !document->Printing());
       DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
       GetLayoutView()->UpdateLayout();
+      ds_controller.SetAllowDeferredShaping(PassKey(), false);
     }
   }
 

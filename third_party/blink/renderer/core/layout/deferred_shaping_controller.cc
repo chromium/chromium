@@ -28,8 +28,8 @@ void DeferredShapingController::Trace(Visitor* visitor) const {
 }
 
 void DeferredShapingController::DisallowDeferredShaping() {
-  DCHECK_EQ(frame_->View()->CurrentViewportBottom(), kIndefiniteSize);
-  DCHECK_EQ(frame_->View()->CurrentMinimumTop(), LayoutUnit());
+  DCHECK_EQ(CurrentViewportBottom(), kIndefiniteSize);
+  DCHECK_EQ(CurrentMinimumTop(), LayoutUnit());
   default_allow_deferred_shaping_ = false;
 }
 

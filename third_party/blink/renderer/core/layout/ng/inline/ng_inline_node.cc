@@ -539,15 +539,17 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   }
 
   NGInlineNodeData* data = MutableData();
-  auto& view = *GetLayoutBox()->GetFrameView();
+  auto& ds_controller =
+      GetLayoutBox()->GetFrameView()->GetDeferredShapingController();
   NGInlineNodeData::ShapingState new_state = NGInlineNodeData::kShapingDone;
-  if (view.AllowDeferredShaping() && !GetLayoutBox()->IsInsideFlowThread() &&
+  if (ds_controller.AllowDeferredShaping() &&
+      !GetLayoutBox()->IsInsideFlowThread() &&
       Style().IsContentVisibilityVisible() &&
       Style().PageTransitionTag().IsEmpty()) {
     DCHECK(IsHorizontalWritingMode(Style().GetWritingMode()));
-    const LayoutUnit viewport_bottom = view.CurrentViewportBottom();
+    const LayoutUnit viewport_bottom = ds_controller.CurrentViewportBottom();
     DCHECK_NE(viewport_bottom, kIndefiniteSize) << GetLayoutBox();
-    LayoutUnit top = view.CurrentMinimumTop();
+    LayoutUnit top = ds_controller.CurrentMinimumTop();
     // For css2.1/t080301-c411-vt-mrgn-00-b.html we should apply negative
     // margin, but not positive margin because of margin collapse.
     NGBoxStrut margins = ComputeMarginsForSelf(space, Style());
@@ -558,8 +560,7 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
       new_state = NGInlineNodeData::kShapingDeferred;
 
       if (Element* element = DynamicTo<Element>(GetDOMNode())) {
-        // We can't call DisplayLockContext::SetRequestedState() during layout.
-        view.GetDeferredShapingController().RegisterDeferred(*element);
+        ds_controller.RegisterDeferred(*element);
       } else {
         // We don't support deferring anonymous IFCs because DisplayLock
         // supports only elements.

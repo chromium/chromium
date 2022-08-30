@@ -86,9 +86,6 @@ namespace blink {
 class AXObjectCache;
 class ChromeClient;
 class DeferredShapingController;
-class DeferredShapingDisallowScope;
-class DeferredShapingMinimumTopScope;
-class DeferredShapingViewportScope;
 class DarkModeFilter;
 class DocumentLifecycle;
 class FragmentAnchor;
@@ -485,26 +482,6 @@ class CORE_EXPORT LocalFrameView final
   // returns false.
   bool IsSubtreeLayout() const { return !layout_subtree_root_list_.IsEmpty(); }
 
-  // The bottom position of the nearest scrollable ancestor.
-  // This returns kIndefiniteSize if the viewport bottom is not registered.
-  LayoutUnit CurrentViewportBottom() const { return current_viewport_bottom_; }
-  void SetCurrentViewportBottom(base::PassKey<DeferredShapingViewportScope>,
-                                LayoutUnit value) {
-    current_viewport_bottom_ = value;
-  }
-  // The "minimum top" position of the box which is being laid out.
-  LayoutUnit CurrentMinimumTop() const { return current_minimum_top_; }
-  void SetCurrentMinimumTop(base::PassKey<DeferredShapingMinimumTopScope>,
-                            LayoutUnit value) {
-    current_minimum_top_ = value;
-  }
-  // A flag indicating whether the current layout container supports
-  // deferred shaping.
-  bool AllowDeferredShaping() const { return allow_deferred_shaping_; }
-  void SetAllowDeferredShaping(base::PassKey<DeferredShapingDisallowScope>,
-                               bool value) {
-    allow_deferred_shaping_ = value;
-  }
   DeferredShapingController& GetDeferredShapingController() const {
     return *deferred_shaping_controller_;
   }
@@ -1053,9 +1030,6 @@ class CORE_EXPORT LocalFrameView final
   Member<LocalFrame> frame_;
 
   Member<DeferredShapingController> deferred_shaping_controller_;
-  LayoutUnit current_viewport_bottom_ = kIndefiniteSize;
-  LayoutUnit current_minimum_top_;
-  bool allow_deferred_shaping_ = false;
   bool can_have_scrollbars_;
   bool in_post_lifecycle_steps_ = false;
 

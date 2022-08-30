@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -14,10 +15,14 @@
 
 namespace blink {
 
+class DeferredShapingDisallowScope;
+class DeferredShapingMinimumTopScope;
+class DeferredShapingViewportScope;
 class Document;
 class Element;
 class LayoutObject;
 class LocalFrame;
+class LocalFrameView;
 class Node;
 
 enum class ReshapeReason {
@@ -52,10 +57,38 @@ class CORE_EXPORT DeferredShapingController
     return default_allow_deferred_shaping_;
   }
 
+  // Manage states during layout
+
+  // The bottom position of the nearest scrollable ancestor.
+  // This returns kIndefiniteSize if the viewport bottom is not registered.
+  LayoutUnit CurrentViewportBottom() const { return current_viewport_bottom_; }
+  void SetCurrentViewportBottom(base::PassKey<DeferredShapingViewportScope>,
+                                LayoutUnit value) {
+    current_viewport_bottom_ = value;
+  }
+  // The "minimum top" position of the box which is being laid out.
+  LayoutUnit CurrentMinimumTop() const { return current_minimum_top_; }
+  void SetCurrentMinimumTop(base::PassKey<DeferredShapingMinimumTopScope>,
+                            LayoutUnit value) {
+    current_minimum_top_ = value;
+  }
+  // A flag indicating whether the current layout container supports
+  // deferred shaping.
+  bool AllowDeferredShaping() const { return allow_deferred_shaping_; }
+  void SetAllowDeferredShaping(base::PassKey<DeferredShapingDisallowScope>,
+                               bool value) {
+    allow_deferred_shaping_ = value;
+  }
+  void SetAllowDeferredShaping(base::PassKey<LocalFrameView>, bool value) {
+    allow_deferred_shaping_ = value;
+  }
+
   void PerformPostLayoutTask();
   void RegisterDeferred(Element& element);
   bool IsRegisteredDeferred(Element& element) const;
   void UnregisterDeferred(Element& element);
+
+  // Manage reshaping
 
   void ReshapeAllDeferred(ReshapeReason reason);
   // Reshape shaping-deferred elements so that |target| can return the precise
@@ -77,6 +110,9 @@ class CORE_EXPORT DeferredShapingController
   Member<LocalFrame> frame_;
   TaskHandle reshaping_task_handle_;
   HeapHashSet<Member<Element>> deferred_elements_;
+  LayoutUnit current_viewport_bottom_ = kIndefiniteSize;
+  LayoutUnit current_minimum_top_;
+  bool allow_deferred_shaping_ = false;
   bool default_allow_deferred_shaping_ = true;
 };
 
