@@ -1298,42 +1298,62 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitHelper(
       (count > 0) ? ax::mojom::MoveDirection::kForward
                   : ax::mojom::MoveDirection::kBackward;
 
+  const AXNode* initial_endpoint = endpoint->GetAnchor();
+
   // Most of the methods used to create the next/previous position go back and
   // forth creating a leaf text position and rooting the result to the original
   // position's anchor; avoid this by normalizing to a leaf text position.
   AXPositionInstance current_endpoint = endpoint->AsLeafTextPosition();
+  AXPositionInstance next_endpoint = GetNextTextBoundaryPosition(
+      current_endpoint, boundary_type,
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition},
+      boundary_direction);
+  DCHECK(next_endpoint->IsLeafTextPosition());
 
-  for (int iteration = 0; iteration < std::abs(count); ++iteration) {
-    do {
-      AXPositionInstance next_endpoint = GetNextTextBoundaryPosition(
-          current_endpoint, boundary_type,
-          {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
-           AXBoundaryDetection::kDontCheckInitialPosition},
-          boundary_direction);
-      DCHECK(next_endpoint->IsLeafTextPosition());
+  bool is_ignored_for_text_navigation = false;
+  int iteration = 0;
+  // Since AXBoundaryBehavior::kStopAtLastAnchorBoundary forces the next
+  // text boundary position to be different than the input position, the
+  // only case where these are equal is when they're already located at the
+  // last anchor boundary. In such case, there is no next position to move
+  // to.
+  while (iteration < std::abs(count) &&
+         !(next_endpoint->GetAnchor() == current_endpoint->GetAnchor() &&
+           *next_endpoint == *current_endpoint)) {
+    is_ignored_for_text_navigation = false;
+    current_endpoint = std::move(next_endpoint);
 
-      // Since AXBoundaryBehavior::kStopAtLastAnchorBoundary forces the next
-      // text boundary position to be different than the input position, the
-      // only case where these are equal is when they're already located at the
-      // last anchor boundary. In such case, there is no next position to move
-      // to.
-      if (next_endpoint->GetAnchor() == current_endpoint->GetAnchor() &&
-          *next_endpoint == *current_endpoint) {
-        *units_moved = (count > 0) ? iteration : -iteration;
-        return current_endpoint;
-      }
-      current_endpoint = std::move(next_endpoint);
-      // Loop until we're not on a position that is ignored for text navigation.
-      // There is one exception for character navigation - since the ignored
-      // anchor is represented by an embedded object character, we allow
-      // navigation by character for consistency (i.e. you should be able to
-      // move by character the same number of characters that are represented by
-      // the ranges flat string buffer).
-    } while (boundary_type != ax::mojom::TextBoundary::kCharacter &&
-             current_endpoint->GetAnchor()->IsIgnoredForTextNavigation());
+    next_endpoint = GetNextTextBoundaryPosition(
+        current_endpoint, boundary_type,
+        {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+         AXBoundaryDetection::kDontCheckInitialPosition},
+        boundary_direction);
+    DCHECK(next_endpoint->IsLeafTextPosition());
+
+    // Loop until we're not on a position that is ignored for text navigation.
+    // There is one exception for character navigation - since the ignored
+    // anchor is represented by an embedded object character, we allow
+    // navigation by character for consistency (i.e. you should be able to
+    // move by character the same number of characters that are represented by
+    // the ranges flat string buffer).
+    is_ignored_for_text_navigation =
+        boundary_type != ax::mojom::TextBoundary::kCharacter &&
+        current_endpoint->GetAnchor()->IsIgnoredForTextNavigation();
+    if (!is_ignored_for_text_navigation)
+      iteration++;
   }
 
-  *units_moved = count;
+  *units_moved = (count > 0) ? iteration : -iteration;
+
+  if (is_ignored_for_text_navigation &&
+      initial_endpoint != current_endpoint->GetAnchor()) {
+    // If the last node in the tree is ignored for text navigation, we
+    // should still be able to return an endpoint located on that node. We
+    // also need to ensure that the value of |units_moved| is accurate.
+    *units_moved += (count > 0) ? 1 : -1;
+  }
+
   return current_endpoint;
 }
 

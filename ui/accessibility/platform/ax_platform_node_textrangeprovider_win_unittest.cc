@@ -7514,4 +7514,70 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   expected_variant.Reset();
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       MoveEndpointToLastIgnoredForTextNavigationNode) {
+  // This test moves the end endpoint of a range by one paragraph unit forward
+  // to the last node of the tree. That last node happens to be a node that is
+  // ignored for text navigation, but since it's the last node in the tree, it
+  // should successfully move the endpoint to that node and keep the units_moved
+  // value in sync.
+  // ++1 kRootWebArea
+  // ++++2 kStaticText name="abc"
+  // ++++++3 kInlineTextBox name="abc"
+  // ++++4 kGenericContainer
+  AXNodeData root_1;
+  AXNodeData static_text_2;
+  AXNodeData inline_text_3;
+  AXNodeData generic_container_4;
+
+  root_1.id = 1;
+  static_text_2.id = 2;
+  inline_text_3.id = 3;
+  generic_container_4.id = 4;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {static_text_2.id, generic_container_4.id};
+
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.SetName("abc");
+  static_text_2.child_ids = {inline_text_3.id};
+
+  inline_text_3.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_3.SetName("abc");
+
+  generic_container_4.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.root_id = root_1.id;
+  update.tree_data.tree_id = tree_id;
+  update.has_tree_data = true;
+  update.nodes = {root_1, static_text_2, inline_text_3, generic_container_4};
+
+  Init(update);
+
+  // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
+  // will build the entire tree.
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  base::win::ScopedVariant expected_variant;
+
+  CreateTextRangeProviderWin(
+      range, owner, tree_id,
+      /*start_anchor_id*/ inline_text_3.id, /*start_offset*/ 0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ inline_text_3.id, /*end_offset*/ 3,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"abc");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(range, TextPatternRangeEndpoint_End,
+                                   TextUnit_Paragraph,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"abc\n\xFFFC",
+                                   /*expected_count*/ 1);
+}
+
 }  // namespace ui
