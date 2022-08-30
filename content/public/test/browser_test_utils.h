@@ -321,6 +321,11 @@ void SimulateTouchscreenPinch(WebContents* web_contents,
 #endif  // !BUILDFLAG(IS_MAC)
 
 // Sends a GesturePinch Begin/Update/End sequence.
+void SimulateGesturePinchSequence(RenderWidgetHost* render_widget_host,
+                                  const gfx::Point& point,
+                                  float scale,
+                                  blink::WebGestureDevice source_device);
+
 void SimulateGesturePinchSequence(WebContents* web_contents,
                                   const gfx::Point& point,
                                   float scale,

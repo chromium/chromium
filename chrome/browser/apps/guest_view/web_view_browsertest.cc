@@ -5358,20 +5358,25 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AutoResizeMessages) {
 IN_PROC_BROWSER_TEST_P(WebViewTest, TouchpadPinchSyntheticWheelEvents) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   LoadAppWithGuest("web_view/touchpad_pinch");
-  content::WebContents* guest_contents = GetGuestWebContents();
 
-  content::WaitForHitTestData(guest_contents);
+  content::RenderFrameHost* render_frame_host =
+      GetGuestView()->GetGuestMainFrame();
+  content::WaitForHitTestData(render_frame_host);
+
+  content::RenderWidgetHost* render_widget_host =
+      render_frame_host->GetRenderWidgetHost();
+
   // Ensure the compositor thread is aware of the wheel listener.
-  content::MainThreadFrameObserver synchronize_threads(
-      guest_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+  content::MainThreadFrameObserver synchronize_threads(render_widget_host);
   synchronize_threads.Wait();
 
   ExtensionTestMessageListener synthetic_wheel_listener("Seen wheel event");
 
-  const gfx::Rect contents_rect = guest_contents->GetContainerBounds();
-  const gfx::Point pinch_position(contents_rect.width() / 2,
-                                  contents_rect.height() / 2);
-  content::SimulateGesturePinchSequence(guest_contents, pinch_position, 1.23,
+  const gfx::Rect guest_rect = render_widget_host->GetView()->GetViewBounds();
+  const gfx::Point pinch_position(guest_rect.width() / 2,
+                                  guest_rect.height() / 2);
+  content::SimulateGesturePinchSequence(render_widget_host, pinch_position,
+                                        1.23,
                                         blink::WebGestureDevice::kTouchpad);
 
   ASSERT_TRUE(synthetic_wheel_listener.WaitUntilSatisfied());

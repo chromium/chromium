@@ -1087,12 +1087,12 @@ void SimulateTouchscreenPinch(WebContents* web_contents,
 
 #endif  // !BUILDFLAG(IS_MAC)
 
-void SimulateGesturePinchSequence(WebContents* web_contents,
+void SimulateGesturePinchSequence(RenderWidgetHost* render_widget_host,
                                   const gfx::Point& point,
                                   float scale,
                                   blink::WebGestureDevice source_device) {
-  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
+  RenderWidgetHostImpl* widget_host =
+      RenderWidgetHostImpl::From(render_widget_host);
 
   blink::WebGestureEvent pinch_begin(
       blink::WebInputEvent::Type::kGesturePinchBegin,
@@ -1115,6 +1115,15 @@ void SimulateGesturePinchSequence(WebContents* web_contents,
   pinch_end.SetNeedsWheelEvent(source_device ==
                                blink::WebGestureDevice::kTouchpad);
   widget_host->ForwardGestureEvent(pinch_end);
+}
+
+void SimulateGesturePinchSequence(WebContents* web_contents,
+                                  const gfx::Point& point,
+                                  float scale,
+                                  blink::WebGestureDevice source_device) {
+  RenderWidgetHost* widget_host =
+      web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  SimulateGesturePinchSequence(widget_host, point, scale, source_device);
 }
 
 void SimulateGestureScrollSequence(WebContents* web_contents,
