@@ -1098,7 +1098,8 @@ RasterDecoderImpl::RasterDecoderImpl(
           features::kDisableFlushWorkaroundForMacCrash)),
 #endif
       is_raw_draw_enabled_(features::IsUsingRawDraw()),
-      is_drdc_enabled_(features::IsDrDcEnabled()) {
+      is_drdc_enabled_(features::IsDrDcEnabled() &&
+                       !feature_info()->workarounds().disable_drdc) {
   DCHECK(shared_context_state_);
   shared_context_state_->AddContextLostObserver(this);
 }

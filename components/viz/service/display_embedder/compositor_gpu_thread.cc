@@ -40,8 +40,12 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
     gpu::VulkanImplementation* vulkan_implementation,
     gpu::VulkanDeviceQueue* device_queue,
     bool enable_watchdog) {
-  if (!features::IsDrDcEnabled())
+  DCHECK(gpu_channel_manager);
+
+  if (!features::IsDrDcEnabled() ||
+      gpu_channel_manager->gpu_driver_bug_workarounds().disable_drdc) {
     return nullptr;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   // When using angle via enabling passthrough command decoder on android, angle
