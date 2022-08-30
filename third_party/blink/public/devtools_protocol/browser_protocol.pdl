@@ -8351,6 +8351,7 @@ domain Page
       OutstandingNetworkRequestDirectSocket
       InjectedJavascript
       InjectedStyleSheet
+      KeepaliveRequest
       Dummy
       # Disabled for render frame host reasons
       # See content/browser/renderer_host/back_forward_cache_disable.h for explanations.

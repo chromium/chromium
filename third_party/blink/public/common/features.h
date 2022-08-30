@@ -43,6 +43,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kBatchFetchRequests;
 BLINK_COMMON_EXPORT extern const base::Feature
     kBackForwardCacheSendNotRestoredReasons;
 BLINK_COMMON_EXPORT extern const base::Feature
+    kBackForwardCacheWithKeepaliveRequest;
+BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingDownloadsInAdFrameWithoutUserActivation;
 BLINK_COMMON_EXPORT extern const base::Feature kCSSContainerQueries;
 BLINK_COMMON_EXPORT extern const base::Feature kConversionMeasurement;
