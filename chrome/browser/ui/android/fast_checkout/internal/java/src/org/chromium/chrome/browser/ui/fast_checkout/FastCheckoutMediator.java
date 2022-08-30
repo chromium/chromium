@@ -236,15 +236,13 @@ public class FastCheckoutMediator {
                     R.string.fast_checkout_autofill_profile_sheet_title);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_autofill_profile_settings_button_description);
-            // TODO(crbug.com/1355310): Implement handler for opening Autofill profile settings.
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-                    createSettingsOnClickListener(() -> {}));
+                    createSettingsOnClickListener(() -> mDelegate.openAutofillProfileSettings()));
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST));
         } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
-            // TODO(crbug.com/1355310): Implement handler for opening credit card settings.
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-                    createSettingsOnClickListener(() -> {}));
+                    createSettingsOnClickListener(() -> mDelegate.openCreditCardSettings()));
             // TODO(crbug.com/1355310): Switch to credit card model, set title, etc.
         }
 

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,8 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.PROFILE_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.SELECTED_PROFILE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.VISIBLE;
+
+import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.RecyclerView;
@@ -113,7 +116,6 @@ public class FastCheckoutMediatorTest {
         assertNotNull(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
         assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER),
                 instanceOf(OnMenuItemClickListener.class));
-        // TODO(crbug.com/1355310): Test opening Autofill settings.
     }
 
     @Test
@@ -123,6 +125,32 @@ public class FastCheckoutMediatorTest {
 
         mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER).run();
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
+    }
+
+    @Test
+    public void testOpenSettingsWorksFromAutofillProfileScreen() {
+        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
+        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.AUTOFILL_PROFILE_SCREEN));
+
+        // Simulate the proper MenuItem.
+        MenuItem settingsItem = mock(MenuItem.class);
+        when(settingsItem.getItemId()).thenReturn(R.id.settings_menu_id);
+
+        mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).onMenuItemClick(settingsItem);
+        verify(mMockDelegate).openAutofillProfileSettings();
+    }
+
+    @Test
+    public void testOpenSettingsWorksFromCreditCardScreen() {
+        mMediator.setCurrentScreen(ScreenType.CREDIT_CARD_SCREEN);
+        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.CREDIT_CARD_SCREEN));
+
+        // Simulate the proper MenuItem.
+        MenuItem settingsItem = mock(MenuItem.class);
+        when(settingsItem.getItemId()).thenReturn(R.id.settings_menu_id);
+
+        mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).onMenuItemClick(settingsItem);
+        verify(mMockDelegate).openCreditCardSettings();
     }
 
     @Test
