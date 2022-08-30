@@ -401,6 +401,13 @@ class GSPMobile2018Page(TopRealWorldMobilePage):
   YEAR = '2018'
   URL = 'http://gsp.ro'
 
+  def RunNavigateSteps(self, action_runner):
+    super(GSPMobile2018Page, self).RunNavigateSteps(action_runner)
+
+    # Close a pop-up dialog that occludes a large area of the page.
+    action_runner.WaitForElement(selector='.close-btn')
+    action_runner.TapElement(selector='.close-btn')
+
 
 class TheVergeMobile2018Page(TopRealWorldMobilePage):
   """Why: Top tech blog"""
