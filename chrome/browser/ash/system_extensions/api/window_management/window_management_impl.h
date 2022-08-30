@@ -9,11 +9,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
-#include "ui/aura/window.h"
 
 namespace views {
 class Widget;
 }  // namespace views
+
+namespace aura {
+class Window;
+}
 
 namespace ash {
 
@@ -21,14 +24,15 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
  public:
   explicit WindowManagementImpl(
       int32_t render_process_host_id,
-      mojo::PendingAssociatedRemote<
-          blink::mojom::CrosWindowManagementStartObserver>
+      mojo::PendingAssociatedRemote<blink::mojom::CrosWindowManagementObserver>
           observer_pending_remote);
   ~WindowManagementImpl() override;
 
   // Sends a 'start' event to the renderer through the
-  // blink::mojom::CrosWindowManagementStartObserver interface.
+  // blink::mojom::CrosWindowManagementObserver interface.
   void DispatchStartEvent();
+
+  void DispatchWindowClosedEvent(const base::UnguessableToken& id);
 
   // Sends an AcceleratorEvent to the renderer through the
   // blink::mojom::CrosWindowManagementStartObserver interface.
@@ -76,8 +80,7 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
   int32_t render_process_host_id_;
 
   // Used to send events to the renderer.
-  mojo::AssociatedRemote<blink::mojom::CrosWindowManagementStartObserver>
-      observer_;
+  mojo::AssociatedRemote<blink::mojom::CrosWindowManagementObserver> observer_;
 };
 
 }  // namespace ash

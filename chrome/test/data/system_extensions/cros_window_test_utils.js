@@ -5,7 +5,8 @@
 // We assume a single window only and apply cros_window API methods at index 0.
 async function assertSingleWindow() {
   let windows = await chromeos.windowManagement.getWindows();
-  assert_equals(windows.length, 1,
+  assert_equals(
+      windows.length, 1,
       `util functions restricted to testing with a single window.`);
 }
 
@@ -147,4 +148,23 @@ async function assertWindowBounds(x, y, width, height) {
   assert_equals(window.screenTop, window.screenY);
   assert_equals(window.width, width);
   assert_equals(window.height, height);
+}
+
+/**
+ * Notifies when the event `type` has fired.
+ * @param {EventTarget} target The object to listen for the event.
+ * @param {string} type The type of event to listen for.
+ * @param {object} options Characteristics about the event listener.
+ * @returns {Promise<Event>} Resolves when an event of `type` has fired.
+ * TODO(b/242264794): Move to use testharness.js EventWaiter once we move to a
+ * js test model.
+ */
+function eventPromise(target, type, options) {
+  return new Promise(resolve => {
+    let wrapper = function(event) {
+      target.removeEventListener(type, wrapper);
+      resolve(event);
+    };
+    target.addEventListener(type, wrapper, options);
+  });
 }

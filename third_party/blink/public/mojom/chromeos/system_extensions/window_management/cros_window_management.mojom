@@ -71,12 +71,12 @@ struct CrosScreenInfo {
 // Interface to bind CrosWindowManagement and CrosWindowManagementObserver.
 // Implemented by CrosWindowManagementContext which is a keyed service.
 interface CrosWindowManagementFactory {
-  // Binds a CrosWindowManagement and a CrosWindowManagementStartObserver
+  // Binds a CrosWindowManagement and a CrosWindowManagementObserver
   // interfaces associated with CrosWindowManagementFactory. Their lifetimes are
   // tied to that of the pipe.
   Create(
       pending_associated_receiver<CrosWindowManagement> receiver,
-      pending_associated_remote<CrosWindowManagementStartObserver> observer_remote);
+      pending_associated_remote<CrosWindowManagementObserver> observer_remote);
 };
 
 // Chrome OS Window Management API for System Extensions.
@@ -139,7 +139,7 @@ struct AcceleratorEvent {
 
 // Interface used by the browser to send events to Window Management System
 // Extensions service workers. Bound using CrosWindowManagementFactory.Create.
-interface CrosWindowManagementStartObserver {
+interface CrosWindowManagementObserver {
   // Notify the renderer that it should dispatch the `start` event. Currently,
   // start is only dispatched when the System Extension is installed.
   DispatchStartEvent();
@@ -149,4 +149,7 @@ interface CrosWindowManagementStartObserver {
   // their accelerators, but for prototyping, we just send any key press with a
   // modifier.
   DispatchAcceleratorEvent(AcceleratorEvent event);
+
+  // Notify the renderer that it should dispatch a window closed event.
+  DispatchWindowClosedEvent(mojo_base.mojom.UnguessableToken window_id);
 };
