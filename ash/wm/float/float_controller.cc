@@ -10,13 +10,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
-#include "ash/wm/workspace/workspace_event_handler.h"
 #include "base/check_op.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -144,11 +144,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 // -----------------------------------------------------------------------------
 // FloatController:
 
-FloatController::FloatController() {
-  shell_observation_.Observe(Shell::Get());
-  for (aura::Window* root : Shell::GetAllRootWindows())
-    OnRootWindowAdded(root);
-}
+FloatController::FloatController() = default;
 
 FloatController::~FloatController() = default;
 
@@ -358,16 +354,6 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
     ResetFloatedWindow(window);
 }
 
-void FloatController::OnRootWindowAdded(aura::Window* root_window) {
-  workspace_event_handlers_[root_window] =
-      std::make_unique<WorkspaceEventHandler>(
-          root_window->GetChildById(kShellWindowId_FloatContainer));
-}
-
-void FloatController::OnRootWindowWillShutdown(aura::Window* root_window) {
-  workspace_event_handlers_.erase(root_window);
-}
-
 void FloatController::ToggleFloat(aura::Window* window) {
   WindowState* window_state = WindowState::Get(window);
   const WMEvent toggle_event(window_state->IsFloated() ? WM_EVENT_RESTORE
@@ -422,7 +408,6 @@ void FloatController::FloatImpl(aura::Window* window) {
       window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
   DCHECK_NE(window->parent(), floated_container);
   floated_container->AddChild(window);
-
   if (!tablet_mode_observation_.IsObserving())
     tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   if (!display_observer_)
