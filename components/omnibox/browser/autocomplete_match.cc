@@ -441,6 +441,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TAB_SEARCH_DEPRECATED:
     case Type::TILE_NAVSUGGEST:
     case Type::OPEN_TAB:
+    case Type::STARTER_PACK:
       return omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
@@ -776,6 +777,10 @@ bool AutocompleteMatch::IsActionCompatibleType(Type type) {
          // match.fill_into_edit or maybe page title for URL matches, and come
          // up with a UI design for the button in the tail suggest layout.
          type != AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
+}
+
+bool AutocompleteMatch::IsStarterPackType(Type type) {
+  return type == AutocompleteMatchType::STARTER_PACK;
 }
 
 // static
@@ -1206,6 +1211,10 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
       return OmniboxEventProto::Suggestion::OPEN_TAB;
     case AutocompleteMatchType::HISTORY_CLUSTER:
       return OmniboxEventProto::Suggestion::HISTORY_CLUSTER;
+    case AutocompleteMatchType::STARTER_PACK:
+      // TODO(yoangela): Update this when STARTER_PACK is added to
+      //   OmniboxEventProto.
+      return OmniboxEventProto::Suggestion::NAVSUGGEST;
     case AutocompleteMatchType::VOICE_SUGGEST:
       // VOICE_SUGGEST matches are only used in Java and are not logged,
       // so we should never reach this case.

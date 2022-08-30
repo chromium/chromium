@@ -80,6 +80,8 @@ struct AutocompleteMatchType {
     NULL_RESULT_MESSAGE         = 32,  // A suggestion whose purpose is only to
                                        // deliver a message. This suggestion
                                        // cannot be opened or acted upon.
+    STARTER_PACK     = 33,  // A URL suggestion that a starter pack
+                                       // keyword mode chip attaches to.
     NUM_TYPES,
   };
   // clang-format on

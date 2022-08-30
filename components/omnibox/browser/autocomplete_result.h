@@ -271,7 +271,8 @@ class AutocompleteResult {
   // This method implements a stateful stable partition. Matches which are
   // search types, and their submatches regardless of type, are shifted
   // earlier in the range, while non-search types and their submatches
-  // are shifted later.
+  // are shifted later. For grouping purposes, the starter pack suggestions
+  // (while technically navigation suggestions) are grouped before search types.
   static void GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
 
   // This value should be comfortably larger than any max-autocomplete-matches

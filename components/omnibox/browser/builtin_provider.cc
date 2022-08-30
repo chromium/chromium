@@ -207,9 +207,15 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
     return;
   }
 
+  // The starter pack relevance score is currently ranked above
+  // search-what-you-typed suggestion to avoid the keyword mode chip attaching
+  // to the search suggestion instead of these Builtin suggestions.
+  // TODO(yoangela): This should be updated so the keyword chip only attaches to
+  //  STARTER_PACK type suggestions rather than rely on out-scoring all other
+  //  suggestions.
   AutocompleteMatch match(
       this, OmniboxFieldTrial::kSiteSearchStarterPackRelevanceScore.Get(),
-      false, AutocompleteMatchType::NAVSUGGEST);
+      false, AutocompleteMatchType::STARTER_PACK);
 
   const std::u16string destination_url =
       TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
@@ -222,6 +228,7 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
   match.description_class.emplace_back(0, ACMatchClassification::NONE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.keyword = template_url.keyword();
+  match.allowed_to_be_default_match = true;
   matches_.push_back(match);
 }
 

@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/base_search_provider.h"
@@ -1231,7 +1232,13 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
   if (begin == end)
     return;
 
-  std::stable_partition(begin, end, [](const AutocompleteMatch& match) {
-    return AutocompleteMatch::IsSearchType(match.type);
-  });
+  base::ranges::stable_sort(
+      begin, end, [](int a, int b) { return a < b; },
+      [](const auto& m) {
+        if (AutocompleteMatch::IsStarterPackType(m.type))
+          return 0;
+        if (AutocompleteMatch::IsSearchType(m.type))
+          return 1;
+        return 2;
+      });
 }
