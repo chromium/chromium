@@ -542,7 +542,8 @@ enum Mutation {
   kNodeRemoved,
 };
 
-// Next value: 31
+// Next version: 2
+// Next value: 33
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -560,6 +561,7 @@ enum StringAttribute {
   kContainerLiveStatus = 10,
   kDescription = 11,  // Any description = 11, from any description source.
   kDisplay = 12,
+  [MinVersion=1] kDoDefaultLabel = 31, // Only for ARC
   // Only present when different from parent.
   kFontFamily = 13,
   kHtmlTag = 14,
@@ -572,6 +574,7 @@ enum StringAttribute {
   kKeyShortcuts = 19,
   // Only present when different from parent.
   kLanguage = 20,
+  [MinVersion=1] kLongClickLabel = 32, // Only for ARC
   kName = 21,
   kLiveRelevant = 22,
   kLiveStatus = 23,

@@ -462,6 +462,25 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
     out_data->AddState(ax::mojom::State::kExpanded);
   }
 
+  if (node_ptr_->standard_actions) {
+    for (mojom::AccessibilityActionInAndroidPtr& android_action :
+         node_ptr_->standard_actions.value()) {
+      if (android_action->label.has_value()) {
+        const std::string& label = android_action->label.value();
+        const auto action_id =
+            static_cast<mojom::AccessibilityActionType>(android_action->id);
+        if (action_id == mojom::AccessibilityActionType::CLICK) {
+          out_data->AddStringAttribute(
+              ax::mojom::StringAttribute::kDoDefaultLabel, label);
+        }
+        if (action_id == mojom::AccessibilityActionType::LONG_CLICK) {
+          out_data->AddStringAttribute(
+              ax::mojom::StringAttribute::kLongClickLabel, label);
+        }
+      }
+    }
+  }
+
   // Custom actions.
   if (node_ptr_->custom_actions) {
     std::vector<int32_t> custom_action_ids;

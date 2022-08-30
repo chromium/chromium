@@ -11,7 +11,7 @@ namespace {
 void AddAction(
     std::vector<arc::mojom::AccessibilityActionInAndroidPtr>* actions,
     int id,
-    absl::optional<std::string> label = absl::nullopt) {
+    absl::optional<std::string> label) {
   actions->push_back(arc::mojom::AccessibilityActionInAndroid::New());
   arc::mojom::AccessibilityActionInAndroid* action = actions->back().get();
   action->id = id;
@@ -24,12 +24,14 @@ void AddAction(
 namespace arc {
 
 void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
-                       mojom::AccessibilityActionType action_type) {
+                       mojom::AccessibilityActionType action_type,
+                       absl::optional<std::string> label) {
   if (!node->standard_actions) {
     node->standard_actions =
         std::vector<mojom::AccessibilityActionInAndroidPtr>();
   }
-  AddAction(&node->standard_actions.value(), static_cast<int>(action_type));
+  AddAction(&node->standard_actions.value(), static_cast<int>(action_type),
+            label);
 }
 
 void AddCustomAction(mojom::AccessibilityNodeInfoData* node,

@@ -1526,6 +1526,9 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kDisplay:
         result += " display=" + value;
         break;
+      case ax::mojom::StringAttribute::kDoDefaultLabel:
+        result += " doDefaultLabel=" + value;
+        break;
       case ax::mojom::StringAttribute::kFontFamily:
         result += " font-family=" + value;
         break;
@@ -1575,6 +1578,9 @@ std::string AXNodeData::ToString() const {
         break;
       case ax::mojom::StringAttribute::kRoleDescription:
         result += " role_description=" + value;
+        break;
+      case ax::mojom::StringAttribute::kLongClickLabel:
+        result += " longClickLabel=" + value;
         break;
       case ax::mojom::StringAttribute::kTooltip:
         result += " tooltip=" + value;

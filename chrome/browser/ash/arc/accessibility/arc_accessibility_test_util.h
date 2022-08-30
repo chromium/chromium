@@ -26,7 +26,8 @@ void SetProperty(
 }
 
 void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
-                       mojom::AccessibilityActionType action_type);
+                       mojom::AccessibilityActionType action_type,
+                       absl::optional<std::string> label = absl::nullopt);
 
 void AddCustomAction(mojom::AccessibilityNodeInfoData* node,
                      int id,

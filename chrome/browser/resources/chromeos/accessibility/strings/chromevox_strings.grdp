@@ -2330,6 +2330,12 @@
   <message desc="A hint to the user that the current control is clickable." name="IDS_CHROMEVOX_HINT_CLICKABLE">
     Press Search+Space to activate
   </message>
+  <message desc="A hint to the user that the current control is clickable. 'label' will explain what will happen when the user clicks." name="IDS_CHROMEVOX_HINT_CLICKABLE_WITH_LABEL" is_accessibility_with_no_ui="true">
+    Press Search+Space to <ph name="label">$1<ex>switch</ex></ph>
+  </message>
+  <message desc="A hint to the user that the current control can be double tapped. 'label' will explain what will happen when the user double taps." name="IDS_CHROMEVOX_HINT_DOUBLE_TAP_WITH_LABEL" is_accessibility_with_no_ui="true">
+    Double tap to <ph name="label">$1<ex>switch</ex></ph>
+  </message>
   <message desc="A hint to the user that the current control has a list of auto completions." name="IDS_CHROMEVOX_HINT_AUTOCOMPLETE_LIST">
     Press up or down arrow for auto completions
   </message>

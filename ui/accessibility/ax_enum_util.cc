@@ -790,6 +790,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "description";
     case ax::mojom::StringAttribute::kDisplay:
       return "display";
+    case ax::mojom::StringAttribute::kDoDefaultLabel:
+      return "doDefaultLabel";
     case ax::mojom::StringAttribute::kFontFamily:
       return "fontFamily";
     case ax::mojom::StringAttribute::kHtmlTag:
@@ -820,6 +822,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "role";
     case ax::mojom::StringAttribute::kRoleDescription:
       return "roleDescription";
+    case ax::mojom::StringAttribute::kLongClickLabel:
+      return "longClickLabel";
     case ax::mojom::StringAttribute::kTooltip:
       return "tooltip";
     case ax::mojom::StringAttribute::kUrl:

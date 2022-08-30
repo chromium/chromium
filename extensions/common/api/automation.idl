@@ -926,6 +926,12 @@ enum SortDirectionType {
     // Accessible Name Calculation</a> process.
     DOMString? name;
 
+    // Explains what will happen when the doDefault action is performed.
+    DOMString? doDefaultLabel;
+
+    // Explains what will happen when the long click action is performed.
+    DOMString? longClickLabel;
+
     // The tooltip of the node, if any.
     DOMString? tooltip;
 

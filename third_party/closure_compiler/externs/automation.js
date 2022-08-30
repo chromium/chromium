@@ -1269,6 +1269,20 @@ chrome.automation.AutomationNode.prototype.roleDescription;
 chrome.automation.AutomationNode.prototype.name;
 
 /**
+ * Explains what will happen when the doDefault action is performed.
+ * @type {(string|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-doDefaultLabel
+ */
+chrome.automation.AutomationNode.prototype.doDefaultLabel;
+
+/**
+ * Explains what will happen when the long click action is performed.
+ * @type {(string|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-longClickLabel
+ */
+chrome.automation.AutomationNode.prototype.longClickLabel;
+
+/**
  * The tooltip of the node, if any.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-tooltip

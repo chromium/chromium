@@ -1368,6 +1368,29 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', async function() {
       o.speechOutputForTest);
 });
 
+AX_TEST_F(
+    'ChromeVoxOutputE2ETest', 'DelayHintWithActionLabel', async function() {
+      const site = `<button>OK</button>`;
+      const root = await this.runWithLoadedTree(site);
+      const button = root.children[0];
+      const range = CursorRange.fromNode(button);
+
+      let o = new Output().withSpeech(range, null, 'navigate');
+
+      // Force a few properties to be set so that hints are triggered.
+      Object.defineProperty(button, 'clickable', {get: () => true});
+
+      Object.defineProperty(
+          button, 'doDefaultLabel', {get: () => 'click label'});
+      o = new Output().withSpeech(range, null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'OK|Press Search+Space to click label',
+            spans_: [{value: {delay: true}, start: 3, end: 36}],
+          },
+          o.speechOutputForTest);
+    });
+
 AX_TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', async function() {
   const site = `<button></button>`;
   const root = await this.runWithLoadedTree(site);

@@ -2151,7 +2151,7 @@ export class Output {
     const allMsgs = msgs.concat(delayedMsgs);
     for (const msg of allMsgs) {
       if (msg.msgId) {
-        const text = Msgs.getMsg(msg.msgId);
+        const text = Msgs.getMsg(msg.msgId, msg.subs);
         this.append_(buff, text, {annotation: [msg.props]});
         ruleStr.write('hint_: ' + text + '\n');
       } else if (msg.text) {
@@ -2229,6 +2229,7 @@ export class Output {
    * @param {EventType|OutputEventType} type
    * @return {!Array<{text: (string|undefined),
    *           msgId: (string|undefined),
+   *           subs: (Array<string>|undefined),
    *           outputFormat: (string|undefined)}>} Note that the above caller
    * expects one and only one key be set.
    * @private
@@ -2247,7 +2248,14 @@ export class Output {
       const isWithinVirtualKeyboard = AutomationUtil.getAncestors(node).find(
           n => n.role === RoleType.KEYBOARD);
       if (AutomationPredicate.clickable(node) && !isWithinVirtualKeyboard) {
-        ret.push({msgId: 'hint_double_tap'});
+        if (node.doDefaultLabel) {
+          ret.push({
+            msgId: 'hint_double_tap_with_label',
+            subs: [node.doDefaultLabel],
+          });
+        } else {
+          ret.push({msgId: 'hint_double_tap'});
+        }
       }
 
       const enteredVirtualKeyboard =
@@ -2292,7 +2300,12 @@ export class Output {
     if (AutomationPredicate.checkable(node)) {
       ret.push({msgId: 'hint_checkable'});
     } else if (AutomationPredicate.clickable(node)) {
-      ret.push({msgId: 'hint_clickable'});
+      if (node.doDefaultLabel) {
+        ret.push(
+            {msgId: 'hint_clickable_with_label', subs: [node.doDefaultLabel]});
+      } else {
+        ret.push({msgId: 'hint_clickable'});
+      }
     }
 
     if (node.autoComplete === 'list' || node.autoComplete === 'both' ||
