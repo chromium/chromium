@@ -87,6 +87,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       cache_state_(info.cache_state),
       encoded_body_size_(info.encoded_body_size),
       decoded_body_size_(info.decoded_body_size),
+      response_status_(info.response_status),
       did_reuse_connection_(info.did_reuse_connection),
       allow_timing_details_(info.allow_timing_details),
       allow_redirect_details_(info.allow_redirect_details),
@@ -178,6 +179,10 @@ AtomicString PerformanceResourceTiming::renderBlockingStatus() const {
   }
   NOTREACHED();
   return "non-blocking";
+}
+
+uint16_t PerformanceResourceTiming::responseStatus() const {
+  return response_status_;
 }
 
 AtomicString PerformanceResourceTiming::AlpnNegotiatedProtocol() const {
@@ -470,6 +475,9 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("transferSize", transferSize());
   builder.AddNumber("encodedBodySize", encodedBodySize());
   builder.AddNumber("decodedBodySize", decodedBodySize());
+  if (RuntimeEnabledFeatures::ResourceTimingResponseStatusEnabled()) {
+    builder.AddNumber("responseStatus", responseStatus());
+  }
 
   ScriptState* script_state = builder.GetScriptState();
   builder.Add("serverTiming", FreezeV8Object(ToV8(serverTiming(), script_state),

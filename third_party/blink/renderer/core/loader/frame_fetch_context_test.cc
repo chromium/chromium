@@ -1330,7 +1330,8 @@ TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
   scoped_refptr<ResourceTimingInfo> info =
       ResourceTimingInfo::Create("type", base::TimeTicks() + base::Seconds(0.3),
                                  mojom::blink::RequestContextType::UNSPECIFIED,
-                                 network::mojom::RequestDestination::kEmpty);
+                                 network::mojom::RequestDestination::kEmpty,
+                                 network::mojom::RequestMode::kSameOrigin);
 
   dummy_page_holder = nullptr;
 

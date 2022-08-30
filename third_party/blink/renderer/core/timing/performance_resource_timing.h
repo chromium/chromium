@@ -94,6 +94,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   uint64_t transferSize() const;
   uint64_t encodedBodySize() const;
   uint64_t decodedBodySize() const;
+  uint16_t responseStatus() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
 
   void Trace(Visitor*) const override;
@@ -152,6 +153,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   mojom::blink::CacheState cache_state_ = mojom::blink::CacheState::kNone;
   const uint64_t encoded_body_size_ = 0;
   const uint64_t decoded_body_size_ = 0;
+  const uint16_t response_status_ = 0;
   const bool did_reuse_connection_ = false;
   const bool allow_timing_details_ = false;
   const bool allow_redirect_details_ = false;

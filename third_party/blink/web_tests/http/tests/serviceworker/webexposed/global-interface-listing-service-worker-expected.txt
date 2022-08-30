@@ -1177,6 +1177,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter requestStart
     getter responseEnd
     getter responseStart
+    getter responseStatus
     getter secureConnectionStart
     getter serverTiming
     getter transferSize

@@ -122,4 +122,8 @@ struct ResourceTimingInfo {
   // Holds the boolean used to determine |renderBlockingStatus| in
   // PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-2/).
   bool render_blocking_status;
+
+  // Holds the HTTP status code corresponding to |responseStatus| in
+  // PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-2/).
+  uint16 response_status;
 };

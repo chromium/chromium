@@ -102,6 +102,7 @@ class CORE_EXPORT Request final : public ScriptWrappable,
   }
   mojom::blink::RequestContextType GetRequestContextType() const;
   network::mojom::RequestDestination GetRequestDestination() const;
+  network::mojom::RequestMode GetRequestMode() const;
 
   void Trace(Visitor*) const override;
 

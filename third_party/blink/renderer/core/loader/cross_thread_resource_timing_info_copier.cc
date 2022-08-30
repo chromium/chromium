@@ -35,7 +35,7 @@ CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Copy(
       info->is_secure_transport, info->allow_timing_details,
       info->allow_redirect_details, info->allow_negative_values,
       CloneServerTimingInfoArray(info->server_timing),
-      info->render_blocking_status);
+      info->render_blocking_status, info->response_status);
 }
 
 CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr>::Type

@@ -59,5 +59,9 @@ interface PerformanceResourceTiming : PerformanceEntry {
     // See: https://github.com/abinpaul1/resource-timing/blob/render-blocking-status-explainer/Explainer/Render_Blocking_Status.md
     [RuntimeEnabled=RenderBlockingStatus]
         readonly attribute RenderBlockingStatusType renderBlockingStatus;
+    // PerformanceResourceTiming#responseStatus
+    // See: https://github.com/abinpaul1/resource-timing/blob/explainer-resource-response-status/Explainers/Response_Status_Code.md
+    [RuntimeEnabled=ResourceTimingResponseStatus]
+        readonly attribute short responseStatus;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

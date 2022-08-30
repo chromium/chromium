@@ -212,7 +212,7 @@ void FetchEvent::OnNavigationPreloadComplete(
   // navigation preload request is "navigation".
   scoped_refptr<ResourceTimingInfo> info = ResourceTimingInfo::Create(
       "navigation", request_time, request_->GetRequestContextType(),
-      request_->GetRequestDestination());
+      request_->GetRequestDestination(), request_->GetRequestMode());
   info->SetNegativeAllowed(true);
   info->SetLoadResponseEnd(completion_time);
   info->SetInitialURL(request_->url());

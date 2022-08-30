@@ -51,9 +51,10 @@ class PLATFORM_EXPORT ResourceTimingInfo
       const AtomicString& type,
       const base::TimeTicks time,
       mojom::blink::RequestContextType context,
-      network::mojom::RequestDestination destination) {
+      network::mojom::RequestDestination destination,
+      network::mojom::RequestMode mode) {
     return base::AdoptRef(
-        new ResourceTimingInfo(type, time, context, destination));
+        new ResourceTimingInfo(type, time, context, destination, mode));
   }
   ResourceTimingInfo(const ResourceTimingInfo&) = delete;
   ResourceTimingInfo& operator=(const ResourceTimingInfo&) = delete;
@@ -78,6 +79,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
     final_response_ = response;
   }
   const ResourceResponse& FinalResponse() const { return final_response_; }
+  uint16_t responseStatus() const { return response_status_; }
 
   void AddRedirect(const ResourceResponse& redirect_response,
                    const KURL& new_url);
@@ -103,25 +105,30 @@ class PLATFORM_EXPORT ResourceTimingInfo
   network::mojom::RequestDestination RequestDestination() const {
     return request_destination_;
   }
+  network::mojom::RequestMode RequestMode() const { return request_mode_; }
 
  private:
   ResourceTimingInfo(const AtomicString& type,
                      const base::TimeTicks time,
                      mojom::blink::RequestContextType context_type,
-                     network::mojom::RequestDestination request_destination)
+                     network::mojom::RequestDestination request_destination,
+                     network::mojom::RequestMode request_mode)
       : type_(type),
         initial_time_(time),
         context_type_(context_type),
-        request_destination_(request_destination) {}
+        request_destination_(request_destination),
+        request_mode_(request_mode) {}
 
   AtomicString type_;
   bool render_blocking_status_ = false;
   base::TimeTicks initial_time_;
   mojom::blink::RequestContextType context_type_;
   network::mojom::RequestDestination request_destination_;
+  network::mojom::RequestMode request_mode_;
   base::TimeTicks load_response_end_;
   KURL initial_url_;
   ResourceResponse final_response_;
+  uint16_t response_status_ = 0;
   Vector<ResourceResponse> redirect_chain_;
   bool has_cross_origin_redirect_ = false;
   bool negative_allowed_ = false;

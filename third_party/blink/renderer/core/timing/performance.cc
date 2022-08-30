@@ -490,6 +490,20 @@ bool Performance::PassesTimingAllowCheck(
   return false;
 }
 
+bool Performance::ShouldReportResponseStatus(
+    const ResourceResponse& response,
+    const SecurityOrigin& initiator_security_origin,
+    const network::mojom::RequestMode request_mode) {
+  if (request_mode != network::mojom::RequestMode::kNavigate) {
+    return response.IsCorsSameOrigin();
+  }
+  scoped_refptr<const SecurityOrigin> response_origin =
+      SecurityOrigin::Create(response.ResponseUrl());
+  bool is_same_origin =
+      response_origin->IsSameOriginWith(&initiator_security_origin);
+  return is_same_origin;
+}
+
 bool Performance::AllowsTimingRedirect(
     const Vector<ResourceResponse>& redirect_chain,
     const ResourceResponse& final_response,
@@ -598,6 +612,10 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   }
 
   result->render_blocking_status = info.RenderBlockingStatus();
+  if (ShouldReportResponseStatus(final_response, destination_origin,
+                                 info.RequestMode())) {
+    result->response_status = final_response.HttpStatusCode();
+  }
 
   return result;
 }

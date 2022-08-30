@@ -1100,6 +1100,10 @@ network::mojom::RequestDestination Request::GetRequestDestination() const {
   return request_->Destination();
 }
 
+network::mojom::RequestMode Request::GetRequestMode() const {
+  return request_->Mode();
+}
+
 void Request::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable<Request>::Trace(visitor);

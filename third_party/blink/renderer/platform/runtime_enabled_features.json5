@@ -1907,6 +1907,10 @@
       name: "RenderPriorityAttribute"
     },
     {
+      name: "ResourceTimingResponseStatus",
+      status: "experimental",
+    },
+    {
       name: "RestrictGamepadAccess",
       status: "experimental",
     },
