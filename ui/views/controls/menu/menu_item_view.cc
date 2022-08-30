@@ -16,6 +16,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1475,10 +1476,9 @@ bool MenuItemView::HasChecksOrRadioButtons() const {
     return true;
   if (!HasSubmenu())
     return false;
-  const auto menu_items = submenu_->GetMenuItems();
-  return std::any_of(
-      menu_items.cbegin(), menu_items.cend(),
-      [](const auto* item) { return item->HasChecksOrRadioButtons(); });
+  return base::ranges::any_of(submenu_->GetMenuItems(), [](const auto* item) {
+    return item->HasChecksOrRadioButtons();
+  });
 }
 
 void MenuItemView::UpdateSelectionBasedStateIfChanged(PaintMode mode) {

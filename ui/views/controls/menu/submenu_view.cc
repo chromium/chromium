@@ -9,8 +9,10 @@
 #include <set>
 
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
@@ -65,17 +67,14 @@ SubmenuView::~SubmenuView() {
 }
 
 bool SubmenuView::HasEmptyMenuItemView() const {
-  return std::any_of(
-      children().cbegin(), children().cend(), [](const View* child) {
-        return child->GetID() == MenuItemView::kEmptyMenuItemViewID;
-      });
+  return base::Contains(children(), MenuItemView::kEmptyMenuItemViewID,
+                        &View::GetID);
 }
 
 bool SubmenuView::HasVisibleChildren() const {
-  const auto menu_items = GetMenuItems();
-  return std::any_of(
-      menu_items.cbegin(), menu_items.cend(),
-      [](const MenuItemView* item) { return item->GetVisible(); });
+  return base::ranges::any_of(GetMenuItems(), [](const MenuItemView* item) {
+    return item->GetVisible();
+  });
 }
 
 SubmenuView::MenuItems SubmenuView::GetMenuItems() const {

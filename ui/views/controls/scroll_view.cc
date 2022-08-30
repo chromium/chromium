@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -77,10 +78,9 @@ END_METADATA
 // Returns true if any descendants of |view| have a layer (not including
 // |view|).
 bool DoesDescendantHaveLayer(View* view) {
-  return std::any_of(view->children().cbegin(), view->children().cend(),
-                     [](View* child) {
-                       return child->layer() || DoesDescendantHaveLayer(child);
-                     });
+  return base::ranges::any_of(view->children(), [](View* child) {
+    return child->layer() || DoesDescendantHaveLayer(child);
+  });
 }
 
 // Returns the position for the view so that it isn't scrolled off the visible

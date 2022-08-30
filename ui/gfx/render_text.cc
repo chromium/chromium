@@ -6,7 +6,6 @@
 
 #include <limits.h>
 
-#include <algorithm>
 #include <climits>
 
 #include "base/check_op.h"
@@ -16,6 +15,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -1434,9 +1434,8 @@ bool RenderText::IsHomogeneous() const {
     return false;
   }
 
-  return std::none_of(
-      styles().cbegin(), styles().cend(),
-      [](const auto& style) { return style.breaks().size() > 1; });
+  return base::ranges::none_of(
+      styles(), [](const auto& style) { return style.breaks().size() > 1; });
 }
 
 internal::ShapedText* RenderText::GetShapedText() {

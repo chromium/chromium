@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -111,8 +112,7 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
   const auto is_enabled = [client](MenuCommand command) {
     return client->IsCommandIdEnabled(command.command_id);
   };
-  return std::any_of(std::cbegin(kMenuCommands), std::cend(kMenuCommands),
-                     is_enabled);
+  return base::ranges::any_of(kMenuCommands, is_enabled);
 }
 
 void TouchSelectionMenuViews::CloseMenu() {

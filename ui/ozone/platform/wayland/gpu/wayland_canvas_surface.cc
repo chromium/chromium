@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -326,10 +327,7 @@ void WaylandCanvasSurface::OnSubmission(uint32_t frame_id,
   // |current_buffer_| is nullptr, and it is only set to nullptr in
   // |OnSubmission| and |ResizeCanvas|. In |ResizeCanvas|, |buffers_| is cleared
   // so we will not know about |frame_id|.
-  if (std::none_of(buffers_.begin(), buffers_.end(),
-                   [frame_id](const auto& buffer) {
-                     return buffer->buffer_id() == frame_id;
-                   }))
+  if (!base::Contains(buffers_, frame_id, &SharedMemoryBuffer::buffer_id))
     return;
 
   DCHECK(current_buffer_);

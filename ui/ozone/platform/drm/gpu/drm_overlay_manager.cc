@@ -4,11 +4,11 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -177,8 +177,8 @@ void DrmOverlayManager::CheckOverlaySupport(
   auto iter = cache.Get(cache_key);
   if (iter == cache.end()) {
     // We can skip GPU side validation in case all candidates are invalid.
-    bool needs_gpu_validation = std::any_of(
-        result_candidates.begin(), result_candidates.end(),
+    bool needs_gpu_validation = base::ranges::any_of(
+        result_candidates,
         [](OverlaySurfaceCandidate& c) { return c.overlay_handled; });
     OverlayValidationCacheValue value;
     value.status.resize(result_candidates.size(), needs_gpu_validation

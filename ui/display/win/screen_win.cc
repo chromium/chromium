@@ -7,14 +7,13 @@
 #include <windows.h>
 #include <shellscalingapi.h>
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -891,11 +890,10 @@ void ScreenWin::OnColorProfilesChanged() {
   // The color profile reader will often just confirm that our guess that the
   // color profile was sRGB was indeed correct. Avoid doing an update in these
   // cases.
-  if (std::any_of(
-          displays_.cbegin(), displays_.cend(), [this](const auto& display) {
-            return display.color_spaces().GetRasterColorSpace() !=
-                   color_profile_reader_->GetDisplayColorSpace(display.id());
-          }))
+  if (base::ranges::any_of(displays_, [this](const auto& display) {
+        return display.color_spaces().GetRasterColorSpace() !=
+               color_profile_reader_->GetDisplayColorSpace(display.id());
+      }))
     UpdateAllDisplaysAndNotify();
 }
 

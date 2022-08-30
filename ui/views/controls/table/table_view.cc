@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
@@ -404,16 +405,13 @@ void TableView::SetSortDescriptors(const SortDescriptors& sort_descriptors) {
 }
 
 bool TableView::IsColumnVisible(int id) const {
-  const auto ids_match = [id](const auto& column) {
-    return column.column.id == id;
-  };
-  return std::any_of(visible_columns_.cbegin(), visible_columns_.cend(),
-                     ids_match);
+  return base::Contains(visible_columns_, id, [](const VisibleColumn& column) {
+    return column.column.id;
+  });
 }
 
 bool TableView::HasColumn(int id) const {
-  const auto ids_match = [id](const auto& column) { return column.id == id; };
-  return std::any_of(columns_.cbegin(), columns_.cend(), ids_match);
+  return base::Contains(columns_, id, &ui::TableColumn::id);
 }
 
 bool TableView::GetHasFocusIndicator() const {

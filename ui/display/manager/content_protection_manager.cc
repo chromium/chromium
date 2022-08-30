@@ -4,12 +4,12 @@
 
 #include "ui/display/manager/content_protection_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/manager/apply_content_protection_task.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/query_content_protection_task.h"
@@ -241,18 +241,16 @@ void ContentProtectionManager::OnDisplayModeChangeFailed(
 bool ContentProtectionManager::HasExternalDisplaysWithContentProtection()
     const {
   const auto displays = layout_manager_->GetDisplayStates();
-  if (std::all_of(displays.begin(), displays.end(),
-                  [](const DisplaySnapshot* display) {
-                    return display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-                  })) {
+  if (base::ranges::all_of(displays, [](const DisplaySnapshot* display) {
+        return display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+      })) {
     return false;
   }
 
   const auto protections = AggregateContentProtections();
-  return std::any_of(protections.begin(), protections.end(),
-                     [](const auto& pair) {
-                       return pair.second != CONTENT_PROTECTION_METHOD_NONE;
-                     });
+  return base::ranges::any_of(protections, [](const auto& pair) {
+    return pair.second != CONTENT_PROTECTION_METHOD_NONE;
+  });
 }
 
 void ContentProtectionManager::ToggleDisplaySecurityPolling() {
