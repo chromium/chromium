@@ -6844,3 +6844,4 @@ crbug.com/1356118 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonym
 # Sheriff 2022-08-30
 crbug.com/1357621 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html [ Failure Timeout Pass ]
 crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default.html [ Failure Pass ]
+crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-writing-mode-rl.html [ Failure Pass ]
