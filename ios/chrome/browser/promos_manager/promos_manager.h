@@ -74,20 +74,6 @@ class PromosManager {
   std::set<promos_manager::Promo> ActivePromos(
       const base::Value::List& stored_active_promos);
 
-  // Returns the most recent day (int) that `promo` was seen by the user.
-  //
-  // A day (int) is represented as the number of days since the Unix epoch
-  // (running from UTC midnight to UTC midnight).
-  //
-  // Assumes that `sorted_impressions` is sorted by day (most recent -> least
-  // recent).
-  //
-  // Returns promos_manager::kLastSeenDayPromoNotFound if `promo` isn't
-  // found in the impressions list.
-  int LastSeenDay(
-      promos_manager::Promo promo,
-      std::vector<promos_manager::Impression>& sorted_impressions) const;
-
   // Returns true if any impression limit from `impression_limits` is triggered,
   // and false otherwise.
   //
@@ -143,9 +129,6 @@ class PromosManager {
 
   // Allow unit tests to access private methods.
   friend class PromosManagerTest;
-  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsLastSeenDayForPromo);
-  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
-                           ReturnsSentinelForNonExistentPromo);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsImpressionCounts);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsEmptyImpressionCounts);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsTotalImpressionCount);

@@ -28,11 +28,6 @@
 
 namespace {
 
-// Comparator for descending sort evaluation using std::is_sorted.
-bool Compare(promos_manager::Impression a, promos_manager::Impression b) {
-  return a.day > b.day;
-}
-
 // The number of days since the Unix epoch; one day, in this context, runs
 // from UTC midnight to UTC midnight.
 int TodaysDay() {
@@ -149,25 +144,6 @@ NSArray<ImpressionLimit*>* PromosManager::GlobalPerPromoImpressionLimits()
   });
 
   return limits;
-}
-
-int PromosManager::LastSeenDay(
-    promos_manager::Promo promo,
-    std::vector<promos_manager::Impression>& sorted_impressions) const {
-  if (sorted_impressions.empty())
-    return promos_manager::kLastSeenDayPromoNotFound;
-
-  DCHECK(std::is_sorted(sorted_impressions.begin(), sorted_impressions.end(),
-                        Compare));
-
-  // Find first occurrence of `promo` in list (i.e. find the most recent
-  // occurrence of `promo`).
-  for (size_t j = 0; j < sorted_impressions.size(); ++j) {
-    if (sorted_impressions[j].promo == promo)
-      return sorted_impressions[j].day;
-  }
-
-  return promos_manager::kLastSeenDayPromoNotFound;
 }
 
 bool PromosManager::AnyImpressionLimitTriggered(

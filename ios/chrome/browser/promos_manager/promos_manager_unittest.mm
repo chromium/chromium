@@ -141,30 +141,6 @@ TEST_F(PromosManagerTest, CreatesImpressionLimits) {
   EXPECT_EQ(impressionLimits[1].numDays, 31);
 }
 
-// Tests the last seen day (int) is correctly returned for given
-// promos_manager::Promo(s).
-TEST_F(PromosManagerTest, ReturnsLastSeenDayForPromo) {
-  std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, 7),
-      promos_manager::Impression(promos_manager::Promo::Test, 3),
-      promos_manager::Impression(promos_manager::Promo::Test, 1),
-  };
-
-  EXPECT_EQ(
-      promos_manager_->LastSeenDay(promos_manager::Promo::Test, impressions),
-      7);
-}
-
-// Tests the sentinel value is returned when a given promos_manager::Promo isn't
-// found in the impression history.
-TEST_F(PromosManagerTest, ReturnsSentinelForNonExistentPromo) {
-  std::vector<promos_manager::Impression> impressions;
-
-  EXPECT_EQ(
-      promos_manager_->LastSeenDay(promos_manager::Promo::Test, impressions),
-      promos_manager::kLastSeenDayPromoNotFound);
-}
-
 // Tests PromosManager::ImpressionCounts() correctly returns a counts list from
 // an impression counts map.
 TEST_F(PromosManagerTest, ReturnsImpressionCounts) {
