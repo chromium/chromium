@@ -3271,7 +3271,7 @@ crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-persistent-permission.https.html [ Crash Failure ]
-# TODO(crbug.com/1358135): Re-enable this test
+# TODO(crbug.com/1358135, crbug.com/1358147): Re-enable this test: Re-enable this test
 crbug.com/626703 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-quirks-mode.html [ Skip ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
@@ -6848,3 +6848,6 @@ crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-tim
 crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-writing-mode-rl.html [ Failure Pass ]
 
 crbug.com/1358051 external/wpt/longtask-timing/containerTypes.html [ Failure Pass ]
+
+# TODO(crbug.com/1358147): Re-enable this test
+virtual/plz-dedicated-worker/external/wpt/resource-timing/no-entries-for-cross-origin-css-fetched-memory-cache.sub.html [ Skip ]
