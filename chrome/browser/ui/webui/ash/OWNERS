@@ -1,5 +1,0 @@
-file://ash/webui/PLATFORM_OWNERS
-
-per-file *bluetooth*=file://ui/webui/resources/cr_components/chromeos/bluetooth/OWNERS
-per-file *net*=file://ui/webui/resources/cr_components/chromeos/network/OWNERS
-per-file drive_internals_ui.*=file://ui/file_manager/OWNERS

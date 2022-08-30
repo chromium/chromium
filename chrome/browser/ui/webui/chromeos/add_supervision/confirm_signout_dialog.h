@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -13,7 +13,7 @@ namespace views {
 class Widget;
 }
 
-namespace ash {
+namespace chromeos {
 
 // Dialog shown when the user tries to close the flow when account has already
 // become supervised, and the user only has the choice of finishing the flow, or
@@ -40,6 +40,6 @@ class ConfirmSignoutDialog : public views::DialogDelegateView {
   static views::Widget* current_instance_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_

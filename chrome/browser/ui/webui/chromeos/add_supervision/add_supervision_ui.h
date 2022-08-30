@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_UI_H_
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom-forward.h"
-#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler.h"
+#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom-forward.h"
+#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/ui_base_types.h"
@@ -17,7 +17,7 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
 
-namespace ash {
+namespace chromeos {
 
 // Dialog which displays the add-supervision flow which allows users to
 // convert a regular Google account into a Family-Link managed account.
@@ -100,11 +100,6 @@ class AddSupervisionUI : public ui::MojoWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::AddSupervisionDialog;
-}
-
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_UI_H_

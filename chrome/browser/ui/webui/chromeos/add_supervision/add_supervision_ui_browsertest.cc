@@ -7,9 +7,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
-#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
-#include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
+#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/chromeos/add_supervision/confirm_signout_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -20,7 +20,7 @@
 #include "content/public/test/network_connection_change_simulator.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -57,8 +57,8 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
             AddSupervisionMetricsRecorder::EnrollmentState::kInitiated);
   }
 
-  AddSupervisionUI* GetAddSupervisionUI() {
-    return static_cast<AddSupervisionUI*>(
+  chromeos::AddSupervisionUI* GetAddSupervisionUI() {
+    return static_cast<chromeos::AddSupervisionUI*>(
         contents()->GetWebUI()->GetController());
   }
 
@@ -220,4 +220,4 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, UMATest) {
             1);
 }
 
-}  // namespace ash
+}  // namespace chromeos
