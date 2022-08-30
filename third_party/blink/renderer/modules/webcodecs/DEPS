@@ -18,6 +18,7 @@ include_rules = [
     "+media/base",
     "+media/filters",
     "+media/formats/mp4/box_definitions.h",
+    "+media/formats/mp4/hevc.h",
     "+media/media_buildflags.h",
     "+media/mojo",
     "+media/renderers",

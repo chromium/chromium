@@ -99,6 +99,13 @@ source_set("filters") {
       "h264_to_annex_b_bitstream_converter.cc",
       "h264_to_annex_b_bitstream_converter.h",
     ]
+
+    if (enable_platform_hevc) {
+      sources += [
+        "h265_to_annex_b_bitstream_converter.cc",
+        "h265_to_annex_b_bitstream_converter.h",
+      ]
+    }
   }
 
   if (media_use_ffmpeg) {
@@ -378,6 +385,10 @@ source_set("unit_tests") {
 
   if (proprietary_codecs) {
     sources += [ "h264_to_annex_b_bitstream_converter_unittest.cc" ]
+
+    if (enable_platform_hevc) {
+      sources += [ "h265_to_annex_b_bitstream_converter_unittest.cc" ]
+    }
 
     if (media_use_ffmpeg) {
       sources += [

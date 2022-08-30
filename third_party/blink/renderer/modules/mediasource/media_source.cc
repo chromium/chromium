@@ -56,11 +56,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-#include "media/filters/h264_to_annex_b_bitstream_converter.h"
-#include "media/formats/mp4/box_definitions.h"
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-
 using blink::WebMediaSource;
 using blink::WebSourceBuffer;
 
@@ -281,19 +276,6 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
   std::unique_ptr<media::VideoDecoderConfig> video_config;
   String console_message;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  // TODO(crbug.com/1144908): The SourceBuffer needs these for converting h264
-  // EncodedVideoChunks. Probably best if these details are put into a new
-  // WebCodecs VideoDecoderHelper abstraction (or similar), since this top-level
-  // MediaSource impl shouldn't need to worry about the details of specific
-  // codec bitstream conversions (nor should the underlying implementation be
-  // depended upon to redo work done already in WebCodecs decoder configuration
-  // validation.) In initial prototype, we do not support h264 buffering, so
-  // will fail if these become populated by MakeMediaVideoDecoderConfig, below.
-  std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter;
-  std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc;
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-
   if (config->hasAudioConfig()) {
     if (!AudioDecoder::IsValidAudioDecoderConfig(*(config->audioConfig()),
                                                  &console_message /* out */)) {
@@ -322,21 +304,19 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
       return nullptr;
     }
 
+    bool converter_needed = false;
     absl::optional<media::VideoDecoderConfig> out_video_config =
         VideoDecoder::MakeMediaVideoDecoderConfig(*(config->videoConfig()),
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-                                                  h264_converter /* out */,
-                                                  h264_avcc /* out */,
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-                                                  &console_message /* out */);
+                                                  &console_message /* out */,
+                                                  &converter_needed /* out */);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     // TODO(crbug.com/1144908): Initial prototype does not support h264
     // buffering. See above.
-    if (out_video_config && (h264_converter || h264_avcc)) {
+    if (out_video_config && converter_needed) {
       out_video_config = absl::nullopt;
       console_message =
-          "H.264 EncodedVideoChunk buffering is not yet supported in MSE. See "
-          "https://crbug.com/1144908.";
+          "H.264/H.265 EncodedVideoChunk buffering is not yet supported in "
+          "MSE.See https://crbug.com/1144908.";
     }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 

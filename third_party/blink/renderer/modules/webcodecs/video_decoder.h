@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/decoder_template.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_decoder_helper.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -28,13 +29,6 @@ namespace media {
 class VideoFrame;
 class DecoderBuffer;
 class MediaLog;
-
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-class H264ToAnnexBBitstreamConverter;
-namespace mp4 {
-struct AVCDecoderConfigurationRecord;
-}
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace media
 
@@ -100,15 +94,11 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
       const VideoDecoderConfig& config,
       String* js_error_message);
 
-  // For use by MediaSource and by ::MakeMediaConfig.
+  // For use by MediaSource
   static absl::optional<media::VideoDecoderConfig> MakeMediaVideoDecoderConfig(
       const ConfigType& config,
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-      std::unique_ptr<media::H264ToAnnexBBitstreamConverter>&
-          out_h264_converter,
-      std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord>& out_h264_avcc,
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-      String* js_error_message);
+      String* js_error_message,
+      bool* needs_converter_out = nullptr);
 
   VideoDecoder(ScriptState*, const VideoDecoderInit*, ExceptionState&);
   ~VideoDecoder() override = default;
@@ -125,10 +115,8 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
   MakeDecoderBuffer(const InputType& input, bool verify_key_frame) override;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter_;
-  std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc_;
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // Bitstream converter to annex B for AVC/HEVC.
+  std::unique_ptr<VideoDecoderHelper> decoder_helper_;
 
   media::VideoCodec current_codec_ = media::VideoCodec::kUnknown;
 
@@ -137,6 +125,13 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   HardwarePreference GetHardwarePreference(const ConfigType& config) override;
   bool GetLowDelayPreference(const ConfigType& config) override;
   void SetHardwarePreference(HardwarePreference preference) override;
+  // For use by ::MakeMediaConfig
+  static absl::optional<media::VideoDecoderConfig>
+  MakeMediaVideoDecoderConfigInternal(
+      const ConfigType& config,
+      std::unique_ptr<VideoDecoderHelper>& decoder_helper,
+      String* js_error_message,
+      bool* needs_converter_out = nullptr);
 };
 
 }  // namespace blink
