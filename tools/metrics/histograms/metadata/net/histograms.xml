@@ -770,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.HttpUpgrade" enum="DNS.HttpUpgradeResult"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1066,7 +1066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.InsecureDnsTask.FailureTime" units="ms"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1298,7 +1298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.DNS.UI.DropdownSelectionEvent"
-    enum="DohProviderId" expires_after="2022-12-18">
+    enum="DohProviderId" expires_after="2023-02-26">
 <!-- Name completed by histogram_suffixes
    name="DnsDropdownSelectionEvent" -->
 
@@ -1675,7 +1675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.TotalTime.TLS13.Google" units="ms"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1854,7 +1854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkChangeNotifier.NewConnectionCost"
-    enum="NetworkConnectionCost" expires_after="2022-12-25">
+    enum="NetworkConnectionCost" expires_after="2023-02-26">
   <owner>fbeaufort@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1864,7 +1864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkChangeNotifier.NewConnectionType"
-    enum="NetworkConnectionType" expires_after="2022-12-25">
+    enum="NetworkConnectionType" expires_after="2023-02-26">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4907,7 +4907,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
-    enum="NetErrorCodes" expires_after="2022-11-06">
+    enum="NetErrorCodes" expires_after="2023-02-26">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>

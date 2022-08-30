@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.ActivateEvent.Time" units="ms"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>wanderview@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1041,7 +1041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StartWorker.Timeout.StartPurpose"
-    enum="ServiceWorkerMetrics.EventType" expires_after="2022-12-25">
+    enum="ServiceWorkerMetrics.EventType" expires_after="2023-02-26">
   <owner>wanderview@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1054,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StartWorker.TimeoutPhase"
-    enum="EmbeddedWorkerStartingPhase" expires_after="2022-12-25">
+    enum="EmbeddedWorkerStartingPhase" expires_after="2023-02-26">
   <owner>wanderview@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>

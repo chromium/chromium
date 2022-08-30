@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.PercentageUsed" units="%"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -1183,7 +1183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulFormat" enum="StatefulFormat"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>sarthakkukreti@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>Chrome OS stateful partition format. Sampled once per boot.</summary>
@@ -1199,7 +1199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulLifetimeWrites" units="GiB"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -1249,7 +1249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulWritesDaily" units="KiB"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -1269,7 +1269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Storage.Nvme.PercentageUsed" units="%"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -1292,7 +1292,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.SwapInDaily" units="pages" expires_after="2022-12-25">
+<histogram name="Platform.SwapInDaily" units="pages" expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>Number of pages swapped IN over a day, sampled daily.</summary>
@@ -1317,7 +1317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SwapOutDaily" units="pages"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>Number of pages swapped OUT over a day, sampled daily.</summary>
@@ -1473,7 +1473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.VersionFingerprint" enum="TPMVersionFingerprint"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>

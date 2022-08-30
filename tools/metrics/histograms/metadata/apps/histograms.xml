@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1010,7 +1010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SortDiscoveryDurationAfterEducationNudge"
-    units="ms" expires_after="2023-02-19">
+    units="ms" expires_after="2023-02-26">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -2075,7 +2075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Win.Result"
-    enum="FileHandlerRegistrationWinResult" expires_after="M110">
+    enum="FileHandlerRegistrationWinResult" expires_after="2023-02-26">
   <owner>estade@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -2351,7 +2351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AvailabilityOnScreenLock"
-    enum="LockScreenActionAvailability" expires_after="2022-12-01">
+    enum="LockScreenActionAvailability" expires_after="2023-02-26">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>

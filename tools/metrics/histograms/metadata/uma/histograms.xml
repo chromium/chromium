@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.JavaCachingRecorder.DroppedHistogramSampleCount"
-    units="samples" expires_after="2022-12-25">
+    units="samples" expires_after="2023-02-26">
   <owner>bttk@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.JavaCachingRecorder.DroppedUserActionCount"
-    units="samples" expires_after="2022-12-25">
+    units="samples" expires_after="2023-02-26">
   <owner>bttk@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -511,7 +511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsReporting.Toggle" enum="MetricsReportingChange"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -859,7 +859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2023-02-19">
+    expires_after="2023-02-26">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

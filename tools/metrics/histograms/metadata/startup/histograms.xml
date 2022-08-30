@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.FeedContentFirstLoadedTime"
-    units="ms" expires_after="2022-12-25">
+    units="ms" expires_after="2023-02-26">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.Android.ShowChromeStartSegmentationResultComparison"
     enum="ShowChromeStartSegmentationResultComparison"
-    expires_after="2022-12-11">
+    expires_after="2023-02-26">
   <owner>hanxi@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.ConsecutiveLoadsWithoutLaunch" units="count"
-    expires_after="2022-12-04">
+    expires_after="2023-02-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -799,7 +799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.MobileSessionStartFromApps"
-    enum="MobileSessionCallerApp" expires_after="2022-10-16">
+    enum="MobileSessionCallerApp" expires_after="2023-02-26">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The calling application (if any).</summary>
@@ -924,7 +924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromProcessCreationToDidFinishLaunchingCall"
-    units="ms" expires_after="2022-12-04">
+    units="ms" expires_after="2023-02-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromProcessCreationToLoad" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -945,7 +945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromProcessCreationToMainCall" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromProcessCreationToSceneConnection" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>

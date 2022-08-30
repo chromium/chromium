@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Browser.AnyWindowHasName" enum="Boolean"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>ellyjones@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.IOJanksTotalPerMinute" units="janks"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>gab@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -684,7 +684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.WindowCount.Guest" units="units"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -696,7 +696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.WindowCount.Incognito" units="units"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>

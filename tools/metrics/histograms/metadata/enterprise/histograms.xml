@@ -429,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingBasicRequestSize" units="KB"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -460,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingResponse"
-    enum="EnterpriseCloudReportingResponse" expires_after="2022-12-25">
+    enum="EnterpriseCloudReportingResponse" expires_after="2023-02-26">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1865,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.MultipartDataPipe.WriteRate"
-    units="kilobytes per second" expires_after="2022-12-25">
+    units="kilobytes per second" expires_after="2023-02-26">
   <owner>domfc@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
   <summary>
@@ -2391,7 +2391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsDomainJoined" enum="BooleanEnabled"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>pastarmovj@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
@@ -2402,7 +2402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsEnterpriseUser" enum="BooleanEnabled"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>pastarmovj@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
@@ -2414,7 +2414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>twellington@google.com</owner>
   <owner>tedchcoc@chromium.org</owner>
   <summary>

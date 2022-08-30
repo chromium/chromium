@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.ClearBrowsingData.OpenMyActivity"
-    enum="ClearBrowsingDataMyActivityNavigation" expires_after="2022-12-25">
+    enum="ClearBrowsingDataMyActivityNavigation" expires_after="2023-02-26">
   <owner>andzaytsev@google.com</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.GivenShowHomeButton_HomePageIsNewTabPage"
-    enum="Boolean" expires_after="2022-12-25">
+    enum="Boolean" expires_after="2023-02-26">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PreloadStatus.OnStartup" enum="BooleanEnabled"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -424,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.ShowHomeButton" enum="BooleanEnabled"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -485,7 +485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
-    expires_after="2022-12-22">
+    expires_after="2023-02-26">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -544,7 +544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
-    expires_after="2022-12-22">
+    expires_after="2023-02-26">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
@@ -584,7 +584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
-    enum="TrackedPreference" expires_after="2022-12-22">
+    enum="TrackedPreference" expires_after="2023-02-26">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

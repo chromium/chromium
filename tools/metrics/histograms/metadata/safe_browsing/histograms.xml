@@ -1105,7 +1105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionPersister.AgedFileFound"
-    enum="BooleanFound" expires_after="2022-12-25">
+    enum="BooleanFound" expires_after="2023-02-26">
   <owner>psarouthakis@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1136,7 +1136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionPersister.ReadResult"
-    enum="BooleanSuccess" expires_after="2022-12-25">
+    enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>psarouthakis@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1148,7 +1148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionPersister.WriteResult"
-    enum="BooleanSuccess" expires_after="2022-12-25">
+    enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>psarouthakis@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1485,7 +1485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.Daily.Extended" enum="BooleanEnabled"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1724,7 +1724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.HasTokenFromFetcher" enum="BooleanHasToken"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1912,7 +1912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Response.VerdictType"
-    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-02-19">
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-02-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2323,7 +2323,7 @@ Safe Browsing lookup mechanism is working as expected -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2"
-    units="entries" expires_after="2022-12-25">
+    units="entries" expires_after="2023-02-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2384,7 +2384,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount"
-    units="entries" expires_after="2022-12-25">
+    units="entries" expires_after="2023-02-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2394,7 +2394,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result"
-    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2022-12-25">
+    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2023-02-26">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

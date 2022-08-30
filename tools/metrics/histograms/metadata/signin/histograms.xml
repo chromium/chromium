@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -256,7 +256,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AuthError" enum="GoogleServiceAuthError"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -546,7 +546,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreSentinelError"
-    enum="SigninIOSDeviceRestoreSentinelError" expires_after="2022-12-18">
+    enum="SigninIOSDeviceRestoreSentinelError" expires_after="2023-02-26">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -556,7 +556,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreSentinelPathGenerated"
-    enum="BooleanSuccess" expires_after="2022-12-18">
+    enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -609,7 +609,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
-    expires_after="2022-12-18">
+    expires_after="2023-02-26">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -662,7 +662,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Count" units="identities"
-    expires_after="2022-12-18">
+    expires_after="2023-02-26">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

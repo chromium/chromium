@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryBarShown"
-    enum="AccessoryBarContents" expires_after="2022-12-25">
+    enum="AccessoryBarContents" expires_after="2023-02-26">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessorySheetTriggered"
-    enum="AccessorySheetTrigger" expires_after="2022-12-25">
+    enum="AccessorySheetTrigger" expires_after="2023-02-26">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryToggleImpression"
-    enum="AccessoryToggleType" expires_after="2022-12-25">
+    enum="AccessoryToggleType" expires_after="2023-02-26">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -640,7 +640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FailedToParseResponse"
-    enum="Boolean" expires_after="2022-12-11">
+    enum="Boolean" expires_after="2023-02-26">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -999,7 +999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.Error"
-    enum="PasswordLeakDetectionError" expires_after="2022-12-25">
+    enum="PasswordLeakDetectionError" expires_after="2023-02-26">
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>Error encountered during the password bulk check.</summary>
@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrer"
-    enum="PasswordCheckReferrer" expires_after="2022-12-25">
+    enum="PasswordCheckReferrer" expires_after="2023-02-26">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1089,7 +1089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.TimePerCredential" units="ms"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -1409,7 +1409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.EditsInSaveBubble"
-    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2022-12-25">
+    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2023-02-26">
   <owner>vasilii@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -1444,7 +1444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>kolos@chromium.org</owner>
   <owner>khamutov@google.com</owner>
   <summary>
@@ -1676,7 +1676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.iOS.InfoBar.PasswordSave" enum="Boolean"
-    expires_after="2022-10-16">
+    expires_after="2023-02-26">
   <owner>djean@chromium.org</owner>
   <owner>sczs@google.com</owner>
   <summary>
@@ -1744,7 +1744,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.LeakDetection.DialogDismissalReason"
     enum="PasswordLeakDetectionDialogDismissalReason"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1754,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.Error"
-    enum="PasswordLeakDetectionError" expires_after="2022-12-25">
+    enum="PasswordLeakDetectionError" expires_after="2023-02-26">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1763,7 +1763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2022-12-25">
+    enum="HttpResponseCode" expires_after="2023-02-26">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1864,14 +1864,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LoginDatabaseInit"
-    enum="LoginDatabaseInitError" expires_after="2022-12-25">
+    enum="LoginDatabaseInitError" expires_after="2023-02-26">
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>An error on LoginDatabase initialization.</summary>
 </histogram>
 
 <histogram name="PasswordManager.ManagePasswordsReferrer"
-    enum="ManagePasswordsReferrer" expires_after="2022-12-25">
+    enum="ManagePasswordsReferrer" expires_after="2023-02-26">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2000,7 +2000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.NewlySavedPasswordIsGenerated"
-    enum="BooleanNewlySavedPasswordIsGenerated" expires_after="2022-12-25">
+    enum="BooleanNewlySavedPasswordIsGenerated" expires_after="2023-02-26">
   <owner>nepper@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
@@ -2748,7 +2748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordSyncState2" enum="PasswordSyncState"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2781,7 +2781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ProvisionalSaveFailure"
-    enum="ProvisionalSaveFailure" expires_after="2022-12-25">
+    enum="ProvisionalSaveFailure" expires_after="2023-02-26">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2893,7 +2893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SaveUIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2022-12-25">
+    enum="PasswordManagerUIDismissalReason" expires_after="2023-02-26">
 <!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
 
   <owner>vasilii@chromium.org</owner>
@@ -3112,7 +3112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SyncingAccountState2"
-    enum="PasswordManagerSyncingAccountState" expires_after="2022-12-25">
+    enum="PasswordManagerSyncingAccountState" expires_after="2023-02-26">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
@@ -3166,7 +3166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.DismissalReason"
-    enum="BottomSheet.StateChangeReason" expires_after="2022-12-25">
+    enum="BottomSheet.StateChangeReason" expires_after="2023-02-26">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
@@ -3253,7 +3253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2022-12-25">
+    enum="PasswordManagerUIDismissalReason" expires_after="2023-02-26">
   <owner>vasilii@chromium.org</owner>
   <summary>
     Why was the password manager's UI (bubble or infobar) closed? Save and
@@ -3658,7 +3658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.InterstitialAction"
-    enum="PasswordProtectionWarningAction" expires_after="2022-12-25">
+    enum="PasswordProtectionWarningAction" expires_after="2023-02-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

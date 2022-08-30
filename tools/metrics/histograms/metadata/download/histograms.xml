@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.DragInfo" enum="Download.DragInfo"
-    expires_after="2022-12-22">
+    expires_after="2023-02-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousDialog.Events"
-    enum="DangerousDownloadDialogEvent" expires_after="2022-12-25">
+    enum="DangerousDownloadDialogEvent" expires_after="2023-02-26">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records user interactions with the dangerous download dialog on Android.
@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Retry.InterruptReason" enum="InterruptReason"
-    expires_after="2022-12-28">
+    expires_after="2023-02-26">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

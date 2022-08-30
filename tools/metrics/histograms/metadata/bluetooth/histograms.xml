@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.ConnectDevice.Result"
-    enum="BooleanSuccess" expires_after="2022-12-25">
+    enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -737,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.PairRetry.Count" units="count"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -1236,7 +1236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ConnectedDeviceCount" units="devices"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>adlr@chromium.org</owner>
   <summary>
     Counts the number of simulataneously connected Bluetooth devices. Used to

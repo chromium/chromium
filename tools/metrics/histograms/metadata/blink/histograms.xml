@@ -2769,7 +2769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.AnimatedCSSProperties"
-    enum="MappedCSSProperties" expires_after="2022-12-25">
+    enum="MappedCSSProperties" expires_after="2023-02-26">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
@@ -2786,7 +2786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.CSSProperties"
-    enum="MappedCSSProperties" expires_after="2022-12-25">
+    enum="MappedCSSProperties" expires_after="2023-02-26">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
@@ -2815,7 +2815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.Features" enum="FeatureObserver"
-    expires_after="2022-12-25">
+    expires_after="2023-02-26">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
@@ -2831,7 +2831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.MainFrame.Features"
-    enum="FeatureObserver" expires_after="2022-12-25">
+    enum="FeatureObserver" expires_after="2023-02-26">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparc-dev@chromium.org</owner>
   <summary>
