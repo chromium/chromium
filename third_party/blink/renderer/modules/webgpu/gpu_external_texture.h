@@ -109,6 +109,8 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
 
   void ExpireExternalTexture();
 
+  bool destroyed() const;
+
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
 
   absl::optional<int> media_video_frame_unique_id_;

@@ -413,7 +413,7 @@ GPUExternalTexture* GPUExternalTexture::CreateExpired(
               device->GetHandle()),
           nullptr /*mailbox_texture*/,
           absl::nullopt /*media_video_frame_unique_id*/);
-  external_texture->Destroy();
+
   return external_texture;
 }
 
@@ -513,12 +513,10 @@ GPUExternalTexture::GPUExternalTexture(
 }
 
 void GPUExternalTexture::Destroy() {
-  if (status_ == Status::Destroyed)
-    return;
+  DCHECK(!destroyed());
+  DCHECK(mailbox_texture_);
 
   status_ = Status::Destroyed;
-
-  DCHECK(mailbox_texture_);
   mailbox_texture_.reset();
 }
 
@@ -539,7 +537,7 @@ bool GPUExternalTexture::ContinueCheckingCurrentVideoFrame() {
   DCHECK(video_);
   DCHECK(media_video_frame_unique_id_.has_value());
 
-  if (expired())
+  if (destroyed())
     return false;
 
   WebMediaPlayer* media_player = video_->GetWebMediaPlayer();
@@ -577,9 +575,6 @@ void GPUExternalTexture::ExpireExternalTextureFromVideoFrame() {
 }
 
 void GPUExternalTexture::ExpireExternalTexture() {
-  if (expired())
-    return;
-
   device()->RemoveActiveExternalTexture(this);
   Destroy();
 }
@@ -602,6 +597,9 @@ void GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
 void GPUExternalTexture::OnVideoFrameClosed() {
   DCHECK(task_runner_);
 
+  if (destroyed())
+    return;
+
   // Expire the GPUExternalTexture here in the main thread to prevent it from
   // being used again (because WebGPU runs on the main thread). Expiring the
   // texture later in ExpireExternalTextureFromVideoFrame() could occur on a
@@ -623,6 +621,10 @@ void GPUExternalTexture::OnVideoFrameClosed() {
 
 bool GPUExternalTexture::expired() const {
   return status_ == Status::Expired || status_ == Status::Destroyed;
+}
+
+bool GPUExternalTexture::destroyed() const {
+  return status_ == Status::Destroyed;
 }
 
 }  // namespace blink
