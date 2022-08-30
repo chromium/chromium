@@ -54,7 +54,7 @@ class QtUi : public ui::LinuxUi, QtInterface::Delegate {
 
   // ui::LinuxUi:
   bool Initialize() override;
-  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
+  ui::NativeTheme* GetNativeTheme() const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   SkColor GetFocusRingColor() const override;

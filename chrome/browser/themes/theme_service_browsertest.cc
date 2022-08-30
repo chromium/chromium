@@ -21,8 +21,9 @@
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_getter.h"
 #endif
 
 namespace {
@@ -158,12 +159,11 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
   // This test relies on toolbar buttons having no tint, which is not currently
-  // true in dark mode and GTK.
+  // true in dark mode when using the system theme.
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
-#if BUILDFLAG(USE_GTK)
-  ui::LinuxUi::instance()->SetUseSystemThemeCallback(
-      base::BindRepeating([](aura::Window* window) { return false; }));
-#endif  // BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
+  ui::LinuxUiGetter::set_instance(nullptr);
+#endif
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
   SkColor default_toolbar_button_color =

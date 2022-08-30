@@ -51,7 +51,7 @@ class FakeLinuxUi : public LinuxUi {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
-  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
+  ui::NativeTheme* GetNativeTheme() const override;
   bool GetTextEditCommandsForEvent(
       const ui::Event& event,
       std::vector<ui::TextEditCommandAuraLinux>* commands) override;

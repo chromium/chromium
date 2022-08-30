@@ -288,9 +288,8 @@ bool GtkUi::Initialize() {
   return true;
 }
 
-ui::NativeTheme* GtkUi::GetNativeTheme(bool use_system_theme) const {
-  return use_system_theme ? native_theme_
-                          : ui::NativeTheme::GetInstanceForNativeUi();
+ui::NativeTheme* GtkUi::GetNativeTheme() const {
+  return native_theme_;
 }
 
 bool GtkUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {

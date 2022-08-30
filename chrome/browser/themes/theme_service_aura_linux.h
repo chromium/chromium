@@ -28,7 +28,7 @@ class ThemeServiceAuraLinux : public ThemeService {
   bool UsingSystemTheme() const override;
   void FixInconsistentPreferencesIfNeeded() override;
 
-  static bool ShouldUseSystemThemeForProfile(const Profile* profile);
+  static ui::SystemTheme GetSystemThemeForProfile(const Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_

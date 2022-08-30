@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
+#include "ui/linux/linux_ui_getter.h"
 
 namespace ui {
 
@@ -28,6 +29,20 @@ LinuxUi* LinuxUi::SetInstance(LinuxUi* instance) {
 // static
 LinuxUi* LinuxUi::instance() {
   return g_linux_ui;
+}
+
+// static
+LinuxUi* LinuxUi::GetForWindow(aura::Window* window) {
+  if (auto* getter = LinuxUiGetter::instance())
+    return getter->GetForWindow(window);
+  return nullptr;
+}
+
+// static
+LinuxUi* LinuxUi::GetForProfile(Profile* profile) {
+  if (auto* getter = LinuxUiGetter::instance())
+    return getter->GetForProfile(profile);
+  return nullptr;
 }
 
 LinuxUi::LinuxUi() = default;
@@ -74,15 +89,6 @@ void LinuxUi::AddCursorThemeObserver(CursorThemeManagerObserver* observer) {
 
 void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observer_list_.RemoveObserver(observer);
-}
-
-ui::NativeTheme* LinuxUi::GetNativeTheme(aura::Window* window) const {
-  return GetNativeTheme(use_system_theme_callback_.is_null() ||
-                        use_system_theme_callback_.Run(window));
-}
-
-void LinuxUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
-  use_system_theme_callback_ = std::move(callback);
 }
 
 // static

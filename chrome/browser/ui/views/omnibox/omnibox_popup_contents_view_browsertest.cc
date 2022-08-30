@@ -38,8 +38,9 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_getter.h"
 #endif
 
 #if defined(USE_AURA)
@@ -208,8 +209,8 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
 
   void UseDefaultTheme() {
     // Some test relies on the light/dark variants of the result background to
-    // be different. But when using the GTK theme on Linux, these colors will be
-    // the same. Ensure we're not using the system (GTK) theme, which may be
+    // be different. But when using the system theme on Linux, these colors will
+    // be the same. Ensure we're not using the system theme, which may be
     // conditionally enabled depending on the environment.
 #if BUILDFLAG(IS_LINUX)
     // Normally it would be sufficient to call ThemeService::UseDefaultTheme()
@@ -219,8 +220,7 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
     // NativeThemeGtk instance will always be returned.
     // TODO(crbug.com/1304441): Remove this once GTK passthrough is fully
     // supported.
-    ui::LinuxUi::instance()->SetUseSystemThemeCallback(
-        base::BindRepeating([](aura::Window* window) { return false; }));
+    ui::LinuxUiGetter::set_instance(nullptr);
     ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
     ThemeService* theme_service =

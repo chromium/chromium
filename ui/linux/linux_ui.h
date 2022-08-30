@@ -22,6 +22,7 @@
 // be executed behind this interface.
 
 using SkColor = uint32_t;
+class Profile;
 
 namespace aura {
 class Window;
@@ -61,8 +62,8 @@ class WindowFrameProvider;
 // project that wants to do linux desktop native rendering.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
  public:
-  using UseSystemThemeCallback =
-      base::RepeatingCallback<bool(aura::Window* window)>;
+  using GetLinuxUiForWindowCallback =
+      base::RepeatingCallback<LinuxUi*(aura::Window*)>;
 
   // Describes the window management actions that could be taken in response to
   // a middle click in the non client area.
@@ -96,6 +97,12 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // running with the "--ash" flag.)
   static LinuxUi* instance();
 
+  // Returns the LinuxUi instance for the given window.
+  static LinuxUi* GetForWindow(aura::Window* window);
+
+  // Returns the LinuxUi instance for the given profile.
+  static LinuxUi* GetForProfile(Profile* profile);
+
   // Notifies the observer about changes about how window buttons should be
   // laid out.
   void AddWindowButtonOrderObserver(WindowButtonOrderObserver* observer);
@@ -117,11 +124,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   void RemoveCursorThemeObserver(CursorThemeManagerObserver* observer);
 
-  // Returns the NativeTheme that reflects the theme used by `window`.
-  ui::NativeTheme* GetNativeTheme(aura::Window* window) const;
-
-  // Sets a callback that determines whether to use the system theme.
-  void SetUseSystemThemeCallback(UseSystemThemeCallback callback);
+  // Returns the native theme for this toolkit.
+  virtual ui::NativeTheme* GetNativeTheme() const = 0;
 
   // Returns true on success.  If false is returned, this instance shouldn't
   // be used and the behavior of all functions is undefined.
@@ -258,13 +262,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
     return cursor_theme_observer_list_;
   }
 
-  virtual ui::NativeTheme* GetNativeTheme(bool use_system_theme) const = 0;
-
  private:
-  // Used to determine whether the system theme should be used for a window.  If
-  // no override is provided or the callback returns true, LinuxUI will default
-  // to GetNativeTheme().
-  UseSystemThemeCallback use_system_theme_callback_;
+  static GetLinuxUiForWindowCallback get_linux_ui_for_window_callback_;
 
   // Objects to notify when the window frame button order changes.
   base::ObserverList<WindowButtonOrderObserver>::Unchecked

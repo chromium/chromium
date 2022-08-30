@@ -53,6 +53,7 @@
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"  // nogncheck
+#include "ui/linux/linux_ui_getter.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -102,6 +103,20 @@ class ThemeScoper {
   std::string extension_id_;
   base::ScopedTempDir temp_dir_;
 };
+
+#if BUILDFLAG(IS_LINUX)
+class LinuxUiGetterImpl : public ui::LinuxUiGetter {
+ public:
+  explicit LinuxUiGetterImpl(bool use_system_theme)
+      : linux_ui_(use_system_theme ? ui::LinuxUi::instance() : nullptr) {}
+  ~LinuxUiGetterImpl() override = default;
+  ui::LinuxUi* GetForWindow(aura::Window* window) override { return linux_ui_; }
+  ui::LinuxUi* GetForProfile(Profile* profile) override { return linux_ui_; }
+
+ private:
+  ui::LinuxUi* const linux_ui_;
+};
+#endif
 
 }  // namespace
 
@@ -214,11 +229,8 @@ class ColorProviderTest
       initialized_mixers = true;
     }
 #if BUILDFLAG(IS_LINUX)
-    ui::LinuxUi::instance()->SetUseSystemThemeCallback(base::BindRepeating(
-        [](bool use_system_theme, aura::Window* window) {
-          return use_system_theme;
-        },
-        std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom));
+    linux_ui_getter_ = std::make_unique<LinuxUiGetterImpl>(
+        std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom);
 #endif  // BUILDFLAG(IS_LINUX)
 
     const auto param_tuple = GetParam();
@@ -232,7 +244,7 @@ class ColorProviderTest
 #if BUILDFLAG(IS_LINUX)
     if (system_theme == SystemTheme::kCustom) {
       const auto* linux_ui = ui::GetDefaultLinuxUi();
-      native_theme_ = linux_ui->GetNativeTheme(nullptr);
+      native_theme_ = linux_ui->GetNativeTheme();
     }
 #endif
     original_forced_colors_ = native_theme_->InForcedColorsMode();
@@ -330,6 +342,9 @@ class ColorProviderTest
       ui::NativeTheme::PreferredContrast::kNoPreference;
   bool original_should_use_dark_colors_ = false;
   raw_ptr<ui::NativeTheme> native_theme_;
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(

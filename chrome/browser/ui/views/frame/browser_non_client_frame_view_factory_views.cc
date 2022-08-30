@@ -34,11 +34,11 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
 #if BUILDFLAG(IS_LINUX)
-  auto* linux_ui = ui::LinuxUi::instance();
   auto* profile = browser_view->browser()->profile();
+  auto* linux_ui = ui::LinuxUi::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   auto* app_controller = browser_view->browser()->app_controller();
-  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // Ignore the toolkit theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.

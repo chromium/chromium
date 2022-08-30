@@ -182,9 +182,8 @@ bool QtUi::Initialize() {
   return true;
 }
 
-ui::NativeTheme* QtUi::GetNativeTheme(bool use_system_theme) const {
-  return use_system_theme ? native_theme_.get()
-                          : ui::NativeTheme::GetInstanceForNativeUi();
+ui::NativeTheme* QtUi::GetNativeTheme() const {
+  return native_theme_.get();
 }
 
 bool QtUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {

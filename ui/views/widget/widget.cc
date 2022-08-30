@@ -1820,10 +1820,8 @@ const ui::NativeTheme* Widget::GetNativeTheme() const {
     return parent_->GetNativeTheme();
 
 #if BUILDFLAG(IS_LINUX)
-  if (const ui::LinuxUi* linux_ui = ui::LinuxUi::instance()) {
-    if (auto* native_theme = linux_ui->GetNativeTheme(GetNativeWindow()))
-      return native_theme;
-  }
+  if (auto* linux_ui = ui::LinuxUi::GetForWindow(GetNativeWindow()))
+    return linux_ui->GetNativeTheme();
 #endif
 
   return ui::NativeTheme::GetInstanceForNativeUi();

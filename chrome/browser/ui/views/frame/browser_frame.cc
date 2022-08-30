@@ -383,7 +383,7 @@ void BrowserFrame::OnTouchUiChanged() {
 }
 
 void BrowserFrame::SelectNativeTheme() {
-  // Select between regular, dark and system theme.
+  // Select between regular, dark and Linux toolkit themes.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
   if (browser_view_->browser()->profile()->IsIncognitoProfile()) {
@@ -394,14 +394,13 @@ void BrowserFrame::SelectNativeTheme() {
   }
 
 #if BUILDFLAG(IS_LINUX)
-  const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
+  const ui::LinuxUi* linux_ui = ui::LinuxUi::GetForWindow(GetNativeWindow());
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (linux_ui && !browser_view_->AppUsesWindowControlsOverlay()) {
-    native_theme = linux_ui->GetNativeTheme(GetNativeWindow());
-  }
+  if (linux_ui && !browser_view_->AppUsesWindowControlsOverlay())
+    native_theme = linux_ui->GetNativeTheme();
 #endif
 
   SetNativeTheme(native_theme);

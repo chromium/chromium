@@ -59,7 +59,7 @@ void SystemThemeLinux::StopUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, false);
   // Have the former theme notify its observers of change.
   if (auto* linux_ui = ui::GetLinuxUi(system_theme_))
-    linux_ui->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
+    linux_ui->GetNativeTheme()->NotifyOnNativeThemeUpdated();
 }
 
 bool SystemThemeLinux::GetColor(int id, SkColor* color) const {
@@ -86,7 +86,7 @@ bool SystemThemeLinux::HasCustomImage(int id) const {
 
 ui::NativeTheme* SystemThemeLinux::GetNativeTheme() const {
   if (auto* linux_ui = ui::GetLinuxUi(system_theme_)) {
-    if (auto* native_theme = linux_ui->GetNativeTheme(nullptr))
+    if (auto* native_theme = linux_ui->GetNativeTheme())
       return native_theme;
   }
   return CustomThemeSupplier::GetNativeTheme();
@@ -99,9 +99,7 @@ SystemThemeLinux::~SystemThemeLinux() = default;
 ThemeServiceAuraLinux::~ThemeServiceAuraLinux() = default;
 
 ui::SystemTheme ThemeServiceAuraLinux::GetDefaultSystemTheme() const {
-  // TODO(https://crbug.com/1317782): Add QT theme preference.
-  return ShouldUseSystemThemeForProfile(profile()) ? ui::SystemTheme::kGtk
-                                                   : ui::SystemTheme::kDefault;
+  return GetSystemThemeForProfile(profile());
 }
 
 void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
@@ -119,7 +117,7 @@ void ThemeServiceAuraLinux::UseSystemTheme() {
   if (UsingSystemTheme())
     return;
   if (auto* linux_ui = ui::LinuxUi::instance()) {
-    if (auto* native_theme = linux_ui->GetNativeTheme(nullptr)) {
+    if (auto* native_theme = linux_ui->GetNativeTheme()) {
       UseTheme(native_theme->system_theme());
       return;
     }
@@ -150,8 +148,15 @@ void ThemeServiceAuraLinux::FixInconsistentPreferencesIfNeeded() {
 }
 
 // static
-bool ThemeServiceAuraLinux::ShouldUseSystemThemeForProfile(
+ui::SystemTheme ThemeServiceAuraLinux::GetSystemThemeForProfile(
     const Profile* profile) {
-  return !profile || (!profile->IsChild() &&
-                      profile->GetPrefs()->GetBoolean(prefs::kUsesSystemTheme));
+#if BUILDFLAG(IS_LINUX)
+  // TODO(https://crbug.com/1317782): Add QT theme preference.
+  bool use_system_theme =
+      !profile || (!profile->IsChild() &&
+                   profile->GetPrefs()->GetBoolean(prefs::kUsesSystemTheme));
+  if (use_system_theme)
+    return ui::SystemTheme::kGtk;
+#endif
+  return ui::SystemTheme::kDefault;
 }
