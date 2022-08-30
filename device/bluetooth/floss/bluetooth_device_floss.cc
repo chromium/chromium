@@ -16,6 +16,10 @@
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
+#endif
+
 namespace floss {
 
 namespace {
@@ -31,13 +35,17 @@ void OnCreateBond(DBusResult<bool> ret) {
 }
 
 void OnRemoveBond(base::OnceClosure callback, DBusResult<bool> ret) {
-  if (ret.has_value() && !*ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to remove bond: " << ret.error();
+  } else if (!*ret) {
     BLUETOOTH_LOG(ERROR) << "RemoveBond returned failure";
   }
 
-  if (!ret.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Failed to remove bond: " << ret.error();
-  }
+#if BUILDFLAG(IS_CHROMEOS)
+  bool success = ret.has_value() && *ret;
+  device::RecordForgetResult(success ? device::ForgetResult::kSuccess
+                                     : device::ForgetResult::kFailure);
+#endif
 
   std::move(callback).Run();
 }
@@ -358,55 +366,6 @@ BluetoothDeviceFloss::BluetoothDeviceFloss(BluetoothAdapterFloss* adapter,
   // TODO(abps): Add observers and cache data here.
 }
 
-void BluetoothDeviceFloss::ConnectInternal(ConnectCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnConnect(ConnectCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnConnectError(ConnectCallback callback,
-                                          const Error& error) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnPairDuringConnect(ConnectCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnPairDuringConnectError(ConnectCallback callback,
-                                                    const Error& error) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnDisconnect(base::OnceClosure callback) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnDisconnectError(ErrorCallback error_callback,
-                                             const Error& error) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnPair(ConnectCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnPairError(ConnectCallback callback,
-                                       const Error& error) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnCancelPairingError(const Error& error) {
-  NOTIMPLEMENTED();
-}
-
-void BluetoothDeviceFloss::OnForgetError(ErrorCallback error_callback,
-                                         const Error& error) {
-  NOTIMPLEMENTED();
-}
-
 void BluetoothDeviceFloss::OnGetRemoteType(
     DBusResult<FlossAdapterClient::BluetoothDeviceType> ret) {
   if (!ret.has_value()) {
@@ -472,11 +431,22 @@ void BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles(
     ErrorCallback error_callback,
     DBusResult<Void> ret) {
   if (!ret.has_value()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    device::RecordUserInitiatedDisconnectResult(
+        device::DisconnectResult::kFailure,
+        /*transport=*/GetType());
+#endif
     BLUETOOTH_LOG(ERROR) << "Failed to discconnect all enabled profiles: "
                          << ret.error();
     std::move(error_callback).Run();
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  device::RecordUserInitiatedDisconnectResult(
+      device::DisconnectResult::kSuccess,
+      /*transport=*/GetType());
+#endif
 
   std::move(callback).Run();
 }
