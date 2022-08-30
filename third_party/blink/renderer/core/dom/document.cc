@@ -8429,13 +8429,7 @@ void Document::CountUse(mojom::WebFeature feature) {
 }
 
 void Document::CountProperty(CSSPropertyID property) const {
-  // https://linear.app/replay/issue/RUN-469
-  recordreplay::Assert("Document::CountProperty");
-
   if (DocumentLoader* loader = Loader()) {
-    // https://linear.app/replay/issue/RUN-469
-    recordreplay::Assert("Document::CountProperty #1");
-
     loader->GetUseCounter().Count(
         property, UseCounterImpl::CSSPropertyType::kDefault, GetFrame());
   }

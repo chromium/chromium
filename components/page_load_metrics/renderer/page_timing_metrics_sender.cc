@@ -90,19 +90,12 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 void PageTimingMetricsSender::DidObserveNewCssPropertyUsage(
     blink::mojom::CSSSampleId css_property,
     bool is_animated) {
-  // https://linear.app/replay/issue/RUN-469
-  recordreplay::Assert("PageTimingMetricsSender::DidObserveNewCssPropertyUsage %d %d",
-                       (int)css_property, is_animated);
-
   size_t css_property_id = static_cast<size_t>(css_property);
   if (is_animated && !animated_css_properties_sent_.test(css_property_id)) {
     animated_css_properties_sent_.set(css_property_id);
     new_features_->animated_css_properties.push_back(css_property);
     EnsureSendTimer();
   } else if (!is_animated && !css_properties_sent_.test(css_property_id)) {
-    // https://linear.app/replay/issue/RUN-469
-    recordreplay::Assert("PageTimingMetricsSender::DidObserveNewCssPropertyUsage #1");
-
     css_properties_sent_.set(css_property_id);
     new_features_->css_properties.push_back(css_property);
     EnsureSendTimer();
@@ -357,18 +350,16 @@ void PageTimingMetricsSender::SendNow() {
   std::sort(render_data_.input_timestamps.begin(),
             render_data_.input_timestamps.end());
 
-  // https://linear.app/replay/issue/RUN-469
-  recordreplay::Assert("PageTimingMetricsSender::SendNow %d %d %d %d %d %d %d %d %d %d",
-    last_timing_->back_forward_cache_timings.size(),
-    last_timing_->input_to_navigation_start ? 1 : 0,
-    metadata_->intersection_update ? 1 : 0,
-    metadata_->intersection_update ? (metadata_->intersection_update->main_frame_intersection_rect ? 1 : 0) : 0,
-    new_features_->features.size(),
-    new_features_->css_properties.size(),
-    new_features_->animated_css_properties.size(),
-    resources.size(),
-    render_data_.new_layout_shifts.size(),
-    render_data_.input_timestamps.size()
+  // The number of CSS properties which we send can vary between recording
+  // and replaying due to the use of weak pointers when noting CSS properties
+  // which need to be sent. Force these to match.
+  new_features_->css_properties.resize(
+    recordreplay::RecordReplayValue("PageTimingMetricsSender::SendNow NumCSSProperties",
+                                    new_features_->css_properties.size())
+  );
+  new_features_->animated_css_properties.resize(
+    recordreplay::RecordReplayValue("PageTimingMetricsSender::SendNow NumAnimatedCSSProperties",
+                                    new_features_->animated_css_properties.size())
   );
 
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),

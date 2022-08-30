@@ -87,9 +87,6 @@ bool CSSPropertyParser::ParseValue(
     parse_success = parser.ParseValueStart(unresolved_property, important);
   }
 
-  // https://linear.app/replay/issue/RUN-469
-  recordreplay::Assert("CSSPropertyParser::ParseValue #2 %d", parse_success);
-
   // This doesn't count UA style sheets
   if (parse_success)
     context->Count(context->Mode(), unresolved_property);
