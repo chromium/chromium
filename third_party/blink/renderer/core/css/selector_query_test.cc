@@ -71,11 +71,12 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
   document->documentElement()->setInnerHTML(
       "<body><style>span::before { content: 'X' }</style><span></span></body>");
 
+  Arena arena;
   CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, "span::before");
+      nullptr, "span::before", arena);
   CSSSelectorList selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query =
@@ -87,7 +88,7 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, "span");
+      nullptr, "span", arena);
   selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
   query = SelectorQuery::Adopt(std::move(selector_list));
   elm = query->QueryFirst(*document);
@@ -103,11 +104,12 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
 
   document->body()->BeginParsingChildren();
 
+  Arena arena;
   CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, "p:last-of-type");
+      nullptr, "p:last-of-type", arena);
   CSSSelectorList selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query =

@@ -54,7 +54,7 @@ CSSSelectorList CSSSelectorList::Copy() const {
 size_t CSSSelectorList::FlattenedSize(
     const CSSSelectorVector& selector_vector) {
   size_t flattened_size = 0;
-  for (const std::unique_ptr<blink::CSSParserSelector>& selector_ptr :
+  for (const ArenaUniquePtr<blink::CSSParserSelector>& selector_ptr :
        selector_vector) {
     for (CSSParserSelector* selector = selector_ptr.get(); selector;
          selector = selector->TagHistory())
@@ -69,16 +69,16 @@ void CSSSelectorList::AdoptSelectorVector(CSSSelectorVector& selector_vector,
                                           size_t flattened_size) {
   DCHECK_EQ(flattened_size, FlattenedSize(selector_vector));
   wtf_size_t array_index = 0;
-  for (const std::unique_ptr<blink::CSSParserSelector>& selector_ptr :
+  for (const ArenaUniquePtr<blink::CSSParserSelector>& selector_ptr :
        selector_vector) {
     CSSParserSelector* current = selector_ptr.get();
     while (current) {
       // Move item from the parser selector vector into selector_array_ without
-      // invoking destructor (Ugh.)
+      // invoking destructor (Ugh.) The CSSSelector is allocated on Arena,
+      // so we do not need to actually free it.
       CSSSelector* current_selector = current->ReleaseSelector().release();
       memcpy(&selector_array[array_index], current_selector,
              sizeof(CSSSelector));
-      WTF::Partitions::FastFree(current_selector);
 
       current = current->TagHistory();
       DCHECK(!selector_array[array_index].IsLastInSelectorList());

@@ -74,11 +74,12 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
       const ExpectedResultCacheEntry (&expected_result_cache_entries)[length],
       unsigned expected_fast_reject_filter_cache_count,
       unsigned expected_bloom_filter_allocation_count) const {
+    Arena arena;
     CSSSelectorVector selector_vector = CSSParser::ParseSelector(
         MakeGarbageCollected<CSSParserContext>(
             *document, NullURL(), true /* origin_clean */, Referrer(),
             WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-        nullptr, selector_text);
+        nullptr, selector_text, arena);
     CSSSelectorList selector_list =
         CSSSelectorList::AdoptSelectorVector(selector_vector);
     const CSSSelector* selector = nullptr;

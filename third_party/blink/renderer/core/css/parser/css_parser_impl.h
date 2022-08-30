@@ -55,7 +55,8 @@ class CORE_EXPORT CSSParserImpl {
   STACK_ALLOCATED();
 
  public:
-  CSSParserImpl(const CSSParserContext*, StyleSheetContents* = nullptr);
+  explicit CSSParserImpl(const CSSParserContext*,
+                         StyleSheetContents* = nullptr);
   CSSParserImpl(const CSSParserImpl&) = delete;
   CSSParserImpl& operator=(const CSSParserImpl&) = delete;
 
@@ -225,6 +226,10 @@ class CORE_EXPORT CSSParserImpl {
   CSSParserObserver* observer_;
 
   CSSLazyParsingState* lazy_state_;
+
+  // Used for temporary allocations of CSSParserSelector (we send it down
+  // to CSSSelectorParser, which temporarily holds on to a reference to it).
+  Arena arena_;
 
   HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;
 };

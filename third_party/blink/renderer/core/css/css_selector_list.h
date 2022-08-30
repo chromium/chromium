@@ -29,13 +29,14 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/parser/arena.h"
 
 namespace blink {
 
 class CSSParserSelector;
 
 // See css_selector_parser.h.
-using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
+using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
 
 // This class represents a CSS selector, i.e. a pattern of one or more
 // simple selectors. https://www.w3.org/TR/css3-selectors/

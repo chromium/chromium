@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/parser/arena.h"
 
 namespace blink {
 
@@ -34,14 +35,16 @@ class CSSParserContext;
 class CSSParserSelector;
 
 // See css_selector_parser.h.
-using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
+using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
 
 class CORE_EXPORT CSSParserSelector {
   USING_FAST_MALLOC(CSSParserSelector);
 
  public:
-  CSSParserSelector();
-  explicit CSSParserSelector(const QualifiedName&, bool is_implicit = false);
+  explicit CSSParserSelector(Arena&);
+  explicit CSSParserSelector(Arena&,
+                             const QualifiedName&,
+                             bool is_implicit = false);
   CSSParserSelector(const CSSParserSelector&) = delete;
   CSSParserSelector& operator=(const CSSParserSelector&) = delete;
   ~CSSParserSelector();
@@ -49,9 +52,7 @@ class CORE_EXPORT CSSParserSelector {
   // Note that on ReleaseSelector() or GetSelector(), you get that single
   // selector only, not its entire tag history (so TagHistory() will not
   // make sense until it's put into a CSSSelectorVector).
-  std::unique_ptr<CSSSelector> ReleaseSelector() {
-    return std::move(selector_);
-  }
+  ArenaUniquePtr<CSSSelector> ReleaseSelector() { return std::move(selector_); }
   const CSSSelector* GetSelector() const { return selector_.get(); }
 
   CSSSelector::RelationType Relation() const { return selector_->Relation(); }
@@ -115,18 +116,20 @@ class CORE_EXPORT CSSParserSelector {
   bool NeedsImplicitShadowCombinatorForMatching() const;
 
   CSSParserSelector* TagHistory() const { return tag_history_.get(); }
-  void SetTagHistory(std::unique_ptr<CSSParserSelector> selector) {
+  void SetTagHistory(ArenaUniquePtr<CSSParserSelector> selector) {
     tag_history_ = std::move(selector);
   }
   void ClearTagHistory() { tag_history_.reset(); }
   void AppendTagHistory(CSSSelector::RelationType,
-                        std::unique_ptr<CSSParserSelector>);
-  std::unique_ptr<CSSParserSelector> ReleaseTagHistory();
-  void PrependTagSelector(const QualifiedName&, bool tag_is_implicit = false);
+                        ArenaUniquePtr<CSSParserSelector>);
+  ArenaUniquePtr<CSSParserSelector> ReleaseTagHistory();
+  void PrependTagSelector(Arena&,
+                          const QualifiedName&,
+                          bool tag_is_implicit = false);
 
  private:
-  std::unique_ptr<CSSSelector> selector_;
-  std::unique_ptr<CSSParserSelector> tag_history_;
+  ArenaUniquePtr<CSSSelector> selector_;
+  ArenaUniquePtr<CSSParserSelector> tag_history_;
 };
 
 }  // namespace blink

@@ -476,11 +476,12 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
   if (it != entries_.end())
     return it->value.get();
 
+  Arena arena;
   CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           document, document.BaseURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, selectors);
+      nullptr, selectors, arena);
 
   if (selector_vector.IsEmpty()) {
     exception_state.ThrowDOMException(

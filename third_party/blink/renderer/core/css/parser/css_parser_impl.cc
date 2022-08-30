@@ -365,12 +365,13 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
   if (!range.AtEnd())
     return CSSSelectorList();  // Parse error; extra tokens in @page selector
 
-  std::unique_ptr<CSSParserSelector> selector;
+  Arena arena;
+  ArenaUniquePtr<CSSParserSelector> selector;
   if (!type_selector.IsNull() && pseudo.IsNull()) {
-    selector = std::make_unique<CSSParserSelector>(
-        QualifiedName(g_null_atom, type_selector, g_star_atom));
+    selector.reset(arena.New<CSSParserSelector>(
+        arena, QualifiedName(g_null_atom, type_selector, g_star_atom)));
   } else {
-    selector = std::make_unique<CSSParserSelector>();
+    selector.reset(arena.New<CSSParserSelector>(arena));
     if (!pseudo.IsNull()) {
       selector->SetMatch(CSSSelector::kPagePseudoClass);
       selector->UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
@@ -379,12 +380,12 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
     }
     if (!type_selector.IsNull()) {
       selector->PrependTagSelector(
-          QualifiedName(g_null_atom, type_selector, g_star_atom));
+          arena, QualifiedName(g_null_atom, type_selector, g_star_atom));
     }
   }
 
   selector->SetForPage();
-  Vector<std::unique_ptr<CSSParserSelector>> selector_vector;
+  Vector<ArenaUniquePtr<CSSParserSelector>> selector_vector;
   selector_vector.push_back(std::move(selector));
   CSSSelectorList selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
@@ -1363,7 +1364,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
 
   // Parse the prelude of the style rule
   CSSSelectorVector selector_vector = CSSSelectorParser::ConsumeSelector(
-      stream, context_, style_sheet_, observer_);
+      stream, context_, style_sheet_, observer_, arena_);
 
   if (selector_vector.IsEmpty()) {
     // Read the rest of the prelude if there was an error

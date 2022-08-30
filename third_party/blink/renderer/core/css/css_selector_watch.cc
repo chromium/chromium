@@ -157,9 +157,10 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
   // UA stylesheets always parse in the insecure context mode.
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
+  Arena arena;
   for (const auto& selector : selectors) {
     CSSSelectorVector selector_vector =
-        CSSParser::ParseSelector(context, nullptr, selector);
+        CSSParser::ParseSelector(context, nullptr, selector, arena);
     if (selector_vector.IsEmpty())
       continue;
 

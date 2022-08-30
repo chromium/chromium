@@ -84,8 +84,9 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
       ParserContext(execution_context->GetSecureContextMode()));
   StyleSheetContents* parent_contents =
       parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
+  Arena arena;
   CSSSelectorVector selector_vector =
-      CSSParser::ParseSelector(context, parent_contents, selector_text);
+      CSSParser::ParseSelector(context, parent_contents, selector_text, arena);
   if (selector_vector.IsEmpty())
     return;
 

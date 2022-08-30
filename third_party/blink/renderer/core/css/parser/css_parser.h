@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/parser/arena.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
@@ -31,7 +32,7 @@ enum class ParseSheetResult;
 enum class SecureContextMode;
 
 // See css_selector_parser.h.
-using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
+using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
 
 // This class serves as the public API for the css/parser subsystem
 class CORE_EXPORT CSSParser {
@@ -53,7 +54,8 @@ class CORE_EXPORT CSSParser {
       std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
   static CSSSelectorVector ParseSelector(const CSSParserContext*,
                                          StyleSheetContents*,
-                                         const String&);
+                                         const String&,
+                                         Arena&);
   static CSSSelectorList ParsePageSelector(const CSSParserContext&,
                                            StyleSheetContents*,
                                            const String&);

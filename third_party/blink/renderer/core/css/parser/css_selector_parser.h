@@ -8,6 +8,7 @@
 #include <memory>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/parser/arena.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 
@@ -26,7 +27,7 @@ class StyleSheetContents;
 // CSSSelectorList::AdoptSelectorVector(), but it can be useful to have this
 // temporary form to find out e.g. how many bytes it will occupy
 // (e.g. in StyleRule::Create) before you actually make that allocation.
-using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
+using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
 
 // FIXME: We should consider building CSSSelectors directly instead of using
 // the intermediate CSSParserSelector.
@@ -35,14 +36,20 @@ class CORE_EXPORT CSSSelectorParser {
 
  public:
   // Both ParseSelector() and ConsumeSelector() return an empty list
-  // on error.
+  // on error. The arena is used for allocating the returned selectors,
+  // so the return value is only valid as long as the arena is.
+  // (CSSSelectorList::AdoptSelectorVector() makes new allocations,
+  // which is generally what makes it possible to destroy the arena
+  // quite quickly after parsing.)
   static CSSSelectorVector ParseSelector(CSSParserTokenRange,
                                          const CSSParserContext*,
-                                         StyleSheetContents*);
+                                         StyleSheetContents*,
+                                         Arena&);
   static CSSSelectorVector ConsumeSelector(CSSParserTokenStream&,
                                            const CSSParserContext*,
                                            StyleSheetContents*,
-                                           CSSParserObserver*);
+                                           CSSParserObserver*,
+                                           Arena&);
 
   static bool ConsumeANPlusB(CSSParserTokenRange&, std::pair<int, int>&);
 
@@ -71,7 +78,7 @@ class CORE_EXPORT CSSSelectorParser {
       StyleSheetContents*);
 
  private:
-  CSSSelectorParser(const CSSParserContext*, StyleSheetContents*);
+  CSSSelectorParser(const CSSParserContext*, StyleSheetContents*, Arena&);
 
   // These will all consume trailing comments if successful
 
@@ -89,9 +96,9 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
   CSSSelectorList ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
 
-  std::unique_ptr<CSSParserSelector> ConsumeRelativeSelector(
+  ArenaUniquePtr<CSSParserSelector> ConsumeRelativeSelector(
       CSSParserTokenRange&);
-  std::unique_ptr<CSSParserSelector> ConsumeComplexSelector(
+  ArenaUniquePtr<CSSParserSelector> ConsumeComplexSelector(
       CSSParserTokenRange&);
 
   // ConsumePartialComplexSelector() method provides the common logic of
@@ -106,27 +113,26 @@ class CORE_EXPORT CSSSelectorParser {
   // After consuming the left-most compound selector and a combinator of a
   // complex selector, we can also use this method to consume the remaining
   // selectors of the complex selector.
-  std::unique_ptr<CSSParserSelector> ConsumePartialComplexSelector(
+  ArenaUniquePtr<CSSParserSelector> ConsumePartialComplexSelector(
       CSSParserTokenRange&,
       CSSSelector::RelationType& /* current combinator */,
-      std::unique_ptr<CSSParserSelector> /* previous compound selector */,
+      ArenaUniquePtr<CSSParserSelector> /* previous compound selector */,
       unsigned& /* previous compound flags */);
 
-  std::unique_ptr<CSSParserSelector> ConsumeCompoundSelector(
+  ArenaUniquePtr<CSSParserSelector> ConsumeCompoundSelector(
       CSSParserTokenRange&);
   // This doesn't include element names, since they're handled specially
-  std::unique_ptr<CSSParserSelector> ConsumeSimpleSelector(
-      CSSParserTokenRange&);
+  ArenaUniquePtr<CSSParserSelector> ConsumeSimpleSelector(CSSParserTokenRange&);
 
   bool ConsumeName(CSSParserTokenRange&,
                    AtomicString& name,
                    AtomicString& namespace_prefix);
 
   // These will return nullptr when the selector is invalid
-  std::unique_ptr<CSSParserSelector> ConsumeId(CSSParserTokenRange&);
-  std::unique_ptr<CSSParserSelector> ConsumeClass(CSSParserTokenRange&);
-  std::unique_ptr<CSSParserSelector> ConsumePseudo(CSSParserTokenRange&);
-  std::unique_ptr<CSSParserSelector> ConsumeAttribute(CSSParserTokenRange&);
+  ArenaUniquePtr<CSSParserSelector> ConsumeId(CSSParserTokenRange&);
+  ArenaUniquePtr<CSSParserSelector> ConsumeClass(CSSParserTokenRange&);
+  ArenaUniquePtr<CSSParserSelector> ConsumePseudo(CSSParserTokenRange&);
+  ArenaUniquePtr<CSSParserSelector> ConsumeAttribute(CSSParserTokenRange&);
 
   CSSSelector::RelationType ConsumeCombinator(CSSParserTokenRange&);
   CSSSelector::MatchType ConsumeAttributeMatch(CSSParserTokenRange&);
@@ -138,12 +144,13 @@ class CORE_EXPORT CSSSelectorParser {
                                    bool has_element_name,
                                    const AtomicString& element_name,
                                    CSSParserSelector*);
-  static std::unique_ptr<CSSParserSelector> AddSimpleSelectorToCompound(
-      std::unique_ptr<CSSParserSelector> compound_selector,
-      std::unique_ptr<CSSParserSelector> simple_selector);
-  static std::unique_ptr<CSSParserSelector>
+  static ArenaUniquePtr<CSSParserSelector> AddSimpleSelectorToCompound(
+      Arena& arena,
+      ArenaUniquePtr<CSSParserSelector> compound_selector,
+      ArenaUniquePtr<CSSParserSelector> simple_selector);
+  static ArenaUniquePtr<CSSParserSelector>
   SplitCompoundAtImplicitShadowCrossingCombinator(
-      std::unique_ptr<CSSParserSelector> compound_selector);
+      ArenaUniquePtr<CSSParserSelector> compound_selector);
   void RecordUsageAndDeprecations(const CSSSelectorVector&);
   static bool ContainsUnknownWebkitPseudoElements(
       const CSSSelector& complex_selector);
@@ -186,11 +193,18 @@ class CORE_EXPORT CSSSelectorParser {
   bool found_complex_logical_combinations_in_has_argument_ = false;
   bool is_inside_logical_combination_in_has_argument_ = false;
 
+  // Used for temporary allocations of CSSParserSelector; anytime we have
+  // an ArenaUniquePtr<CSSParserSelector>, they are allocated on this arena.
+  // (They do not escape the class; they are generally discarded after
+  // construction, as they are converted into longer-lived CSSSelectorVector
+  // objects.)
+  Arena& arena_;
+
   class DisallowPseudoElementsScope {
     STACK_ALLOCATED();
 
    public:
-    DisallowPseudoElementsScope(CSSSelectorParser* parser)
+    explicit DisallowPseudoElementsScope(CSSSelectorParser* parser)
         : parser_(parser), was_disallowed_(parser_->disallow_pseudo_elements_) {
       parser_->disallow_pseudo_elements_ = true;
     }
