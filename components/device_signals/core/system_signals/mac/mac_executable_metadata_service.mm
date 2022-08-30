@@ -20,7 +20,6 @@ MacExecutableMetadataService::~MacExecutableMetadataService() = default;
 FilePathMap<ExecutableMetadata>
 MacExecutableMetadataService::GetAllExecutableMetadata(
     const FilePathSet& file_paths) {
-  // TODO(b:231326198): Add support for Mac app bundles.
   FilePathMap<bool> files_are_running_map =
       platform_delegate_->AreExecutablesRunning(file_paths);
 

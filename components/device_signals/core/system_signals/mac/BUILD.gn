@@ -20,11 +20,16 @@ static_library("mac") {
   ]
 
   deps = [ "//base" ]
+
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "mac_executable_metadata_service_unittest.mm" ]
+  sources = [
+    "mac_executable_metadata_service_unittest.mm",
+    "mac_platform_delegate_unittest.mm",
+  ]
 
   deps = [
     ":mac",
