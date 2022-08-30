@@ -126,7 +126,8 @@ function setupEventListeners() {
   });
 
   $('discover-api-override-apply').addEventListener('click', function() {
-    pageHandler.overrideFeedHost({url: $('discover-api-override').value});
+    pageHandler.overrideDiscoverApiEndpoint(
+        {url: $('discover-api-override').value});
   });
 
   $('feed-stream-data-override').addEventListener('click', function() {
