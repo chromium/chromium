@@ -77,7 +77,6 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD2(SetDisabledModules, void(bool, const std::vector<std::string>&));
   MOCK_METHOD1(SetModulesFreVisibility, void(bool));
   MOCK_METHOD1(CustomizeChromeSidePanelVisibilityChanged, void(bool));
-  MOCK_METHOD1(SetPromo, void(new_tab_page::mojom::PromoPtr));
 
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};
 };
@@ -550,7 +549,7 @@ TEST_F(NewTabPageHandlerTest, GetInteractiveDoodle) {
   EXPECT_EQ("alt text", doodle->description);
 }
 
-TEST_F(NewTabPageHandlerTest, UpdatePromoData) {
+TEST_F(NewTabPageHandlerTest, GetPromo) {
   PromoData promo_data;
   promo_data.middle_slot_json = R"({
     "part": [{
@@ -579,13 +578,13 @@ TEST_F(NewTabPageHandlerTest, UpdatePromoData) {
   EXPECT_CALL(mock_promo_service_, Refresh).Times(1);
 
   new_tab_page::mojom::PromoPtr promo;
-  EXPECT_CALL(mock_page_, SetPromo)
+  base::MockCallback<NewTabPageHandler::GetPromoCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke([&promo](new_tab_page::mojom::PromoPtr arg) {
         promo = std::move(arg);
       }));
-  handler_->UpdatePromoData();
-  mock_page_.FlushForTesting();
+  handler_->GetPromo(callback.Get());
 
   ASSERT_TRUE(promo);
   EXPECT_EQ("foo", promo->id);

@@ -97,7 +97,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void GetDoodle(GetDoodleCallback callback) override;
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;
-  void UpdatePromoData() override;
+  void GetPromo(GetPromoCallback callback) override;
   void BlocklistPromo(const std::string& promo_id) override;
   void UndoBlocklistPromo(const std::string& promo_id) override;
   void OnDismissModule(const std::string& module_id) override;
@@ -201,6 +201,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
+  std::vector<GetPromoCallback> promo_callbacks_;
   raw_ptr<PromoService> promo_service_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
