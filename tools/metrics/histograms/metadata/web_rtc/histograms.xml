@@ -1784,16 +1784,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.SdpSemanticRequested"
-    enum="PeerConnectionSdpSemanticRequested" expires_after="2022-09-11">
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    What SDP semantic (Unified Plan, Plan B or &quot;use default&quot;) has been
-    asked for by the creator of a PeerConnection.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.Simulcast.ApplyLocalDescription"
     enum="SimulcastApiVersion" expires_after="2020-08-23">
   <owner>amithi@chromium.org</owner>
