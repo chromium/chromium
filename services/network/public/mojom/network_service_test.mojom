@@ -13,6 +13,8 @@ import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/transferable_socket.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
 //
@@ -234,4 +236,10 @@ interface NetworkServiceTest {
       mojo_base.mojom.FilePath path,
       bool reset)
       => (pending_remote<SimpleCache>? backend);
+
+  // Make a HTTP 1.0 GET request for / to `endpoint` using connected socket `s`.
+  // Returns true if request was successfully sent. Intended for use verifying
+  // that a TransferableSocket can be transferred between processes.
+  MakeRequestToServer(TransferableSocket s, IPEndPoint endpoint)
+      => (bool result);
 };

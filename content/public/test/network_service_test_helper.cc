@@ -37,6 +37,7 @@
 #include "net/log/net_log.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/test/test_data_directory.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
@@ -696,6 +697,21 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     DCHECK_EQ(result.net_error, net::ERR_IO_PENDING);
   }
 
+  void MakeRequestToServer(network::TransferableSocket transferred,
+                           const net::IPEndPoint& endpoint,
+                           MakeRequestToServerCallback callback) override {
+    net::TCPSocket socket(nullptr, nullptr, net::NetLogSource());
+    socket.AdoptConnectedSocket(transferred.TakeSocket(), endpoint);
+    const std::string kRequest("GET / HTTP/1.0\r\n\r\n");
+    auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kRequest);
+
+    int rv = socket.Write(io_buffer.get(), io_buffer->size(), base::DoNothing(),
+                          TRAFFIC_ANNOTATION_FOR_TESTS);
+    // For purposes of tests, this IPC only supports sync Write calls.
+    DCHECK_NE(net::ERR_IO_PENDING, rv);
+    std::move(callback).Run(rv == static_cast<int>(kRequest.size()));
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
@@ -718,6 +734,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run(std::move(remote));
   }
 
+  void OnNetworkDataWritten(int rv) { write_result_ = rv; }
+
   bool registered_as_destruction_observer_ = false;
   bool have_test_doh_servers_ = false;
   mojo::ReceiverSet<network::mojom::NetworkServiceTest> receivers_;
@@ -729,6 +747,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  int write_result_;
   std::unique_ptr<disk_cache::Backend> disk_cache_backend_;
 
   base::WeakPtrFactory<NetworkServiceTestImpl> weak_factory_{this};

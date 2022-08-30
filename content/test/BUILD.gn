@@ -1335,6 +1335,7 @@ test("content_browsertests") {
     "../browser/net/sandboxed_nqe_browsertest.cc",
     "../browser/net/sandboxed_socket_broker_browsertest.cc",
     "../browser/net/split_cache_browsertest.cc",
+    "../browser/net/transferable_socket_browsertest.cc",
     "../browser/net/trust_token_browsertest.cc",
     "../browser/net/trust_token_browsertest.h",
     "../browser/net/trust_token_origin_trial_browsertest.cc",
