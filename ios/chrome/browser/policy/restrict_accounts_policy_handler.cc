@@ -30,7 +30,7 @@ RestrictAccountsPolicyHandler::~RestrictAccountsPolicyHandler() {}
 bool RestrictAccountsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  // |GetValueUnsafe| is used to differentiate between the policy value being
+  // `GetValueUnsafe` is used to differentiate between the policy value being
   // unset vs being set with an incorrect type.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (!value)

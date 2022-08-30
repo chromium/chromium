@@ -162,7 +162,7 @@ TEST_F(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
   ASSERT_TRUE(report);
   EXPECT_EQ(2, report->chrome_policies_size());
 
-  // Make sure policies are no longer reported when |set_policies_enabled| is
+  // Make sure policies are no longer reported when `set_policies_enabled` is
   // set to false.
   generator_.set_policies_enabled(false);
   report = GenerateReport();
@@ -170,7 +170,7 @@ TEST_F(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
   EXPECT_EQ(0, report->chrome_policies_size());
 
   // Make sure policies are once again being reported after setting
-  // |set_policies_enabled| back to true.
+  // `set_policies_enabled` back to true.
   generator_.set_policies_enabled(true);
   report = GenerateReport();
   ASSERT_TRUE(report);

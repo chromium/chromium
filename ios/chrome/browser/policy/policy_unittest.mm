@@ -59,7 +59,7 @@ class PolicyTest : public PlatformTest {
   // Enterprise policy boilerplate configuration.
   std::unique_ptr<EnterprisePolicyTestHelper> enterprise_policy_helper_;
 
-  // The path to |policy_test_cases.json|.
+  // The path to `policy_test_cases.json`.
   base::FilePath policy_test_cases_path_;
 };
 

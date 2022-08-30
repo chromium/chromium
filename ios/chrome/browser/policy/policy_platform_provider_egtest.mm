@@ -38,8 +38,8 @@ std::unique_ptr<base::Value> GetPlatformPolicy(const std::string& key) {
 }
 
 // Returns an AppLaunchConfiguration containing the given policy data.
-// |policy_data| must be in XML format. |policy_data| is passed to the
-// application regardless of whether |disable_policy| is true or false..
+// `policy_data` must be in XML format. `policy_data` is passed to the
+// application regardless of whether `disable_policy` is true or false..
 AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
                                                       bool enable_cbcm) {
   AppLaunchConfiguration config;

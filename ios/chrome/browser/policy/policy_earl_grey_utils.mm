@@ -13,8 +13,8 @@
 #endif
 
 namespace {
-// Returns a JSON-encoded string representing the given |base::Value|. If
-// |value| is nullptr, returns a string representing a |base::Value| of type
+// Returns a JSON-encoded string representing the given `base::Value`. If
+// `value` is nullptr, returns a string representing a `base::Value` of type
 // NONE.
 std::string SerializeValue(const base::Value value) {
   std::string serialized_value;

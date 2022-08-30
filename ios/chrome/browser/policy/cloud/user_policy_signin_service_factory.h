@@ -32,7 +32,7 @@ class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns an instance of the UserPolicySigninServiceFactory singleton.
   static UserPolicySigninServiceFactory* GetInstance();
 
-  // Returns the instance of UserPolicySigninService for the |context|.
+  // Returns the instance of UserPolicySigninService for the `context`.
   static UserPolicySigninService* GetForBrowserState(
       web::BrowserState* context);
 

@@ -22,7 +22,7 @@ class CloudPolicyClientRegistrationHelper;
 class UserPolicySigninService : public UserPolicySigninServiceBase,
                                 public signin::IdentityManager::Observer {
  public:
-  // Creates a UserPolicySigninService associated with the |browser_state|.
+  // Creates a UserPolicySigninService associated with the `browser_state`.
   UserPolicySigninService(
       PrefService* browser_state_prefs,
       PrefService* local_state,

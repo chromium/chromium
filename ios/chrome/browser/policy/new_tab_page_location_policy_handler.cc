@@ -56,7 +56,7 @@ bool NewTabPageLocationPolicyHandler::CheckPolicySettings(
     policy::PolicyErrorMap* errors) {
   if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
-  // |GetValueUnsafe| is used to differentiate between the policy value being
+  // `GetValueUnsafe` is used to differentiate between the policy value being
   // unset vs being set with an incorrect type.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (NewTabPageLocationPolicyHandler::ValidateNewTabPageLocationURL(value)) {

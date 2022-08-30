@@ -14,7 +14,7 @@ class Schema;
 
 // Builds a policy handler list.
 // All un-released policies will be ignored by default unless
-// |allow_future_policies| is True.
+// `allow_future_policies` is True.
 std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
     bool allow_future_policies,
     const policy::Schema& chrome_schema);

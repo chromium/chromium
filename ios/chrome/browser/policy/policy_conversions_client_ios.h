@@ -19,7 +19,7 @@ class BrowserState;
 class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
  public:
   // Creates a PolicyConversionsClientIOS which retrieves BrowserState-specific
-  // policy information from the given |browser_state|.
+  // policy information from the given `browser_state`.
   explicit PolicyConversionsClientIOS(web::BrowserState* browser_state);
 
   PolicyConversionsClientIOS(const PolicyConversionsClientIOS&) = delete;

@@ -50,8 +50,8 @@ id<GREYMatcher> TabGridButton() {
 }
 
 // Tests the enabled state of an item.
-// |parentMatcher| is the container matcher of the |item|.
-// |availability| is the expected availability.
+// `parentMatcher` is the container matcher of the `item`.
+// `availability` is the expected availability.
 void AssertItemEnabledState(id<GREYMatcher> item,
                             id<GREYMatcher> parentMatcher,
                             bool enabled) {

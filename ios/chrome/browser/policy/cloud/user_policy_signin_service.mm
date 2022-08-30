@@ -29,7 +29,7 @@ namespace {
 // chrome/browser/signin/account_id_from_account_info.h to components/ to be
 // able to reuse the helper here.
 //
-// Gets the AccountId from the provided |account_info|.
+// Gets the AccountId from the provided `account_info`.
 AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
   if (account_info.email.empty() || account_info.gaia.empty())
     return EmptyAccountId();

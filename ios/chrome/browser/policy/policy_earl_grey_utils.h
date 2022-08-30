@@ -18,27 +18,27 @@ namespace policy_test_utils {
 // CHROME policy namespace.
 std::string GetValueForPlatformPolicy(const std::string& policy_key);
 
-// Sets the value of the policy with the |policy_key| key to the given boolean
+// Sets the value of the policy with the `policy_key` key to the given boolean
 // value.
 void SetPolicy(bool enabled, const std::string& policy_key);
 
-// Sets the value of the policy with the |policy_key| key to the given integer
+// Sets the value of the policy with the `policy_key` key to the given integer
 // value.
 void SetPolicy(int value, const std::string& policy_key);
 
-// Sets the value of the policy with the |policy_key| key to the given string
+// Sets the value of the policy with the `policy_key` key to the given string
 // value.
 void SetPolicyWithStringValue(const std::string& value,
                               const std::string& policy_key);
 
-// Sets the value of the policy with the |policy_key| key to the given value.
+// Sets the value of the policy with the `policy_key` key to the given value.
 // The value must be serialized as a JSON string.
 // Prefer using the other type-specific helpers instead of this generic helper
 // if possible.
 void SetPolicy(const std::string& json_value, const std::string& policy_key);
 
-// Sets the value of the policy with the |policy_key| key to the given value.
-// The value must be wrapped in a |base::Value|.
+// Sets the value of the policy with the `policy_key` key to the given value.
+// The value must be wrapped in a `base::Value`.
 // Prefer using the other type-specific helpers instead of this generic helper
 // if possible.
 void SetPolicy(base::Value value, const std::string& policy_key);

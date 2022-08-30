@@ -22,7 +22,7 @@ void BrowserStatePolicyConnector::Init(
   schema_registry_ = schema_registry;
 
   // The object returned by GetPlatformConnector() may or may not be in the list
-  // returned by GetPolicyProviders().  Explicitly add it to |policy_providers_|
+  // returned by GetPolicyProviders().  Explicitly add it to `policy_providers_`
   // here in case it will not be added by the loop below (for example, this
   // could happen if the platform provider is overridden for testing)..
   policy::ConfigurationPolicyProvider* platform_provider =
