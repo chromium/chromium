@@ -307,14 +307,14 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
   };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  if (event_bundle) {
+    write_to_bundle(event_bundle);
+    return;
+  }
   {
     AutoLockWithDeferredTaskPosting lock(lock_);
     if (!emit_metadata_at_start_)
       return;
-  }
-  if (event_bundle) {
-    write_to_bundle(event_bundle);
-    return;
   }
   DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     auto packet = ctx.NewTracePacket();
