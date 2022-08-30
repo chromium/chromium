@@ -2583,7 +2583,7 @@
             ]
         }
     ],
-    "ChromeAppsDeprecation": [
+    "ChromeAppsDeprecationWinMacLinux": [
         {
             "platforms": [
                 "linux",
