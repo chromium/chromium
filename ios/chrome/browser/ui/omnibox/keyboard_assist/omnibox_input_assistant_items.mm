@@ -72,6 +72,7 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
       ]];
       UIBarButtonItem* pasteButtonItem =
           [[UIBarButtonItem alloc] initWithCustomView:pasteControlContainer];
+      [pasteButtonItem setWidth:kPasteButtonSize];
       [items addObject:pasteButtonItem];
     }
 #endif  // defined(__IPHONE_16_0)
