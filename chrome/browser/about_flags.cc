@@ -2789,11 +2789,9 @@ constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
 constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 constexpr char kBorealisStorageBallooningInternalName[] =
     "borealis-storage-ballooning";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kClipboardHistoryReorderInternalName[] =
     "clipboard-history-reorder";
+constexpr char kWelcomeScreenInternalName[] = "welcome-screen";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -5174,6 +5172,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"fuse-box-debug", flag_descriptions::kFuseBoxDebugName,
      flag_descriptions::kFuseBoxDebugDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kFuseBoxDebug)},
+    {kWelcomeScreenInternalName, flag_descriptions::kWelcomeScreenName,
+     flag_descriptions::kWelcomeScreenDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kGlanceables)},
     {"guest-os-files", flag_descriptions::kGuestOsFilesName,
      flag_descriptions::kGuestOsFilesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kGuestOsFiles)},
@@ -9405,6 +9406,12 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kClipboardHistoryReorderInternalName, entry.internal_name)) {
     return channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
+
+  // Only show glanceables flag for canary/unknown channels.
+  if (!strcmp(kWelcomeScreenInternalName, entry.internal_name)) {
+    return channel != version_info::Channel::CANARY &&
            channel != version_info::Channel::UNKNOWN;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

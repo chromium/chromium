@@ -6031,6 +6031,12 @@ const char kWebAppsCrosapiName[] = "Web Apps Crosapi";
 const char kWebAppsCrosapiDescription[] =
     "Support web apps publishing from Lacros browser.";
 
+const char kWelcomeScreenName[] =
+    "Productivity Experiment: Reorient with welcome screen";
+const char kWelcomeScreenDescription[] =
+    "When a user is about to start a new task, provide them with relevant "
+    "information and tools to help them orient and get started.";
+
 const char kWifiConnectMacAddressRandomizationName[] =
     "MAC address randomization";
 const char kWifiConnectMacAddressRandomizationDescription[] =

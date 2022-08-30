@@ -3456,6 +3456,9 @@ extern const char kWakeOnWifiAllowedDescription[];
 extern const char kWebAppsCrosapiName[];
 extern const char kWebAppsCrosapiDescription[];
 
+extern const char kWelcomeScreenName[];
+extern const char kWelcomeScreenDescription[];
+
 extern const char kWifiConnectMacAddressRandomizationName[];
 extern const char kWifiConnectMacAddressRandomizationDescription[];
 
