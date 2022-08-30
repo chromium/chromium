@@ -99,11 +99,7 @@ using remove_cvref_t = typename remove_cvref<T>::type;
 // - https://en.cppreference.com/w/cpp/types/is_constant_evaluated
 // - https://wg21.link/meta.const.eval
 constexpr bool is_constant_evaluated() noexcept {
-#if HAS_BUILTIN(__builtin_is_constant_evaluated)
   return __builtin_is_constant_evaluated();
-#else
-  return false;
-#endif
 }
 
 // Simplified implementation of C++20's std::iter_value_t.
