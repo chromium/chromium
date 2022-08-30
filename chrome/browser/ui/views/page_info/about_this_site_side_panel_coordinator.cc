@@ -18,25 +18,38 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
 
+namespace {
+content::OpenURLParams CreateOpenUrlParams(const GURL& url) {
+  return content::OpenURLParams(
+      net::AppendOrReplaceQueryParameter(
+          url, page_info::AboutThisSiteRenderModeParameterName,
+          page_info::AboutThisSiteRenderModeParameterValue),
+      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+}
+}  // namespace
+
 void ShowAboutThisSiteSidePanel(content::WebContents* web_contents,
-                                const content::OpenURLParams& params) {
+                                const GURL& more_about_url) {
   // Create PanelCoordinator if it doesn't exist yet.
   AboutThisSideSidePanelCoordinator::CreateForWebContents(web_contents);
   AboutThisSideSidePanelCoordinator::FromWebContents(web_contents)
-      ->RegisterEntryAndShow(params);
+      ->RegisterEntryAndShow(more_about_url);
 }
 
 void RegisterAboutThisSiteSidePanel(content::WebContents* web_contents,
-                                    const content::OpenURLParams& params) {
+                                    const GURL& more_about_url) {
   // Create PanelCoordinator if it doesn't exist yet.
   AboutThisSideSidePanelCoordinator::CreateForWebContents(web_contents);
   AboutThisSideSidePanelCoordinator::FromWebContents(web_contents)
-      ->RegisterEntry(params);
+      ->RegisterEntry(more_about_url);
 }
 
 AboutThisSideSidePanelCoordinator::AboutThisSideSidePanelCoordinator(
@@ -49,13 +62,14 @@ AboutThisSideSidePanelCoordinator::~AboutThisSideSidePanelCoordinator() =
     default;
 
 void AboutThisSideSidePanelCoordinator::RegisterEntry(
-    const content::OpenURLParams& params) {
+    const GURL& more_about_url) {
   auto* browser_view = GetBrowserView();
   if (!browser_view)
     return;
 
   auto* registry = SidePanelRegistry::Get(web_contents());
-  last_url_info_ = {web_contents()->GetLastCommittedURL(), params};
+  last_url_info_ = {web_contents()->GetLastCommittedURL(),
+                    CreateOpenUrlParams(more_about_url)};
   registered_but_not_shown_ = true;
 
   // Check if the view is already registered.
@@ -76,17 +90,17 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
 }
 
 void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
-    const content::OpenURLParams& params) {
+    const GURL& more_about_url) {
   auto* browser_view = GetBrowserView();
   if (!browser_view)
     return;
 
-  RegisterEntry(params);
+  RegisterEntry(more_about_url);
   registered_but_not_shown_ = false;
 
   if (about_this_site_side_panel_view_) {
     // Load params in view if view still exists.
-    about_this_site_side_panel_view_->OpenUrl(params);
+    about_this_site_side_panel_view_->OpenUrl(last_url_info_->url_params);
   }
 
   auto* side_panel_coordinator = browser_view->side_panel_coordinator();
