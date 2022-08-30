@@ -5,11 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_DISPATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_DISPATCHER_H_
 
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -17,12 +23,26 @@ namespace blink {
 class ExecutionContext;
 class KURL;
 
-// `PendingBeaconDispatcher` helps the caller connect to a `blink::Document`'s
-// PendingBeaconHost by wrapping a shared HeapMojoRemote `remote_` that connects
-// to a PendingBeaconHost instance running in the browser.
+// `PendingBeaconDispatcher` connects a renderer `PendingBeacon` to its browser
+// counterpart.
 //
-// Every PendingBeacon from the same Document should use this class to make
-// calls to the corresponding PendingBeaconHost.
+// It supports the following requests:
+//
+// (1) Create browser-side PendingBeacon:
+//     On constructed, every `PendingBeacon` from the same Document should call
+//     `CreateHostBeacon()` to make calls to the corresponding
+//     PendingBeaconHost, and to register itself within this dispatcher.
+//
+// (2) Dispatch every registered `PendingBeacon` on its background timeout.
+//     Implicitly triggered when the page enters `hidden` state within
+//     `PageVisibilityChanged()`. In such case, it schedules a series of tasks
+//     to send out every beacons according to their individual background
+//     timeouts. If the page enters `visible` state, all the pending tasks will
+//     be canceled.
+//     See `ScheduleDispatchBeacons()` for the actual scheduling algorithm.
+//
+// Internally, it connects to a `blink::Document`'s corresponding
+// PendingBeaconHost instance running in the browser via `remote_`.
 //
 // PendingBeaconDispatcher is only created and attached to an ExecutionContext
 // lazily by `PendingBeaconDispatcher::FromOrAttachTo()` if a PendingBeacon is
@@ -31,30 +51,48 @@ class KURL;
 // The lifetime of PendingBeaconDispatcher is the same as the ExecutionContext
 // it is attached to.
 //
-// TODO(crbug.com/1293679): Implement dispatching beacons on timeout.
-// TODO(crbug.com/1293679): Implement dispatching beacons on (page hidden +
-// backgroundTimeout) msec.
+// Example:
+//   // Accesses an instance of this class within a document.
+//   auto& dispatcher = PendingBeaconDispatcher::FromOrAttachTo(ec);
+//
+//   // When creating a renderer-side PendingBeacon, also call the following
+//   // to create browser-side counterpart and to register itself for later
+//   // dispatching.
+//   dispatcher.CreateHostBeacon(pending_beacon, ...);
+//
+//   // When a PendingBeacon becomes non-pending.
+//   dispatcher.Unregister(pending_beacon);
 class CORE_EXPORT PendingBeaconDispatcher
     : public GarbageCollected<PendingBeaconDispatcher>,
-      public Supplement<ExecutionContext> {
+      public Supplement<ExecutionContext>,
+      public ExecutionContextLifecycleObserver,
+      public PageVisibilityObserver {
  public:
+  // `PendingBeacon` is an interface to represent a reference to renderer-side
+  // pending beacon object. "pending" means this beacon is ok to send.
+  // PendingBeaconDispatcher uses this abstraction, instead of the entire
+  // blink::PendingBeacon, to schedule tasks to send out pending beacons.
+  class CORE_EXPORT PendingBeacon : public GarbageCollectedMixin {
+   public:
+    // Returns a background timeout to help schedule calls to `Send()` when the
+    // page where this beacon created enters hidden visibility state.
+    // Implementation should ensure the returned TimeDelta is not negative.
+    virtual base::TimeDelta GetBackgroundTimeout() const = 0;
+    // Triggers beacon sending action.
+    // Implementation should also transitions this beacon into non-pending
+    // state. and call `PendingBeaconDispatcher::Unregister()` to unregister
+    // itself from further scheduling.
+    virtual void Send() = 0;
+  };
+
   static const char kSupplementName[];
+
   // TODO(crbug.com/1293679): Update to proper TaskType once the spec finalized.
-  // Using the `TaskType::kMiscPlatformAPI` as pending beacons are not yet
-  // associated with any specific task runner in the spec.
+  // Using the `TaskType::kNetworkingUnfreezable` as pending beacons needs to
+  // work when Document is put into BackForwardCache (frozen).
   // See also
   // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/scheduler/TaskSchedulingInBlink.md#task-types-and-task-sources
-  static constexpr TaskType kTaskType = TaskType::kMiscPlatformAPI;
-
-  explicit PendingBeaconDispatcher(ExecutionContext& ec,
-                                   base::PassKey<PendingBeaconDispatcher> key);
-
-  // Not copyable or movable
-  PendingBeaconDispatcher(const PendingBeaconDispatcher&) = delete;
-  PendingBeaconDispatcher& operator=(const PendingBeaconDispatcher&) = delete;
-  virtual ~PendingBeaconDispatcher() = default;
-
-  void Trace(Visitor* visitor) const override;
+  static constexpr TaskType kTaskType = TaskType::kNetworkingUnfreezable;
 
   // Returns an instance of this class of `ec` if already stored in `ec`.
   // Otherwise, constructs a new one attached to `ec` and returns it.
@@ -64,23 +102,113 @@ class CORE_EXPORT PendingBeaconDispatcher
   // Otherwise, returns nullptr.
   static PendingBeaconDispatcher* From(ExecutionContext& ec);
 
+  explicit PendingBeaconDispatcher(ExecutionContext& ec,
+                                   base::PassKey<PendingBeaconDispatcher> key);
+
+  // Not copyable or movable
+  PendingBeaconDispatcher(const PendingBeaconDispatcher&) = delete;
+  PendingBeaconDispatcher& operator=(const PendingBeaconDispatcher&) = delete;
+
+  void Trace(Visitor* visitor) const override;
+
   // Asks the PendingBeaconHost in the browser process to create and store a new
-  // PendingBeacon that holds `receiver`. The caller `beacon` will be able to
-  // communicate with it by sending messages to `receiver`.
+  // PendingBeacon that holds `receiver`. The caller `pending_beacon` will be
+  // able to communicate with the browser-side PendingBeacon by sending messages
+  // to `receiver`.
   //
-  // This method also retains an extra reference to `beacon` for later use in
-  // `ScheduleDispatchingBeacons()`.
+  // Calling this method will also make this dispatcher retain at least one
+  // strong reference to `pending_beacon`, so that `pending_beacon` can be
+  // scheduled to dispatch even if its original reference is gone.
   void CreateHostBeacon(
+      PendingBeacon* pending_beacon,
       mojo::PendingReceiver<mojom::blink::PendingBeacon> receiver,
       const KURL& url,
       mojom::blink::BeaconMethod method);
 
+  // Unregisters `pending_beacon` from this dispatcher so that it won't be
+  // scheduled to send anymore.
+  //
+  // But it will still be able to send itself out when it is still alive.
+  // Note that some of references to `pending_beacon` in this dispatcher might
+  // not be cleared immediately.
+  void Unregister(PendingBeacon* pending_beacon);
+
+  // `ExecutionContextLifecycleObserver` implementation.
+  void ContextDestroyed() override;
+
+  // `PageVisibilityObserver` implementation.
+  void PageVisibilityChanged() override;
+
  private:
+  // Schedules a series of tasks to dispatch pending beacons according to
+  // their `PendingBeacon::GetBackgroundTimeout()`.
+  //
+  // Internally, it doesn't send all of pending beacons out at once. Instead, it
+  // bundles pending beacons with similar background timeout, and sends them out
+  // in batch to reduce the number of task callbacks triggered.
+  void ScheduleDispatchBeacons();
+
+  // Cancels the scheduled task held by `task_handle_` if exists, and clears
+  // all pending beacons held in `background_timeout_descending_beacons_`.
+  void CancelDispatchBeacons();
+
+  // Internal method to schedule sending a bundle of beacons. see
+  // `GetStartIndexForNextBundledBeacons()` for more details.
+  void ScheduleDispatchNextBundledBeacons();
+
+  // Sends out beacons in the range [`start_index`, end) from
+  // `background_timeout_descending_beacons_`.
+  // It also schedules the next call to itself if feasible.
+  void OnDispatchBeaconsAndRepeat(wtf_size_t start_index);
+
+  // Returns the starting index of a range of beacons that can be sent out
+  // together by looking into beacons in
+  // `background_timeout_descending_beacons_`. In other words,
+  // background_timeout_descending_beacons_[returned index, end) is the next
+  // bundle.
+  wtf_size_t GetStartIndexForNextBundledBeacons() const;
+
+  // Returns a TaskRunner to schedule beacon sending tasks.
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+
   // Connects to a PendingBeaconHost running in browser process.
   HeapMojoRemote<mojom::blink::PendingBeaconHost> remote_;
+
+  // Retains strong references to the pending beacons so that they can be
+  // scheduled to send even if the original references are gone.
+  //
+  // A new reference is inserted every time `CreateHostBeacon()` is called.
+  // A reference is removed if
+  //   - it is manually un-registered by `Unregistered()`.
+  //   - it is about to send in `OnDispatchBeaconsAndRepeat()`.
+  //
+  // This field should be the source of truth when deciding if a pending beacon
+  // is still *pending*, i.e. ok to send, or not.
+  HeapHashSet<Member<PendingBeacon>> pending_beacons_;
+
+  // Retains additional references to the ones in `pending_beacons_` to process.
+  //
+  // These are sorted by their `PendingBeacon::GetBackgroundTimeout()` in
+  // non-ascending order: the earliest expired beacon is put last so that they
+  // can be easily removed.
+  // This field is empty until the sending process kicks off, i.e.
+  // `ScheduleDispatchBeacons()` is called.
+  // Must be cleared every time `CancelDispatchBeacons()` is called.
+  HeapVector<Member<PendingBeacon>> background_timeout_descending_beacons_;
+
+  // The accumulated delay indicating how long it has passed since the initial
+  // call to `ScheduleDispatchBeacons()`.
+  //
+  // Must be reset to 0 every time `CancelDispatchBeacons()` is called.
+  base::TimeDelta previous_delayed_;
+
+  // Points to the most recent bundled-beacons-sending task scheduled in
+  // `ScheduleDispatchNextBundledBeacons()`.
+  //
+  // It is canceled when `CancelDispatchBeacons()` is called.
+  TaskHandle task_handle_;
 };
 
 }  // namespace blink
 
-#endif  // #define
-        // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_DISPATCHER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_DISPATCHER_H_
