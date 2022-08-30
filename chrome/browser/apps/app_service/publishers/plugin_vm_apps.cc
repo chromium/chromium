@@ -28,7 +28,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -319,6 +318,30 @@ void PluginVmApps::Uninstall(const std::string& app_id,
       ->UninstallPluginVm();
 }
 
+void PluginVmApps::GetMenuModel(const std::string& app_id,
+                                MenuType menu_type,
+                                int64_t display_id,
+                                base::OnceCallback<void(MenuItems)> callback) {
+  MenuItems menu_items;
+
+  if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
+    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
+                   menu_items);
+  }
+
+  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
+  }
+
+  if (app_id == plugin_vm::kPluginVmShelfAppId &&
+      plugin_vm::IsPluginVmRunning(profile_)) {
+    AddCommandItem(ash::SHUTDOWN_GUEST_OS, IDS_PLUGIN_VM_SHUT_DOWN_MENU_ITEM,
+                   menu_items);
+  }
+
+  std::move(callback).Run(std::move(menu_items));
+}
+
 void PluginVmApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
@@ -352,26 +375,8 @@ void PluginVmApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,
                                 GetMenuModelCallback callback) {
-  apps::MenuItems menu_items;
-
-  if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
-                        profile_)) {
-    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                   menu_items);
-  }
-
-  if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
-                         profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
-  }
-
-  if (app_id == plugin_vm::kPluginVmShelfAppId &&
-      plugin_vm::IsPluginVmRunning(profile_)) {
-    AddCommandItem(ash::SHUTDOWN_GUEST_OS, IDS_PLUGIN_VM_SHUT_DOWN_MENU_ITEM,
-                   menu_items);
-  }
-
-  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
+               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
 }
 
 void PluginVmApps::OnRegistryUpdated(

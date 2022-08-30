@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -58,6 +59,10 @@ class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
               WindowInfoPtr window_info) override;
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
+  void GetMenuModel(const std::string& app_id,
+                    MenuType menu_type,
+                    int64_t display_id,
+                    base::OnceCallback<void(MenuItems)> callback);
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

@@ -24,7 +24,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -352,6 +351,27 @@ void BorealisApps::Uninstall(const std::string& app_id,
       .Uninstall(app_id, base::DoNothing());
 }
 
+void BorealisApps::GetMenuModel(const std::string& app_id,
+                                MenuType menu_type,
+                                int64_t display_id,
+                                base::OnceCallback<void(MenuItems)> callback) {
+  MenuItems menu_items;
+
+  if (borealis::BorealisService::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled()) {
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
+  }
+
+  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
+  }
+
+  // TODO(b/162562622): Menu models for borealis apps.
+
+  std::move(callback).Run(std::move(menu_items));
+}
+
 void BorealisApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -399,22 +419,8 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,
                                 GetMenuModelCallback callback) {
-  MenuItems menu_items;
-
-  if (borealis::BorealisService::GetForProfile(profile_)
-          ->Features()
-          .IsEnabled()) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
-  }
-
-  if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
-                         profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
-  }
-
-  // TODO(b/162562622): Menu models for borealis apps.
-
-  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
+               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
 }
 
 void BorealisApps::OnRegistryUpdated(

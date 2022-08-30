@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -163,6 +162,25 @@ void BuiltInChromeOsApps::LaunchAppWithParams(AppLaunchParams&& params,
   std::move(callback).Run(LaunchResult());
 }
 
+void BuiltInChromeOsApps::GetMenuModel(
+    const std::string& app_id,
+    MenuType menu_type,
+    int64_t display_id,
+    base::OnceCallback<void(MenuItems)> callback) {
+  MenuItems menu_items;
+
+  if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
+    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
+                   menu_items);
+  }
+
+  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
+  }
+
+  std::move(callback).Run(std::move(menu_items));
+}
+
 void BuiltInChromeOsApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -202,20 +220,8 @@ void BuiltInChromeOsApps::GetMenuModel(const std::string& app_id,
                                        apps::mojom::MenuType menu_type,
                                        int64_t display_id,
                                        GetMenuModelCallback callback) {
-  apps::MenuItems menu_items;
-
-  if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
-                        profile_)) {
-    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                   menu_items);
-  }
-
-  if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
-                         profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
-  }
-
-  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
+               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
 }
 
 }  // namespace apps

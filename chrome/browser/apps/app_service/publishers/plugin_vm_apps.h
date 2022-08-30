@@ -17,6 +17,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -74,6 +75,10 @@ class PluginVmApps : public apps::PublisherBase,
                  UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+  void GetMenuModel(const std::string& app_id,
+                    MenuType menu_type,
+                    int64_t display_id,
+                    base::OnceCallback<void(MenuItems)> callback);
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

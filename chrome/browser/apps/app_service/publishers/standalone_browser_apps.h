@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -74,6 +75,10 @@ class StandaloneBrowserApps : public apps::PublisherBase,
               WindowInfoPtr window_info) override;
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
+  void GetMenuModel(const std::string& app_id,
+                    MenuType menu_type,
+                    int64_t display_id,
+                    base::OnceCallback<void(MenuItems)> callback);
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

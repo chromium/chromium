@@ -27,7 +27,6 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -253,6 +252,53 @@ void StandaloneBrowserExtensionApps::Uninstall(const std::string& app_id,
                          report_abuse);
 }
 
+void StandaloneBrowserExtensionApps::GetMenuModel(
+    const std::string& app_id,
+    MenuType menu_type,
+    int64_t display_id,
+    base::OnceCallback<void(MenuItems)> callback) {
+  bool is_platform_app = true;
+  bool can_use_uninstall = false;
+  bool show_app_info = false;
+  WindowMode display_mode = WindowMode::kUnknown;
+  proxy()->AppRegistryCache().ForOneApp(
+      app_id, [&is_platform_app, &can_use_uninstall, &show_app_info,
+               &display_mode](const apps::AppUpdate& update) {
+        is_platform_app = update.IsPlatformApp().value_or(true);
+        can_use_uninstall = update.AllowUninstall().value_or(false);
+        show_app_info = update.ShowInManagement().value_or(false);
+        display_mode = update.WindowMode();
+      });
+
+  // This provides the context menu for hosted app in standalone browser.
+  // Note: The context menu for platform app in standalone browser is provided
+  // by StandaloneBrowserExtensionAppContextMenu.
+  DCHECK(!is_platform_app);
+
+  MenuItems menu_items;
+  CreateOpenNewSubmenu(display_mode == WindowMode::kWindow
+                           ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
+                           : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
+                       menu_items);
+
+  if (menu_type == MenuType::kShelf) {
+    if (proxy()->BrowserAppInstanceRegistry()->IsAppRunning(app_id)) {
+      AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
+    }
+  }
+
+  if (can_use_uninstall) {
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
+  }
+
+  if (show_app_info) {
+    AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
+                   menu_items);
+  }
+
+  std::move(callback).Run(std::move(menu_items));
+}
+
 void StandaloneBrowserExtensionApps::SetWindowMode(const std::string& app_id,
                                                    WindowMode window_mode) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
@@ -382,48 +428,8 @@ void StandaloneBrowserExtensionApps::GetMenuModel(
     apps::mojom::MenuType menu_type,
     int64_t display_id,
     GetMenuModelCallback callback) {
-  bool is_platform_app = true;
-  bool can_use_uninstall = false;
-  bool show_app_info = false;
-  WindowMode display_mode = WindowMode::kUnknown;
-  proxy()->AppRegistryCache().ForOneApp(
-      app_id, [&is_platform_app, &can_use_uninstall, &show_app_info,
-               &display_mode](const apps::AppUpdate& update) {
-        is_platform_app = update.IsPlatformApp().value_or(true);
-        can_use_uninstall = update.AllowUninstall().value_or(false);
-        show_app_info = update.ShowInManagement().value_or(false);
-        display_mode = update.WindowMode();
-      });
-
-  // This provides the context menu for hosted app in standalone browser.
-  // Note: The context menu for platform app in standalone browser is provided
-  // by StandaloneBrowserExtensionAppContextMenu.
-  DCHECK(!is_platform_app);
-
-  apps::MenuItems menu_items;
-  apps::CreateOpenNewSubmenu(display_mode == WindowMode::kWindow
-                                 ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
-                                 : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
-                             menu_items);
-
-  if (menu_type == apps::mojom::MenuType::kShelf) {
-    if (proxy()->BrowserAppInstanceRegistry()->IsAppRunning(app_id)) {
-      apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
-                           menu_items);
-    }
-  }
-
-  if (can_use_uninstall) {
-    apps::AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
-                         menu_items);
-  }
-
-  if (show_app_info) {
-    apps::AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-                         menu_items);
-  }
-
-  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
+               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
 }
 
 void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {

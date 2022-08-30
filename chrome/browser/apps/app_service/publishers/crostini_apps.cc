@@ -33,7 +33,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -53,11 +52,11 @@ const char kTextTypeMimeType[] = "text/";
 const char kTextWildcardMimeType[] = "text/*";
 
 bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
-                                      apps::mojom::MenuType menu_type,
+                                      apps::MenuType menu_type,
                                       int64_t display_id) {
   // The default terminal app is crosh in a Chrome window and it doesn't run in
   // the Crostini container so it doesn't support display density the same way.
-  if (menu_type != apps::mojom::MenuType::kShelf) {
+  if (menu_type != apps::MenuType::kShelf) {
     return false;
   }
 
@@ -233,6 +232,51 @@ void CrostiniApps::Uninstall(const std::string& app_id,
       ->QueueUninstallApplication(app_id);
 }
 
+void CrostiniApps::GetMenuModel(const std::string& app_id,
+                                MenuType menu_type,
+                                int64_t display_id,
+                                base::OnceCallback<void(MenuItems)> callback) {
+  MenuItems menu_items;
+
+  if (menu_type == MenuType::kShelf) {
+    AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
+                   menu_items);
+  }
+
+  if (crostini::IsUninstallable(profile_, app_id)) {
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
+  }
+
+  if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
+    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
+                   menu_items);
+  }
+
+  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
+  }
+
+  // Offer users the ability to toggle per-application UI scaling.
+  // Some apps have high-density display support and do not require scaling
+  // to match the system display density, but others are density-unaware and
+  // look better when scaled to match the display density.
+  if (ShouldShowDisplayDensityMenuItem(app_id, menu_type, display_id)) {
+    absl::optional<guest_os::GuestOsRegistryService::Registration>
+        registration = registry_->GetRegistration(app_id);
+    if (registration) {
+      if (registration->IsScaled()) {
+        AddCommandItem(ash::CROSTINI_USE_HIGH_DENSITY,
+                       IDS_CROSTINI_USE_HIGH_DENSITY, menu_items);
+      } else {
+        AddCommandItem(ash::CROSTINI_USE_LOW_DENSITY,
+                       IDS_CROSTINI_USE_LOW_DENSITY, menu_items);
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(menu_items));
+}
+
 void CrostiniApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -302,47 +346,8 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,
                                 GetMenuModelCallback callback) {
-  MenuItems menu_items;
-
-  if (menu_type == apps::mojom::MenuType::kShelf) {
-    AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
-                   menu_items);
-  }
-
-  if (crostini::IsUninstallable(profile_, app_id)) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
-  }
-
-  if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
-                        profile_)) {
-    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                   menu_items);
-  }
-
-  if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
-                         profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
-  }
-
-  // Offer users the ability to toggle per-application UI scaling.
-  // Some apps have high-density display support and do not require scaling
-  // to match the system display density, but others are density-unaware and
-  // look better when scaled to match the display density.
-  if (ShouldShowDisplayDensityMenuItem(app_id, menu_type, display_id)) {
-    absl::optional<guest_os::GuestOsRegistryService::Registration>
-        registration = registry_->GetRegistration(app_id);
-    if (registration) {
-      if (registration->IsScaled()) {
-        AddCommandItem(ash::CROSTINI_USE_HIGH_DENSITY,
-                       IDS_CROSTINI_USE_HIGH_DENSITY, menu_items);
-      } else {
-        AddCommandItem(ash::CROSTINI_USE_LOW_DENSITY,
-                       IDS_CROSTINI_USE_LOW_DENSITY, menu_items);
-      }
-    }
-  }
-
-  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
+               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
 }
 
 void CrostiniApps::OnRegistryUpdated(
