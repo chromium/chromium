@@ -4080,7 +4080,7 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
                        CertificateSelectorForGuest) {
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
+  content::RenderFrameHost* guest_rfh = GetGuestRenderFrameHost();
 
   const GURL client_cert_url =
       https_server().GetURL("/ssl/browser_use_client_cert_store.html");
@@ -4088,7 +4088,7 @@ IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
   base::RunLoop run_loop;
   ClientCertStoreStub::SetQuitClosure(run_loop.QuitClosure());
   EXPECT_TRUE(content::ExecJs(
-      guest, content::JsReplace("location.href = $1;", client_cert_url)));
+      guest_rfh, content::JsReplace("location.href = $1;", client_cert_url)));
   run_loop.Run();
 
   auto* manager = GetModalDialogManager(GetEmbedderWebContents());
