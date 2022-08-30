@@ -123,10 +123,10 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // entries.
   void PruneEntries();
 
-  // Returns an iterator into |entries_| whose id matches |id|. If |id|
-  // identifies a Window, then its iterator position will be returned. If it
-  // identifies a tab, then the iterator position of the Window in which the Tab
-  // resides is returned.
+  // Returns an iterator into |entries_| whose id or original_id matches |id|.
+  // If |id| identifies a Window, then its iterator position will be returned.
+  // If it identifies a tab, then the iterator position of the Window in which
+  // the Tab resides is returned.
   Entries::iterator GetEntryIteratorById(SessionID id);
 
   // From base::trace_event::MemoryDumpProvider
