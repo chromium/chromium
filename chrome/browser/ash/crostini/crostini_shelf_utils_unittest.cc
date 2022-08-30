@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,9 +47,9 @@ class CrostiniShelfUtilsTest : public testing::Test {
  public:
   std::string GetShelfAppIdUsingProfile(const Profile* profile,
                                         WindowIds window_ids) const {
-    return GetCrostiniShelfAppId(
-        profile, base::OptionalOrNullptr(window_ids.app_id),
-        base::OptionalOrNullptr(window_ids.startup_id));
+    return GetCrostiniShelfAppId(profile,
+                                 base::OptionalToPtr(window_ids.app_id),
+                                 base::OptionalToPtr(window_ids.startup_id));
   }
 
   std::string GetShelfAppId(WindowIds window_ids) const {
