@@ -25,9 +25,6 @@ using testing::SaveArg;
 
 namespace autofill {
 
-using FieldPrediction =
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
-
 namespace {
 class MockSuggestionsHandler
     : public SingleFieldFormFiller::SuggestionsHandler {
@@ -89,17 +86,32 @@ class SingleFieldFormFillRouterTest : public testing::Test {
 };
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
-// OnGetSingleFieldSuggestions call.
+// OnGetSingleFieldSuggestions call if the field has autocomplete on.
 TEST_F(SingleFieldFormFillRouterTest,
        RouteToAutocompleteHistoryManager_OnGetSingleFieldSuggestions) {
-  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  for (bool test_field_should_autocomplete : {true, false}) {
+    SCOPED_TRACE(testing::Message() << "test_field_should_autocomplete = "
+                                    << test_field_should_autocomplete);
+    auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+    test_field_.should_autocomplete = test_field_should_autocomplete;
 
-  EXPECT_CALL(*autocomplete_history_manager_, OnGetSingleFieldSuggestions);
+    // If |test_field_.should_autocomplete| is true, that means autocomplete is
+    // turned on for the given test field and
+    // AutocompleteHistoryManager::OnGetSingleFieldSuggestions() should return
+    // true. If |test_field_.should_autocomplete| is false, then autocomplete is
+    // turned off for the given test field and
+    // AutocompleteHistoryManager::OnGetSingleFieldSuggestions() should return
+    // false.
+    EXPECT_CALL(*autocomplete_history_manager_, OnGetSingleFieldSuggestions)
+        .Times(1)
+        .WillOnce(testing::Return(test_field_.should_autocomplete));
 
-  single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+    EXPECT_EQ(test_field_.should_autocomplete,
+              single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+                  /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+                  /*autoselect_first_suggestion=*/false, test_field_,
+                  suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+  }
 }
 
 // Ensure that the router routes to all SingleFieldFormFillers for this
@@ -107,17 +119,8 @@ TEST_F(SingleFieldFormFillRouterTest,
 TEST_F(SingleFieldFormFillRouterTest,
        RouteToAllSingleFieldFormFillers_OnWillSubmitForm) {
   FormData form_data;
-  std::vector<FormFieldData> fields;
   size_t number_of_fields_for_testing = 3;
-  for (size_t i = 0; i < number_of_fields_for_testing; i++) {
-    fields.emplace_back();
-  }
-
-#if !BUILDFLAG(IS_IOS)
-  for (size_t i = 0; i < number_of_fields_for_testing; i++) {
-    fields.emplace_back();
-  }
-#endif  // !BUILDFLAG(IS_IOS)
+  std::vector<FormFieldData> fields(2 * number_of_fields_for_testing);
 
   form_data.fields = fields;
   FormStructure form_structure{form_data};
@@ -128,14 +131,12 @@ TEST_F(SingleFieldFormFillRouterTest,
     form_structure.set_server_field_type_for_testing(i, UNKNOWN_TYPE);
   }
 
-#if !BUILDFLAG(IS_IOS)
   // Set the next |number_of_fields_for_testing| fields to be merchant promo
   // code fields.
   for (size_t i = number_of_fields_for_testing;
        i < number_of_fields_for_testing * 2; i++) {
     form_structure.set_server_field_type_for_testing(i, MERCHANT_PROMO_CODE);
   }
-#endif  // !BUILDFLAG(IS_IOS)
 
   std::vector<FormFieldData> submitted_autocomplete_fields;
   bool autocomplete_fields_is_autocomplete_enabled = false;
@@ -144,14 +145,12 @@ TEST_F(SingleFieldFormFillRouterTest,
           (DoAll(SaveArg<0>(&submitted_autocomplete_fields),
                  SaveArg<1>(&autocomplete_fields_is_autocomplete_enabled))));
 
-#if !BUILDFLAG(IS_IOS)
   std::vector<FormFieldData> submitted_merchant_promo_code_fields;
   bool merchant_promo_code_fields_is_autocomplete_enabled = false;
   EXPECT_CALL(*merchant_promo_code_manager_, OnWillSubmitFormWithFields(_, _))
       .WillOnce((DoAll(
           SaveArg<0>(&submitted_merchant_promo_code_fields),
           SaveArg<1>(&merchant_promo_code_fields_is_autocomplete_enabled))));
-#endif  // !BUILDFLAG(IS_IOS)
 
   single_field_form_fill_router_->OnWillSubmitForm(
       form_data, &form_structure, /*is_autocomplete_enabled=*/true);
@@ -160,11 +159,9 @@ TEST_F(SingleFieldFormFillRouterTest,
               number_of_fields_for_testing);
   EXPECT_TRUE(autocomplete_fields_is_autocomplete_enabled);
 
-#if !BUILDFLAG(IS_IOS)
   EXPECT_TRUE(submitted_merchant_promo_code_fields.size() ==
               number_of_fields_for_testing);
   EXPECT_TRUE(merchant_promo_code_fields_is_autocomplete_enabled);
-#endif  // !BUILDFLAG(IS_IOS)
 }
 
 // Ensure that the router routes to SingleFieldFormFillers for this
@@ -175,9 +172,7 @@ TEST_F(SingleFieldFormFillRouterTest,
 
   EXPECT_CALL(*autocomplete_history_manager_, CancelPendingQueries);
 
-#if !BUILDFLAG(IS_IOS)
   EXPECT_CALL(*merchant_promo_code_manager_, CancelPendingQueries);
-#endif  // !BUILDFLAG(IS_IOS)
 
   single_field_form_fill_router_->CancelPendingQueries(
       suggestions_handler.get());
@@ -205,32 +200,90 @@ TEST_F(SingleFieldFormFillRouterTest,
       /*value=*/u"Value", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 }
 
-#if !BUILDFLAG(IS_IOS)
 // Ensure that the router routes to MerchantPromoCodeManager for this
 // OnGetSingleFieldSuggestions call.
 TEST_F(SingleFieldFormFillRouterTest,
        RouteToMerchantPromoCodeManager_OnGetSingleFieldSuggestions) {
+  for (bool test_field_should_autocomplete : {true, false}) {
+    SCOPED_TRACE(testing::Message() << "test_field_should_autocomplete = "
+                                    << test_field_should_autocomplete);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kAutofillFillMerchantPromoCodeFields}, {});
+    auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+    test_field_.should_autocomplete = test_field_should_autocomplete;
+
+    // |test_field_.should_autocomplete| should not affect merchant promo code
+    // autofill, so MerchantPromoCodeManager::OnGetSingleFieldSuggestions()
+    // should always be called since the given test field is a merchant promo
+    // code field.
+    EXPECT_CALL(*merchant_promo_code_manager_, OnGetSingleFieldSuggestions)
+        .Times(1)
+        .WillOnce(testing::Return(true));
+
+    EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+        /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+        /*autoselect_first_suggestion=*/false, test_field_,
+        suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+  }
+}
+
+// Ensure that the router routes to AutocompleteHistoryManager for this
+// OnGetSingleFieldSuggestions call if MerchantPromoCodeManager is not present.
+TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerNotPresent) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillFillMerchantPromoCodeFields,
-                                 features::kAutofillServerTypeTakesPrecedence},
-                                {});
+  feature_list.InitWithFeatures(
+      {features::kAutofillFillMerchantPromoCodeFields}, {});
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
-  EXPECT_CALL(*merchant_promo_code_manager_, OnGetSingleFieldSuggestions);
-  std::vector<FieldPrediction> merchant_promo_code_field_predictions;
-  FieldPrediction merchant_promo_code_field_prediction;
-  merchant_promo_code_field_prediction.set_type(MERCHANT_PROMO_CODE);
-  merchant_promo_code_field_predictions.push_back(
-      merchant_promo_code_field_prediction);
-  SuggestionsContext context;
-  AutofillField autofill_field;
-  autofill_field.set_server_predictions(
-      std::move(merchant_promo_code_field_predictions));
-  context.focused_field = &autofill_field;
-  single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+  // This also invalidates the WeakPtr that the |single_field_form_fill_router_|
+  // holds on the promo code manager.
+  merchant_promo_code_manager_.reset();
+
+  // As the merchant promo code manager is gone, we should call
+  // AutocompleteHistoryManager::OnGetSingleFieldSuggestions().
+  EXPECT_CALL(*autocomplete_history_manager_, OnGetSingleFieldSuggestions)
+      .Times(1)
+      .WillOnce(testing::Return(true));
+
+  // As |test_field_.should_autocomplete| is true, this was a valid field for
+  // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
+  // should return true.
+  EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), context);
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+}
+
+// Ensure that the router routes to AutocompleteHistoryManager for this
+// OnGetSingleFieldSuggestions call if
+// MerchantPromoCodeManager::OnGetSingleFieldSuggestions() returns false.
+TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerReturnedFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillFillMerchantPromoCodeFields}, {});
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+
+  // Mock MerchantPromoCodeManager::OnGetSingleFieldSuggestions() returning
+  // false.
+  EXPECT_CALL(*merchant_promo_code_manager_, OnGetSingleFieldSuggestions)
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  // Since MerchantPromoCodeManager::OnGetSingleFieldSuggestions() returned
+  // false, we should call
+  // AutocompleteHistoryManager::OnGetSingleFieldSuggestions().
+  EXPECT_CALL(*autocomplete_history_manager_, OnGetSingleFieldSuggestions)
+      .Times(1)
+      .WillOnce(testing::Return(true));
+
+  // As |test_field_.should_autocomplete| is true, this was a valid field for
+  // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
+  // should return true.
+  EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
@@ -254,6 +307,31 @@ TEST_F(SingleFieldFormFillRouterTest,
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(
       /*value=*/u"Value", POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
 }
-#endif  // !BUILDFLAG(IS_IOS)
+
+// Ensure that SingleFieldFormFillRouter::OnGetSingleFieldSuggestions() returns
+// false if all single field form fillers returned false.
+TEST_F(
+    SingleFieldFormFillRouterTest,
+    FieldNotEligibleForAnySingleFieldFormFiller_OnGetSingleFieldSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillFillMerchantPromoCodeFields}, {});
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+
+  EXPECT_CALL(*merchant_promo_code_manager_, OnGetSingleFieldSuggestions)
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  EXPECT_CALL(*autocomplete_history_manager_, OnGetSingleFieldSuggestions)
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  // All SingleFieldFormFillers returned false, so we should return false as we
+  // did not attempt to display any single field form fill suggestions.
+  EXPECT_FALSE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+}
 
 }  // namespace autofill

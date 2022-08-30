@@ -18,27 +18,43 @@ MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
 
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
-void MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
+bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
     const FormFieldData& field,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
+  // We don't check whether |is_autocomplete_enabled| is false because it is
+  // redundant. If |is_autocomplete_enabled| is false, then autofill
+  // wallet import must be disabled. Disabling autofill wallet import (turning
+  // off the "Save and fill payment methods" toggle) will disable offering
+  // suggestions and filling promo codes, because it will cause
+  // PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin() to return
+  // an empty vector.
+  bool field_is_eligible =
+      context.focused_field &&
+      context.focused_field->Type().GetStorableType() == MERCHANT_PROMO_CODE;
+  if (!field_is_eligible)
+    return false;
+
   // If merchant promo code offers are available for the given site, and the
   // profile is not OTR, show the promo code offers.
   if (!is_off_the_record_ && personal_data_manager_) {
-    std::vector<const AutofillOfferData*> promo_code_offers =
+    const std::vector<const AutofillOfferData*> promo_code_offers =
         personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(
           promo_code_offers, QueryHandler(query_id, autoselect_first_suggestion,
                                           field.value, handler));
+      // TODO(crbug.com/1190334): Fix the metrics logging to not log if we will
+      // not show promo code autofill suggestions.
       uma_recorder_.OnOffersSuggestionsShown(field.name, promo_code_offers);
-      return;
+      return true;
     }
   }
+  return false;
 }
 
 void MerchantPromoCodeManager::OnWillSubmitFormWithFields(
@@ -71,7 +87,7 @@ base::WeakPtr<MerchantPromoCodeManager> MerchantPromoCodeManager::GetWeakPtr() {
 
 void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
     const std::u16string& name,
-    std::vector<const AutofillOfferData*>& offers) {
+    const std::vector<const AutofillOfferData*>& offers) {
   // Log metrics related to the showing of overall offers suggestions popup.
   autofill_metrics::LogOffersSuggestionsPopupShown(
       /*first_time_being_logged=*/most_recent_suggestions_shown_field_name_ !=
@@ -154,6 +170,11 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     if (query_handler.prefix_ ==
         base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
+      // Return empty suggestions to query handler. This will result in no
+      // suggestions being displayed.
+      query_handler.handler_->OnSuggestionsReturned(
+          query_handler.client_query_id_,
+          query_handler.autoselect_first_suggestion_, {});
       return;
     }
   }

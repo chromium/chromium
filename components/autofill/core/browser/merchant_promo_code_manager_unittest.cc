@@ -17,10 +17,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using testing::_;
 using testing::Field;
+using testing::Truly;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
+
+using FieldPrediction =
+    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
 namespace {
 
@@ -66,6 +71,7 @@ class MerchantPromoCodeManagerTest : public testing::Test {
   std::string SetUpPromoCodeOffer(std::string origin,
                                   const GURL& offer_details_url) {
     personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
+    personal_data_manager_.get()->SetAutofillCreditCardEnabled(true);
     AutofillOfferData testPromoCodeOfferData =
         test::GetPromoCodeOfferData(GURL(origin));
     testPromoCodeOfferData.SetOfferDetailsUrl(offer_details_url);
@@ -74,9 +80,19 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     return testPromoCodeOfferData.GetPromoCode();
   }
 
+  // Adds a promo code focused field to the suggestions context.
+  void AddPromoCodeFocusedFieldToSuggestionsContext(SuggestionsContext* out) {
+    FieldPrediction merchant_promo_code_field_prediction;
+    merchant_promo_code_field_prediction.set_type(MERCHANT_PROMO_CODE);
+    autofill_field_.set_server_predictions(
+        {merchant_promo_code_field_prediction});
+    out->focused_field = &autofill_field_;
+  }
+
   std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   FormFieldData test_field_;
+  AutofillField autofill_field_;
 };
 
 TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
@@ -92,6 +108,7 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   std::string promo_code = SetUpPromoCodeOffer(
       last_committed_origin_url, GURL("https://offer-details-url.com/"));
   Suggestion promo_code_suggestion = Suggestion(base::ASCIIToUTF16(promo_code));
@@ -114,27 +131,27 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   // Because all criteria are met, active promo code suggestions for the given
   // merchant site will be displayed instead of requesting Autocomplete
   // suggestions.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
       test_field_, suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Trigger offers suggestions popup again to be able to test that we do not
   // log metrics twice for the same field.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
       test_field_, suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Trigger offers suggestions popup again to be able to test that we log
   // metrics more than once if it is a different field.
   FormFieldData other_field;
   test::CreateTestFormField(/*label=*/"", "Some Other Name", "SomePrefix",
                             "Some Type", &other_field);
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
       other_field, suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Offer.SuggestionsPopupShown",
@@ -155,6 +172,41 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
 }
 
 TEST_F(MerchantPromoCodeManagerTest,
+       DoesNotShowPromoCodeOffersIfFieldIsNotAPromoCodeField) {
+  base::HistogramTester histogram_tester;
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // the field is not a promo code field.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(),
+      /*context=*/SuggestionsContext()));
+
+  // Ensure that no metrics were logged.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.SuggestionsPopupShown",
+      autofill_metrics::OffersSuggestionsPopupEvent::
+          kOffersSuggestionsPopupShownOnce,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.SuggestionsPopupShown",
+      autofill_metrics::OffersSuggestionsPopupEvent::
+          kOffersSuggestionsPopupShown,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+      autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShownOnce, 0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+      autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShown, 0);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
        DoesNotShowPromoCodeOffersForOffTheRecord) {
   base::HistogramTester histogram_tester;
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
@@ -167,6 +219,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   merchant_promo_code_manager_->is_off_the_record_ = true;
 
   // Setting up mock to verify that suggestions returning is not triggered if
@@ -174,11 +227,11 @@ TEST_F(MerchantPromoCodeManagerTest,
   EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
 
   // Simulate request for suggestions.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
       suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -210,6 +263,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   merchant_promo_code_manager_->personal_data_manager_ = nullptr;
 
   // Setting up mock to verify that suggestions returning is not triggered if
@@ -217,11 +271,11 @@ TEST_F(MerchantPromoCodeManagerTest,
   EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
 
   // Simulate request for suggestions.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
       suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -247,23 +301,25 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   std::string last_committed_origin_url = "https://www.example.com";
   personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
+  personal_data_manager_.get()->SetAutofillCreditCardEnabled(true);
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
 
   // Setting up mock to verify that suggestions returning is not triggered if
   // there are no promo code offers to suggest.
   EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
 
   // Simulate request for suggestions.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
       suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Ensure that no metrics were logged.
   histogram_tester.ExpectBucketCount(
@@ -284,6 +340,157 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
       autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShown, 0);
 }
 
+// This test case exists to ensure that disabling autofill wallet import (by
+// turning off the "Payment methods, offers, and addresses using Google Pay"
+// toggle) disables offering suggestions and autofilling for promo codes.
+TEST_F(MerchantPromoCodeManagerTest, AutofillWalletImportDisabled) {
+  base::HistogramTester histogram_tester;
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  std::string last_committed_origin_url = "https://www.example.com";
+  FormData form_data;
+  form_data.main_frame_origin =
+      url::Origin::Create(GURL(last_committed_origin_url));
+  FormStructure form_structure{form_data};
+  SuggestionsContext context;
+  context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
+  SetUpPromoCodeOffer(last_committed_origin_url,
+                      GURL("https://offer-details-url.com/"));
+  personal_data_manager_->SetAutofillWalletImportEnabled(false);
+
+  // Autofill wallet import is disabled, so check that we do not return
+  // suggestions to the handler.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(),
+      /*context=*/context));
+
+  // Ensure that no metrics were logged.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.SuggestionsPopupShown",
+      autofill_metrics::OffersSuggestionsPopupEvent::
+          kOffersSuggestionsPopupShownOnce,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.SuggestionsPopupShown",
+      autofill_metrics::OffersSuggestionsPopupEvent::
+          kOffersSuggestionsPopupShown,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+      autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShownOnce, 0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+      autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShown, 0);
+}
+
+// This test case exists to ensure that disabling autofill credit card (by
+// turning off the "Save and fill payment methods" toggle) disables offering
+// suggestions and autofilling for promo codes.
+TEST_F(MerchantPromoCodeManagerTest, AutofillCreditCardDisabled) {
+  base::HistogramTester histogram_tester;
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  std::string last_committed_origin_url = "https://www.example.com";
+  FormData form_data;
+  form_data.main_frame_origin =
+      url::Origin::Create(GURL(last_committed_origin_url));
+  FormStructure form_structure{form_data};
+  SuggestionsContext context;
+  context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
+  SetUpPromoCodeOffer(last_committed_origin_url,
+                      GURL("https://offer-details-url.com/"));
+  personal_data_manager_->SetAutofillCreditCardEnabled(false);
+
+  // Autofill credit card is disabled, so check that we do not return
+  // suggestions to the handler.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(),
+      /*context=*/context));
+
+  // Ensure that no metrics were logged.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.SuggestionsPopupShown",
+      autofill_metrics::OffersSuggestionsPopupEvent::
+          kOffersSuggestionsPopupShownOnce,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.SuggestionsPopupShown",
+      autofill_metrics::OffersSuggestionsPopupEvent::
+          kOffersSuggestionsPopupShown,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+      autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShownOnce, 0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+      autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShown, 0);
+}
+
+// This test case exists to ensure that we do not offer promo code offer
+// suggestions if the field already contains a promo code.
+TEST_F(MerchantPromoCodeManagerTest, PrefixMatched) {
+  base::HistogramTester histogram_tester;
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  std::string last_committed_origin_url = "https://www.example.com";
+  FormData form_data;
+  form_data.main_frame_origin =
+      url::Origin::Create(GURL(last_committed_origin_url));
+  FormStructure form_structure{form_data};
+  SuggestionsContext context;
+  context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
+  test_field_.value = base::ASCIIToUTF16(SetUpPromoCodeOffer(
+      last_committed_origin_url, GURL("https://offer-details-url.com/")));
+
+  // The field contains the promo code already, so check that we do not return
+  // suggestions to the handler.
+  EXPECT_CALL(*suggestions_handler,
+              OnSuggestionsReturned(
+                  _, _,
+                  testing::Truly(
+                      [](const std::vector<Suggestion>& returned_suggestions) {
+                        return returned_suggestions.empty();
+                      })));
+
+  // Simulate request for suggestions.
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(),
+      /*context=*/context));
+
+  // Log that suggestions were attempted to be shown.
+  // TODO(crbug.com/1190334): Fix the metrics logging to not log if we will not
+  // show promo code autofill suggestions.
+  // histogram_tester.ExpectBucketCount(
+  //     "Autofill.Offer.SuggestionsPopupShown",
+  //     autofill_metrics::OffersSuggestionsPopupEvent::
+  //         kOffersSuggestionsPopupShownOnce,
+  //     0);
+  // histogram_tester.ExpectBucketCount(
+  //     "Autofill.Offer.SuggestionsPopupShown",
+  //     autofill_metrics::OffersSuggestionsPopupEvent::
+  //         kOffersSuggestionsPopupShown,
+  //     0);
+  // histogram_tester.ExpectBucketCount(
+  //     "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+  //     autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShownOnce,
+  //     0);
+  // histogram_tester.ExpectBucketCount(
+  //     "Autofill.Offer.Suggestion.GPayPromoCodeOffer",
+  //     autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShown, 0);
+}
+
 TEST_F(MerchantPromoCodeManagerTest,
        OnSingleFieldSuggestion_GPayPromoCodeOfferSuggestion) {
   // Set up the test.
@@ -300,6 +507,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   SetUpPromoCodeOffer(last_committed_origin_url,
                       GURL("https://offer-details-url.com/"));
 
@@ -312,10 +520,10 @@ TEST_F(MerchantPromoCodeManagerTest,
       autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionSelected, 0);
 
   // Simulate showing the promo code offers suggestions popup.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
       test_field_, suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Simulate selecting a promo code offer suggestion.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
@@ -331,10 +539,10 @@ TEST_F(MerchantPromoCodeManagerTest,
       1);
 
   // Simulate showing the promo code offers suggestions popup.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
       test_field_, suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Simulate selecting a promo code offer suggestion.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
@@ -366,6 +574,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
+  AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   SetUpPromoCodeOffer(last_committed_origin_url,
                       GURL("https://offer-details-url.com/"));
 
@@ -380,10 +589,10 @@ TEST_F(MerchantPromoCodeManagerTest,
       0);
 
   // Simulate showing the promo code offers suggestions popup.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
       test_field_, suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Simulate selecting a promo code offer suggestion.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
@@ -402,10 +611,10 @@ TEST_F(MerchantPromoCodeManagerTest,
       1);
 
   // Simulate showing the promo code offers suggestions popup.
-  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
       test_field_, suggestions_handler->GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 
   // Simulate selecting a promo code offer suggestion.
   merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(

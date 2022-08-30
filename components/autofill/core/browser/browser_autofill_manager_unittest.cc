@@ -419,6 +419,12 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::make_unique<NiceMock<MockSingleFieldFormFillRouter>>(
             autocomplete_history_manager_.get(),
             merchant_promo_code_manager_.get());
+    // By default, if we offer single field form fill, suggestions should be
+    // returned because it is assumed |field.should_autocomplete| is set to
+    // true. This should be overridden in tests where
+    // |field.should_autocomplete| is set to false.
+    ON_CALL(*single_field_form_fill_router, OnGetSingleFieldSuggestions)
+        .WillByDefault(testing::Return(true));
     single_field_form_fill_router_ = single_field_form_fill_router.get();
     browser_autofill_manager_->set_single_field_form_fill_router_for_test(
         std::move(single_field_form_fill_router));
@@ -875,9 +881,14 @@ class BrowserAutofillManagerStructuredProfileTest
 void BrowserAutofillManagerStructuredProfileTest::InitializeFeatures() {
   structured_names_and_addresses_ = GetParam();
 
+  // The BrowserAutofillManagerStructuredProfileTest test suite will run every
+  // test once with these flags on, and once with these flags off.
   std::vector<base::Feature> features = {
       features::kAutofillEnableSupportForMoreStructureInAddresses,
-      features::kAutofillEnableSupportForMoreStructureInNames};
+      features::kAutofillEnableSupportForMoreStructureInNames,
+      // TODO(crbug.com/1190334): Remove this feature flag once the GPay
+      // activated promo code autofill project is fully launched and stable.
+      features::kAutofillFillMerchantPromoCodeFields};
   if (structured_names_and_addresses_) {
     scoped_features_.InitWithFeatures(features, {});
   } else {
@@ -1121,9 +1132,9 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
-  // Ensure that the single field form fill router is not called for
+  // Ensure that the SingleFieldFormFillRouter is not called for
   // suggestions either.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
       .Times(0);
 
   // Suggestions should be returned for the first two fields.
@@ -1157,8 +1168,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
-  // Ensure that the single field form fill router is called for both fields.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
+  // Ensure that the SingleFieldFormFillRouter is called for both fields.
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
       .Times(2);
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -1854,7 +1865,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
       browser_autofill_manager_->ShouldShowCreditCardSigninPromo(form, field));
 
   // Single field form fill suggestions are not queried.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
       .Times(0);
 
   GetAutofillSuggestions(form, field);
@@ -5666,7 +5677,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormData form;
   test::CreateTestAddressFormData(&form);
 
-  EXPECT_CALL(*(single_field_form_fill_router_), OnWillSubmitForm(_, _, true));
+  EXPECT_CALL(*single_field_form_fill_router_, OnWillSubmitForm(_, _, true));
   FormSubmitted(form);
 }
 
@@ -5700,7 +5711,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, ValuePatternsMetric) {
 }
 
 // Test that when Autofill is disabled, single field form fill suggestions are
-// still queried.
+// still queried as a fallback.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        SingleFieldFormFillSuggestions_SomeWhenAutofillDisabled) {
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
@@ -5719,39 +5730,14 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormsSeen(forms);
   const FormFieldData& field = form.fields[0];
 
-  // Expect the single field form fill router to be called for suggestions.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions);
+  // Expect the SingleFieldFormFillRouter to be called for suggestions.
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions);
 
   GetAutofillSuggestions(form, field);
-}
 
-// Test that when Autofill is disabled and the field should not autocomplete,
-// single field form fill suggestions are not queried.
-TEST_P(
-    BrowserAutofillManagerStructuredProfileTest,
-    SingleFieldFormFillSuggestions_AutofillDisabledAndFieldShouldNotAutocomplete) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
-  auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
-      browser_autofill_manager_.get(), autofill_driver_.get(),
-      /*call_parent_methods=*/false);
-  external_delegate_ = external_delegate.get();
-  browser_autofill_manager_->SetExternalDelegateForTest(
-      std::move(external_delegate));
-
-  // Set up our form data.
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
-  FormFieldData field = form.fields[0];
-  field.should_autocomplete = false;
-
-  // Single field form fill router is not called for suggestions.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
-      .Times(0);
-
-  GetAutofillSuggestions(form, field);
+  // Single field form fill suggestions were returned, so we should not go
+  // through the normal autofill flow.
+  EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
 // Test that we do not query for single field form fill suggestions when there
@@ -5765,8 +5751,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormsSeen(forms);
   const FormFieldData& field = form.fields[0];
 
-  // Single field form fill router is not called for suggestions.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
+  // SingleFieldFormFillRouter is not called for suggestions.
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
       .Times(0);
 
   GetAutofillSuggestions(form, field);
@@ -5790,7 +5776,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   // Single field form fill manager is called for suggestions because Autofill
   // is empty.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions);
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions);
 
   GetAutofillSuggestions(form, field);
 }
@@ -5825,8 +5811,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormFieldData field = form.fields[0];
   field.should_autocomplete = true;
 
-  // Single field form fill router is not called for suggestions.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions);
+  // SingleFieldFormFillRouter is called for suggestions.
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions);
 
   GetAutofillSuggestions(form, field);
 }
@@ -5861,19 +5847,20 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormFieldData field = form.fields[1];
   field.should_autocomplete = true;
 
-  // Single field form fill router is not called for suggestions.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
+  // SingleFieldFormFillRouter is not called for suggestions.
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
       .Times(0);
 
   GetAutofillSuggestions(form, field);
 }
 
-// Test that we do not query for single field form fill suggestions when there
-// are no Autofill suggestions available, and that the field should not
-// autocomplete.
+// Test that the situation where there are no Autofill suggestions available,
+// and no single field form fill conditions were met is correctly handled. The
+// single field form fill conditions were not met because autocomplete is set to
+// off and the field is not recognized as a promo code field.
 TEST_F(
     BrowserAutofillManagerTest,
-    SingleFieldFormFillSuggestions_NoneWhenAutofillEmptyFieldShouldNotAutocomplete) {
+    SingleFieldFormFillSuggestions_NoneWhenAutofillEmptyAndSingleFieldFormFillConditionsNotMet) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5885,15 +5872,25 @@ TEST_F(
   field.should_autocomplete = false;
   test::CreateTestFormField("Email", "email", "donkey", "email", &field);
 
-  // Single field form fill router is not called for suggestions.
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
-      .Times(0);
+  // Autocomplete is set to off, so suggestions should not get returned from
+  // |single_field_form_fill_router_|.
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
+      .WillRepeatedly(testing::Return(false));
 
   GetAutofillSuggestions(form, field);
+
+  // Single field form fill was not triggered, so go through the normal autofill
+  // flow.
+  EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       AutocompleteOffRespectedForSingleFieldFormFill) {
+// Test that the situation where no single field form fill conditions were met
+// is handled correctly. The single field form fill conditions were not met
+// because autocomplete is set to off and the field is not recognized as a promo
+// code field.
+TEST_P(
+    BrowserAutofillManagerStructuredProfileTest,
+    SingleFieldFormFillSuggestions_NoneWhenSingleFieldFormFillConditionsNotMet) {
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
   browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
@@ -5903,9 +5900,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   browser_autofill_manager_->SetExternalDelegateForTest(
       std::move(external_delegate));
 
-  EXPECT_CALL(*(single_field_form_fill_router_), OnGetSingleFieldSuggestions)
-      .Times(0);
-
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5913,12 +5907,22 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormsSeen(forms);
   FormFieldData* field = &form.fields[0];
   field->should_autocomplete = false;
+
+  // Autocomplete is set to off, so suggestions should not get returned from
+  // |single_field_form_fill_router_|.
+  EXPECT_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
+      .WillRepeatedly(testing::Return(false));
+
   GetAutofillSuggestions(form, *field);
+
+  // Single field form fill was not triggered, so go through the normal autofill
+  // flow.
+  EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 }
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        DestructorCancelsSingleFieldFormFillQueries) {
-  EXPECT_CALL(*(single_field_form_fill_router_), CancelPendingQueries).Times(1);
+  EXPECT_CALL(*single_field_form_fill_router_, CancelPendingQueries).Times(1);
   browser_autofill_manager_.reset();
 }
 
@@ -7432,7 +7436,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        DontSaveCvcInAutocompleteHistory) {
   FormData form_seen_by_ahm;
-  EXPECT_CALL(*(single_field_form_fill_router_), OnWillSubmitForm(_, _, true))
+  EXPECT_CALL(*single_field_form_fill_router_, OnWillSubmitForm(_, _, true))
       .WillOnce(SaveArg<0>(&form_seen_by_ahm));
 
   FormData form;
@@ -8121,8 +8125,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Verify that suggestions are shown on desktop for credit card related fields
-// even if the initiating field field has the "autocomplete" attribute set to
-// off.
+// even if the initiating field has the "autocomplete" attribute set to off.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        DisplaySuggestions_AutocompleteOff_CreditCardField) {
   // Set up a credit card form.
@@ -8147,7 +8150,15 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   // Suggestions should always be displayed.
   for (const FormFieldData& mixed_form_field : mixed_form.fields) {
+    // Single field form fill suggestions being returned are directly correlated
+    // to whether or not the field has autocomplete set to true or false. We
+    // know autocomplete must be the single field form filler in this case due
+    // to the field not having a type that would route to any of the other
+    // single field form fillers.
+    ON_CALL(*single_field_form_fill_router_, OnGetSingleFieldSuggestions)
+        .WillByDefault(testing::Return(mixed_form_field.should_autocomplete));
     GetAutofillSuggestions(mixed_form, mixed_form_field);
+
     EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
   }
 }

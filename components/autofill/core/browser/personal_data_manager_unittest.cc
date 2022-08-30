@@ -1718,6 +1718,21 @@ TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
   EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
 }
 
+// Tests that GetAutofillOffers does not return any offers if
+// |IsAutofillCreditCardEnabled()| returns |false|.
+TEST_F(PersonalDataManagerMockTest,
+       GetAutofillOffers_AutofillCreditCardDisabled) {
+  // Add a card-linked offer and a promo code offer.
+  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+
+  // Should return neither of the offers as the autofill credit card import pref
+  // is disabled.
+  EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
+}
+
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin returns only active and
 // site-relevant promo code offers.
 TEST_F(PersonalDataManagerTest, GetActiveAutofillPromoCodeOffersForOrigin) {
@@ -1755,6 +1770,23 @@ TEST_F(PersonalDataManagerMockTest,
   prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
 
   // Should not return the offer as the wallet import pref is disabled.
+  EXPECT_EQ(0U, personal_data_
+                    ->GetActiveAutofillPromoCodeOffersForOrigin(
+                        GURL("http://www.example.com"))
+                    .size());
+}
+
+// Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
+// promo code offers if |IsAutofillCreditCardEnabled()| returns |false|.
+TEST_F(PersonalDataManagerMockTest,
+       GetActiveAutofillPromoCodeOffersForOrigin_AutofillCreditCardDisabled) {
+  // Add an active promo code offer.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com")));
+
+  prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+
+  // Should not return the offer as the autofill credit card pref is disabled.
   EXPECT_EQ(0U, personal_data_
                     ->GetActiveAutofillPromoCodeOffersForOrigin(
                         GURL("http://www.example.com"))

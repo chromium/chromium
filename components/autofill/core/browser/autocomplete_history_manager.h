@@ -44,12 +44,13 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   ~AutocompleteHistoryManager() override;
 
   // SingleFieldFormFiller overrides:
-  void OnGetSingleFieldSuggestions(int query_id,
-                                   bool is_autocomplete_enabled,
-                                   bool autoselect_first_suggestion,
-                                   const FormFieldData& field,
-                                   base::WeakPtr<SuggestionsHandler> handler,
-                                   const SuggestionsContext& context) override;
+  [[nodiscard]] bool OnGetSingleFieldSuggestions(
+      int query_id,
+      bool is_autocomplete_enabled,
+      bool autoselect_first_suggestion,
+      const FormFieldData& field,
+      base::WeakPtr<SuggestionsHandler> handler,
+      const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
   void CancelPendingQueries(const SuggestionsHandler* handler) override;

@@ -1206,7 +1206,7 @@ PersonalDataManager::GetCreditCardCloudTokenData() const {
 }
 
 std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
-  if (!IsAutofillWalletImportEnabled())
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillCreditCardEnabled())
     return {};
 
   std::vector<AutofillOfferData*> result;
@@ -1219,7 +1219,7 @@ std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
 std::vector<const AutofillOfferData*>
 PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     GURL origin) const {
-  if (!IsAutofillWalletImportEnabled())
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillCreditCardEnabled())
     return {};
 
   std::vector<const AutofillOfferData*> promo_code_offers_for_origin;

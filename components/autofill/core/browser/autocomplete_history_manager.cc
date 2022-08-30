@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -78,13 +79,16 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
   CancelAllPendingQueries();
 }
 
-void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
+bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
     const FormFieldData& field,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
+  if (!field.should_autocomplete)
+    return false;
+
   CancelPendingQueries(handler.get());
 
   if (!IsMeaningfulFieldName(field.name) || !is_autocomplete_enabled ||
@@ -94,7 +98,7 @@ void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
                                      field.value, handler));
     uma_recorder_.OnGetAutocompleteSuggestions(field.name,
                                                0 /* pending_query_handle */);
-    return;
+    return true;
   }
 
   if (profile_database_) {
@@ -106,7 +110,13 @@ void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     pending_queries_.insert(
         {query_handle, QueryHandler(query_id, autoselect_first_suggestion,
                                     field.value, handler)});
+    return true;
   }
+
+  // TODO(crbug.com/1190334): Remove this after ensuring that in practice
+  // |profile_database_| is never null.
+  base::debug::DumpWithoutCrashing();
+  return false;
 }
 
 void AutocompleteHistoryManager::OnWillSubmitFormWithFields(

@@ -52,7 +52,7 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
       autocomplete_fields, is_autocomplete_enabled);
 }
 
-void SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
+bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
@@ -60,16 +60,20 @@ void SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   // Retrieving suggestions for a new field; select the appropriate filler.
-  if (merchant_promo_code_manager_ && context.focused_field &&
-      context.focused_field->Type().GetStorableType() == MERCHANT_PROMO_CODE) {
-    merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-        query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
-        handler, context);
-  } else {
-    autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-        query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
-        handler, context);
+  if (merchant_promo_code_manager_ &&
+      merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+          query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
+          handler, context)) {
+    return true;
   }
+
+  if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
+          query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
+          handler, context)) {
+    return true;
+  }
+
+  return false;
 }
 
 void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(

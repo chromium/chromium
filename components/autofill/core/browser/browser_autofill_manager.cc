@@ -1042,18 +1042,18 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     }
   }
 
-  auto ShouldOfferAutocomplete = [&] {
-    // Do not offer autocomplete if one of the following:
+  auto ShouldOfferSingleFieldFormFill = [&] {
+    // Do not offer single field form fill if one of the following is true:
     //  * There are already suggestions.
     //  * Credit card sign-in promo is offered.
-    //  * Autocomplete for the field is disabled.
-    if (!suggestions.empty() || ShouldShowCreditCardSigninPromo(form, field) ||
-        !field.should_autocomplete) {
+    if (!suggestions.empty() || ShouldShowCreditCardSigninPromo(form, field))
       return false;
-    }
 
-    // Do not offer autocomplete suggestions for credit card number, cvc and
-    // expiration date related fields.
+    // Do not offer single field form fill suggestions for credit card number,
+    // cvc, and expiration date related fields. Standalone cvc fields (used to
+    // re-authenticate the use of a credit card the website has on file) will be
+    // handled separately because those have the field type
+    // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
     ServerFieldType server_type =
         context.focused_field ? context.focused_field->Type().GetStorableType()
                               : UNKNOWN_TYPE;
@@ -1063,9 +1063,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       return false;
     }
 
-    // Do not offer autocomplete suggestions if popups are suppressed due to an
-    // unrecognized autocomplete attribute. Note that in the context of
-    // Autofill, the popup for credit card related fields is not getting
+    // Do not offer single field form fill suggestions if popups are suppressed
+    // due to an unrecognized autocomplete attribute. Note that in the context
+    // of Autofill, the popup for credit card related fields is not getting
     // suppressed due to an unrecognized autocomplete attribute.
     if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
       return false;
@@ -1084,14 +1084,16 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return true;
   };
 
-  if (ShouldOfferAutocomplete()) {
+  if (ShouldOfferSingleFieldFormFill()) {
     // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
     // will handle sending the results back to the renderer.
-    single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-        query_id, client()->IsAutocompleteEnabled(),
-        autoselect_first_suggestion, field, weak_ptr_factory_.GetWeakPtr(),
-        context);
-    return;
+    bool handled_by_single_field_form_filler =
+        single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+            query_id, client()->IsAutocompleteEnabled(),
+            autoselect_first_suggestion, field, weak_ptr_factory_.GetWeakPtr(),
+            context);
+    if (handled_by_single_field_form_filler)
+      return;
   }
 
   single_field_form_fill_router_->CancelPendingQueries(this);

@@ -18,7 +18,7 @@ class MockIBANManager : public IBANManager {
 
   ~MockIBANManager() override;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               OnGetSingleFieldSuggestions,
               (int query_id,
                bool is_autocomplete_enabled,

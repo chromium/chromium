@@ -10,7 +10,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::Field;
+using testing::Truly;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
@@ -93,12 +95,13 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
       .Times(1);
 
   // Simulate request for suggestions.
-  // Because all criteria are met, available IBANs will be displayed.
-  iban_manager_.OnGetSingleFieldSuggestions(
+  // Because all criteria are met to trigger returning to the handler,
+  // the handler should be triggered and this should return true.
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/false,
       /*autoselect_first_suggestion=*/false, test_field,
       suggestions_handler_.GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 }
 
 TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
@@ -113,16 +116,23 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
   test_field.value = std::u16string(value_0);
 
   // Setting up mock to verify that the handler is not returned any iban-based
-  // suggestions as a match is found.
-  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
+  // suggestions as the field already contains an iban.
+  EXPECT_CALL(suggestions_handler_,
+              OnSuggestionsReturned(
+                  _, _,
+                  testing::Truly(
+                      [](const std::vector<Suggestion>& returned_suggestions) {
+                        return returned_suggestions.empty();
+                      })));
 
   // Simulate request for suggestions.
-  // Because all criteria are met, available IBANs will be displayed.
-  iban_manager_.OnGetSingleFieldSuggestions(
+  // Because all criteria are met to trigger returning to the handler,
+  // the handler should be triggered and this should return true.
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/false,
       /*autoselect_first_suggestion=*/false, test_field,
       suggestions_handler_.GetWeakPtr(),
-      /*context=*/context);
+      /*context=*/context));
 }
 
 TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
@@ -136,10 +146,10 @@ TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
   EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
 
   // Simulate request for suggestions.
-  iban_manager_.OnGetSingleFieldSuggestions(
+  EXPECT_FALSE(iban_manager_.OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field,
-      suggestions_handler_.GetWeakPtr(), /*context=*/context);
+      suggestions_handler_.GetWeakPtr(), /*context=*/context));
 }
 
 }  // namespace autofill

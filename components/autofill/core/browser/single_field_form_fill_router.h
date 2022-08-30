@@ -42,7 +42,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
                                 bool is_autocomplete_enabled);
 
   // SingleFieldFormFiller overrides:
-  void OnGetSingleFieldSuggestions(
+  [[nodiscard]] bool OnGetSingleFieldSuggestions(
       int query_id,
       bool is_autocomplete_enabled,
       bool autoselect_first_suggestion,
