@@ -3195,15 +3195,14 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   if (!atk_object)
     return;
 
-  if (delegate_->GetFocus() == atk_object)
-    atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSED);
-
   // It is insufficient to compare with g_current_activedescendant due to both
   // timing and event ordering for objects which implement AtkSelection and also
   // have an active descendant. For instance, if we check the state set of a
   // selectable child, it will only have ATK_STATE_FOCUSED if we've processed
   // the activedescendant change.
-  if (GetActiveDescendantOfCurrentFocused() == atk_object)
+  AtkObject* descendant = GetActiveDescendantOfCurrentFocused();
+  AtkObject* effective_focus = descendant ? descendant : delegate_->GetFocus();
+  if (effective_focus == atk_object)
     atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSED);
 }
 
@@ -3775,8 +3774,7 @@ bool AXPlatformNodeAuraLinux::SelectionAndFocusAreTheSame() {
       return !GetDelegate()->IsWebContent();
     if (role == ax::mojom::Role::kListBox &&
         !container->HasState(ax::mojom::State::kMultiselectable)) {
-      return container->GetDelegate()->GetFocus() ==
-             container->GetNativeViewAccessible();
+      return GetDelegate()->GetFocus() == GetNativeViewAccessible();
     }
   }
 
