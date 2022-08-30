@@ -10,13 +10,17 @@ namespace blink {
 
 void DisplayItemRasterInvalidator::Generate() {
   struct OldAndNewDisplayItems {
+    const DisplayItemClient* client;
     // Union of visual rects of all old display items of the client.
     IntRect old_visual_rect;
     // Union of visual rects of all new display items of the client.
     IntRect new_visual_rect;
     PaintInvalidationReason reason = PaintInvalidationReason::kNone;
+
+    OldAndNewDisplayItems(const DisplayItemClient* client = nullptr)
+      : client(client) {}
   };
-  HashMap<const DisplayItemClient*, OldAndNewDisplayItems>
+  HashMap<uintptr_t, OldAndNewDisplayItems>
       clients_to_invalidate;
 
   Vector<bool> old_display_items_matched;
@@ -32,7 +36,7 @@ void DisplayItemRasterInvalidator::Generate() {
         // Will invalidate for the new display item which doesn't match any old
         // display item.
         auto& value = clients_to_invalidate
-                          .insert(&new_item.Client(), OldAndNewDisplayItems())
+                          .insert(new_item.GetKey(), OldAndNewDisplayItems(&new_item.Client()))
                           .stored_value->value;
         value.new_visual_rect.Unite(new_item.VisualRect());
         if (value.reason == PaintInvalidationReason::kNone) {
@@ -57,7 +61,7 @@ void DisplayItemRasterInvalidator::Generate() {
       // The display item reordered, skipped cache or changed. Will invalidate
       // for both the old and new display items.
       auto& value = clients_to_invalidate
-                        .insert(&new_item.Client(), OldAndNewDisplayItems())
+                        .insert(new_item.GetKey(), OldAndNewDisplayItems(&new_item.Client()))
                         .stored_value->value;
       if (old_item.IsTombstone() || old_item.DrawsContent())
         value.old_visual_rect.Unite(old_item.VisualRect());
@@ -86,15 +90,32 @@ void DisplayItemRasterInvalidator::Generate() {
 
     const auto& old_item = *it;
     if (old_item.DrawsContent() || old_item.IsTombstone()) {
-      clients_to_invalidate.insert(&old_item.Client(), OldAndNewDisplayItems())
+      clients_to_invalidate.insert(old_item.GetKey(), OldAndNewDisplayItems(&old_item.Client()))
           .stored_value->value.old_visual_rect.Unite(old_item.VisualRect());
     }
   }
 
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("DisplayItemRasterInvalidator::Generate #5");
+
   for (const auto& item : clients_to_invalidate) {
-    GenerateRasterInvalidation(*item.key, item.value.old_visual_rect,
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("DisplayItemRasterInvalidator::Generate #6 KEY %d OLD %d %d %d %d NEW %d %d %d %d",
+                         item.key,
+                         item.value.old_visual_rect.X(),
+                         item.value.old_visual_rect.Y(),
+                         item.value.old_visual_rect.Width(),
+                         item.value.old_visual_rect.Height(),
+                         item.value.new_visual_rect.X(),
+                         item.value.new_visual_rect.Y(),
+                         item.value.new_visual_rect.Width(),
+                         item.value.new_visual_rect.Height());
+    GenerateRasterInvalidation(*item.value.client, item.value.old_visual_rect,
                                item.value.new_visual_rect, item.value.reason);
   }
+
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("DisplayItemRasterInvalidator::Generate Done");
 }
 
 DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
@@ -111,12 +132,12 @@ DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
       return next_old_item_to_match++;
     // Add the skipped old item into index.
     old_display_items_index_
-        .insert(&old_item.Client(), Vector<DisplayItemIterator>())
+        .insert(old_item.GetKey(), Vector<DisplayItemIterator>())
         .stored_value->value.push_back(next_old_item_to_match);
   }
 
   // Didn't find matching old item in sequential matching. Look up the index.
-  auto it = old_display_items_index_.find(&new_item.Client());
+  auto it = old_display_items_index_.find(new_item.GetKey());
   if (it == old_display_items_index_.end())
     return old_display_items_.end();
   for (auto i : it->value) {

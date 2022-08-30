@@ -160,6 +160,7 @@ class PLATFORM_EXPORT DisplayItem {
               const IntRect& visual_rect,
               bool draws_content = false)
       : client_(&client),
+        key_(client.GetKey()),
         visual_rect_(visual_rect),
         fragment_(0),
         type_(type),
@@ -254,6 +255,8 @@ class PLATFORM_EXPORT DisplayItem {
     return type_ == kScrollbarHorizontal || type_ == kScrollbarVertical;
   }
 
+  uintptr_t GetKey() const { return key_; }
+
   bool IsCacheable() const { return is_cacheable_; }
   void SetUncacheable() { is_cacheable_ = false; }
 
@@ -291,6 +294,7 @@ class PLATFORM_EXPORT DisplayItem {
   DisplayItem() : draws_content_(false), is_tombstone_(true) {}
 
   const DisplayItemClient* client_;
+  uintptr_t key_;
   IntRect visual_rect_;
   wtf_size_t fragment_;
   static_assert(kTypeLast < (1 << 8),

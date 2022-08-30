@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
@@ -28,14 +29,29 @@ enum class RasterEffectOutset : uint8_t {
 class PLATFORM_EXPORT DisplayItemClient {
  public:
   DisplayItemClient() {
+    // Pointer registration is needed for GetKey.
+    recordreplay::RegisterPointer(this);
+
 #if DCHECK_IS_ON()
     OnCreate();
 #endif
   }
   virtual ~DisplayItemClient() {
+    recordreplay::UnregisterPointer(this);
+
 #if DCHECK_IS_ON()
     OnDestroy();
 #endif
+  }
+
+  // When recording/replaying, get a deterministic key based on the pointer ID
+  // which will behave consistently when used in hashtables or comparing the
+  // keys of possibly dead clients.
+  uintptr_t GetKey() const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      return recordreplay::PointerId(this);
+    }
+    return (uintptr_t)this;
   }
 
 #if DCHECK_IS_ON()
