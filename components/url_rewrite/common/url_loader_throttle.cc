@@ -112,12 +112,9 @@ bool HostMatches(const base::StringPiece& url_host,
   return base::CompareCaseInsensitiveASCII(url_host, rule_host) == 0;
 }
 
-// Returns true if the host and scheme filters defined in |rule| match
-// |request|.
-bool RuleFiltersMatchRequest(network::ResourceRequest* request,
-                             const mojom::UrlRequestRulePtr& rule) {
-  const GURL& url = request->url;
-
+// Returns true if the host and scheme filters defined in |rule| match |url|.
+bool RuleFiltersMatchUrl(const GURL& url,
+                         const mojom::UrlRequestRulePtr& rule) {
   if (rule->hosts_filter) {
     bool found = false;
     for (const base::StringPiece host : rule->hosts_filter.value()) {
@@ -153,7 +150,7 @@ bool IsRequestAllowed(network::ResourceRequest* request,
     if (rule->actions[0]->which() != mojom::UrlRequestAction::Tag::kPolicy)
       continue;
 
-    if (!RuleFiltersMatchRequest(request, rule))
+    if (!RuleFiltersMatchUrl(request->url, rule))
       continue;
 
     switch (rule->actions[0]->get_policy()) {
@@ -203,8 +200,19 @@ bool URLLoaderThrottle::makes_unsafe_redirect() {
 
 void URLLoaderThrottle::ApplyRule(network::ResourceRequest* request,
                                   const mojom::UrlRequestRulePtr& rule) {
-  if (!RuleFiltersMatchRequest(request, rule))
+  if (!RuleFiltersMatchUrl(request->url, rule))
     return;
+
+  // Prevent applying rules more than once when redirected.
+  for (const auto& url : request->navigation_redirect_chain) {
+    // Last element in redirect chain is the current navigation.
+    if (&url == &request->navigation_redirect_chain.back()) {
+      continue;
+    }
+    if (RuleFiltersMatchUrl(url, rule)) {
+      return;
+    }
+  }
 
   for (const auto& rewrite : rule->actions)
     ApplyRewrite(request, rewrite);
