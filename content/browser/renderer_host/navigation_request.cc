@@ -33,6 +33,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_conversion_helper.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -1391,7 +1392,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   navigation_request->commit_params_->storage_key =
       blink::StorageKey::CreateWithOptionalNonce(
           origin, net::SchemefulSite(top_level_origin),
-          base::OptionalOrNullptr(nonce),
+          base::OptionalToPtr(nonce),
           render_frame_host->ComputeSiteForCookies().IsNull()
               ? blink::mojom::AncestorChainBit::kCrossSite
               : blink::mojom::AncestorChainBit::kSameSite);
@@ -4869,7 +4870,7 @@ void NavigationRequest::CommitNavigation() {
   absl::optional<base::UnguessableToken> nonce =
       render_frame_host_->ComputeNonce(is_anonymous());
   commit_params_->storage_key = render_frame_host_->CalculateStorageKey(
-      GetOriginToCommit(), base::OptionalOrNullptr(nonce));
+      GetOriginToCommit(), base::OptionalToPtr(nonce));
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();
@@ -8094,7 +8095,7 @@ NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(
     NavigationRequest& navigation_request)
     : initiator_origin_(
           GetNavigationRequestInitiatorCrashKey(),
-          base::OptionalOrNullptr(navigation_request.GetInitiatorOrigin())),
+          base::OptionalToPtr(navigation_request.GetInitiatorOrigin())),
       url_(GetNavigationRequestUrlCrashKey(), navigation_request.GetURL()),
       is_same_document_(
           GetNavigationRequestIsSameDocumentCrashKey(),

@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/optional_util.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -695,8 +696,8 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // to PAGE_TRANSITION_FORM_SUBMIT. See https://crbug.com/829827.
   frame_tree_node_->navigator().NavigateFromFrameProxy(
       current_rfh, validated_url,
-      base::OptionalOrNullptr(params->initiator_frame_token),
-      GetProcess()->GetID(), params->initiator_origin, site_instance_.get(),
+      base::OptionalToPtr(params->initiator_frame_token), GetProcess()->GetID(),
+      params->initiator_origin, site_instance_.get(),
       params->referrer.To<content::Referrer>(), ui::PAGE_TRANSITION_LINK,
       params->should_replace_current_entry, download_policy,
       params->post_body ? "POST" : "GET", params->post_body,

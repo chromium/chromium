@@ -45,6 +45,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/optional_trace_event.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/about_url_loader_factory.h"
@@ -4150,7 +4151,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   SetLastCommittedOrigin(new_frame_origin);
 
   SetStorageKey(CalculateStorageKey(
-      new_frame_origin, base::OptionalOrNullptr(isolation_info_.nonce())));
+      new_frame_origin, base::OptionalToPtr(isolation_info_.nonce())));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
@@ -7177,7 +7178,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
     target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
         target_frame, validated_params_url,
-        base::OptionalOrNullptr(params->initiator_frame_token),
+        base::OptionalToPtr(params->initiator_frame_token),
         GetProcess()->GetID(), params->initiator_origin, GetSiteInstance(),
         content::Referrer(), ui::PAGE_TRANSITION_LINK,
         should_replace_current_entry, download_policy, "GET",
@@ -7194,8 +7195,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
                validated_url.possibly_invalid_spec());
 
   frame_tree_node_->navigator().RequestOpenURL(
-      this, validated_url,
-      base::OptionalOrNullptr(params->initiator_frame_token),
+      this, validated_url, base::OptionalToPtr(params->initiator_frame_token),
       GetProcess()->GetID(), params->initiator_origin, params->post_body,
       params->extra_headers, params->referrer.To<content::Referrer>(),
       params->disposition, params->should_replace_current_entry,
@@ -12050,7 +12050,7 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
 
   url::Origin origin = GetLastCommittedOrigin();
   blink::StorageKey storage_key_to_commit = CalculateStorageKey(
-      origin, base::OptionalOrNullptr(provisional_storage_key.nonce()));
+      origin, base::OptionalToPtr(provisional_storage_key.nonce()));
   SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();

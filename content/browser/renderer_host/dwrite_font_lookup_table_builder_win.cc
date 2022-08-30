@@ -6,6 +6,7 @@
 
 #include <dwrite.h>
 #include <dwrite_2.h>
+
 #include <set>
 #include <utility>
 
@@ -28,6 +29,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "content/browser/renderer_host/dwrite_font_file_util_win.h"
@@ -427,7 +429,7 @@ void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable(
         base::BindOnce(
             &ExtractPathAndNamesFromFamily, collection_, family_index,
             start_time_table_build_, slow_down_mode_for_testing_,
-            OptionalOrNullptr(hang_event_for_testing_), IndexingTimeout()),
+            OptionalToPtr(hang_event_for_testing_), IndexingTimeout()),
         base::BindOnce(&DWriteFontLookupTableBuilder::
                            AppendFamilyResultAndFinalizeIfNeeded,
                        base::Unretained(this)));
