@@ -49,7 +49,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
     bool IsAffiliated(Profile* profile) const override;
 
-    bool IsDeprovisioned() const override;
+    virtual bool IsDeprovisioned() const;
   };
 
   static std::unique_ptr<MetricReportingManager> Create(

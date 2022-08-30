@@ -99,9 +99,6 @@ class MetricReportingManagerDelegateBase {
   // otherwise.
   virtual bool IsAffiliated(Profile* profile) const;
 
-  // Returns true if device is deprovisioned. False otherwise.
-  virtual bool IsDeprovisioned() const = 0;
-
   // Returns the delay interval used with `MetricReportingManager`
   // initialization.
   base::TimeDelta GetInitDelay() const;
