@@ -108,7 +108,7 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   EXPECT_FALSE(cookie1.http_only);
   EXPECT_EQ(api::cookies::SAME_SITE_STATUS_NO_RESTRICTION, cookie1.same_site);
   EXPECT_TRUE(cookie1.session);
-  EXPECT_FALSE(cookie1.expiration_date.get());
+  EXPECT_FALSE(cookie1.expiration_date);
   EXPECT_EQ("some cookie store", cookie1.store_id);
 
   std::unique_ptr<net::CanonicalCookie> canonical_cookie2 =
@@ -123,7 +123,7 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   EXPECT_FALSE(cookie2.host_only);
   EXPECT_FALSE(cookie2.session);
   EXPECT_EQ(api::cookies::SAME_SITE_STATUS_STRICT, cookie2.same_site);
-  ASSERT_TRUE(cookie2.expiration_date.get());
+  ASSERT_TRUE(cookie2.expiration_date);
   EXPECT_EQ(10000, *cookie2.expiration_date);
 
   TestingProfile profile;

@@ -35,7 +35,7 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
                              const Extension* extension,
                              std::string* error,
                              std::vector<std::string>* warnings) {
-  if (create_info.delay_in_minutes.get() && create_info.when.get()) {
+  if (create_info.delay_in_minutes && create_info.when) {
     *error = kBothRelativeAndAbsoluteTime;
     return false;
   }
@@ -51,7 +51,7 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
   // compute a long-enough timeout, but then the call into the alarms interface
   // gets delayed past the boundary).  However, it's still worth warning about
   // relative delays that are shorter than we'll honor.
-  if (create_info.delay_in_minutes.get()) {
+  if (create_info.delay_in_minutes) {
     if (*create_info.delay_in_minutes <
         alarms_api_constants::kReleaseDelayMinimum) {
       if (Manifest::IsUnpackedLocation(extension->location())) {
@@ -63,7 +63,7 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
       }
     }
   }
-  if (create_info.period_in_minutes.get()) {
+  if (create_info.period_in_minutes) {
     if (*create_info.period_in_minutes <
         alarms_api_constants::kReleaseDelayMinimum) {
       if (Manifest::IsUnpackedLocation(extension->location())) {

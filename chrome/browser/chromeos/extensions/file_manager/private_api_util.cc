@@ -311,7 +311,7 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
     return;
   }
 
-  properties_->size = std::make_unique<double>(metadata->size);
+  properties_->size = metadata->size;
   properties_->present = metadata->available_offline;
   properties_->dirty = metadata->dirty;
   properties_->hosted = drivefs::IsHosted(metadata->type);
@@ -324,12 +324,11 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   properties_->starred = metadata->starred;
 
   if (metadata->modification_time != base::Time()) {
-    properties_->modification_time =
-        std::make_unique<double>(metadata->modification_time.ToJsTime());
+    properties_->modification_time = metadata->modification_time.ToJsTime();
   }
   if (metadata->last_viewed_by_me_time != base::Time()) {
     properties_->modification_by_me_time =
-        std::make_unique<double>(metadata->last_viewed_by_me_time.ToJsTime());
+        metadata->last_viewed_by_me_time.ToJsTime();
   }
   if (!metadata->content_mime_type.empty()) {
     properties_->content_mime_type =

@@ -63,7 +63,7 @@ std::unique_ptr<base::DictionaryValue> MojoMediaMetadataToValue(
     SetValueOptional(metadata->width, &media_metadata.width);
   }
 
-  SetValueScopedPtr(metadata->duration, &media_metadata.duration);
+  SetValueOptional(metadata->duration, &media_metadata.duration);
   SetValueOptional(metadata->rotation, &media_metadata.rotation);
   SetValueScopedPtr(std::move(metadata->artist), &media_metadata.artist);
   SetValueScopedPtr(std::move(metadata->album), &media_metadata.album);

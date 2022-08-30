@@ -180,14 +180,13 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
 
     if (names_.find(api::file_manager_private::ENTRY_PROPERTY_NAME_SIZE) !=
         names_.end()) {
-      properties_->size = std::make_unique<double>(*metadata->size.get());
+      properties_->size = *metadata->size;
     }
 
     if (names_.find(
             api::file_manager_private::ENTRY_PROPERTY_NAME_MODIFICATIONTIME) !=
         names_.end()) {
-      properties_->modification_time =
-          std::make_unique<double>(metadata->modification_time->ToJsTime());
+      properties_->modification_time = metadata->modification_time->ToJsTime();
     }
 
     if (names_.find(
@@ -295,10 +294,10 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
     properties_->can_rename = metadata.supports_rename;
     properties_->can_add_children = metadata.dir_supports_create;
     if (!metadata.last_modified.is_null()) {
-      properties_->modification_time = std::make_unique<double>(
-          metadata.last_modified.ToJsTimeIgnoringNull());
+      properties_->modification_time =
+          metadata.last_modified.ToJsTimeIgnoringNull();
     }
-    properties_->size = std::make_unique<double>(metadata.size);
+    properties_->size = metadata.size;
     CompleteGetEntryProperties(base::File::FILE_OK);
   }
 

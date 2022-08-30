@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionRecommendedTest, Internal) {
 
   extensions::api::system_display::DisplayProperties props;
   double user_scale = 50;
-  props.display_zoom_factor = std::make_unique<double>(user_scale / 100.0);
+  props.display_zoom_factor = user_scale / 100.0;
   SetUserProperties(display_helper()->GetFirstDisplayId(), std::move(props));
 
   EXPECT_EQ(user_scale, display_helper()->GetScaleOfFirstDisplay())
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionRecommendedTest,
   double user_scale = 50;
   double user_width = 1920;
   double user_height = 1080;
-  props.display_zoom_factor = std::make_unique<double>(user_scale / 100.0);
+  props.display_zoom_factor = user_scale / 100.0;
   props.display_mode =
       CreateDisplayMode(display_helper()->GetSecondDisplayId(), user_width,
                         user_height, display_helper()->GetDisplayManager());

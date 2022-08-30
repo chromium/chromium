@@ -34,8 +34,8 @@ telemetry_api::CpuCStateInfo UncheckedConvertPtr(
     result.name = std::make_unique<std::string>(input->name.value());
   }
   if (input->time_in_state_since_last_boot_us) {
-    result.time_in_state_since_last_boot_us = std::make_unique<double_t>(
-        input->time_in_state_since_last_boot_us->value);
+    result.time_in_state_since_last_boot_us =
+        input->time_in_state_since_last_boot_us->value;
   }
   return result;
 }
@@ -54,8 +54,7 @@ telemetry_api::LogicalCpuInfo UncheckedConvertPtr(
         input->scaling_current_frequency_khz->value;
   }
   if (input->idle_time_ms) {
-    result.idle_time_ms =
-        std::make_unique<double_t>(input->idle_time_ms->value);
+    result.idle_time_ms = input->idle_time_ms->value;
   }
   result.c_states = ConvertPtrVector<telemetry_api::CpuCStateInfo>(
       std::move(input->c_states));
@@ -94,30 +93,28 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
         std::make_unique<std::string>(std::move(input->status.value()));
   }
   if (input->cycle_count) {
-    result.cycle_count = std::make_unique<double_t>(input->cycle_count->value);
+    result.cycle_count = input->cycle_count->value;
   }
   if (input->voltage_now) {
-    result.voltage_now = std::make_unique<double_t>(input->voltage_now->value);
+    result.voltage_now = input->voltage_now->value;
   }
   if (input->charge_full_design) {
-    result.charge_full_design =
-        std::make_unique<double_t>(input->charge_full_design->value);
+    result.charge_full_design = input->charge_full_design->value;
   }
   if (input->charge_full) {
-    result.charge_full = std::make_unique<double_t>(input->charge_full->value);
+    result.charge_full = input->charge_full->value;
   }
   if (input->voltage_min_design) {
-    result.voltage_min_design =
-        std::make_unique<double_t>(input->voltage_min_design->value);
+    result.voltage_min_design = input->voltage_min_design->value;
   }
   if (input->charge_now) {
-    result.charge_now = std::make_unique<double_t>(input->charge_now->value);
+    result.charge_now = input->charge_now->value;
   }
   if (input->current_now) {
-    result.current_now = std::make_unique<double_t>(input->current_now->value);
+    result.current_now = input->current_now->value;
   }
   if (input->temperature) {
-    result.temperature = std::make_unique<double_t>(input->temperature->value);
+    result.temperature = input->temperature->value;
   }
   if (input->manufacture_date.has_value()) {
     result.manufacture_date =
@@ -158,11 +155,10 @@ telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
     telemetry_service::ProbeStatefulPartitionInfoPtr input) {
   telemetry_api::StatefulPartitionInfo result;
   if (input->available_space) {
-    result.available_space =
-        std::make_unique<double_t>(input->available_space->value);
+    result.available_space = input->available_space->value;
   }
   if (input->total_space) {
-    result.total_space = std::make_unique<double_t>(input->total_space->value);
+    result.total_space = input->total_space->value;
   }
 
   return result;

@@ -1513,7 +1513,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   float final_zoom_factor_2 = zoom_factor_2;
 
   api::system_display::DisplayProperties info;
-  info.display_zoom_factor = std::make_unique<double>(zoom_factor_1);
+  info.display_zoom_factor = zoom_factor_1;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
@@ -1523,7 +1523,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // factor.
   EXPECT_EQ(GetDisplayZoom(display_id_list[1]), zoom_factor_1);
 
-  info.display_zoom_factor = std::make_unique<double>(zoom_factor_2);
+  info.display_zoom_factor = zoom_factor_2;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[1]), info));
 
@@ -1534,14 +1534,14 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // This zoom factor when applied to the display with width 1200, will result
   // in an effective width greater than 4096, which is out of range.
   float invalid_zoom_factor_1 = 0.285f;
-  info.display_zoom_factor = std::make_unique<double>(invalid_zoom_factor_1);
+  info.display_zoom_factor = invalid_zoom_factor_1;
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
   // This zoom factor when applied to the display with width 1200, will result
   // in an effective width greater less than 640, which is out of range.
   float invalid_zoom_factor_2 = 1.88f;
-  info.display_zoom_factor = std::make_unique<double>(invalid_zoom_factor_2);
+  info.display_zoom_factor = invalid_zoom_factor_2;
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
@@ -1555,7 +1555,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // is valid because the initial width was 400px, so the logical width now
   // allows a minimum width of 400px.
   float valid_zoom_factor_1 = 0.8f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_1);
+  info.display_zoom_factor = valid_zoom_factor_1;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
@@ -1563,17 +1563,17 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // but is valid because the initial width was 4500px, so logical width of up
   // to 4500px is allowed in this case.
   float valid_zoom_factor_2 = 1.07f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_2);
+  info.display_zoom_factor = valid_zoom_factor_2;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[1]), info));
 
   float valid_zoom_factor_3 = 0.5f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_3);
+  info.display_zoom_factor = valid_zoom_factor_3;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
   float valid_zoom_factor_4 = 2.f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_4);
+  info.display_zoom_factor = valid_zoom_factor_4;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[1]), info));
 }

@@ -43,7 +43,7 @@ std::unique_ptr<base::DictionaryValue> SerializeMediaMetadata(
     extension_metadata.width = metadata->width;
   }
 
-  SetValueScopedPtr(metadata->duration, &extension_metadata.duration);
+  SetValueOptional(metadata->duration, extension_metadata.duration);
   SetValueScopedPtr(std::move(metadata->artist), &extension_metadata.artist);
   SetValueScopedPtr(std::move(metadata->album), &extension_metadata.album);
   SetValueScopedPtr(std::move(metadata->comment), &extension_metadata.comment);

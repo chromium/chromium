@@ -5388,8 +5388,7 @@ AutotestPrivateGetScrollableShelfInfoForStateFunction::Run() {
   info.is_overflow = fetched_info.is_overflow;
 
   if (params->state.scroll_distance) {
-    info.target_main_axis_offset =
-        std::make_unique<double>(fetched_info.target_main_axis_offset);
+    info.target_main_axis_offset = fetched_info.target_main_axis_offset;
   }
 
   return RespondNow(
@@ -5440,7 +5439,7 @@ AutotestPrivateGetShelfUIInfoForStateFunction::Run() {
 
     if (state.scroll_distance) {
       scrollable_shelf_ui_info.target_main_axis_offset =
-          std::make_unique<double>(fetched_info.target_main_axis_offset);
+          fetched_info.target_main_axis_offset;
     }
 
     shelf_ui_info.scrollable_shelf_info = std::move(scrollable_shelf_ui_info);

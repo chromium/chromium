@@ -69,8 +69,7 @@ HistoryItem GetHistoryItem(const history::URLRow& row) {
   history_item.url = std::make_unique<std::string>(row.url().spec());
   history_item.title =
       std::make_unique<std::string>(base::UTF16ToUTF8(row.title()));
-  history_item.last_visit_time =
-      std::make_unique<double>(MilliSecondsFromTime(row.last_visit()));
+  history_item.last_visit_time = MilliSecondsFromTime(row.last_visit());
   history_item.typed_count = row.typed_count();
   history_item.visit_count = row.visit_count();
 
@@ -82,8 +81,7 @@ VisitItem GetVisitItem(const history::VisitRow& row) {
 
   visit_item.id = base::NumberToString(row.url_id);
   visit_item.visit_id = base::NumberToString(row.visit_id);
-  visit_item.visit_time =
-      std::make_unique<double>(MilliSecondsFromTime(row.visit_time));
+  visit_item.visit_time = MilliSecondsFromTime(row.visit_time);
   visit_item.referring_visit_id = base::NumberToString(row.referring_visit);
 
   api::history::TransitionType transition = api::history::TRANSITION_TYPE_LINK;
@@ -296,9 +294,9 @@ ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
   options.SetRecentDayRange(1);
   options.max_count = 100;
 
-  if (params->query.start_time.get())
+  if (params->query.start_time)
     options.begin_time = GetTime(*params->query.start_time);
-  if (params->query.end_time.get())
+  if (params->query.end_time)
     options.end_time = GetTime(*params->query.end_time);
   if (params->query.max_results)
     options.max_count = *params->query.max_results;

@@ -68,8 +68,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
   if (referrer.has_is_retargeting())
     entry.is_retargeting = referrer.is_retargeting();
   if (referrer.has_navigation_time_msec()) {
-    entry.navigation_time_ms =
-        std::make_unique<double>(referrer.navigation_time_msec());
+    entry.navigation_time_ms = referrer.navigation_time_msec();
   }
   if (referrer.server_redirect_chain_size() > 0) {
     entry.server_redirect_chain =

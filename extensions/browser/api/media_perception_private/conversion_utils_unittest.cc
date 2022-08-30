@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::Eq;
 
 namespace media_perception = extensions::api::media_perception_private;
 
@@ -189,8 +192,8 @@ std::unique_ptr<media_perception::Point> MakePointIdl(float x, float y) {
   std::unique_ptr<media_perception::Point> point =
       std::make_unique<media_perception::Point>();
 
-  point->x = std::make_unique<double>(x);
-  point->y = std::make_unique<double>(y);
+  point->x = x;
+  point->y = y;
 
   return point;
 }
@@ -595,14 +598,14 @@ TEST(MediaPerceptionConversionUtilsTest, StateProtoToIdl) {
   EXPECT_EQ(*state_result.named_template_arguments->at(1).name, "");
   EXPECT_EQ(state_result.named_template_arguments->at(1).value->as_string,
             nullptr);
-  EXPECT_EQ(state_result.named_template_arguments->at(1).value->as_number,
-            nullptr);
+  EXPECT_THAT(state_result.named_template_arguments->at(1).value->as_number,
+              Eq(absl::nullopt));
 
   // String.
   EXPECT_EQ(*state_result.named_template_arguments->at(2).name,
             kStringTemplateArgumentName);
-  EXPECT_EQ(state_result.named_template_arguments->at(2).value->as_number,
-            nullptr);
+  EXPECT_FALSE(state_result.named_template_arguments->at(2)
+                   .value->as_number.has_value());
   EXPECT_EQ(*state_result.named_template_arguments->at(2).value->as_string,
             kStringTemplateArgumentValue);
 
@@ -640,8 +643,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
       MakePointIdl(kWhiteboardBottomLeftX, kWhiteboardBottomLeftY);
   state.whiteboard->bottom_right =
       MakePointIdl(kWhiteboardBottomRightX, kWhiteboardBottomRightY);
-  state.whiteboard->aspect_ratio =
-      std::make_unique<double>(kWhiteboardAspectRatio);
+  state.whiteboard->aspect_ratio = kWhiteboardAspectRatio;
 
   state.features =
       std::make_unique<std::vector<media_perception::Feature>>();

@@ -534,8 +534,8 @@ ExtensionFunction::ResponseAction WebcamPrivateResetFunction::Run() {
     return RespondNow(Error(kUnknownWebcam));
 
   webcam->Reset(
-      params->config.pan != nullptr, params->config.tilt != nullptr,
-      params->config.zoom != nullptr,
+      params->config.pan.has_value(), params->config.tilt.has_value(),
+      params->config.zoom.has_value(),
       base::BindRepeating(&WebcamPrivateResetFunction::OnResetWebcam, this));
 
   // Reset() might have responded already.

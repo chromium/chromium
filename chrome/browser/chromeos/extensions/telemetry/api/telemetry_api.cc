@@ -148,8 +148,8 @@ void OsTelemetryGetMemoryInfoFunction::OnResult(
     result.available_memory_ki_b = memory_info->available_memory_kib->value;
   }
   if (memory_info->page_faults_since_last_boot) {
-    result.page_faults_since_last_boot = std::make_unique<double_t>(
-        memory_info->page_faults_since_last_boot->value);
+    result.page_faults_since_last_boot =
+        memory_info->page_faults_since_last_boot->value;
   }
 
   Respond(

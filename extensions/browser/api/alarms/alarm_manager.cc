@@ -279,10 +279,10 @@ void AlarmManager::OnAlarm(AlarmIterator it) {
   delegate_->OnAlarm(extension_id_copy, alarm);
 
   // Update our scheduled time for the next alarm.
-  if (double* period_in_minutes = alarm.js_alarm->period_in_minutes.get()) {
+  if (alarm.js_alarm->period_in_minutes) {
     // Get the timer's delay in JS time (i.e., convert it from minutes to
     // milliseconds).
-    double period_in_js_time = *period_in_minutes *
+    double period_in_js_time = *alarm.js_alarm->period_in_minutes *
                                base::Time::kMicrosecondsPerMinute /
                                base::Time::kMicrosecondsPerMillisecond;
     // Find out how many periods have transpired since the alarm last went off
@@ -470,19 +470,19 @@ Alarm::Alarm(const std::string& name,
   js_alarm->name = name;
   minimum_granularity = min_granularity;
 
-  if (create_info.when.get()) {
+  if (create_info.when) {
     // Absolute scheduling.
     js_alarm->scheduled_time = *create_info.when;
     granularity = base::Time::FromJsTime(js_alarm->scheduled_time) - now;
   } else {
     // Relative scheduling.
-    double* delay_in_minutes = create_info.delay_in_minutes.get();
-    if (delay_in_minutes == NULL)
-      delay_in_minutes = create_info.period_in_minutes.get();
-    CHECK(delay_in_minutes != NULL)
+    CHECK(create_info.delay_in_minutes || create_info.period_in_minutes)
         << "ValidateAlarmCreateInfo in alarms_api.cc should have "
-        << "prevented this call.";
-    base::TimeDelta delay = TimeDeltaFromDelay(*delay_in_minutes);
+        << "validated \"create_info\".";
+    const double delay_in_minutes = create_info.delay_in_minutes
+                                        ? *create_info.delay_in_minutes
+                                        : *create_info.period_in_minutes;
+    base::TimeDelta delay = TimeDeltaFromDelay(delay_in_minutes);
     js_alarm->scheduled_time = (now + delay).ToJsTime();
     granularity = delay;
   }
@@ -491,10 +491,7 @@ Alarm::Alarm(const std::string& name,
     granularity = min_granularity;
 
   // Check for repetition.
-  if (create_info.period_in_minutes.get()) {
-    js_alarm->period_in_minutes =
-        std::make_unique<double>(*create_info.period_in_minutes);
-  }
+  js_alarm->period_in_minutes = create_info.period_in_minutes;
 }
 
 Alarm::~Alarm() {

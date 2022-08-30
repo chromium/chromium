@@ -254,7 +254,7 @@ bool NotificationsApiFunction::CreateNotification(
   if (options->priority)
     optional_fields.priority = *options->priority;
 
-  if (options->event_time.get())
+  if (options->event_time)
     optional_fields.timestamp = base::Time::FromJsTime(*options->event_time);
 
   if (options->silent)

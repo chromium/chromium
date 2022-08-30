@@ -98,7 +98,7 @@ bool ValidateIDLEntryMetadata(
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_SIZE &&
-      !metadata.size.get()) {
+      !metadata.size) {
     return false;
   }
 

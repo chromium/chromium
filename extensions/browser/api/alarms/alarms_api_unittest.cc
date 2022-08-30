@@ -127,7 +127,7 @@ void ExtensionAlarmsTestGetAlarmCallback(ExtensionAlarmsTest* test,
   ASSERT_TRUE(alarm);
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
-  EXPECT_FALSE(alarm->js_alarm->period_in_minutes.get());
+  EXPECT_FALSE(alarm->js_alarm->period_in_minutes);
 
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
@@ -158,8 +158,7 @@ void ExtensionAlarmsTestCreateRepeatingGetAlarmCallback(
   ASSERT_TRUE(alarm);
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10060, alarm->js_alarm->scheduled_time);
-  EXPECT_THAT(alarm->js_alarm->period_in_minutes,
-              testing::Pointee(testing::DoubleEq(0.001)));
+  EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.001));
 
   test->test_clock_.Advance(base::Seconds(1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -201,7 +200,7 @@ void ExtensionAlarmsTestCreateAbsoluteGetAlarm1Callback(
   ASSERT_TRUE(alarm);
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10001, alarm->js_alarm->scheduled_time);
-  EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::IsNull());
+  EXPECT_FALSE(alarm->js_alarm->period_in_minutes.has_value());
 
   test->test_clock_.SetNow(base::Time::FromDoubleT(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -251,8 +250,7 @@ void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm1Callback(
   ASSERT_TRUE(alarm);
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10001, alarm->js_alarm->scheduled_time);
-  EXPECT_THAT(alarm->js_alarm->period_in_minutes,
-              testing::Pointee(testing::DoubleEq(0.001)));
+  EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.001));
 
   test->test_clock_.SetNow(base::Time::FromDoubleT(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -349,8 +347,7 @@ TEST_F(ExtensionAlarmsTest, Get) {
     EXPECT_TRUE(JsAlarm::Populate(*result, &alarm));
     EXPECT_EQ("", alarm.name);
     EXPECT_DOUBLE_EQ(4060, alarm.scheduled_time);
-    EXPECT_THAT(alarm.period_in_minutes,
-                testing::Pointee(testing::DoubleEq(0.001)));
+    EXPECT_THAT(alarm.period_in_minutes, testing::Eq(0.001));
   }
 
   // Get "7".
@@ -362,7 +359,7 @@ TEST_F(ExtensionAlarmsTest, Get) {
     EXPECT_TRUE(JsAlarm::Populate(*result, &alarm));
     EXPECT_EQ("7", alarm.name);
     EXPECT_EQ(424000, alarm.scheduled_time);
-    EXPECT_THAT(alarm.period_in_minutes, testing::Pointee(7));
+    EXPECT_THAT(alarm.period_in_minutes, testing::Eq(7));
   }
 
   // Get a non-existent one.
@@ -397,7 +394,7 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
     if (alarm->name != "7")
       alarm = alarms[1].get();
     EXPECT_EQ("7", alarm->name);
-    EXPECT_THAT(alarm->period_in_minutes, testing::Pointee(7));
+    EXPECT_THAT(alarm->period_in_minutes, testing::Eq(7));
   }
 }
 
@@ -406,8 +403,7 @@ void ExtensionAlarmsTestClearGetAllAlarms2Callback(
   // Ensure the 0.001-minute alarm is still there, since it's repeating.
   ASSERT_TRUE(alarms);
   EXPECT_EQ(1u, alarms->size());
-  EXPECT_THAT((*alarms)[0]->js_alarm->period_in_minutes,
-              testing::Pointee(0.001));
+  EXPECT_THAT((*alarms)[0]->js_alarm->period_in_minutes, testing::Eq(0.001));
 }
 
 void ExtensionAlarmsTestClearGetAllAlarms1Callback(
@@ -415,8 +411,7 @@ void ExtensionAlarmsTestClearGetAllAlarms1Callback(
     const AlarmManager::AlarmList* alarms) {
   ASSERT_TRUE(alarms);
   EXPECT_EQ(1u, alarms->size());
-  EXPECT_THAT((*alarms)[0]->js_alarm->period_in_minutes,
-              testing::Pointee(0.001));
+  EXPECT_THAT((*alarms)[0]->js_alarm->period_in_minutes, testing::Eq(0.001));
 
   // Now wait for the alarms to fire, and ensure the cancelled alarms don't
   // fire.
@@ -551,7 +546,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
     std::unique_ptr<Alarm> alarm(new Alarm);
     alarm->js_alarm->name = "bb";
     alarm->js_alarm->scheduled_time = 30 * 60000;
-    alarm->js_alarm->period_in_minutes = std::make_unique<double>(30);
+    alarm->js_alarm->period_in_minutes = 30;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm));
     VerifyScheduledTime("a");
     RemoveAllAlarms();
@@ -561,7 +556,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
     std::unique_ptr<Alarm> alarm(new Alarm);
     alarm->js_alarm->name = "bb";
     alarm->js_alarm->scheduled_time = 3 * 60000;
-    alarm->js_alarm->period_in_minutes = std::make_unique<double>(3);
+    alarm->js_alarm->period_in_minutes = 3;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm));
     base::RunLoop().Run();
     EXPECT_EQ(base::Time::FromJsTime(3 * 60000) + base::Minutes(3),
@@ -575,12 +570,12 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
     std::unique_ptr<Alarm> alarm2(new Alarm);
     alarm2->js_alarm->name = "bb";
     alarm2->js_alarm->scheduled_time = 4 * 60000;
-    alarm2->js_alarm->period_in_minutes = std::make_unique<double>(4);
+    alarm2->js_alarm->period_in_minutes = 4;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm2));
     std::unique_ptr<Alarm> alarm3(new Alarm);
     alarm3->js_alarm->name = "ccc";
     alarm3->js_alarm->scheduled_time = 25 * 60000;
-    alarm3->js_alarm->period_in_minutes = std::make_unique<double>(25);
+    alarm3->js_alarm->period_in_minutes = 25;
     alarm_manager_->AddAlarmImpl(extension()->id(), std::move(alarm3));
     base::RunLoop().Run();
     EXPECT_EQ(base::Time::FromJsTime(4 * 60000) + base::Minutes(4),
@@ -674,8 +669,7 @@ void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
   ASSERT_TRUE(alarm);
   EXPECT_EQ("hello", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
-  EXPECT_THAT(alarm->js_alarm->period_in_minutes,
-              testing::Pointee(testing::DoubleEq(0.0001)));
+  EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.0001));
 
   test->test_clock_.Advance(base::Milliseconds(10));
   // Now wait for the alarm to fire. Our test delegate will quit the

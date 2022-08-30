@@ -801,7 +801,7 @@ void EventRouter::OnCopyStarted(int copy_id,
   status.destination_url =
       std::make_unique<std::string>(destination_url.spec());
   // Use the bytes copied member to store space needed for this event.
-  status.size = std::make_unique<double>(space_needed);
+  status.size = space_needed;
 
   notification_manager_->HandleCopyStart(copy_id, status);
 }
@@ -861,7 +861,7 @@ void EventRouter::OnCopyProgress(
         FileErrorToErrorName(base::File::FILE_ERROR_FAILED));
   }
   if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress)
-    status.size = std::make_unique<double>(size);
+    status.size = size;
 
   // Discard error progress since current JS code cannot handle this properly.
   // TODO(yawano): Remove this after JS side is implemented correctly.

@@ -385,7 +385,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
     parsed_args_->details.store_id = std::make_unique<std::string>(store_id);
 
   base::Time expiration_time;
-  if (parsed_args_->details.expiration_date.get()) {
+  if (parsed_args_->details.expiration_date) {
     // Time::FromDoubleT converts double time 0 to empty Time object. So we need
     // to do special handling here.
     expiration_time = (*parsed_args_->details.expiration_date == 0) ?

@@ -1093,7 +1093,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       "filesystem:chrome://file-manager/external/Downloads-test-user/NewFolder/"
       "file.txt";
   status.destination_url = std::make_unique<std::string>(copy_file_dest_url);
-  status.size = std::make_unique<double>(copy_size);
+  status.size = copy_size;
   std::string copy_file_src_url =
       "filesystem:chrome://file-manager/external/Downloads-test-user/file.txt";
   status.source_url = std::make_unique<std::string>(copy_file_src_url);

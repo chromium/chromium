@@ -125,7 +125,7 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
         !std::isfinite(expiration_date)) {
       expiration_date = std::numeric_limits<double>::max();
     }
-    cookie.expiration_date = std::make_unique<double>(expiration_date);
+    cookie.expiration_date = expiration_date;
   }
   cookie.store_id = store_id;
 
