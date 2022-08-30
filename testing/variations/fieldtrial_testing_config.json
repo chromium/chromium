@@ -2583,6 +2583,27 @@
             ]
         }
     ],
+    "ChromeAppsDeprecation": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220824",
+                    "params": {
+                        "allow_list": "alhngdkjgnedakdlnamimgfihgkmenbh"
+                    },
+                    "enable_features": [
+                        "ChromeAppsDeprecation",
+                        "KeepForceInstalledPreinstalledApps"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeLabs": [
         {
             "platforms": [

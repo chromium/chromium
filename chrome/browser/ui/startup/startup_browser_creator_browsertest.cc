@@ -784,6 +784,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
       case ChromeAppDeprecationFeatureValue::kEnabled:
         return false;
       case ChromeAppDeprecationFeatureValue::kDefault:
+        return !base::FeatureList::IsEnabled(features::kChromeAppsDeprecation);
       case ChromeAppDeprecationFeatureValue::kDisabled:
         return true;
     }
