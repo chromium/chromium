@@ -113,40 +113,41 @@ def compile_module(module, sources, settings, extras, tmpdir):
         '-enable-cxx-interop',
     ])
 
+  # The swiftc compiler uses a global module cache that is not robust against
+  # changes in the sub-modules nor against corruption (see crbug.com/1358073).
+  # Use a separate temporary directory as module cache path for each invocation
+  # of the compiler (use the -module-cache-path as a prefix if specified).
+  prefix = None
   if settings.module_cache_path:
-    if not os.path.exists(settings.module_cache_path):
-      os.makedirs(settings.module_cache_path)
-    extra_args.extend([
-        '-module-cache-path',
-        os.path.abspath(settings.module_cache_path),
-    ])
+    prefix = os.path.abspath(settings.module_cache_path) + os.path.sep
+    if not os.path.exists(prefix):
+      os.makedirs(prefix)
 
-  # Allow an alternative Swift toolchain (such as ToT or a newer version)
-  # by utilizing `xcrun`. If an alternative is not present in either
-  # /Library/Developer/Toolchains or ~/Library/Developer/Toolchains, this
-  # will automatically fall back to Xcode's default.
-  process = subprocess.Popen([
-      settings.swift_toolchain_path + '/usr/bin/swiftc',
-      '-parse-as-library',
-      '-module-name',
-      module,
-      '-emit-object',
-      '-emit-dependencies',
-      '-emit-module',
-      '-emit-module-path',
-      settings.module_path,
-      '-emit-objc-header',
-      '-emit-objc-header-path',
-      settings.header_path,
-      '-output-file-map',
-      output_file_map_path,
-      '-pch-output-dir',
-      os.path.abspath(settings.pch_output_dir),
-  ] + extra_args + extras + sources)
+  with tempfile.TemporaryDirectory(prefix=prefix) as module_cache_path:
+    extra_args.extend(['-module-cache-path', module_cache_path])
 
-  process.communicate()
-  if process.returncode:
-    sys.exit(process.returncode)
+    process = subprocess.Popen([
+        settings.swift_toolchain_path + '/usr/bin/swiftc',
+        '-parse-as-library',
+        '-module-name',
+        module,
+        '-emit-object',
+        '-emit-dependencies',
+        '-emit-module',
+        '-emit-module-path',
+        settings.module_path,
+        '-emit-objc-header',
+        '-emit-objc-header-path',
+        settings.header_path,
+        '-output-file-map',
+        output_file_map_path,
+        '-pch-output-dir',
+        os.path.abspath(settings.pch_output_dir),
+    ] + extra_args + extras + sources)
+
+    process.communicate()
+    if process.returncode:
+      sys.exit(process.returncode)
 
   # The swiftc compiler generates depfile that uses absolute paths, but
   # ninja requires paths in depfiles to be identical to paths used in
@@ -247,6 +248,8 @@ def main(args):
                       required=True,
                       help='path to the root of the repository')
   parser.add_argument('-swift-toolchain-path',
+                      default='',
+                      action='store',
                       dest='swift_toolchain_path',
                       help='path to the root of the Swift toolchain')
   parser.add_argument('-enable-cxx-interop',
