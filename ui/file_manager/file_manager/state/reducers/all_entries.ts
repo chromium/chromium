@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {util} from '../../common/js/util.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
 import {Action, ActionType, ChangeDirectoryAction, ClearStaleCachedEntriesAction} from '../actions.js';
@@ -88,14 +89,17 @@ export function cacheEntries(currentState: State, action: Action): State {
       return currentState;
     }
 
-    // TODO(lucmult): Find a correct way to grab the VolumeManager.
-    const volumeManager = window.fileManager?.volumeManager as any;
-    const volumeInfo = volumeManager?.getVolumeInfo(entry as Entry);
-    const volumeType = volumeInfo?.volumeType;
+    const volumeManager = window.fileManager?.volumeManager;
+    const volumeInfo = volumeManager?.getVolumeInfo(entry);
+    const locationInfo = volumeManager?.getLocationInfo(entry);
+    const label = locationInfo ? util.getEntryLabel(locationInfo, entry) : '';
+
+    const volumeType = volumeInfo?.volumeType || null;
 
     const entryData = allEntries[key] || {};
     allEntries[key] = Object.assign(entryData, {
       entry,
+      label,
       volumeType,
     });
 

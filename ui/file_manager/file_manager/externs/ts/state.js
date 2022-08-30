@@ -9,6 +9,7 @@ import {FilesAppEntry} from '../files_app_entry_interfaces.js';
  * The data for each individual file/entry.
  * @typedef {{
  *   entry: (Entry|FilesAppEntry),
+ *   label: string,
  *   volumeType: (VolumeManagerCommon.VolumeType|null),
  * }}
  */
