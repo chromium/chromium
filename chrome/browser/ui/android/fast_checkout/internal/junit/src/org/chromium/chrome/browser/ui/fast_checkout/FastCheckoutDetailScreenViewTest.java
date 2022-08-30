@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -38,8 +37,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
@@ -99,11 +96,6 @@ public class FastCheckoutDetailScreenViewTest {
         });
     }
 
-    public static <T> T waitForEvent(T mock) {
-        return verify(mock,
-                timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
-    }
-
     @Test
     @SmallTest
     public void testBackArrowClickCallsHandler() {
@@ -125,7 +117,7 @@ public class FastCheckoutDetailScreenViewTest {
         }
         assertNotNull(backButton);
         backButton.performClick();
-        waitForEvent(mBackClickHandler).run();
+        mShadowLooper.idle();
     }
 
     @Test
@@ -137,7 +129,7 @@ public class FastCheckoutDetailScreenViewTest {
         View settingsMenuElement = mView.findViewById(R.id.settings_menu_id);
         assertNotNull(settingsMenuElement);
         settingsMenuElement.performClick();
-        waitForEvent(mSettingsClickHandler).run();
+        mShadowLooper.idle();
     }
 
     @Test
