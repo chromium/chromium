@@ -4,23 +4,10 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 
-#include <sys/stat.h>
-
 #include "base/process/process_handle.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 
 namespace policy {
-
-namespace {
-
-ino_t GetInodeValue(const base::FilePath& path) {
-  struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0)
-    return 0;
-  return file_stats.st_ino;
-}
-
-}  // namespace
 
 // static
 void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
@@ -43,12 +30,9 @@ void DlpScopedFileAccessDelegate::RequestFilesAccess(
   }
 
   dlp::RequestFileAccessRequest request;
-  for (const auto& file : files) {
-    auto inode_n = GetInodeValue(file);
-    if (inode_n > 0) {
-      request.add_inodes(inode_n);
-    }
-  }
+  for (const auto& file : files)
+    request.add_files_paths(file.value());
+
   request.set_destination_url(destination_url.spec());
   request.set_process_id(base::GetCurrentProcId());
   client_->RequestFileAccess(
