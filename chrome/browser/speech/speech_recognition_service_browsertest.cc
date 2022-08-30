@@ -79,7 +79,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       media::mojom::AudioProcessingConfigPtr processing_config,
-      CreateInputStreamCallback created_callback) {
+      CreateInputStreamCallback created_callback) override {
     device_id_ = device_id;
     params_ = params;
     if (stream_receiver_.is_bound())
