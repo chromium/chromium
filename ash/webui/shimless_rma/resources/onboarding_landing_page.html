@@ -40,17 +40,19 @@
         icon$="[[getVerificationIcon_(isCompliant_)]]"
         hidden$="[[verificationInProgress_]]" class="small-icon">
       </iron-icon>
-      <span hidden$="[[!verificationInProgress_]]" class="instructions">
-        [[i18n('validatingComponentsText')]]
-      </span>
-      <span hidden$="[[verificationInProgress_]]" class="instructions">
-        <span hidden$="[[!isCompliant_]]">
-          [[i18n('validatedComponentsSuccessText')]]
+      <div aria-live="polite">
+        <span hidden$="[[!verificationInProgress_]]" class="instructions">
+          [[i18n('validatingComponentsText')]]
         </span>
-        <span inner-h-t-m-l="[[verificationFailedMessage_]]"
-            hidden$="[[isCompliant_]]" class="instructions">
+        <span hidden$="[[verificationInProgress_]]" class="instructions">
+          <span hidden$="[[!isCompliant_]]">
+            [[i18n('validatedComponentsSuccessText')]]
+          </span>
+          <span inner-h-t-m-l="[[verificationFailedMessage_]]"
+              hidden$="[[isCompliant_]]" class="instructions">
+          </span>
         </span>
-      </span>
+      </div>
     </div>
     <div id="navigationButtonWrapper">
       <cr-button id="getStartedButton" class="action-button"
