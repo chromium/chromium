@@ -473,6 +473,10 @@ const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";
 
+const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
+const char kOmniboxFuzzyUrlSuggestionsDescription[] =
+    "Enables URL suggestions for inputs that may contain typos.";
+
 const char kOmniboxHttpsUpgradesName[] = "Omnibox HTTPS upgrades";
 const char kOmniboxHttpsUpgradesDescription[] =
     "Enables HTTPS upgrades for omnibox navigations typed without a scheme";
