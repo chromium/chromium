@@ -570,6 +570,15 @@ export class Dictation {
     this.hiddenMacroManager_.runMacroWithTwoStringArgsForTesting(
         name, arg1, arg2);
   }
+
+  /**
+   * Used to increase the NO_FOCUSED_IME_MS timeout to reduce the flakiness of
+   * Dictation tests on slower builds. For testing purposes only.
+   * @private
+   */
+  increaseNoFocusedImeTimeoutForTesting_() {
+    Dictation.Timeouts.NO_FOCUSED_IME_MS = 20 * 1000;
+  }
 }
 
 /**

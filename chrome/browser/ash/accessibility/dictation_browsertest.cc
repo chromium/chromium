@@ -319,6 +319,14 @@ class DictationTestBase
     // Put focus in the text box.
     ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
+
+    // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
+    // builds.
+    std::string script = R"(
+      accessibilityCommon.dictation_.increaseNoFocusedImeTimeoutForTesting_();
+      window.domAutomationController.send("done");
+    )";
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void TearDownOnMainThread() override {
@@ -468,6 +476,13 @@ class DictationTestBase
   const base::flat_map<std::string, Dictation::LocaleData>
   GetAllSupportedLocales() {
     return Dictation::GetAllSupportedLocales();
+  }
+
+  void ExecuteAccessibilityCommonScript(const std::string& script) {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        /*context=*/browser()->profile(),
+        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
+        /*script=*/script);
   }
 
  private:
@@ -739,8 +754,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, StopListening) {
   WaitForRecognitionStopped();
 }
 
-// TODO(crbug.com/1354284): Disabled due to flakiness
-IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_SmartCapitalization) {
+IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   SendFinalResultAndWaitForTextAreaValue("This", "This");
@@ -1664,14 +1678,6 @@ class DictationHiddenMacrosTest : public DictationTest {
                                     start_phrase, end_phrase);
     bounding_box_waiter.Wait();
     ASSERT_TRUE(selection_waiter.WaitForNotification());
-  }
-
- private:
-  void ExecuteAccessibilityCommonScript(const std::string& script) {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-        /*context=*/browser()->profile(),
-        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
-        /*script=*/script);
   }
 };
 
