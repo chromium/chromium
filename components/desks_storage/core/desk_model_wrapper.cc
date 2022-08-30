@@ -21,32 +21,29 @@ DeskModelWrapper::DeskModelWrapper(
 DeskModelWrapper::~DeskModelWrapper() = default;
 
 DeskModel::GetAllEntriesResult DeskModelWrapper::GetAllEntries() {
-  auto template_entries = std::vector<const ash::DeskTemplate*>();
-  auto desk_template_status =
-      GetDeskTemplateModel()->GetAllEntries(template_entries);
-  for (const auto& it : policy_entries_)
-    template_entries.push_back(it.get());
+  DeskModel::GetAllEntriesResult templates_result =
+      desk_template_model_->GetAllEntries();
 
-  if (desk_template_status != DeskModel::GetAllEntriesStatus::kOk) {
-    return DeskModel::GetAllEntriesResult(
-        DeskModel::GetAllEntriesStatus::kFailure, std::move(template_entries));
+  if (templates_result.status != DeskModel::GetAllEntriesStatus::kOk) {
+    return templates_result;
   }
 
-  auto save_and_recall_entries_result =
+  DeskModel::GetAllEntriesResult save_and_recall_result =
       save_and_recall_desks_model_->GetAllEntries();
 
-  if (save_and_recall_entries_result.status !=
-      DeskModel::GetAllEntriesStatus::kOk) {
-    return DeskModel::GetAllEntriesResult(save_and_recall_entries_result.status,
-                                          std::move(template_entries));
+  if (save_and_recall_result.status != DeskModel::GetAllEntriesStatus::kOk) {
+    return save_and_recall_result;
   }
 
-  auto all_entries = template_entries;
+  std::vector<const ash::DeskTemplate*>& all_entries = templates_result.entries;
 
-  for (auto* const entry : save_and_recall_entries_result.entries)
+  for (auto* const entry : save_and_recall_result.entries)
     all_entries.push_back(entry);
 
-  return DeskModel::GetAllEntriesResult(save_and_recall_entries_result.status,
+  for (const auto& it : policy_entries_)
+    all_entries.push_back(it.get());
+
+  return DeskModel::GetAllEntriesResult(DeskModel::GetAllEntriesStatus::kOk,
                                         std::move(all_entries));
 }
 

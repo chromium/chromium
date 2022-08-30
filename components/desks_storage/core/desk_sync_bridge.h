@@ -102,9 +102,6 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   const ash::DeskTemplate* GetUserEntryByUUID(const base::GUID& uuid) const;
 
-  DeskModel::GetAllEntriesStatus GetAllEntries(
-      std::vector<const ash::DeskTemplate*>& entries);
-
   DeskModel::DeleteEntryStatus DeleteAllEntries();
 
  private:

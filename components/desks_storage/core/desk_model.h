@@ -79,6 +79,7 @@ class DeskModel {
   struct GetAllEntriesResult {
     GetAllEntriesResult(GetAllEntriesStatus status,
                         std::vector<const ash::DeskTemplate*> entries);
+    GetAllEntriesResult(GetAllEntriesResult& other);
     ~GetAllEntriesResult();
 
     GetAllEntriesStatus status;

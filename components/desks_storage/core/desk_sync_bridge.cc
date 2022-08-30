@@ -1054,16 +1054,12 @@ std::string DeskSyncBridge::GetStorageKey(
 }
 
 DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
-  std::vector<const DeskTemplate*> entries;
-  GetAllEntriesStatus status = GetAllEntries(entries);
-  return GetAllEntriesResult(status, std::move(entries));
-}
-
-DeskModel::GetAllEntriesStatus DeskSyncBridge::GetAllEntries(
-    std::vector<const DeskTemplate*>& entries) {
   if (!IsReady()) {
-    return GetAllEntriesStatus::kFailure;
+    return GetAllEntriesResult(GetAllEntriesStatus::kFailure,
+                               std::vector<const DeskTemplate*>());
   }
+
+  std::vector<const DeskTemplate*> entries;
 
   for (const auto& it : policy_entries_)
     entries.push_back(it.get());
@@ -1073,7 +1069,7 @@ DeskModel::GetAllEntriesStatus DeskSyncBridge::GetAllEntries(
     entries.push_back(it.second.get());
   }
 
-  return GetAllEntriesStatus::kOk;
+  return GetAllEntriesResult(GetAllEntriesStatus::kOk, std::move(entries));
 }
 
 DeskModel::GetEntryByUuidResult DeskSyncBridge::GetEntryByUUID(
