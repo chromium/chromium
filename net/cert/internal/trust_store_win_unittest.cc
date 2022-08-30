@@ -242,7 +242,17 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUAnyUsage) {
 }
 
 // Test if duplicate certs are added to the root and intermediate stores,
-// possibly with different EKU usages.
+// possibly with different EKU usages. Root store set up as follows:
+//
+// - kMultiRootDByD: only has szOID_PKIX_KP_CLIENT_AUTH EKU set
+// - kMultiRootDByD (dupe): only has szOID_PKIX_KP_SERVER_AUTH set
+// - kMultiRootDByD (dupe 2): no EKU usages set
+//
+// And the intermediate store as follows:
+//
+// - kMultiRootCByD: only has szOID_PKIX_KP_CLIENT_AUTH set
+// - kMultiRootCByD (dupe): only has szOID_PKIX_KP_SERVER_AUTH EKU set
+
 TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
   crypto::ScopedHCERTSTORE root_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
@@ -266,7 +276,8 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
     base::StringPiece file_name;
     CertificateTrustType expected_result;
   } kTestData[] = {
-      {kMultiRootDByD, CertificateTrustType::UNSPECIFIED},
+      // One copy of the Root cert is trusted for TLS Server Auth.
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);

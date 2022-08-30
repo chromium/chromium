@@ -246,34 +246,26 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // whether to continue path building, but doesn't treat the certificate
 // as affirmatively revoked/distrusted.
 //
-// Rather than have these EKUs expressed during ParsedCertificate, which
-// would require threading platform-specific knowledge throughout the
-// CertVerifier, this is implemented via CertificateTrust: if the
-// certificate has a given EKU disabled (i.e. TLS server auth), it's
-// treated as if it's distrusted. This has the effect of causing path
-// building to try the next path.
+// This behaviour is replicated here by returning Unspecified trust if
+// we find instances of the cert that do not have the correct EKUs set
+// for TLS Server Auth. This allows path building to continue and allows
+// us to later trust the cert if it is present in Chrome Root Store.
 //
-// Put differently:
-//   - If a certificate is in the Disallowed store and usable for EKU, then
-//     it's affirmatively distrusted/revoked. This is checked first and
-//     overrides everything else.
-//   - If a certificate is in the ROOT store, and usable for an EKU,
+// Windows does have some idiosyncrasies here, which result in the
+// following treatment:
+//
+//   - If a certificate is in the Disallowed store, it is distrusted for
+//     all purposes regardless of any EKUs that are set.
+//   - If a certificate is in the ROOT store, and usable for TLS Server Auth,
 //     then it's trusted.
-//   - If a certificate is in the root store, and lacks the EKU, but in
-//     the intermediate store, and has the EKU, then continue path
-//     building, but don't treat it as trusted (aka Unspecified)
-//   - If a certificate is both/either in the root store and the
-//     intermediate store, and neither have the EKU, then treat this
-//     path as terminal for path building ("Distrusted", which is
-//     imprecise but good enough).
+//   - If a certificate is in the root store, and lacks the EKU, then continue
+//     path building, but don't treat it as trusted (aka Unspecified).
 //   - If we can't find the cert anywhere, then continue path
 //     building, but don't treat it as trusted (aka Unspecified).
 //
 // If a certificate is found multiple times in the ROOT store, it is trusted
-// for TLS server auth if and only if every instance of the certificate found
-// is usable for TLS server auth. Similar logic applies for certificates in
-// the intermediate store (only return unspecified if and only if all instances
-// of the certificate found are usable for TLS server auth).
+// for TLS server auth if any instance of the certificate found
+// is usable for TLS server auth.
 CertificateTrust TrustStoreWin::GetTrust(
     const ParsedCertificate* cert,
     base::SupportsUserData* debug_data) const {
@@ -298,8 +290,6 @@ CertificateTrust TrustStoreWin::GetTrust(
     }
   }
 
-  bool root_found = false;
-  bool root_is_trusted = true;
   // TODO(https://crbug.com/1239270): figure out if this is thread-safe or if we
   // need locking here
   while ((cert_from_store = CertFindCertificateInStore(
@@ -308,15 +298,12 @@ CertificateTrust TrustStoreWin::GetTrust(
     base::span<const uint8_t> cert_from_store_span = base::make_span(
         cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
     if (base::ranges::equal(cert_span, cert_from_store_span)) {
-      root_found = true;
-      root_is_trusted &= IsCertTrustedForServerAuth(cert_from_store);
+      // If we find at least one version of the cert that is trusted for TLS
+      // Server Auth, we will trust the cert.
+      if (IsCertTrustedForServerAuth(cert_from_store)) {
+        return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+      }
     }
-  }
-
-  // Found at least one instance of the cert in the root store, and all
-  // instances found are trusted for TLS server auth.
-  if (root_found && root_is_trusted) {
-    return CertificateTrust::ForTrustAnchorEnforcingExpiration();
   }
 
   // If we fall through here, we've either
