@@ -8125,6 +8125,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLensStandaloneVariations,
                                     "GoogleLensDesktopContextMenuSearch")},
 
+    {"enable-region-search-on-pdf-viewer",
+     flag_descriptions::kEnableRegionSearchOnPdfViewerName,
+     flag_descriptions::kEnableRegionSearchOnPdfViewerDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kEnableRegionSearchOnPdfViewer)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-log-controller-for-diagnostics-app",
      flag_descriptions::kEnableLogControllerForDiagnosticsAppName,

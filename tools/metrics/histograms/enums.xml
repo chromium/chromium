@@ -59649,6 +59649,7 @@ from previous Chrome versions.
   <int value="92327255" label="DisplayMoveWindowAccels:disabled"/>
   <int value="92466801" label="UploadOfficeToCloud:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
+  <int value="94576028" label="LensEnableRegionSearchOnPdfViewer:disabled"/>
   <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
   <int value="97764742" label="QuickAnswersForMoreLocales:disabled"/>
@@ -60641,6 +60642,7 @@ from previous Chrome versions.
   <int value="717827121" label="ChromeSharingHub:disabled"/>
   <int value="719267310"
       label="KeepAliveRendererForKeepaliveRequests:disabled"/>
+  <int value="719614898" label="LensEnableRegionSearchOnPdfViewer:enabled"/>
   <int value="719922283" label="MessagesForAndroidSaveCard:enabled"/>
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>

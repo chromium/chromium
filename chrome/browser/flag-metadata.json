@@ -2779,6 +2779,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-region-search-on-pdf-viewer",
+    "owners": ["nguyenbryan@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-removing-all-third-party-cookies",
     "owners": [ "dullweber" ],
     "expiry_milestone": 95

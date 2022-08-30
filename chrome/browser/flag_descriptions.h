@@ -717,6 +717,9 @@ extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];
 
+extern const char kEnableRegionSearchOnPdfViewerName[];
+extern const char kEnableRegionSearchOnPdfViewerDescription[];
+
 extern const char kEnableManagedConfigurationWebApiName[];
 extern const char kEnableManagedConfigurationWebApiDescription[];
 
