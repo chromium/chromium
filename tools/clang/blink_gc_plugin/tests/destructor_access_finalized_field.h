@@ -17,14 +17,15 @@ public:
 class HeapObject;
 
 class PartOther {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
-public:
- void Trace(Visitor*) const;
+  DISALLOW_NEW();
 
- HeapObject* obj() { return m_obj; }
+ public:
+  void Trace(Visitor*) const;
 
-private:
-    Member<HeapObject> m_obj;
+  HeapObject* obj() { return m_obj; }
+
+ private:
+  Member<HeapObject> m_obj;
 };
 
 class HeapObject : public GarbageCollected<HeapObject> {

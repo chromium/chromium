@@ -10,11 +10,22 @@
 namespace blink {
 
 class HeapObject : public GarbageCollected<HeapObject> {
-    WTF_MAKE_FAST_ALLOCATED;
-public:
- void Trace(Visitor*) const {}
+ public:
+  void* operator new(size_t);
+  void Trace(Visitor*) const {}
 };
 
+class HeapObjectBase : public GarbageCollected<HeapObjectBase> {
+ public:
+  virtual ~HeapObjectBase() = default;
+  virtual void Trace(Visitor*) const {}
+};
+
+class HeapObjectDerived : public HeapObjectBase {
+ public:
+  void* operator new(size_t);
+  void Trace(Visitor*) const override;
+};
 }
 
 #endif
