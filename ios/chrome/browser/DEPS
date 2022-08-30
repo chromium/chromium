@@ -165,10 +165,6 @@ include_rules = [
   "-ios/common/ui",
   "+ios/chrome/browser/ui/commands",
 
-  # ios/chrome/browser/promos_manager needs the following
-  "+ios/chrome/browser/ui/main/observing_scene_state_agent.h",
-  "+ios/chrome/browser/ui/main/scene_state.h",
-
   # For tests.
   "+ios/chrome/test",
   "+ios/public/test",

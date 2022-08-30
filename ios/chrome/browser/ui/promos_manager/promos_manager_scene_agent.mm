@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/promos_manager_scene_agent.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 
 #import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
