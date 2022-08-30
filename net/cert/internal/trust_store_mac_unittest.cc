@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/lock.h"
@@ -120,6 +121,39 @@ enum IsKnownRootTestOrder {
   TEST_IS_KNOWN_ROOT_BEFORE,
   TEST_IS_KNOWN_ROOT_AFTER,
 };
+
+const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
+  switch (t) {
+    case TrustStoreMac::TrustImplType::kDomainCache:
+      return "DomainCache";
+    case TrustStoreMac::TrustImplType::kSimple:
+      return "Simple";
+    case TrustStoreMac::TrustImplType::kLruCache:
+      return "LruCache";
+    case TrustStoreMac::TrustImplType::kDomainCacheFullCerts:
+      return "DomainCacheFullCerts";
+    case TrustStoreMac::TrustImplType::kUnknown:
+      return "Unknown";
+  }
+}
+
+const char* IsKnownRootTestOrderToString(IsKnownRootTestOrder order) {
+  switch (order) {
+    case TEST_IS_KNOWN_ROOT_BEFORE:
+      return "IsKnownRootBefore";
+    case TEST_IS_KNOWN_ROOT_AFTER:
+      return "IsKnownRootAfter";
+  }
+}
+
+const char* TrustDomainsToString(TrustStoreMac::TrustDomains domains) {
+  switch (domains) {
+    case TrustStoreMac::TrustDomains::kAll:
+      return "AllDomains";
+    case TrustStoreMac::TrustDomains::kUserAndAdmin:
+      return "UserAndAdminDomains";
+  }
+}
 
 }  // namespace
 
@@ -451,6 +485,12 @@ INSTANTIATE_TEST_SUITE_P(
         // which one initializes the cache first.
         testing::Values(TEST_IS_KNOWN_ROOT_BEFORE, TEST_IS_KNOWN_ROOT_AFTER),
         testing::Values(TrustStoreMac::TrustDomains::kAll,
-                        TrustStoreMac::TrustDomains::kUserAndAdmin)));
+                        TrustStoreMac::TrustDomains::kUserAndAdmin)),
+    [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
+      return base::StrCat(
+          {TrustImplTypeToString(std::get<0>(info.param)),
+           IsKnownRootTestOrderToString(std::get<1>(info.param)),
+           TrustDomainsToString(std::get<2>(info.param))});
+    });
 
 }  // namespace net
