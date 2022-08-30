@@ -535,14 +535,6 @@
              "--force-high-contrast"]
   },
   {
-    "prefix": "eye-dropper",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "fast/forms/color-scheme/color",
-      "http/tests/eye-dropper"],
-    "args": ["--enable-features=EyeDropper"]
-  },
-  {
     "prefix": "use-common-select-popup",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme/select"],
@@ -566,8 +558,7 @@
               "fast/forms/validation-bubble-appearance-wrap.html",
               "fast/loader/plain-text-document-appearance.html",
               "http/tests/eye-dropper"],
-    "args": ["--blink-settings=preferredColorScheme=0",
-             "--enable-features=EyeDropper"]
+    "args": ["--blink-settings=preferredColorScheme=0"]
   },
   {
     "prefix": "force-eager",
