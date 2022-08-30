@@ -182,9 +182,8 @@ def GetStripPath():
 
 
 def GetApkAnalyzerPath():
-  default_path = FromToolsSrcRoot('third_party', 'android_sdk', 'public',
-                                  'cmdline-tools', 'latest', 'bin',
-                                  'apkanalyzer')
+  default_path = FromToolsSrcRoot('third_party', 'android_build_tools',
+                                  'apkanalyzer', 'apkanalyzer')
   return os.environ.get('SUPERSIZE_APK_ANALYZER', default_path)
 
 

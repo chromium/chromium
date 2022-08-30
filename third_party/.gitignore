@@ -10,6 +10,7 @@
 /amd/
 /android_build_tools/aapt2/aapt2
 /android_build_tools/aapt2/lib64/*.so
+/android_build_tools/apkanalyzer/apkanalyzer.jar
 /android_build_tools/bundletool/*.jar
 /android_ndk/
 /android_prebuilts/build_tools
