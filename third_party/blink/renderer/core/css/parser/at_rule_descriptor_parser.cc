@@ -72,8 +72,43 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
   return values;
 }
 
+bool IsSupportedFontFormat(String font_format) {
+  return EqualIgnoringASCIICase(font_format, "woff") ||
+         EqualIgnoringASCIICase(font_format, "truetype") ||
+         EqualIgnoringASCIICase(font_format, "opentype") ||
+         EqualIgnoringASCIICase(font_format, "woff2") ||
+         EqualIgnoringASCIICase(font_format, "collection") ||
+         EqualIgnoringASCIICase(font_format, "woff-variations") ||
+         EqualIgnoringASCIICase(font_format, "truetype-variations") ||
+         EqualIgnoringASCIICase(font_format, "opentype-variations") ||
+         EqualIgnoringASCIICase(font_format, "woff2-variations");
+}
+
+bool IsValidKeywordFormat(CSSValueID keyword) {
+  switch (keyword) {
+    case CSSValueID::kCollection:
+    case CSSValueID::kEmbeddedOpentype:
+    case CSSValueID::kOpentype:
+    case CSSValueID::kTruetype:
+    case CSSValueID::kSVG:
+    case CSSValueID::kWoff:
+    case CSSValueID::kWoff2:
+      return true;
+    default:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// Returns nullptr for hard parsing errors: CSSUnsetValue for unsupprted
+// formats. This distinction is needed as the caller of the function needs to
+// decide whether to continue parsing or not.
 CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
-                                const CSSParserContext& context) {
+                                const CSSParserContext& context,
+                                bool& tech_format_unsupported) {
+  tech_format_unsupported = false;
+
   String url =
       css_parsing_utils::ConsumeUrlAsStringView(range, context).ToString();
   if (url.IsNull())
@@ -84,17 +119,41 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
       context.IsAdRelated()));
 
-  if (range.Peek().FunctionId() != CSSValueID::kFormat)
-    return uri_value;
-
-  // FIXME: https://drafts.csswg.org/css-fonts says that format() contains a
-  // comma-separated list of strings, but CSSFontFaceSrcValue stores only one
-  // format. Allowing one format for now.
-  CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(range);
-  const CSSParserToken& arg = args.ConsumeIncludingWhitespace();
-  if ((arg.GetType() != kStringToken) || !args.AtEnd())
+  // After the url() it's either the end of the src: line, or a comma
+  // for the next url() or format().
+  if (!range.AtEnd() &&
+      range.Peek().GetType() != CSSParserTokenType::kCommaToken &&
+      (range.Peek().GetType() != CSSParserTokenType::kFunctionToken ||
+       (range.Peek().FunctionId() != CSSValueID::kFormat)))
     return nullptr;
-  uri_value->SetFormat(arg.Value().ToString());
+
+  if (range.Peek().FunctionId() == CSSValueID::kFormat) {
+    CSSParserTokenRange format_args = css_parsing_utils::ConsumeFunction(range);
+    const CSSParserToken& format_arg = format_args.ConsumeIncludingWhitespace();
+
+    // Now we expect either a string or a keyword for the format, such as woff |
+    // truetype | opentype | woff2 | embedded-opentype | collection | svg If
+    // it's an unsupported format.
+
+    if (format_arg.GetType() == kIdentToken &&
+        !IsValidKeywordFormat(format_arg.Id()))
+      return nullptr;
+
+    if (format_arg.GetType() == kStringToken ||
+        format_arg.GetType() == kIdentToken) {
+      String sanitized_format = format_arg.Value().ToString();
+      tech_format_unsupported |= !IsSupportedFontFormat(sanitized_format);
+      if (!tech_format_unsupported)
+        uri_value->SetFormat(sanitized_format);
+    } else {
+      return nullptr;
+    }
+
+    // After one argument to the format function, there shouldn't be anything
+    // else, for example not a comma.
+    if (!format_args.AtEnd())
+      return nullptr;
+  }
   return uri_value;
 }
 
@@ -132,13 +191,18 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenRange& range,
   do {
     const CSSParserToken& token = range.Peek();
     CSSValue* parsed_value = nullptr;
-    if (token.FunctionId() == CSSValueID::kLocal)
+    bool tech_format_unsupported = false;
+    if (token.FunctionId() == CSSValueID::kLocal) {
       parsed_value = ConsumeFontFaceSrcLocal(range, context);
-    else
-      parsed_value = ConsumeFontFaceSrcURI(range, context);
+    } else {
+      parsed_value =
+          ConsumeFontFaceSrcURI(range, context, tech_format_unsupported);
+    }
+    // Parsing error encountered, drop whole src: line.
     if (!parsed_value)
       return nullptr;
-    values->Append(*parsed_value);
+    if (!tech_format_unsupported)
+      values->Append(*parsed_value);
   } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
   return values;
 }

@@ -1251,6 +1251,13 @@
 
     // @font-face src
     "format",
+    "collection",
+    "embedded-opentype",
+    "opentype",
+    "svg",
+    "truetype",
+    "woff",
+    "woff2",
 
     // (-webkit-)filter
     "invert",

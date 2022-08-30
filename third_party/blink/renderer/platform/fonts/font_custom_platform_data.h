@@ -85,7 +85,6 @@ class PLATFORM_EXPORT FontCustomPlatformData
   Vector<VariationAxis> GetVariationAxes() const;
 
   size_t DataSize() const { return data_size_; }
-  static bool SupportsFormat(const String&);
 
   bool MayBeIconFont() const;
 

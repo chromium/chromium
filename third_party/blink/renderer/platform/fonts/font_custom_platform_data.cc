@@ -328,19 +328,6 @@ scoped_refptr<FontCustomPlatformData> FontCustomPlatformData::Create(
       new FontCustomPlatformData(std::move(typeface), decoder.DecodedSize()));
 }
 
-bool FontCustomPlatformData::SupportsFormat(const String& format) {
-  // Support relevant format specifiers from
-  // https://drafts.csswg.org/css-fonts-4/#src-desc
-  return EqualIgnoringASCIICase(format, "woff") ||
-         EqualIgnoringASCIICase(format, "truetype") ||
-         EqualIgnoringASCIICase(format, "opentype") ||
-         EqualIgnoringASCIICase(format, "woff2") ||
-         EqualIgnoringASCIICase(format, "woff-variations") ||
-         EqualIgnoringASCIICase(format, "truetype-variations") ||
-         EqualIgnoringASCIICase(format, "opentype-variations") ||
-         EqualIgnoringASCIICase(format, "woff2-variations");
-}
-
 bool FontCustomPlatformData::MayBeIconFont() const {
   if (!may_be_icon_font_computed_) {
     // We observed that many icon fonts define almost all of their glyphs in the

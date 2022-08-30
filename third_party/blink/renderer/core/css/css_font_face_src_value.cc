@@ -48,16 +48,17 @@
 namespace blink {
 
 bool CSSFontFaceSrcValue::IsSupportedFormat() const {
+  // format() syntax is already checked at parse time, see
+  // AtRuleDescriptorParser.
+  if (!format_.IsEmpty())
+    return true;
+
   // Normally we would just check the format, but in order to avoid conflicts
   // with the old WinIE style of font-face, we will also check to see if the URL
   // ends with .eot.  If so, we'll go ahead and assume that we shouldn't load
   // it.
-  if (format_.IsEmpty()) {
-    return absolute_resource_.StartsWithIgnoringASCIICase("data:") ||
-           !absolute_resource_.EndsWithIgnoringASCIICase(".eot");
-  }
-
-  return FontCustomPlatformData::SupportsFormat(format_);
+  return absolute_resource_.StartsWithIgnoringASCIICase("data:") ||
+         !absolute_resource_.EndsWithIgnoringASCIICase(".eot");
 }
 
 String CSSFontFaceSrcValue::CustomCSSText() const {
@@ -69,8 +70,11 @@ String CSSFontFaceSrcValue::CustomCSSText() const {
   } else {
     result.Append(SerializeURI(specified_resource_));
   }
+
   if (!format_.IsEmpty()) {
     result.Append(" format(");
+    // Format should be serialized as strings:
+    // https://github.com/w3c/csswg-drafts/issues/6328#issuecomment-971823790
     result.Append(SerializeString(format_));
     result.Append(')');
   }

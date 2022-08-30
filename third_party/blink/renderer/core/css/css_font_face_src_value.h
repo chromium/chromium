@@ -81,9 +81,11 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
         is_ad_related_(is_ad_related) {}
 
   const String& GetResource() const { return absolute_resource_; }
-  const String& Format() const { return format_; }
   bool IsLocal() const { return is_local_; }
 
+  /* Format is serialized as string, so we can set this to string internally. It
+   * does not affect functionality downstream - i.e. the font face is handled
+   * the same way whatsoever, if the format is supported. */
   void SetFormat(const String& format) { format_ = format; }
 
   bool IsSupportedFormat() const;
