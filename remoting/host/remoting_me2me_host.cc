@@ -426,7 +426,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   ThirdPartyAuthConfig third_party_auth_config_;
   bool security_key_auth_policy_enabled_ = false;
   bool security_key_extension_supported_ = true;
-  int max_session_duration_minutes_ = 0;
+  absl::optional<int> max_session_duration_minutes_;
 
   // Used to specify which window to stream, if enabled.
   webrtc::WindowId window_id_ = 0;
@@ -1549,15 +1549,14 @@ bool HostProcess::OnMaxSessionDurationPolicyUpdate(
     base::DictionaryValue* policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  if (!policies->GetInteger(
-          policy::key::kRemoteAccessHostMaximumSessionDurationMinutes,
-          &max_session_duration_minutes_)) {
+  max_session_duration_minutes_ = policies->GetDict().FindInt(
+      policy::key::kRemoteAccessHostMaximumSessionDurationMinutes);
+  if (!max_session_duration_minutes_)
     return false;
-  }
 
   if (max_session_duration_minutes_ > 0) {
     HOST_LOG << "Policy sets maximum session duration to "
-             << max_session_duration_minutes_ << " minutes.";
+             << max_session_duration_minutes_.value() << " minutes.";
   } else {
     HOST_LOG << "Policy does not set a maximum session duration.";
   }
@@ -1570,11 +1569,10 @@ bool HostProcess::OnMaxClipboardSizePolicyUpdate(
     base::DictionaryValue* policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  int max_clipboard_size;
-  if (!policies->GetInteger(policy::key::kRemoteAccessHostClipboardSizeBytes,
-                            &max_clipboard_size)) {
+  const absl::optional<int> max_clipboard_size = policies->GetDict().FindInt(
+      policy::key::kRemoteAccessHostClipboardSizeBytes);
+  if (!max_clipboard_size)
     return false;
-  }
 
   if (max_clipboard_size >= 0) {
     max_clipboard_size_ = max_clipboard_size;
@@ -1752,9 +1750,9 @@ void HostProcess::StartHost() {
 
   host_->AddExtension(std::make_unique<TestEchoExtension>());
 
-  if (max_session_duration_minutes_ > 0) {
+  if (max_session_duration_minutes_ && max_session_duration_minutes_ > 0) {
     host_->SetMaximumSessionDuration(
-        base::Minutes(max_session_duration_minutes_));
+        base::Minutes(max_session_duration_minutes_.value()));
   }
 
   host_status_logger_ = std::make_unique<HostStatusLogger>(
