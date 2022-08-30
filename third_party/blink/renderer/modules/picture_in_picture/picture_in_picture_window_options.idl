@@ -5,4 +5,5 @@
 dictionary PictureInPictureWindowOptions {
   float initialAspectRatio = 0.0;
   boolean lockAspectRatio = false;
+  boolean copyStyleSheets = false;
 };

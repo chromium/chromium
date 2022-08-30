@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
+#include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -602,6 +604,113 @@ class PictureInPictureControllerDocumentTest : public RenderingTest {
     return *chrome_client_;
   }
 
+  const KURL& GetOpenerURL() const { return opener_url_; }
+
+  StyleSheet* FindStyleSheetInOpener() {
+    // Remember that style sheet names are not preserved in the pip document,
+    // because injection doesn't do that.
+    StyleSheetList& list = GetDocument().StyleSheets();
+    for (unsigned i = 0; i < list.length(); i++) {
+      StyleSheet* sheet = list.item(i);
+      if (sheet->title() && sheet->title() == style_sheet_title_) {
+        return sheet;
+      }
+    }
+
+    return nullptr;
+  }
+
+  String GetBodyBackgroundColor(V8TestingScope& v8_scope, Document* document) {
+    const auto* styleMap = document->body()->ComputedStyleMap();
+    CSSStyleValue* styleValue =
+        styleMap->get(v8_scope.GetExecutionContext(), "background-color",
+                      v8_scope.GetExceptionState());
+    return styleValue->toString();
+  }
+
+  void InitializeDocumentPictureInPictureOpener(V8TestingScope& v8_scope) {
+    // Get past the BindingSecurity::ShouldAllowAccessTo() check.
+    ScriptState* script_state =
+        ToScriptStateForMainWorld(GetDocument().GetFrame());
+    ScriptState::Scope entered_context_scope(script_state);
+
+    // Add HTML to set the CSS to the opener, with a title so that we can find
+    // it later.
+    GetDocument().write("<head><style title='");
+    GetDocument().write(style_sheet_title_);
+    GetDocument().write(
+        "'>"
+        "body { background-color: blue; }"
+        "</style></head>",
+        /*entered_window=*/nullptr, v8_scope.GetExceptionState());
+  }
+
+  // Should the PiP window get a copy of the style sheets from the opener?
+  enum class CopyStyleSheetOptions {
+    kNo,
+    kYes,
+  };
+
+  PictureInPictureWindow* OpenDocumentPictureInPictureWindow(
+      V8TestingScope& v8_scope,
+      CopyStyleSheetOptions copyStyleSheets) {
+    EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                           .pictureInPictureWindow());
+
+    // Enable the DocumentPictureInPictureAPI flag.
+    ScopedPictureInPictureAPIForTest scoped_dependency(true);
+    ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
+
+    // Get past the LocalDOMWindow::isSecureContext() check.
+    GetFrame().DomWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+        nullptr);
+    GetFrame().DomWindow()->GetSecurityContext().SetSecurityOrigin(
+        SecurityOrigin::Create(GetOpenerURL()));
+
+    // Get past the BindingSecurity::ShouldAllowAccessTo() check.
+    ScriptState* script_state =
+        ToScriptStateForMainWorld(GetDocument().GetFrame());
+    ScriptState::Scope entered_context_scope(script_state);
+
+    // Create the PictureInPictureWindowOptions.
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
+    v8_object
+        ->Set(v8_scope.GetContext(), V8String(v8_scope.GetIsolate(), "width"),
+              v8::Number::New(v8_scope.GetIsolate(), 640))
+        .Check();
+    v8_object
+        ->Set(v8_scope.GetContext(), V8String(v8_scope.GetIsolate(), "height"),
+              v8::Number::New(v8_scope.GetIsolate(), 320))
+        .Check();
+    if (copyStyleSheets == CopyStyleSheetOptions::kYes) {
+      v8_object
+          ->Set(v8_scope.GetContext(),
+                V8String(v8_scope.GetIsolate(), "copyStyleSheets"),
+                v8::Number::New(v8_scope.GetIsolate(), true))
+          .Check();
+    }
+    PictureInPictureWindowOptions* options =
+        PictureInPictureWindowOptions::Create(resolver->Promise().GetIsolate(),
+                                              v8_object,
+                                              v8_scope.GetExceptionState());
+
+    // Set a base URL for the opener window.
+    GetDocument().SetBaseURLOverride(opener_url_);
+    EXPECT_EQ(opener_url_.GetString(), GetDocument().BaseURL().GetString());
+
+    PictureInPictureControllerImpl::From(GetDocument())
+        .CreateDocumentPictureInPictureWindow(
+            script_state, *GetFrame().DomWindow(), options, resolver,
+            v8_scope.GetExceptionState());
+
+    PictureInPictureWindow* pictureInPictureWindow =
+        PictureInPictureControllerImpl::From(GetDocument())
+            .pictureInPictureWindow();
+
+    return pictureInPictureWindow;
+  }
+
  private:
   Persistent<PictureInPictureControllerChromeClient> chrome_client_;
   // This is used by our chrome client to create the PiP window.  We keep
@@ -609,62 +718,31 @@ class PictureInPictureControllerDocumentTest : public RenderingTest {
   // cannot own it because it also has a GC root to the client; everything would
   // leak if we did so.
   DummyPageHolder dummy_page_holder_;
+
+  KURL opener_url_{"https://example.com/"};
+  const char* style_sheet_title_ = "our_style_sheet";
 };
 
 TEST_F(PictureInPictureControllerDocumentTest,
        CreateDocumentPictureInPictureWindow) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .pictureInPictureWindow());
-
-  // Enable the DocumentPictureInPictureAPI flag.
-  ScopedPictureInPictureAPIForTest scoped_dependency(true);
-  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
-
-  V8TestingScope scope;
-  KURL url = KURL("https://example.com/");
-
-  // Get pass the LocalDOMWindow::isSecureContext() check.
-  GetFrame().DomWindow()->GetSecurityContext().SetSecurityOriginForTesting(
-      nullptr);
-  GetFrame().DomWindow()->GetSecurityContext().SetSecurityOrigin(
-      SecurityOrigin::Create(url));
-
-  // Get pass the BindingSecurity::ShouldAllowAccessTo() check.
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(GetDocument().GetFrame());
-  ScriptState::Scope entered_context_scope(script_state);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  // Create the PictureInPictureWindowOptions.
-  v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
-  v8_object
-      ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "width"),
-            v8::Number::New(scope.GetIsolate(), 640))
-      .Check();
-  v8_object
-      ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "height"),
-            v8::Number::New(scope.GetIsolate(), 320))
-      .Check();
-  PictureInPictureWindowOptions* options =
-      PictureInPictureWindowOptions::Create(resolver->Promise().GetIsolate(),
-                                            v8_object,
-                                            scope.GetExceptionState());
-
-  // Set a base URL for the opener window.
-  GetDocument().SetBaseURLOverride(url);
-  EXPECT_EQ(url.GetString(), GetDocument().BaseURL().GetString());
-
-  PictureInPictureControllerImpl::From(GetDocument())
-      .CreateDocumentPictureInPictureWindow(
-          script_state, *GetFrame().DomWindow(), options, resolver,
-          scope.GetExceptionState());
-
+  V8TestingScope v8_scope;
+  InitializeDocumentPictureInPictureOpener(v8_scope);
   PictureInPictureWindow* pictureInPictureWindow =
-      PictureInPictureControllerImpl::From(GetDocument())
-          .pictureInPictureWindow();
-  EXPECT_NE(nullptr, pictureInPictureWindow);
-  EXPECT_EQ(url.GetString(),
-            pictureInPictureWindow->document()->BaseURL().GetString());
+      OpenDocumentPictureInPictureWindow(v8_scope, CopyStyleSheetOptions::kNo);
+  ASSERT_NE(nullptr, pictureInPictureWindow);
+  Document* pictureInPictureDocument = pictureInPictureWindow->document();
+  ASSERT_NE(nullptr, pictureInPictureDocument);
+
+  // The Picture in Picture window's base URL should match the opener.
+  EXPECT_EQ(GetOpenerURL().GetString(),
+            pictureInPictureDocument->BaseURL().GetString());
+
+  // By default, CSS should not be copied from the opener, so the background
+  // color should be the default.
+  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
+            "rgba(0, 0, 0, 0)");
 
   // Verify that move* and resize* don't call through to the chrome client.
   EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _)).Times(0);
@@ -672,6 +750,36 @@ TEST_F(PictureInPictureControllerDocumentTest,
   pictureInPictureWindow->document()->domWindow()->moveBy(10, 10);
   pictureInPictureWindow->document()->domWindow()->resizeTo(10, 10);
   pictureInPictureWindow->document()->domWindow()->resizeBy(10, 10);
+}
+
+TEST_F(PictureInPictureControllerDocumentTest,
+       CopyStylesToDocumentPictureInPictureWindow) {
+  V8TestingScope v8_scope;
+  InitializeDocumentPictureInPictureOpener(v8_scope);
+  PictureInPictureWindow* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, CopyStyleSheetOptions::kYes);
+  Document* pictureInPictureDocument = pictureInPictureWindow->document();
+
+  // CSS for a blue background should have been copied from the opener.
+  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
+            "rgb(0, 0, 255)");
+}
+
+TEST_F(PictureInPictureControllerDocumentTest,
+       DoesNotCopyDisabledStyleSheetsToDocumentPictureInPictureWindow) {
+  V8TestingScope v8_scope;
+  InitializeDocumentPictureInPictureOpener(v8_scope);
+
+  // Turn off our style sheet.
+  StyleSheet* sheet = FindStyleSheetInOpener();
+  ASSERT_NE(sheet, nullptr);
+  sheet->setDisabled(true);
+
+  PictureInPictureWindow* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, CopyStyleSheetOptions::kYes);
+  Document* pictureInPictureDocument = pictureInPictureWindow->document();
+  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
+            "rgba(0, 0, 0, 0)");
 }
 
 }  // namespace blink

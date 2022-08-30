@@ -20,6 +20,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -436,14 +439,35 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
 
   // Set the Picture-in-Picture window's base URL to be the same as the opener
   // window's so that relative URLs will be resolved in the same way.
-  DCHECK(local_dom_window->document());
-  local_dom_window->document()->SetBaseURLOverride(
-      opener.document()->BaseURL());
+  auto* pip_document = local_dom_window->document();
+  DCHECK(pip_document);
+  pip_document->SetBaseURLOverride(opener.document()->BaseURL());
 
   // TODO(https://crbug.com/1329638): Return a type specific to document pip
   // instead of a shared interface between the two APIs.
   picture_in_picture_window_ = MakeGarbageCollected<PictureInPictureWindow>(
-      GetExecutionContext(), gfx::Size(), local_dom_window->document());
+      GetExecutionContext(), gfx::Size(), pip_document);
+
+  // Copy style sheets, if requested.
+  if (options->copyStyleSheets()) {
+    StyleSheetList& list = opener.document()->StyleSheets();
+    for (unsigned i = 0; i < list.length(); i++) {
+      StyleSheet* sheet = list.item(i);
+      if (!sheet->IsCSSStyleSheet() || sheet->disabled()) {
+        continue;
+      }
+      CSSStyleSheet* css = To<CSSStyleSheet>(sheet);
+      StyleSheetContents* contents = css->Contents();
+
+      // Inject the style sheet. It will not stay in sync with the opener.
+      //
+      // `key` is arbitrary; it just has to avoid conflicting with any other
+      // injected style sheets. Typically, only extensions do that, so it's
+      // fairly rare.
+      pip_document->GetStyleEngine().InjectSheet(
+          /*key=*/AtomicString::Number(i), contents);
+    }
+  }
 
   // TODO(https://crbug.com/1329698): Resolve this in a posted task instead.
   resolver->Resolve(picture_in_picture_window_);
