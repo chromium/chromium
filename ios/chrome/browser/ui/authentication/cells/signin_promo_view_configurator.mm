@@ -91,8 +91,8 @@ using l10n_util::GetNSStringF;
 
 #pragma mark - Private
 
-// Configures the view elements of the |signinPromoView| to conform to the
-// |SigninPromoViewStyleStandard| style.
+// Configures the view elements of the `signinPromoView` to conform to the
+// `SigninPromoViewStyleStandard` style.
 - (void)configureStandardSigninPromoView:(SigninPromoView*)signinPromoView {
   signinPromoView.titleLabel.hidden = YES;
   //  signinPromoView.secondaryButton.hidden = NO;
@@ -126,8 +126,8 @@ using l10n_util::GetNSStringF;
   }
 }
 
-// Configures the view elements of the |signinPromoView| to conform to
-// |SigninPromoViewStyleTitled| or |SigninPromoViewStyleTitledCompact| style.
+// Configures the view elements of the `signinPromoView` to conform to
+// `SigninPromoViewStyleTitled` or `SigninPromoViewStyleTitledCompact` style.
 - (void)configureTitledPromoView:(SigninPromoView*)signinPromoView {
   // In the titled Promo views (both compact and non compact the primary button
   // text will use "continue" regardless of the promo mode.
@@ -138,7 +138,7 @@ using l10n_util::GetNSStringF;
                                  forState:UIControlStateNormal];
 }
 
-// Sets profile image to a given |signinPromoView|.
+// Sets profile image to a given `signinPromoView`.
 - (void)assignProfileImageToSigninPromoView:(SigninPromoView*)signinPromoView {
   UIImage* image = self.userImage;
   DCHECK(image);

@@ -431,7 +431,7 @@ enum AuthenticationState {
 
 - (void)completeSignInWithSuccess:(BOOL)success {
   DCHECK(_signInCompletion)
-      << "|completeSignInWithSuccess| should not be called twice.";
+      << "`completeSignInWithSuccess` should not be called twice.";
   if (success) {
     bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
     signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSignin,

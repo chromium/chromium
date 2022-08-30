@@ -29,7 +29,7 @@
                              hasCloseButton:(BOOL)hasCloseButton
     NS_DESIGNATED_INITIALIZER;
 
-// Configure |signinPromoView| with the given |promoViewStyle| style.
+// Configure `signinPromoView` with the given `promoViewStyle` style.
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView
                        withStyle:(SigninPromoViewStyle)promoViewStyle;
 
