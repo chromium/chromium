@@ -9,11 +9,11 @@
 
 #include <string>
 
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 
 namespace net {
 
-class QuicChromiumClientSession;
 class QuicChromiumClientStream;
 
 namespace test {
@@ -36,6 +36,9 @@ class QuicChromiumClientSessionPeer {
       QuicChromiumClientSession* session);
 
   static bool GetSessionGoingAway(QuicChromiumClientSession* session);
+
+  static MigrationCause GetCurrentMigrationCause(
+      QuicChromiumClientSession* session);
 };
 
 }  // namespace test

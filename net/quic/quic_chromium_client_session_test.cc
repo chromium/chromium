@@ -198,7 +198,7 @@ class QuicChromiumClientSessionTest
         /*migrate_session_on_network_change_v2=*/false, default_network_,
         quic::QuicTime::Delta::FromMilliseconds(
             kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
-        /*migrate_idle_session=*/false, /*allow_port_migration=*/false,
+        /*migrate_idle_session=*/false, allow_port_migration_,
         kDefaultIdleSessionMigrationPeriod, kMaxTimeOnNonDefaultNetwork,
         kMaxMigrationsToNonDefaultNetworkOnWriteError,
         kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
@@ -312,6 +312,7 @@ class QuicChromiumClientSessionTest
   QuicTestPacketMaker server_maker_;
   ProofVerifyDetailsChromium verify_details_;
   bool migrate_session_early_v2_ = false;
+  bool allow_port_migration_ = false;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 };
 
@@ -2452,6 +2453,32 @@ TEST_P(QuicChromiumClientSessionTest,
   // monitor.
   session_.reset();
   EXPECT_EQ(0u, connectivity_monitor_->GetNumDegradingSessions());
+}
+
+// This test verifies that when multi-port and port migration is enabled, path
+// degrading won't trigger port migration.
+TEST_P(QuicChromiumClientSessionTest, DegradingWithMultiPortEnabled) {
+  if (!version_.UsesHttp3())
+    return;
+  // Default network is always set to handles::kInvalidNetworkHandle.
+  default_network_ = handles::kInvalidNetworkHandle;
+  connectivity_monitor_ =
+      std::make_unique<QuicConnectivityMonitor>(default_network_);
+  allow_port_migration_ = true;
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
+  auto options = config_.SendConnectionOptions();
+  options.push_back(quic::kMPQC);
+  config_.SetConnectionOptionsToSend(options);
+
+  Initialize();
+  EXPECT_TRUE(session_->connection()->multi_port_enabled());
+
+  session_->ReallyOnPathDegrading();
+  EXPECT_EQ(1u, connectivity_monitor_->GetNumDegradingSessions());
+
+  EXPECT_EQ(
+      UNKNOWN_CAUSE,
+      QuicChromiumClientSessionPeer::GetCurrentMigrationCause(session_.get()));
 }
 
 // This test verifies that when the handles::NetworkHandle is not supported, and
