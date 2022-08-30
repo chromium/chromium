@@ -8,11 +8,13 @@
 #include <shlobj.h>
 #include <windows.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -25,11 +27,15 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item_list.h"
+#include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -433,6 +439,74 @@ void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal) {
                            << ": Typelib path: " << typelib_path
                            << ": IID: " << iid_string;
     }
+  }
+}
+
+void MarshalUpdaterInternal() {
+  constexpr REFIID iid = __uuidof(IUpdaterInternal);
+
+  // Create proxy/stubs for the IUpdaterInternal interface.
+  // Look up the ProxyStubClsid32.
+  CLSID psclsid = {};
+  HRESULT hr = ::CoGetPSClsid(iid, &psclsid);
+
+  CHECK(SUCCEEDED(hr)) << std::hex << hr;
+  CHECK_EQ(base::ToUpperASCII(base::win::WStringFromGUID(psclsid)),
+           L"{00020424-0000-0000-C000-000000000046}");
+
+  // Get the proxy/stub factory buffer.
+  Microsoft::WRL::ComPtr<IPSFactoryBuffer> psfb;
+  hr = ::CoGetClassObject(psclsid, CLSCTX_INPROC, 0, IID_PPV_ARGS(&psfb));
+
+  CHECK(SUCCEEDED(hr)) << std::hex << hr;
+
+  // Create the interface proxy.
+  Microsoft::WRL::ComPtr<IRpcProxyBuffer> proxy_buffer;
+  Microsoft::WRL::ComPtr<IUpdaterInternal> object;
+  hr = psfb->CreateProxy(nullptr, iid, &proxy_buffer,
+                         IID_PPV_ARGS_Helper(&object));
+  LOG_IF(ERROR, FAILED(hr))
+      << __func__ << ": CreateProxy failed: " << std::hex << hr;
+
+  // Create the interface stub.
+  Microsoft::WRL::ComPtr<IRpcStubBuffer> stub_buffer;
+  hr = psfb->CreateStub(iid, nullptr, &stub_buffer);
+  LOG_IF(ERROR, FAILED(hr))
+      << __func__ << ": CreateStub failed: " << std::hex << hr;
+
+  // Marshal and unmarshal an IUpdaterInternal object.
+  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
+  hr =
+      Microsoft::WRL::MakeAndInitialize<UpdaterInternalImpl>(&updater_internal);
+  CHECK(SUCCEEDED(hr)) << std::hex << hr;
+
+  Microsoft::WRL::ComPtr<IStream> stream;
+  hr = ::CoMarshalInterThreadInterfaceInStream(iid, updater_internal.Get(),
+                                               &stream);
+  CHECK(SUCCEEDED(hr)) << std::hex << hr;
+
+  base::ScopedAllowBaseSyncPrimitivesForTesting blocking_allowed_here;
+  base::WaitableEvent unmarshal_complete_event;
+
+  base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](Microsoft::WRL::ComPtr<IStream> stream,
+                 base::WaitableEvent& event) {
+                const base::ScopedClosureRunner signal_event(base::BindOnce(
+                    [](base::WaitableEvent& event) { event.Signal(); },
+                    std::ref(event)));
+
+                Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
+                HRESULT hr = ::CoUnmarshalInterface(
+                    stream.Get(), IID_PPV_ARGS(&updater_internal));
+                CHECK(SUCCEEDED(hr)) << std::hex << hr;
+              },
+              stream, std::ref(unmarshal_complete_event)));
+
+  if (!unmarshal_complete_event.TimedWait(base::Seconds(60))) {
+    NOTREACHED();
   }
 }
 

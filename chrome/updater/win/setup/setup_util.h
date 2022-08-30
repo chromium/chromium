@@ -116,6 +116,13 @@ bool UnregisterUserRunAtStartup(const std::wstring& run_value_name);
 // bug is resolved.
 void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal);
 
+// Marshals an instance of UpdaterInternal and unmarshals it into another
+// thread. The test also checks for successful creation of proxy/stubs for the
+// IUpdaterInternal interface.
+// TODO(crbug.com/1341471) - revert the CL that introduced the check after the
+// bug is resolved.
+void MarshalUpdaterInternal();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_SETUP_SETUP_UTIL_H_
