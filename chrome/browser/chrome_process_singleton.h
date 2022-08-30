@@ -62,6 +62,18 @@ class ChromeProcessSingleton {
   void Unlock(
       const ProcessSingleton::NotificationCallback& notification_callback);
 
+  // Create the chrome process singleton instance for the current process.
+  static void CreateInstance(const base::FilePath& user_data_dir);
+  // Delete the chrome process singleton instance.
+  static void DeleteInstance();
+  // Retrieve the chrome process singleton instance for the current process.
+  static ChromeProcessSingleton* GetInstance();
+
+  // Setup the experiment for the early process singleton. Remove this code
+  // when the experiment is over (http://www.crbug.com/1340599).
+  static void SetupEarlySingletonFeature(const base::CommandLine& command_line);
+  static bool IsEarlySingletonFeatureEnabled();
+
  private:
   bool NotificationCallback(const base::CommandLine& command_line,
                             const base::FilePath& current_directory);

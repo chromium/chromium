@@ -252,6 +252,10 @@ const char kEnableCriticalPersistedTabData[] =
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 
+// Enables the early process singleton feature. The process singleton will be
+// held for the whole lifetime of BrowserImpl (see https://crbug.com/1340599).
+const char kEnableEarlyProcessSingleton[] = "enable-early-process-singleton";
+
 // Enables logging for extension activity.
 const char kEnableExtensionActivityLogging[] =
     "enable-extension-activity-logging";

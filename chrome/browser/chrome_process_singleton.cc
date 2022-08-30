@@ -7,6 +7,12 @@
 #include <utility>
 
 #include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/common/chrome_switches.h"
+
+namespace {
+bool g_is_early_singleton_feature_ = false;
+ChromeProcessSingleton* g_chrome_process_singleton_ = nullptr;
+}  // namespace
 
 ChromeProcessSingleton::ChromeProcessSingleton(
     const base::FilePath& user_data_dir)
@@ -49,6 +55,43 @@ void ChromeProcessSingleton::Unlock(
     const ProcessSingleton::NotificationCallback& notification_callback) {
   notification_callback_ = notification_callback;
   startup_lock_.Unlock();
+}
+
+// static
+void ChromeProcessSingleton::CreateInstance(
+    const base::FilePath& user_data_dir) {
+  DCHECK(!g_chrome_process_singleton_);
+  DCHECK(!user_data_dir.empty());
+  g_chrome_process_singleton_ = new ChromeProcessSingleton(user_data_dir);
+}
+
+// static
+void ChromeProcessSingleton::DeleteInstance() {
+  if (g_chrome_process_singleton_) {
+    delete g_chrome_process_singleton_;
+    g_chrome_process_singleton_ = nullptr;
+  }
+}
+
+// static
+ChromeProcessSingleton* ChromeProcessSingleton::GetInstance() {
+  CHECK(g_chrome_process_singleton_);
+  return g_chrome_process_singleton_;
+}
+
+// static
+void ChromeProcessSingleton::SetupEarlySingletonFeature(
+    const base::CommandLine& command_line) {
+  if (command_line.HasSwitch(switches::kEnableEarlyProcessSingleton))
+    g_is_early_singleton_feature_ = true;
+
+  // TODO(1340599): Set up a synthetic trial for the early process singleton
+  // experiment.
+}
+
+// static
+bool ChromeProcessSingleton::IsEarlySingletonFeatureEnabled() {
+  return g_is_early_singleton_feature_;
 }
 
 bool ChromeProcessSingleton::NotificationCallback(

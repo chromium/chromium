@@ -287,6 +287,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+#include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/process_singleton.h"
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
@@ -970,7 +971,8 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   MediaCaptureDevicesDispatcher::GetInstance();
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  process_singleton_ = std::make_unique<ChromeProcessSingleton>(user_data_dir_);
+  if (!ChromeProcessSingleton::IsEarlySingletonFeatureEnabled())
+    ChromeProcessSingleton::CreateInstance(user_data_dir_);
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   // Android's first run is done in Java instead of native.
@@ -1142,6 +1144,11 @@ void ChromeBrowserMainParts::PostCreateThreads() {
                      base::BindRepeating(&CreateCoreUnwindersFactory)));
 #endif
 
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+  if (ChromeProcessSingleton::IsEarlySingletonFeatureEnabled())
+    ChromeProcessSingleton::GetInstance()->StartWatching();
+#endif
+
   tracing::SetupBackgroundTracingFieldTrial();
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
@@ -1310,8 +1317,10 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   // Allow ProcessSingleton to process messages.
   // This is done here instead of just relying on the main message loop's start
   // to avoid rendezvous in RunLoops that may precede MainMessageLoopRun.
-  process_singleton_->Unlock(base::BindRepeating(
-      &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
+  if (!ChromeProcessSingleton::IsEarlySingletonFeatureEnabled()) {
+    ChromeProcessSingleton::GetInstance()->Unlock(base::BindRepeating(
+        &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
+  }
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   // Set up a task to delete old WebRTC log files for all profiles. Use a delay
@@ -1402,39 +1411,43 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif  // defined(USE_AURA)
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  // When another process is running, use that process instead of starting a
-  // new one. NotifyOtherProcess will currently give the other process up to
-  // 20 seconds to respond. Note that this needs to be done before we attempt
-  // to read the profile.
-  notify_result_ = process_singleton_->NotifyOtherProcessOrCreate();
-  UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
-                            notify_result_,
-                            ProcessSingleton::kNumNotifyResults);
-  switch (notify_result_) {
-    case ProcessSingleton::PROCESS_NONE:
-      // No process already running, fall through to starting a new one.
-      process_singleton_->StartWatching();
-      g_browser_process->platform_part()->PlatformSpecificCommandLineProcessing(
-          *base::CommandLine::ForCurrentProcess());
-      break;
+  if (!ChromeProcessSingleton::IsEarlySingletonFeatureEnabled()) {
+    // When another process is running, use that process instead of starting a
+    // new one. NotifyOtherProcess will currently give the other process up to
+    // 20 seconds to respond. Note that this needs to be done before we attempt
+    // to read the profile.
+    notify_result_ =
+        ChromeProcessSingleton::GetInstance()->NotifyOtherProcessOrCreate();
+    UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
+                              notify_result_,
+                              ProcessSingleton::kNumNotifyResults);
+    switch (notify_result_) {
+      case ProcessSingleton::PROCESS_NONE:
+        // No process already running, fall through to starting a new one.
+        ChromeProcessSingleton::GetInstance()->StartWatching();
+        g_browser_process->platform_part()
+            ->PlatformSpecificCommandLineProcessing(
+                *base::CommandLine::ForCurrentProcess());
+        break;
 
-    case ProcessSingleton::PROCESS_NOTIFIED:
-      printf("%s\n", base::SysWideToNativeMB(
-                         base::UTF16ToWide(l10n_util::GetStringUTF16(
-                             IDS_USED_EXISTING_BROWSER)))
-                         .c_str());
-      return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
+      case ProcessSingleton::PROCESS_NOTIFIED:
+        printf("%s\n", base::SysWideToNativeMB(
+                           base::UTF16ToWide(l10n_util::GetStringUTF16(
+                               IDS_USED_EXISTING_BROWSER)))
+                           .c_str());
+        return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
 
-    case ProcessSingleton::PROFILE_IN_USE:
-      return chrome::RESULT_CODE_PROFILE_IN_USE;
+      case ProcessSingleton::PROFILE_IN_USE:
+        return chrome::RESULT_CODE_PROFILE_IN_USE;
 
-    case ProcessSingleton::LOCK_ERROR:
-      LOG(ERROR) << "Failed to create a ProcessSingleton for your profile "
-                    "directory. This means that running multiple instances "
-                    "would start multiple browser processes rather than "
-                    "opening a new window in the existing process. Aborting "
-                    "now to avoid profile corruption.";
-      return chrome::RESULT_CODE_PROFILE_IN_USE;
+      case ProcessSingleton::LOCK_ERROR:
+        LOG(ERROR) << "Failed to create a ProcessSingleton for your profile "
+                      "directory. This means that running multiple instances "
+                      "would start multiple browser processes rather than "
+                      "opening a new window in the existing process. Aborting "
+                      "now to avoid profile corruption.";
+        return chrome::RESULT_CODE_PROFILE_IN_USE;
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
@@ -1511,7 +1524,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         try_chrome_int,
         base::BindRepeating(
             &ChromeProcessSingleton::SetModalDialogNotificationHandler,
-            base::Unretained(process_singleton_.get())));
+            base::Unretained(ChromeProcessSingleton::GetInstance())));
     switch (answer) {
       case TryChromeDialog::NOT_NOW:
         return chrome::RESULT_CODE_NORMAL_EXIT_CANCEL;
@@ -1824,6 +1837,14 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+  if (ChromeProcessSingleton::IsEarlySingletonFeatureEnabled()) {
+    // Allow ProcessSingleton to process messages.
+    ChromeProcessSingleton::GetInstance()->Unlock(base::BindRepeating(
+        &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
+  }
+#endif
 }
 
 void ChromeBrowserMainParts::OnFirstIdle() {
@@ -1889,7 +1910,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   if (notify_result_ == ProcessSingleton::PROCESS_NONE)
-    process_singleton_->Cleanup();
+    ChromeProcessSingleton::GetInstance()->Cleanup();
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   browser_process_->metrics_service()->Stop();
@@ -1955,7 +1976,8 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  process_singleton_.reset();
+  if (!ChromeProcessSingleton::IsEarlySingletonFeatureEnabled())
+    ChromeProcessSingleton::DeleteInstance();
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   device_event_log::Shutdown();

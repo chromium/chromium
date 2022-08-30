@@ -21,7 +21,6 @@
 #include "content/public/common/result_codes.h"
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-#include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/process_singleton.h"
 #endif
 
@@ -197,7 +196,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  std::unique_ptr<ChromeProcessSingleton> process_singleton_;
   ProcessSingleton::NotifyResult notify_result_ =
       ProcessSingleton::PROCESS_NONE;
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
