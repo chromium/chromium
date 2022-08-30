@@ -9,6 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -19,12 +21,15 @@
 
 namespace ash {
 
+class WorkspaceEventHandler;
+
 // This controller allows windows to be on top of all app windows, but below
 // pips. When a window is 'floated', it remains always on top for the user so
 // that they can complete secondary tasks. Floated window stays in the
 // `kShellWindowId_FloatContainer`.
 class ASH_EXPORT FloatController : public TabletModeObserver,
                                    public display::DisplayObserver,
+                                   public ShellObserver,
                                    public chromeos::FloatControllerBase {
  public:
   // The possible corners that a floated window can be placed in tablet mode.
@@ -79,6 +84,11 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
+  // ShellObserver:
+  void OnRootWindowAdded(aura::Window* root_window) override;
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
+  void OnShellDestroying() override;
+
   // chromeos::FloatControllerBase:
   void ToggleFloat(aura::Window* window) override;
 
@@ -117,9 +127,20 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   base::flat_map<aura::Window*, std::unique_ptr<FloatedWindowInfo>>
       floated_window_info_map_;
 
+  // Workspace event handler which handles double click events to change to
+  // maximized state as well as horizontally and vertically maximize. We create
+  // one per root window.
+  base::flat_map<aura::Window*, std::unique_ptr<WorkspaceEventHandler>>
+      workspace_event_handlers_;
+
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};
   absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+  base::ScopedObservation<Shell,
+                          ShellObserver,
+                          &Shell::AddShellObserver,
+                          &Shell::RemoveShellObserver>
+      shell_observation_{this};
 };
 
 }  // namespace ash

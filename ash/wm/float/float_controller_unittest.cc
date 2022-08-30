@@ -101,6 +101,22 @@ TEST_F(WindowFloatTest, WindowFloatingSwitch) {
   EXPECT_FALSE(WindowState::Get(window_2.get())->IsFloated());
 }
 
+// Tests that double clicking on the caption maximizes a floated window.
+// Regression test for https://crbug.com/1357049.
+TEST_F(WindowFloatTest, DoubleClickOnCaption) {
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Double click on the caption. The window should be maximized now.
+  auto* frame = NonClientFrameViewAsh::Get(window.get());
+  HeaderView* header_view = frame->GetHeaderView();
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->DoubleClickLeftButton();
+
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+}
+
 // Tests that a floated window animates to and from overview.
 TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
   std::unique_ptr<aura::Window> floated_window = CreateFloatedWindow();
