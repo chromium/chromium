@@ -28,16 +28,6 @@ namespace partition_alloc::internal {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-namespace {
-
-[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void
-DoubleFreeOrCorruptionDetected() {
-  PA_NO_CODE_FOLDING();
-  PA_IMMEDIATE_CRASH();
-}
-
-}  // namespace
-
 // Special-purpose atomic reference count class used by BackupRefPtrImpl.
 // The least significant bit of the count is reserved for tracking the liveness
 // state of an allocation: it's set when the allocation is created and cleared
@@ -183,7 +173,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
         count_.fetch_and(~kMemoryHeldByAllocatorBit, std::memory_order_release);
 
     if (PA_UNLIKELY(!(old_count & kMemoryHeldByAllocatorBit)))
-      DoubleFreeOrCorruptionDetected();
+      DoubleFreeOrCorruptionDetected(old_count);
 
     if (PA_LIKELY(old_count == kMemoryHeldByAllocatorBit)) {
       std::atomic_thread_fence(std::memory_order_acquire);
@@ -279,6 +269,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
            kCookieSalt;
   }
 #endif  // defined(PA_REF_COUNT_CHECK_COOKIE)
+
+  [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void
+  DoubleFreeOrCorruptionDetected(CountType count) {
+    PA_DEBUG_DATA_ON_STACK("refcount", count);
+    PA_NO_CODE_FOLDING();
+    PA_IMMEDIATE_CRASH();
+  }
 
   // Note that in free slots, this is overwritten by encoded freelist
   // pointer(s). The way the pointers are encoded on 64-bit little-endian
