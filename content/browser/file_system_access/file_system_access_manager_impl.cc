@@ -771,6 +771,9 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
 
   if (url.type() == storage::kFileSystemTypeLocal ||
       url.mount_type() == storage::kFileSystemTypeExternal) {
+    // Files from non-sandboxed file systems should not include bucket info.
+    DCHECK(!url.bucket().has_value());
+
     // A url can have mount_type = external and type = native local at the same
     // time. In that case we want to still treat it as an external path.
     const bool is_external =
@@ -801,7 +804,9 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
   } else if (url.type() == storage::kFileSystemTypeTemporary) {
     base::FilePath virtual_path = url.virtual_path();
     data.mutable_sandboxed()->set_virtual_path(SerializePath(virtual_path));
-    if (url.bucket().has_value() && !url.bucket()->is_default) {
+    // Files in the sandboxed file system must include bucket info.
+    DCHECK(url.bucket().has_value());
+    if (!url.bucket()->is_default) {
       data.mutable_sandboxed()->set_bucket_id(url.bucket()->id.value());
     }
   } else {
@@ -851,26 +856,28 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
           DeserializePath(data.sandboxed().virtual_path());
       storage::FileSystemURL url = context()->CreateCrackedFileSystemURL(
           storage_key, storage::kFileSystemTypeTemporary, virtual_path);
+      // Apply bucket information.
+      auto bucket_callback = base::BindOnce(
+          [](storage::FileSystemURL url,
+             base::OnceCallback<void(const storage::FileSystemURL&)> callback,
+             storage::QuotaErrorOr<storage::BucketInfo> result) {
+            if (!result.ok()) {
+              // Drop `token`, and directly return.
+              return;
+            }
+            url.SetBucket(result->ToBucketLocator());
+            std::move(callback).Run(url);
+          },
+          url,
+          base::BindOnce(&FileSystemAccessManagerImpl::
+                             DidGetSandboxedBucketForDeserializeHandle,
+                         weak_factory_.GetWeakPtr(), data, std::move(token)));
       if (!data.sandboxed().has_bucket_id()) {
         // Use the default storage bucket.
-        DidGetSandboxedBucketForDeserializeHandle(data, std::move(token), url);
+        context_->quota_manager_proxy()->UpdateOrCreateBucket(
+            storage::BucketInitParams::ForDefaultBucket(storage_key),
+            base::SequencedTaskRunnerHandle::Get(), std::move(bucket_callback));
       } else {
-        // Apply a custom bucket override.
-        auto bucket_callback = base::BindOnce(
-            [](storage::FileSystemURL url,
-               base::OnceCallback<void(const storage::FileSystemURL&)> callback,
-               storage::QuotaErrorOr<storage::BucketInfo> result) {
-              if (!result.ok()) {
-                // Drop `token`, and directly return.
-                return;
-              }
-              url.SetBucket(result->ToBucketLocator());
-              std::move(callback).Run(url);
-            },
-            url,
-            base::BindOnce(&FileSystemAccessManagerImpl::
-                               DidGetSandboxedBucketForDeserializeHandle,
-                           weak_factory_.GetWeakPtr(), data, std::move(token)));
         context_->quota_manager_proxy()->GetBucketById(
             storage::BucketId::FromUnsafeValue(data.sandboxed().bucket_id()),
             base::SequencedTaskRunnerHandle::Get(), std::move(bucket_callback));

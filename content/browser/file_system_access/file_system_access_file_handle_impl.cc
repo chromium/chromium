@@ -373,6 +373,7 @@ void FileSystemAccessFileHandleImpl::IsSameEntry(
 void FileSystemAccessFileHandleImpl::IsSameEntryImpl(
     IsSameEntryCallback callback,
     FileSystemAccessTransferTokenImpl* other) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!other) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -391,6 +392,19 @@ void FileSystemAccessFileHandleImpl::IsSameEntryImpl(
 
   // If two URLs are of a different type they are definitely not related.
   if (url1.type() != url2.type()) {
+    std::move(callback).Run(file_system_access_error::Ok(), false);
+    return;
+  }
+
+  // URLs from the sandboxed file system must include bucket info, while URLs
+  // from non-sandboxed file systems should not.
+  DCHECK_EQ(url1.type() == storage::kFileSystemTypeTemporary,
+            url1.bucket().has_value());
+  DCHECK_EQ(url2.type() == storage::kFileSystemTypeTemporary,
+            url2.bucket().has_value());
+
+  // Since the types match, either both or neither URL will have bucket info.
+  if (url1.bucket() != url2.bucket()) {
     std::move(callback).Run(file_system_access_error::Ok(), false);
     return;
   }

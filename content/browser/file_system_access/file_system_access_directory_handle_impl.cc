@@ -20,6 +20,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
@@ -277,6 +278,19 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // If two URLs are of a different type they are definitely not related.
   if (parent_url.type() != child_url.type()) {
+    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    return;
+  }
+
+  // URLs from the sandboxed file system must include bucket info, while URLs
+  // from non-sandboxed file systems should not.
+  DCHECK_EQ(parent_url.type() == storage::kFileSystemTypeTemporary,
+            parent_url.bucket().has_value());
+  DCHECK_EQ(child_url.type() == storage::kFileSystemTypeTemporary,
+            child_url.bucket().has_value());
+
+  // Since the types match, either both or neither URL will have bucket info.
+  if (parent_url.bucket() != child_url.bucket()) {
     std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
     return;
   }

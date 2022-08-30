@@ -90,6 +90,18 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     return handle;
   }
 
+  storage::BucketLocator CreateBucketForTesting() {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+        bucket_future;
+    quota_manager_proxy_->CreateBucketForTesting(
+        test_src_storage_key_, "custom_bucket",
+        blink::mojom::StorageType::kTemporary,
+        base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
+    auto bucket = bucket_future.Take();
+    EXPECT_TRUE(bucket.ok());
+    return bucket->ToBucketLocator();
+  }
+
  protected:
   void SetupHelper(storage::FileSystemType type, bool is_incognito) {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -113,6 +125,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
 
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
         test_src_storage_key_, type, base::FilePath::FromUTF8Unsafe("test"));
+    if (type == storage::kFileSystemTypeTemporary)
+      test_file_url_.SetBucket(CreateBucketForTesting());
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFile(

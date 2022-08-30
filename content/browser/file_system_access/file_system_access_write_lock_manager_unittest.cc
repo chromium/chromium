@@ -7,9 +7,8 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -18,9 +17,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 
 namespace content {
 
@@ -140,6 +136,11 @@ class FileSystemAccessWriteLockManagerTest : public testing::Test {
  protected:
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
+  const storage::BucketLocator kTestBucketLocator =
+      storage::BucketLocator(storage::BucketId(1),
+                             kTestStorageKey,
+                             blink::mojom::StorageType::kTemporary,
+                             /*is_default=*/false);
 
   BrowserTaskEnvironment task_environment_;
 
@@ -192,6 +193,7 @@ TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFile) {
   auto url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+  url.SetBucket(kTestBucketLocator);
 
   {
     auto exclusive_lock =
@@ -213,12 +215,44 @@ TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesSamePath) {
   // BucketLocator is set.
   const blink::StorageKey kOtherStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://foo.com/test");
+  const auto path = base::FilePath::FromUTF8Unsafe("test/foo/bar");
   auto url1 = file_system_context_->CreateCrackedFileSystemURL(
-      kOtherStorageKey, storage::kFileSystemTypeTemporary,
-      base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+      kOtherStorageKey, storage::kFileSystemTypeTemporary, path);
+  url1.SetBucket(kTestBucketLocator);
   auto url2 = file_system_context_->CreateCrackedFileSystemURL(
-      kTestStorageKey, storage::kFileSystemTypeTemporary,
-      base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+      kTestStorageKey, storage::kFileSystemTypeTemporary, path);
+  const storage::BucketLocator kOtherBucketLocator(
+      storage::BucketId(2), kOtherStorageKey,
+      blink::mojom::StorageType::kTemporary,
+      /*is_default=*/false);
+  url2.SetBucket(kOtherBucketLocator);
+
+  // Take a lock on the file in the first file system.
+  auto exclusive_lock1 =
+      manager_->TakeWriteLock(url1, WriteLockType::kExclusive);
+  ASSERT_TRUE(exclusive_lock1);
+  ASSERT_FALSE(manager_->TakeWriteLock(url1, WriteLockType::kExclusive));
+
+  // Can still take a lock on the file in the second file system.
+  auto exclusive_lock2 =
+      manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
+  ASSERT_TRUE(exclusive_lock2);
+  ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
+}
+
+TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesDifferentBucket) {
+  // Sandboxed files of the same relative path do not lock across buckets.
+  const auto path = base::FilePath::FromUTF8Unsafe("test/foo/bar");
+  auto url1 = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary, path);
+  url1.SetBucket(kTestBucketLocator);
+  auto url2 = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary, path);
+  const storage::BucketLocator kOtherBucketLocator(
+      storage::BucketId(2), kTestStorageKey,
+      blink::mojom::StorageType::kTemporary,
+      /*is_default=*/false);
+  url2.SetBucket(kOtherBucketLocator);
 
   // Take a lock on the file in the first file system.
   auto exclusive_lock1 =
@@ -317,9 +351,11 @@ TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocksSandboxed) {
   auto parent_path = base::FilePath::FromUTF8Unsafe("test/foo/bar");
   auto parent_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary, parent_path);
+  parent_url.SetBucket(kTestBucketLocator);
   auto child_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       parent_path.Append(FILE_PATH_LITERAL("child")));
+  child_url.SetBucket(kTestBucketLocator);
 
   AssertAncestorLockBehavior(parent_url, child_url);
 }

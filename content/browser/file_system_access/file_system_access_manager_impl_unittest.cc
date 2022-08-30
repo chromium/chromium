@@ -20,6 +20,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -46,6 +47,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -334,9 +336,37 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
     auto bucket = bucket_future.Take();
     EXPECT_TRUE(bucket.ok());
-    LOG(INFO) << "Created bucket "
-              << bucket->ToBucketLocator().id.GetUnsafeValue();
     return bucket->ToBucketLocator();
+  }
+
+  storage::BucketLocator CreateSandboxFileSystemAndGetDefaultBucket() {
+    base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+        future;
+    manager_remote_->GetSandboxedFileSystem(future.GetCallback());
+    blink::mojom::FileSystemAccessErrorPtr get_fs_result;
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+        directory_remote;
+    std::tie(get_fs_result, directory_remote) = future.Take();
+    EXPECT_EQ(get_fs_result->status, blink::mojom::FileSystemAccessStatus::kOk);
+    mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
+        std::move(directory_remote));
+    EXPECT_TRUE(root);
+
+    storage::QuotaManagerProxySync quota_manager_proxy_sync(
+        quota_manager_proxy_.get());
+
+    // Check default bucket exists.
+    storage::QuotaErrorOr<storage::BucketInfo> result =
+        quota_manager_proxy_sync.GetBucket(
+            kTestStorageKey, storage::kDefaultBucketName,
+            blink::mojom::StorageType::kTemporary);
+    EXPECT_TRUE(result.ok());
+    EXPECT_EQ(result->name, storage::kDefaultBucketName);
+    EXPECT_EQ(result->storage_key, kTestStorageKey);
+    EXPECT_GT(result->id.value(), 0);
+    return result->ToBucketLocator();
   }
 
  protected:
@@ -384,32 +414,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 };
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CreateBucket) {
-  base::test::TestFuture<
-      blink::mojom::FileSystemAccessErrorPtr,
-      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
-      future;
-  manager_remote_->GetSandboxedFileSystem(future.GetCallback());
-  blink::mojom::FileSystemAccessErrorPtr get_fs_result;
-  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
-      directory_remote;
-  std::tie(get_fs_result, directory_remote) = future.Take();
-  EXPECT_EQ(get_fs_result->status, blink::mojom::FileSystemAccessStatus::kOk);
-  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
-      std::move(directory_remote));
-  ASSERT_TRUE(root);
-
-  storage::QuotaManagerProxySync quota_manager_proxy_sync(
-      quota_manager_proxy_.get());
-
   // Check default bucket exists.
-  storage::QuotaErrorOr<storage::BucketInfo> result =
-      quota_manager_proxy_sync.GetBucket(kTestStorageKey,
-                                         storage::kDefaultBucketName,
-                                         blink::mojom::StorageType::kTemporary);
-  EXPECT_TRUE(result.ok());
-  EXPECT_EQ(result->name, storage::kDefaultBucketName);
-  EXPECT_EQ(result->storage_key, kTestStorageKey);
-  EXPECT_GT(result->id.value(), 0);
+  ASSERT_TRUE(CreateSandboxFileSystemAndGetDefaultBucket().is_default);
 }
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
@@ -753,9 +759,11 @@ TEST_F(FileSystemAccessManagerImplTest,
 
 TEST_F(FileSystemAccessManagerImplTest,
        SerializeHandle_SandboxedFile_DefaultBucket) {
+  auto default_bucket = CreateSandboxFileSystemAndGetDefaultBucket();
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+  test_file_url.SetBucket(default_bucket);
   FileSystemAccessFileHandleImpl file(manager_.get(), kBindingContext,
                                       test_file_url, {ask_grant_, ask_grant_});
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
@@ -765,7 +773,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   FileSystemAccessTransferTokenImpl* token =
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
-  ASSERT_FALSE(token->url().bucket().has_value());
+  ASSERT_TRUE(token->url().bucket().has_value());
   EXPECT_EQ(test_file_url, token->url());
   EXPECT_EQ(HandleType::kFile, token->type());
 
@@ -806,9 +814,11 @@ TEST_F(FileSystemAccessManagerImplTest,
 
 TEST_F(FileSystemAccessManagerImplTest,
        SerializeHandle_SandboxedDirectory_DefaultBucket) {
+  auto default_bucket = CreateSandboxFileSystemAndGetDefaultBucket();
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("hello/world/"));
+  test_file_url.SetBucket(default_bucket);
   FileSystemAccessDirectoryHandleImpl directory(
       manager_.get(), kBindingContext, test_file_url, {ask_grant_, ask_grant_});
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
@@ -818,7 +828,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   FileSystemAccessTransferTokenImpl* token =
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
-  ASSERT_FALSE(token->url().bucket().has_value());
+  ASSERT_TRUE(token->url().bucket().has_value());
   EXPECT_EQ(test_file_url, token->url());
   EXPECT_EQ(HandleType::kDirectory, token->type());
 
