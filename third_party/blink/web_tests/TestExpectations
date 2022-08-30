@@ -3270,6 +3270,8 @@ crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-
 crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win10.20h2 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-persistent-permission.https.html [ Failure Crash ]
+crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-quirks-mode.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]

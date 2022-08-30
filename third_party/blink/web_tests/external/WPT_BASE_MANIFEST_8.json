@@ -16441,32 +16441,6 @@
    },
    "scroll-animations": {
     "css": {
-     "at-scroll-timeline-default-descriptors-iframe-print.html": [
-      "0b73d7f03474d617767ec636a2712a56eed6c79c",
-      [
-       null,
-       [
-        [
-         "/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "at-scroll-timeline-default-descriptors-print.tentative.html": [
-      "418ed3c5495b77d58bcc87c7519264491c29462a",
-      [
-       null,
-       [
-        [
-         "/scroll-animations/css/at-scroll-timeline-default-descriptors-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "at-scroll-timeline-specified-scroller-print.html": [
       "5543088324d60ab425b1f5ad1775f6406c85a768",
       [
@@ -16474,6 +16448,32 @@
        [
         [
          "/scroll-animations/css/at-scroll-timeline-specified-scroller-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-timeline-default-iframe-print.html": [
+      "fc8e4f193e161fe4fd896f26d4bf55ca62b2abb6",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/scroll-timeline-default-iframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-timeline-default-print.tentative.html": [
+      "e17a40e941f69d827f1bb744cd9afa0d16f4e924",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/scroll-timeline-default-ref.html",
          "=="
         ]
        ],
@@ -244456,58 +244456,6 @@
    },
    "scroll-animations": {
     "css": {
-     "at-scroll-timeline-default-descriptors-iframe.html": [
-      "ddb06693c77d80cdcde9b4cecb13cfdad7ef20bf",
-      [
-       null,
-       [
-        [
-         "/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "at-scroll-timeline-default-descriptors-quirks-mode.html": [
-      "1bba34d5866a2dfc581d8f1a97c16d0fd2344a6c",
-      [
-       null,
-       [
-        [
-         "/scroll-animations/css/at-scroll-timeline-default-descriptors-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "at-scroll-timeline-default-descriptors-writing-mode-rl.html": [
-      "4d276497bc685ceba6ebece2df70f8dc8478c351",
-      [
-       null,
-       [
-        [
-         "/scroll-animations/css/at-scroll-timeline-default-descriptors-writing-mode-rl-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "at-scroll-timeline-default-descriptors.html": [
-      "58225341938822b6d9ff5d13034b1dc7617cd183",
-      [
-       null,
-       [
-        [
-         "/scroll-animations/css/at-scroll-timeline-default-descriptors-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "at-scroll-timeline-frame-size-changed.html": [
       "e41af998c26ef375e6ce990b6dfba90200796c3e",
       [
@@ -244528,6 +244476,58 @@
        [
         [
          "/scroll-animations/css/at-scroll-timeline-inline-orientation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-timeline-default-iframe.html": [
+      "46ede5d88f8ff989d214064ed5deb622b0e916a2",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/scroll-timeline-default-iframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-timeline-default-quirks-mode.html": [
+      "1ef02978bd89c2783dba0116ac5d938c8fd760c7",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/scroll-timeline-default-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-timeline-default-writing-mode-rl.html": [
+      "5ef774396592c9419b0b576c9df5fe5fc5d5737f",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/scroll-timeline-default-writing-mode-rl-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-timeline-default.html": [
+      "aff9f541b7fd56b0063302b625b0a2c745569dda",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/scroll-timeline-default-ref.html",
          "=="
         ]
        ],
@@ -332071,7 +332071,7 @@
      []
     ],
     "MediaDevices-enumerateDevices-persistent-permission.https-expected.txt": [
-     "91119ce94ad223d9054eadcf0c62cd742563dd24",
+     "95a92cc33302b66bc6315d2580834239997a507f",
      []
     ],
     "MediaDevices-enumerateDevices-returned-objects.https-expected.txt": [
@@ -337503,18 +337503,6 @@
      []
     ],
     "css": {
-     "at-scroll-timeline-default-descriptors-iframe-ref.html": [
-      "b05627d99400026dde2c568788a90a25af81f932",
-      []
-     ],
-     "at-scroll-timeline-default-descriptors-ref.html": [
-      "b72a4e8b733a57e119d01366cf44f32f28f0ca97",
-      []
-     ],
-     "at-scroll-timeline-default-descriptors-writing-mode-rl-ref.html": [
-      "2ea7d17577c2af1943f01784625a07dbea4e1605",
-      []
-     ],
      "at-scroll-timeline-frame-size-changed-ref.html": [
       "745c2f5472ee59f6a5bcaccff0a1181763bf720a",
       []
@@ -337533,6 +337521,18 @@
      ],
      "scroll-timeline-cssom.tentative-expected.txt": [
       "116f38ce142edb0efb004461c1a8a9a314c36283",
+      []
+     ],
+     "scroll-timeline-default-iframe-ref.html": [
+      "1ab5646c8bddbec83b29c3d335b0e33fb1a3465c",
+      []
+     ],
+     "scroll-timeline-default-ref.html": [
+      "cb3b60e4bd6c529d5d516f32d3b85510e7d0d3f6",
+      []
+     ],
+     "scroll-timeline-default-writing-mode-rl-ref.html": [
+      "3c072829e6f8cd5c2b94f12a8feeb5d860abc6cd",
       []
      ]
     },
@@ -337791,7 +337791,7 @@
      []
     ],
     "enrollment.https-expected.txt": [
-     "f9c50fc46685b90a6540ae85112dd061f30ace1a",
+     "d3dd35b3578b4f5bdc3c43348a36f99a572f1e7f",
      []
     ],
     "resources": {
@@ -341366,6 +341366,10 @@
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
        []
       ],
+      "encrypted-media.https.html": [
+       "1c3a3ab0ea03794663e00446afa4d19743c9c069",
+       []
+      ],
       "exec.html": [
        "80e0c5999e7f06fb1899984f247010f8cba0e5c9",
        []
@@ -341392,6 +341396,14 @@
       ],
       "key-value-store.py": [
        "1ab609f11bf2be22696f0b132b88d8fc86546b93",
+       []
+      ],
+      "media-device-info.https.html": [
+       "09e85e77b18111b7a32a1cea244e606a4e3ff453",
+       []
+      ],
+      "media-devices-access.https.html": [
+       "462ce53e1b91fb7e19ff254917925d38a9040b63",
        []
       ],
       "notification-before-activation.html": [
@@ -341480,6 +341492,10 @@
       ],
       "web-database-access.html": [
        "fb00852caa9d6eaa0134662b7fe01f085641509e",
+       []
+      ],
+      "web-hid.https.html": [
+       "e9531293eadde0a863e292eb2f2df5e0a2946514",
        []
       ],
       "web-nfc.https.html": [
@@ -384158,7 +384174,7 @@
      ]
     ],
     "otpcredential-get-basics.https.html": [
-     "3907f85450fe4642720b2c8ec374f7f689bfbdd1",
+     "c0cac166de91c242a16bd4d6fc2edfa93aa37680",
      [
       null,
       {}
@@ -388485,7 +388501,7 @@
        ]
       ],
       "custom-property-style-queries.html": [
-       "6e5acbffb8ee35c939fea34e3294250f5e2bb8be",
+       "10e8e55561f346ef49d5b12cac144805d4375264",
        [
         null,
         {}
@@ -492104,7 +492120,7 @@
        ]
       ],
       "popup-attribute-basic.tentative.html": [
-       "4f508ee5baed7a027fcabbaa45b2d8ae0aee702a",
+       "dfce21b0c16d85c7da7efd7d738fd949ce5bc273",
        [
         null,
         {}
@@ -508787,7 +508803,7 @@
      ]
     ],
     "MediaDevices-enumerateDevices-persistent-permission.https.html": [
-     "c53309ca1a97831fc0301a8da3ceac5b92598711",
+     "58aacf9856ce99e606d3feedd55f768f2592304e",
      [
       null,
       {
@@ -534772,10 +534788,12 @@
      ]
     ],
     "object-not-found-after-cross-origin-redirect.html": [
-     "278c78e320e98ce65c62cfc2d4a612e3b84b82f0",
+     "c1a82d49708d72931a20c46d39902a3c92abd483",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "opaque-origin.html": [
@@ -537037,6 +537055,13 @@
        {}
       ]
      ],
+     "animation-timeline-ignored.tentative.html": [
+      "32cb89c4ef8ba42416be57ca015215557451c559",
+      [
+       null,
+       {}
+      ]
+     ],
      "animation-timeline-in-keyframe.html": [
       "75483331390d9fb6571307c3158cc37adcd893ee",
       [
@@ -537045,7 +537070,7 @@
       ]
      ],
      "animation-timeline-multiple.html": [
-      "d223860a069e865388c3eb630d9c196e96c008d1",
+      "8ae37bf751982355ef89c3db2c491e4e68b27ba0",
       [
        null,
        {}
@@ -537086,13 +537111,6 @@
        {}
       ]
      ],
-     "at-scroll-timeline-ignored.tentative.html": [
-      "44d4155f74bbbef2f7408abde84918b78e5bdfdf",
-      [
-       null,
-       {}
-      ]
-     ],
      "at-scroll-timeline-inactive-phase.html": [
       "a50583dfd0641855fc59f3fd55f6085bbfd9654d",
       [
@@ -537123,13 +537141,6 @@
      ],
      "at-scroll-timeline-responsiveness-from-endpoint.html": [
       "883f94b249ab1000cbdebc2df68a7d0a65e50396",
-      [
-       null,
-       {}
-      ]
-     ],
-     "at-scroll-timeline-sampling.html": [
-      "cc3507732922c644788a9a240c6902f260a2a4e7",
       [
        null,
        {}
@@ -537207,6 +537218,13 @@
      ],
      "scroll-timeline-name-parsing.tentative.html": [
       "866363de3363733dc687de7ac306b13f91e15f07",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scroll-timeline-sampling.html": [
+      "1fe354edfd694a8d0cb03ffff78d030508452356",
       [
        null,
        {}
@@ -537728,7 +537746,7 @@
      ]
     ],
     "enrollment.https.html": [
-     "b93822c7f18e5d265499ade28a254cf85cf5fe1a",
+     "7a370aa7b7ebecdcebb832f8e54f284ac5011b85",
      [
       null,
       {
@@ -543895,6 +543913,24 @@
        }
       ]
      ],
+     "restriction-encrypted-media-unsupported-config.https.html": [
+      "6a5cc0e89a3a0a0f4fd4dc90f5f1100bfac43903",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-encrypted-media.https.html": [
+      "9c375f59c9aa5247294bd3512cfea83fefecc6d4",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-focus.html": [
       "1149b8bd0981e8cf0109f2bca9dd974b9cd9a604",
       [
@@ -543906,6 +543942,33 @@
      ],
      "restriction-idle-detection.https.html": [
       "688ae00ba743a226dbff486915c53cea8769d716",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-media-camera.https.html": [
+      "78f7dd098db9f55c27ca02f5802b00bd3f3796a2",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-media-device-info.https.html": [
+      "2e419c027e099b2dd0721ce06958334b62c9ef79",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-media-microphone.https.html": [
+      "09385be4b10d7de2d723e546d733ce71e0ca44c8",
       [
        null,
        {
@@ -544060,6 +544123,15 @@
        null,
        {
         "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-web-hid.https.html": [
+      "c96173ac17821d4309fd5a8db3962c1f2fd1176d",
+      [
+       null,
+       {
         "timeout": "long"
        }
       ]
@@ -564511,16 +564583,6 @@
       }
      ]
     ],
-    "createcredential-abort.https.html": [
-     "15b2b8b6f0bb9269111639f968d4f1f20e66f351",
-     [
-      null,
-      {
-       "testdriver": true,
-       "timeout": "long"
-      }
-     ]
-    ],
     "createcredential-attachment.https.html": [
      "e9458ad5604875e2ba430647cd434e561556a675",
      [
@@ -564683,16 +564745,6 @@
     ],
     "credblob-supported.https.html": [
      "c69091fbc4019038531de326c59141a09cea9a00",
-     [
-      null,
-      {
-       "testdriver": true,
-       "timeout": "long"
-      }
-     ]
-    ],
-    "getcredential-abort.https.html": [
-     "1cd5a7ed0b513b732edf0ac85d8b6474b6b8b1b1",
      [
       null,
       {
