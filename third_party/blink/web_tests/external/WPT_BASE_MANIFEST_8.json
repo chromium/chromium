@@ -273616,10 +273616,6 @@
       []
      ],
      "parsing": {
-      "font-face-src-format-expected.txt": [
-       "2e8aa5259e7d0500c5285332fb824aaffea98673",
-       []
-      ],
       "font-face-src-tech-expected.txt": [
        "1058d8a25a73843a8741a64670b75c5535a5a849",
        []
@@ -307920,19 +307916,19 @@
       }
      },
      "idlharness.any-expected.txt": [
-      "82448e0dd39cf64338dc5a4753b273f3288b9962",
+      "6bb633c40b208bd5c5932195ea0ddb8c2a6f7ebf",
       []
      ],
      "idlharness.any.serviceworker-expected.txt": [
-      "3a6843f3029d8aca02233925ddf82f40b5cf8d2d",
+      "a91294156f25ce42682f28ba77dad7f47229bce4",
       []
      ],
      "idlharness.any.sharedworker-expected.txt": [
-      "3a6843f3029d8aca02233925ddf82f40b5cf8d2d",
+      "a91294156f25ce42682f28ba77dad7f47229bce4",
       []
      ],
      "idlharness.any.worker-expected.txt": [
-      "3a6843f3029d8aca02233925ddf82f40b5cf8d2d",
+      "a91294156f25ce42682f28ba77dad7f47229bce4",
       []
      ],
      "policies": {
@@ -311189,12 +311185,12 @@
      []
     ],
     "generic-sensor-tests.js": [
-     "26ff691959917b7b4921900f0603dcc23867c0ca",
+     "42821465b59872861b76f33d2e73c9e523fc9647",
      []
     ],
     "resources": {
      "generic-sensor-helpers.js": [
-      "7070daa0516ea37ca69be5e48c5908f0b1e0dec4",
+      "aa101547ff1420f3ec95c96725bb8e5067a7f955",
       []
      ],
      "iframe_sensor_handler.html": [
@@ -311293,7 +311289,7 @@
      []
     ],
     "GeolocationSensor.https-expected.txt": [
-     "908101b03564b911e0246b9eb6eca2b0d2ed6496",
+     "11f9fa8cff297402c3aff283c4b18bd4d7b73536",
      []
     ],
     "GeolocationSensor_read.https-expected.txt": [
@@ -329157,7 +329153,7 @@
      []
     ],
     "fetch.idl": [
-     "a9304e90ef886bd9db5356258e84f700418d4393",
+     "6532e748dae8b35d512ae9d57a411b5a1967126d",
      []
     ],
     "file-system-access.idl": [
@@ -330435,7 +330431,7 @@
      []
     ],
     "Magnetometer.https-expected.txt": [
-     "f8572ea5d6ca6b1a49ffd2eabfc1706ec8eec881",
+     "7ec2483a741db1d95f9c622e2ec560854380473c",
      []
     ],
     "OWNERS": [
@@ -336980,7 +336976,7 @@
       []
      ],
      "resource-loaders.js": [
-      "99a2c28d2b3b27dce7e6b0ed1b4ee9e4e93f0517",
+      "92e57d0bde870864ac01730cca4d708ccea010cc",
       []
      ],
      "resource-timing-content-length.py": [
@@ -337024,7 +337020,7 @@
       []
      ],
      "status-code.py": [
-      "72222b39e48574c666052b2bb4d7029fd6ba526a",
+      "1c6a0216333289b9c5af5f90ea62827e4b687338",
       []
      ],
      "sw-install.html": [
@@ -337327,11 +337323,11 @@
        []
       ],
       "VERSION.md": [
-       "10bdc008209a91851a68613f95eb932444ad903d",
+       "5a3726c6c00fe5a30c01a69dd1d9b722c13d4405",
        []
       ],
       "webidl2.js": [
-       "2861354e47da9bf300ba50ded531e52472e71b7b",
+       "7161def899cf24a5edeb26cf234c4de3a7e0071a",
        []
       ],
       "webidl2.js.headers": [
@@ -365975,7 +365971,7 @@
      ]
     ],
     "AmbientLightSensor.https.html": [
-     "0ccb899ec237a0de885622a66c26677193f749c5",
+     "7d23896a6488f3fdfef6809f552a06f03fe427a3",
      [
       null,
       {
@@ -391689,7 +391685,7 @@
       ]
      ],
      "font-family-src-quoted.html": [
-      "3989bf8d2367b9e529f80a37620d9a826a020d7f",
+      "a279e99153f20533d3eb8b0f5340df15c2ff3f87",
       [
        null,
        {}
@@ -391818,7 +391814,7 @@
        ]
       ],
       "font-face-src-format.html": [
-       "22f6d564ed7ed707f16dadb8011f838d171795b9",
+       "e38ebebcf66fea06fb0754f404914b896063cac8",
        [
         null,
         {}
@@ -534907,6 +534903,13 @@
       {}
      ]
     ],
+    "response-status-code.html": [
+     "d0b24aef5075dc745632ac48accdbead3866f5ec",
+     [
+      null,
+      {}
+     ]
+    ],
     "same-origin-from-cross-origin-redirect.html": [
      "8740b81b13fd8aa7a269a10cf2dd3023a0fbc2a5",
      [
@@ -535133,7 +535136,7 @@
      ]
     ],
     "tojson.html": [
-     "7a6187d3d55bcdf6b937602fbe3ce5b87a1f9f03",
+     "19da9c0390f53bf0d71e521545dec400921a0d00",
      [
       null,
       {}
@@ -537074,7 +537077,7 @@
       ]
      ],
      "animation-timeline-named-scroll-progress-timeline.tentative.html": [
-      "915aaa1b36b060e0d2fe30fa48705d46138009fd",
+      "b31e402a1a3f37f67d0565186c38699bc38b88a0",
       [
        null,
        {}

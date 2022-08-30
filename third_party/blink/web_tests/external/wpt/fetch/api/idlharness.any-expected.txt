@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 138 tests; 136 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 141 tests; 138 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
@@ -100,6 +100,7 @@ PASS Response interface: existence and properties of interface prototype object'
 PASS Response interface: existence and properties of interface prototype object's @@unscopables property
 PASS Response interface: operation error()
 PASS Response interface: operation redirect(USVString, optional unsigned short)
+FAIL Response interface: operation json(any, optional ResponseInit) assert_equals: property has wrong .length expected 0 but got 1
 PASS Response interface: attribute type
 PASS Response interface: attribute url
 PASS Response interface: attribute redirected
@@ -120,6 +121,8 @@ PASS Stringification of new Response()
 PASS Response interface: new Response() must inherit property "error()" with the proper type
 PASS Response interface: new Response() must inherit property "redirect(USVString, optional unsigned short)" with the proper type
 PASS Response interface: calling redirect(USVString, optional unsigned short) on new Response() with too few arguments must throw TypeError
+PASS Response interface: new Response() must inherit property "json(any, optional ResponseInit)" with the proper type
+PASS Response interface: calling json(any, optional ResponseInit) on new Response() with too few arguments must throw TypeError
 PASS Response interface: new Response() must inherit property "type" with the proper type
 PASS Response interface: new Response() must inherit property "url" with the proper type
 PASS Response interface: new Response() must inherit property "redirected" with the proper type
