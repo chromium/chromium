@@ -43,3 +43,47 @@
     assert_equals(getComputedStyle(grandchild).color, green);
   }, "Target grandchild");
 </script>
+
+<style>
+  @property --length {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  #reg_container {
+    container-name: my-reg-container;
+    font-size: 50px;
+  }
+  #reg_child, #reg_grandchild { color: red; }
+  @container style(--length: 100px) {
+    #reg_child { color: green; }
+  }
+  @container my-reg-container style(--length: 200px) {
+    #reg_grandchild { color: green; }
+  }
+</style>
+<div id="reg_container">
+  <div id="reg_child"></div>
+  <div>
+    <div id="reg_grandchild"></div>
+  </div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(reg_child).color, red);
+    assert_equals(getComputedStyle(reg_grandchild).color, red);
+  }, "Initially no queries for registered property match.");
+
+  test(() => {
+    reg_container.style.setProperty("--length", "2em");
+    assert_equals(getComputedStyle(reg_child).color, green);
+    assert_equals(getComputedStyle(reg_grandchild).color, red);
+  }, "Registered property query child");
+
+  test(() => {
+    reg_container.style.setProperty("--length", "200px");
+    assert_equals(getComputedStyle(reg_child).color, red);
+    assert_equals(getComputedStyle(reg_grandchild).color, green);
+  }, "Registered property query grandchild");
+</script>
