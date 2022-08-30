@@ -15,6 +15,7 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -56,9 +57,8 @@ bool ModelContainsInitializedItemsForSection(
     const HoldingSpaceModel* model,
     const HoldingSpaceItemViewsSection* section) {
   const auto& supported_types = section->supported_types();
-  return std::any_of(
-      supported_types.begin(), supported_types.end(),
-      [&model](HoldingSpaceItem::Type supported_type) {
+  return base::ranges::any_of(
+      supported_types, [&model](HoldingSpaceItem::Type supported_type) {
         return model->ContainsInitializedItemOfType(supported_type);
       });
 }
@@ -212,9 +212,8 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsRemoved(
   // contain initialized items supported by any of its sections. The exception
   // is if a section has a placeholder to show in lieu of holding space items.
   // If a placeholder exists, the child bubble should persist.
-  const bool animate_out = std::none_of(
-      sections_.begin(), sections_.end(),
-      [&model](const HoldingSpaceItemViewsSection* section) {
+  const bool animate_out = base::ranges::none_of(
+      sections_, [&model](const HoldingSpaceItemViewsSection* section) {
         return section->has_placeholder() ||
                ModelContainsInitializedItemsForSection(model, section);
       });

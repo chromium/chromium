@@ -35,6 +35,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -590,8 +591,8 @@ void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
   // holding space tray should bounce in (if it isn't already visible) and
   // previews should be animated.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_initialized_item = std::any_of(
-        items.begin(), items.end(),
+    const bool has_initialized_item = base::ranges::any_of(
+        items,
         [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
     if (has_initialized_item)
       SetShouldAnimate(true);
@@ -606,8 +607,8 @@ void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
   // If an initialized holding space item is removed from the model mid-session,
   // the holding space tray should animate updates.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_initialized_item = std::any_of(
-        items.begin(), items.end(),
+    const bool has_initialized_item = base::ranges::any_of(
+        items,
         [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
     if (has_initialized_item)
       SetShouldAnimate(true);

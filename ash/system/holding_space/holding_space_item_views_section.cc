@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -277,8 +278,8 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  const bool needs_update = std::any_of(
-      items.begin(), items.end(), [this](const HoldingSpaceItem* item) {
+  const bool needs_update =
+      base::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
                base::Contains(supported_types_, item->type());
       });
@@ -288,8 +289,8 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  const bool needs_update = std::any_of(
-      items.begin(), items.end(), [this](const HoldingSpaceItem* item) {
+  const bool needs_update =
+      base::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return base::Contains(views_by_item_id_, item->id());
       });
   if (needs_update)
@@ -414,9 +415,8 @@ void HoldingSpaceItemViewsSection::AnimateOut(
   if (animate_out_header) {
     HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
     if (model) {
-      animate_out_header = std::none_of(
-          supported_types_.begin(), supported_types_.end(),
-          [&model](HoldingSpaceItem::Type supported_type) {
+      animate_out_header = base::ranges::none_of(
+          supported_types_, [&model](HoldingSpaceItem::Type supported_type) {
             return model->ContainsInitializedItemOfType(supported_type);
           });
     }

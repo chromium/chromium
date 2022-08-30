@@ -35,6 +35,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
@@ -125,10 +126,9 @@ class DragWindowFromShelfController::WindowsHider
   // minimize asynchronously so they may not be truly minimized after |this| is
   // constructed.
   bool WindowsMinimized() {
-    return std::all_of(hidden_windows_.begin(), hidden_windows_.end(),
-                       [](const aura::Window* w) {
-                         return WindowState::Get(w)->IsMinimized();
-                       });
+    return base::ranges::all_of(hidden_windows_, [](const aura::Window* w) {
+      return WindowState::Get(w)->IsMinimized();
+    });
   }
 
   // aura::WindowObserver:

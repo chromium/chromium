@@ -4,12 +4,12 @@
 
 #include "ash/login/ui/views_utils.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/focus_ring.h"
@@ -44,7 +44,7 @@ class ContainerView : public NonAccessibleView,
       return child->GetVisible() &&
              child->HitTestRect(gfx::ToEnclosingRect(child_rect));
     };
-    return std::any_of(children.cbegin(), children.cend(), hits_child);
+    return base::ranges::any_of(children, hits_child);
   }
 };
 

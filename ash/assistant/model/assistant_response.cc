@@ -4,14 +4,15 @@
 
 #include "ash/assistant/model/assistant_response.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "ash/assistant/model/assistant_response_observer.h"
 #include "ash/assistant/model/ui/assistant_error_element.h"
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -204,11 +205,8 @@ bool AssistantResponse::ContainsUiElement(
     const AssistantUiElement* element) const {
   DCHECK(element);
 
-  bool contains_element =
-      std::any_of(ui_elements_.cbegin(), ui_elements_.cend(),
-                  [element](const std::unique_ptr<AssistantUiElement>& other) {
-                    return *other == *element;
-                  });
+  bool contains_element = base::Contains(
+      ui_elements_, *element, &std::unique_ptr<AssistantUiElement>::operator*);
 
   return contains_element || ContainsPendingUiElement(element);
 }
@@ -217,9 +215,10 @@ bool AssistantResponse::ContainsPendingUiElement(
     const AssistantUiElement* element) const {
   DCHECK(element);
 
-  return std::any_of(pending_ui_elements_.cbegin(), pending_ui_elements_.cend(),
-                     [element](const std::unique_ptr<PendingUiElement>& other) {
-                       return *other->ui_element == *element;
-                     });
+  return base::ranges::any_of(
+      pending_ui_elements_,
+      [element](const std::unique_ptr<PendingUiElement>& other) {
+        return *other->ui_element == *element;
+      });
 }
 }  // namespace ash

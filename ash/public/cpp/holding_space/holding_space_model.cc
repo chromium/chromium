@@ -4,14 +4,13 @@
 
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 
-#include <algorithm>
-
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -108,8 +107,8 @@ HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetInProgressCommands(
     std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands) {
-  DCHECK(std::all_of(
-      in_progress_commands.begin(), in_progress_commands.end(),
+  DCHECK(base::ranges::all_of(
+      in_progress_commands,
       [](const HoldingSpaceItem::InProgressCommand& in_progress_command) {
         return holding_space_util::IsInProgressCommand(
             in_progress_command.command_id);

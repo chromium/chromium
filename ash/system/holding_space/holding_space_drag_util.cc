@@ -17,6 +17,7 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
@@ -423,8 +424,8 @@ class DragImageView : public views::View {
     container->SetLayoutManager(
         std::make_unique<DragImageLayoutManager>(kDragImageViewChildOffset));
 
-    const bool contains_only_screen_captures = std::all_of(
-        items.begin(), items.end(),
+    const bool contains_only_screen_captures = base::ranges::all_of(
+        items,
         [](const HoldingSpaceItem* item) { return item->IsScreenCapture(); });
 
     // Show at most `kDragImageViewMaxItemsToPaint` items in the drag image. If

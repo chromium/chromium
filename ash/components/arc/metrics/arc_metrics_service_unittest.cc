@@ -4,7 +4,6 @@
 
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 
-#include <algorithm>
 #include <array>
 #include <map>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "ash/constants/app_types.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -371,8 +371,8 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents) {
   EXPECT_EQ(*arc_start_time, base::Milliseconds(10) + base::TimeTicks());
 
   // Check that the upgrade event was removed from events.
-  EXPECT_TRUE(std::none_of(
-      events.begin(), events.end(), [](const mojom::BootProgressEventPtr& ev) {
+  EXPECT_TRUE(
+      base::ranges::none_of(events, [](const mojom::BootProgressEventPtr& ev) {
         return ev->event.compare(kBootProgressArcUpgraded) == 0;
       }));
 }

@@ -12,6 +12,7 @@
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -235,10 +236,10 @@ void AnimatedContainerView::AddResponse(
 }
 
 bool AnimatedContainerView::IsAnimatingViews() const {
-  return std::any_of(animators_.begin(), animators_.end(),
-                     [](const std::unique_ptr<ElementAnimator>& animator) {
-                       return animator->layer()->GetAnimator()->is_animating();
-                     });
+  return base::ranges::any_of(
+      animators_, [](const std::unique_ptr<ElementAnimator>& animator) {
+        return animator->layer()->GetAnimator()->is_animating();
+      });
 }
 
 void AnimatedContainerView::AddElementAnimatorAndAnimateInView(

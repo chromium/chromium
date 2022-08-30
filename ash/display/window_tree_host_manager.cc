@@ -4,7 +4,6 @@
 
 #include "ash/display/window_tree_host_manager.h"
 
-#include <algorithm>
 #include <cmath>
 #include <map>
 #include <memory>
@@ -27,6 +26,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -573,11 +573,8 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
     }
 
     // |to_delete| has already been removed from |window_tree_hosts_|.
-    DCHECK(std::none_of(
-        window_tree_hosts_.cbegin(), window_tree_hosts_.cend(),
-        [to_delete](const std::pair<int64_t, AshWindowTreeHost*>& pair) {
-          return pair.second == to_delete;
-        }));
+    DCHECK(!base::Contains(window_tree_hosts_, to_delete,
+                           &WindowTreeHostMap::value_type::second));
 
     DeleteHost(to_delete);
     DCHECK(!primary_tree_host_for_replace_);

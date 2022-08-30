@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -304,11 +305,11 @@ bool HoldingSpaceItem::SetProgress(const HoldingSpaceProgress& progress) {
 
 bool HoldingSpaceItem::SetInProgressCommands(
     std::vector<InProgressCommand> in_progress_commands) {
-  DCHECK(std::all_of(in_progress_commands.begin(), in_progress_commands.end(),
-                     [](const InProgressCommand& in_progress_command) {
-                       return holding_space_util::IsInProgressCommand(
-                           in_progress_command.command_id);
-                     }));
+  DCHECK(base::ranges::all_of(in_progress_commands,
+                              [](const InProgressCommand& in_progress_command) {
+                                return holding_space_util::IsInProgressCommand(
+                                    in_progress_command.command_id);
+                              }));
 
   if (progress_.IsComplete() || in_progress_commands_ == in_progress_commands)
     return false;

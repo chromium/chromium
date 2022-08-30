@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -65,11 +66,8 @@ AmbientModePhotoSource AmbientSettingsToPhotoSource(
   if (settings.selected_album_ids.size() == 0)
     return AmbientModePhotoSource::kGooglePhotosEmpty;
 
-  bool has_recent_highlights = std::any_of(
-      settings.selected_album_ids.cbegin(), settings.selected_album_ids.cend(),
-      [](const std::string& album_id) {
-        return album_id == ash::kAmbientModeRecentHighlightsAlbumId;
-      });
+  bool has_recent_highlights = base::Contains(
+      settings.selected_album_ids, ash::kAmbientModeRecentHighlightsAlbumId);
 
   if (has_recent_highlights && settings.selected_album_ids.size() == 1)
     return AmbientModePhotoSource::kGooglePhotosRecentHighlights;

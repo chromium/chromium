@@ -19,6 +19,7 @@
 #include "base/containers/cxx20_erase_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 
 namespace ash {
 namespace {
@@ -80,8 +81,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override {
     // The removal of `items` can be safely ignored if none were in progress.
-    const bool removed_in_progress_item = std::any_of(
-        items.begin(), items.end(), [](const HoldingSpaceItem* item) {
+    const bool removed_in_progress_item =
+        base::ranges::any_of(items, [](const HoldingSpaceItem* item) {
           return item->IsInitialized() && !item->progress().IsComplete();
         });
     if (removed_in_progress_item)

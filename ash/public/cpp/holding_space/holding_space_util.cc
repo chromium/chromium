@@ -5,6 +5,7 @@
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "base/containers/contains.h"
 
 namespace ash::holding_space_util {
 
@@ -52,11 +53,8 @@ bool IsInProgressCommand(HoldingSpaceCommandId command_id) {
 bool SupportsInProgressCommand(const HoldingSpaceItem* item,
                                HoldingSpaceCommandId command_id) {
   DCHECK(IsInProgressCommand(command_id));
-  return std::any_of(
-      item->in_progress_commands().begin(), item->in_progress_commands().end(),
-      [&](const HoldingSpaceItem::InProgressCommand& in_progress_command) {
-        return in_progress_command.command_id == command_id;
-      });
+  return base::Contains(item->in_progress_commands(), command_id,
+                        &HoldingSpaceItem::InProgressCommand::command_id);
 }
 
 bool ExecuteInProgressCommand(const HoldingSpaceItem* item,

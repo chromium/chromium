@@ -25,6 +25,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -114,10 +115,9 @@ class AmbientControllerTest : public AmbientAshTestBase {
 
   bool WidgetsVisible() {
     const auto& views = GetContainerViews();
-    return views.size() > 0 &&
-           std::all_of(views.cbegin(), views.cend(), [](const auto* view) {
-             return view->GetWidget()->IsVisible();
-           });
+    return !views.empty() && base::ranges::all_of(views, [](const auto* view) {
+      return view->GetWidget()->IsVisible();
+    });
   }
 
   bool AreSessionSpecificObserversBound() {
