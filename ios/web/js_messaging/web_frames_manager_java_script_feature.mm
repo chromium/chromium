@@ -75,14 +75,6 @@ WebFramesManagerJavaScriptFeature::FromBrowserState(
   return feature;
 }
 
-void WebFramesManagerJavaScriptFeature::RegisterExistingFrames(
-    WebState* web_state) {
-  // This call must be sent to the webstate directly, because the result of this
-  // call will create the WebFrames. (Thus, the WebFrames do not yet exist to
-  // call into JavaScript at this point.)
-  web_state->ExecuteJavaScript(u"__gCrWeb.message.getExistingFrames();");
-}
-
 void WebFramesManagerJavaScriptFeature::ConfigureHandlers(
     WKUserContentController* user_content_controller) {
   // Reset the old handlers first as handlers with the same name can not be

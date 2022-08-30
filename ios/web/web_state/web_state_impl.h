@@ -248,6 +248,9 @@ class WebStateImpl final : public WebState {
   // observers.
   void WebFrameBecameUnavailable(const std::string& frame_id);
 
+  // Broadcasts a JavaScript message to request the frameId of all frames.
+  void RetrieveExistingFrames();
+
   // Removes all current web frames.
   void RemoveAllWebFrames();
 

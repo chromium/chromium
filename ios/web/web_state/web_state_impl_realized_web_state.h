@@ -125,6 +125,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
                       WebStateDelegate::AuthCallback callback);
   void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
   void WebFrameBecameUnavailable(const std::string& frame_id);
+  void RetrieveExistingFrames();
   void RemoveAllWebFrames();
 
   // WebState:

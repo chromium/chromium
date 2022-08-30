@@ -14,7 +14,6 @@
 
 namespace web {
 class BrowserState;
-class WebState;
 
 // A feature which notifies the native application code of the creation and
 // destruction of webpage frames based on JavaScript messages from the webpage.
@@ -29,10 +28,6 @@ class WebFramesManagerJavaScriptFeature : public base::SupportsUserData::Data,
   // null.
   static WebFramesManagerJavaScriptFeature* FromBrowserState(
       BrowserState* browser_state);
-
-  // Broadcasts a (not encrypted) JavaScript message to get the identifiers
-  // and keys of existing frames.
-  void RegisterExistingFrames(WebState* web_state);
 
   // Configures message handlers for the creation and destruction of frames.
   // |user_content_controller| is used directly (instead of using the built-in

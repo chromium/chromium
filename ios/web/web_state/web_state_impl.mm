@@ -309,6 +309,10 @@ void WebStateImpl::WebFrameBecameUnavailable(const std::string& frame_id) {
   RealizedState()->WebFrameBecameUnavailable(frame_id);
 }
 
+void WebStateImpl::RetrieveExistingFrames() {
+  RealizedState()->RetrieveExistingFrames();
+}
+
 void WebStateImpl::RemoveAllWebFrames() {
   RealizedState()->RemoveAllWebFrames();
 }

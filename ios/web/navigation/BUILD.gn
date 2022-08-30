@@ -23,7 +23,6 @@ source_set("navigation") {
     "//ios/web/common",
     "//ios/web/download",
     "//ios/web/js_messaging",
-    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/download",

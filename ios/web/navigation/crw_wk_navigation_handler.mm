@@ -16,7 +16,6 @@
 #include "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/download/download_native_task_bridge.h"
-#import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_pending_navigation_info.h"
@@ -769,9 +768,7 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
     // does not get a chance to properly update MIME type.
     [self.webStateImpl->GetWebController() injectWindowID];
 
-    web::BrowserState* browserState = self.webStateImpl->GetBrowserState();
-    web::WebFramesManagerJavaScriptFeature::FromBrowserState(browserState)
-        ->RegisterExistingFrames(self.webStateImpl);
+    self.webStateImpl->RetrieveExistingFrames();
   }
 
   if (committedNavigation) {

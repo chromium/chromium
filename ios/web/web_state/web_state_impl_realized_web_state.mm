@@ -502,6 +502,13 @@ void WebStateImpl::RealizedWebState::WebFrameBecameUnavailable(
   NotifyObserversAndRemoveWebFrame(frame);
 }
 
+void WebStateImpl::RealizedWebState::RetrieveExistingFrames() {
+  // This call must be sent to the webstate directly, because the result of this
+  // call will create the WebFrames. (Thus, the WebFrames do not yet exist and
+  // can not be used to call JavaScript.)
+  ExecuteJavaScript(u"__gCrWeb.message.getExistingFrames();");
+}
+
 void WebStateImpl::RealizedWebState::RemoveAllWebFrames() {
   for (WebFrame* frame : GetWebFramesManager().GetAllWebFrames()) {
     NotifyObserversAndRemoveWebFrame(frame);
