@@ -6391,22 +6391,19 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
                        FencedFrameInGuestHasGuestSiteInstance) {
   TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
 
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+  auto* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
   std::vector<content::RenderFrameHost*> rfhs =
-      content::CollectAllRenderFrameHosts(
-          guest_web_contents->GetPrimaryMainFrame());
+      content::CollectAllRenderFrameHosts(guest_rfh);
   ASSERT_EQ(rfhs.size(), 2u);
-  ASSERT_EQ(rfhs[0], guest_web_contents->GetPrimaryMainFrame());
+  ASSERT_EQ(rfhs[0], guest_rfh);
   content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
 
   content::SiteInstance* fenced_frame_site_instance =
       fenced_frame->GetSiteInstance();
   EXPECT_TRUE(fenced_frame_site_instance->IsGuest());
   EXPECT_EQ(fenced_frame_site_instance->GetStoragePartitionConfig(),
-            guest_web_contents->GetPrimaryMainFrame()
-                ->GetSiteInstance()
-                ->GetStoragePartitionConfig());
+            guest_rfh->GetSiteInstance()->GetStoragePartitionConfig());
 }
 
 class WebViewPortalTest : public WebViewTest {
