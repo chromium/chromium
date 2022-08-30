@@ -23,34 +23,18 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId KioskAutolaunchScreenView::kScreenId;
-
 KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler()
     : BaseScreenHandler(kScreenId) {
   KioskAppManager::Get()->AddObserver(this);
 }
 
 KioskAutolaunchScreenHandler::~KioskAutolaunchScreenHandler() {
-  if (delegate_)
-    delegate_->OnViewDestroyed(this);
-
   KioskAppManager::Get()->RemoveObserver(this);
 }
 
 void KioskAutolaunchScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
   UpdateKioskApp();
   ShowInWebUI();
-}
-
-void KioskAutolaunchScreenHandler::SetDelegate(
-    KioskAutolaunchScreen* delegate) {
-  delegate_ = delegate;
-  if (IsJavascriptAllowed())
-    InitializeDeprecated();
 }
 
 void KioskAutolaunchScreenHandler::UpdateKioskApp() {
@@ -74,7 +58,7 @@ void KioskAutolaunchScreenHandler::UpdateKioskApp() {
     icon_url = webui::GetBitmapDataUrl(*app.icon.bitmap());
 
   app_info.Set("appIconUrl", icon_url);
-  CallJS("login.AutolaunchScreen.updateApp", std::move(app_info));
+  CallExternalAPI("updateApp", std::move(app_info));
 }
 
 void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
@@ -86,37 +70,19 @@ void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
   builder->Add("autolaunchCancelButton", IDS_CANCEL);
 }
 
-void KioskAutolaunchScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed() || !delegate_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void KioskAutolaunchScreenHandler::RegisterMessages() {
-  AddCallback("autolaunchVisible",
-              &KioskAutolaunchScreenHandler::HandleOnVisible);
-  AddCallback("autolaunchOnCancel",
-              &KioskAutolaunchScreenHandler::HandleOnCancel);
-  AddCallback("autolaunchOnConfirm",
-              &KioskAutolaunchScreenHandler::HandleOnConfirm);
-}
-
 void KioskAutolaunchScreenHandler::HandleOnCancel() {
   KioskAppManager::Get()->RemoveObserver(this);
   KioskAppManager::Get()->SetEnableAutoLaunch(false);
-  if (delegate_)
-    delegate_->OnExit(false);
 }
 
 void KioskAutolaunchScreenHandler::HandleOnConfirm() {
   KioskAppManager::Get()->RemoveObserver(this);
   KioskAppManager::Get()->SetEnableAutoLaunch(true);
-  if (delegate_)
-    delegate_->OnExit(true);
+}
+
+void KioskAutolaunchScreenHandler::DeclareJSCallbacks() {
+  AddCallback("autolaunchVisible",
+              &KioskAutolaunchScreenHandler::HandleOnVisible);
 }
 
 void KioskAutolaunchScreenHandler::HandleOnVisible() {

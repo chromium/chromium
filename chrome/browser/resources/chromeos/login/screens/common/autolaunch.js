@@ -56,11 +56,11 @@ class Autolaunch extends AutolaunchBase {
   }
 
   onConfirm_() {
-    chrome.send('autolaunchOnConfirm');
+    this.userActed('confirm');
   }
 
   onCancel_() {
-    chrome.send('autolaunchOnCancel');
+    this.userActed('cancel');
   }
 
   /**
@@ -74,7 +74,7 @@ class Autolaunch extends AutolaunchBase {
    * Cancels the reset and drops the user back to the login screen.
    */
   cancel() {
-    chrome.send('autolaunchOnCancel');
+    this.userActed('cancel');
   }
 
   /**

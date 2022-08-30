@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
@@ -23,7 +24,7 @@ class KioskAutolaunchScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  KioskAutolaunchScreen(KioskAutolaunchScreenView* view,
+  KioskAutolaunchScreen(base::WeakPtr<KioskAutolaunchScreenView> view,
                         const ScreenExitCallback& exit_callback);
 
   KioskAutolaunchScreen(const KioskAutolaunchScreen&) = delete;
@@ -31,20 +32,17 @@ class KioskAutolaunchScreen : public BaseScreen {
 
   ~KioskAutolaunchScreen() override;
 
-  // Called when screen is exited.
-  void OnExit(bool confirmed);
-
-  // This method is called, when view is being destroyed. Note, if Delegate
-  // is destroyed earlier then it has to call SetDelegate(nullptr).
-  void OnViewDestroyed(KioskAutolaunchScreenView* view);
-
  protected:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const base::Value::List& args) override;
 
  private:
-  KioskAutolaunchScreenView* view_;
+  // Called when screen is exited.
+  void OnExit(bool confirmed);
+
+  base::WeakPtr<KioskAutolaunchScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 
