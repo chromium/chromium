@@ -113,9 +113,17 @@ bool AXMenuListOption::OnNativeClickAction() {
     GetElement()->AccessKeyAction(
         SimulatedClickCreationScope::kFromAccessibility);
 
+    // It's possible that the call to `AccessKeyAction` right above modified the
+    // tree structure (e.g., by collapsing the list of options and removing them
+    // from the tree), effectively detaching the current node from the tree. In
+    // this case, `ParentObject` will now return nullptr.
+    AXObject* parent = ParentObject();
+    if (!parent)
+      return false;
+
     // Calling OnNativeClickAction on the parent select element will toggle
     // it open or closed.
-    return ParentObject()->OnNativeClickAction();
+    return parent->OnNativeClickAction();
   }
 
   return AXNodeObject::OnNativeClickAction();
