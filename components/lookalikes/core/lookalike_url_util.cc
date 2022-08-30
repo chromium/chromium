@@ -683,16 +683,34 @@ bool IsComboSquatting(
     auto brand_skeleton = brand.second;
     DCHECK(IsComboSquattingCandidate(brand_name));
     for (auto& skeleton : navigated_domain.domain_without_registry_skeletons) {
+      size_t brand_skeleton_pos = skeleton.find(brand_skeleton);
       if (skeleton.size() == brand_skeleton.size() ||
-          skeleton.find(brand_skeleton) == std::string::npos) {
+          brand_skeleton_pos == std::string::npos) {
         continue;
       }
 
       for (size_t j = 0; j < combo_squatting_params.num_popular_keywords; j++) {
         auto* const keyword = combo_squatting_params.popular_keywords[j];
-        if (skeleton.find(keyword) != std::string::npos &&
-            std::string(brand_skeleton).find(keyword) == std::string::npos &&
-            std::string(keyword).find(brand_skeleton) == std::string::npos) {
+        size_t keyword_pos = skeleton.find(keyword);
+        if (keyword_pos == std::string::npos) {
+          // Keyword not found, ignore.
+          continue;
+        }
+
+        if (std::string(brand_skeleton).find(keyword) != std::string::npos ||
+            std::string(keyword).find(brand_skeleton) != std::string::npos) {
+          // Keyword is a substring of brand or vice versa, ignore.
+          continue;
+        }
+
+        if ((keyword_pos > brand_skeleton_pos &&
+             keyword_pos < brand_skeleton_pos + brand_skeleton.size()) ||
+            (brand_skeleton_pos > keyword_pos &&
+             brand_skeleton_pos < keyword_pos + strlen(keyword))) {
+          // Keyword and brand overlap, ignore.
+          continue;
+        }
+
           if (is_hard_coded) {
             *matched_domain = FindMatchedDomainForHardCodedComboSquatting(
                 brand_name, navigated_domain);
@@ -701,7 +719,6 @@ bool IsComboSquatting(
                 brand_name, navigated_domain, engaged_sites);
           }
           return true;
-        }
       }
     }
   }

@@ -23,8 +23,8 @@ constexpr std::pair<const char*, const char*> kBrandNames[] = {
     {"sample", "sarnple"},
     {"example", "exarnple"},
     {"vices", "vices"}};
-const char* const kPopularKeywords[] = {"online", "login",    "account",
-                                        "arnple", "services", "test"};
+const char* const kPopularKeywords[] = {
+    "online", "login", "account", "arnple", "services", "test", "security"};
 const ComboSquattingParams kComboSquattingParams{
     kBrandNames, std::size(kBrandNames), kPopularKeywords,
     std::size(kPopularKeywords)};
@@ -625,6 +625,9 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
       GetDomainInfo(GURL("https://len.com")),
       // An engaged site with a registry other than com.
       GetDomainInfo(GURL("https://testcombo.org")),
+      // Test case for overlapping brand name and keyword (highs +
+      // security = highsecurity). Single letter overlap.
+      GetDomainInfo(GURL("https://highs.com")),
   };
   const struct TestCase {
     const char* domain;
@@ -733,6 +736,9 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
       // than com.
       {"testcomboonline.org", "testcombo.org",
        ComboSquattingType::kSiteEngagement},
+
+      // If the brand name (highsec) and keyword (security) overlap, ignore.
+      {"highsecurity.com", "", ComboSquattingType::kNone},
   };
   for (const TestCase& test_case : kTestCases) {
     auto navigated =
