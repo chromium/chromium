@@ -442,11 +442,12 @@ DiagnosticsDialogUI::~DiagnosticsDialogUI() {
 
 void DiagnosticsDialogUI::BindInterface(
     mojo::PendingReceiver<diagnostics::mojom::NetworkHealthProvider> receiver) {
-  DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
-  diagnostics::NetworkHealthProvider* network_health_provider =
-      diagnostics_manager_->GetNetworkHealthProvider();
-  if (network_health_provider) {
-    network_health_provider->BindInterface(std::move(receiver));
+  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
+    diagnostics::NetworkHealthProvider* network_health_provider =
+        diagnostics_manager_->GetNetworkHealthProvider();
+    if (network_health_provider) {
+      network_health_provider->BindInterface(std::move(receiver));
+    }
   }
 }
 
