@@ -2771,6 +2771,7 @@ test("content_unittests") {
     "//ui/gl:test_support",
     "//ui/latency:test_support",
     "//ui/shell_dialogs:shell_dialogs",
+    "//ui/webui:test_support",
   ]
 
   data_deps = [

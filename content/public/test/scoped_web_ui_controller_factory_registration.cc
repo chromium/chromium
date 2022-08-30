@@ -16,6 +16,12 @@ namespace content {
 
 namespace {
 
+url::Origin GetOriginFromConfig(WebUIConfig& webui_config) {
+  return url::Origin::Create(
+      GURL(base::StrCat({webui_config.scheme(), url::kStandardSchemeSeparator,
+                         webui_config.host()})));
+}
+
 void AddWebUIConfig(std::unique_ptr<WebUIConfig> webui_config) {
   auto& config_map = WebUIConfigMap::GetInstance();
 
@@ -57,26 +63,19 @@ ScopedWebUIControllerFactoryRegistration::
 
 ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
     std::unique_ptr<WebUIConfig> webui_config)
-    : ScopedWebUIConfigRegistration(
-          GURL(base::StrCat({webui_config->scheme(),
-                             url::kStandardSchemeSeparator,
-                             webui_config->host()})),
-          std::move(webui_config)) {}
-
-ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
-    const GURL& webui_origin)
-    : ScopedWebUIConfigRegistration(webui_origin,
-                                    /*webui_config=*/nullptr) {}
-
-ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
-    const GURL& webui_origin,
-    std::unique_ptr<WebUIConfig> webui_config)
-    : webui_config_origin_(url::Origin::Create(webui_origin)) {
+    : webui_config_origin_(GetOriginFromConfig(*webui_config)) {
   auto& config_map = WebUIConfigMap::GetInstance();
   replaced_webui_config_ = config_map.RemoveConfig(webui_config_origin_);
 
-  if (webui_config != nullptr)
-    AddWebUIConfig(std::move(webui_config));
+  DCHECK(webui_config.get() != nullptr);
+  AddWebUIConfig(std::move(webui_config));
+}
+
+ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
+    const GURL& webui_origin)
+    : webui_config_origin_(url::Origin::Create(webui_origin)) {
+  auto& config_map = WebUIConfigMap::GetInstance();
+  replaced_webui_config_ = config_map.RemoveConfig(webui_config_origin_);
 }
 
 ScopedWebUIConfigRegistration::~ScopedWebUIConfigRegistration() {

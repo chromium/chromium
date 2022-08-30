@@ -52,9 +52,6 @@ class ScopedWebUIConfigRegistration {
   ~ScopedWebUIConfigRegistration();
 
  private:
-  ScopedWebUIConfigRegistration(const GURL& webui_origin,
-                                std::unique_ptr<WebUIConfig> webui_config);
-
   const url::Origin webui_config_origin_;
   std::unique_ptr<WebUIConfig> replaced_webui_config_;
 };

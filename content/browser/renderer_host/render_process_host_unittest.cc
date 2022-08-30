@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -22,6 +23,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/storage_partition_test_helpers.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"
 
 namespace content {
 
@@ -429,6 +432,140 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseOtherSiteServiceWorkerProcess) {
   EXPECT_NE(sw_host1, sw_site_instance2->GetProcess());
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance2->GetLastProcessAssignmentOutcome());
+}
+
+class RenderProcessHostUntrustedWebUIUnitTest
+    : public RenderProcessHostUnitTest {
+ public:
+  void SetUp() override {
+    RenderProcessHostUnitTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableServiceWorkersForChromeUntrusted);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(RenderProcessHostUntrustedWebUIUnitTest,
+       DontReuseServiceWorkerProcessForDifferentWebUI) {
+  ScopedWebUIConfigRegistration config_registration1(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
+  ScopedWebUIConfigRegistration config_registration2(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("second-host"));
+
+  const GURL kWebUI1("chrome-untrusted://test-host/");
+  const GURL kWebUI2("chrome-untrusted://second-host/");
+
+  // Gets a RenderProcessHost for an unmatched service worker.
+  scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
+      CreateForServiceWorker(kWebUI1);
+  RenderProcessHost* sw_host = sw_site_instance1->GetProcess();
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            sw_site_instance1->GetLastProcessAssignmentOutcome());
+
+  // Discard the spare, so it cannot be considered by the GetProcess call below.
+  RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting();
+
+  // Getting RenderProcessHost for a service worker for a different WebUI
+  // should return a new process because there is no reusable process.
+  scoped_refptr<SiteInstanceImpl> sw_site_instance2 = CreateForUrl(kWebUI2);
+  EXPECT_NE(sw_host, sw_site_instance2->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            sw_site_instance2->GetLastProcessAssignmentOutcome());
+}
+
+TEST_F(RenderProcessHostUntrustedWebUIUnitTest,
+       DontReuseServiceWorkerProcessForWebUrl) {
+  ScopedWebUIConfigRegistration config_registration1(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
+
+  const GURL kWebUI1("chrome-untrusted://test-host/");
+
+  // Gets a RenderProcessHost for an unmatched service worker.
+  scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
+      CreateForServiceWorker(kWebUI1);
+  RenderProcessHost* sw_host = sw_site_instance1->GetProcess();
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            sw_site_instance1->GetLastProcessAssignmentOutcome());
+
+  const GURL kWebUrl("https://test.example/");
+
+  // Getting RenderProcessHost for a service worker for a regular site should
+  // return a new process because there is no reusable process.
+  scoped_refptr<SiteInstanceImpl> web_sw_site_instance =
+      CreateForServiceWorker(kWebUrl);
+  EXPECT_NE(sw_host, web_sw_site_instance->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            web_sw_site_instance->GetLastProcessAssignmentOutcome());
+
+  // Getting RenderProcessHost for a navigation to a regular site should
+  // re-use the Web Service Worker process and not the WebUI one.
+  scoped_refptr<SiteInstanceImpl> web_site_instance = CreateForUrl(kWebUrl);
+  EXPECT_NE(sw_host, web_site_instance->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
+            web_site_instance->GetLastProcessAssignmentOutcome());
+}
+
+// Tests that Service Worker processes for WebUIs are not re-used even
+// for the same WebUI. Ideally we would re-use the process if it's for
+// the same WebUI but we currently don't because of crbug.com/1158277.
+TEST_F(RenderProcessHostUntrustedWebUIUnitTest,
+       DontReuseServiceWorkerProcessForSameWebUI) {
+  ScopedWebUIConfigRegistration config_registration(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
+  const GURL kUrl("chrome-untrusted://test-host");
+
+  // Gets a RenderProcessHost for a service worker.
+  scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
+      CreateForServiceWorker(kUrl,
+                             /*can_reuse_process=*/true);
+  RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            sw_site_instance1->GetLastProcessAssignmentOutcome());
+
+  // Getting a RenderProcessHost for a service worker with DEFAULT reuse policy
+  // should not reuse the existing service worker's process. This is because
+  // we use DEFAULT reuse policy for a service worker when we have failed to
+  // start the service worker and want to use a new process. We create this
+  // second service worker to test the "find the newest process" logic later.
+  scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
+      CreateForServiceWorker(kUrl);
+  RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
+  EXPECT_NE(sw_host1, sw_host2);
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            sw_site_instance2->GetLastProcessAssignmentOutcome());
+
+  // Getting a RenderProcessHost for a service worker of the same WebUI with
+  // REUSE_PENDING_OR_COMMITTED_SITE reuse policy doesn't reuse any service
+  // worker processes.
+  scoped_refptr<SiteInstanceImpl> sw_site_instance3 =
+      CreateForServiceWorker(kUrl,
+                             /*can_reuse_process=*/true);
+  RenderProcessHost* sw_host3 = sw_site_instance3->GetProcess();
+  EXPECT_NE(sw_host1, sw_host3);
+  EXPECT_NE(sw_host2, sw_host3);
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            sw_site_instance3->GetLastProcessAssignmentOutcome());
+
+  // Getting a RenderProcessHost for a navigation to the same WebUI doesn't
+  // reuse any service worker's processes.
+  scoped_refptr<SiteInstanceImpl> site_instance1 = CreateForUrl(kUrl);
+  EXPECT_NE(sw_host1, site_instance1->GetProcess());
+  EXPECT_NE(sw_host2, site_instance1->GetProcess());
+  EXPECT_NE(sw_host3, site_instance1->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            site_instance1->GetLastProcessAssignmentOutcome());
+
+  // Getting a RenderProcessHost for a navigation to a web URL doesn't reuse any
+  // service worker's processes.
+  const GURL kWebUrl("https://test.example");
+  scoped_refptr<SiteInstanceImpl> web_site_instance = CreateForUrl(kWebUrl);
+  EXPECT_NE(sw_host1, web_site_instance->GetProcess());
+  EXPECT_NE(sw_host2, web_site_instance->GetProcess());
+  EXPECT_NE(sw_host3, web_site_instance->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
+            web_site_instance->GetLastProcessAssignmentOutcome());
 }
 
 // Tests that RenderProcessHost will not consider reusing a process that has
