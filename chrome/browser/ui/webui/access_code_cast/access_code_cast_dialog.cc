@@ -161,8 +161,7 @@ void AccessCodeCastDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
-  base::TimeDelta duration_pref = GetAccessCodeDeviceDurationPref(
-      context_->GetPrefs());
+  base::TimeDelta duration_pref = GetAccessCodeDeviceDurationPref(context_);
   bool rememberDevices = duration_pref != base::Seconds(0);
   size->SetSize(kDialogWidthDefault,
       rememberDevices ? kDialogHeightFootnote : kDialogHeightDefault);

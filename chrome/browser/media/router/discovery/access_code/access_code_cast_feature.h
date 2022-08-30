@@ -7,9 +7,9 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
-class PrefService;
 
 namespace base {
 class TimeDelta;
@@ -56,11 +56,11 @@ void RegisterAccessCodeProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns true if this user is allowed to use Access Codes & QR codes to
 // discover cast devices.
-bool GetAccessCodeCastEnabledPref(PrefService* pref_service);
+bool GetAccessCodeCastEnabledPref(Profile* profile);
 
 // Returns the duration that a scanned cast device is allowed to remain
 // in the cast list.
-base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service);
+base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile);
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

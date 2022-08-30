@@ -56,7 +56,7 @@ bool IsAccessCodeCastEnabled() {
   if (!profile)
     return false;
 
-  return GetAccessCodeCastEnabledPref(profile->GetPrefs());
+  return GetAccessCodeCastEnabledPref(profile);
 }
 
 // Callback for adding a remembered sink to the cast list. The second parameter
@@ -572,7 +572,7 @@ base::TimeDelta AccessCodeCastSinkService::CalculateDurationTillExpiration(
   }
 
   base::Time time_of_expiration = fetched_device_added_time.value() +
-                                  GetAccessCodeDeviceDurationPref(prefs_);
+                                  GetAccessCodeDeviceDurationPref(profile_);
   base::TimeDelta time_till_expiration = time_of_expiration - base::Time::Now();
 
   // If for some reason this value is negative, simply return instant
@@ -800,7 +800,7 @@ void AccessCodeCastSinkService::OnDurationPrefChange() {
 }
 
 void AccessCodeCastSinkService::OnEnabledPrefChange() {
-  if (!GetAccessCodeCastEnabledPref(prefs_)) {
+  if (!GetAccessCodeCastEnabledPref(profile_)) {
     RemoveAndDisconnectExistingSinksOnNetwork();
     ResetExpirationTimers();
     pref_updater_->ClearDevicesDict();

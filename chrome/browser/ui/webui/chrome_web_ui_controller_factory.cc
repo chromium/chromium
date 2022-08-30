@@ -900,7 +900,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (!base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
       return nullptr;
     }
-    if (!media_router::GetAccessCodeCastEnabledPref(profile->GetPrefs())) {
+    if (!media_router::GetAccessCodeCastEnabledPref(profile)) {
       return nullptr;
     }
     return &NewWebUI<media_router::AccessCodeCastUI>;

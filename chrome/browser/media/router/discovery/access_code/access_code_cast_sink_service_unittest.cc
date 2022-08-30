@@ -28,9 +28,10 @@
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_socket_service.h"
 #include "components/cast_channel/cast_test_util.h"
@@ -80,15 +81,10 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures({features::kAccessCodeCastRememberDevices},
                                    {});
-    pref_service_ =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterAccessCodeProfilePrefs(pref_service_->registry());
-    pref_service_->SetUserPref(prefs::kAccessCodeCastEnabled,
-                               base::Value(true));
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager()->CreateTestingProfile("foo_email");
+    GetTestingPrefs()->SetManagedPref(::prefs::kEnableMediaRouter,
+                                      std::make_unique<base::Value>(true));
+    GetTestingPrefs()->SetManagedPref(prefs::kAccessCodeCastEnabled,
+                                      std::make_unique<base::Value>(true));
 
     router_ = std::make_unique<NiceMock<media_router::MockMediaRouter>>();
     logger_ = std::make_unique<LoggerImpl>();
@@ -96,8 +92,8 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
 
     access_code_cast_sink_service_ =
         base::WrapUnique(new AccessCodeCastSinkService(
-            profile_, router_.get(), cast_media_sink_service_impl_.get(),
-            discovery_network_monitor_.get(), pref_service_.get()));
+            &profile_, router_.get(), cast_media_sink_service_impl_.get(),
+            discovery_network_monitor_.get(), GetTestingPrefs()));
     access_code_cast_sink_service_->SetTaskRunnerForTest(
         mock_time_task_runner_);
     mock_time_task_runner()->FastForwardUntilNoTasksRemain();
@@ -108,10 +104,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   void TearDown() override {
     access_code_cast_sink_service_->Shutdown();
     access_code_cast_sink_service_.reset();
-    profile_manager_->DeleteAllTestingProfiles();
-    profile_manager_.reset();
     router_.reset();
-    pref_service_.reset();
     mock_time_task_runner()->ClearPendingTasks();
     task_environment_.RunUntilIdle();
     content::RunAllTasksUntilIdle();
@@ -124,7 +117,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   }
 
   void SetDeviceDurationPrefForTest(const base::TimeDelta duration_time) {
-    pref_service_->SetUserPref(
+    GetTestingPrefs()->SetUserPref(
         prefs::kAccessCodeCastDeviceDuration,
         base::Value(static_cast<int>(duration_time.InSeconds())));
   }
@@ -136,7 +129,10 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   base::TestMockTimeTaskRunner* mock_time_task_runner() {
     return mock_time_task_runner_.get();
   }
-  TestingProfileManager* profile_manager() { return profile_manager_.get(); }
+
+  sync_preferences::TestingPrefServiceSyncable* GetTestingPrefs() {
+    return profile_.GetTestingPrefService();
+  }
 
   void ChangeConnectionType(network::mojom::ConnectionType connection_type) {
     discovery_network_monitor_->OnConnectionChanged(connection_type);
@@ -161,13 +157,11 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<media_router::MockMediaRouter> router_;
   std::unique_ptr<LoggerImpl> logger_;
 
   base::test::ScopedFeatureList feature_list_;
 
-  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   static std::vector<DiscoveryNetworkInfo> fake_network_info_;
 
   static const std::vector<DiscoveryNetworkInfo> fake_ethernet_info_;
@@ -181,7 +175,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   std::unique_ptr<DiscoveryNetworkMonitor> discovery_network_monitor_ =
       DiscoveryNetworkMonitor::CreateInstanceForTest(&FakeGetNetworkInfo);
 
-  raw_ptr<TestingProfile> profile_;
+  TestingProfile profile_;
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
@@ -923,7 +917,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeEnabledPref) {
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(cast_sink1));
 
-  pref_service_->SetUserPref(prefs::kAccessCodeCastEnabled, base::Value(false));
+  GetTestingPrefs()->SetManagedPref(prefs::kAccessCodeCastEnabled,
+                                    base::Value(false));
 
   EXPECT_TRUE(access_code_cast_sink_service_->current_session_expiration_timers_
                   .empty());
@@ -957,8 +952,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeDurationPref) {
           ->current_session_expiration_timers_[cast_sink1.id()]
           ->GetCurrentDelay());
 
-  pref_service_->SetUserPref(prefs::kAccessCodeCastDeviceDuration,
-                             base::Value(100));
+  GetTestingPrefs()->SetUserPref(prefs::kAccessCodeCastDeviceDuration,
+                                 base::Value(100));
 
   EXPECT_TRUE(access_code_cast_sink_service_
                   ->current_session_expiration_timers_[cast_sink1.id()]
