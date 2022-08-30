@@ -5327,20 +5327,20 @@ TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
   scrollbar->SetHoveredPart(kThumbPart);
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
-  EXPECT_EQ("#ff0000", custom_scrollbar->GetPart(kThumbPart)
-                           ->Style()
-                           ->BackgroundColor()
-                           .GetColor()
-                           .Serialized());
+  EXPECT_EQ("rgb(255, 0, 0)", custom_scrollbar->GetPart(kThumbPart)
+                                  ->Style()
+                                  ->BackgroundColor()
+                                  .GetColor()
+                                  .SerializeAsCSSColor());
 
   scrollbar->SetHoveredPart(kNoPart);
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
-  EXPECT_EQ("#008000", custom_scrollbar->GetPart(kThumbPart)
-                           ->Style()
-                           ->BackgroundColor()
-                           .GetColor()
-                           .Serialized());
+  EXPECT_EQ("rgb(0, 128, 0)", custom_scrollbar->GetPart(kThumbPart)
+                                  ->Style()
+                                  ->BackgroundColor()
+                                  .GetColor()
+                                  .SerializeAsCSSColor());
 }
 
 TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantClassChange) {

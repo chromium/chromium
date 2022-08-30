@@ -216,12 +216,12 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
     AddProperty("suggestionHighlightColor",
                 LayoutTheme::GetTheme()
                     .ActiveListBoxSelectionBackgroundColor(color_scheme)
-                    .Serialized(),
+                    .SerializeAsCSSColor(),
                 data);
     AddProperty("suggestionHighlightTextColor",
                 LayoutTheme::GetTheme()
                     .ActiveListBoxSelectionForegroundColor(color_scheme)
-                    .Serialized(),
+                    .SerializeAsCSSColor(),
                 data);
   }
   AddString("}\n", data);

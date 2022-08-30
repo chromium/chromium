@@ -1820,7 +1820,7 @@ void StyleChange::ExtractTextStyles(Document* document,
   }
 
   if (style->GetPropertyCSSValue(CSSPropertyID::kColor)) {
-    apply_font_color_ = GetFontColor(style).Serialized();
+    apply_font_color_ = GetFontColor(style).SerializeAsCSSColor();
     style->RemoveProperty(CSSPropertyID::kColor);
   }
 

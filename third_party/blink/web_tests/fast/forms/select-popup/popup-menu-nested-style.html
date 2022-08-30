@@ -31,8 +31,8 @@ function test1() {
     params = internals.pagePopupWindow.global.params;
     shouldBeEqualToString('params.children[1].type', 'optgroup');
     shouldBeUndefined('params.children[1].children[0].type');
-    shouldBeEqualToString('params.children[1].children[0].style.color', '#000000');
-    shouldBeEqualToString('params.children[1].children[0].style.backgroundColor', '#ffffff');
+    shouldBeEqualToString('params.children[1].children[0].style.color', 'rgb(0, 0, 0)');
+    shouldBeEqualToString('params.children[1].children[0].style.backgroundColor', 'rgb(255, 255, 255)');
 
     finishJSTest();
 }

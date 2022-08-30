@@ -489,6 +489,12 @@
       status: "test",
     },
     {
+      // Support for CSS Color Module Level 4
+      // https://www.w3.org/TR/css-color-4/
+      name: "CSSColor4",
+      status:  "experimental",
+    },
+    {
       name: "CSSColorContrast",
       status: "experimental",
     },

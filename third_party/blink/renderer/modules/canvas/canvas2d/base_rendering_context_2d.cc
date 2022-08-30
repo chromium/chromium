@@ -677,7 +677,7 @@ void BaseRenderingContext2D::setShadowBlur(double blur) {
 String BaseRenderingContext2D::shadowColor() const {
   // TODO(https://1351544): CanvasRenderingContext2DState's shadow color should
   // be a Color, not an SkColor or SkColor4f.
-  return Color::FromSkColor(GetState().ShadowColor()).Serialized();
+  return Color::FromSkColor(GetState().ShadowColor()).SerializeAsCanvasColor();
 }
 
 void BaseRenderingContext2D::setShadowColor(const String& color_string) {

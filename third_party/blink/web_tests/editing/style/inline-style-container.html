@@ -66,7 +66,7 @@ testStyleWithoutCSS('fontName', 'Arial',
 // font color
 testStyleWithoutCSS("foreColor", 'blue',
     '^<font><u style="color:red;">abc</u></font>|',
-    '<font color="#0000ff"><u style>^abc|</u></font>',
+    '<font color="rgb(0, 0, 255)"><u style>^abc|</u></font>',
     'font-color-1');
 testStyleWithoutCSS("foreColor", 'rgba(0,50,100,0.4)',
     '^<font><u style="color:red;">abc</u></font>|',

@@ -137,15 +137,15 @@ Overlay rendered:
       }
     ],
     "snapportBorder": {
-      "color": "#000000",
+      "color": "rgb(0, 0, 0)",
       "pattern": "solid"
     },
     "snapAreaBorder": {
-      "color": "#000000",
+      "color": "rgb(0, 0, 0)",
       "pattern": "solid"
     },
-    "scrollMarginColor": "#000000",
-    "scrollPaddingColor": "#000000"
+    "scrollMarginColor": "rgb(0, 0, 0)",
+    "scrollPaddingColor": "rgb(0, 0, 0)"
   }
 }
 

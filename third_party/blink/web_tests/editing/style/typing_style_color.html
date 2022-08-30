@@ -7,7 +7,7 @@
 selection_test(
     [
         '<div contenteditable>',
-            '<font color="#0000ff">abc | def</font>',
+            '<font color="rgb(0, 0, 255)">abc | def</font>',
         '</div>',
     ],
     selection => {
@@ -16,9 +16,9 @@ selection_test(
     },
     [
         '<div contenteditable>',
-            '<font color="#0000ff">abc </font>',
-            '<font color="#008000">XYZ|</font>',
-            '<font color="#0000ff">def</font>',
+            '<font color="rgb(0, 0, 255)">abc </font>',
+            '<font color="rgb(0, 128, 0)">XYZ|</font>',
+            '<font color="rgb(0, 0, 255)">def</font>',
         '</div>',
     ]);
 </script>

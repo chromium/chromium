@@ -393,6 +393,9 @@ SkColor4f Color::toSkColor4f() const {
           NOTIMPLEMENTED();
           return SkColor4f{0.f, 0.f, 0.f, 0.f};
       }
+    case SerializationType::kLab:
+      // TODO(crbug.com/1354622): Actually calculate the proper lab color.
+      return SkColor4f{0.0f, 0.0f, 0.0f, 0.0f};
     default:
       NOTIMPLEMENTED();
       return SkColor4f{0.f, 0.f, 0.f, 0.f};
@@ -452,42 +455,77 @@ bool Color::SetFromString(const String& name) {
   return ParseHexColor(name.Characters16() + 1, name.length() - 1, *this);
 }
 
-String Color::Serialized() const {
-  if (serialization_type_ != SerializationType::kRGB) {
-    // TODO(https://crbug.com/1333988): Implement CSS Color level 4
-    // serialization.
-    NOTIMPLEMENTED();
-    return "rgb(0, 0, 0)";
-  }
-  if (!HasAlpha())
+String Color::SerializeAsCanvasColor() const {
+  if (serialization_type_ == SerializationType::kRGB && !HasAlpha())
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
 
+  return SerializeAsCSSColor();
+}
+
+String Color::SerializeAsCSSColor() const {
   StringBuilder result;
   result.ReserveCapacity(28);
 
-  result.Append("rgba(");
-  result.AppendNumber(Red());
-  result.Append(", ");
-  result.AppendNumber(Green());
-  result.Append(", ");
-  result.AppendNumber(Blue());
-  result.Append(", ");
+  switch (serialization_type_) {
+    case SerializationType::kRGB:
+      if (HasAlpha())
+        result.Append("rgba(");
+      else
+        result.Append("rgb(");
 
-  if (!Alpha())
-    result.Append('0');
-  else {
-    result.Append(Decimal::FromDouble(Alpha() / 255.0).ToString());
+      result.AppendNumber(Red());
+      result.Append(", ");
+      result.AppendNumber(Green());
+      result.Append(", ");
+      result.AppendNumber(Blue());
+
+      if (HasAlpha()) {
+        result.Append(", ");
+        // See <alphavalue> section in
+        // https://drafts.csswg.org/cssom/#serializing-css-values
+        float rounded = round(Alpha() * 100 / 255.0f) / 100;
+        if (round(rounded * 255) == Alpha()) {
+          result.AppendNumber(rounded, 2);
+        } else {
+          rounded = round(Alpha() * 1000 / 255.0f) / 1000;
+          result.AppendNumber(rounded, 3);
+        }
+      }
+
+      result.Append(')');
+      return result.ToString();
+
+    case SerializationType::kLab:
+      result.Append("lab(");
+      result.AppendNumber(param0_);
+      result.Append("% ");
+      result.AppendNumber(param1_);
+      result.Append(" ");
+      result.AppendNumber(param2_);
+      if (alpha_ != 1.0) {
+        result.Append(" / ");
+        result.AppendNumber(alpha_);
+      }
+      result.Append(")");
+      return result.ToString();
+
+    // TODO(https://crbug.com/1333988): Implement CSS Color level 4
+    // serialization.
+    case SerializationType::kColor:
+    case SerializationType::kOKLab:
+    case SerializationType::kLCH:
+    case SerializationType::kOKLCH:
+    default:
+      NOTIMPLEMENTED();
+      return "rgb(0, 0, 0)";
   }
-
-  result.Append(')');
-  return result.ToString();
 }
 
 String Color::NameForLayoutTreeAsText() const {
   if (serialization_type_ != SerializationType::kRGB) {
     // TODO(https://crbug.com/1333988): Determine if CSS Color Level 4 colors
     // should use this representation here.
-    return Serialized();
+    return SerializeAsCSSColor();
   }
   if (Alpha() < 0xFF)
     return String::Format("#%02X%02X%02X%02X", Red(), Green(), Blue(), Alpha());

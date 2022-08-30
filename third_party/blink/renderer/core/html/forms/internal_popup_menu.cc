@@ -185,11 +185,13 @@ class InternalPopupMenu::ItemIterationContext {
     DCHECK(!is_in_group_);
     PagePopupClient::AddString("baseStyle: {", buffer_);
     if (!BaseStyle().ColorSchemeForced()) {
-      AddProperty("backgroundColor", background_color_.Serialized(), buffer_);
-      AddProperty(
-          "color",
-          BaseStyle().VisitedDependentColor(GetCSSPropertyColor()).Serialized(),
-          buffer_);
+      AddProperty("backgroundColor", background_color_.SerializeAsCSSColor(),
+                  buffer_);
+      AddProperty("color",
+                  BaseStyle()
+                      .VisitedDependentColor(GetCSSPropertyColor())
+                      .SerializeAsCSSColor(),
+                  buffer_);
     }
     AddProperty("textTransform",
                 String(TextTransformToString(BaseStyle().TextTransform())),
@@ -416,14 +418,15 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
         style->VisitedDependentColor(GetCSSPropertyColor());
     if (base_style.VisitedDependentColor(GetCSSPropertyColor()) !=
         foreground_color) {
-      AddProperty("color", foreground_color.Serialized(), data);
+      AddProperty("color", foreground_color.SerializeAsCSSColor(), data);
       color_applied = true;
     }
     Color background_color =
         style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
     if (background_color != Color::kTransparent &&
         (context.BackgroundColor() != background_color)) {
-      AddProperty("backgroundColor", background_color.Serialized(), data);
+      AddProperty("backgroundColor", background_color.SerializeAsCSSColor(),
+                  data);
       color_applied = true;
     }
     if (color_applied)

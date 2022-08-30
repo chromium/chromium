@@ -41,7 +41,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColors) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("#ff0000", colors.at(0).Serialized());
+  EXPECT_EQ("rgb(255, 0, 0)", colors.at(0).SerializeAsCSSColor());
   EXPECT_EQ(1.0f, fg_opacity);
 }
 
@@ -76,7 +76,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacity) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("#e5e5e5", colors.at(0).Serialized());
+  EXPECT_EQ("rgb(229, 229, 229)", colors.at(0).SerializeAsCSSColor());
   EXPECT_EQ(1.0f, fg_opacity);
 }
 
@@ -92,7 +92,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacityParent) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("#e5e5e5", colors.at(0).Serialized());
+  EXPECT_EQ("rgb(229, 229, 229)", colors.at(0).SerializeAsCSSColor());
   EXPECT_EQ(0.1f, fg_opacity);
 }
 
@@ -106,7 +106,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsElementWithOpacity) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("#ffffff", colors.at(0).Serialized());
+  EXPECT_EQ("rgb(255, 255, 255)", colors.at(0).SerializeAsCSSColor());
   EXPECT_EQ(0.1f, fg_opacity);
 }
 
@@ -123,7 +123,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgHidden) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("#ffffff", colors.at(0).Serialized());
+  EXPECT_EQ("rgb(255, 255, 255)", colors.at(0).SerializeAsCSSColor());
   EXPECT_EQ(1.0f, fg_opacity);
 }
 
@@ -143,7 +143,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsWithOpacity) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("#040404", colors.at(0).Serialized());
+  EXPECT_EQ("rgb(4, 4, 4)", colors.at(0).SerializeAsCSSColor());
   EXPECT_EQ(1.0f, fg_opacity);
 }
 

@@ -82,26 +82,26 @@ strikeThrough all:
 
 foreColor first:
 | <font>
-|   color="#0000ff"
+|   color="rgb(0, 0, 255)"
 |   "<#selection-anchor>hello, <#selection-focus>"
 | "world WebKit"
 
 foreColor middle:
 | "hello, "
 | <font>
-|   color="#0000ff"
+|   color="rgb(0, 0, 255)"
 |   "<#selection-anchor>world<#selection-focus>"
 | " WebKit"
 
 foreColor last:
 | "hello, world"
 | <font>
-|   color="#0000ff"
+|   color="rgb(0, 0, 255)"
 |   "<#selection-anchor> WebKit<#selection-focus>"
 
 foreColor all:
 | <font>
-|   color="#0000ff"
+|   color="rgb(0, 0, 255)"
 |   "<#selection-anchor>hello, world WebKit<#selection-focus>"
 
 hiliteColor first:

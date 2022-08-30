@@ -143,7 +143,10 @@ class PLATFORM_EXPORT Color {
 
   // Returns the color serialized according to HTML5:
   // http://www.whatwg.org/specs/web-apps/current-work/#serialization-of-a-color
-  String Serialized() const;
+  String SerializeAsCSSColor() const;
+  // Canvas colors are serialized somewhat differently:
+  // https://html.spec.whatwg.org/multipage/canvas.html#serialisation-of-a-color
+  String SerializeAsCanvasColor() const;
 
   // Returns the color serialized as either #RRGGBB or #RRGGBBAA. The latter
   // format is not a valid CSS color, and should only be seen in DRT dumps.

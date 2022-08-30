@@ -664,7 +664,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
     if (include_blended_background_colors_) {
       if (colors.size()) {
         layout_tree_snapshot->getBlendedBackgroundColors(nullptr)->emplace_back(
-            AddString(colors[0].Serialized()));
+            AddString(colors[0].SerializeAsCSSColor()));
       } else {
         layout_tree_snapshot->getBlendedBackgroundColors(nullptr)->emplace_back(
             -1);

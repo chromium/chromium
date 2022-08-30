@@ -224,7 +224,7 @@ TEST_F(InspectorHighlightTest,
       "containerBorder":["M",8,8,"L",408,8,"L",408,508,"L",8,508,"Z"],
       "containerQueryContainerHighlightConfig": {
         "descendantBorder": {
-          "color": "#010101",
+          "color": "rgb(1, 1, 1)",
           "pattern": ""
         }
       },

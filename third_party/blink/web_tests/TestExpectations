@@ -370,16 +370,19 @@ crbug.com/1170337 [ Debug Mac11 ] external/wpt/html/canvas/element/drawing-text-
 crbug.com/1170337 [ Debug Mac11 ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
 crbug.com/1170337 [ Debug Mac11 ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.zero.html [ Pass Timeout ]
 crbug.com/1170337 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.worker.html [ Skip Timeout ]
-crbug.com/1300389 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.get.halftransparent.html [ Failure ]
-crbug.com/1300389 external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.get.halftransparent.html [ Failure ]
-crbug.com/1300389 external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.get.halftransparent.worker.html [ Failure ]
-crbug.com/1300389 virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.get.halftransparent.html [ Failure ]
-crbug.com/1300389 virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.get.halftransparent.worker.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-inherit-rtl.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html [ Failure ]
 
 # Off by one pixel error on ref test
 crbug.com/1259367 [ Mac ] printing/offscreencanvas-webgl-printing.html [ Failure ]
+
+# These are testing deprecated features: https://github.com/web-platform-tests/wpt/issues/35662
+external/wpt/editing/run/inserttext.html?1001-2000 [ Failure ]
+external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
+external/wpt/editing/run/forecolor.html?1-1000 [ Failure ]
+external/wpt/editing/run/forecolor.html?1001-2000 [ Failure ]
+external/wpt/editing/run/forecolor.html?2001-last [ Failure ]
+external/wpt/editing/run/insertlinebreak.html [ Failure ]
 
 # This test depends on synchronous focus() which does not exist (anymore?).
 crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Failure ]

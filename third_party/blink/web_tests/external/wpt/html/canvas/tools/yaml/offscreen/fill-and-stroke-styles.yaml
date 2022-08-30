@@ -47,7 +47,7 @@
   code: |
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     @assert ctx.fillStyle === 'rgba(255, 255, 255, 0.5)';
-
+    t.done();
 
 - name: 2d.fillStyle.get.transparent
   testing:

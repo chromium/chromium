@@ -1278,6 +1278,7 @@
     "hsl",
     "hsla",
     "hwb",
+    "lab",
     "-internal-light-dark",
 
     // transform

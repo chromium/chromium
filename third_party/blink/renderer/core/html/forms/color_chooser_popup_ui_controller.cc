@@ -106,8 +106,8 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
       "<div id='main'>Loading...</div><script>\n"
       "window.dialogArguments = {\n",
       data);
-  PagePopupClient::AddProperty("selectedColor",
-                               client_->CurrentColor().Serialized(), data);
+  PagePopupClient::AddProperty(
+      "selectedColor", client_->CurrentColor().SerializeAsCSSColor(), data);
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", false, data);
@@ -160,7 +160,7 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
     // TODO(https://crbug.com/1351544): ColorSuggestions be sent as Color or
     // SkColor4f.
     suggestion_values.push_back(
-        Color::FromRGBA32(suggestion->color).Serialized());
+        Color::FromRGBA32(suggestion->color).SerializeAsCSSColor());
   }
   gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       client_->ElementRectRelativeToViewport(), frame_->View());
@@ -180,8 +180,8 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   PagePopupClient::AddProperty("values", suggestion_values, data);
   PagePopupClient::AddLocalizedProperty("otherColorLabel",
                                         IDS_FORM_OTHER_COLOR_LABEL, data);
-  PagePopupClient::AddProperty("selectedColor",
-                               client_->CurrentColor().Serialized(), data);
+  PagePopupClient::AddProperty(
+      "selectedColor", client_->CurrentColor().SerializeAsCSSColor(), data);
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", true, data);
@@ -264,7 +264,8 @@ void ColorChooserPopupUIController::EyeDropperResponseHandler(bool success,
   AddProperty("success", success, data.get());
   // TODO(https://crbug.com/1351544): The EyeDropper should use Color or
   // SkColor4f.
-  AddProperty("color", Color::FromRGBA32(color).Serialized(), data.get());
+  AddProperty("color", Color::FromRGBA32(color).SerializeAsCSSColor(),
+              data.get());
   PagePopupClient::AddString("}\n", data.get());
   popup_->PostMessageToPopup(String::FromUTF8(data->Data(), data->size()));
 }

@@ -224,7 +224,8 @@ void ColorInputType::DidChooseColor(const Color& color) {
       color == ValueAsColor())
     return;
   EventQueueScope scope;
-  GetElement().SetValueFromRenderer(color.Serialized());
+  // TODO(crbug.com/1333988): Serialize as CSSColor
+  GetElement().SetValueFromRenderer(color.SerializeAsCanvasColor());
   GetElement().UpdateView();
 }
 
