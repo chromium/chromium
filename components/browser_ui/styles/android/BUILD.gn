@@ -157,6 +157,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_brightness_medium_24dp.xml",
     "java/res/drawable/ic_business.xml",
     "java/res/drawable/ic_call_end_white_24dp.xml",
+    "java/res/drawable/ic_check_circle_filled_green_24dp.xml",
     "java/res/drawable/ic_collections_grey.xml",
     "java/res/drawable/ic_data_viz_grey.xml",
     "java/res/drawable/ic_desktop_windows.xml",
