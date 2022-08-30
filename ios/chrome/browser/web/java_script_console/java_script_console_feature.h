@@ -20,11 +20,11 @@ class JavaScriptConsoleFeature : public KeyedService,
                                  public web::JavaScriptFeature {
  public:
   // Creates a feature to listen for JavaScript console messages and send
-  // details about those messages to |delegate_|.
+  // details about those messages to `delegate_`.
   JavaScriptConsoleFeature();
   ~JavaScriptConsoleFeature() override;
 
-  // Sets the current delegate to |delegate|. If |delegate| is null, any current
+  // Sets the current delegate to `delegate`. If `delegate` is null, any current
   // delegate will be removed.
   void SetDelegate(JavaScriptConsoleFeatureDelegate* delegate);
 
