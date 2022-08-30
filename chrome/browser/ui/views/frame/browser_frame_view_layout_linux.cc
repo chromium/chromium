@@ -70,10 +70,10 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
   }
 
   // The border must be at least as large as the input region.
-  auto insets = -gfx::Insets::TLBR(tiled_edges.top ? 0 : kResizeBorder,
-                                   tiled_edges.left ? 0 : kResizeBorder,
-                                   tiled_edges.bottom ? 0 : kResizeBorder,
-                                   tiled_edges.right ? 0 : kResizeBorder);
+  auto insets = gfx::Insets::TLBR(tiled_edges.top ? 0 : kResizeBorder,
+                                  tiled_edges.left ? 0 : kResizeBorder,
+                                  tiled_edges.bottom ? 0 : kResizeBorder,
+                                  tiled_edges.right ? 0 : kResizeBorder);
   gfx::Rect input_extents;
   input_extents.Inset(-insets);
   frame_extents.Union(input_extents);
