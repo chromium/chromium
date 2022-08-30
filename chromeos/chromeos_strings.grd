@@ -3347,6 +3347,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ASH_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the phonetics-button in Quick-Answers related views.">
         Listen
       </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the dogfood feedback button in Quick-Answers related views.">
+        Send feedback
+      </message>
       <message name="IDS_ASH_QUICK_ANSWERS_DEFINITION_INTENT" desc="Display text of definition intent. This is used in the title of Quick Answers user consent dialog.">
         definition
       </message>

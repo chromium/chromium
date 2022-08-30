@@ -569,7 +569,7 @@ void QuickAnswersView::AddFrameButtons() {
             &QuickAnswersUiController::OnReportQueryButtonPressed,
             controller_)));
     dogfood_feedback_button_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+        IDS_ASH_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT));
   }
 
   settings_button_ = buttons_view->AddChildView(
