@@ -31,11 +31,11 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   METADATA_HEADER(IconButton);
 
   enum class Type {
-    kTiny,
+    kXSmall,
     kSmall,
     kMedium,
     kLarge,
-    kTinyFloating,
+    kXSmallFloating,
     kSmallFloating,
     kMediumFloating,
     kLargeFloating
