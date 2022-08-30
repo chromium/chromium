@@ -21,7 +21,7 @@ class WorkspaceEventHandlerTestHelper {
   ~WorkspaceEventHandlerTestHelper();
 
   MultiWindowResizeController* resize_controller() {
-    return &(handler_->multi_window_resize_controller_);
+    return handler_->multi_window_resize_controller_.get();
   }
 
  private:

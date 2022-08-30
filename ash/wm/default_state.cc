@@ -238,7 +238,8 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
         window_state->OnWMEvent(&event);
       } else if (window_state->IsMaximized()) {
         window_state->Restore();
-      } else if (window_state->IsNormalOrSnapped()) {
+      } else if (window_state->IsNormalOrSnapped() ||
+                 window_state->IsFloated()) {
         if (window_state->CanMaximize())
           window_state->Maximize();
       }
@@ -262,13 +263,13 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
           screen_util::GetDisplayWorkAreaBoundsInParent(window);
       // Maximize vertically if:
       // - The window does not have a max height defined.
-      // - The window has the normal state type. Snapped windows are excluded
-      //   because they are already maximized vertically and reverting to the
-      //   restored bounds looks weird.
-      if (GetWindowMaximumSize(window).height() != 0 ||
-          !window_state->IsNormalStateType()) {
+      // - The window is floated or has the normal state type. Snapped windows
+      //   are excluded because they are already maximized vertically and
+      //   reverting to the restored bounds looks weird.
+      if (GetWindowMaximumSize(window).height() != 0)
         return;
-      }
+      if (!window_state->IsNormalStateType() && !window_state->IsFloated())
+        return;
       if (!window_state->VerticallyShrinkWindow(work_area)) {
         gfx::Rect restore_bounds = window->GetTargetBounds();
         const gfx::Rect new_bounds =
@@ -283,10 +284,10 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
     case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE: {
       // Maximize horizontally if:
       // - The window does not have a max width defined.
-      // - The window is snapped or has the normal state type.
+      // - The window is snapped or floated or has the normal state type.
       if (GetWindowMaximumSize(window).width() != 0)
         return;
-      if (!window_state->IsNormalOrSnapped())
+      if (!window_state->IsNormalOrSnapped() && !window_state->IsFloated())
         return;
       gfx::Rect work_area =
           screen_util::GetDisplayWorkAreaBoundsInParent(window);
