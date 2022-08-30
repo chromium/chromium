@@ -14,12 +14,6 @@
     from { height: 100px; }
     to { height: 100px; }
   }
-  @scroll-timeline timeline1 {
-    source: selector(#scroller1);
-  }
-  @scroll-timeline timeline2 {
-    source: selector(#scroller2);
-  }
   main {
     height: 0px;
     overflow: hidden;
@@ -47,10 +41,10 @@
   </div>
 </main>
 <script>
-    function insertScroller(id) {
+    function insertScroller(timeline_name) {
       let scroller = document.createElement('div');
-      scroller.setAttribute('id', id);
-      scroller.setAttribute('class', 'scroller');
+      scroller.classList.add('scroller');
+      scroller.style.scrollTimeline = timeline_name;
       scroller.append(document.createElement('div'));
       main.insertBefore(scroller, element1);
     }
@@ -61,15 +55,15 @@
       let events1 = [];
       let events2 = [];
 
-      insertScroller('scroller1');
-      // Even though #scroller1 was just inserted into the DOM, |timeline1|
+      insertScroller('timeline1');
+      // Even though the scroller was just inserted into the DOM, |timeline1|
       // remains inactive until the next frame.
       //
       // https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
       assert_equals(getComputedStyle(element1).width, '1px');
       (new ResizeObserver(entries => {
         events1.push(entries);
-        insertScroller('scroller2');
+        insertScroller('timeline2');
         assert_equals(getComputedStyle(element2).height, '1px');
       })).observe(element1);
 
