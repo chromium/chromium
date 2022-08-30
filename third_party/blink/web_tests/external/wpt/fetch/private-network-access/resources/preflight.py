@@ -55,6 +55,7 @@ from wptserve.utils import isomorphic_encode
 
 _ACAO = ("Access-Control-Allow-Origin", "*")
 _ACAPN = ("Access-Control-Allow-Private-Network", "true")
+_ACAH = ("Access-Control-Allow-Headers", "Service-Worker")
 
 def _get_response_headers(method, mode):
   acam = ("Access-Control-Allow-Methods", method)
@@ -64,6 +65,9 @@ def _get_response_headers(method, mode):
 
   if mode == b"cors+pna":
     return [acam, _ACAO, _ACAPN]
+
+  if mode == b"cors+pna+sw":
+    return [acam, _ACAO, _ACAPN, _ACAH]
 
   return []
 
