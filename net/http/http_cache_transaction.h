@@ -47,6 +47,39 @@ struct HttpRequestInfo;
 struct LoadTimingInfo;
 class SSLPrivateKey;
 
+// An enum representing a caller of WriterAboutToBeRemovedFromEntry.
+enum class WriterAboutToBeRemovedFromEntryCaller : uint8_t {
+  // It is not called.
+  kNone,
+
+  // Called by HttpCacheWriters::RemoveIdleWriters.
+  kRemoveIdleWriters,
+
+  // Called by HttpCacheWriters::RemoveTransaction.
+  kRemoveTransaction,
+
+  // Called by HttpCacheWriters::OnNetworkReadFailure.
+  kOnNetworkReadFailure,
+
+  // Called by HttpCacheWriters::OnDataReceived,
+  kOnDataReceived,
+
+  // Called by HttpCacheWriters::CompleteWaitingForReadTransactions,
+  kCompleteWaitingForReadTransactions,
+};
+
+// An enum representing a caller of WriteModeTransactionAboutToBecomeReader.
+enum class WriteModeTransactionAboutToBecomeReaderCaller : uint8_t {
+  // It is not called.
+  kNone,
+
+  // Called by HttpCache::WritersDoneWritingToEntry.
+  kWritersDoneWritingToEntry,
+
+  // Called by ProcessDoneHeadersQueue.
+  kProcessDoneHeadersQueue,
+};
+
 // This is the transaction that is returned by the HttpCache transaction
 // factory.
 class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
@@ -187,11 +220,14 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   // Invoked when this writer transaction is about to be removed from entry.
   // If result is an error code, a future Read should fail with |result|.
-  void WriterAboutToBeRemovedFromEntry(int result);
+  void WriterAboutToBeRemovedFromEntry(
+      int result,
+      WriterAboutToBeRemovedFromEntryCaller caller);
 
   // Invoked when this transaction is about to become a reader because the cache
   // entry has finished writing.
-  void WriteModeTransactionAboutToBecomeReader();
+  void WriteModeTransactionAboutToBecomeReader(
+      WriteModeTransactionAboutToBecomeReaderCaller caller);
 
   // True if the passed checksum calculated from the response matches the
   // expected value from the HttpRequestInfo. Consumes `checksum`.
@@ -330,7 +366,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   };
 
   // An enum representing the last DoCacheReadData[Complete] call information.
-  enum class DoCacheReadDataLastCall {
+  enum class DoCacheReadDataLastCall : uint8_t {
     // Neither DoCacheReadData nor DoCacheReadDataComplete were called.
     kNone,
 
@@ -773,6 +809,13 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
       TransactionState::kUnknown;
   DoCacheReadDataLastCall do_cache_read_data_last_call_ =
       DoCacheReadDataLastCall::kNone;
+  WriterAboutToBeRemovedFromEntryCaller
+      writer_about_to_be_removed_from_entry_caller_ =
+          WriterAboutToBeRemovedFromEntryCaller::kNone;
+  WriteModeTransactionAboutToBecomeReaderCaller
+      write_mode_transaction_about_to_become_reader_caller_ =
+          WriteModeTransactionAboutToBecomeReaderCaller::kNone;
+  bool has_called_done_with_entry_since_last_do_cache_read_data_ = false;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
 };

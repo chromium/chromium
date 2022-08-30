@@ -643,11 +643,14 @@ void HttpCache::Transaction::SetValidatingCannotProceed() {
   entry_ = nullptr;
 }
 
-void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(int result) {
+void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(
+    int result,
+    WriterAboutToBeRemovedFromEntryCaller caller) {
   TRACE_EVENT_WITH_FLOW1(
       "net", "HttpCacheTransaction::WriterAboutToBeRemovedFromEntry",
       TRACE_ID_LOCAL(trace_id_),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result", result);
+  writer_about_to_be_removed_from_entry_caller_ = caller;
   // Since the transaction can no longer access the network transaction, save
   // all network related info now.
   if (moved_network_transaction_to_writers_ &&
@@ -665,11 +668,13 @@ void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(int result) {
     shared_writing_error_ = result;
 }
 
-void HttpCache::Transaction::WriteModeTransactionAboutToBecomeReader() {
+void HttpCache::Transaction::WriteModeTransactionAboutToBecomeReader(
+    WriteModeTransactionAboutToBecomeReaderCaller caller) {
   TRACE_EVENT_WITH_FLOW0(
       "net", "HttpCacheTransaction::WriteModeTransactionAboutToBecomeReader",
       TRACE_ID_LOCAL(trace_id_),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  write_mode_transaction_about_to_become_reader_caller_ = caller;
   mode_ = READ;
   if (moved_network_transaction_to_writers_ &&
       entry_->writers->network_transaction()) {
@@ -2480,6 +2485,11 @@ int HttpCache::Transaction::DoCacheReadData() {
     CHECK(InWriters() || entry_->TransactionInReaders(this));
   }
   do_cache_read_data_last_call_ = DoCacheReadDataLastCall::kDoCacheReadData;
+  writer_about_to_be_removed_from_entry_caller_ =
+      WriterAboutToBeRemovedFromEntryCaller::kNone;
+  write_mode_transaction_about_to_become_reader_caller_ =
+      WriteModeTransactionAboutToBecomeReaderCaller::kNone;
+  has_called_done_with_entry_since_last_do_cache_read_data_ = false;
 
   TRACE_EVENT_WITH_FLOW2(
       "net", "HttpCacheTransaction::DoCacheReadData", TRACE_ID_LOCAL(trace_id_),
@@ -2513,6 +2523,15 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
   SCOPED_CRASH_KEY_NUMBER("net", "DoCacheReadDataLastCall",
                           static_cast<int>(do_cache_read_data_last_call_));
   SCOPED_CRASH_KEY_BOOL("net", "!!partial", !!partial_);
+  SCOPED_CRASH_KEY_NUMBER(
+      "net", "WriterAboutToBeRemoved...",
+      static_cast<int>(writer_about_to_be_removed_from_entry_caller_));
+  SCOPED_CRASH_KEY_NUMBER(
+      "net", "WriteModeTransactionAbout...",
+      static_cast<int>(write_mode_transaction_about_to_become_reader_caller_));
+  SCOPED_CRASH_KEY_BOOL(
+      "net", "has called DoneWithEntry",
+      has_called_done_with_entry_since_last_do_cache_read_data_);
 
   CHECK_EQ(do_cache_read_data_last_call_,
            DoCacheReadDataLastCall::kDoCacheReadData);
@@ -3514,6 +3533,7 @@ bool HttpCache::Transaction::StopCachingImpl(bool success) {
 }
 
 void HttpCache::Transaction::DoneWithEntry(bool entry_is_complete) {
+  has_called_done_with_entry_since_last_do_cache_read_data_ = true;
   if (!entry_)
     return;
 

@@ -24,6 +24,8 @@ class HttpResponseInfo;
 class IOBuffer;
 class PartialData;
 
+enum class WriterAboutToBeRemovedFromEntryCaller : uint8_t;
+
 // If multiple HttpCache::Transactions are accessing the same cache entry
 // simultaneously, their access to the data read from network is synchronized
 // by HttpCache::Writers. This enables each of those transactions to drive
@@ -233,9 +235,13 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   void TruncateEntry();
 
   // Remove the transaction.
-  void EraseTransaction(Transaction* transaction, int result);
-  TransactionMap::iterator EraseTransaction(TransactionMap::iterator it,
-                                            int result);
+  void EraseTransaction(Transaction* transaction,
+                        int result,
+                        WriterAboutToBeRemovedFromEntryCaller caller);
+  TransactionMap::iterator EraseTransaction(
+      TransactionMap::iterator it,
+      int result,
+      WriterAboutToBeRemovedFromEntryCaller caller);
   void SetCacheCallback(bool success, const TransactionSet& make_readers);
 
   // IO Completion callback function.

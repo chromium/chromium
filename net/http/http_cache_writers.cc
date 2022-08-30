@@ -190,7 +190,8 @@ void HttpCache::Writers::ResetNetworkTransaction() {
 
 void HttpCache::Writers::RemoveTransaction(Transaction* transaction,
                                            bool success) {
-  EraseTransaction(transaction, OK);
+  EraseTransaction(transaction, OK,
+                   WriterAboutToBeRemovedFromEntryCaller::kRemoveTransaction);
 
   if (!all_writers_.empty())
     return;
@@ -202,18 +203,23 @@ void HttpCache::Writers::RemoveTransaction(Transaction* transaction,
                                     TransactionSet());
 }
 
-void HttpCache::Writers::EraseTransaction(Transaction* transaction,
-                                          int result) {
+void HttpCache::Writers::EraseTransaction(
+    Transaction* transaction,
+    int result,
+    WriterAboutToBeRemovedFromEntryCaller caller) {
   // The transaction should be part of all_writers.
   auto it = all_writers_.find(transaction);
   DCHECK(it != all_writers_.end());
-  EraseTransaction(it, result);
+  EraseTransaction(it, result, caller);
 }
 
 HttpCache::Writers::TransactionMap::iterator
-HttpCache::Writers::EraseTransaction(TransactionMap::iterator it, int result) {
+HttpCache::Writers::EraseTransaction(
+    TransactionMap::iterator it,
+    int result,
+    WriterAboutToBeRemovedFromEntryCaller caller) {
   Transaction* transaction = it->first;
-  transaction->WriterAboutToBeRemovedFromEntry(result);
+  transaction->WriterAboutToBeRemovedFromEntry(result, caller);
 
   auto return_it = all_writers_.erase(it);
 
@@ -461,8 +467,11 @@ int HttpCache::Writers::DoNetworkReadComplete(int result) {
 void HttpCache::Writers::OnNetworkReadFailure(int result) {
   ProcessFailure(result);
 
-  if (active_transaction_)
-    EraseTransaction(active_transaction_, result);
+  if (active_transaction_) {
+    EraseTransaction(
+        active_transaction_, result,
+        WriterAboutToBeRemovedFromEntryCaller::kOnNetworkReadFailure);
+  }
   active_transaction_ = nullptr;
 
   if (ShouldTruncate())
@@ -596,8 +605,10 @@ void HttpCache::Writers::OnDataReceived(int result) {
       return;
     }
 
-    if (active_transaction_)
-      EraseTransaction(active_transaction_, result);
+    if (active_transaction_) {
+      EraseTransaction(active_transaction_, result,
+                       WriterAboutToBeRemovedFromEntryCaller::kOnDataReceived);
+    }
     active_transaction_ = nullptr;
     CompleteWaitingForReadTransactions(write_len_);
 
@@ -658,8 +669,11 @@ void HttpCache::Writers::CompleteWaitingForReadTransactions(int result) {
 
     // If its response completion or failure, this transaction needs to be
     // removed from writers.
-    if (result <= 0)
-      EraseTransaction(transaction, result);
+    if (result <= 0) {
+      EraseTransaction(transaction, result,
+                       WriterAboutToBeRemovedFromEntryCaller::
+                           kCompleteWaitingForReadTransactions);
+    }
   }
 }
 
@@ -673,7 +687,8 @@ void HttpCache::Writers::RemoveIdleWriters(int result) {
       it++;
       continue;
     }
-    it = EraseTransaction(it, result);
+    it = EraseTransaction(
+        it, result, WriterAboutToBeRemovedFromEntryCaller::kRemoveIdleWriters);
   }
 }
 

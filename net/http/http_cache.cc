@@ -1002,7 +1002,9 @@ void HttpCache::WritersDoneWritingToEntry(ActiveEntry* entry,
   if (success) {
     // Add any idle writers to readers.
     for (auto* reader : make_readers) {
-      reader->WriteModeTransactionAboutToBecomeReader();
+      reader->WriteModeTransactionAboutToBecomeReader(
+          WriteModeTransactionAboutToBecomeReaderCaller::
+              kWritersDoneWritingToEntry);
       entry->readers.insert(reader);
     }
     // Reset writers here so that WriteModeTransactionAboutToBecomeReader can
@@ -1174,7 +1176,9 @@ void HttpCache::ProcessDoneHeadersQueue(ActiveEntry* entry) {
         // writing to the cache, it would have been added to writers in
         // DoneWithResponseHeaders, thus no writers here signify the response
         // was completely written).
-        transaction->WriteModeTransactionAboutToBecomeReader();
+        transaction->WriteModeTransactionAboutToBecomeReader(
+            WriteModeTransactionAboutToBecomeReaderCaller::
+                kProcessDoneHeadersQueue);
         auto return_val = entry->readers.insert(transaction);
         DCHECK(return_val.second);
       }
