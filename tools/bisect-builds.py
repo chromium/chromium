@@ -324,8 +324,17 @@ class PathContext(object):
             pass
       return (revisions, next_marker, githash_svn_dict)
 
+    # crbug.com/1338727
+    # loop_around is used to continue paging from e.g. */999988 to */1000000
+    # due to the lexicographical sort of the prefixes.
+    loop_around = False
+    # only use the flag above when the starting revision is set and less than
+    # this
+    LOOP_AROUND_REV = 1000000
     # Fetch the first list of revisions.
     if last_known_rev:
+      if last_known_rev < LOOP_AROUND_REV:
+        loop_around = True
       revisions = []
       # Optimization: Start paging at the last known revision (local cache).
       next_marker = _GetMarkerForRev(last_known_rev)
@@ -340,7 +349,12 @@ class PathContext(object):
 
     # If the result list was truncated, refetch with the next marker. Do this
     # until an entire directory listing is done.
-    while next_marker:
+    while next_marker or loop_around:
+      # If we got to the end of the listing but we started e.g on rev 999XXX,
+      # then loop around once to get revs >= 1000000.
+      if loop_around and not next_marker:
+        loop_around = False
+        next_marker = _GetMarkerForRev(0)
       sys.stdout.write('\rFetching revisions at marker %s' % next_marker)
       sys.stdout.flush()
 
