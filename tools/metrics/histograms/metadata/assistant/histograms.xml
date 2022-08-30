@@ -201,8 +201,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceReadyTime" units="ms"
-    expires_after="2022-08-29">
+    expires_after="2023-08-15">
   <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     Amount of time between when the Assistant service is launched, and when the
     Assistant back-end signals it is ready to process queries.
