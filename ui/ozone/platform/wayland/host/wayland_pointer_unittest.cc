@@ -162,12 +162,14 @@ ACTION_P3(CloneEventAndCheckCapture, window, result, ptr) {
 
 TEST_P(WaylandPointerTest, Motion) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_->resource());
   Sync();  // We're interested in checking Motion event in this test case, so
            // skip Enter event here.
 
   wl_pointer_send_motion(pointer_->resource(), 1002,
                          wl_fixed_from_double(10.75),
                          wl_fixed_from_double(20.375));
+  wl_pointer_send_frame(pointer_->resource());
 
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
@@ -198,6 +200,7 @@ TEST_P(WaylandPointerTest, MotionDragged) {
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
   wl_pointer_send_motion(pointer_->resource(), 1003, wl_fixed_from_int(400),
                          wl_fixed_from_int(500));
+  wl_pointer_send_frame(pointer_->resource());
 
   Sync();
 

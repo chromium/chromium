@@ -330,7 +330,9 @@ void WaylandEventSource::OnPointerButtonEvent(
     std::move(closure).Run();
 }
 
-void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
+void WaylandEventSource::OnPointerMotionEvent(
+    const gfx::PointF& location,
+    wl::EventDispatchPolicy dispatch_policy) {
   pointer_location_ = location;
 
   int flags = pointer_flags_ | keyboard_modifiers_;
@@ -341,7 +343,13 @@ void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
   // A window may be deleted when the event arrived from the server.
   if (!target)
     return;
-  SetTargetAndDispatchEvent(&event, target);
+
+  if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
+    SetTargetAndDispatchEvent(&event, target);
+  } else {
+    pointer_frames_.push_back(
+        std::make_unique<FrameData>(event, base::NullCallback()));
+  }
 }
 
 void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2dF& offset) {
@@ -640,7 +648,8 @@ void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta) {
   // TODO(oshima): Investigate if we need to scale the delta
   // when surface_submission_in_pixel_coordinates is on.
   relative_pointer_location_ = *relative_pointer_location_ + delta;
-  OnPointerMotionEvent(*relative_pointer_location_);
+  OnPointerMotionEvent(*relative_pointer_location_,
+                       wl::EventDispatchPolicy::kImmediate);
 }
 
 bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {

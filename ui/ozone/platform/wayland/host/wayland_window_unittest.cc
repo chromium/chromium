@@ -1468,6 +1468,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   wl_pointer_send_motion(server_.seat()->pointer()->resource(), 1002,
                          wl_fixed_from_double(10.75),
                          wl_fixed_from_double(20.375));
+  wl_pointer_send_frame(server_.seat()->pointer()->resource());
 
   Sync();
 
@@ -1491,6 +1492,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   wl_pointer_send_motion(server_.seat()->pointer()->resource(), 1002,
                          wl_fixed_from_double(10.75),
                          wl_fixed_from_double(20.375));
+  wl_pointer_send_frame(server_.seat()->pointer()->resource());
 
   Sync();
 
@@ -1501,6 +1503,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   wl_pointer_send_motion(server_.seat()->pointer()->resource(), 1002,
                          wl_fixed_from_double(2.75),
                          wl_fixed_from_double(8.375));
+  wl_pointer_send_frame(server_.seat()->pointer()->resource());
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
   std::unique_ptr<Event> event3;
@@ -1543,6 +1546,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   wl_pointer_send_motion(server_.seat()->pointer()->resource(), 1002,
                          wl_fixed_from_double(2.75),
                          wl_fixed_from_double(8.375));
+  wl_pointer_send_frame(server_.seat()->pointer()->resource());
 
   Sync();
 
@@ -1642,6 +1646,7 @@ TEST_P(WaylandWindowTest,
   wl_pointer_send_motion(server_.seat()->pointer()->resource(), 1002,
                          wl_fixed_from_double(10.75),
                          wl_fixed_from_double(20.375));
+  wl_pointer_send_frame(server_.seat()->pointer()->resource());
 
   Sync();
 
@@ -1667,6 +1672,7 @@ TEST_P(WaylandWindowTest,
   wl_pointer_send_motion(server_.seat()->pointer()->resource(), 1002,
                          wl_fixed_from_double(10.75),
                          wl_fixed_from_double(20.375));
+  wl_pointer_send_frame(server_.seat()->pointer()->resource());
 
   Sync();
 

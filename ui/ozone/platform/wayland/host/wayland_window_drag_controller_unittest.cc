@@ -106,6 +106,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     wl_fixed_t x = wl_fixed_from_int(location.x());
     wl_fixed_t y = wl_fixed_from_int(location.y());
     wl_pointer_send_motion(pointer_->resource(), NextTime(), x, y);
+    wl_pointer_send_frame(pointer_->resource());
 
     if (!sync_and_ensure_dispatched)
       return;

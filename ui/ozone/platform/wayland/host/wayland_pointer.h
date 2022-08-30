@@ -122,7 +122,9 @@ class WaylandPointer::Delegate {
       int changed_button,
       WaylandWindow* window,
       wl::EventDispatchPolicy dispatch_policy) = 0;
-  virtual void OnPointerMotionEvent(const gfx::PointF& location) = 0;
+  virtual void OnPointerMotionEvent(
+      const gfx::PointF& location,
+      wl::EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnPointerAxisEvent(const gfx::Vector2dF& offset) = 0;
   virtual void OnPointerFrameEvent() = 0;
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;

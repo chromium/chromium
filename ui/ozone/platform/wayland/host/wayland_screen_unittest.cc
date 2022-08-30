@@ -641,6 +641,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(10),
                          wl_fixed_from_int(20));
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 
@@ -658,6 +659,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(20),
                          wl_fixed_from_int(10));
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 
@@ -701,6 +703,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(2),
                          wl_fixed_from_int(1));
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 
@@ -720,6 +723,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(1912),
                          wl_fixed_from_int(1071));
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 
@@ -752,6 +756,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(2),
                          wl_fixed_from_int(3));
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 
@@ -767,6 +772,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(2),
                          wl_fixed_from_int(1));
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 

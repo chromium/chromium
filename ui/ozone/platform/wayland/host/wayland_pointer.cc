@@ -105,7 +105,8 @@ void WaylandPointer::Motion(void* data,
   const WaylandWindow* target = pointer->delegate_->GetPointerTarget();
 
   pointer->delegate_->OnPointerMotionEvent(
-      pointer->connection_->MaybeConvertLocation(location, target));
+      pointer->connection_->MaybeConvertLocation(location, target),
+      EventDispatchPolicyForPlatform());
 }
 
 // static
