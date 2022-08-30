@@ -34,7 +34,8 @@ StartupMode StartupUtil::ChooseStartupModeForIntent(
   if (!trigger_context.GetCCT()) {
     features_to_check.emplace_back(kAutofillAssistantChromeEntry);
   }
-  if (!script_parameters.GetStartImmediately().value_or(true)) {
+  if (script_parameters.HasStartImmediately() &&
+      !script_parameters.GetStartImmediately()) {
     features_to_check.emplace_back(kAutofillAssistantProactiveHelp);
     if (!options.feature_module_installed) {
       features_to_check.emplace_back(
@@ -50,8 +51,8 @@ StartupMode StartupUtil::ChooseStartupModeForIntent(
     }
   }
 
-  if (!script_parameters.GetStartImmediately().has_value() ||
-      !script_parameters.GetEnabled().value_or(false)) {
+  if (!script_parameters.HasStartImmediately() ||
+      !script_parameters.GetEnabled()) {
     VLOG(1)
         << "Invalid Autofill Assistant intent: a mandatory startup parameter "
            "(START_IMMEDIATELY or ENABLED) was missing or invalid.";
@@ -65,12 +66,12 @@ StartupMode StartupUtil::ChooseStartupModeForIntent(
     return StartupMode::NO_INITIAL_URL;
   }
 
-  if (script_parameters.GetStartImmediately().value()) {
+  if (script_parameters.GetStartImmediately()) {
     // For regular scripts we can stop checking here.
     return StartupMode::START_REGULAR;
   }
 
-  if (!(script_parameters.GetRequestsTriggerScript().value_or(false))) {
+  if (!(script_parameters.GetRequestsTriggerScript())) {
     VLOG(1) << "Invalid Autofill Assistant intent: START_IMMEDIATELY=false "
                "requires REQUEST_TRIGGER_SCRIPT=true.";
     return StartupMode::MANDATORY_PARAMETERS_MISSING;
@@ -82,7 +83,7 @@ StartupMode StartupUtil::ChooseStartupModeForIntent(
     return StartupMode::SETTING_DISABLED;
   }
 
-  DCHECK(script_parameters.GetRequestsTriggerScript().value_or(false));
+  DCHECK(script_parameters.GetRequestsTriggerScript());
   if (!options.msbb_setting_enabled &&
       !base::FeatureList::IsEnabled(
           kAutofillAssistantGetTriggerScriptsByHashPrefix)) {

@@ -273,7 +273,7 @@ TEST(ScriptParametersTest, InvalidFormat) {
   ScriptParameters parameters = {
       {{"ENABLED", "not_a_boolean"}, {"CALLER", "not_an_integer"}}};
 
-  EXPECT_THAT(parameters.GetEnabled(), Eq(absl::nullopt));
+  EXPECT_THAT(parameters.GetEnabled(), Eq(false));
   EXPECT_THAT(parameters.GetCaller(), Eq(absl::nullopt));
 }
 
@@ -281,7 +281,8 @@ TEST(ScriptParametersTest, MissingValues) {
   ScriptParameters parameters;
 
   // Just one test per data type here for brevity.
-  EXPECT_THAT(parameters.GetEnabled(), Eq(absl::nullopt));
+  EXPECT_THAT(parameters.HasStartImmediately(), Eq(false));
+  EXPECT_THAT(parameters.GetEnabled(), Eq(false));
   EXPECT_THAT(parameters.GetIntent(), Eq(absl::nullopt));
   EXPECT_THAT(parameters.GetCaller(), Eq(absl::nullopt));
   EXPECT_THAT(parameters.GetExperiments(), IsEmpty());

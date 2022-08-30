@@ -28,8 +28,7 @@ WaitForDomOperation::WaitForDomOperation(
       allow_interrupt_(allow_interrupt),
       use_observers_(allow_observers && delegate->GetTriggerContext()
                                             ->GetScriptParameters()
-                                            .GetEnableObserverWaitForDom()
-                                            .value_or(false)),
+                                            .GetEnableObserverWaitForDom()),
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),
       timeout_warning_delay_(delegate_->GetSettings().warning_delay),

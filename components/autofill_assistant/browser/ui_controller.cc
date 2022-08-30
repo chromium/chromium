@@ -1114,10 +1114,8 @@ void UiController::InitFromParameters(const TriggerContext& trigger_context) {
   if (details->UpdateFromParameters(trigger_context.GetScriptParameters()))
     SetDetails(std::move(details), base::TimeDelta());
 
-  const absl::optional<bool> enable_tts =
-      trigger_context.GetScriptParameters().GetEnableTts();
-  if (enable_tts && enable_tts.value() &&
-      !client_->IsSpokenFeedbackAccessibilityServiceEnabled()) {
+  const bool enable_tts = trigger_context.GetScriptParameters().GetEnableTts();
+  if (enable_tts && !client_->IsSpokenFeedbackAccessibilityServiceEnabled()) {
     tts_enabled_ = true;
     for (UiControllerObserver& observer : observers_) {
       observer.OnTtsButtonVisibilityChanged(/* visible= */ true);

@@ -87,9 +87,7 @@ std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
 
 // Returns whether |trigger_context| contains the REQUEST_TRIGGER_SCRIPT
 bool IsTriggerScriptContext(const TriggerContext& trigger_context) {
-  return trigger_context.GetScriptParameters()
-      .GetRequestsTriggerScript()
-      .value_or(false);
+  return trigger_context.GetScriptParameters().GetRequestsTriggerScript();
 }
 
 // The cache of failed trigger script fetches is shared across all instances and
@@ -610,7 +608,7 @@ void Starter::StartTriggerScript() {
   std::unique_ptr<ServiceRequestSender> service_request_sender =
       platform_delegate_->GetTriggerScriptRequestSenderToInject();
   if (!service_request_sender) {
-    if (script_parameters.GetRequestsTriggerScript().value_or(false)) {
+    if (script_parameters.GetRequestsTriggerScript()) {
       service_request_sender = CreateRpcTriggerScriptRequestSender(
           web_contents()->GetBrowserContext(), platform_delegate_);
     } else {

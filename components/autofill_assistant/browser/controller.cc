@@ -62,8 +62,7 @@ bool ShouldSuppressKeyboardForState(AutofillAssistantState state) {
 
 bool ShouldSendModelVersionInContext(const TriggerContext& trigger_context) {
   return trigger_context.GetScriptParameters()
-             .GetSendAnnotateDomModelVersion()
-             .value_or(false) ||
+             .GetSendAnnotateDomModelVersion() ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kAutofillAssistantAnnotateDom);
 }
@@ -853,8 +852,7 @@ void Controller::InitFromParameters() {
   user_model_.SetCurrentURL(GetCurrentURL());
 
   GetService()->SetDisableRpcSigning(
-      trigger_context_->GetScriptParameters().GetDisableRpcSigning().value_or(
-          false));
+      trigger_context_->GetScriptParameters().GetDisableRpcSigning());
 }
 
 void Controller::Track(std::unique_ptr<TriggerContext> trigger_context,

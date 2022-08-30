@@ -240,8 +240,8 @@ base::Value Details::GetDebugContext() const {
 }
 
 bool Details::UpdateFromParameters(const ScriptParameters& script_parameters) {
-  absl::optional<bool> show_initial = script_parameters.GetDetailsShowInitial();
-  if (show_initial.has_value() && !*show_initial) {
+  if (script_parameters.HasDetailsShowInitial() &&
+      !script_parameters.GetDetailsShowInitial()) {
     return false;
   }
 

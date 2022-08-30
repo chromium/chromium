@@ -178,8 +178,7 @@ void ClientAndroid::Start(
   }
 
   // Register TTS Synthetic Field Trial.
-  const bool enable_tts =
-      trigger_context->GetScriptParameters().GetEnableTts().value_or(false);
+  const bool enable_tts = trigger_context->GetScriptParameters().GetEnableTts();
   dependencies_->GetCommonDependencies()
       ->CreateFieldTrialUtil()
       ->RegisterSyntheticFieldTrial(

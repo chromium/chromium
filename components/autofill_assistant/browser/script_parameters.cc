@@ -29,7 +29,7 @@ const char kParameterMemoryPrefix[] = "param:";
 // non-existent values. Expects bool parameters as 'false' and 'true'.
 template <typename T>
 absl::optional<T> GetTypedParameter(
-    const base::flat_map<std::string, ValueProto> parameters,
+    const base::flat_map<std::string, ValueProto>& parameters,
     const std::string& key) {
   auto iter = parameters.find(key);
   if (iter == parameters.end())
@@ -45,6 +45,11 @@ absl::optional<T> GetTypedParameter(
     return absl::nullopt;
   }
   return out;
+}
+
+bool GetBoolParameter(const base::flat_map<std::string, ValueProto>& parameters,
+                      const std::string& key) {
+  return GetTypedParameter<bool>(parameters, key).value_or(false);
 }
 
 }  // namespace
@@ -199,28 +204,33 @@ absl::optional<std::string> ScriptParameters::GetPasswordChangeUsername()
       public_script_parameters::kPasswordChangeUsernameParameterName);
 }
 
-absl::optional<bool> ScriptParameters::GetRequestsTriggerScript() const {
-  return GetTypedParameter<bool>(parameters_,
-                                 kRequestTriggerScriptParameterName);
+bool ScriptParameters::GetRequestsTriggerScript() const {
+  return GetBoolParameter(parameters_, kRequestTriggerScriptParameterName);
 }
 
-absl::optional<bool> ScriptParameters::GetStartImmediately() const {
-  return GetTypedParameter<bool>(
+bool ScriptParameters::GetStartImmediately() const {
+  return GetBoolParameter(
       parameters_, public_script_parameters::kStartImmediatelyParameterName);
 }
 
-absl::optional<bool> ScriptParameters::GetEnabled() const {
+bool ScriptParameters::HasStartImmediately() const {
   return GetTypedParameter<bool>(
-      parameters_, public_script_parameters::kEnabledParameterName);
+             parameters_,
+             public_script_parameters::kStartImmediatelyParameterName)
+      .has_value();
+}
+
+bool ScriptParameters::GetEnabled() const {
+  return GetBoolParameter(parameters_,
+                          public_script_parameters::kEnabledParameterName);
 }
 
 absl::optional<std::string> ScriptParameters::GetOriginalDeeplink() const {
   return GetParameter(public_script_parameters::kOriginalDeeplinkParameterName);
 }
 
-absl::optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
-  return GetTypedParameter<bool>(parameters_,
-                                 kTriggerScriptExperimentParameterName);
+bool ScriptParameters::GetTriggerScriptExperiment() const {
+  return GetBoolParameter(parameters_, kTriggerScriptExperimentParameterName);
 }
 
 absl::optional<std::string> ScriptParameters::GetIntent() const {
@@ -231,12 +241,12 @@ absl::optional<std::string> ScriptParameters::GetCallerEmail() const {
   return GetParameter(kCallerEmailParameterName);
 }
 
-absl::optional<bool> ScriptParameters::GetEnableTts() const {
-  return GetTypedParameter<bool>(parameters_, kEnableTtsParameterName);
+bool ScriptParameters::GetEnableTts() const {
+  return GetBoolParameter(parameters_, kEnableTtsParameterName);
 }
 
-absl::optional<bool> ScriptParameters::GetEnableObserverWaitForDom() const {
-  return GetTypedParameter<bool>(parameters_, kEnableObserversParameter);
+bool ScriptParameters::GetEnableObserverWaitForDom() const {
+  return GetBoolParameter(parameters_, kEnableObserversParameter);
 }
 
 absl::optional<int> ScriptParameters::GetCaller() const {
@@ -261,20 +271,20 @@ std::vector<std::string> ScriptParameters::GetExperiments() const {
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
-absl::optional<bool> ScriptParameters::GetDisableRpcSigning() const {
-  return GetTypedParameter<bool>(parameters_, kDisableRpcSigningParamaterName);
+bool ScriptParameters::GetDisableRpcSigning() const {
+  return GetBoolParameter(parameters_, kDisableRpcSigningParamaterName);
 }
 
-absl::optional<bool> ScriptParameters::GetSendAnnotateDomModelVersion() const {
-  return GetTypedParameter<bool>(parameters_, kSendAnnotateDomModelVersion);
+bool ScriptParameters::GetSendAnnotateDomModelVersion() const {
+  return GetBoolParameter(parameters_, kSendAnnotateDomModelVersion);
 }
 
 bool ScriptParameters::GetRunHeadless() const {
-  return GetTypedParameter<bool>(parameters_, kRunHeadless).value_or(false);
+  return GetBoolParameter(parameters_, kRunHeadless);
 }
 
 bool ScriptParameters::GetUseAssistantUi() const {
-  return GetTypedParameter<bool>(parameters_, kUseAssistantUi).value_or(false);
+  return GetBoolParameter(parameters_, kUseAssistantUi);
 }
 
 absl::optional<std::string> ScriptParameters::GetFieldTrialGroup(
@@ -282,13 +292,17 @@ absl::optional<std::string> ScriptParameters::GetFieldTrialGroup(
   DCHECK_GE(field_trial_slot, 1);
   DCHECK_LE(field_trial_slot,
             AssistantFieldTrialUtil::kSyntheticTrialParamCount);
-  return GetTypedParameter<std::string>(
-      parameters_, base::StrCat({kFieldTrialPrefix,
-                                 base::NumberToString(field_trial_slot)}));
+  return GetParameter(base::StrCat(
+      {kFieldTrialPrefix, base::NumberToString(field_trial_slot)}));
 }
 
-absl::optional<bool> ScriptParameters::GetDetailsShowInitial() const {
-  return GetTypedParameter<bool>(parameters_, kDetailsShowInitialParameterName);
+bool ScriptParameters::HasDetailsShowInitial() const {
+  return GetTypedParameter<bool>(parameters_, kDetailsShowInitialParameterName)
+      .has_value();
+}
+
+bool ScriptParameters::GetDetailsShowInitial() const {
+  return GetBoolParameter(parameters_, kDetailsShowInitialParameterName);
 }
 
 absl::optional<std::string> ScriptParameters::GetDetailsTitle() const {

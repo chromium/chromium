@@ -53,20 +53,22 @@ class ScriptParameters {
   // Getters for specific parameters.
   absl::optional<std::string> GetOverlayColors() const;
   absl::optional<std::string> GetPasswordChangeUsername() const;
-  absl::optional<bool> GetRequestsTriggerScript() const;
-  absl::optional<bool> GetStartImmediately() const;
-  absl::optional<bool> GetEnabled() const;
+  bool GetRequestsTriggerScript() const;
+  // Returns true if the parameter is set and valid (either "true" or "false").
+  bool HasStartImmediately() const;
+  bool GetStartImmediately() const;
+  bool GetEnabled() const;
   absl::optional<std::string> GetOriginalDeeplink() const;
-  absl::optional<bool> GetTriggerScriptExperiment() const;
+  bool GetTriggerScriptExperiment() const;
   absl::optional<std::string> GetIntent() const;
   absl::optional<std::string> GetCallerEmail() const;
-  absl::optional<bool> GetEnableTts() const;
-  absl::optional<bool> GetEnableObserverWaitForDom() const;
+  bool GetEnableTts() const;
+  bool GetEnableObserverWaitForDom() const;
   absl::optional<int> GetCaller() const;
   absl::optional<int> GetSource() const;
   std::vector<std::string> GetExperiments() const;
-  absl::optional<bool> GetDisableRpcSigning() const;
-  absl::optional<bool> GetSendAnnotateDomModelVersion() const;
+  bool GetDisableRpcSigning() const;
+  bool GetSendAnnotateDomModelVersion() const;
   bool GetRunHeadless() const;
   bool GetUseAssistantUi() const;
   absl::optional<std::string> GetFieldTrialGroup(
@@ -74,7 +76,9 @@ class ScriptParameters {
   absl::optional<bool> GetIsNoRoundtrip() const;
 
   // Details parameters.
-  absl::optional<bool> GetDetailsShowInitial() const;
+  bool GetDetailsShowInitial() const;
+  // Returns true if the parameter is set and valid (either "true" or "false").
+  bool HasDetailsShowInitial() const;
   absl::optional<std::string> GetDetailsTitle() const;
   absl::optional<std::string> GetDetailsDescriptionLine1() const;
   absl::optional<std::string> GetDetailsDescriptionLine2() const;
