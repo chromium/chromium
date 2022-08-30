@@ -126,12 +126,12 @@ ts_definitions("generate_definitions") {
   root_dir = "$target_gen_dir/$preprocessed_dir"
   out_dir = "$target_gen_dir/$preprocessed_dir"
   js_files = generate_definitions_js_files
+  deps = [ "//ui/webui/resources:library" ]
   extra_deps = [
     ":copy_checked_in_dts_files",
     ":css_wrapper_files",
     ":html_wrapper_files",
     ":preprocess",
-    "//ui/webui/resources:library",
   ]
 }
 

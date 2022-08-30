@@ -33,6 +33,7 @@ def _write_tsconfig_json(gen_dir, tsconfig):
 
 def main(argv):
   parser = argparse.ArgumentParser()
+  parser.add_argument('--deps', nargs='*')
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--out_dir', required=True)
   parser.add_argument('--root_dir', required=True)
@@ -61,6 +62,9 @@ def main(argv):
       mapping = m.split('|')
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
     tsconfig['compilerOptions']['paths'] = path_mappings
+
+  if args.deps is not None:
+    tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
   _write_tsconfig_json(args.gen_dir, tsconfig)
 

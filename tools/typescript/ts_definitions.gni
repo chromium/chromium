@@ -11,6 +11,7 @@ template("ts_definitions") {
 
     forward_variables_from(invoker,
                            [
+                             "deps",
                              "extra_deps",
                              "js_files",
                            ])
@@ -44,6 +45,16 @@ template("ts_definitions") {
              rebase_path(out_dir, root_build_dir),
              "--js_files",
            ] + js_files
+
+    if (defined(deps)) {
+      args += [ "--deps" ]
+
+      foreach(dep, deps) {
+        name = get_label_info(dep, "name")
+        args += [ rebase_path(get_label_info(dep, "dir"), ".") +
+                  "/tsconfig_$name.json" ]
+      }
+    }
 
     if (defined(extra_deps)) {
       if (!defined(deps)) {
