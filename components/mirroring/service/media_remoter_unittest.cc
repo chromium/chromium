@@ -10,6 +10,7 @@
 #include "base/time/default_tick_clock.h"
 #include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/mirror_settings.h"
+#include "components/mirroring/service/rpc_dispatcher_impl.h"
 #include "media/cast/cast_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -73,6 +74,7 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
       : message_dispatcher_(receiver_.BindNewPipeAndPassRemote(),
                             inbound_channel_.BindNewPipeAndPassReceiver(),
                             error_callback_.Get()),
+        rpc_dispatcher_(message_dispatcher_),
         sink_metadata_(DefaultSinkMetadata()) {}
   MediaRemoterTest(const MediaRemoterTest&) = delete;
   MediaRemoterTest& operator=(const MediaRemoterTest&) = delete;
@@ -98,8 +100,8 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     EXPECT_FALSE(media_remoter_);
     EXPECT_CALL(*this, OnConnectToRemotingSource()).Times(1);
     EXPECT_CALL(remoting_source_, OnSinkAvailable(_)).Times(1);
-    media_remoter_ = std::make_unique<MediaRemoter>(this, sink_metadata_,
-                                                    &message_dispatcher_);
+    media_remoter_ =
+        std::make_unique<MediaRemoter>(*this, sink_metadata_, rpc_dispatcher_);
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(this);
     Mock::VerifyAndClear(&remoting_source_);
@@ -171,6 +173,7 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
   base::MockCallback<MessageDispatcher::ErrorCallback> error_callback_;
   mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
   MessageDispatcher message_dispatcher_;
+  RpcDispatcherImpl rpc_dispatcher_;
   const media::mojom::RemotingSinkMetadata sink_metadata_;
   MockRemotingSource remoting_source_;
   mojo::Remote<media::mojom::Remoter> remoter_;

@@ -481,6 +481,7 @@ void Session::StopSession() {
   // provider.
   media_remoter_.reset();
   message_dispatcher_.reset();
+  rpc_dispatcher_.reset();
   setup_querier_.reset();
   weak_factory_.InvalidateWeakPtrs();
   audio_encode_thread_ = nullptr;
@@ -1025,11 +1026,13 @@ void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
     build_version = setup_querier_->build_version();
     friendly_name = setup_querier_->friendly_name();
   }
+
+  rpc_dispatcher_ = std::make_unique<RpcDispatcherImpl>(*message_dispatcher_);
   media_remoter_ = std::make_unique<MediaRemoter>(
-      this,
+      *this,
       ToRemotingSinkMetadata(caps, friendly_name, session_params_,
                              build_version),
-      message_dispatcher_.get());
+      *rpc_dispatcher_);
 }
 
 }  // namespace mirroring

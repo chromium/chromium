@@ -16,6 +16,7 @@
 #include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/receiver_setup_querier.h"
+#include "components/mirroring/service/rpc_dispatcher_impl.h"
 #include "components/mirroring/service/rtp_stream.h"
 #include "gpu/config/gpu_info.h"
 #include "media/capture/video/video_capture_feedback.h"
@@ -175,7 +176,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   MirrorSettings mirror_settings_;
 
   std::unique_ptr<MessageDispatcher> message_dispatcher_;
-
+  std::unique_ptr<RpcDispatcherImpl> rpc_dispatcher_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
 
   std::unique_ptr<ReceiverSetupQuerier> setup_querier_;

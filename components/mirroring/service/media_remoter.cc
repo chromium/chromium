@@ -4,15 +4,10 @@
 
 #include "components/mirroring/service/media_remoter.h"
 
-#include "base/base64.h"
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
-#include "base/values.h"
-#include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/remoting_sender.h"
+#include "components/mirroring/service/rpc_dispatcher.h"
 #include "media/cast/net/cast_transport.h"
 
 using media::cast::Codec;
@@ -21,18 +16,15 @@ using media::cast::FrameSenderConfig;
 namespace mirroring {
 
 MediaRemoter::MediaRemoter(
-    Client* client,
+    Client& client,
     const media::mojom::RemotingSinkMetadata& sink_metadata,
-    MessageDispatcher* message_dispatcher)
+    RpcDispatcher& rpc_dispatcher)
     : client_(client),
       sink_metadata_(sink_metadata),
-      message_dispatcher_(message_dispatcher),
+      rpc_dispatcher_(rpc_dispatcher),
       cast_environment_(nullptr),
       transport_(nullptr),
       state_(MIRRORING) {
-  DCHECK(client_);
-  DCHECK(message_dispatcher_);
-
   client_->ConnectToRemotingSource(
       receiver_.BindNewPipeAndPassRemote(),
       remoting_source_.BindNewPipeAndPassReceiver());
@@ -46,10 +38,8 @@ MediaRemoter::~MediaRemoter() {
   Stop(media::mojom::RemotingStopReason::ROUTE_TERMINATED);
 }
 
-void MediaRemoter::OnMessageFromSink(const ReceiverResponse& response) {
-  DCHECK_EQ(ResponseType::RPC, response.type());
-  remoting_source_->OnMessageFromSink(
-      std::vector<uint8_t>(response.rpc().begin(), response.rpc().end()));
+void MediaRemoter::OnMessageFromSink(const std::vector<uint8_t>& response) {
+  remoting_source_->OnMessageFromSink(response);
 }
 
 void MediaRemoter::StartRpcMessaging(
@@ -72,9 +62,8 @@ void MediaRemoter::StartRpcMessaging(
   transport_ = transport;
   audio_config_ = audio_config;
   video_config_ = video_config;
-  message_dispatcher_->Subscribe(
-      ResponseType::RPC, base::BindRepeating(&MediaRemoter::OnMessageFromSink,
-                                             weak_factory_.GetWeakPtr()));
+  rpc_dispatcher_->Subscribe(base::BindRepeating(
+      &MediaRemoter::OnMessageFromSink, weak_factory_.GetWeakPtr()));
   state_ = REMOTING_STARTED;
   remoting_source_->OnStarted();
 }
@@ -104,7 +93,7 @@ void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
   if (state_ != STARTING_REMOTING && state_ != REMOTING_STARTED)
     return;
   if (state_ == REMOTING_STARTED) {
-    message_dispatcher_->Unsubscribe(ResponseType::RPC);
+    rpc_dispatcher_->Unsubscribe();
     audio_sender_.reset();
     video_sender_.reset();
     cast_environment_ = nullptr;
@@ -161,20 +150,7 @@ void MediaRemoter::StartDataStreams(
 void MediaRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
   if (state_ != REMOTING_STARTED)
     return;
-  std::string encoded_rpc;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(message.data()),
-                        message.size()),
-      &encoded_rpc);
-  base::Value::Dict rpc;
-  rpc.Set("type", "RPC");
-  rpc.Set("rpc", std::move(encoded_rpc));
-  mojom::CastMessagePtr rpc_message = mojom::CastMessage::New();
-  rpc_message->message_namespace = mojom::kRemotingNamespace;
-  const bool did_serialize_rpc =
-      base::JSONWriter::Write(rpc, &rpc_message->json_format_data);
-  DCHECK(did_serialize_rpc);
-  message_dispatcher_->SendOutboundMessage(std::move(rpc_message));
+  rpc_dispatcher_->SendOutboundMessage(message);
 }
 
 void MediaRemoter::EstimateTransmissionCapacity(
