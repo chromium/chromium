@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/process/process.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -81,22 +80,20 @@ class ScopedSymbolPath {
         subkey_(is_system ? L"SYSTEM\\CurrentControlSet\\Control\\Session "
                             L"Manager\\Environment"
                           : L"Environment") {
-    base::FilePath this_executable_path;
-    base::PathService::Get(base::FILE_EXE, &this_executable_path);
-    const std::wstring symbol_path = this_executable_path.DirName().value();
-
-    // For an unknown reason, symbolized stacks for code running as user
-    // requires setting up the environment variable for this unit test process.
-    if (::GetEnvironmentVariable(kNtSymbolPathEnVar, nullptr, 0) == 0) {
-      ::SetEnvironmentVariable(kNtSymbolPathEnVar, symbol_path.c_str());
-    }
-
     base::win::RegKey reg_key(rootkey_, subkey_.c_str(), KEY_READ | KEY_WRITE);
     if (reg_key.Valid() && !reg_key.HasValue(kNtSymbolPathEnVar)) {
+      base::FilePath this_executable_path;
+      base::PathService::Get(base::FILE_EXE, &this_executable_path);
+      const std::wstring symbol_path = this_executable_path.DirName().value();
       is_owned = reg_key.WriteValue(kNtSymbolPathEnVar, symbol_path.c_str()) ==
                  ERROR_SUCCESS;
       if (!is_owned)
         return;
+
+      // For an unknown reason, symbolized stacks for code running as user
+      // requires setting up the environment variable for this unit test process
+      // as well.
+      ::SetEnvironmentVariable(kNtSymbolPathEnVar, symbol_path.c_str());
       BroadcastEnvironmentChange();
       std::wcerr << "Symbol path for " << (is_system_ ? "system" : "user")
                  << " set to: " << symbol_path << std::endl;
@@ -106,6 +103,7 @@ class ScopedSymbolPath {
   ~ScopedSymbolPath() {
     if (!is_owned)
       return;
+    ::SetEnvironmentVariable(kNtSymbolPathEnVar, nullptr);
     base::win::RegKey reg_key(rootkey_, subkey_.c_str(), KEY_WRITE);
     if (reg_key.Valid()) {
       reg_key.DeleteValue(kNtSymbolPathEnVar);
@@ -182,10 +180,6 @@ int main(int argc, char** argv) {
   chrome::RegisterPathProvider();
   return base::LaunchUnitTestsWithOptions(
       argc, argv, 1, 10, true, base::BindRepeating([]() {
-        logging::SetLogItems(true,    // enable_process_id
-                             true,    // enable_thread_id
-                             true,    // enable_timestamp
-                             false);  // enable_tickcount
         updater::test::CreateIntegrationTestCommands()->PrintLog();
       }),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));

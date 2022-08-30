@@ -123,6 +123,7 @@ class IntegrationTest : public ::testing::Test {
     PrintLog();
     CopyLog();
     test_commands_->Uninstall();
+    WaitForUpdaterExit();
   }
 
   void ExpectCandidateUninstalled() {
