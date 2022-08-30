@@ -125,12 +125,10 @@ interface MediaFoundationRendererExtension {
   // Notify that the frame has been displayed and can be reused.
   NotifyFrameReleased(mojo_base.mojom.UnguessableToken frame_token);
 
-  // Request a frame from the media engine if it is available for a specific
-  // time.
+  // Request a frame from the media engine if it is available
   // The frame will be returned async via the
   // MediaFoundationRendererClientExtension::OnFrameAvailable callback.
-  RequestNextFrameBetweenTimestamps(mojo_base.mojom.TimeTicks deadline_min,
-    mojo_base.mojom.TimeTicks deadline_max);
+  RequestNextFrame();
 
   // Notify which rendering mode to be using for future video frames.
   SetMediaFoundationRenderingMode(MediaFoundationRenderingMode mode);

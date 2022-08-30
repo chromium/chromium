@@ -833,6 +833,10 @@ void MediaFoundationRenderer::OnPlaying() {
   OnBufferingStateChange(
       BufferingState::BUFFERING_HAVE_ENOUGH,
       BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+
+  // Earliest time to request first frame to screen
+  RequestNextFrame();
+
   // The OnPlaying callback from MediaEngineNotifyImpl lets us know that an
   // MF_MEDIA_ENGINE_EVENT_PLAYING message has been received. At this point we
   // can safely start sending Statistics as any asynchronous Flush action in
@@ -968,9 +972,7 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
     renderer_client_->OnError(new_status);
 }
 
-void MediaFoundationRenderer::RequestNextFrameBetweenTimestamps(
-    base::TimeTicks deadline_min,
-    base::TimeTicks deadline_max) {
+void MediaFoundationRenderer::RequestNextFrame() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (rendering_mode_ != MediaFoundationRenderingMode::FrameServer) {
     return;

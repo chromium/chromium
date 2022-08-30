@@ -42,9 +42,7 @@ class MEDIA_EXPORT MediaFoundationRendererExtension {
       const base::UnguessableToken& frame_token) = 0;
 
   // Request a new frame to be provided to the client.
-  virtual void RequestNextFrameBetweenTimestamps(
-      base::TimeTicks deadline_min,
-      base::TimeTicks deadline_max) = 0;
+  virtual void RequestNextFrame() = 0;
 
   // Change which mode we are using for video frame rendering.
   virtual void SetMediaFoundationRenderingMode(
