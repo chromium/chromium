@@ -63,6 +63,8 @@ const char kArch[] =
     "loong32";
 #elif defined(__loongarch64)
     "loong64";
+#elif defined(__riscv) && (__riscv_xlen == 64)
+    "riscv64";
 #else
 #error "unknown arch"
 #endif
@@ -136,6 +138,8 @@ const char* UpdateQueryParams::GetNaclArch() {
   return "loong32";
 #elif defined(ARCH_CPU_LOONG64)
   return "loong64";
+#elif defined(ARCH_CPU_RISCV64)
+  return "riscv64";
 #else
 // NOTE: when adding new values here, please remember to update the
 // comment in the .h file about possible return values from this function.
