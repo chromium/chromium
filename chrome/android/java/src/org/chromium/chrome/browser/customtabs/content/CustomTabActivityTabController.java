@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -520,7 +521,10 @@ public class CustomTabActivityTabController implements InflationObserver {
      */
     private void maybeStartSendingRealTimeEngagementSignals(Tab tab) {
         assert tab.getWebContents() != null;
-
+        // Do not report engagement signals if user does not consent to report usage.
+        if (!PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()) {
+            return;
+        }
         if (mScrollState == null) mScrollState = new ScrollState();
         if (mGestureStateListener == null) {
             mGestureStateListener = new GestureStateListener() {

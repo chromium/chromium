@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -40,6 +41,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -78,6 +80,8 @@ public class CustomTabActivityTabControllerUnitTest {
     private GestureListenerManagerImpl mGestureListenerManagerImpl;
     @Mock
     private RenderCoordinatesImpl mRenderCoordinatesImpl;
+    @Mock
+    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerImpl;
 
     @Before
     public void setUp() {
@@ -87,12 +91,15 @@ public class CustomTabActivityTabControllerUnitTest {
         when(mRenderCoordinatesImpl.getMaxVerticalScrollPixInt()).thenReturn(100);
         GestureListenerManagerImpl.setInstanceForTesting(mGestureListenerManagerImpl);
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinatesImpl);
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerImpl);
+        doReturn(true).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
     }
 
     @After
     public void tearDown() {
         RenderCoordinatesImpl.setInstanceForTesting(null);
         GestureListenerManagerImpl.setInstanceForTesting(null);
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(null);
     }
 
     @Test
@@ -232,6 +239,15 @@ public class CustomTabActivityTabControllerUnitTest {
 
     @Test
     public void doesNotAddListenersForSignalsIfFeatureIsDisabled() {
+        env.reachNativeInit(mTabController);
+
+        verify(mGestureListenerManagerImpl, never()).addListener(any(GestureStateListener.class));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void doesNotAddListenersForSignalsIfUmaUploadIsDisabled() {
+        doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
         env.reachNativeInit(mTabController);
 
         verify(mGestureListenerManagerImpl, never()).addListener(any(GestureStateListener.class));
