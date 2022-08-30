@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.Autofil
 
 import android.view.ViewGroup;
 
+import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -25,7 +26,7 @@ public class AutofillProfileItemViewBinder {
     // credit card items and footer items.
     static AutofillProfileItemViewHolder createViewHolder(ViewGroup parent, int itemType) {
         // Only one type of item is supported.
-        assert itemType == AutofillProfileItemProperties.DEFAULT_ITEM_TYPE;
+        assert itemType == DetailItemType.PROFILE;
         return new AutofillProfileItemViewHolder(
                 parent, R.layout.fast_checkout_autofill_profile_item);
     }

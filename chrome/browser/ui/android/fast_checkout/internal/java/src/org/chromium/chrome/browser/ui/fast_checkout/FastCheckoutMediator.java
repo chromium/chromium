@@ -11,10 +11,12 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
+import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -23,7 +25,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -174,8 +176,7 @@ public class FastCheckoutMediator {
         assert profiles != null && profiles.length != 0;
 
         // Populate all model entries.
-        ListModel<MVCListAdapter.ListItem> profileItems =
-                mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
+        ListModel<ListItem> profileItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
         profileItems.clear();
         for (FastCheckoutAutofillProfile profile : profiles) {
             PropertyModel model = AutofillProfileItemProperties.create(
@@ -183,8 +184,7 @@ public class FastCheckoutMediator {
                         setSelectedAutofillProfile(profile);
                         setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
                     });
-            MVCListAdapter.ListItem item = new MVCListAdapter.ListItem(
-                    AutofillProfileItemProperties.DEFAULT_ITEM_TYPE, model);
+            ListItem item = new ListItem(DetailItemType.PROFILE, model);
             profileItems.add(item);
         }
 
@@ -194,7 +194,7 @@ public class FastCheckoutMediator {
     }
 
     /**
-     * Sets the Autofill profile items and updates the IS_SELECTED entry in the models
+     * Sets the selected Autofill profile and updates the IS_SELECTED entry in the models
      * of the profile item entries on the Autofill profiles page.
      * @param selectedProfile The profile that is to be selected.
      */
@@ -203,9 +203,8 @@ public class FastCheckoutMediator {
         mModel.set(FastCheckoutProperties.SELECTED_PROFILE, selectedProfile);
 
         int foundProfiles = 0;
-        ListModel<MVCListAdapter.ListItem> allItems =
-                mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
-        for (MVCListAdapter.ListItem item : allItems) {
+        ListModel<ListItem> allItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
+        for (ListItem item : allItems) {
             boolean isSelected = selectedProfile.equals(
                     item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE));
             item.model.set(AutofillProfileItemProperties.IS_SELECTED, isSelected);
@@ -218,11 +217,54 @@ public class FastCheckoutMediator {
         assert foundProfiles == 1;
     }
 
+    /**
+     * Sets the credit card items and creates the corresponding models for the
+     * credit card item entries on the credit card page.
+     * @param creditCards The array of FastCheckoutCreditCard to set as credit cards.
+     */
     public void setCreditCardItems(FastCheckoutCreditCard[] creditCards) {
-        // TODO(crbug.com/1334642): Keep proper track of the selected credit card and list of
-        // available credit card items. For now setting the first element of the list as default.
-        assert creditCards.length != 0;
-        mModel.set(FastCheckoutProperties.SELECTED_CREDIT_CARD, creditCards[0]);
+        assert creditCards != null && creditCards.length != 0;
+
+        // Populate all model entries.
+        ListModel<ListItem> cardItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
+        cardItems.clear();
+        for (FastCheckoutCreditCard card : creditCards) {
+            PropertyModel model = CreditCardItemProperties.create(
+                    /*creditCard=*/card, /*isSelected=*/false, /*onClickListener=*/() -> {
+                        setSelectedCreditCard(card);
+                        setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
+                    });
+            ListItem item = new ListItem(DetailItemType.CREDIT_CARD, model);
+            cardItems.add(item);
+        }
+
+        // TODO(crbug.com/1334642): Keep proper track of selected profile and list of available
+        // profile items. For now setting the first element of the list as default.
+        setSelectedCreditCard(creditCards[0]);
+    }
+
+    /**
+     * Sets the selected credit card and updates the IS_SELECTED entry in the models
+     * of the credit card item entries on the credit card page.
+     * @param selectedCreditCard The credit card that is to be selected.
+     */
+    public void setSelectedCreditCard(FastCheckoutCreditCard selectedCreditCard) {
+        assert selectedCreditCard != null;
+        mModel.set(FastCheckoutProperties.SELECTED_CREDIT_CARD, selectedCreditCard);
+
+        int foundCards = 0;
+        ListModel<ListItem> allItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
+        for (ListItem item : allItems) {
+            boolean isSelected =
+                    selectedCreditCard.equals(item.model.get(CreditCardItemProperties.CREDIT_CARD));
+            item.model.set(CreditCardItemProperties.IS_SELECTED, isSelected);
+            if (isSelected) {
+                ++foundCards;
+            }
+        }
+
+        // Exactly one of the models must contain the selected credit card.
+        assert foundCards == 1;
     }
 
     /**

@@ -38,6 +38,22 @@ public class FastCheckoutProperties {
         int CREDIT_CARD_SCREEN = 2;
     }
 
+    /**
+     * The different item types in the RecyclerView on the Autofill profile sheet.
+     */
+    @IntDef({DetailItemType.PROFILE, DetailItemType.CREDIT_CARD, DetailItemType.FOOTER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DetailItemType {
+        /** An Autofill profile entry. */
+        int PROFILE = 1;
+
+        /** A credit card entry. */
+        int CREDIT_CARD = 2;
+
+        /** A footer entry with a link to add a new profile/card. */
+        int FOOTER = 3;
+    }
+
     /** Property that indicates the bottom sheet visibility. */
     public static final WritableBooleanPropertyKey VISIBLE =
             new WritableBooleanPropertyKey("visible");
@@ -60,6 +76,10 @@ public class FastCheckoutProperties {
     /** The chosen credit card option. */
     public static final WritableObjectPropertyKey<FastCheckoutCreditCard> SELECTED_CREDIT_CARD =
             new WritableObjectPropertyKey<>("selected_credit_card");
+
+    /** The models corresponding to all credit card options. */
+    public static final ReadableObjectPropertyKey<ListModel<ListItem>> CREDIT_CARD_MODEL_LIST =
+            new ReadableObjectPropertyKey("credit_card_model_list");
 
     /** The delegate that handles actions on the home screen. */
     public static final WritableObjectPropertyKey<HomeScreenCoordinator.Delegate>
@@ -94,13 +114,14 @@ public class FastCheckoutProperties {
                 .with(VISIBLE, false)
                 .with(CURRENT_SCREEN, ScreenType.HOME_SCREEN)
                 .with(PROFILE_MODEL_LIST, new ListModel())
+                .with(CREDIT_CARD_MODEL_LIST, new ListModel())
                 .build();
     }
 
     /** All keys used for the fast checkout bottom sheet. */
-    static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {VISIBLE, CURRENT_SCREEN, SELECTED_PROFILE, PROFILE_MODEL_LIST,
-                    SELECTED_CREDIT_CARD, HOME_SCREEN_DELEGATE, DETAIL_SCREEN_TITLE,
-                    DETAIL_SCREEN_SETTINGS_MENU_TITLE, DETAIL_SCREEN_BACK_CLICK_HANDLER,
-                    DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, DETAIL_SCREEN_MODEL_LIST};
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, CURRENT_SCREEN,
+            SELECTED_PROFILE, PROFILE_MODEL_LIST, SELECTED_CREDIT_CARD, CREDIT_CARD_MODEL_LIST,
+            HOME_SCREEN_DELEGATE, DETAIL_SCREEN_TITLE, DETAIL_SCREEN_SETTINGS_MENU_TITLE,
+            DETAIL_SCREEN_BACK_CLICK_HANDLER, DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
+            DETAIL_SCREEN_MODEL_LIST};
 }

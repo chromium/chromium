@@ -42,6 +42,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
@@ -150,10 +151,10 @@ public class FastCheckoutDetailScreenViewTest {
                 FastCheckoutTestUtils.createDummyProfile("Jane Doe", "doe.jane@gmail.com");
 
         ListModel<ListItem> models = mModel.get(PROFILE_MODEL_LIST);
-        models.add(new ListItem(AutofillProfileItemProperties.DEFAULT_ITEM_TYPE,
+        models.add(new ListItem(DetailItemType.PROFILE,
                 AutofillProfileItemProperties.create(profile1, /*isSelected=*/false,
                         /*onClickListener=*/mCallback1)));
-        models.add(new ListItem(AutofillProfileItemProperties.DEFAULT_ITEM_TYPE,
+        models.add(new ListItem(DetailItemType.PROFILE,
                 AutofillProfileItemProperties.create(profile2, /*isSelected=*/true,
                         /*onClickListener=*/mCallback2)));
         mModel.set(DETAIL_SCREEN_MODEL_LIST, models);

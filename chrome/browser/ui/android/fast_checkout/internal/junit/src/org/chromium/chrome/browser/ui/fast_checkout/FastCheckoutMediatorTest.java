@@ -16,6 +16,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CREDIT_CARD_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
@@ -24,6 +25,7 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.HOME_SCREEN_DELEGATE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.PROFILE_MODEL_LIST;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.SELECTED_CREDIT_CARD;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.SELECTED_PROFILE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.VISIBLE;
 
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.Scree
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -64,7 +67,9 @@ public class FastCheckoutMediatorTest {
             FastCheckoutTestUtils.createDummyProfile("Jane Doe", "jane@gmail.com"),
             FastCheckoutTestUtils.createDummyProfile("Foo Boo", "foo@gmail.com")};
     private static final FastCheckoutCreditCard[] DUMMY_CARDS = {
-            FastCheckoutTestUtils.createDummyCreditCard("https://example.com", "4111111111111111")};
+            FastCheckoutTestUtils.createDummyCreditCard("https://example.com", "4111111111111111"),
+            FastCheckoutTestUtils.createDummyCreditCard(
+                    "https://example.co.uk", "4111111145454111")};
 
     @Mock
     RecyclerView mMockParentView;
@@ -91,6 +96,8 @@ public class FastCheckoutMediatorTest {
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
         assertThat(mModel.get(PROFILE_MODEL_LIST), instanceOf(ListModel.class));
         assertThat(mModel.get(PROFILE_MODEL_LIST).size(), is(0));
+        assertThat(mModel.get(CREDIT_CARD_MODEL_LIST), instanceOf(ListModel.class));
+        assertThat(mModel.get(CREDIT_CARD_MODEL_LIST).size(), is(0));
 
         // On top of that, the initialize method of the Mediator sets up delegates.
         assertNotNull(mModel.get(HOME_SCREEN_DELEGATE));
@@ -189,6 +196,18 @@ public class FastCheckoutMediatorTest {
     }
 
     @Test
+    public void testSetCreditCardsCreatesModels() {
+        mMediator.setCreditCardItems(DUMMY_CARDS);
+
+        ListModel<MVCListAdapter.ListItem> models = mModel.get(CREDIT_CARD_MODEL_LIST);
+        assertThat(models.size(), is(DUMMY_CARDS.length));
+        for (int index = 0; index < DUMMY_CARDS.length; ++index) {
+            PropertyModel model = models.get(index).model;
+            assertThat(model.get(CreditCardItemProperties.CREDIT_CARD), is(DUMMY_CARDS[index]));
+        }
+    }
+
+    @Test
     public void testSetSelectedAutofillProfileUpdatesModels() {
         mMediator.setAutofillProfileItems(DUMMY_PROFILES);
 
@@ -202,12 +221,34 @@ public class FastCheckoutMediatorTest {
         checkThatAutofillProfileIsSelected(2);
     }
 
+    @Test
+    public void testSetSelectedCreditCardUpdatesModels() {
+        mMediator.setCreditCardItems(DUMMY_CARDS);
+
+        ListModel<MVCListAdapter.ListItem> models = mModel.get(CREDIT_CARD_MODEL_LIST);
+        assertThat(models.size(), is(DUMMY_CARDS.length));
+
+        mMediator.setSelectedCreditCard(DUMMY_CARDS[0]);
+        checkThatCreditCardIsSelected(0);
+
+        mMediator.setSelectedCreditCard(DUMMY_CARDS[1]);
+        checkThatCreditCardIsSelected(1);
+    }
+
     private void checkThatAutofillProfileIsSelected(int selectedIndex) {
         ListModel<MVCListAdapter.ListItem> models = mModel.get(PROFILE_MODEL_LIST);
         for (int index = 0; index < DUMMY_PROFILES.length; ++index) {
             PropertyModel model = models.get(index).model;
             assertThat(model.get(AutofillProfileItemProperties.IS_SELECTED),
                     is(index == selectedIndex));
+        }
+    }
+
+    private void checkThatCreditCardIsSelected(int selectedIndex) {
+        ListModel<MVCListAdapter.ListItem> models = mModel.get(CREDIT_CARD_MODEL_LIST);
+        for (int index = 0; index < DUMMY_CARDS.length; ++index) {
+            PropertyModel model = models.get(index).model;
+            assertThat(model.get(CreditCardItemProperties.IS_SELECTED), is(index == selectedIndex));
         }
     }
 
@@ -225,6 +266,23 @@ public class FastCheckoutMediatorTest {
 
         assertThat(mModel.get(SELECTED_PROFILE),
                 is(model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE)));
+        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
+    }
+
+    @Test
+    public void testCreditCardItemOnClickListenerUpdatesSelectedCreditCard() {
+        mMediator.setCreditCardItems(DUMMY_CARDS);
+        mMediator.setSelectedCreditCard(DUMMY_CARDS[0]);
+        mMediator.setCurrentScreen(ScreenType.CREDIT_CARD_SCREEN);
+
+        ListModel<MVCListAdapter.ListItem> models = mModel.get(CREDIT_CARD_MODEL_LIST);
+        assertThat(models.size(), is(DUMMY_CARDS.length));
+
+        PropertyModel model = models.get(1).model;
+        model.get(CreditCardItemProperties.ON_CLICK_LISTENER).run();
+
+        assertThat(mModel.get(SELECTED_CREDIT_CARD),
+                is(model.get(CreditCardItemProperties.CREDIT_CARD)));
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
     }
 }
