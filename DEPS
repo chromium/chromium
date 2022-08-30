@@ -1192,6 +1192,11 @@ deps = {
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
+  'src/third_party/devtools-frontend-internal': {
+      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + 'd110473508b618607e81b6745d4bf898520894c3',
+    'condition': 'checkout_src_internal',
+  },
+
   'src/third_party/dom_distiller_js/dist':
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
@@ -1819,7 +1824,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@3f95ce893573ce8badea0517785565c45da8dba9',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@8b2649d6408150032c4d44d395b918e91130d36b',
     'condition': 'checkout_src_internal',
   },
 
@@ -4767,6 +4772,7 @@ recursedeps = [
   # Dawn manages DEPS for its copy of the WebGPU CTS as well as GLFW for which
   # it has build files.
   'src/third_party/dawn',
+  'src/third_party/devtools-frontend-internal',
   'src/third_party/openscreen/src',
   'src/third_party/vulkan-deps',
   # src-internal has its own DEPS file to pull additional internal repos
