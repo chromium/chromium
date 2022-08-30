@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.view.View;
 import android.widget.ImageButton;
@@ -55,8 +54,6 @@ public final class ToolbarTabletUnitTest {
     @Mock
     private LocationBarCoordinator mLocationBar;
     @Mock
-    private Drawable mDrawable;
-    @Mock
     private LocationBarCoordinatorTablet mLocationBarTablet;
     @Mock
     private StatusCoordinator mStatusCoordinator;
@@ -75,7 +72,6 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet = (ToolbarTablet) mActivity.getLayoutInflater().inflate(
                 org.chromium.chrome.R.layout.toolbar_tablet, null);
         when(mLocationBar.getTabletCoordinator()).thenReturn(mLocationBarTablet);
-        when(mLocationBarTablet.getBackground()).thenReturn(mDrawable);
         mToolbarTablet.setLocationBarCoordinator(mLocationBar);
         LocationBarLayout locationBarLayout = mToolbarTablet.findViewById(R.id.location_bar);
         locationBarLayout.setStatusCoordinatorForTesting(mStatusCoordinator);
