@@ -276,8 +276,8 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element,
   }
 
   if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
-    DeferredShapingController::From(*document_)
-        ->ReshapeAllDeferred(ReshapeReason::kInspector);
+    if (auto* ds_controller = DeferredShapingController::From(*document_))
+      ds_controller->ReshapeAllDeferred(ReshapeReason::kInspector);
     document_->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
   }
   PhysicalRect content_bounds = GetNodeRect(text_node);

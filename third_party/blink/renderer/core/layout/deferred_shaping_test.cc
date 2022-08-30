@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
@@ -549,6 +550,13 @@ TEST_F(DeferredShapingTest, NoDeferForAutoSizing) {
   GetFrame().View()->EnableAutoSizeMode({100, 100}, {1920, 4000});
   UpdateAllLifecyclePhasesForTest();
   // Pass if no DCHECK failures.
+}
+
+TEST_F(DeferredShapingTest, ScrollIntoViewInInactiveDocument) {
+  Document* doc = Document::CreateForTest();
+  Node* root = doc->appendChild(doc->CreateRawElement(html_names::kHTMLTag));
+  To<Element>(root)->scrollIntoView();
+  // PASS if no crash.
 }
 
 }  // namespace blink

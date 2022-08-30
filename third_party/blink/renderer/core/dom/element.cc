@@ -1211,8 +1211,8 @@ void Element::scrollIntoView(bool align_to_top) {
 }
 
 void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
-  DeferredShapingController::From(GetDocument())
-      ->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
+  if (auto* ds_controller = DeferredShapingController::From(GetDocument()))
+    ds_controller->ReshapeAllDeferred(ReshapeReason::kScrollingApi);
   ActivateDisplayLockIfNeeded(DisplayLockActivationReason::kScrollIntoView);
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
