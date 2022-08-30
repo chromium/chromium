@@ -284,4 +284,13 @@ if (use_libfuzzer) {
       "//third_party/libprotobuf-mutator",
     ]
   }
+  fuzzer_test("create_trials_from_seed_fuzzer") {
+    sources = [ "fuzzers/create_trials_from_seed_fuzzer.cc" ]
+    deps = [
+      ":variations",
+      "proto",
+      "//base/test:test_support",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }
