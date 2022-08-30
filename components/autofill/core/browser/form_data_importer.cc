@@ -641,6 +641,9 @@ bool FormDataImporter::ImportAddressProfileForSection(
             features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
       candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
       import_metadata.did_remove_invalid_phone_number = true;
+      LOG_AF(import_log_buffer)
+          << LogMessage::kImportAddressProfileFromFormRemoveInvalidValue
+          << "Phone number." << CTag{};
     } else {
       has_invalid_phone_number = true;
       LOG_AF(import_log_buffer)

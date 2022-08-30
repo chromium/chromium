@@ -45,6 +45,8 @@ class LogBuffer;
     "Source of country for address requirements: ")                            \
   T(ImportAddressProfileFromFormAddressRequirements,                           \
     "Requirements for the address import: ")                                   \
+  T(ImportAddressProfileFromFormRemoveInvalidValue,                            \
+    "Removing value because validation failed: ")                              \
   T(FormSubmissionDetected, "Form submission detected: ")                      \
   T(SendFillingData, "Sending data to fill to renderer: ")                     \
   T(CreditCardUploadEnabled, "Credit card upload is enabled.")                 \
