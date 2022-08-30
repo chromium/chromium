@@ -154,11 +154,13 @@ class ChromiumDepGraph {
         net_bytebuddy_byte_buddy: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            overrideLatest: true),
         net_bytebuddy_byte_buddy_agent: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            overrideLatest: true),
         net_sf_kxml_kxml2: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/stefanhaustein/kxml2/master/license.txt',
             licenseName: 'MIT'),
@@ -184,7 +186,8 @@ class ChromiumDepGraph {
         org_objenesis_objenesis: new PropertyOverride(
             url: 'http://objenesis.org/index.html',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            overrideLatest: true),
         org_ow2_asm_asm: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
             licenseName: 'BSD'),
