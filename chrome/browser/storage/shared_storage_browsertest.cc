@@ -215,10 +215,12 @@ class SharedStorageChromeBrowserTest : public InProcessBrowserTest {
 
     add_module_console_observer.Wait();
 
-    EXPECT_EQ(1u, content::GetAttachedWorkletHostsCountForRenderFrameHost(
-                      execution_target));
-    EXPECT_EQ(0u, content::GetKeepAliveWorkletHostsCountForRenderFrameHost(
-                      execution_target));
+    EXPECT_EQ(1u,
+              content::GetAttachedSharedStorageWorkletHostsCount(
+                  execution_target.render_frame_host()->GetStoragePartition()));
+    EXPECT_EQ(0u,
+              content::GetKeepAliveSharedStorageWorkletHostsCount(
+                  execution_target.render_frame_host()->GetStoragePartition()));
     EXPECT_EQ(1u, add_module_console_observer.messages().size());
     EXPECT_EQ(
         "Finish executing customizable_module.js",
@@ -343,10 +345,12 @@ class SharedStoragePrefBrowserTest
 
     add_module_console_observer.Wait();
 
-    EXPECT_EQ(1u, content::GetAttachedWorkletHostsCountForRenderFrameHost(
-                      execution_target));
-    EXPECT_EQ(0u, content::GetKeepAliveWorkletHostsCountForRenderFrameHost(
-                      execution_target));
+    EXPECT_EQ(1u,
+              content::GetAttachedSharedStorageWorkletHostsCount(
+                  execution_target.render_frame_host()->GetStoragePartition()));
+    EXPECT_EQ(0u,
+              content::GetKeepAliveSharedStorageWorkletHostsCount(
+                  execution_target.render_frame_host()->GetStoragePartition()));
     EXPECT_EQ(1u, add_module_console_observer.messages().size());
     EXPECT_EQ(
         "Finish executing customizable_module.js",

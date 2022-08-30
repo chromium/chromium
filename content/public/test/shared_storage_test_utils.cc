@@ -22,11 +22,9 @@ namespace content {
 namespace {
 
 SharedStorageWorkletHostManager*
-GetSharedStorageWorkletHostManagerForRenderFrameHost(
-    const ToRenderFrameHost& to_rfh) {
-  return static_cast<StoragePartitionImpl*>(to_rfh.render_frame_host()
-                                                ->GetBrowserContext()
-                                                ->GetDefaultStoragePartition())
+GetSharedStorageWorkletHostManagerForStoragePartition(
+    StoragePartition* storage_partition) {
+  return static_cast<StoragePartitionImpl*>(storage_partition)
       ->GetSharedStorageWorkletHostManager();
 }
 
@@ -41,20 +39,18 @@ void SetBypassIsSharedStorageAllowed(bool allow) {
       GetBypassIsSharedStorageAllowedForTesting() = allow;
 }
 
-size_t GetAttachedWorkletHostsCountForRenderFrameHost(
-    const ToRenderFrameHost& to_rfh) {
+size_t GetAttachedSharedStorageWorkletHostsCount(
+    StoragePartition* storage_partition) {
   SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForRenderFrameHost(
-          to_rfh.render_frame_host());
+      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition);
   DCHECK(manager);
   return manager->GetAttachedWorkletHostsForTesting().size();
 }
 
-size_t GetKeepAliveWorkletHostsCountForRenderFrameHost(
-    const ToRenderFrameHost& to_rfh) {
+size_t GetKeepAliveSharedStorageWorkletHostsCount(
+    StoragePartition* storage_partition) {
   SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForRenderFrameHost(
-          to_rfh.render_frame_host());
+      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition);
   DCHECK(manager);
   return manager->GetKeepAliveWorkletHostsForTesting().size();
 }
