@@ -115,6 +115,8 @@ class WebsiteMetrics : public BrowserListObserver,
 
     ~ActiveTabWebContentsObserver() override;
 
+    void OnPrimaryPageChanged();
+
     // content::WebContentsObserver
     void PrimaryPageChanged(content::Page& page) override;
     void WebContentsDestroyed() override;

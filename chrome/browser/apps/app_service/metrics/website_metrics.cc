@@ -84,8 +84,7 @@ WebsiteMetrics::ActiveTabWebContentsObserver::ActiveTabWebContentsObserver(
 WebsiteMetrics::ActiveTabWebContentsObserver::~ActiveTabWebContentsObserver() =
     default;
 
-void WebsiteMetrics::ActiveTabWebContentsObserver::PrimaryPageChanged(
-    content::Page& page) {
+void WebsiteMetrics::ActiveTabWebContentsObserver::OnPrimaryPageChanged() {
   owner_->OnWebContentsUpdated(web_contents());
 
   if (app_banner_manager_observer_.IsObserving()) {
@@ -98,6 +97,11 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::PrimaryPageChanged(
   if (app_banner_manager) {
     app_banner_manager_observer_.Observe(app_banner_manager);
   }
+}
+
+void WebsiteMetrics::ActiveTabWebContentsObserver::PrimaryPageChanged(
+    content::Page& page) {
+  OnPrimaryPageChanged();
 }
 
 void WebsiteMetrics::ActiveTabWebContentsObserver::WebContentsDestroyed() {
@@ -255,6 +259,7 @@ void WebsiteMetrics::OnFiveMinutes() {
 }
 
 void WebsiteMetrics::OnTwoHours() {
+  SaveUsageTime();
   RecordUsageTime();
 
   std::map<GURL, UrlInfo> url_infos;
@@ -322,7 +327,9 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     // contents.
     auto it = window_to_web_contents_.find(window);
     if (it != window_to_web_contents_.end()) {
-      OnTabClosed(it->second);
+      if (it->second) {
+        OnTabClosed(it->second);
+      }
       window_to_web_contents_.erase(it);
       MaybeRemoveObserveWindowActivationClient();
     }
@@ -349,6 +356,18 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
 
   if (new_contents) {
     window_to_web_contents_[window] = new_contents;
+    // When the tab is drag to a new browser window, PrimaryPageChanged might
+    // not be called, so `webcontents_to_ukm_key_` doesn't include
+    // `new_contents`. So call PrimaryPageChanged to update web contents and add
+    // the website url.
+    if (!base::Contains(webcontents_to_ukm_key_, new_contents)) {
+      auto it = webcontents_to_observer_map_.find(new_contents);
+      if (it != webcontents_to_observer_map_.end()) {
+        it->second->OnPrimaryPageChanged();
+        it->second->OnInstallableWebAppStatusUpdated();
+      }
+      return;
+    }
     if (wm::IsActiveWindow(window)) {
       SetTabActivated(new_contents);
     }
@@ -407,9 +426,10 @@ void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
   // start url if there is a manifest.
   auto* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(web_contents);
-  DCHECK(app_banner_manager);
 
-  if (blink::IsEmptyManifest(app_banner_manager->manifest())) {
+  // In some test cases, AppBannerManager might be null.
+  if (!app_banner_manager ||
+      blink::IsEmptyManifest(app_banner_manager->manifest())) {
     return;
   }
 
@@ -448,26 +468,33 @@ void WebsiteMetrics::UpdateUrlInfo(const GURL& old_url,
                                    bool is_activated,
                                    bool promotable) {
   base::TimeTicks start_time = base::TimeTicks::Now();
+  base::TimeDelta running_time_in_five_minutes;
+  base::TimeDelta running_time_in_two_hours;
 
   auto it = url_infos_.find(old_url);
   if (it != url_infos_.end()) {
+    running_time_in_five_minutes = it->second.running_time_in_five_minutes;
+    running_time_in_two_hours = it->second.running_time_in_two_hours;
     start_time = it->second.start_time;
     url_infos_.erase(old_url);
   }
 
   AddUrlInfo(new_url, start_time, url_content, is_activated, promotable);
+  url_infos_[new_url].running_time_in_five_minutes =
+      running_time_in_five_minutes;
+  url_infos_[new_url].running_time_in_two_hours = running_time_in_two_hours;
 }
 
 void WebsiteMetrics::SetWindowActivated(aura::Window* window) {
   auto it = window_to_web_contents_.find(window);
-  if (it != window_to_web_contents_.end()) {
+  if (it != window_to_web_contents_.end() && it->second) {
     SetTabActivated(it->second);
   }
 }
 
 void WebsiteMetrics::SetWindowInActivated(aura::Window* window) {
   auto it = window_to_web_contents_.find(window);
-  if (it != window_to_web_contents_.end()) {
+  if (it != window_to_web_contents_.end() && it->second) {
     SetTabInActivated(it->second);
   }
 }
