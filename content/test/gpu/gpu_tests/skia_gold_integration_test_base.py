@@ -358,21 +358,11 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     use_luci = not (gold_properties.local_pixel_tests
                     or gold_properties.no_luci_auth)
 
-    # TODO(skbug.com/12149): Remove this once Gold stops clobbering earlier
-    # results when running retry steps.
-    force_dryrun = False
-    # "Retry without patch" steps automatically pass in a test filter, which
-    # should be the only time these tests are run with a test filter on trybots.
-    if (gold_properties.IsTryjobRun()
-        and self.GetOriginalFinderOptions().has_test_filter):
-      force_dryrun = True
-
     status, error = gold_session.RunComparison(
         name=image_name,
         png_file=png_temp_file,
         inexact_matching_args=page.matching_algorithm.GetCmdline(),
-        use_luci=use_luci,
-        force_dryrun=force_dryrun)
+        use_luci=use_luci)
     if not status:
       return
 
