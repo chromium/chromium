@@ -8,8 +8,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -17,7 +15,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
-#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -6600,64 +6597,8 @@ TEST_F(PersistentDesksBarTest, BentoBarWithShelfAlignment) {
   EXPECT_TRUE(IsWidgetVisible());
 }
 
-// Tests that the bar will only be created when the app list is not in
-// fullscreen mode. This test can be deleted when ProductivityLauncher is the
-// default.
-TEST_F(PersistentDesksBarTest, AppListFullscreen) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
-
-  AppListControllerImpl* app_list_controller =
-      Shell::Get()->app_list_controller();
-  AppListView* app_list_view =
-      app_list_controller->fullscreen_presenter()->GetView();
-
-  // The bar should be created when the app list view remains null.
-  NewDesk();
-  EXPECT_EQ(2u, DesksController::Get()->desks().size());
-  EXPECT_TRUE(GetBarWidget());
-  EXPECT_TRUE(IsWidgetVisible());
-
-  // The bar should be created when the app list view is created and
-  // showing in kPeeking mode.
-  app_list_controller->ShowAppList();
-  app_list_view = app_list_controller->fullscreen_presenter()->GetView();
-  ASSERT_TRUE(app_list_view);
-  EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kPeeking);
-  EXPECT_TRUE(GetBarWidget());
-  EXPECT_TRUE(IsWidgetVisible());
-
-  // The bar should be created when the app list is in kHalf mode.
-  app_list_view->SetState(AppListViewState::kHalf);
-  EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kHalf);
-  EXPECT_TRUE(GetBarWidget());
-  EXPECT_TRUE(IsWidgetVisible());
-
-  // The bar should be destroyed when the app list is in kFullscreenSearch mode.
-  app_list_view->SetState(AppListViewState::kFullscreenSearch);
-  EXPECT_TRUE(app_list_view->app_list_state() ==
-              AppListViewState::kFullscreenSearch);
-  EXPECT_FALSE(GetBarWidget());
-
-  // The bar should be destroyed when the app list is in kFullscreenAllApps
-  // mode.
-  app_list_view->SetState(AppListViewState::kFullscreenAllApps);
-  EXPECT_TRUE(app_list_view->app_list_state() ==
-              AppListViewState::kFullscreenAllApps);
-  EXPECT_FALSE(GetBarWidget());
-
-  // The bar should be created when the app list is dismissed.
-  app_list_controller->DismissAppList();
-  EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kClosed);
-  EXPECT_TRUE(GetBarWidget());
-  EXPECT_TRUE(IsWidgetVisible());
-}
-
-// Tests that the bar is not affected by ProductivityLauncher.
-TEST_F(PersistentDesksBarTest, ProductivityLauncher) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
-
+// Tests that the bar is not affected by the launcher opening.
+TEST_F(PersistentDesksBarTest, BarStaysOpenWhenLauncherOpens) {
   AppListControllerImpl* app_list_controller =
       Shell::Get()->app_list_controller();
 
