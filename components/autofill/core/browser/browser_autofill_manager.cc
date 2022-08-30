@@ -1994,37 +1994,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         filling_context && base::Contains(filling_context->forced_fill_values,
                                           form.fields[i].global_id());
 
-    // Do not override prefilled text/input field values. Selection fields are
-    // excluded from this check because they may have a non-empty value.
-    // If the initiating element had a prefilled value but the autofill
-    // suggestion is present that includes the currently filled value in the
-    // field as a substring, Autofill would override the filled value in that
-    // case.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillPreventOverridingPrefilledValues)) {
-      form_structure->field(i)
-          ->set_value_not_autofilled_over_existing_value_hash(absl::nullopt);
-      if (form.fields[i].form_control_type != "select-one" &&
-          !form.fields[i].value.empty() && !has_override &&
-          !FormFieldData::DeepEqual(form.fields[i], field)) {
-        buffer << Tr{} << field_number << "Skipped: value is prefilled";
-        std::string unused_failure_to_fill;
-        const std::u16string kEmptyCvc{};
-        const std::u16string fill_value = field_filler_.GetValueForFilling(
-            *cached_field, profile_or_credit_card, &result.fields[i],
-            optional_cvc ? *optional_cvc : kEmptyCvc, action,
-            &unused_failure_to_fill);
-        if (action == mojom::RendererFormDataAction::kFill &&
-            !fill_value.empty() && fill_value != form.fields[i].value &&
-            !form_structure->field(i)->value.empty()) {
-          // Save the value that was supposed to be autofilled for this field if
-          // the field contained an initial value.
-          form_structure->field(i)
-              ->set_value_not_autofilled_over_existing_value_hash(
-                  base::FastHash(base::UTF16ToUTF8(fill_value)));
-        }
-        continue;
-      }
+    if (!has_override &&
+        ShouldPreventAutofillFromOverridingPrefilledField(
+            action, field, form.fields[i], cached_field, &result.fields[i],
+            profile_or_credit_card, optional_cvc)) {
+      LOG_AF(buffer) << Tr{} << field_number << "Skipped: value is prefilled";
+      continue;
     }
 
     // Do not fill fields that have been edited by the user, except if the field
@@ -2186,6 +2161,47 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // ignored the operation could be for a different card or address.
     filling_context->forced_fill_values.clear();
   }
+}
+
+bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
+    mojom::RendererFormDataAction action,
+    const FormFieldData& initiating_field,
+    const FormFieldData& to_be_filled_field,
+    AutofillField* cached_field,
+    FormFieldData* field_data,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    const std::u16string* optional_cvc) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillPreventOverridingPrefilledValues)) {
+    return false;
+  }
+
+  cached_field->set_value_not_autofilled_over_existing_value_hash(
+      absl::nullopt);
+
+  if (to_be_filled_field.form_control_type != "select-one" &&
+      !to_be_filled_field.value.empty() &&
+      !FormFieldData::DeepEqual(to_be_filled_field, initiating_field)) {
+    std::string unused_failure_to_fill;
+    const std::u16string kEmptyCvc{};
+    std::u16string fill_value = field_filler_.GetValueForFilling(
+        *cached_field, profile_or_credit_card, field_data,
+        optional_cvc ? *optional_cvc : kEmptyCvc, action,
+        &unused_failure_to_fill);
+
+    if (action == mojom::RendererFormDataAction::kFill && !fill_value.empty() &&
+        fill_value != to_be_filled_field.value &&
+        !cached_field->value.empty()) {
+      // Save the value that was supposed to be autofilled for this
+      // field if the field contained an initial value.
+      cached_field->set_value_not_autofilled_over_existing_value_hash(
+          base::FastHash(base::UTF16ToUTF8(fill_value)));
+    }
+    return true;
+  }
+
+  return false;
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
