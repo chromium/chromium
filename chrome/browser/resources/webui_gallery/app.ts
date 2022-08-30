@@ -75,7 +75,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_slider/cr_slider_demo.html',
             },
             {
-              name: 'Tabs, non Polymer',
+              name: 'Tabs, non-Polymer',
               path: 'tabs1',
               src: 'cr_tab_box/cr_tab_box_demo.html',
             },
@@ -83,6 +83,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               name: 'Toggles',
               path: 'toggles',
               src: 'cr_toggle_demo.html',
+            },
+            {
+              name: 'Tree, non-Polymer',
+              path: 'tree',
+              src: 'cr_tree/cr_tree_demo.html',
             },
           ];
         },

@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="../demo.css">
+<style>
+  cr-tree:not([has-children]) ~ #clearAll,
+  cr-tree:not([has-children]) ~ #collapseAll,
+  cr-tree:not([has-children]) ~ #expandAll {
+    display: none;
+  }
+
+  cr-tree[has-children] ~ #populateTree {
+    display: none;
+  }
+</style>
+
+<h1>cr-tree</h1>
+<div class="demos">
+  <cr-tree></cr-tree>
+
+  <label id="iconVisibilityContainer">
+    <input type="checkbox" id="iconVisibility" checked>
+    Show folder icons
+  </label>
+
+  <button id="expandAll">Expand All</button>
+  <button id="collapseAll">Collapse All</button>
+  <button id="addItem">Add item</button>
+  <button id="removeItem">Remove item</button>
+
+  <div id="log"></div>
+</div>
