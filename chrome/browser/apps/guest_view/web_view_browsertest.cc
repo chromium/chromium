@@ -320,8 +320,8 @@ class SelectControlWaiter : public aura::WindowObserver,
 // Simulate real click with delay between mouse down and up.
 class LeftMouseClick {
  public:
-  explicit LeftMouseClick(content::WebContents* web_contents)
-      : web_contents_(web_contents),
+  explicit LeftMouseClick(content::RenderFrameHost* render_frame_host)
+      : render_frame_host_(render_frame_host),
         mouse_event_(blink::WebInputEvent::Type::kMouseDown,
                      blink::WebInputEvent::kNoModifiers,
                      blink::WebInputEvent::GetStaticTimeStampForTests()) {
@@ -339,14 +339,12 @@ class LeftMouseClick {
     click_completed_ = false;
     mouse_event_.SetType(blink::WebInputEvent::Type::kMouseDown);
     mouse_event_.SetPositionInWidget(point.x(), point.y());
-    const gfx::Rect offset = web_contents_->GetContainerBounds();
+    const gfx::Rect offset =
+        render_frame_host_->GetRenderWidgetHost()->GetView()->GetViewBounds();
     mouse_event_.SetPositionInScreen(point.x() + offset.x(),
                                      point.y() + offset.y());
     mouse_event_.click_count = 1;
-    web_contents_->GetPrimaryMainFrame()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->ForwardMouseEvent(mouse_event_);
+    render_frame_host_->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event_);
 
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -366,17 +364,14 @@ class LeftMouseClick {
  private:
   void SendMouseUp() {
     mouse_event_.SetType(blink::WebInputEvent::Type::kMouseUp);
-    web_contents_->GetPrimaryMainFrame()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->ForwardMouseEvent(mouse_event_);
+    render_frame_host_->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event_);
     click_completed_ = true;
     if (message_loop_runner_)
       message_loop_runner_->Quit();
   }
 
   // Unowned pointer.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
@@ -1357,18 +1352,18 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SelectShowHide) {
   content::WebContents* embedder_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(embedder_contents);
 
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_contents_list);
-  ASSERT_EQ(1u, guest_contents_list.size());
-  content::WebContents* guest_contents = guest_contents_list[0];
+  std::vector<content::RenderFrameHost*> guest_frames_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_frames_list);
+  ASSERT_EQ(1u, guest_frames_list.size());
+  content::RenderFrameHost* guest_frame = guest_frames_list[0];
 
   const gfx::Rect embedder_rect = embedder_contents->GetContainerBounds();
-  const gfx::Rect guest_rect = guest_contents->GetContainerBounds();
+  const gfx::Rect guest_rect =
+      guest_frame->GetRenderWidgetHost()->GetView()->GetViewBounds();
   const gfx::Point click_point(guest_rect.x() - embedder_rect.x() + 10,
                                guest_rect.y() - embedder_rect.y() + 10);
 
-  LeftMouseClick mouse_click(guest_contents);
+  LeftMouseClick mouse_click(guest_frame);
   SelectControlWaiter select_control_waiter;
 
   for (int i = 0; i < 5; ++i) {
