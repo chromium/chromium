@@ -469,7 +469,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   std::unique_ptr<gpu::SharedImageManager> owned_shared_image_manager_;
 
   std::unique_ptr<gpu::Scheduler> owned_scheduler_;
-  raw_ptr<gpu::Scheduler> scheduler_;
+  raw_ptr<gpu::Scheduler, DanglingUntriaged> scheduler_;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   raw_ptr<gpu::VulkanImplementation> vulkan_implementation_;
