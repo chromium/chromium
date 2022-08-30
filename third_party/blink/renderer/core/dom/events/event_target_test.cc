@@ -85,4 +85,16 @@ TEST_F(EventTargetTest, UseCountAbortSignal) {
       GetDocument().IsUseCounted(WebFeature::kAddEventListenerWithAbortSignal));
 }
 
+// See https://crbug.com/1357453.
+// Tests that we don't crash when adding a unload event handler to a target
+// that has no ExecutionContext.
+TEST_F(EventTargetTest, UnloadWithoutExecutionContext) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(R"JS(
+      document.createElement("track").track.addEventListener(
+          "unload",() => {});
+                      )JS")
+      ->RunScript(GetDocument().domWindow());
+}
+
 }  // namespace blink

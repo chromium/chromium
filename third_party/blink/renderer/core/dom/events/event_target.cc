@@ -419,10 +419,16 @@ bool EventTarget::AddEventListenerInternal(
   if (options->hasSignal() && options->signal()->aborted())
     return false;
 
+  // It doesn't make sense to add an event listener without an ExecutionContext
+  // and some code below here assumes we have one.
+  auto* execution_context = GetExecutionContext();
+  if (!execution_context)
+    return false;
+
   // Consider `Permissions-Policy: unload`.
   if (event_type == event_type_names::kUnload &&
       RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled() &&
-      !GetExecutionContext()->IsFeatureEnabled(
+      !execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {
     return false;
