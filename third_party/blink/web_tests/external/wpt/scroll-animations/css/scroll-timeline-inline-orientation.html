@@ -1,22 +1,17 @@
 <!DOCTYPE HTML>
 <html class="reftest-wait">
-<title>The scroll-timeline at rule with inline orientation and default source</title>
+<title>Scroll timeline with inline orientation and root scroller</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
-<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#scroll-notation">
 <link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#descdef-scroll-timeline-orientation">
 <link rel="help" href="https://drafts.csswg.org/css-animations-2/#animation-timeline">
 <meta name="assert" content="CSS animation correctly updates values when using the inline orientation">
-<link rel="match" href="at-scroll-timeline-inline-orientation-ref.html">
+<link rel="match" href="scroll-timeline-inline-orientation-ref.html">
 
 <style>
   @keyframes update {
     from { transform: translateX(0px); }
     to { transform: translateX(200px); }
-  }
-
-  @scroll-timeline test-timeline {
-    source: auto;
-    orientation: inline;
   }
 
   html {
@@ -30,7 +25,7 @@
     height: 100px;
     background-color: green;
     animation: update 1s linear;
-    animation-timeline: test-timeline;
+    animation-timeline: scroll(inline root);
     display: inline-block;
   }
 
