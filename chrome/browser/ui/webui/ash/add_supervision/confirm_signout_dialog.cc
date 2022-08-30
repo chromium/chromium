@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/add_supervision/confirm_signout_dialog.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
 
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,7 +22,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // The width of the text body in the dialog.
@@ -91,4 +91,4 @@ bool ConfirmSignoutDialog::IsShowing() {
 BEGIN_METADATA(ConfirmSignoutDialog, views::DialogDelegateView)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

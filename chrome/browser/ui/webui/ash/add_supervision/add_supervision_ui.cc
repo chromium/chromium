@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 
 #include <memory>
 #include <utility>
@@ -14,10 +14,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/confirm_signout_dialog.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -29,7 +29,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -218,7 +218,7 @@ void AddSupervisionUI::SetUpResources() {
 
   // Full paths (relative to src) are important for Mojom generated files.
   source->AddResourcePath(
-      "chrome/browser/ui/webui/chromeos/add_supervision/"
+      "chrome/browser/ui/webui/ash/add_supervision/"
       "add_supervision.mojom-lite.js",
       IDR_ADD_SUPERVISION_MOJOM_LITE_JS);
 
@@ -258,4 +258,4 @@ GURL AddSupervisionUI::GetAddSupervisionURL() {
   return result;
 }
 
-}  // namespace chromeos
+}  // namespace ash

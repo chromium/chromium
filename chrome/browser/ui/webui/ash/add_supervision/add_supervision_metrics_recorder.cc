@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/default_tick_clock.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 
 // static
 AddSupervisionMetricsRecorder* AddSupervisionMetricsRecorder::GetInstance() {
