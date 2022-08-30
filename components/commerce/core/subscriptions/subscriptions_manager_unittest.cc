@@ -240,18 +240,17 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe) {
   }
 
   CreateManagerAndVerify(true);
-  bool callback_executed = false;
+  base::RunLoop run_loop;
   subscriptions_manager_->Subscribe(
       BuildSubscriptions("333"),
       base::BindOnce(
-          [](bool* callback_executed, bool succeeded) {
+          [](base::RunLoop* run_loop, bool succeeded) {
             ASSERT_EQ(true, succeeded);
-            *callback_executed = true;
+            run_loop->Quit();
           },
-          &callback_executed));
-  // Use a RunLoop in case the callback is posted on a different thread.
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(true, callback_executed);
+          &run_loop));
+  // The callback should eventually quit the run loop.
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
@@ -275,18 +274,17 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
   }
 
   CreateManagerAndVerify(true);
-  bool callback_executed = false;
+  base::RunLoop run_loop;
   subscriptions_manager_->Subscribe(
       BuildSubscriptions("333"),
       base::BindOnce(
-          [](bool* callback_executed, bool succeeded) {
+          [](base::RunLoop* run_loop, bool succeeded) {
             ASSERT_EQ(false, succeeded);
-            *callback_executed = true;
+            run_loop->Quit();
           },
-          &callback_executed));
-  // Use a RunLoop in case the callback is posted on a different thread.
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(true, callback_executed);
+          &run_loop));
+  // The callback should eventually quit the run loop.
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_InitFailed) {
@@ -305,18 +303,17 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_InitFailed) {
   }
 
   CreateManagerAndVerify(false);
-  bool callback_executed = false;
+  base::RunLoop run_loop;
   subscriptions_manager_->Subscribe(
       BuildSubscriptions("333"),
       base::BindOnce(
-          [](bool* callback_executed, bool succeeded) {
+          [](base::RunLoop* run_loop, bool succeeded) {
             ASSERT_EQ(false, succeeded);
-            *callback_executed = true;
+            run_loop->Quit();
           },
-          &callback_executed));
-  // Use a RunLoop in case the callback is posted on a different thread.
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(true, callback_executed);
+          &run_loop));
+  // The callback should eventually quit the run loop.
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_HasRequestRunning) {
@@ -440,18 +437,16 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
   }
 
   CreateManagerAndVerify(true);
-  bool callback_executed = false;
+  base::RunLoop run_loop;
   subscriptions_manager_->Unsubscribe(
       BuildSubscriptions("333"),
       base::BindOnce(
-          [](bool* callback_executed, bool succeeded) {
+          [](base::RunLoop* run_loop, bool succeeded) {
             ASSERT_EQ(true, succeeded);
-            *callback_executed = true;
+            run_loop->Quit();
           },
-          &callback_executed));
-  // Use a RunLoop in case the callback is posted on a different thread.
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(true, callback_executed);
+          &run_loop));
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
@@ -470,18 +465,16 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
   }
 
   CreateManagerAndVerify(false);
-  bool callback_executed = false;
+  base::RunLoop run_loop;
   subscriptions_manager_->Unsubscribe(
       BuildSubscriptions("333"),
       base::BindOnce(
-          [](bool* callback_executed, bool succeeded) {
+          [](base::RunLoop* run_loop, bool succeeded) {
             ASSERT_EQ(false, succeeded);
-            *callback_executed = true;
+            run_loop->Quit();
           },
-          &callback_executed));
-  // Use a RunLoop in case the callback is posted on a different thread.
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(true, callback_executed);
+          &run_loop));
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsManagerTest, TestIdentityChange) {

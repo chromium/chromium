@@ -169,16 +169,15 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate) {
                                     kExpectedPostDataForCreate, _))
       .Times(1);
 
-  bool callback_executed = false;
+  base::RunLoop run_loop;
   server_proxy_->Create(BuildValidSubscriptions(),
                         base::BindOnce(
-                            [](bool* callback_executed, bool succeeded) {
+                            [](base::RunLoop* run_loop, bool succeeded) {
                               ASSERT_EQ(true, succeeded);
-                              *callback_executed = true;
+                              run_loop->Quit();
                             },
-                            &callback_executed));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(true, callback_executed);
+                            &run_loop));
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsServerProxyTest, TestCreate_EmptyList) {

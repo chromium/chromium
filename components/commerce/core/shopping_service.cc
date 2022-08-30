@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -283,7 +284,8 @@ void ShoppingService::GetProductInfoForUrl(const GURL& url,
     absl::optional<ProductInfo> info;
     // Make a copy based on the cached value.
     info.emplace(*cached_info);
-    std::move(callback).Run(url, info);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), url, info));
     return;
   }
 

@@ -219,11 +219,11 @@ TEST_F(SubscriptionsStorageTest, TestGetUniqueNonExistingSubscriptions) {
   proto_db_->MockLoadResponse(true);
   EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _)).Times(1);
 
-  bool callback_executed = false;
+  base::RunLoop run_loop;
   storage_->GetUniqueNonExistingSubscriptions(
       MockIncomingSubscriptions(),
       base::BindOnce(
-          [](bool* callback_executed,
+          [](base::RunLoop* run_loop,
              std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
             ASSERT_EQ(1, static_cast<int>(subscriptions->size()));
             auto subscription = (*subscriptions)[0];
@@ -234,11 +234,10 @@ TEST_F(SubscriptionsStorageTest, TestGetUniqueNonExistingSubscriptions) {
             ASSERT_EQ(kMockId1, subscription.id);
             ASSERT_EQ(kUnknownSubscriptionTimestamp, subscription.timestamp);
 
-            *callback_executed = true;
+            run_loop->Quit();
           },
-          &callback_executed));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(true, callback_executed);
+          &run_loop));
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsStorageTest, TestGetUniqueExistingSubscriptions) {
