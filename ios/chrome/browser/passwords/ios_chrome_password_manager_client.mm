@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#import "base/types/optional_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -300,7 +301,7 @@ IOSChromePasswordManagerClient::GetMetricsRecorder() {
   if (!metrics_recorder_) {
     metrics_recorder_.emplace(GetUkmSourceId());
   }
-  return base::OptionalOrNullptr(metrics_recorder_);
+  return base::OptionalToPtr(metrics_recorder_);
 }
 
 signin::IdentityManager* IOSChromePasswordManagerClient::GetIdentityManager() {
