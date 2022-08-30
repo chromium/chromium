@@ -63,7 +63,8 @@ class MediaFoundationRendererWrapper final
   void SetOutputRect(const gfx::Rect& output_rect,
                      SetOutputRectCallback callback) override;
   void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
-  void RequestNextFrame() override;
+  void RequestNextFrameBetweenTimestamps(base::TimeTicks deadline_min,
+                                         base::TimeTicks deadline_max) override;
   void SetMediaFoundationRenderingMode(
       MediaFoundationRenderingMode mode) override;
 

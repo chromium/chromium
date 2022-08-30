@@ -230,8 +230,10 @@ void MediaFoundationRendererWrapper::NotifyFrameReleased(
   renderer_->NotifyFrameReleased(frame_token);
 }
 
-void MediaFoundationRendererWrapper::RequestNextFrame() {
-  renderer_->RequestNextFrame();
+void MediaFoundationRendererWrapper::RequestNextFrameBetweenTimestamps(
+    base::TimeTicks deadline_min,
+    base::TimeTicks deadline_max) {
+  renderer_->RequestNextFrameBetweenTimestamps(deadline_min, deadline_max);
 }
 
 void MediaFoundationRendererWrapper::SetMediaFoundationRenderingMode(
