@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -297,5 +299,27 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertNotEquals(0, layoutParams.topMargin);
         Assert.assertEquals(0, layoutParams.rightMargin);
         Assert.assertEquals(0, layoutParams.bottomMargin);
+    }
+
+    @Test
+    public void getBackgroundDrawableColor_incognito() {
+        final @ColorInt int expectedColor =
+                mBaseView.getContext().getColor(R.color.omnibox_suggestion_bg_incognito);
+        final boolean isIncognito = true;
+
+        Assert.assertEquals(
+                BaseSuggestionViewBinder.getBackgroundDrawableColor(isIncognito, mBaseView),
+                expectedColor);
+    }
+
+    @Test
+    public void getBackgroundDrawableColor_notIncognito() {
+        final @ColorInt int expectedColor = ChromeColors.getSurfaceColor(
+                mBaseView.getContext(), R.dimen.omnibox_suggestion_bg_elevation);
+        final boolean isIncognito = false;
+
+        Assert.assertEquals(
+                BaseSuggestionViewBinder.getBackgroundDrawableColor(isIncognito, mBaseView),
+                expectedColor);
     }
 }

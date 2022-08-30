@@ -18,6 +18,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
@@ -321,11 +322,22 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         backgroundGradient.setCornerRadii(new float[] {topRadii, topRadii, topRadii, topRadii,
                 bottomRadii, bottomRadii, bottomRadii, bottomRadii});
-        backgroundGradient.setColor(view.getContext().getColor(R.color.default_bg_color_baseline));
-        final int tint = ChromeColors.getSurfaceColor(
-                view.getContext(), R.dimen.omnibox_suggestion_bg_elevation);
-        backgroundGradient.setTint(tint);
+        backgroundGradient.setColor(getBackgroundDrawableColor(isIncognito(model), view));
 
         return backgroundGradient;
+    }
+
+    /**
+     * Retrieves color for background gradient based on identifying incognito mode.
+     *
+     * @param isIncognito whether the view is in incognito mode.
+     * @param view A view that provides context.
+     * @return The color for suggestion background drawable.
+
+     */
+    static @ColorInt int getBackgroundDrawableColor(boolean isIncognito, View view) {
+        return isIncognito ? view.getContext().getColor(R.color.omnibox_suggestion_bg_incognito)
+                           : ChromeColors.getSurfaceColor(
+                                   view.getContext(), R.dimen.omnibox_suggestion_bg_elevation);
     }
 }
