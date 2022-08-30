@@ -602,9 +602,8 @@ bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   ssl_info->peer_signature_algorithm =
       SSL_get_peer_signature_algorithm(ssl_.get());
 
-  SSLConnectionStatusSetCipherSuite(
-      static_cast<uint16_t>(SSL_CIPHER_get_id(cipher)),
-      &ssl_info->connection_status);
+  SSLConnectionStatusSetCipherSuite(SSL_CIPHER_get_protocol_id(cipher),
+                                    &ssl_info->connection_status);
   SSLConnectionStatusSetVersion(GetNetSSLVersion(ssl_.get()),
                                 &ssl_info->connection_status);
 

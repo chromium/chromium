@@ -571,9 +571,8 @@ bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   const SSL_CIPHER* cipher = SSL_get_current_cipher(ssl_.get());
   CHECK(cipher);
 
-  SSLConnectionStatusSetCipherSuite(
-      static_cast<uint16_t>(SSL_CIPHER_get_id(cipher)),
-      &ssl_info->connection_status);
+  SSLConnectionStatusSetCipherSuite(SSL_CIPHER_get_protocol_id(cipher),
+                                    &ssl_info->connection_status);
   SSLConnectionStatusSetVersion(GetNetSSLVersion(ssl_.get()),
                                 &ssl_info->connection_status);
 
