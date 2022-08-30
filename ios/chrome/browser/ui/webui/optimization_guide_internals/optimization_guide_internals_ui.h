@@ -49,8 +49,8 @@ class OptimizationGuideInternalsUI
       optimization_guide_internals_page_factory_receiver_{this};
 
   // Logger to receive the debug logs from the optimization guide service. Not
-  // owned. Guaranteed to outlive |this|, since the logger is owned by the
-  // optimization guide keyed service, while |this| is part of
+  // owned. Guaranteed to outlive `this`, since the logger is owned by the
+  // optimization guide keyed service, while `this` is part of
   // RenderFrameHostImpl::WebUIImpl.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
