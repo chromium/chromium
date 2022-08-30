@@ -458,13 +458,13 @@ export class FileTransferController {
     const sourceEntries = await pastePlan.resolveEntries();
     let disallowedTransfers = [];
     try {
-      const destinationDir =
+      if (util.isDlpEnabled()) {
+        const destinationDir =
           /** @type{!DirectoryEntry} */ (
               assert(util.unwrapEntry(pastePlan.destinationEntry)));
-
-      // TODO(crbug.com/1297603): Avoid calling the api if DLP isn't enabled.
-      disallowedTransfers =
-          await getDisallowedTransfers(sourceEntries, destinationDir);
+        disallowedTransfers =
+            await getDisallowedTransfers(sourceEntries, destinationDir);
+      }
     } catch (error) {
       disallowedTransfers = [];
       console.warn(error);
