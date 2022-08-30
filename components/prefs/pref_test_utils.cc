@@ -13,7 +13,7 @@
 void WaitForPrefValue(PrefService* pref_service,
                       const std::string& path,
                       const base::Value& value) {
-  if (value == *(pref_service->Get(path)))
+  if (value == pref_service->GetValue(path))
     return;
 
   base::RunLoop run_loop;
