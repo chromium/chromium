@@ -1631,10 +1631,12 @@ TEST_F(BrowserAccessibilityManagerTest, TestOnNodeReparented) {
   EXPECT_EQ(1, observer.reparent_count());
   EXPECT_EQ(3, observer.node_count());
 
-  // Reparenting a new child that is not found in the tree should not crash.
+  // Reparenting a new child that is not found in the tree should crash.
   ui::AXNode child3(manager->ax_tree(), /* parent */ nullptr, /* id */ 4,
                     /* index_in_parent */ 0u);
-  manager->OnNodeReparented(manager->ax_tree(), &child3);
+  EXPECT_DEATH_IF_SUPPORTED(
+      manager->OnNodeReparented(manager->ax_tree(), &child3),
+      "Missing BrowserAccessibility");
   // We avoid checking the observer on purpose, since reparenting a non-existent
   // node should not trigger any tree observers. The node is not in the tree,
   // hence the normal tree update process cannot be followed.

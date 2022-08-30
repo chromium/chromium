@@ -603,6 +603,9 @@ class AX_EXPORT AXNode final {
   // table header container node, or nullptr if not applicable.
   const std::vector<AXNode*>* GetExtraMacNodes() const;
 
+  // Return true for mock nodes added to the map, such as extra mac nodes.
+  bool IsGenerated() const;
+
   // Table row-like nodes.
   bool IsTableRow() const;
   absl::optional<int> GetTableRowRowIndex() const;

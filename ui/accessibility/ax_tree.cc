@@ -737,13 +737,6 @@ bool AXTree::ComputeNodeIsIgnoredChanged(
 }
 
 AXTree::AXTree() {
-  AXNodeData root;
-  root.id = kInvalidAXNodeID;
-
-  AXTreeUpdate initial_state;
-  initial_state.root_id = kInvalidAXNodeID;
-  initial_state.nodes.push_back(root);
-  CHECK(Unserialize(initial_state)) << error();
   // TODO(chrishall): should language_detection_manager be a member or pointer?
   // TODO(chrishall): do we want to initialize all the time, on demand, or only
   //                  when feature flag is set?
@@ -790,6 +783,8 @@ const AXTreeData& AXTree::data() const {
 }
 
 AXNode* AXTree::GetFromId(AXNodeID id) const {
+  if (id == ui::kInvalidAXNodeID)
+    return nullptr;
   auto iter = id_map_.find(id);
   return iter != id_map_.end() ? iter->second.get() : nullptr;
 }
@@ -1036,6 +1031,12 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
+#if DCHECK_IS_ON()
+  for (const auto& new_data : update.nodes)
+    DCHECK(new_data.id != kInvalidAXNodeID)
+        << "AXTreeUpdate contains invalid node: " << update.ToString();
+#endif
+
   event_data_ = std::make_unique<AXEvent>();
   event_data_->event_from = update.event_from;
   event_data_->event_from_action = update.event_from_action;
@@ -1159,7 +1160,8 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
       }
     }
 
-    DCHECK_EQ(!GetFromId(update.root_id), update_state.root_will_be_created);
+    DCHECK_EQ(update.root_id != kInvalidAXNodeID && !GetFromId(update.root_id),
+              update_state.root_will_be_created);
 
     // Update all of the nodes in the update.
     for (const AXNodeData& updated_node_data : update_state.updated_nodes) {
@@ -1290,18 +1292,21 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   }
 
   // Now that the unignored cached values are up to date, notify observers of
-  // the nodes that were deleted from the tree but not reparented.
-  for (AXNodeID node_id : update_state.removed_node_ids) {
-    if (!update_state.IsCreatedNode(node_id))
-      NotifyNodeHasBeenDeleted(node_id);
-  }
-
-  // Now that the unignored cached values are up to date, notify observers of
-  // new nodes in the tree.
+  // new nodes in the tree. This is done before notifications of deleted nodes,
+  // because deleting nodes can cause events to be fired, which will need to
+  // access the root, and therefore the BrowserAccessibilityManager needs to be
+  // aware of any newly created root as soon as possible.
   for (AXNodeID node_id : update_state.new_node_ids) {
     AXNode* node = GetFromId(node_id);
     if (node)
       NotifyNodeHasBeenReparentedOrCreated(node, &update_state);
+  }
+
+  // Now that the unignored cached values are up to date, notify observers of
+  // the nodes that were deleted from the tree but not reparented.
+  for (AXNodeID node_id : update_state.removed_node_ids) {
+    if (!update_state.IsCreatedNode(node_id))
+      NotifyNodeHasBeenDeleted(node_id);
   }
 
   // Now that the unignored cached values are up to date, notify observers of
@@ -1385,6 +1390,7 @@ AXNode* AXTree::CreateNode(AXNode* parent,
   // |update_state| must already contain information about all of the expected
   // changes and invalidations to apply. If any of these are missing, observers
   // may not be notified of changes.
+  SANITIZER_CHECK(id != kInvalidAXNodeID);
   DCHECK(!GetFromId(id));
   DCHECK_GT(update_state->GetPendingCreateNodeCount(id), 0);
   DCHECK(update_state->InvalidatesUnignoredCachedValues(id));
@@ -1493,13 +1499,17 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
     }
   }
 
-  update_state->root_will_be_created =
-      !GetFromId(update.root_id) ||
-      !update_state->ShouldPendingNodeExistInTree(update.root_id);
+  if (update.root_id != kInvalidAXNodeID) {
+    update_state->root_will_be_created =
+        !GetFromId(update.root_id) ||
+        !update_state->ShouldPendingNodeExistInTree(update.root_id);
+  }
 
   // Populate |update_state| with all of the changes that will be performed
   // on the tree during the update.
   for (const AXNodeData& new_data : update_state->updated_nodes) {
+    if (new_data.id == kInvalidAXNodeID)
+      continue;
     bool is_new_root =
         update_state->root_will_be_created && new_data.id == update.root_id;
     if (!ComputePendingChangesToNode(new_data, is_new_root, update_state)) {
@@ -1835,8 +1845,18 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
     const AXTreeData* optional_new_tree_data,
     const AXNodeData& new_data) {
   DCHECK(!GetTreeUpdateInProgressState());
-  if (node->id() == kInvalidAXNodeID)
+  DCHECK(node);
+  DCHECK(node->id() != kInvalidAXNodeID);
+
+  // Do not fire generated events for initial empty document:
+  // The initial empty document and changes to it are uninteresting. It is a
+  // bit of a hack that may not need to exist in the future
+  // TODO(accessibility) Find a way to remove the initial empty document and the
+  // need for this special case.
+  if (node->GetRole() == ax::mojom::Role::kRootWebArea &&
+      old_data.child_ids.empty() && !node->GetParentCrossingTreeBoundary()) {
     return;
+  }
 
   for (AXTreeObserver& observer : observers_)
     observer.OnNodeDataChanged(this, old_data, new_data);
@@ -2095,17 +2115,18 @@ void AXTree::DestroySubtree(AXNode* node,
 
 void AXTree::DestroyNodeAndSubtree(AXNode* node,
                                    AXTreeUpdateState* update_state) {
+  AXNodeID id = node->id();
+
   DCHECK(GetTreeUpdateInProgressState());
-  DCHECK(!update_state ||
-         update_state->GetPendingDestroyNodeCount(node->id()) > 0);
+  DCHECK(!update_state || update_state->GetPendingDestroyNodeCount(id) > 0);
 
   // Clear out any reverse relations.
   AXNodeData empty_data;
-  empty_data.id = node->id();
+  empty_data.id = id;
   UpdateReverseRelations(node, empty_data);
 
-  AXNodeID id = node->id();
   auto iter = id_map_.find(id);
+  DCHECK(iter != id_map_.end());
   std::unique_ptr<AXNode> node_to_delete = std::move(iter->second);
   id_map_.erase(iter);
   node = nullptr;
@@ -2625,7 +2646,9 @@ bool ComputeUnignoredSelectionEndpoint(
     AXNodeID& node_id,
     int32_t& offset,
     ax::mojom::TextAffinity& affinity) {
-  AXNode* node = tree.GetFromId(node_id);
+  AXNode* node = nullptr;
+  if (node_id != kInvalidAXNodeID)
+    node = tree.GetFromId(node_id);
   if (!node) {
     node_id = kInvalidAXNodeID;
     offset = -1;

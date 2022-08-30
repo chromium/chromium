@@ -305,7 +305,7 @@ TEST_F(AXTreeConverterTest, TransformAccountsForContainerOffset) {
 
 TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
   ui::AXNodeData source_node_data;
-  source_node_data.id = 0;
+  source_node_data.id = 1;
   source_node_data.AddAction(ax::mojom::Action::kFocus);
   source_node_data.AddAction(ax::mojom::Action::kSetValue);
   source_node_data.child_ids = std::vector<int32_t>{kChildId1};
@@ -319,7 +319,7 @@ TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
       ui::AXTreeID::CreateNewAXTreeID(), false, 0.0f, &mapper);
 
   Node expected_node;
-  expected_node.set_node_id(0);
+  expected_node.set_node_id(1);
   expected_node.set_actions(
       std::vector<Action>{Action::SET_FOCUS, Action::SET_VALUE});
   expected_node.set_child_ids(std::vector<uint32_t>{kChildId1});
@@ -483,7 +483,7 @@ TEST_F(AXTreeConverterTest, MapsNodeIDs) {
 TEST_F(AXTreeConverterTest, ConvertRoles) {
   MockNodeIDMapper mapper;
   ui::AXNodeData node;
-  node.id = 0;
+  node.id = 1;
   node.role = ax::mojom::Role::kButton;
   EXPECT_EQ(fuchsia::accessibility::semantics::Role::BUTTON,
             AXNodeDataToSemanticNode(AddChildNode(node), root_node(),
@@ -671,7 +671,7 @@ TEST_F(AXTreeConverterTest, NodeWithTableAttributes) {
 TEST_F(AXTreeConverterTest, IgnoredAndInvisibleNodesAreMarkedAsHidden) {
   MockNodeIDMapper mapper;
   ui::AXNodeData node;
-  node.id = 0;
+  node.id = 1;
   node.AddState(ax::mojom::State::kInvisible);
   EXPECT_TRUE(AXNodeDataToSemanticNode(AddChildNode(node), root_node(),
                                        ui::AXTreeID::CreateNewAXTreeID(), false,

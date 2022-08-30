@@ -202,10 +202,8 @@ void swap(AXEventGenerator::Iterator& lhs, AXEventGenerator::Iterator& rhs) {
 AXEventGenerator::AXEventGenerator() = default;
 
 AXEventGenerator::AXEventGenerator(AXTree* tree) : tree_(tree) {
-  if (tree_) {
+  if (tree)  // Can be null in unit tests.
     tree_event_observation_.Observe(tree_.get());
-    live_region_tracker_ = std::make_unique<AXLiveRegionTracker>(*tree_);
-  }
 }
 
 AXEventGenerator::~AXEventGenerator() = default;
@@ -217,15 +215,20 @@ void AXEventGenerator::SetTree(AXTree* new_tree) {
     live_region_tracker_.reset();
   }
   tree_ = new_tree;
-  if (tree_) {
+  if (tree_)
     tree_event_observation_.Observe(tree_.get());
-    live_region_tracker_ = std::make_unique<AXLiveRegionTracker>(*tree_);
-  }
 }
 
 void AXEventGenerator::ReleaseTree() {
   tree_event_observation_.Reset();
   tree_ = nullptr;
+}
+
+AXLiveRegionTracker* AXEventGenerator::GetOrCreateLiveRegionTracker() {
+  DCHECK(tree_->root());
+  if (!live_region_tracker_)
+    live_region_tracker_ = std::make_unique<AXLiveRegionTracker>(*tree_);
+  return live_region_tracker_.get();
 }
 
 bool AXEventGenerator::empty() const {
@@ -777,7 +780,7 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
 
 void AXEventGenerator::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
-  live_region_tracker_->OnNodeWillBeDeleted(*node);
+  GetOrCreateLiveRegionTracker()->OnNodeWillBeDeleted(*node);
   FireValueInTextFieldChangedEventIfNecessary(tree, node);
 }
 
@@ -806,6 +809,15 @@ void AXEventGenerator::OnNodeReparented(AXTree* tree, AXNode* node) {
 
 void AXEventGenerator::OnNodeCreated(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
+  // Note: now that AXEventGenerator is part of AXTreeManager, this is being
+  // called before BrowserAccessibilityManager::OnNodeCreated() is called,
+  // where things used to be the other way around. That means that the new
+  // node is in the tree's map, but not BAM's map yet, which means certain
+  // calls, such as IsLeaf() may trigger a DCHECK because they call GetFromID(),
+  // which checks to make sure that the id maps are in sync.
+  // TODO(accesibility) Use a single id map so that issues like this go away.
+  // Or for now, just have this call BAM::OnNodeCreated() directly to enforce
+  // the order.
   FireValueInTextFieldChangedEventIfNecessary(tree, node);
 }
 
@@ -823,7 +835,8 @@ void AXEventGenerator::OnAtomicUpdateFinished(
          change.type == NODE_REPARENTED || change.type == SUBTREE_REPARENTED)) {
       if (change.node->HasStringAttribute(
               ax::mojom::StringAttribute::kContainerLiveStatus)) {
-        live_region_tracker_->UpdateCachedLiveRootForNode(*change.node);
+        GetOrCreateLiveRegionTracker()->UpdateCachedLiveRootForNode(
+            *change.node);
       }
     }
 
@@ -851,7 +864,8 @@ void AXEventGenerator::OnAtomicUpdateFinished(
   // TODO(mrobinson): Consider designing AXEventGenerator to have a more
   // resilient way to queue up events for nodes that might be destroyed and
   // recreated in a single update.
-  for (auto& id : live_region_tracker_->live_region_roots_with_changes()) {
+  for (auto& id :
+       GetOrCreateLiveRegionTracker()->live_region_roots_with_changes()) {
     // If node is null, the live region root with a change was deleted during
     // the course of this update and we should not trigger an event.
     if (AXNode* node = tree_->GetFromId(id)) {
@@ -859,7 +873,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
     }
   }
 
-  live_region_tracker_->OnAtomicUpdateFinished();
+  GetOrCreateLiveRegionTracker()->OnAtomicUpdateFinished();
 
   PostprocessEvents();
 }
@@ -871,7 +885,8 @@ void AXEventGenerator::AddEventsForTesting(
 }
 
 void AXEventGenerator::FireLiveRegionEvents(AXNode* node) {
-  AXNode* live_root = live_region_tracker_->GetLiveRootIfNotBusy(*node);
+  AXNode* live_root =
+      GetOrCreateLiveRegionTracker()->GetLiveRootIfNotBusy(*node);
 
   // Note that |live_root| might be nullptr if a live region was just added,
   // or if it has aria-busy="true".
@@ -912,7 +927,7 @@ void AXEventGenerator::FireValueInTextFieldChangedEventIfNecessary(
     AXNode* target_node) {
   // Text is only found on leaf nodes, so the text in a text field would change
   // if any of the leaf nodes in it have changed their names.
-  if (!target_node->IsLeaf())
+  if (target_node->GetChildCount())
     return;
 
   AXNode* text_field_ancestor = target_node->GetTextFieldAncestor();

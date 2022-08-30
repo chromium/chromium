@@ -1469,9 +1469,7 @@ TEST_F(PdfAccessibilityTreeTest, TextRunsAndCharsMismatch) {
   WaitForThreadTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
-  ASSERT_EQ(ax::mojom::Role::kUnknown,
-            pdf_accessibility_tree.GetRoot()->GetRole());
-  ASSERT_EQ(0u, pdf_accessibility_tree.GetRoot()->children().size());
+  ASSERT_FALSE(pdf_accessibility_tree.GetRoot());
 }
 
 TEST_F(PdfAccessibilityTreeTest, UnsortedLinkVector) {
@@ -1515,9 +1513,7 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedLinkVector) {
   WaitForThreadTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
-  ASSERT_EQ(ax::mojom::Role::kUnknown,
-            pdf_accessibility_tree.GetRoot()->GetRole());
-  ASSERT_EQ(0u, pdf_accessibility_tree.GetRoot()->children().size());
+  ASSERT_FALSE(pdf_accessibility_tree.GetRoot());
 }
 
 TEST_F(PdfAccessibilityTreeTest, OutOfBoundLink) {
@@ -1552,9 +1548,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundLink) {
   WaitForThreadTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
-  ASSERT_EQ(ax::mojom::Role::kUnknown,
-            pdf_accessibility_tree.GetRoot()->GetRole());
-  ASSERT_EQ(0u, pdf_accessibility_tree.GetRoot()->children().size());
+  ASSERT_FALSE(pdf_accessibility_tree.GetRoot());
 }
 
 TEST_F(PdfAccessibilityTreeTest, UnsortedImageVector) {
@@ -1596,9 +1590,7 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedImageVector) {
   WaitForThreadTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
-  ASSERT_EQ(ax::mojom::Role::kUnknown,
-            pdf_accessibility_tree.GetRoot()->GetRole());
-  ASSERT_EQ(0u, pdf_accessibility_tree.GetRoot()->children().size());
+  ASSERT_FALSE(pdf_accessibility_tree.GetRoot());
 }
 
 TEST_F(PdfAccessibilityTreeTest, OutOfBoundImage) {
@@ -1631,9 +1623,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundImage) {
   WaitForThreadTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
-  ASSERT_EQ(ax::mojom::Role::kUnknown,
-            pdf_accessibility_tree.GetRoot()->GetRole());
-  ASSERT_EQ(0u, pdf_accessibility_tree.GetRoot()->children().size());
+  ASSERT_FALSE(pdf_accessibility_tree.GetRoot());
 }
 
 TEST_F(PdfAccessibilityTreeTest, UnsortedHighlightVector) {
@@ -1680,9 +1670,7 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedHighlightVector) {
   WaitForThreadTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
-  ASSERT_EQ(ax::mojom::Role::kUnknown,
-            pdf_accessibility_tree.GetRoot()->GetRole());
-  ASSERT_EQ(0u, pdf_accessibility_tree.GetRoot()->children().size());
+  ASSERT_FALSE(pdf_accessibility_tree.GetRoot());
 }
 
 TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
@@ -1718,9 +1706,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
   WaitForThreadTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
-  ASSERT_EQ(ax::mojom::Role::kUnknown,
-            pdf_accessibility_tree.GetRoot()->GetRole());
-  ASSERT_EQ(0u, pdf_accessibility_tree.GetRoot()->children().size());
+  ASSERT_FALSE(pdf_accessibility_tree.GetRoot());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
