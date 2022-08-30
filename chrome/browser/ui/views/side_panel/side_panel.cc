@@ -78,10 +78,12 @@ class SidePanelBorder : public views::Border {
         view.GetLayoutProvider()->GetCornerRadiusMetric(
             views::Emphasis::kMedium, view.GetContentsBounds().size()) *
         dsf;
-    gfx::InsetsF insets_in_pixels(
-        gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(GetInsets(), dsf)));
+    gfx::InsetsF insets_in_pixels(gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_bounds.Inset(insets_in_pixels);
-    SkRRect rect = SkRRect::MakeRectXY(gfx::RectFToSkRect(scaled_bounds),
+    // Use ToEnclosedRect to make sure that the clip bounds never end up larger
+    // than the child view.
+    gfx::Rect clip_bounds = ToEnclosedRect(scaled_bounds);
+    SkRRect rect = SkRRect::MakeRectXY(gfx::RectToSkRect(clip_bounds),
                                        corner_radius, corner_radius);
 
     // Clip out the content area from the background about to be painted.
@@ -112,8 +114,8 @@ class SidePanelBorder : public views::Border {
 
     // Outset half of the stroke thickness so that it's painted fully on the
     // outside of the clipping region.
-    scaled_bounds.Inset(gfx::InsetsF(-stroke_thickness / 2));
-    canvas->DrawRoundRect(scaled_bounds, corner_radius, flags);
+    clip_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
+    canvas->DrawRoundRect(clip_bounds, corner_radius, flags);
   }
 
   gfx::Insets GetInsets() const override {
