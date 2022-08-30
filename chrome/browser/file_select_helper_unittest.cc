@@ -358,9 +358,7 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_OKBadFiles) {
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
-  ASSERT_EQ(1u, files.size());
-  EXPECT_EQ(data_dir_.AppendASCII("bar.doc"),
-            files[0]->get_native_file()->file_path);
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(FileSelectHelperTest,
@@ -423,12 +421,7 @@ TEST_F(FileSelectHelperTest,
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
-  ASSERT_EQ(3u, files.size());
-  EXPECT_TRUE(files[0]->is_file_system());
-  EXPECT_TRUE(files[1]->is_native_file());
-  EXPECT_EQ(data_dir_.AppendASCII("bar.doc"),
-            files[1]->get_native_file()->file_path);
-  EXPECT_TRUE(files[2]->is_file_system());
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {

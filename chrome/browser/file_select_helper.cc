@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -408,23 +409,12 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
   DCHECK_EQ(data.paths.size(), result.paths_results.size());
   DCHECK_GE(list.size(), result.paths_results.size());
 
-  // Remove any files that did not pass the deep scan. Non-native files are
-  // skipped.
-  size_t i = 0;
-  for (auto it = list.begin(); it != list.end();) {
-    if ((*it)->is_native_file()) {
-      if (!result.paths_results[i]) {
-        it = list.erase(it);
-      } else {
-        ++it;
-      }
-      ++i;
-    } else {
-      // Skip non-native files by incrementing the iterator without changing `i`
-      // so that no result is skipped.
-      ++it;
-    }
-  }
+  // If any result is negative, don't allow the file selection.
+  bool all_true =
+      std::all_of(result.paths_results.cbegin(), result.paths_results.cend(),
+                  [](bool b) { return b; });
+  if (!all_true)
+    list.clear();
 
   NotifyListenerAndEnd(std::move(list));
 }
