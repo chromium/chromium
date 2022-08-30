@@ -454,10 +454,6 @@ void FrameTreeNode::SetOriginalOpener(FrameTreeNode* opener) {
   }
 }
 
-void FrameTreeNode::SetCurrentURL(const GURL& url) {
-  current_frame_host()->SetLastCommittedUrl(url);
-}
-
 void FrameTreeNode::SetCollapsed(bool collapsed) {
   DCHECK(!IsMainFrame() || IsFencedFrameRoot());
   if (is_collapsed_ == collapsed)

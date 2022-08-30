@@ -3848,11 +3848,13 @@ void RenderFrameHostImpl::DidNavigate(
     const mojom::DidCommitProvisionalLoadParams& params,
     NavigationRequest* navigation_request,
     bool was_within_same_document) {
-  // Keep track of the last committed URL and origin in the RenderFrameHost
-  // itself.  These allow GetLastCommittedURL and GetLastCommittedOrigin to
-  // stay correct even if the render_frame_host later becomes pending deletion.
+  // The `url` and `origin` of the current document are stored in the
+  // RenderFrameHost, because:
+  // - The FrameTreeNode represents the frame.
+  // - The RenderFrameHost represents a document hosted inside the frame.
+  //
   // The URL is set regardless of whether it's for a net error or not.
-  navigation_request->frame_tree_node()->SetCurrentURL(params.url);
+  SetLastCommittedUrl(params.url);
   SetLastCommittedOrigin(params.origin);
 
   // If the navigation was a cross-document navigation and it's not the

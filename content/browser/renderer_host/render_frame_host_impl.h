@@ -668,9 +668,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RemoveChild(FrameTreeNode* child);
   void ResetChildren();
 
-  // Allows FrameTreeNode::SetCurrentURL to update this frame's last committed
-  // URL.  Do not call this directly, since we rely on SetCurrentURL to track
-  // whether a real load has committed or not.
+  // Set the URL of the document represented by this RenderFrameHost. Called
+  // when the navigation commits. See also `GetLastCommittedURL`.
   void SetLastCommittedUrl(const GURL& url);
 
   // The most recent non-net-error URL to commit in this frame.  In almost all

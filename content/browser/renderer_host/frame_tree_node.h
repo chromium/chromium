@@ -195,9 +195,6 @@ class CONTENT_EXPORT FrameTreeNode {
     return current_frame_host()->GetLastCommittedURL();
   }
 
-  // Sets the last committed URL for this frame.
-  void SetCurrentURL(const GURL& url);
-
   // Sets `is_on_initial_empty_document_` to false.
   void SetNotOnInitialEmptyDocument() { is_on_initial_empty_document_ = false; }
 
@@ -670,9 +667,8 @@ class CONTENT_EXPORT FrameTreeNode {
   // synchronously committed about:blank document committed at frame creation,
   // and its "initial empty document"-ness is still true.
   // This will be false if either of these has happened:
-  // - SetCurrentUrl() was called after committing a document that is not the
-  //   initial about:blank document or the synchronously committed about:blank
-  //   document, per
+  // - The current RenderFrameHost commits a cross-document navigation that is
+  //   not the synchronously committed about:blank document per:
   //   https://html.spec.whatwg.org/multipage/browsers.html#creating-browsing-contexts:is-initial-about:blank
   // - The document's input stream has been opened with document.open(), per
   //   https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
