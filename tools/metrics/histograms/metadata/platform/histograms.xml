@@ -1826,28 +1826,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PlatformThread.Mac.AttemptedRealtimePeriod"
-    units="microseconds" expires_after="2022-08-28">
-  <owner>olka@chromium.org</owner>
-  <owner>handellm@chromium.org</owner>
-  <summary>
-    Realtime period the thread is attempted to be configured with. Zero means
-    the default empirical configuration is used. Reported only on Mac.
-  </summary>
-</histogram>
-
-<histogram name="PlatformThread.Mac.SucceededRealtimePeriod"
-    units="microseconds" expires_after="2022-09-11">
-  <owner>olka@chromium.org</owner>
-  <owner>handellm@chromium.org</owner>
-  <summary>
-    Realtime thread period logged if it was applied successfully. Zero means the
-    default empirical configuration is used. Comparison with
-    PlatformThread.Mac.AttemptedRealtimePeriod may point to problematic
-    configurations. Reported only on Mac.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
