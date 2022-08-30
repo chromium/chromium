@@ -253,7 +253,7 @@ testcase.trashRestoreFromTrashShortcut = async () => {
 };
 
 /**
- * Delete files (move them into trash) then empty trash using toolbar.
+ * Delete files (move them into trash) then empty trash using the banner.
  */
 testcase.trashEmptyTrash = async () => {
   const appId = await setupAndWaitUntilReady(
@@ -274,7 +274,8 @@ testcase.trashEmptyTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Empty trash and confirm delete (dialog shown).
-  await remoteCall.waitAndClickElement(appId, '#empty-trash-button');
+  await remoteCall.waitAndClickElement(
+      appId, ['trash-banner', 'cr-button[command="#empty-trash"]']);
   await remoteCall.waitAndClickElement(
       appId, '.files-confirm-dialog .cr-dialog-ok');
 

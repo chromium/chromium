@@ -88,13 +88,6 @@ export class ToolbarController {
      * @private {!HTMLElement}
      * @const
      */
-    this.emptyTrashButton_ =
-        util.queryRequiredElement('#empty-trash-button', this.toolbar_);
-
-    /**
-     * @private {!HTMLElement}
-     * @const
-     */
     this.sharesheetButton_ =
         util.queryRequiredElement('#sharesheet-button', this.toolbar_);
 
@@ -259,9 +252,6 @@ export class ToolbarController {
     this.restoreFromTrashButton_.addEventListener(
         'click', this.onRestoreFromTrashButtonClicked_.bind(this));
 
-    this.emptyTrashButton_.addEventListener(
-        'click', this.onEmptyTrashButtonClicked_.bind(this));
-
     this.sharesheetButton_.addEventListener(
         'click', this.onSharesheetButtonClicked_.bind(this));
 
@@ -361,11 +351,6 @@ export class ToolbarController {
         this.directoryModel_.getCurrentRootType() !==
             VolumeManagerCommon.RootType.TRASH;
 
-    // Update visibility of the empty-trash button.
-    this.emptyTrashButton_.hidden =
-        this.directoryModel_.getCurrentRootType() !==
-        VolumeManagerCommon.RootType.TRASH;
-
     this.togglePinnedCommand_.canExecuteChange(this.listContainer_.currentList);
 
     // Set .selecting class to containing element to change the view
@@ -423,16 +408,6 @@ export class ToolbarController {
     this.restoreFromTrashCommand_.canExecuteChange(
         this.listContainer_.currentList);
     this.restoreFromTrashCommand_.execute(this.listContainer_.currentList);
-  }
-
-  /**
-   * Handles click event for empty trash button to empty the trash.
-   * command.
-   * @private
-   */
-  onEmptyTrashButtonClicked_() {
-    this.emptyTrashCommand_.canExecuteChange(this.listContainer_.currentList);
-    this.emptyTrashCommand_.execute(this.listContainer_.currentList);
   }
 
   /**
