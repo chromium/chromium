@@ -1,41 +1,4 @@
 {
-  "$build/chromium_tests_builder_config": {
-    "builder_config": {
-      "builder_db": {
-        "entries": [
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "GPU Flake Finder",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "COMPILE_AND_TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              }
-            }
-          }
-        ]
-      },
-      "builder_ids": [
-        {
-          "bucket": "ci",
-          "builder": "GPU Flake Finder",
-          "project": "chromium"
-        }
-      ]
-    }
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 250,
