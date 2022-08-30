@@ -15,6 +15,7 @@ class CSSToggleData;
 class CSSToggleMap;
 class Element;
 class ExceptionState;
+class ToggleTrigger;
 class V8CSSToggleCycle;
 class V8CSSToggleScope;
 class V8UnionStringOrUnsignedLong;
@@ -38,6 +39,21 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
 
   CSSToggleMap* OwnerToggleMap() const { return owner_toggle_map_; }
   Element* OwnerElement() const;
+
+  // Find the toggle and corresponding element that has the toggle named name
+  // that is in scope on this element, or both null if no toggle is in scope.
+  // The element may be this.
+  //
+  // See https://tabatkins.github.io/css-toggle/#toggle-in-scope .
+  static CSSToggle* FindToggleInScope(Element& start_element,
+                                      const AtomicString& name);
+
+  // Implement https://tabatkins.github.io/css-toggle/#fire-a-toggle-activation
+  static void FireToggleActivation(Element& activated_element,
+                                   const ToggleTrigger& activation);
+
+  void ChangeToggle(const ToggleTrigger& action,
+                    const ToggleRoot* override_spec);
 
   // CSSToggle API
   V8UnionStringOrUnsignedLong* value();

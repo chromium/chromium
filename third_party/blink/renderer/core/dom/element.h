@@ -73,7 +73,6 @@ class ContainerQueryEvaluator;
 class CSSPropertyName;
 class CSSPropertyValueSet;
 class CSSStyleDeclaration;
-class CSSToggle;
 class CSSToggleMap;
 class CustomElementDefinition;
 class DOMRect;
@@ -114,9 +113,6 @@ class StylePropertyMap;
 class StylePropertyMapReadOnly;
 class StyleRecalcContext;
 class StyleRequest;
-class ToggleRoot;
-class ToggleRootList;
-class ToggleTrigger;
 class V8UnionBooleanOrScrollIntoViewOptions;
 
 enum class CSSPropertyID;
@@ -1222,20 +1218,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   CSSToggleMap* GetToggleMap();
   CSSToggleMap& EnsureToggleMap();
 
-  // Create any toggles specified by 'toggle-root' that don't already exist on
-  // the element.
-  void CreateToggles(const ToggleRootList* toggle_roots);
-
-  // Find the toggle and corresponding element that has the toggle named name
-  // that is in scope on this element, or both null if no toggle is in scope.
-  // The element may be this.
-  //
-  // See https://tabatkins.github.io/css-toggle/#toggle-in-scope .
-  std::pair<CSSToggle*, Element*> FindToggleInScope(const AtomicString& name);
-
-  // Implement https://tabatkins.github.io/css-toggle/#fire-a-toggle-activation
-  void FireToggleActivation(const ToggleTrigger& activation);
-
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
@@ -1636,10 +1618,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // like *::selection. To improve runtime and keep copy-on-write inheritance,
   // avoid recalc if neither parent nor child matched any non-universal rules.
   bool CanSkipRecalcForHighlightPseudos(const ComputedStyle& new_style) const;
-
-  static void ChangeToggle(CSSToggle* toggle,
-                           const ToggleTrigger& action,
-                           const ToggleRoot* override_spec);
 
   Member<ElementData> element_data_;
 };

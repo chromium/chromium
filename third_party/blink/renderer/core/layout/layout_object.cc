@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -3059,7 +3060,7 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     Element* element = DynamicTo<Element>(GetNode());
     DCHECK(element);
     if (element) {
-      element->CreateToggles(toggle_root);
+      element->EnsureToggleMap().CreateToggles(toggle_root);
     }
   }
 }

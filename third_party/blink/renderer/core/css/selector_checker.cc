@@ -1656,8 +1656,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       const AtomicString& name = selector.Argument();
       const State* value = selector.ToggleValue();
 
-      auto [toggle, toggle_element] = element.FindToggleInScope(name);
-      DCHECK_EQ(!toggle, !toggle_element);
+      CSSToggle* toggle = CSSToggle::FindToggleInScope(element, name);
       // An element matches :toggle() if the element is in scope for a toggle
       // with the name given by <custom-ident>, and ...
       if (!toggle)

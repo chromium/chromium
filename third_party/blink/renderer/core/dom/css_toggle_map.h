@@ -18,6 +18,7 @@ namespace blink {
 
 class Element;
 class ExceptionState;
+class ToggleRootList;
 
 // Represents the set of toggles on an element.
 using ToggleMap = HeapHashMap<AtomicString, Member<CSSToggle>>;
@@ -34,6 +35,9 @@ class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
 
   ToggleMap& Toggles() { return toggles_; }
   Element* OwnerElement() const { return owner_element_; }
+  // Create any toggles specified by 'toggle-root' that don't already exist on
+  // the element.
+  void CreateToggles(const ToggleRootList* toggle_roots);
 
   void Trace(Visitor* visitor) const override;
 

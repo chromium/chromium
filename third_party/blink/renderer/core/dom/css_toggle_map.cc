@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/style/toggle_root.h"
+#include "third_party/blink/renderer/core/style/toggle_root_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -17,6 +19,27 @@ void CSSToggleMap::Trace(Visitor* visitor) const {
   visitor->Trace(toggles_);
 
   ScriptWrappable::Trace(visitor);
+}
+
+void CSSToggleMap::CreateToggles(const ToggleRootList* toggle_roots) {
+  const auto& roots = toggle_roots->Roots();
+  DCHECK(!roots.IsEmpty());
+  DCHECK(OwnerElement());
+
+  auto& toggles = Toggles();
+  for (const ToggleRoot& root : roots) {
+    // We want to leave the table unmodified if the key is already present, as
+    // described in https://tabatkins.github.io/css-toggle/#toggle-creation
+    // and https://tabatkins.github.io/css-toggle/#toggles .  This is exactly
+    // what HashMap::insert() does.
+    auto insert_result = toggles.insert(root.Name(), nullptr);
+    if (insert_result.is_new_entry) {
+      CSSToggle* toggle = MakeGarbageCollected<CSSToggle>(root, *this);
+      insert_result.stored_value->value = toggle;
+      toggle->SetNeedsStyleRecalc(OwnerElement(),
+                                  CSSToggle::PostRecalcAt::kLater);
+    }
+  }
 }
 
 CSSToggleMap* CSSToggleMap::set(const AtomicString& key,
