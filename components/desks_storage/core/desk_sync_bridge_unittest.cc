@@ -1303,7 +1303,7 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldSucceed) {
 
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 
-  auto result = bridge()->GetEntryByUUID(kTestUuid1.AsLowercaseString());
+  auto result = bridge()->GetEntryByUUID(kTestUuid1);
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kOk);
   EXPECT_TRUE(result.entry);
 }
@@ -1315,7 +1315,7 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFillEventFlag) {
 
   AddTwoTemplates();
 
-  auto result = bridge()->GetEntryByUUID(kTestUuid1.AsLowercaseString());
+  auto result = bridge()->GetEntryByUUID(kTestUuid1);
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kOk);
   EXPECT_TRUE(result.entry);
   for (const auto& [app_id, launch_list] :
@@ -1337,8 +1337,7 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldReturnAdminTemplate) {
   EXPECT_EQ(3ul, bridge()->GetAllEntryUuids().size());
 
   base::RunLoop loop;
-  auto result =
-      bridge()->GetEntryByUUID(kTestAdminTemplateUuid1.AsLowercaseString());
+  auto result = bridge()->GetEntryByUUID(kTestAdminTemplateUuid1);
   EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, result.status);
   EXPECT_TRUE(result.entry);
 }
@@ -1350,7 +1349,8 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsNotFound) {
 
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 
-  const std::string nonExistingUuid = base::StringPrintf(kUuidFormat, 5);
+  const base::GUID nonExistingUuid =
+      base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 5));
 
   base::RunLoop loop;
   auto result = bridge()->GetEntryByUUID(nonExistingUuid);
@@ -1361,8 +1361,7 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsNotFound) {
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsInvalid) {
   InitializeBridge();
 
-  base::RunLoop loop;
-  auto result = bridge()->GetEntryByUUID("invalid uuid");
+  auto result = bridge()->GetEntryByUUID(base::GUID());
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kInvalidUuid);
   EXPECT_FALSE(result.entry);
 }
@@ -1658,7 +1657,7 @@ TEST_F(DeskSyncBridgeTest, GetTemplateJsonShouldReturnList) {
 
   base::RunLoop loop;
   bridge()->GetTemplateJson(
-      kTestUuid1.AsLowercaseString(), app_cache(),
+      kTestUuid1, app_cache(),
       base::BindLambdaForTesting([&](DeskModel::GetTemplateJsonStatus status,
                                      const std::string& templates_json) {
         EXPECT_EQ(DeskModel::GetTemplateJsonStatus::kOk, status);

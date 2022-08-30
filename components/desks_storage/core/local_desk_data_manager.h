@@ -57,7 +57,7 @@ class LocalDeskDataManager : public DeskModel {
   // DeskModel:
   DeskModel::GetAllEntriesResult GetAllEntries() override;
   DeskModel::GetEntryByUuidResult GetEntryByUUID(
-      const std::string& uuid) override;
+      const base::GUID& uuid) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
   void DeleteEntry(const base::GUID& uuid,

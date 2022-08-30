@@ -510,7 +510,8 @@ TEST_F(DeskModelWrapperTest, CanGetEntryByUuid) {
   task_environment_.RunUntilIdle();
 
   // Find the desk template by its uuid.
-  auto result1 = model_wrapper_->GetEntryByUUID(kTestUuid1);
+  auto result1 = model_wrapper_->GetEntryByUUID(
+      base::GUID::ParseCaseInsensitive(kTestUuid1));
   EXPECT_EQ(result1.status, DeskModel::GetEntryByUuidStatus::kOk);
 
   EXPECT_EQ(result1.entry->uuid(),
@@ -518,7 +519,8 @@ TEST_F(DeskModelWrapperTest, CanGetEntryByUuid) {
   EXPECT_EQ(base::UTF16ToUTF8(result1.entry->template_name()), "desk_01");
 
   // Find the save and recall desk by its uuid.
-  auto result3 = model_wrapper_->GetEntryByUUID(kTestUuid3);
+  auto result3 = model_wrapper_->GetEntryByUUID(
+      base::GUID::ParseCaseInsensitive(kTestUuid3));
 
   EXPECT_EQ(result3.status, DeskModel::GetEntryByUuidStatus::kOk);
 
@@ -539,7 +541,8 @@ TEST_F(DeskModelWrapperTest, GetEntryByUuidShouldReturnAdminTemplate) {
   // Check that the admin template is included as an entry.
   EXPECT_EQ(model_wrapper_->GetAllEntryUuids().size(), 2ul);
 
-  auto result = model_wrapper_->GetEntryByUUID(kTestUuid5);
+  auto result = model_wrapper_->GetEntryByUUID(
+      base::GUID::ParseCaseInsensitive(kTestUuid5));
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kOk);
   EXPECT_EQ(result.entry->uuid(), base::GUID::ParseCaseInsensitive(kTestUuid5));
   EXPECT_EQ(result.entry->source(), ash::DeskTemplateSource::kPolicy);
@@ -550,7 +553,8 @@ TEST_F(DeskModelWrapperTest, GetEntryByUuidShouldReturnAdminTemplate) {
 TEST_F(DeskModelWrapperTest, GetEntryByUuidReturnsNotFoundIfEntryDoesNotExist) {
   InitializeBridge();
 
-  auto result = model_wrapper_->GetEntryByUUID(kTestUuid1);
+  auto result = model_wrapper_->GetEntryByUUID(
+      base::GUID::ParseCaseInsensitive(kTestUuid1));
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kNotFound);
 }
 
@@ -578,14 +582,16 @@ TEST_F(DeskModelWrapperTest, CanUpdateEntry) {
   task_environment_.RunUntilIdle();
 
   // Check that the entries are updated.
-  auto result1 = model_wrapper_->GetEntryByUUID(kTestUuid1);
+  auto result1 = model_wrapper_->GetEntryByUUID(
+      base::GUID::ParseCaseInsensitive(kTestUuid1));
   EXPECT_EQ(result1.status, DeskModel::GetEntryByUuidStatus::kOk);
   EXPECT_EQ(result1.entry->uuid(),
             base::GUID::ParseCaseInsensitive(kTestUuid1));
   EXPECT_EQ(result1.entry->template_name(),
             base::UTF8ToUTF16(std::string("desk_01_mod")));
 
-  auto result3 = model_wrapper_->GetEntryByUUID(kTestUuid3);
+  auto result3 = model_wrapper_->GetEntryByUUID(
+      base::GUID::ParseCaseInsensitive(kTestUuid3));
   EXPECT_EQ(result3.status, DeskModel::GetEntryByUuidStatus::kOk);
   EXPECT_EQ(result3.entry->uuid(),
             base::GUID::ParseCaseInsensitive(kTestUuid3));

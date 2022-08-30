@@ -114,7 +114,7 @@ class DeskModel {
   // but could not be loaded/parsed, `callback` will be called with `kFailure`
   // and a nullptr. An asynchronous `callback` is used here to accommodate
   // storage backend that need to perform asynchronous I/O.
-  virtual GetEntryByUuidResult GetEntryByUUID(const std::string& uuid) = 0;
+  virtual GetEntryByUuidResult GetEntryByUUID(const base::GUID& uuid) = 0;
 
   using AddOrUpdateEntryCallback =
       base::OnceCallback<void(AddOrUpdateEntryStatus status)>;
@@ -133,7 +133,7 @@ class DeskModel {
                               const std::string& json_representation)>;
   // Retrieves a template based on its `uuid`, if found returns a std::string
   // containing the json representation of the template queried.
-  virtual void GetTemplateJson(const std::string& uuid,
+  virtual void GetTemplateJson(const base::GUID& uuid,
                                apps::AppRegistryCache* app_cache,
                                GetTemplateJsonCallback callback);
 
@@ -205,7 +205,7 @@ class DeskModel {
   // Finds the admin desk template with the given `uuid`. Returns `nullptr`
   // if none is found.
   std::unique_ptr<ash::DeskTemplate> GetAdminDeskTemplateByUUID(
-      const std::string& uuid) const;
+      const base::GUID& uuid) const;
 
   // The observers.
   base::ObserverList<DeskModelObserver>::Unchecked observers_;

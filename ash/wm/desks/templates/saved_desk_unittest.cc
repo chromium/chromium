@@ -3720,7 +3720,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   loop.Run();
 
   desks_storage::DeskModel::GetEntryByUuidResult result =
-      desk_model()->GetEntryByUUID(uuid.AsLowercaseString());
+      desk_model()->GetEntryByUUID(uuid);
 
   EXPECT_EQ(desks_storage::DeskModel::GetEntryByUuidStatus::kOk, result.status);
   // `LocalDeskStorage` does not support

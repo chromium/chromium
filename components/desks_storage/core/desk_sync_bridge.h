@@ -67,7 +67,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // DeskModel overrides.
   DeskModel::GetAllEntriesResult GetAllEntries() override;
   DeskModel::GetEntryByUuidResult GetEntryByUUID(
-      const std::string& uuid) override;
+      const base::GUID& uuid) override;
 
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
@@ -98,7 +98,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   sync_pb::WorkspaceDeskSpecifics ToSyncProto(
       const ash::DeskTemplate* desk_template);
 
-  bool HasUuid(const std::string& uuid_str) const;
+  bool HasUuid(const base::GUID& uuid) const;
 
   const ash::DeskTemplate* GetUserEntryByUUID(const base::GUID& uuid) const;
 

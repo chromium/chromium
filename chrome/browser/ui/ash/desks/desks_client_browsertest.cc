@@ -211,7 +211,7 @@ bool ContainUuidInTemplates(
   return false;
 }
 
-std::string GetTemplateJson(const std::string& uuid, Profile* profile) {
+std::string GetTemplateJson(const base::GUID& uuid, Profile* profile) {
   base::RunLoop run_loop;
   std::string template_json_result;
   DesksClient::Get()->GetTemplateJson(
@@ -226,7 +226,7 @@ std::string GetTemplateJson(const std::string& uuid, Profile* profile) {
   return template_json_result;
 }
 
-void DeleteDeskTemplate(const base::GUID uuid) {
+void DeleteDeskTemplate(const base::GUID& uuid) {
   base::RunLoop run_loop;
   DesksClient::Get()->DeleteDeskTemplate(
       uuid, base::BindLambdaForTesting(
@@ -416,8 +416,7 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   }
 
   void LaunchTemplate(const base::GUID& uuid) {
-    DesksClient::Get()->LaunchDeskTemplate(uuid.AsLowercaseString(),
-                                           base::DoNothing());
+    DesksClient::Get()->LaunchDeskTemplate(uuid, base::DoNothing());
   }
 
   void SetAndLaunchTemplate(std::unique_ptr<ash::DeskTemplate> desk_template) {
@@ -1287,8 +1286,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
 
-  std::string template_json = GetTemplateJson(
-      desk_template->uuid().AsLowercaseString(), browser()->profile());
+  std::string template_json =
+      GetTemplateJson(desk_template->uuid(), browser()->profile());
 
   // content of the conversion is tested in:
   // components/desks_storage/core/desk_template_conversion_unittests.cc in this
@@ -2303,13 +2302,13 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
   base::GUID desk_id;
   // Launch one template, desk size should increase by 1.
   DesksClient::Get()->LaunchDeskTemplate(
-      "", base::BindLambdaForTesting(
-              [&](std::string error, const base::GUID& desk_uuid) {
-                EXPECT_TRUE(error.empty());
-                EXPECT_EQ(2, desks_controller->desks().size());
-                desk_id = desk_uuid;
-                loop.Quit();
-              }));
+      base::GUID(), base::BindLambdaForTesting(
+                        [&](std::string error, const base::GUID& desk_uuid) {
+                          EXPECT_TRUE(error.empty());
+                          EXPECT_EQ(2, desks_controller->desks().size());
+                          desk_id = desk_uuid;
+                          loop.Quit();
+                        }));
   loop.Run();
 
   DesksClient::Get()->RemoveDesk(

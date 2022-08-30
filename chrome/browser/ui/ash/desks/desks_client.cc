@@ -244,7 +244,7 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
       /*root_window_to_show=*/nullptr);
 }
 
-void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
+void DesksClient::UpdateDeskTemplate(const base::GUID& template_uuid,
                                      const std::u16string& template_name,
                                      UpdateDeskTemplateCallback callback) {
   if (!active_profile_) {
@@ -298,7 +298,7 @@ void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
                       : ""));
 }
 
-void DesksClient::GetTemplateJson(const std::string uuid,
+void DesksClient::GetTemplateJson(const base::GUID& uuid,
                                   Profile* profile,
                                   GetTemplateJsonCallback callback) {
   if (!active_profile_ || active_profile_ != profile) {
@@ -317,7 +317,7 @@ void DesksClient::GetTemplateJson(const std::string uuid,
 }
 
 void DesksClient::LaunchDeskTemplate(
-    const std::string& template_uuid,
+    const base::GUID& template_uuid,
     LaunchDeskCallback callback,
     const std::u16string& customized_desk_name) {
   base::Time launch_started = base::Time::Now();

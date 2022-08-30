@@ -51,7 +51,7 @@ DeskModel::GetAllEntriesResult DeskModelWrapper::GetAllEntries() {
 }
 
 DeskModel::GetEntryByUuidResult DeskModelWrapper::GetEntryByUUID(
-    const std::string& uuid) {
+    const base::GUID& uuid) {
   // Check if this is an admin template uuid first.
   std::unique_ptr<ash::DeskTemplate> policy_entry =
       GetAdminDeskTemplateByUUID(uuid);
@@ -83,7 +83,7 @@ void DeskModelWrapper::AddOrUpdateEntry(
 void DeskModelWrapper::DeleteEntry(const base::GUID& uuid,
                                    DeskModel::DeleteEntryCallback callback) {
   auto status = std::make_unique<DeskModel::DeleteEntryStatus>();
-  if (GetDeskTemplateModel()->HasUuid(uuid.AsLowercaseString())) {
+  if (GetDeskTemplateModel()->HasUuid(uuid)) {
     GetDeskTemplateModel()->DeleteEntry(uuid, std::move(callback));
   } else {
     save_and_recall_desks_model_->DeleteEntry(uuid, std::move(callback));

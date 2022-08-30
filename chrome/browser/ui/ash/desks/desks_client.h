@@ -76,7 +76,7 @@ class DesksClient : public ash::SessionObserver {
   // error as the |error|.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
-  void UpdateDeskTemplate(const std::string& template_uuid,
+  void UpdateDeskTemplate(const base::GUID& template_uuid,
                           const std::u16string& template_name,
                           UpdateDeskTemplateCallback callback);
 
@@ -110,7 +110,7 @@ class DesksClient : public ash::SessionObserver {
                               std::string error)>;
   // Takes in |uuid| and fetches the stringified json representation of a
   // desk template.
-  void GetTemplateJson(const std::string uuid,
+  void GetTemplateJson(const base::GUID& uuid,
                        Profile* profile,
                        GetTemplateJsonCallback callback);
 
@@ -127,7 +127,7 @@ class DesksClient : public ash::SessionObserver {
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
   void LaunchDeskTemplate(
-      const std::string& template_uuid,
+      const base::GUID& template_uuid,
       LaunchDeskCallback callback,
       const std::u16string& customized_desk_name = std::u16string());
 

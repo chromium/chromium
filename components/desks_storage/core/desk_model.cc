@@ -60,7 +60,7 @@ void DeskModel::RemoveObserver(DeskModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DeskModel::GetTemplateJson(const std::string& uuid,
+void DeskModel::GetTemplateJson(const base::GUID& uuid,
                                 apps::AppRegistryCache* app_cache,
                                 GetTemplateJsonCallback callback) {
   auto result = GetEntryByUUID(uuid);
@@ -99,9 +99,7 @@ void DeskModel::RemovePolicyDeskTemplates() {
 }
 
 std::unique_ptr<ash::DeskTemplate> DeskModel::GetAdminDeskTemplateByUUID(
-    const std::string& uuid_str) const {
-  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
-
+    const base::GUID& uuid) const {
   for (const std::unique_ptr<ash::DeskTemplate>& policy_entry :
        policy_entries_) {
     if (policy_entry->uuid() == uuid)

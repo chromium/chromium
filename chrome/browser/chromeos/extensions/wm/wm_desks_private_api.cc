@@ -18,6 +18,8 @@ namespace extensions {
 
 namespace {
 
+constexpr char kInvalidUuidError[] = "Invalid template UUID.";
+
 api::wm_desks_private::Desk FromAshDesk(const ash::Desk& ash_desk) {
   api::wm_desks_private::Desk target;
   target.desk_name = base::UTF16ToUTF8(ash_desk.name());
@@ -38,8 +40,12 @@ WmDesksPrivateGetDeskTemplateJsonFunction::Run() {
       api::wm_desks_private::GetDeskTemplateJson::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->template_uuid);
+  if (!uuid.is_valid())
+    return RespondNow(Error(kInvalidUuidError));
+
   DesksClient::Get()->GetTemplateJson(
-      params->template_uuid, Profile::FromBrowserContext(browser_context()),
+      uuid, Profile::FromBrowserContext(browser_context()),
       base::BindOnce(
           &WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson,
           this));

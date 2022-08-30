@@ -189,13 +189,12 @@ DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
 }
 
 DeskModel::GetEntryByUuidResult LocalDeskDataManager::GetEntryByUUID(
-    const std::string& uuid_str) {
+    const base::GUID& uuid) {
   if (cache_status_ != LocalDeskDataManager::CacheStatus::kOk) {
     return DeskModel::GetEntryByUuidResult(
         DeskModel::GetEntryByUuidStatus::kFailure, nullptr);
   }
 
-  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
   if (!uuid.is_valid()) {
     return DeskModel::GetEntryByUuidResult(
         DeskModel::GetEntryByUuidStatus::kInvalidUuid, nullptr);
@@ -207,7 +206,7 @@ DeskModel::GetEntryByUuidResult LocalDeskDataManager::GetEntryByUUID(
 
   if (cache_entry == saved_desks_list_[desk_type].end()) {
     std::unique_ptr<ash::DeskTemplate> policy_entry =
-        GetAdminDeskTemplateByUUID(uuid_str);
+        GetAdminDeskTemplateByUUID(uuid);
 
     if (policy_entry) {
       return DeskModel::GetEntryByUuidResult(

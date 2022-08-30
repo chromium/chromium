@@ -1,10 +1,15 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-var templateUuid;
 
 // Basic browser tests for the wmDesksPrivate API.
 chrome.test.runTests([
+  function testGetDeskTemplateJson() {
+    chrome.wmDesksPrivate.getDeskTemplateJson(
+        // Get desk template JSON with an invalid UUID.
+        'invalid-uuid', chrome.test.callbackFail('Invalid template UUID.'));
+  },
+
   // Test launch empty desk with a desk name.
   function testLaunchEmptyDeskWithName() {
     // Launch empty desk with `deskName`
@@ -55,5 +60,5 @@ chrome.test.runTests([
     chrome.wmDesksPrivate.setWindowProperties(1234, { allDesks: false },
       // Launch desk fail with invalid templateUuid
       chrome.test.callbackFail("The window cannot be found."));
-    }
+  }
 ]);
