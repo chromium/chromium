@@ -104,6 +104,11 @@
     white-space: nowrap;
   }
 
+  #pageUrlLabel {
+    display: flex;
+    max-width: 488px;
+  }
+
   #tooltipContent {
     white-space: normal;
     word-wrap: break-word
@@ -208,13 +213,14 @@
       <!-- URL -->
       <div id="pageUrl" class="checkbox-field-container" hidden="[[!feedbackContext.pageUrl.url]]">
         <cr-checkbox id="pageUrlCheckbox" aria-labelledby="pageUrlLabel" checked></cr-checkbox>
-        <label id="pageUrlLabel">[[i18n('sharePageUrlLabel')]]&nbsp;</label>
-        <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">
-          [[feedbackContext.pageUrl.url]]
-        </a>
-        <paper-tooltip for="pageUrlText" fitToVisibleBounds>
-          <div id="tooltipContent">[[feedbackContext.pageUrl.url]]</div>
-        </paper-tooltip>
+        <label id="pageUrlLabel">[[i18n('sharePageUrlLabel')]]&nbsp;
+          <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">
+            [[feedbackContext.pageUrl.url]]
+          </a>
+          <paper-tooltip for="pageUrlText" fitToVisibleBounds>
+            <div id="tooltipContent">[[feedbackContext.pageUrl.url]]</div>
+          </paper-tooltip>
+        </label>
       </div>
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">
