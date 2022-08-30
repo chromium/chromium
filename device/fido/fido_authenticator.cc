@@ -227,4 +227,8 @@ bool FidoAuthenticator::SupportsCredBlobOfSize(size_t num_bytes) const {
   return false;
 }
 
+bool FidoAuthenticator::SupportsDevicePublicKey() const {
+  return false;
+}
+
 }  // namespace device

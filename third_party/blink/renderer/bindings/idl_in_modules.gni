@@ -143,6 +143,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_large_blob_inputs.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_large_blob_outputs.idl",
+          "//third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_device_public_key_inputs.idl",
+          "//third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_device_public_key_outputs.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_payment_inputs.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authenticator_attestation_response.idl",

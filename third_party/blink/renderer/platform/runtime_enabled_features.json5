@@ -2503,6 +2503,11 @@
       name: "WebAuthenticationConditionalUI",
       status: "test",
     },
+    // https://github.com/w3c/webauthn/pull/1663
+    {
+      name: "WebAuthenticationDevicePublicKey",
+      status: "experimental",
+    },
     {
       name: "WebAuthenticationLargeBlobExtension",
       status: "experimental",

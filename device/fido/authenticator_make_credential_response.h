@@ -20,6 +20,8 @@
 
 namespace device {
 
+struct DevicePublicKeyOutput;
+
 // Attestation object which includes attestation format, authentication
 // data, and attestation statement returned by the authenticator as a response
 // to MakeCredential request.
@@ -64,6 +66,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // not intended to be trackable.)
   bool IsAttestationCertificateInappropriatelyIdentifying();
 
+  // Returns the output the the devicePubKey extension, if any.
+  absl::optional<device::DevicePublicKeyOutput> GetDevicePublicKeyResponse()
+      const;
+
   const std::array<uint8_t, kRpIdHashLength>& GetRpIdHash() const;
 
   const AttestationObject& attestation_object() const {
@@ -100,6 +106,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // transports contains the full set of transports supported by the
   // authenticator, if known.
   absl::optional<base::flat_set<FidoTransportProtocol>> transports;
+
+  // device_public_key_signature contains the optional signature from the
+  // device-bound key. See
+  // https://github.com/fido-alliance/fido-2-specs/pull/1346
+  absl::optional<std::vector<uint8_t>> device_public_key_signature;
 
  private:
   AttestationObject attestation_object_;

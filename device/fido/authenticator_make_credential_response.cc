@@ -11,6 +11,7 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
+#include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
@@ -98,6 +99,26 @@ bool AuthenticatorMakeCredentialResponse::
       .IsAttestationCertificateInappropriatelyIdentifying();
 }
 
+absl::optional<device::DevicePublicKeyOutput>
+AuthenticatorMakeCredentialResponse::GetDevicePublicKeyResponse() const {
+  const absl::optional<cbor::Value>& maybe_extensions =
+      attestation_object_.authenticator_data().extensions();
+  if (!maybe_extensions) {
+    return absl::nullopt;
+  }
+
+  DCHECK(maybe_extensions->is_map());
+  const cbor::Value::MapValue& extensions = maybe_extensions->GetMap();
+  const auto device_public_key_it =
+      extensions.find(cbor::Value(device::kExtensionDevicePublicKey));
+  if (device_public_key_it == extensions.end()) {
+    return absl::nullopt;
+  }
+
+  return device::DevicePublicKeyOutput::FromExtension(
+      device_public_key_it->second);
+}
+
 const std::array<uint8_t, kRpIdHashLength>&
 AuthenticatorMakeCredentialResponse::GetRpIdHash() const {
   return attestation_object_.rp_id_hash();
@@ -120,6 +141,12 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
   }
   if (response.large_blob_key()) {
     map.emplace(5, cbor::Value(*response.large_blob_key()));
+  }
+  if (response.device_public_key_signature.has_value()) {
+    cbor::Value::MapValue unsigned_extension_outputs;
+    unsigned_extension_outputs.emplace(kExtensionDevicePublicKey,
+                                       *response.device_public_key_signature);
+    map.emplace(6, std::move(unsigned_extension_outputs));
   }
   auto encoded_bytes = cbor::Writer::Write(cbor::Value(std::move(map)));
   DCHECK(encoded_bytes);

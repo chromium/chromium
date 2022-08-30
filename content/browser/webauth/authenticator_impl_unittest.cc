@@ -1980,6 +1980,55 @@ enum class AttestationType {
   PACKED,
 };
 
+const char* AttestationConveyancePreferenceToString(
+    AttestationConveyancePreference v) {
+  switch (v) {
+    case AttestationConveyancePreference::NONE:
+      return "none";
+    case AttestationConveyancePreference::INDIRECT:
+      return "indirect";
+    case AttestationConveyancePreference::DIRECT:
+      return "direct";
+    case AttestationConveyancePreference::ENTERPRISE:
+      return "enterprise";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
+const char* AttestationConveyancePreferenceToString(
+    device::AttestationConveyancePreference v) {
+  switch (v) {
+    case device::AttestationConveyancePreference::kNone:
+      return "none";
+    case device::AttestationConveyancePreference::kIndirect:
+      return "indirect";
+    case device::AttestationConveyancePreference::kDirect:
+      return "direct";
+    case device::AttestationConveyancePreference::
+        kEnterpriseIfRPListedOnAuthenticator:
+      return "enterprise(ep=1)";
+    case device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
+      return "enterprise(ep=2)";
+  }
+}
+
+const char* AttestationConsentToString(AttestationConsent ac) {
+  switch (ac) {
+    case AttestationConsent::GRANTED:
+      return "GRANTED";
+    case AttestationConsent::DENIED:
+      return "DENIED";
+    case AttestationConsent::GRANTED_FOR_ENTERPRISE_ATTESTATION:
+      return "GRANTED_FOR_ENTERPRISE_ATTESTATION";
+    case AttestationConsent::DENIED_FOR_ENTERPRISE_ATTESTATION:
+      return "DENIED_FOR_ENTERPRISE_ATTESTATION";
+    case AttestationConsent::NOT_USED:
+      return "NOT_USED";
+  }
+}
+
 // TestAuthenticatorRequestDelegate is a test fake implementation of the
 // AuthenticatorRequestClientDelegate embedder interface.
 class TestAuthenticatorRequestDelegate
@@ -2283,23 +2332,6 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
  protected:
   TestAuthenticatorContentBrowserClient test_client_;
-
-  static const char* AttestationConveyancePreferenceToString(
-      AttestationConveyancePreference v) {
-    switch (v) {
-      case AttestationConveyancePreference::NONE:
-        return "none";
-      case AttestationConveyancePreference::INDIRECT:
-        return "indirect";
-      case AttestationConveyancePreference::DIRECT:
-        return "direct";
-      case AttestationConveyancePreference::ENTERPRISE:
-        return "enterprise";
-      default:
-        NOTREACHED();
-        return "";
-    }
-  }
 
   // Expects that |map| contains the given key with a string-value equal to
   // |expected|.
@@ -4950,6 +4982,401 @@ TEST_F(AuthenticatorImplTest, CancellingAuthenticatorDoesNotTerminateRequest) {
       GetAssertionResult result = AuthenticatorGetAssertion();
       EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
     }
+  }
+}
+
+class AuthenticatorDevicePublicKeyTest : public AuthenticatorImplTest {
+  void SetUp() override {
+    AuthenticatorImplTest::SetUp();
+    old_client_ = SetBrowserClientForTesting(&test_client_);
+  }
+
+  void TearDown() override {
+    SetBrowserClientForTesting(old_client_);
+    AuthenticatorImplTest::TearDown();
+  }
+
+ protected:
+  TestAuthenticatorContentBrowserClient test_client_;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
+};
+
+TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyMakeCredential) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  for (const bool dpk_support : {false, true}) {
+    device::VirtualCtap2Device::Config config;
+    config.device_public_key_support = dpk_support;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    // self-attestation is needed because, otherwise, zeroing the AAGUID
+    // invalidates the DPK signature.
+    virtual_device_factory_->mutable_state()->self_attestation = true;
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    ASSERT_EQ(static_cast<bool>(result.response->device_public_key),
+              dpk_support);
+    if (dpk_support) {
+      ASSERT_FALSE(
+          result.response->device_public_key->authenticator_output.empty());
+      ASSERT_FALSE(result.response->device_public_key->signature.empty());
+    }
+  }
+}
+
+TEST_F(AuthenticatorDevicePublicKeyTest,
+       DevicePublicKeyWithPrimaryAttestation) {
+  // If the authenticator returns regular attestation and a devicePubKey
+  // response, and the browser needs to strip that attesation, then the request
+  // should fail because zeroing the AAGUID breaks the DPK signature.
+  // DPK-capable authenticators will need to support the forthcoming
+  // attestationFormats parameter if they wish to do non-null attestation with
+  // DPK.
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.device_public_key_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
+
+  ASSERT_EQ(result.status,
+            AuthenticatorStatus::DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED);
+}
+
+TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyGetAssertion) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  bool credential_injected = false;
+  for (const bool dpk_support : {false, true}) {
+    device::VirtualCtap2Device::Config config;
+    config.device_public_key_support = dpk_support;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    if (!credential_injected) {
+      ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+          options->allow_credentials[0].id, kTestRelyingPartyId));
+      credential_injected = true;
+    }
+    options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    ASSERT_EQ(static_cast<bool>(result.response->device_public_key),
+              dpk_support);
+    if (dpk_support) {
+      ASSERT_FALSE(
+          result.response->device_public_key->authenticator_output.empty());
+      ASSERT_FALSE(result.response->device_public_key->signature.empty());
+    }
+  }
+}
+
+TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyBadResponse) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  bool credential_injected = false;
+  for (int breakage = 0; breakage < 3; breakage++) {
+    SCOPED_TRACE(::testing::Message() << "breakage=" << breakage);
+
+    device::VirtualCtap2Device::Config config;
+    config.device_public_key_support = true;
+    switch (breakage) {
+      case 0:
+        break;
+
+      case 1:
+        config.device_public_key_drop_extension_response = true;
+        break;
+
+      case 2:
+        config.device_public_key_drop_signature = true;
+        break;
+
+      default:
+        CHECK(false);
+    }
+    virtual_device_factory_->SetCtap2Config(config);
+
+    // self-attestation is needed because, otherwise, zeroing the AAGUID
+    // invalidates the DPK signature.
+    virtual_device_factory_->mutable_state()->self_attestation = true;
+
+    AuthenticatorStatus status;
+    for (const bool is_make_credential : {false, true}) {
+      SCOPED_TRACE(::testing::Message()
+                   << "is_make_credential=" << is_make_credential);
+
+      if (is_make_credential) {
+        PublicKeyCredentialCreationOptionsPtr options =
+            GetTestPublicKeyCredentialCreationOptions();
+        options->device_public_key =
+            blink::mojom::DevicePublicKeyRequest::New();
+        MakeCredentialResult result =
+            AuthenticatorMakeCredential(std::move(options));
+        status = result.status;
+      } else {
+        PublicKeyCredentialRequestOptionsPtr options =
+            GetTestPublicKeyCredentialRequestOptions();
+        if (!credential_injected) {
+          ASSERT_TRUE(
+              virtual_device_factory_->mutable_state()->InjectRegistration(
+                  options->allow_credentials[0].id, kTestRelyingPartyId));
+          credential_injected = true;
+        }
+        options->device_public_key =
+            blink::mojom::DevicePublicKeyRequest::New();
+        GetAssertionResult result =
+            AuthenticatorGetAssertion(std::move(options));
+        status = result.status;
+      }
+
+      if (breakage) {
+        EXPECT_NE(status, AuthenticatorStatus::SUCCESS);
+      } else {
+        EXPECT_EQ(status, AuthenticatorStatus::SUCCESS);
+      }
+    }
+  }
+}
+
+TEST_F(AuthenticatorDevicePublicKeyTest,
+       DevicePublicKeyMakeCredentialAttestation) {
+  constexpr device::AttestationConveyancePreference req_none =
+      device::AttestationConveyancePreference::kNone;
+  constexpr device::AttestationConveyancePreference req_indirect =
+      device::AttestationConveyancePreference::kIndirect;
+  constexpr device::AttestationConveyancePreference req_direct =
+      device::AttestationConveyancePreference::kDirect;
+  constexpr device::AttestationConveyancePreference req_enterprise = device::
+      AttestationConveyancePreference::kEnterpriseIfRPListedOnAuthenticator;
+  constexpr bool no_allowlist = false;
+  constexpr bool allowlisted = true;
+  constexpr bool none = false;
+  constexpr bool direct = true;
+  constexpr bool ep = true;
+  constexpr bool no_ep = false;
+  constexpr AttestationConsent no_prompt = AttestationConsent::NOT_USED;
+  constexpr AttestationConsent prompt_no = AttestationConsent::DENIED;
+  constexpr AttestationConsent prompt_yes = AttestationConsent::GRANTED;
+  constexpr AttestationConsent prompt_ep_no =
+      AttestationConsent::DENIED_FOR_ENTERPRISE_ATTESTATION;
+  constexpr AttestationConsent prompt_ep_yes =
+      AttestationConsent::GRANTED_FOR_ENTERPRISE_ATTESTATION;
+
+  constexpr struct {
+    device::AttestationConveyancePreference requested_attestation;
+    bool is_permitted_by_policy;
+    bool has_attestation;
+    bool enterprise_attestation_returned;
+    AttestationConsent prompt;
+    bool ok;
+  } kTests[] = {
+      // clang-format off
+      // |Requested |   In policy? | Att   | Ent?  | Prompt?    |   OK? |
+      // ----------------------------------------------------------------
+
+      // No attestation requested and none provided is the simple case.
+      {req_none,       no_allowlist, none,   no_ep, no_prompt,     true},
+
+      // Any non-enterprise DPK attestation request is mapped to "none", so the
+      // authenticator cannot return a DPK attestation in these cases.
+      {req_none,       no_allowlist, direct, no_ep, no_prompt,     false},
+      {req_indirect,   no_allowlist, direct, no_ep, no_prompt,     false},
+      {req_direct,     no_allowlist, direct, no_ep, no_prompt,     false},
+      // ... and certainly can't return an enterprise attestation.
+      {req_none,       no_allowlist, direct, ep,    no_prompt,     false},
+      {req_indirect,   no_allowlist, direct, ep,    no_prompt,     false},
+      {req_direct,     no_allowlist, direct, ep,    no_prompt,     false},
+
+      // Requesting a DPK attestation results in a prompt, same as requesting
+      // a normal attestation, even if no attestation results.
+      {req_indirect,   no_allowlist, none,   no_ep, prompt_yes,    true},
+      {req_direct,     no_allowlist, none,   no_ep, prompt_yes,    true},
+
+      // A failed ep=1 attestation results in a standard prompt.
+      {req_enterprise, no_allowlist, none,   no_ep, prompt_yes,    true},
+      // ... rejecting that prompt is ok if there's no attestation.
+      {req_enterprise, no_allowlist, none,   no_ep, prompt_no,     true},
+      // A successful ep=1 attestation results in a special prompt.
+      {req_enterprise, no_allowlist, direct, ep,    prompt_ep_yes, true},
+      // ... rejecting that prompt is fatal to the request.
+      {req_enterprise, no_allowlist, direct, ep,    prompt_ep_no,  false},
+
+      // An ep=1 request should either return an enterprise attestation or
+      // nothing. So a "direct" response is invalid and should fail.
+      {req_enterprise, no_allowlist, direct, no_ep, no_prompt,     false},
+
+      // RP IDs listed in policy will cause prompts, but they'll be immediately
+      // resolved because of the policy allowlisting.
+      {req_indirect,   allowlisted,  none,   no_ep, prompt_yes,    true},
+      {req_direct,     allowlisted,  none,   no_ep, prompt_yes,    true},
+      {req_enterprise, allowlisted,  none,   no_ep, prompt_yes,    true},
+      {req_enterprise, allowlisted,  direct, no_ep, prompt_yes,    true},
+      {req_enterprise, allowlisted,  direct, ep,    prompt_ep_yes, true},
+      // clang-format on
+  };
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  unsigned test_num = 0;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(::testing::Message() << "ok=" << test.ok);
+    SCOPED_TRACE(::testing::Message()
+                 << "prompt=" << AttestationConsentToString(test.prompt));
+    SCOPED_TRACE(::testing::Message() << "enterprise_attestation_returned="
+                                      << test.enterprise_attestation_returned);
+    SCOPED_TRACE(::testing::Message()
+                 << "has_attestation=" << test.has_attestation);
+    SCOPED_TRACE(::testing::Message()
+                 << "is_permitted_by_policy=" << test.is_permitted_by_policy);
+    SCOPED_TRACE(
+        ::testing::Message()
+        << "requested_attestation="
+        << AttestationConveyancePreferenceToString(test.requested_attestation));
+    SCOPED_TRACE(::testing::Message() << "kTests[" << test_num++ << "]");
+
+    CHECK(!test.enterprise_attestation_returned || test.has_attestation);
+
+    device::VirtualCtap2Device::Config config;
+    config.device_public_key_support = true;
+    config.device_public_key_always_return_attestation = test.has_attestation;
+    config.device_public_key_always_return_enterprise_attestation =
+        test.enterprise_attestation_returned;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    // self-attestation is needed because, otherwise, zeroing the AAGUID
+    // invalidates the DPK signature.
+    virtual_device_factory_->mutable_state()->self_attestation = true;
+
+    test_client_.GetTestWebAuthenticationDelegate()
+        ->permit_individual_attestation = test.is_permitted_by_policy;
+    test_client_.attestation_consent = test.prompt;
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+    options->device_public_key->attestation = test.requested_attestation;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+
+    EXPECT_EQ(result.status == AuthenticatorStatus::SUCCESS, test.ok);
+  }
+}
+
+TEST_F(AuthenticatorDevicePublicKeyTest,
+       DevicePublicKeyGetAssertionAttestation) {
+  constexpr device::AttestationConveyancePreference req_none =
+      device::AttestationConveyancePreference::kNone;
+  constexpr device::AttestationConveyancePreference req_indirect =
+      device::AttestationConveyancePreference::kIndirect;
+  constexpr device::AttestationConveyancePreference req_direct =
+      device::AttestationConveyancePreference::kDirect;
+  constexpr device::AttestationConveyancePreference req_enterprise = device::
+      AttestationConveyancePreference::kEnterpriseIfRPListedOnAuthenticator;
+  constexpr bool no_allowlist = false;
+  constexpr bool allowlisted = true;
+  constexpr bool none = false;
+  constexpr bool direct = true;
+  constexpr bool ep = true;
+  constexpr bool no_ep = false;
+
+  constexpr struct {
+    device::AttestationConveyancePreference requested_attestation;
+    bool is_permitted_by_policy;
+    bool has_attestation;
+    bool enterprise_attestation_returned;
+    bool ok;
+  } kTests[] = {
+      // clang-format off
+      // |Requested |   In policy? | Att   | Ent?  | OK? |
+      // ----------------------------------------------------------------
+
+      // No attestation requested and none provided is the simple case.
+      {req_none,       no_allowlist, none,   no_ep, true},
+
+      // If the authenticator doesn't provide any attestation then anything
+      // works.
+      {req_indirect,   no_allowlist, none,   no_ep, true},
+      {req_direct,     no_allowlist, none,   no_ep, true},
+      {req_enterprise, no_allowlist, none,   no_ep, true},
+      {req_enterprise, allowlisted,  none,   no_ep, true},
+
+      // If the authenticator provides attestation in unsupported cases then
+      // the request should fail.
+      {req_none,       no_allowlist, direct, no_ep, false},
+      {req_indirect,   no_allowlist, direct, no_ep, false},
+      {req_direct,     no_allowlist, direct, no_ep, false},
+      {req_enterprise, no_allowlist, direct, no_ep, false},
+      {req_enterprise, no_allowlist, direct, ep,    false},
+
+      // The only supported case for DPK attestation during getAssertion is
+      // via policy, when all requests should work.
+      {req_indirect,   allowlisted,  direct, no_ep, true},
+      {req_direct,     allowlisted,  direct, no_ep, true},
+      {req_enterprise, allowlisted,  direct, no_ep, true},
+      {req_enterprise, allowlisted,  direct, ep,    true},
+
+      // But no ep responses to non-ep requests are allowed.
+      {req_indirect,   allowlisted,  direct, ep,    false},
+      {req_direct,     allowlisted,  direct, ep,    false},
+
+      // clang-format on
+  };
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  bool credential_injected = false;
+  unsigned test_num = 0;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(::testing::Message() << "ok=" << test.ok);
+    SCOPED_TRACE(::testing::Message() << "enterprise_attestation_returned="
+                                      << test.enterprise_attestation_returned);
+    SCOPED_TRACE(::testing::Message()
+                 << "has_attestation=" << test.has_attestation);
+    SCOPED_TRACE(::testing::Message()
+                 << "is_permitted_by_policy=" << test.is_permitted_by_policy);
+    SCOPED_TRACE(
+        ::testing::Message()
+        << "requested_attestation="
+        << AttestationConveyancePreferenceToString(test.requested_attestation));
+    SCOPED_TRACE(::testing::Message() << "kTests[" << test_num++ << "]");
+
+    CHECK(!test.enterprise_attestation_returned || test.has_attestation);
+
+    device::VirtualCtap2Device::Config config;
+    config.device_public_key_support = true;
+    config.device_public_key_always_return_attestation = test.has_attestation;
+    config.device_public_key_always_return_enterprise_attestation =
+        test.enterprise_attestation_returned;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    test_client_.GetTestWebAuthenticationDelegate()
+        ->permit_individual_attestation = test.is_permitted_by_policy;
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    if (!credential_injected) {
+      ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+          options->allow_credentials[0].id, kTestRelyingPartyId));
+      credential_injected = true;
+    }
+    options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+    options->device_public_key->attestation = test.requested_attestation;
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+
+    EXPECT_EQ(result.status == AuthenticatorStatus::SUCCESS, test.ok);
   }
 }
 

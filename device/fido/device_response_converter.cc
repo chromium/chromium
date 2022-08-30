@@ -115,6 +115,25 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
         base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
   }
 
+  it = decoded_map.find(CBOR(0x06));
+  if (it != decoded_map.end()) {
+    if (!it->second.is_map()) {
+      return absl::nullopt;
+    }
+    const auto& unsigned_extension_outputs_map = it->second.GetMap();
+    for (const auto& map_it : unsigned_extension_outputs_map) {
+      if (!map_it.first.is_string()) {
+        return absl::nullopt;
+      }
+      if (map_it.first.GetString() == kExtensionDevicePublicKey) {
+        if (!map_it.second.is_bytestring()) {
+          return absl::nullopt;
+        }
+        response.device_public_key_signature = map_it.second.GetBytestring();
+      }
+    }
+  }
+
   return response;
 }
 
@@ -191,6 +210,25 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     }
     memcpy(response.large_blob_key->data(), key.data(),
            response.large_blob_key->size());
+  }
+
+  it = response_map.find(CBOR(0x08));
+  if (it != response_map.end()) {
+    if (!it->second.is_map()) {
+      return absl::nullopt;
+    }
+    const auto& unsigned_extension_outputs_map = it->second.GetMap();
+    for (const auto& map_it : unsigned_extension_outputs_map) {
+      if (!map_it.first.is_string()) {
+        return absl::nullopt;
+      }
+      if (map_it.first.GetString() == kExtensionDevicePublicKey) {
+        if (!map_it.second.is_bytestring()) {
+          return absl::nullopt;
+        }
+        response.device_public_key_signature = map_it.second.GetBytestring();
+      }
+    }
   }
 
   return response;

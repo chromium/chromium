@@ -45,4 +45,8 @@ dictionary AuthenticationExtensionsClientInputs {
   // Allows a remote desktop client to override the `origin` and
   // `sameOriginWithAncestors` internal arguments for a request.
   [RuntimeEnabled=WebAuthenticationRemoteDesktopSupport] RemoteDesktopClientOverride remoteDesktopClientOverride;
+
+  // Device-bound public-key support.
+  // https://github.com/w3c/webauthn/pull/1663
+  [RuntimeEnabled=WebAuthenticationDevicePublicKey] AuthenticationExtensionsDevicePublicKeyInputs devicePubKey;
 };

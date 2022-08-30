@@ -1894,6 +1894,7 @@ test("content_browsertests") {
       "../browser/webauth/webauth_browsertest.cc",
     ]
     deps += [
+      "//components/cbor",
       "//device/base",
       "//device/fido:fido",
       "//device/fido:mocks",

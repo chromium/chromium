@@ -86,6 +86,13 @@ enum class RequestExtension {
   kCredBlob,
   kGetCredBlob,
   kMinPINLength,
+  kDevicePublicKey,
+};
+
+enum class AttestationErasureOption {
+  kIncludeAttestation,
+  kEraseAttestationButIncludeAaguid,
+  kEraseAttestationAndAaguid,
 };
 
 namespace {
@@ -224,12 +231,6 @@ bool AddTransportsFromCertificate(
 
   return ret;
 }
-
-enum class AttestationErasureOption {
-  kIncludeAttestation,
-  kEraseAttestationButIncludeAaguid,
-  kEraseAttestationAndAaguid,
-};
 
 base::TimeDelta AdjustTimeout(absl::optional<base::TimeDelta> timeout,
                               RenderFrameHost* render_frame_host) {
@@ -818,6 +819,49 @@ void AuthenticatorCommon::MakeCredential(
   ctap_make_credential_request_->app_id_exclude = std::move(appid_exclude);
   make_credential_options_->is_off_the_record_context =
       GetBrowserContext()->IsOffTheRecord();
+  if (options->device_public_key) {
+    requested_extensions_.insert(RequestExtension::kDevicePublicKey);
+    ctap_make_credential_request_->device_public_key.emplace();
+    device::DevicePublicKeyRequest& device_public_key =
+        ctap_make_credential_request_->device_public_key.value();
+    device_public_key.attestation = options->device_public_key->attestation;
+    device_public_key.attestation_formats =
+        options->device_public_key->attestation_formats;
+
+    device_public_key_attestation_requested_ =
+        device_public_key.attestation !=
+        device::AttestationConveyancePreference::kNone;
+
+    switch (device_public_key.attestation) {
+      // DPK attestation is currently an enterprise-only feature. Non-enterprise
+      // values are mapped to "none".
+      case device::AttestationConveyancePreference::kIndirect:
+      case device::AttestationConveyancePreference::kDirect:
+      case device::AttestationConveyancePreference::kNone:
+        device_public_key.attestation =
+            device::AttestationConveyancePreference::kNone;
+        device_public_key.attestation_formats.clear();
+        break;
+
+      case device::AttestationConveyancePreference::
+          kEnterpriseIfRPListedOnAuthenticator:
+        if (GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+                GetBrowserContext(), caller_origin,
+                u2f_credential_app_id_override.value_or(relying_party_id_))) {
+          device_public_key.attestation = device::
+              AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
+        }
+        break;
+
+      case device::AttestationConveyancePreference::
+          kEnterpriseApprovedByBrowser:
+        // This should never come from the renderer.
+        mojo::ReportBadMessage("invalid devicePubKey attestation value");
+        CompleteGetAssertionRequest(
+            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+        break;
+    }
+  }
 
   // Compute the effective attestation conveyance preference.
   device::AttestationConveyancePreference attestation = options->attestation;
@@ -1087,6 +1131,55 @@ void AuthenticatorCommon::GetAssertion(
 
   ctap_get_assertion_request_->is_u2f_only = origin_is_crypto_token_extension;
 
+  if (options->device_public_key) {
+    requested_extensions_.insert(RequestExtension::kDevicePublicKey);
+    ctap_get_assertion_request_->device_public_key.emplace();
+    device::DevicePublicKeyRequest& device_public_key =
+        ctap_get_assertion_request_->device_public_key.value();
+    device_public_key.attestation = options->device_public_key->attestation;
+    device_public_key.attestation_formats =
+        options->device_public_key->attestation_formats;
+
+    switch (device_public_key.attestation) {
+      // DPK attestation is currently an enterprise-only feature. Non-enterprise
+      // values are mapped to "none". There's no prompting for getAssertion
+      // either so only policy-configured enterprise attestation works for this
+      // call.
+      case device::AttestationConveyancePreference::
+          kEnterpriseIfRPListedOnAuthenticator:
+        device_public_key.attestation = device::
+            AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
+        [[fallthrough]];
+
+      case device::AttestationConveyancePreference::kIndirect:
+      case device::AttestationConveyancePreference::kDirect:
+        if (GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
+                GetBrowserContext(), caller_origin, relying_party_id_)) {
+          break;
+        }
+        [[fallthrough]];
+
+      case device::AttestationConveyancePreference::kNone:
+        device_public_key.attestation =
+            device::AttestationConveyancePreference::kNone;
+        device_public_key.attestation_formats.clear();
+        break;
+
+      case device::AttestationConveyancePreference::
+          kEnterpriseApprovedByBrowser:
+        // This should never come from the renderer.
+        mojo::ReportBadMessage("invalid devicePubKey attestation value");
+        CompleteGetAssertionRequest(
+            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+        break;
+    }
+  }
+
+  if (options->get_cred_blob) {
+    requested_extensions_.insert(RequestExtension::kGetCredBlob);
+    ctap_get_assertion_request_->get_cred_blob = true;
+  }
+
   if (options->large_blob_write) {
     data_decoder_.Deflate(
         *options->large_blob_write,
@@ -1096,10 +1189,8 @@ void AuthenticatorCommon::GetAssertion(
     return;
   }
 
-  if (options->get_cred_blob) {
-    requested_extensions_.insert(RequestExtension::kGetCredBlob);
-    ctap_get_assertion_request_->get_cred_blob = true;
-  }
+  // Don't put any other extensions here: largeBlob might be decompressing
+  // something.
 
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
@@ -1314,6 +1405,16 @@ void AuthenticatorCommon::OnRegisterResponse(
             *transport == device::FidoTransportProtocol::kHybrid;
       }
 
+      absl::optional<device::DevicePublicKeyOutput> device_public_key_output =
+          response_data->GetDevicePublicKeyResponse();
+      const bool have_enterprise_attestation =
+          response_data->enterprise_attestation_returned ||
+          (device_public_key_output &&
+           device_public_key_output->enterprise_attestation_returned);
+      const bool device_public_key_included_attestation =
+          device_public_key_output &&
+          device_public_key_output->attestation_format !=
+              device::kNoneAttestationValue;
       const auto attestation =
           ctap_make_credential_request_->attestation_preference;
       absl::optional<AttestationErasureOption> attestation_erasure;
@@ -1366,28 +1467,58 @@ void AuthenticatorCommon::OnRegisterResponse(
             attestation != device::AttestationConveyancePreference::kNone
                 ? AttestationErasureOption::kIncludeAttestation
                 : AttestationErasureOption::kEraseAttestationButIncludeAaguid;
-      } else if (attestation !=
-                 device::AttestationConveyancePreference::kNone) {
-        awaiting_attestation_response_ = true;
-        request_delegate_->ShouldReturnAttestation(
-            relying_party_id_, authenticator,
-            response_data->enterprise_attestation_returned,
-            base::BindOnce(
-                &AuthenticatorCommon::OnRegisterResponseAttestationDecided,
-                weak_factory_.GetWeakPtr(), std::move(*response_data)));
-      } else if (response_data->IsSelfAttestation()) {
+      } else if (attestation ==
+                     device::AttestationConveyancePreference::kNone &&
+                 response_data->IsSelfAttestation()) {
         attestation_erasure = AttestationErasureOption::kIncludeAttestation;
-      } else {
+      } else if (attestation ==
+                 device::AttestationConveyancePreference::kNone) {
         attestation_erasure =
             AttestationErasureOption::kEraseAttestationAndAaguid;
       }
 
-      if (attestation_erasure.has_value()) {
+      // TODO(crbug.com/1356340): once
+      // https://github.com/fido-alliance/fido-2-specs/pull/1347 is a little
+      // more mature we can plumb the attestation preference down to the
+      // authenticator and enforce this in the request handler.
+      if (attestation_erasure ==
+              AttestationErasureOption::kEraseAttestationAndAaguid &&
+          device_public_key_output.has_value() &&
+          !response_data->attestation_object()
+               .authenticator_data()
+               .attested_data()
+               ->IsAaguidZero()) {
+        // Zeroing the AAGUID would invalidate the DPK signature. The
+        // authenticator should not have returned an attestation in this case.
+        CompleteMakeCredentialRequest(
+            blink::mojom::AuthenticatorStatus::
+                DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
+            nullptr, nullptr, Focus::kDoCheck);
+        return;
+      }
+
+      if (attestation_erasure.has_value() &&
+          // If a DPK attestation was requested then we show a prompt. (If
+          // the RP ID is allowlisted by policy then the prompt will be
+          // resolved immediately and never actually shown.)
+          !device_public_key_attestation_requested_) {
         CompleteMakeCredentialRequest(
             blink::mojom::AuthenticatorStatus::SUCCESS,
             CreateMakeCredentialResponse(std::move(*response_data),
                                          *attestation_erasure),
             nullptr, Focus::kDoCheck);
+      } else {
+        awaiting_attestation_response_ = true;
+        request_delegate_->ShouldReturnAttestation(
+            relying_party_id_, authenticator, have_enterprise_attestation,
+            base::BindOnce(
+                &AuthenticatorCommon::OnRegisterResponseAttestationDecided,
+                weak_factory_.GetWeakPtr(),
+                attestation_erasure.value_or(
+                    AttestationErasureOption::kIncludeAttestation),
+                device_public_key_output.has_value(),
+                device_public_key_included_attestation,
+                std::move(*response_data)));
       }
 
       return;
@@ -1396,6 +1527,9 @@ void AuthenticatorCommon::OnRegisterResponse(
 }
 
 void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
+    AttestationErasureOption attestation_erasure,
+    const bool has_device_public_key_output,
+    const bool device_public_key_included_attestation,
     device::AuthenticatorMakeCredentialResponse response_data,
     bool attestation_permitted) {
   awaiting_attestation_response_ = false;
@@ -1405,11 +1539,19 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
     return;
   }
 
-  AttestationErasureOption attestation_erasure;
   if (!attestation_permitted) {
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  } else {
-    attestation_erasure = AttestationErasureOption::kIncludeAttestation;
+
+    if (device_public_key_included_attestation) {
+      // If the authenticator returned a DPK attestation due to
+      // kEnterpriseIfRPListedOnAuthenticator then, currently, we showed the
+      // attestation prompt too late and can only reject the response if
+      // there's an unwanted DPK attestation.
+      CompleteMakeCredentialRequest(blink::mojom::AuthenticatorStatus::
+                                        DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
+                                    nullptr, nullptr, Focus::kDoCheck);
+      return;
+    }
   }
 
   // The check for IsAttestationCertificateInappropriatelyIdentifying is
@@ -1430,6 +1572,14 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
     // in the enterprise policy, because that enables the individual attestation
     // bit in the register request and permits individual attestation generally.
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
+
+    if (has_device_public_key_output) {
+      // Zeroing the AAGUID would invalidate the DPK signature. DPK cannot be
+      // supported in this case.
+      CompleteMakeCredentialRequest(blink::mojom::AuthenticatorStatus::
+                                        DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
+                                    nullptr, nullptr, Focus::kDoCheck);
+    }
   }
 
   CompleteMakeCredentialRequest(
@@ -1697,6 +1847,7 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
 
   bool did_create_hmac_secret = false;
   bool did_store_cred_blob = false;
+  absl::optional<std::vector<uint8_t>> device_public_key_authenticator_output;
   const absl::optional<cbor::Value>& maybe_extensions =
       response_data.attestation_object().authenticator_data().extensions();
   if (maybe_extensions) {
@@ -1715,6 +1866,14 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
     if (cred_blob_it != extensions.end() && cred_blob_it->second.is_bool() &&
         cred_blob_it->second.GetBool()) {
       did_store_cred_blob = true;
+    }
+
+    const auto device_public_key_it =
+        extensions.find(cbor::Value(device::kExtensionDevicePublicKey));
+    if (device_public_key_it != extensions.end() &&
+        device_public_key_it->second.is_bytestring()) {
+      device_public_key_authenticator_output =
+          device_public_key_it->second.GetBytestring();
     }
   }
 
@@ -1751,6 +1910,17 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
         // be added later.
         // [1]
         // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+        break;
+      case RequestExtension::kDevicePublicKey:
+        if (device_public_key_authenticator_output &&
+            response_data.device_public_key_signature) {
+          response->device_public_key =
+              blink::mojom::DevicePublicKeyResponse::New();
+          response->device_public_key->authenticator_output =
+              std::move(*device_public_key_authenticator_output);
+          response->device_public_key->signature =
+              *response_data.device_public_key_signature;
+        }
         break;
       case RequestExtension::kAppID:
       case RequestExtension::kLargeBlobRead:
@@ -1891,6 +2061,26 @@ AuthenticatorCommon::CreateGetAssertionResponse(
 
         break;
       }
+      case RequestExtension::kDevicePublicKey: {
+        const absl::optional<cbor::Value>& maybe_extensions =
+            response_data.authenticator_data.extensions();
+        if (maybe_extensions) {
+          DCHECK(maybe_extensions->is_map());
+          const cbor::Value::MapValue& extensions = maybe_extensions->GetMap();
+
+          const auto it =
+              extensions.find(cbor::Value(device::kExtensionDevicePublicKey));
+          if (it != extensions.end() && it->second.is_bytestring()) {
+            response->device_public_key =
+                blink::mojom::DevicePublicKeyResponse::New();
+            response->device_public_key->authenticator_output =
+                it->second.GetBytestring();
+            response->device_public_key->signature =
+                *response_data.device_public_key_signature;
+          }
+        }
+        break;
+      }
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:
       case RequestExtension::kLargeBlobEnable:
@@ -1915,10 +2105,6 @@ void AuthenticatorCommon::CompleteGetAssertionRequest(
 }
 
 void AuthenticatorCommon::Cleanup() {
-  if (awaiting_attestation_response_) {
-    awaiting_attestation_response_ = false;
-  }
-
   timer_->Stop();
   has_pending_request_ = false;
   request_handler_.reset();
@@ -1928,6 +2114,8 @@ void AuthenticatorCommon::Cleanup() {
   make_credential_options_.reset();
   ctap_get_assertion_request_.reset();
   ctap_get_assertion_options_.reset();
+  device_public_key_attestation_requested_ = false;
+  awaiting_attestation_response_ = false;
   request_delegate_.reset();
   make_credential_response_callback_.Reset();
   get_assertion_response_callback_.Reset();

@@ -56,6 +56,7 @@ class RenderFrameHost;
 class WebAuthRequestSecurityChecker;
 
 enum class RequestExtension;
+enum class AttestationErasureOption;
 
 // Common code for any WebAuthn Authenticator interfaces.
 class CONTENT_EXPORT AuthenticatorCommon {
@@ -130,12 +131,6 @@ class CONTENT_EXPORT AuthenticatorCommon {
     kDontCheck,
   };
 
-  enum class AttestationErasureOption {
-    kIncludeAttestation,
-    kEraseAttestationButIncludeAaguid,
-    kEraseAttestationAndAaguid,
-  };
-
   // Replaces the current |request_handler_| with a
   // |MakeCredentialRequestHandler|, effectively restarting the request.
   void StartMakeCredentialRequest(bool allow_skipping_pin_touch);
@@ -171,6 +166,9 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // Callback to complete the registration process once a decision about
   // whether or not to return attestation data has been made.
   void OnRegisterResponseAttestationDecided(
+      AttestationErasureOption attestation_erasure,
+      const bool has_device_public_key_output,
+      const bool device_public_key_included_attestation,
       device::AuthenticatorMakeCredentialResponse response_data,
       bool attestation_permitted);
 
@@ -276,6 +274,10 @@ class CONTENT_EXPORT AuthenticatorCommon {
   absl::optional<device::MakeCredentialOptions> make_credential_options_;
   absl::optional<device::CtapGetAssertionRequest> ctap_get_assertion_request_;
   absl::optional<device::CtapGetAssertionOptions> ctap_get_assertion_options_;
+  // device_public_key_attestation_requested_ is true if any form of DPK
+  // attestation was requested, even if it was mapped to "none" in
+  // |ctap_*_request_|.
+  bool device_public_key_attestation_requested_ = false;
   // awaiting_attestation_response_ is true if the embedder has been queried
   // about an attestsation decision and the response is still pending.
   bool awaiting_attestation_response_ = false;

@@ -76,6 +76,15 @@ const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
 const char kExtensionCredBlob[] = "credBlob";
 const char kExtensionMinPINLength[] = "minPinLength";
+const char kExtensionDevicePublicKey[] = "devicePubKey";
+
+const char kDevicePublicKeyAttestationKey[] = "attestation";
+const char kDevicePublicKeyAttestationFormatsKey[] = "attestationFormats";
+const char kDevicePublicKeyAAGUIDKey[] = "aaguid";
+const char kDevicePublicKeyDPKKey[] = "dpk";
+const char kDevicePublicKeyScopeKey[] = "scope";
+const char kDevicePublicKeyNonceKey[] = "nonce";
+const char kDevicePublicKeyEPKey[] = "epAtt";
 
 const base::TimeDelta kBleDevicePairingModeWaitingInterval = base::Seconds(2);
 

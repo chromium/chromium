@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "crypto/sha2.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
@@ -131,6 +132,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Incognito or Guest mode in Chrome).
   bool is_off_the_record_context = false;
+
+  // device_public_key contains parameters for the devicePubKey extension
+  // https://github.com/w3c/webauthn/pull/1663
+  absl::optional<DevicePublicKeyRequest> device_public_key;
 };
 
 struct CtapGetNextAssertionRequest {};

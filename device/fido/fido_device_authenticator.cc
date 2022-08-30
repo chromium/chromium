@@ -1086,6 +1086,14 @@ bool FidoDeviceAuthenticator::SupportsCredBlobOfSize(size_t num_bytes) const {
          num_bytes <= get_info_response->max_cred_blob_length.value();
 }
 
+bool FidoDeviceAuthenticator::SupportsDevicePublicKey() const {
+  const absl::optional<AuthenticatorGetInfoResponse>& get_info_response =
+      device_->device_info();
+  return get_info_response && get_info_response->extensions &&
+         base::Contains(*get_info_response->extensions,
+                        kExtensionDevicePublicKey);
+}
+
 const absl::optional<AuthenticatorSupportedOptions>&
 FidoDeviceAuthenticator::Options() const {
   return options_;

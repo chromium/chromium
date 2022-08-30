@@ -108,6 +108,25 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
     request.exclude_list = std::move(exclude_list);
   }
 
+  const auto enterprise_attestation_it = request_map.find(cbor::Value(10));
+  if (enterprise_attestation_it != request_map.end()) {
+    if (!enterprise_attestation_it->second.is_unsigned()) {
+      return absl::nullopt;
+    }
+    switch (enterprise_attestation_it->second.GetUnsigned()) {
+      case 1:
+        request.attestation_preference = AttestationConveyancePreference::
+            kEnterpriseIfRPListedOnAuthenticator;
+        break;
+      case 2:
+        request.attestation_preference =
+            AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
+        break;
+      default:
+        return absl::nullopt;
+    }
+  }
+
   const auto extensions_it = request_map.find(cbor::Value(6));
   if (extensions_it != request_map.end()) {
     if (!extensions_it->second.is_map()) {
@@ -164,6 +183,14 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return absl::nullopt;
         }
         request.min_pin_length_requested = extension.second.GetBool();
+      } else if (extension_name == kExtensionDevicePublicKey) {
+        request.device_public_key = DevicePublicKeyRequest::FromCBOR(
+            extension.second,
+            request.attestation_preference ==
+                AttestationConveyancePreference::kEnterpriseApprovedByBrowser);
+        if (!request.device_public_key) {
+          return absl::nullopt;
+        }
       }
     }
   }
@@ -214,25 +241,6 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
       return absl::nullopt;
     }
     request.pin_protocol = *pin_protocol;
-  }
-
-  const auto enterprise_attestation_it = request_map.find(cbor::Value(10));
-  if (enterprise_attestation_it != request_map.end()) {
-    if (!enterprise_attestation_it->second.is_unsigned()) {
-      return absl::nullopt;
-    }
-    switch (enterprise_attestation_it->second.GetUnsigned()) {
-      case 1:
-        request.attestation_preference = AttestationConveyancePreference::
-            kEnterpriseIfRPListedOnAuthenticator;
-        break;
-      case 2:
-        request.attestation_preference =
-            AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
-        break;
-      default:
-        return absl::nullopt;
-    }
   }
 
   return request;
@@ -300,6 +308,11 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
 
   if (request.min_pin_length_requested) {
     extensions.emplace(kExtensionMinPINLength, true);
+  }
+
+  if (request.device_public_key) {
+    extensions.emplace(kExtensionDevicePublicKey,
+                       request.device_public_key->ToCBOR());
   }
 
   if (!extensions.empty()) {

@@ -44,6 +44,7 @@ enum AuthenticatorStatus {
   INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB,
   FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION,
   REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED,
+  DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
 
   // ERROR_WITH_DOM_EXCEPTION_DETAILS indicates that the error will be
   // described in a `WebAuthnDOMExceptionDetails` structure.
@@ -88,6 +89,12 @@ struct UvmEntry {
   uint32 user_verification_method;
   uint16 key_protection_type;
   uint16 matcher_protection_type;
+};
+
+// The output for the `devicePubKey` extension.
+struct DevicePublicKeyResponse {
+  array<uint8> authenticator_output;
+  array<uint8> signature;
 };
 
 // The public key and attestation returned by Authenticator::MakeCredential.
@@ -144,6 +151,8 @@ struct MakeCredentialAuthenticatorResponse {
   // extension output should be.
   bool echo_large_blob;
   bool supports_large_blob;
+
+  DevicePublicKeyResponse? device_public_key;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -201,6 +210,8 @@ struct GetAssertionAuthenticatorResponse {
   // The value of the `getCredBlob` extension output, which maybe empty, or
   // null if none.
   array<uint8>? get_cred_blob;
+
+  DevicePublicKeyResponse? device_public_key;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -327,6 +338,11 @@ struct RemoteDesktopClientOverride {
   bool same_origin_with_ancestors;
 };
 
+struct DevicePublicKeyRequest {
+  AttestationConveyancePreference attestation;
+  array<string> attestation_formats;
+};
+
 // Parameters passed into calls to GetAssertion.
 struct PublicKeyCredentialRequestOptions {
   // If true, indicates that this request should prioritize showing a UI only if
@@ -395,16 +411,10 @@ struct PublicKeyCredentialRequestOptions {
   // Indicates that a remote desktop client is making a forwarded request on
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
-};
 
-// See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
-enum AttestationConveyancePreference {
-  NONE,
-  INDIRECT,
-  DIRECT,
-  // A non-standard addition that we hope will become standard. This indicates
-  // that the RP desires individual attestaion from the device.
-  ENTERPRISE,
+  // If present, reflects the contents of the "devicePubKey" extension.
+  // https://github.com/w3c/webauthn/pull/1663
+  DevicePublicKeyRequest? device_public_key;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement
@@ -534,6 +544,20 @@ struct PublicKeyCredentialCreationOptions {
   // Indicates that a remote desktop client is making a forwarded request on
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
+
+  // If present, reflects the contents of the "devicePubKey" extension.
+  // https://github.com/w3c/webauthn/pull/1663
+  DevicePublicKeyRequest? device_public_key;
+};
+
+// See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
+enum AttestationConveyancePreference {
+  NONE,
+  INDIRECT,
+  DIRECT,
+  // A non-standard addition that we hope will become standard. This indicates
+  // that the RP desires individual attestation from the device.
+  ENTERPRISE,
 };
 
 enum PublicKeyCredentialType {

@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h"
@@ -500,6 +502,10 @@ DOMException* AuthenticatorStatusToDOMException(
       return DOMException::Create(
           /*message=*/dom_exception_details->message,
           /*name=*/dom_exception_details->name);
+    case AuthenticatorStatus::DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "The authenticator responded with an invalid message");
     case AuthenticatorStatus::UNKNOWN_ERROR:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotReadableError,
@@ -687,10 +693,20 @@ void OnMakePublicKeyCredentialComplete(
     large_blob_outputs->setSupported(credential->supports_large_blob);
     extension_outputs->setLargeBlob(large_blob_outputs);
   }
+  if (credential->device_public_key) {
+    AuthenticationExtensionsDevicePublicKeyOutputs* device_public_key_outputs =
+        AuthenticationExtensionsDevicePublicKeyOutputs::Create();
+    device_public_key_outputs->setAuthenticatorOutput(VectorToDOMArrayBuffer(
+        std::move(credential->device_public_key->authenticator_output)));
+    device_public_key_outputs->setSignature(VectorToDOMArrayBuffer(
+        std::move(credential->device_public_key->signature)));
+    extension_outputs->setDevicePubKey(device_public_key_outputs);
+  }
   resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
       credential->info->id, raw_id, authenticator_response,
       credential->authenticator_attachment, extension_outputs));
 }
+
 bool IsForPayment(const CredentialCreationOptions* options,
                   ExecutionContext* context) {
   return RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context) &&
@@ -799,6 +815,16 @@ void OnGetAssertionComplete(
     if (credential->get_cred_blob) {
       extension_outputs->setGetCredBlob(
           VectorToDOMArrayBuffer(std::move(*credential->get_cred_blob)));
+    }
+    if (credential->device_public_key) {
+      AuthenticationExtensionsDevicePublicKeyOutputs*
+          device_public_key_outputs =
+              AuthenticationExtensionsDevicePublicKeyOutputs::Create();
+      device_public_key_outputs->setAuthenticatorOutput(VectorToDOMArrayBuffer(
+          std::move(credential->device_public_key->authenticator_output)));
+      device_public_key_outputs->setSignature(VectorToDOMArrayBuffer(
+          std::move(credential->device_public_key->signature)));
+      extension_outputs->setDevicePubKey(device_public_key_outputs);
     }
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id,
