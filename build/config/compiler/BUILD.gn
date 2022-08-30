@@ -1540,17 +1540,13 @@ config("default_warnings") {
         "-Wno-ignored-pragma-optimize",
       ]
 
-      if (llvm_force_head_revision && !is_nacl) {
-        cflags += [
-          # TODO(crbug.com/1352183) Evaluate and possibly enable.
-          "-Wno-bitfield-constant-conversion",
-        ]
-      }
-
       if (!is_nacl) {
         cflags += [
           # TODO(crbug.com/1343975) Evaluate and possibly enable.
           "-Wno-deprecated-builtins",
+
+          # TODO(crbug.com/1352183) Evaluate and possibly enable.
+          "-Wno-bitfield-constant-conversion",
         ]
       }
     }
