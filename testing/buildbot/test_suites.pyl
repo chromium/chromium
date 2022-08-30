@@ -4896,7 +4896,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
             }
           ]
         },
@@ -4933,7 +4933,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
             }
           ]
         },
@@ -4951,7 +4951,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
             }
           ]
         },
@@ -4966,7 +4966,7 @@
             {
               'cipd_package': 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
             }
           ]
         },
@@ -4980,7 +4980,7 @@
             {
               'cipd_package': 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
             }
           ]
         },
