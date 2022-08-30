@@ -47,7 +47,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Buttons',
               path: 'buttons',
-              src: 'cr_button_demo.html',
+              src: 'buttons_demo.html',
             },
             {
               name: 'Checkboxes',
