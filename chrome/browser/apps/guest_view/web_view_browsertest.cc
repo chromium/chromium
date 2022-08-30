@@ -2761,12 +2761,11 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuInspectElement) {
   LoadAppWithGuest("web_view/context_menus/basic");
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  ASSERT_TRUE(guest_web_contents);
+  content::RenderFrameHost* guest_rfh = GetGuestRenderFrameHost();
+  ASSERT_TRUE(guest_rfh);
 
   content::ContextMenuParams params;
-  TestRenderViewContextMenu menu(*guest_web_contents->GetPrimaryMainFrame(),
-                                 params);
+  TestRenderViewContextMenu menu(*guest_rfh, params);
   menu.Init();
 
   // Expect "Inspect" to be shown as we are running webview in a chrome app.
