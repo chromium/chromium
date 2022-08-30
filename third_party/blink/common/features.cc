@@ -95,11 +95,6 @@ const base::Feature kBackForwardCacheSendNotRestoredReasons{
     "BackForwardCacheSendNotRestoredReasons",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allows pages with keepalive requests to stay eligible for the back/forward
-// cache.
-const base::Feature kBackForwardCacheWithKeepaliveRequest{
-    "BackForwardCacheWithKeepaliveRequest", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Accumulates the fetch requests for resources while parsing chunks of HTML so
 // they can be evaluated, prioritized and processed as a group rather than as
 // they are discovered.
