@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -26,6 +27,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -158,6 +160,25 @@ apps::mojom::AppPtr GetPluginVmApp(Profile* profile, bool allowed) {
   return app;
 }
 
+// Create a file intent filter with extension type conditions for App Service.
+apps::IntentFilters CreateIntentFilterForPluginVm(
+    const guest_os::GuestOsRegistryService::Registration& registration) {
+  const std::set<std::string>& extension_types_set = registration.Extensions();
+  if (extension_types_set.empty()) {
+    return {};
+  }
+  std::vector<std::string> extension_types(extension_types_set.begin(),
+                                           extension_types_set.end());
+  apps::IntentFilters intent_filters;
+  intent_filters.push_back(apps_util::CreateFileFilter(
+      {apps_util::kIntentActionView}, /*mime_types=*/{}, extension_types,
+      // TODO(crbug/1349974): Remove activity_name when default file handling
+      // preferences for Files App are migrated.
+      /*activity_name=*/apps_util::kGuestOsActivityName));
+
+  return intent_filters;
+}
+
 }  // namespace
 
 namespace apps {
@@ -171,12 +192,6 @@ PluginVmApps::PluginVmApps(AppServiceProxy* proxy)
   if (!ash::ProfileHelper::IsPrimaryProfile(profile_)) {
     return;
   }
-
-  registry_ = guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
-  if (!registry_) {
-    return;
-  }
-  registry_->AddObserver(this);
 
   // Register for Plugin VM changes to policy and installed state, so that we
   // can update the availability and status of the Plugin VM app. Unretained is
@@ -226,9 +241,11 @@ void PluginVmApps::Connect(
 }
 
 void PluginVmApps::Initialize() {
+  registry_ = guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
   if (!registry_) {
     return;
   }
+  registry_->AddObserver(this);
 
   PublisherBase::Initialize(proxy()->AppService(),
                             apps::mojom::AppType::kPluginVm);
@@ -418,6 +435,8 @@ AppPtr PluginVmApps::CreateApp(
   app->show_in_shelf = false;
   app->show_in_management = false;
   app->allow_uninstall = false;
+  app->handles_intents = true;
+  app->intent_filters = CreateIntentFilterForPluginVm(registration);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
@@ -446,6 +465,9 @@ apps::mojom::AppPtr PluginVmApps::Convert(
   app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
   app->show_in_management = apps::mojom::OptionalBool::kFalse;
   app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+  app->handles_intents = apps::mojom::OptionalBool::kTrue;
+  app->intent_filters = ConvertIntentFiltersToMojomIntentFilters(
+      CreateIntentFilterForPluginVm(registration));
 
   return app;
 }

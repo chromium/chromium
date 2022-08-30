@@ -9,6 +9,10 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -30,6 +34,9 @@ namespace {
 const char kDiskImageImportCommandUuid[] = "3922722bd7394acf85bf4d5a330d4a47";
 const char kDomain[] = "example.com";
 const char kDeviceId[] = "device_id";
+
+// Arbitrary container value used for updating the GuestOsRegistryService.
+const char kPluginVmContainer[] = "PluginVmContainer";
 
 // For adding a fake shelf item without requiring opening an actual window.
 class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
@@ -130,6 +137,10 @@ PluginVmTestHelper::PluginVmTestHelper(TestingProfile* testing_profile)
     : testing_profile_(testing_profile) {
   testing_profile_->ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();
+
+  current_apps_.set_vm_name(kPluginVmName);
+  current_apps_.set_container_name(kPluginVmContainer);
+  current_apps_.set_vm_type(guest_os::VmType::PLUGIN_VM);
 }
 
 PluginVmTestHelper::~PluginVmTestHelper() = default;
@@ -199,6 +210,30 @@ void PluginVmTestHelper::OpenShelfItem() {
 
 void PluginVmTestHelper::CloseShelfItem() {
   ChromeShelfController::instance()->Close(ash::ShelfID(kPluginVmShelfAppId));
+}
+
+void PluginVmTestHelper::AddApp(const vm_tools::apps::App& app) {
+  for (int i = 0; i < current_apps_.apps_size(); ++i) {
+    if (current_apps_.apps(i).desktop_file_id() == app.desktop_file_id()) {
+      *current_apps_.mutable_apps(i) = app;
+      UpdateRegistry();
+      return;
+    }
+  }
+  *current_apps_.add_apps() = app;
+  UpdateRegistry();
+}
+
+// static
+std::string PluginVmTestHelper::GenerateAppId(const std::string& app_name) {
+  return guest_os::GuestOsRegistryService::GenerateAppId(
+      app_name, /*vm_name=*/kPluginVmName,
+      /*container_name=*/kPluginVmContainer);
+}
+
+void PluginVmTestHelper::UpdateRegistry() {
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(testing_profile_)
+      ->UpdateApplicationList(current_apps_);
 }
 
 }  // namespace plugin_vm

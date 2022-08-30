@@ -7,6 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 
 class TestingProfile;
 
@@ -57,8 +58,18 @@ class PluginVmTestHelper {
   void OpenShelfItem();
   void CloseShelfItem();
 
+  // Adds an app in the default container. Replaces an existing app with the
+  // same app name if one exists.
+  void AddApp(const vm_tools::apps::App& app);
+
+  // Returns the app id that the registry would use for the given app name.
+  static std::string GenerateAppId(const std::string& app_name);
+
  private:
+  void UpdateRegistry();
+
   TestingProfile* testing_profile_;
+  vm_tools::apps::ApplicationList current_apps_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::test::ScopedRunningOnChromeOS> running_on_chromeos_;
