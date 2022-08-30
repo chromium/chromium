@@ -45,7 +45,16 @@ enum class OperationType {
   kEmptyTrash,
   kExtract,
   kMove,
+
+  // This restores to the location supplied in the .trashinfo folder, recreating
+  // the parent hierarchy as required. As .Trash folders reside on the same
+  // filesystem as trashed files, this implies an intra filesystem move.
   kRestore,
+
+  // This restores to a supplied destination only extracting the file name to
+  // properly name the destination file. The destination folder is expected to
+  // exist and items can be restored cross filesystem.
+  kRestoreToDestination,
   kTrash,
   kZip,
 };

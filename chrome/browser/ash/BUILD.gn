@@ -1007,6 +1007,8 @@ source_set("ash") {
     "file_manager/prefs_migration_uma.h",
     "file_manager/restore_io_task.cc",
     "file_manager/restore_io_task.h",
+    "file_manager/restore_to_destination_io_task.cc",
+    "file_manager/restore_to_destination_io_task.h",
     "file_manager/select_file_dialog_util.cc",
     "file_manager/select_file_dialog_util.h",
     "file_manager/snapshot_manager.cc",

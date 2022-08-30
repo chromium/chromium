@@ -37,7 +37,7 @@ class RestoreIOTask : public IOTask {
                 bool show_notification = true);
   ~RestoreIOTask() override;
 
-  // Starts restore trask.
+  // Starts restore task.
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
   void Cancel() override;
