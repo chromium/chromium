@@ -44,6 +44,16 @@ FeatureList* g_feature_list_instance = nullptr;
 // which Feature that accessor was for, if so.
 const Feature* g_initialized_from_accessor = nullptr;
 
+// Controls whether a feature's override state will be cached in
+// `base::Feature::cached_value`. This field and the associated `base::Feature`
+// only exist to measure the impact of the caching on different performance
+// metrics.
+// TODO(crbug.com/1341292): Remove this global and this feature once the gains
+// are measured.
+bool g_cache_override_state = false;
+const base::Feature kCacheFeatureOverrideState{
+    "CacheFeatureOverrideState", base::FEATURE_ENABLED_BY_DEFAULT};
+
 #if DCHECK_IS_ON()
 // Tracks whether the use of base::Feature is allowed for this module.
 // See ForbidUseForCurrentModule().
@@ -173,6 +183,19 @@ bool ParseEnableFeatures(const std::string& enable_features,
   *force_fieldtrials = JoinString(force_fieldtrials_list, "/");
   *force_fieldtrial_params = JoinString(force_fieldtrial_params_list, ",");
   return true;
+}
+
+std::pair<FeatureList::OverrideState, uint16_t> UnpackFeatureCache(
+    uint32_t packed_cache_value) {
+  return std::make_pair(
+      static_cast<FeatureList::OverrideState>(packed_cache_value >> 24),
+      packed_cache_value & 0xFFFF);
+}
+
+uint32_t PackFeatureCache(FeatureList::OverrideState override_state,
+                          uint32_t caching_context) {
+  return (static_cast<uint32_t>(override_state) << 24) |
+         (caching_context & 0xFFFF);
 }
 
 }  // namespace
@@ -508,6 +531,9 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   ConfigureRandBytesFieldTrial();
 #endif
 
+  g_cache_override_state =
+      base::FeatureList::IsEnabled(kCacheFeatureOverrideState);
+
   base::sequence_manager::internal::WorkQueue::ConfigureCapacityFieldTrial();
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -553,6 +579,10 @@ void FeatureList::ForbidUseForCurrentModule() {
 #endif  // DCHECK_IS_ON()
 }
 
+void FeatureList::SetCachingContextForTesting(uint16_t caching_context) {
+  caching_context_ = caching_context;
+}
+
 void FeatureList::FinalizeInitialization() {
   DCHECK(!initialized_);
   // Store the field trial list pointer for DCHECKing.
@@ -587,7 +617,32 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
 
-  return GetOverrideStateByFeatureName(feature.name);
+  // If caching is disabled, always perform the full lookup.
+  if (!g_cache_override_state)
+    return GetOverrideStateByFeatureName(feature.name);
+
+  uint32_t current_cache_value =
+      feature.cached_value.load(std::memory_order_relaxed);
+
+  auto unpacked = UnpackFeatureCache(current_cache_value);
+
+  if (unpacked.second == caching_context_)
+    return unpacked.first;
+
+  OverrideState state = GetOverrideStateByFeatureName(feature.name);
+  uint32_t new_cache_value = PackFeatureCache(state, caching_context_);
+
+  // Update the cache with the new value.
+  // In non-test code, this value can be in one of 2 states: either it's unset,
+  // or another thread has updated it to the same value we're about to write.
+  // Because of this, a plain `store` yields the correct result in all cases.
+  // In test code, it's possible for a different thread to have installed a new
+  // `ScopedFeatureList` and written a value that's different than the one we're
+  // about to write, although that would be a thread safety violation already
+  // and such tests should be fixed.
+  feature.cached_value.store(new_cache_value, std::memory_order_relaxed);
+
+  return state;
 }
 
 FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(

@@ -99,6 +99,16 @@ TEST_F(FeatureListTest, InitializeFromCommandLine) {
     EXPECT_EQ(test_case.expected_feature_off_state,
               FeatureList::IsEnabled(kFeatureOffByDefault))
         << i;
+
+    // Reading the state of each feature again will pull it from their
+    // respective caches instead of performing the full lookup, which should
+    // yield the same result.
+    EXPECT_EQ(test_case.expected_feature_on_state,
+              FeatureList::IsEnabled(kFeatureOnByDefault))
+        << i;
+    EXPECT_EQ(test_case.expected_feature_off_state,
+              FeatureList::IsEnabled(kFeatureOffByDefault))
+        << i;
   }
 }
 
