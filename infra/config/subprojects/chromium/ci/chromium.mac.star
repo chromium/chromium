@@ -187,7 +187,7 @@ ci.builder(
     cores = None,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = 40,
+    reclient_jobs = 200,
 )
 
 ci.thin_tester(

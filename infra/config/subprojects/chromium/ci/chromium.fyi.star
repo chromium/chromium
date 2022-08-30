@@ -2139,7 +2139,7 @@ fyi_mac_builder(
     builderless = True,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = 40,
+    reclient_jobs = 200,
 )
 
 fyi_mac_builder(
