@@ -6,13 +6,11 @@
 
 #include "ui/views/view.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 ExampleBase::~ExampleBase() = default;
 
 ExampleBase::ExampleBase(const char* title)
     : example_title_(title), container_(std::make_unique<View>()) {}
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

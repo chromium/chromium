@@ -25,6 +25,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/examples/create_examples.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
@@ -32,11 +33,11 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 const char kExamplesWidgetName[] = "ExamplesWidget";
 static const char kEnableExamples[] = "enable-examples";
+static const char kEnableSidePanel[] = "side-panel";
 
 bool CheckCommandLineUsage() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -100,9 +101,6 @@ ExampleVector GetExamplesToShow(ExampleVector examples) {
     std::cout << "You may want to specify the example(s) you want to run:"
               << titles;
   }
-
-  for (auto& example : examples)
-    example->CreateExampleView(example->example_view());
   return examples;
 }
 
@@ -140,36 +138,51 @@ class ExamplesWindowContents : public WidgetDelegateView {
  public:
   ExamplesWindowContents(base::OnceClosure on_close, ExampleVector examples)
       : on_close_(std::move(on_close)) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
     SetHasWindowSizeControls(true);
-
-    auto combobox_model = std::make_unique<ComboboxModelExampleList>();
-    combobox_model_ = combobox_model.get();
-    combobox_model_->SetExamples(std::move(examples));
-    auto combobox = std::make_unique<Combobox>(std::move(combobox_model));
-
-    instance_ = this;
-    combobox->SetCallback(base::BindRepeating(
-        &ExamplesWindowContents::ComboboxChanged, base::Unretained(this)));
-    combobox->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_EXAMPLES_COMBOBOX_AX_LABEL));
-
     SetBackground(CreateThemedSolidBackground(ui::kColorDialogBackground));
 
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        BoxLayout::Orientation::kVertical, gfx::Insets(5)));
+    if (command_line->HasSwitch(kEnableSidePanel)) {
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          BoxLayout::Orientation::kHorizontal, gfx::Insets(0)));
 
-    combobox_ = AddChildView(std::move(combobox));
+      auto tabbed_pane =
+          std::make_unique<TabbedPane>(TabbedPane::Orientation::kVertical,
+                                       TabbedPane::TabStripStyle::kBorder);
 
-    auto item_count = combobox_model_->GetItemCount();
-    if (item_count > 0) {
-      combobox_->SetVisible(item_count > 1);
-      example_shown_ = AddChildView(std::make_unique<View>());
-      example_shown_->SetLayoutManager(std::make_unique<FillLayout>());
-      example_shown_->AddChildView(combobox_model_->GetItemViewAt(0));
-      layout->SetFlexForView(example_shown_, 1);
+      tabbed_pane_ = AddChildView(std::move(tabbed_pane));
+      CreateSidePanel(std::move(examples));
+    } else {
+      for (auto& example : examples)
+        example->CreateExampleView(example->example_view());
+
+      auto combobox_model = std::make_unique<ComboboxModelExampleList>();
+      combobox_model_ = combobox_model.get();
+      combobox_model_->SetExamples(std::move(examples));
+      auto combobox = std::make_unique<Combobox>(std::move(combobox_model));
+
+      combobox->SetCallback(base::BindRepeating(
+          &ExamplesWindowContents::ComboboxChanged, base::Unretained(this)));
+      combobox->SetAccessibleName(
+          l10n_util::GetStringUTF16(IDS_EXAMPLES_COMBOBOX_AX_LABEL));
+
+      auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+          BoxLayout::Orientation::kVertical, gfx::Insets(5)));
+
+      combobox_ = AddChildView(std::move(combobox));
+
+      auto item_count = combobox_model_->GetItemCount();
+      if (item_count > 0) {
+        combobox_->SetVisible(item_count > 1);
+        example_shown_ = AddChildView(std::make_unique<View>());
+        example_shown_->SetLayoutManager(std::make_unique<FillLayout>());
+        example_shown_->AddChildView(combobox_model_->GetItemViewAt(0));
+        layout->SetFlexForView(example_shown_, 1);
+      }
     }
-
     status_label_ = AddChildView(std::make_unique<Label>());
+    instance_ = this;
   }
 
   ExamplesWindowContents(const ExamplesWindowContents&) = delete;
@@ -193,11 +206,20 @@ class ExamplesWindowContents : public WidgetDelegateView {
       std::move(on_close_).Run();
   }
   gfx::Size CalculatePreferredSize() const override {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     gfx::Size size(800, 300);
-    for (size_t i = 0; i < combobox_model_->GetItemCount(); i++) {
-      size.set_height(
-          std::max(size.height(),
-                   combobox_model_->GetItemViewAt(i)->GetHeightForWidth(800)));
+    if (command_line->HasSwitch(kEnableSidePanel)) {
+      for (size_t i = 0; i < tabbed_pane_->GetTabCount(); i++) {
+        size.set_height(std::max(
+            size.height(),
+            tabbed_pane_->GetTabAt(i)->contents()->GetHeightForWidth(800)));
+      }
+    } else {
+      for (size_t i = 0; i < combobox_model_->GetItemCount(); i++) {
+        size.set_height(std::max(
+            size.height(),
+            combobox_model_->GetItemViewAt(i)->GetHeightForWidth(800)));
+      }
     }
     return size;
   }
@@ -213,10 +235,24 @@ class ExamplesWindowContents : public WidgetDelegateView {
     InvalidateLayout();
   }
 
+  void CreateSidePanel(ExampleVector examples) {
+    for (auto& example : examples) {
+      auto tab_contents = std::make_unique<View>();
+      tabbed_pane_->AddTab(base::UTF8ToUTF16(example->example_title()),
+                           std::move(tab_contents));
+    }
+    // Currently only create a few examples as some will crash the application
+    // on run.
+    for (int i = 0; i < 11; i++) {
+      examples[i]->CreateExampleView(tabbed_pane_->GetTabAt(i)->contents());
+    }
+  }
+
   static ExamplesWindowContents* instance_;
   raw_ptr<View> example_shown_ = nullptr;
   raw_ptr<Label> status_label_ = nullptr;
   base::OnceClosure on_close_;
+  raw_ptr<TabbedPane> tabbed_pane_ = nullptr;
   raw_ptr<Combobox> combobox_ = nullptr;
   // Owned by |combobox_|.
   raw_ptr<ComboboxModelExampleList> combobox_model_ = nullptr;
@@ -254,5 +290,4 @@ void LogStatus(const std::string& string) {
     ExamplesWindowContents::instance()->SetStatus(string);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
