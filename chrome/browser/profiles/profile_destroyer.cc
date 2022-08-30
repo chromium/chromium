@@ -49,6 +49,14 @@ DestroyerSet& PendingDestroyers() {
   return *instance;
 }
 
+// Given a `profile`, returns the set of profiles that needs to be deleted
+// first.
+std::vector<Profile*> GetDependentProfiles(Profile* profile) {
+  if (profile->IsOffTheRecord())
+    return {};
+  return profile->GetAllOffTheRecordProfiles();
+}
+
 }  // namespace
 
 // static
@@ -96,7 +104,7 @@ void ProfileDestroyer::DestroyProfileWhenAppropriateWithTimeout(
   // ignored during shutdown and by the System Profile do not either.
   HostSet profile_hosts;
   GetHostsForProfile(&profile_hosts, profile);
-  for (Profile* otr_profile : profile->GetAllOffTheRecordProfiles()) {
+  for (Profile* otr_profile : GetDependentProfiles(profile)) {
     GetHostsForProfile(&profile_hosts, otr_profile);
   }
 
@@ -179,10 +187,10 @@ void ProfileDestroyer::DestroyOriginalProfileNow(Profile* const profile) {
   }
 
 #if DCHECK_IS_ON()
-  // Save the raw pointers of profile and off-the-record profile for DCHECKing
-  // on later.
+  // Save the raw pointers of profile and dependent profile for DCHECKing on
+  // later.
   void* profile_ptr = profile;
-  std::vector<Profile*> otr_profiles = profile->GetAllOffTheRecordProfiles();
+  std::vector<Profile*> dependent_profile = GetDependentProfiles(profile);
 #endif  // DCHECK_IS_ON()
 
   delete profile;
@@ -193,7 +201,7 @@ void ProfileDestroyer::DestroyOriginalProfileNow(Profile* const profile) {
   HostSet dangling_hosts;
   HostSet dangling_hosts_for_otr;
   GetHostsForProfile(&dangling_hosts, profile_ptr);
-  for (Profile* otr : otr_profiles) {
+  for (Profile* otr : dependent_profile) {
     GetHostsForProfile(&dangling_hosts_for_otr, otr);
   }
   const size_t profile_hosts_count = dangling_hosts.size();

@@ -634,11 +634,14 @@ Profile* TestingProfile::GetOffTheRecordProfile(
 }
 
 std::vector<Profile*> TestingProfile::GetAllOffTheRecordProfiles() {
-  std::vector<Profile*> otr_profiles;
+  // This matches the implementation of OffTheRecordProfileImpl:
+  if (IsOffTheRecord())
+    return original_profile_->GetAllOffTheRecordProfiles();
 
+  // This matches the implementation of ProfileImpl:
+  std::vector<Profile*> otr_profiles;
   for (auto& otr : otr_profiles_)
     otr_profiles.push_back(otr.second.get());
-
   return otr_profiles;
 }
 

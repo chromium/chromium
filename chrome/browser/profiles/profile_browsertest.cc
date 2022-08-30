@@ -76,6 +76,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -853,6 +854,59 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
 
   EXPECT_TRUE(watcher1.destroyed());
   EXPECT_TRUE(watcher2.destroyed());
+}
+
+// Regression test for: https://crbug.com/1357476
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
+  // Create 3 OTR profiles. The first is the "primary" OTR profile. It is used
+  // to create a RenderProcessHost depending on it, holding it alive.
+  Profile* otr_profile[3] = {
+      browser()->profile()->GetOffTheRecordProfile(
+          Profile::OTRProfileID::PrimaryID(), true),
+      browser()->profile()->GetOffTheRecordProfile(
+          Profile::OTRProfileID::CreateUniqueForTesting(), true),
+      browser()->profile()->GetOffTheRecordProfile(
+          Profile::OTRProfileID::CreateUniqueForTesting(), true),
+  };
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), GURL(url::kAboutBlankURL));
+
+  ProfileDestructionWatcher watcher[3];
+  watcher[0].Watch(otr_profile[0]);
+  watcher[1].Watch(otr_profile[1]);
+  watcher[2].Watch(otr_profile[2]);
+
+  scoped_refptr<base::SequencedTaskRunner> profile_task_runner =
+      incognito_browser->profile()->GetIOTaskRunner();
+
+  // Request the destruction of one OTR profile:
+  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile[1]);
+  EXPECT_FALSE(watcher[0].destroyed());
+  EXPECT_TRUE(watcher[1].destroyed());
+  EXPECT_FALSE(watcher[2].destroyed());
+  // The `watcher` are not observing the real destruction of the Profile. Make
+  // sure no crash are happening during the real destruction of the Profile.
+  // This is needed to reproduce: https://crbug.com/1357476
+  base::RunLoop loop;
+  profile_task_runner->PostDelayedTask(FROM_HERE, loop.QuitClosure(),
+                                       base::Milliseconds(2100));
+  loop.Run();
+
+  // Request the destruction of the primary OTR profile. This happens
+  // synchronously, because it requires releasing the RenderProcessHost used.
+  incognito_browser->tab_strip_model()->CloseAllTabs();
+  EXPECT_FALSE(watcher[0].destroyed());
+  EXPECT_TRUE(watcher[1].destroyed());
+  EXPECT_FALSE(watcher[2].destroyed());
+
+  watcher[0].WaitForDestruction();
+  EXPECT_TRUE(watcher[0].destroyed());
+  EXPECT_TRUE(watcher[1].destroyed());
+  EXPECT_FALSE(watcher[2].destroyed());
+
+  // Cleanup
+  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile[2]);
+  watcher[2].WaitForDestruction();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
