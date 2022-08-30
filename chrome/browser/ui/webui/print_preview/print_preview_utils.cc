@@ -82,9 +82,10 @@ base::Value::List PrintersToValues(const PrinterList& printer_list) {
 }
 
 template <typename Predicate>
-base::Value GetFilteredList(const base::Value* list, Predicate pred) {
-  auto out_list = list->Clone();
-  out_list.EraseListValueIf(pred);
+base::Value::List GetFilteredList(const base::Value::List& list,
+                                  Predicate pred) {
+  auto out_list = list.Clone();
+  out_list.EraseIf(pred);
   return out_list;
 }
 
@@ -108,20 +109,18 @@ bool DpiCapabilityInvalid(const base::Value& val) {
 bool VendorCapabilityInvalid(const base::Value& val) {
   if (!val.is_dict())
     return true;
-  const base::Value* option_type =
-      val.FindKeyOfType(kTypeKey, base::Value::Type::STRING);
+  const auto& dict = val.GetDict();
+  const std::string* option_type = dict.FindString(kTypeKey);
   if (!option_type)
     return true;
-  if (option_type->GetString() != kSelectString)
+  if (*option_type != kSelectString)
     return false;
-  const base::Value* select_cap =
-      val.FindKeyOfType(kSelectCapKey, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* select_cap = dict.FindDict(kSelectCapKey);
   if (!select_cap)
     return true;
-  const base::Value* options_list =
-      select_cap->FindKeyOfType(kOptionKey, base::Value::Type::LIST);
-  if (!options_list || options_list->GetList().empty() ||
-      GetFilteredList(options_list, ValueIsNull).GetList().empty()) {
+  const base::Value::List* options_list = select_cap->FindList(kOptionKey);
+  if (!options_list || options_list->empty() ||
+      GetFilteredList(*options_list, ValueIsNull).empty()) {
     return true;
   }
   return false;
