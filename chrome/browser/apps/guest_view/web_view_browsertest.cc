@@ -5982,11 +5982,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, NavigateToAboutBlank) {
 IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, Shim_BlankWebview) {
   TestHelper("testBlankWebview", "web_view/shim", NO_TEST_SERVER);
 
-  content::WebContents* guest =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_rfh);
   scoped_refptr<content::SiteInstance> site_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      guest_rfh->GetSiteInstance();
   EXPECT_TRUE(site_instance->IsGuest());
   EXPECT_TRUE(site_instance->GetProcess()->IsForGuestsOnly());
 }
