@@ -227,7 +227,7 @@ bool EnumTraits<MojomSourceType, ProtoSourceType>::FromMojom(
   }
   NOTREACHED();
   return false;
-};
+}
 
 // static
 MojomFileType EnumTraits<MojomFileType, ProtoImageFormat>::ToMojom(

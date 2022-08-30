@@ -308,7 +308,7 @@ bool HTMLFrameSetElement::HasBorderColor() const {
   if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
     return frame_set->HasBorderColor();
   return false;
-};
+}
 
 FrameEdgeInfo HTMLFrameSetElement::EdgeInfo() const {
   const_cast<HTMLFrameSetElement*>(this)->CollectEdgeInfoIfDirty();

@@ -88,7 +88,7 @@ class SessionEntropyProvider : public FieldTrial::EntropyProvider {
                             uint32_t randomization_seed) const override {
     DCHECK_EQ(randomization_seed, 0u);
     return RandDouble();
-  };
+  }
 };
 
 // Writes out string1 and then string2 to pickle.

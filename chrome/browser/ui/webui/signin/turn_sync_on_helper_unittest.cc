@@ -271,7 +271,7 @@ class MockSigninManager : public SigninManager {
         : signin_manager_(signin_manager) {
       ++signin_manager_->handle_creation_count_;
     }
-    ~Handle() override { ++signin_manager_->handle_deletion_count_; };
+    ~Handle() override { ++signin_manager_->handle_deletion_count_; }
 
    private:
     raw_ptr<MockSigninManager> signin_manager_;
