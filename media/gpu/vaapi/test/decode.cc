@@ -5,6 +5,7 @@
 #include <va/va.h>
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -57,7 +58,7 @@ constexpr char kUsageMsg[] =
     "           [--frames=<number of frames to decode>]\n"
     "           [--fetch=<derive|get>]\n"
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
-    "           [--md5]\n"
+    "           [--md5[=<checksum path>]]\n"
     "           [--visible]\n"
     "           [--loop]\n"
     "           [--v=<log verbosity>]\n"
@@ -102,12 +103,13 @@ constexpr char kHelpMsg[] =
     "        If specified along with --loop (see below), only saves the first\n"
     "        iteration of decoded frames.\n"
     "        If omitted, the output of this binary is error or lack thereof.\n"
-    "    --md5\n"
-    "        Optional. If specified, prints the md5 of each decoded (and\n"
-    "        visible, if --visible is specified) frame in I420 format to\n"
-    "        stdout.\n"
-    "        Only supported when vaDeriveImage() produces I420 and NV12 data\n"
-    "        for all frames in the video.\n"
+    "    --md5[=<checksum path>]\n"
+    "        Optional. If specified without a value, prints the md5 of each\n"
+    "        decoded (and visible, if --visible is specified) frame in I420\n"
+    "        format to stdout. If specified with a value, prints the md5 to\n"
+    "        the specified value instead of stdout. Only supported when\n"
+    "        vaDeriveImage() produces I420 and NV12 data for all frames\n"
+    "        in the video.\n"
     "    --visible\n"
     "        Optional. If specified, applies post-decode processing (PNG\n"
     "        output, md5 hash) only to visible frames.\n"
@@ -228,6 +230,16 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  std::ofstream md5_checksum_log;
+  const std::string md5_checksum_log_path = cmd->GetSwitchValueASCII("md5");
+  if (!md5_checksum_log_path.empty()) {
+    md5_checksum_log.open(md5_checksum_log_path);
+    if (!md5_checksum_log.is_open()) {
+      LOG(ERROR) << "Could not open " << md5_checksum_log_path << " for writing";
+      return EXIT_FAILURE;
+    }
+  }
+
   // Initialize VA stubs.
   StubPathMap paths;
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
@@ -283,7 +295,10 @@ int main(int argc, char** argv) {
             base::StringPrintf("%s_%d.png", output_prefix.c_str(), i));
       }
       if (cmd->HasSwitch("md5")) {
-        std::cout << dec->LastDecodedFrameMD5Sum() << std::endl;
+        if (md5_checksum_log.is_open())
+          md5_checksum_log << dec->LastDecodedFrameMD5Sum() << std::endl;
+        else
+          std::cout << dec->LastDecodedFrameMD5Sum() << std::endl;
       }
     }
 
@@ -291,6 +306,10 @@ int main(int argc, char** argv) {
   } while (loop_decode);
 
   LOG(INFO) << "Done reading.";
+
+  // Closes log file if opened.
+  if (md5_checksum_log.is_open())
+    md5_checksum_log.close();
 
   return EXIT_SUCCESS;
 }
