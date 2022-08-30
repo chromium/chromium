@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -137,8 +138,7 @@ class ImageTransferCacheEntryTest
       NOTREACHED();
       return {};
     }
-    if (std::all_of(plane_images.cbegin(), plane_images.cend(),
-                    [](sk_sp<SkImage> plane) { return !!plane; })) {
+    if (!base::Contains(plane_images, nullptr)) {
       return plane_images;
     }
     return {};

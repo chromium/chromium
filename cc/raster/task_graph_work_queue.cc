@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <unordered_map>
 #include <utility>
@@ -183,12 +182,10 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (std::any_of(task_namespace.running_tasks.begin(),
-                    task_namespace.running_tasks.end(),
-                    [&node](const CategorizedTask& task) {
-                      return task.second == node.task;
-                    }))
+    if (base::Contains(task_namespace.running_tasks, node.task,
+                       &CategorizedTask::second)) {
       continue;
+    }
 
     node.task->state().DidSchedule();
     task_namespace.ready_to_run_tasks[node.category].emplace_back(
@@ -215,12 +212,10 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (std::any_of(task_namespace.running_tasks.begin(),
-                    task_namespace.running_tasks.end(),
-                    [&node](const CategorizedTask& task) {
-                      return task.second == node.task;
-                    }))
+    if (base::Contains(task_namespace.running_tasks, node.task,
+                       &CategorizedTask::second)) {
       continue;
+    }
 
     DCHECK(!base::Contains(task_namespace.completed_tasks, node.task));
     node.task->state().DidCancel();
