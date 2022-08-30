@@ -4,8 +4,7 @@
 
 #include "net/network_error_logging/network_error_logging_test_util.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "net/base/ip_address.h"
 
 namespace net {
@@ -44,10 +43,8 @@ void TestNetworkErrorLoggingService::RemoveAllBrowsingData() {}
 
 bool TestNetworkErrorLoggingService::Header::MatchesAddressList(
     const AddressList& address_list) const {
-  return std::any_of(address_list.begin(), address_list.end(),
-                     [this](const IPEndPoint& endpoint) {
-                       return endpoint.address() == received_ip_address;
-                     });
+  return base::Contains(address_list, received_ip_address,
+                        &IPEndPoint::address);
 }
 
 }  // namespace net

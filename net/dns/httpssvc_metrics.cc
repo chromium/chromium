@@ -4,6 +4,7 @@
 
 #include "net/dns/httpssvc_metrics.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -99,9 +100,7 @@ void HttpssvcMetrics::SaveForIntegrity(
   // We only record one "Integrity" sample per INTEGRITY query. In case multiple
   // matching records are present in the response, we combine their intactness
   // values with logical AND.
-  const bool intact =
-      std::all_of(condensed_records.cbegin(), condensed_records.cend(),
-                  [](bool b) { return b; });
+  const bool intact = !base::Contains(condensed_records, false);
 
   DCHECK(!is_integrity_intact_.has_value());
   is_integrity_intact_ = intact;
@@ -121,9 +120,7 @@ void HttpssvcMetrics::SaveForHttps(enum HttpssvcDnsRcode rcode,
   // We only record one "parsable" sample per HTTPS query. In case multiple
   // matching records are present in the response, we combine their parsable
   // values with logical AND.
-  const bool parsable =
-      std::all_of(condensed_records.cbegin(), condensed_records.cend(),
-                  [](bool b) { return b; });
+  const bool parsable = !base::Contains(condensed_records, false);
 
   DCHECK(!is_https_parsable_.has_value());
   is_https_parsable_ = parsable;

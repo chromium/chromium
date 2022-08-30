@@ -4,7 +4,6 @@
 
 #include "net/dns/host_resolver_mdns_task.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -12,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
@@ -170,8 +170,8 @@ HostCache::Entry HostResolverMdnsTask::GetResults() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!transactions_.empty());
   DCHECK(!completion_closure_);
-  DCHECK(std::all_of(transactions_.begin(), transactions_.end(),
-                     [](const Transaction& t) { return t.IsDone(); }));
+  DCHECK(base::ranges::all_of(transactions_,
+                              [](const Transaction& t) { return t.IsDone(); }));
 
   auto found_error =
       std::find_if(transactions_.begin(), transactions_.end(),
@@ -241,14 +241,14 @@ void HostResolverMdnsTask::CheckCompletion(bool post_needed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Finish immediately if any transactions completed with an error.
-  if (std::any_of(transactions_.begin(), transactions_.end(),
-                  [](const Transaction& t) { return t.IsError(); })) {
+  if (base::ranges::any_of(transactions_,
+                           [](const Transaction& t) { return t.IsError(); })) {
     Complete(post_needed);
     return;
   }
 
-  if (std::all_of(transactions_.begin(), transactions_.end(),
-                  [](const Transaction& t) { return t.IsDone(); })) {
+  if (base::ranges::all_of(transactions_,
+                           [](const Transaction& t) { return t.IsDone(); })) {
     Complete(post_needed);
     return;
   }

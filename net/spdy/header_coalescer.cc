@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -39,7 +40,7 @@ void NetLogInvalidHeader(const NetLogWithSource& net_log,
 }
 
 bool ContainsUppercaseAscii(base::StringPiece str) {
-  return std::any_of(str.begin(), str.end(), base::IsAsciiUpper<char>);
+  return base::ranges::any_of(str, base::IsAsciiUpper<char>);
 }
 
 }  // namespace
