@@ -2336,8 +2336,15 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     const std::string* type = value.FindString("type");
     if (type)
       arg_value.Set("type", *type);
+
+    const base::Value::List* volume_filter = value.FindList("volumeFilter");
+    if (volume_filter) {
+      base::Value::List cloned_volume_filter = volume_filter->Clone();
+      arg_value.Set("volumeFilter", std::move(cloned_volume_filter));
+    }
+
     std::string search;
-    if (launch_dir || type) {
+    if (launch_dir || type || volume_filter) {
       std::string json_args;
       base::JSONWriter::Write(arg_value, &json_args);
       search = base::StrCat(

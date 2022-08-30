@@ -1328,7 +1328,8 @@ export class FileManager extends EventTarget {
                 str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
                 assert(this.recentEntry_)) :
             null,
-        assert(this.directoryModel_), assert(this.androidAppListModel_));
+        assert(this.directoryModel_), assert(this.androidAppListModel_),
+        this.dialogType);
 
     this.ui_.initDirectoryTree(directoryTree);
 

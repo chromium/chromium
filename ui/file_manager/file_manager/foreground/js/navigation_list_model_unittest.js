@@ -6,6 +6,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
+import {DialogType} from '../../common/js/dialog_type.js';
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
@@ -121,7 +122,7 @@ export function testModel() {
 
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
-      directoryModel, androidAppListModelWithApps);
+      directoryModel, androidAppListModelWithApps, DialogType.FULL_PAGE);
   model.linuxFilesItem = crostiniFakeItem;
 
   // Expect 9 items as 3 additional recent views (Audio, Images, Videos)
@@ -181,7 +182,7 @@ export function testNoRecentOrLinuxFiles() {
 
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
-      directoryModel, androidAppListModel);
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
 
   assertEquals(3, model.length);
   assertEquals(
@@ -205,7 +206,7 @@ export function testAddAndRemoveShortcuts() {
 
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
-      directoryModel, androidAppListModel);
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
 
   assertEquals(3, model.length);
 
@@ -276,7 +277,7 @@ export function testAddAndRemoveVolumes() {
 
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
-      directoryModel, androidAppListModel);
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
 
   assertEquals(3, model.length);
 
@@ -443,7 +444,7 @@ export function testOrderAndNestItems() {
   // Constructor already calls orderAndNestItems_.
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
-      directoryModel, androidAppListModelWithApps);
+      directoryModel, androidAppListModelWithApps, DialogType.FULL_PAGE);
 
   // Check items order and that MTP/Archive/Removable respect the original
   // order.
@@ -566,7 +567,7 @@ export function testMyFilesVolumeEnabled(callback) {
   // Constructor already calls orderAndNestItems_.
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
-      directoryModel, androidAppListModel);
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
   model.linuxFilesItem = crostiniFakeItem;
 
   assertEquals(2, model.length);
@@ -623,7 +624,7 @@ export function testMultipleUsbPartitionsGrouping() {
 
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
-      directoryModel, androidAppListModel);
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
 
   // Check that the common root shows 3 partitions.
   let groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));

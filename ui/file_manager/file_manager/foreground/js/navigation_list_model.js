@@ -5,6 +5,7 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
@@ -191,10 +192,11 @@ export class NavigationListModel extends EventTarget {
    * @param {NavigationModelFakeItem} recentModelItem Recent folder.
    * @param {!DirectoryModel} directoryModel
    * @param {!AndroidAppListModel} androidAppListModel
+   * @param {!DialogType} dialogType
    */
   constructor(
       volumeManager, shortcutListModel, recentModelItem, directoryModel,
-      androidAppListModel) {
+      androidAppListModel, dialogType) {
     super();
 
     /**
@@ -225,6 +227,11 @@ export class NavigationListModel extends EventTarget {
      * @private {!AndroidAppListModel}
      */
     this.androidAppListModel_ = androidAppListModel;
+
+    /**
+     * @private {!DialogType}
+     */
+    this.dialogType_ = dialogType;
 
     /**
      * Root folder for crostini Linux files.
@@ -745,8 +752,13 @@ export class NavigationListModel extends EventTarget {
     }
 
     // Add Trash.
-    // TODO(b/237351925): Trash should not show up when in File picker / saver.
-    if (util.isTrashEnabled()) {
+    // This should only show when Files app is open as a standalone app. The ARC
+    // file selector, however, opens Files app as a standalone app but passes a
+    // query parameter to indicate the mode. As Trash is a fake volume, it is
+    // not filtered out in the filtered volume manager so perform it here
+    // instead.
+    if (util.isTrashEnabled() && this.dialogType_ === DialogType.FULL_PAGE &&
+        !this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled()) {
       if (!this.trashItem_) {
         this.trashItem_ = new NavigationModelFakeItem(
             str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,

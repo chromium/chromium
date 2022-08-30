@@ -389,6 +389,7 @@ js_library("trash") {
   deps = [
     ":tasks",
     ":test_data",
+    "//ui/file_manager/integration_tests:dialog_type",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }

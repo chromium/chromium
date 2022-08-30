@@ -2200,6 +2200,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FilesSwa(),
         TestCase("trashTraversingFolderShowsDisallowedDialog")
             .EnableTrash()
+            .FilesSwa(),
+        TestCase("trashDontShowTrashRootOnSelectFileDialog")
+            .EnableTrash()
+            .FilesSwa(),
+        TestCase("trashDontShowTrashRootWhenOpeningAsAndroidFilePicker")
+            .EnableTrash()
             .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
