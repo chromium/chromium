@@ -3924,6 +3924,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "infobar-scroll-optimization",
+    "owners": [ "lazzzis@google.com", "mdjones", "twellington" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "initial-navigation-entry",
     "owners": [ "rakina", "chrome-security-architecture@google.com" ],
     "expiry_milestone": 105

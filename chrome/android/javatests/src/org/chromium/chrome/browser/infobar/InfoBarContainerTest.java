@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -40,6 +41,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -397,5 +399,27 @@ public class InfoBarContainerTest {
         // Additional manual test that this is working:
         // - adb shell dumpsys SurfaceFlinger
         // - Observe that Clank's overlay size changes (or disappears if URLbar is also gone).
+    }
+
+    /**
+     * Tests that infobar container view hides when browser control is offset.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @EnableFeatures({ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION})
+    public void testSyncWithBrowserControl() throws Exception {
+        final TestListener infobarListener = addInfoBarToCurrentTab(false);
+        Assert.assertEquals(1, sActivityTestRule.getInfoBars().size());
+        final InfoBar infoBar = sActivityTestRule.getInfoBars().get(0);
+        Assert.assertEquals(0, infoBar.getView().getTranslationY(), /*delta=*/0.1);
+
+        InfoBarContainer infoBarContainer = sActivityTestRule.getInfoBarContainer();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            infoBarContainer.getContainerViewForTesting().onControlsOffsetChanged(
+                    -100, 100, 0, 0, false);
+        });
+        Assert.assertNotEquals(
+                0, infoBarContainer.getContainerViewForTesting().getTranslationY(), /*delta=*/0.1);
     }
 }

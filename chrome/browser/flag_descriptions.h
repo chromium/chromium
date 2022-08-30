@@ -948,6 +948,9 @@ extern const char kIncognitoNtpRevampDescription[];
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 
+extern const char kInfobarScrollOptimizationName[];
+extern const char kInfobarScrollOptimizationDescription[];
+
 extern const char kInitialNavigationEntryName[];
 extern const char kInitialNavigationEntryDescription[];
 

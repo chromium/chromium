@@ -100,6 +100,7 @@ extern const base::Feature kHandleMediaIntents;
 extern const base::Feature kImmersiveUiMode;
 extern const base::Feature kIncognitoReauthenticationForAndroid;
 extern const base::Feature kIncognitoScreenshot;
+extern const base::Feature kInfobarScrollOptimization;
 extern const base::Feature kImprovedA2HS;
 extern const base::Feature kInstanceSwitcher;
 extern const base::Feature kInstantStart;

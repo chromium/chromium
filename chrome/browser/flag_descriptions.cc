@@ -1699,6 +1699,10 @@ const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
     "thumbnails visible.";
 
+const char kInfobarScrollOptimizationName[] = "Infobar scroll optimiaztion";
+const char kInfobarScrollOptimizationDescription[] =
+    "Optimize Infobar scroll on Android.";
+
 const char kInitialNavigationEntryName[] = "Initial NavigationEntry";
 const char kInitialNavigationEntryDescription[] =
     "Enables creation of initial NavigationEntry on tab creation.";

@@ -59411,6 +59411,7 @@ from previous Chrome versions.
   <int value="-43650386" label="WindowsFollowCursor:enabled"/>
   <int value="-43428597" label="ClickToCallDetectionV2:enabled"/>
   <int value="-42175674" label="ShareUsageRankingFixedMore:disabled"/>
+  <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
@@ -61067,6 +61068,7 @@ from previous Chrome versions.
   <int value="989740984" label="BorealisStorageBallooning:enabled"/>
   <int value="990380525"
       label="AutofillRationalizeStreetAddressAndAddressLine:enabled"/>
+  <int value="991192182" label="InfobarScrollOptimization:enabled"/>
   <int value="991462028"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:enabled"/>
   <int value="993486662" label="BorealisForceBetaClient:enabled"/>
