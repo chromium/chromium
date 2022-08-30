@@ -38,6 +38,9 @@ self.GenericSensorTest = (() => {
   // Class that mocks Sensor interface defined in
   // https://cs.chromium.org/chromium/src/services/device/public/mojom/sensor.mojom
   class MockSensor {
+    static #BUFFER_OFFSET_TIMESTAMP = 1;
+    static #BUFFER_OFFSET_READINGS = 2;
+
     constructor(sensorRequest, buffer, reportingMode) {
       this.client_ = null;
       this.startShouldFail_ = false;
@@ -51,6 +54,19 @@ self.GenericSensorTest = (() => {
       // In this mock implementation we use a starting value
       // and an increment step value that resemble a platform timestamp reasonably enough.
       this.timestamp_ = window.performance.timeOrigin;
+      // |buffer| represents a SensorReadingSharedBuffer on the C++ side in
+      // Chromium. It consists, in this order, of a
+      // SensorReadingField<OneWriterSeqLock> (an 8-byte union that includes
+      // 32-bit integer used by the lock class), and a SensorReading consisting
+      // of an 8-byte timestamp and 4 8-byte reading fields.
+      //
+      // |this.buffer_[0]| is zeroed by default, which allows OneWriterSeqLock
+      // to work with our custom memory buffer that did not actually create a
+      // OneWriterSeqLock instance. It is never changed manually here.
+      //
+      // Use MockSensor.#BUFFER_OFFSET_TIMESTAMP and
+      // MockSensor.#BUFFER_OFFSET_READINGS to access the other positions in
+      // |this.buffer_| without having to hardcode magic numbers in the code.
       this.buffer_ = buffer;
       this.buffer_.fill(0);
       this.receiver_ = new SensorReceiver(this);
@@ -130,8 +146,8 @@ self.GenericSensorTest = (() => {
       this.setSensorReading(readingData);
 
       const reading = this.readingData_.value();
-      this.buffer_.set(reading, 2);
-      this.buffer_[1] = this.timestamp_++;
+      this.buffer_.set(reading, MockSensor.#BUFFER_OFFSET_READINGS);
+      this.buffer_[MockSensor.#BUFFER_OFFSET_TIMESTAMP] = this.timestamp_++;
     }
 
     // Sets flag that forces sensor to fail when addConfiguration is invoked.
@@ -154,11 +170,11 @@ self.GenericSensorTest = (() => {
             throw new TypeError("startReading(): The readings passed to " +
               "setSensorReading() must be arrays");
           }
-          this.buffer_.set(reading, 2);
+          this.buffer_.set(reading, MockSensor.#BUFFER_OFFSET_READINGS);
         }
         // For all tests sensor reading should have monotonically
         // increasing timestamp.
-        this.buffer_[1] = this.timestamp_++;
+        this.buffer_[MockSensor.#BUFFER_OFFSET_TIMESTAMP] = this.timestamp_++;
 
         if (this.reportingMode_ === ReportingMode.ON_CHANGE &&
             this.notifyOnReadingChange_) {
