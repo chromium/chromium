@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2742511345840685325">Πινγκ πονγκ</translation>
 <translation id="2742870351467570537">Κατάργηση επιλεγμένων στοιχείων</translation>
+<translation id="2759825833388495838">συμπληρώστε τον κωδικό πρόσβασης στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Κόμικ</translation>
 <translation id="2765217105034171413">Μικρό</translation>
 <translation id="277133753123645258">Τρόπος αποστολής</translation>
@@ -885,6 +886,7 @@
 <translation id="3338095232262050444">Ασφαλές</translation>
 <translation id="3339440062908617027">Τρέξιμο και περπάτημα</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
+<translation id="3340978935015468852">ρυθμίσεις</translation>
 <translation id="3342366525167526994">Τέχνη σώματος</translation>
 <translation id="3345782426586609320">Μάτια</translation>
 <translation id="3355823806454867987">Αλλαγή ρυθμίσεων διακομιστή μεσολάβησης...</translation>
@@ -1761,6 +1763,7 @@
 <translation id="5633066919399395251">Οι εισβολείς που βρίσκονται αυτήν τη στιγμή στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ενδέχεται να επιχειρήσουν να εγκαταστήσουν επικίνδυνα προγράμματα στον υπολογιστή σας, τα οποία μπορούν να υποκλέψουν ή να διαγράψουν τα δεδομένα σας (για παράδειγμα, φωτογραφίες, κωδικούς πρόσβασης, μηνύματα και στοιχεία πιστωτικών καρτών). <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Το παραπλανητικό περιεχόμενο αποκλείστηκε.</translation>
 <translation id="5633259641094592098">Ταινίες cult και indie</translation>
+<translation id="563371367637259496">Κινητό</translation>
 <translation id="5635237618724097525">Smartphone</translation>
 <translation id="5644090287519800334">Πλευρά 1 μετατόπιση εικόνας στον άξονα X</translation>
 <translation id="5645854190134202180">Δεύτερη βάρδια</translation>

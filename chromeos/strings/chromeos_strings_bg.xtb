@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Редактиране на файла}other{Редактиране на файловете}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГХц</translation>
 <translation id="3291996639387199448">Посока на ключа</translation>
+<translation id="3294437725009624529">Гост</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>

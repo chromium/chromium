@@ -490,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Nemojte odmah ukloniti svoj uređaj!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Uklanjanje uređaja dok je još u upotrebi može uzrokovati gubitak podataka. Pričekajte da uređaj dovrši radnju, a potom ga izbacite pomoću aplikacije Datoteke.</translation>
-<translation id="5159560892333415631">Isprazni otpad</translation>
 <translation id="5163869187418756376">Dijeljenje nije uspjelo. Provjerite vezu i pokušajte ponovo kasnije.</translation>
 <translation id="516592729076796170">Američka programerska Dvorak</translation>
 <translation id="5172749059808361023">Pojedinosti ograničenja</translation>
@@ -968,7 +967,6 @@
 <translation id="9171921933192916600">Knjiški moljac</translation>
 <translation id="9172592259078059678">transliteracija za gudžaratski</translation>
 <translation id="9173120999827300720">engleski (US) s međunarodnom tipkovnicom</translation>
-<translation id="9174050671906956834">Stavke iz otpada trajno se brišu nakon 30 dana.</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">kazaški</translation>
 <translation id="9200427192836333033">Izdvojeno stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>

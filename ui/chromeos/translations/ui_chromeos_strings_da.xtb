@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Fjern ikke enheden endnu!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Hvis du fjerner din enhed, mens den er i brug, kan det medføre datatab. Vent, indtil handlingen er fuldført, og fjern derefter enheden ved hjælp af appen Filer.</translation>
-<translation id="5159560892333415631">Tøm papirkurv</translation>
 <translation id="5163869187418756376">Deling mislykkedes. Kontrollér din forbindelse, og prøv igen senere.</translation>
 <translation id="516592729076796170">Amerikansk (Programmer Dvorak) tastatur</translation>
 <translation id="5172749059808361023">Oplysninger om begrænsning</translation>
@@ -967,7 +966,6 @@
 <translation id="9171921933192916600">Bogorm</translation>
 <translation id="9172592259078059678">Gujarati translitteration</translation>
 <translation id="9173120999827300720">Engelsk (USA) med internationalt tastatur</translation>
-<translation id="9174050671906956834">Elementer i papirkurven slettes permanent efter 30 dage.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kasakhisk</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementer er pakket ud.</translation>

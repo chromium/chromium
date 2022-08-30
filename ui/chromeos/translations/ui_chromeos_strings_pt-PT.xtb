@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Disco de vinil</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3291218047831493686">Estabeleça ligação a esta rede para alterar a definição de bloqueio do SIM</translation>
+<translation id="3293023191599135697">Não são suportadas redes WEP</translation>
 <translation id="3295357220137379386">O dispositivo está ocupado</translation>
 <translation id="3296763833017966289">Georgiana</translation>
 <translation id="3307875152560779385">Ucraniano</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Não remova já o dispositivo!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Remover o dispositivo enquanto está a ser utilizado pode provocar perda de dados. Aguarde pela conclusão da operação e, em seguida, ejete o dispositivo através da aplicação Ficheiros.</translation>
-<translation id="5159560892333415631">Esvaziar lixo</translation>
 <translation id="5163869187418756376">Falha ao partilhar. Verifique a ligação e tente novamente mais tarde.</translation>
 <translation id="516592729076796170">Dvorak de programador americano</translation>
 <translation id="5172749059808361023">Detalhes da restrição</translation>
@@ -967,7 +967,6 @@
 <translation id="9171921933192916600">Bibliófilo</translation>
 <translation id="9172592259078059678">Transliteração de guzerate</translation>
 <translation id="9173120999827300720">Inglês (EUA) com teclado internacional</translation>
-<translation id="9174050671906956834">Os itens no lixo são eliminados definitivamente após 30 dias.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Cazaque</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> itens extraídos.</translation>

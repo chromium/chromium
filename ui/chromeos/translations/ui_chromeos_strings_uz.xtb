@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Plastinka</translation>
 <translation id="3290356915286466215">Himoyalanmagan</translation>
 <translation id="3291218047831493686">SIM karta qulfi sozlamalarini almashtirish uchun bu tarmoqqa ulaning</translation>
+<translation id="3293023191599135697">WEP tarmoqlari ishlamaydi</translation>
 <translation id="3295357220137379386">Qurilma band</translation>
 <translation id="3296763833017966289">Gruzin tili</translation>
 <translation id="3307875152560779385">Ukrain</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Qurilmani o‘chirmang!<ph name="END_BOLD" />
 <ph name="LINE_BREAKS" />
 Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. Aks holda ba’zi ma’lumotlar o‘chib ketishi mumkin.</translation>
-<translation id="5159560892333415631">Chiqitdonni boʻshatish</translation>
 <translation id="5163869187418756376">Ulashish amalga oshmadi. Ulanishni tekshirib ko‘rib, qayta urining.</translation>
 <translation id="516592729076796170">Dasturchilar uchun Dvorak klaviaturasi</translation>
 <translation id="5172749059808361023">Cheklov tafsilotlari</translation>
@@ -966,7 +966,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9171921933192916600">Ashaddiy kitobxon</translation>
 <translation id="9172592259078059678">Gujarot tili transliteratsiyasi</translation>
 <translation id="9173120999827300720">Ingliz (AQSH) va xalqaro klaviatura</translation>
-<translation id="9174050671906956834">Chiqitdondagi fayllar 30 kundan keyin butunlay tozalab tashlanadi.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Qozoq</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ta fayl arxivdan chiqarildi.</translation>

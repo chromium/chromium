@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{I-edit ang file}one{I-edit ang mga file}other{I-edit ang mga file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">Direksyon ng key</translation>
+<translation id="3294437725009624529">Bisita</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>

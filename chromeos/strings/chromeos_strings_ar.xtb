@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> غيغاهرتز</translation>
 <translation id="3291996639387199448">اتجاه المفتاح</translation>
+<translation id="3294437725009624529">ضيف</translation>
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>

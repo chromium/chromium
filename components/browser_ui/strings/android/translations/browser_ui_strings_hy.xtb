@@ -80,6 +80,7 @@
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
 <translation id="2687403674020088961">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
+<translation id="2692299144678073135">Թույլատրել առնչվող կայքերին հիշել ձեր տվյալները կայքերում</translation>
 <translation id="2704606927547763573">Պատճենվեց</translation>
 <translation id="2713106313042589954">Անջատել տեսախցիկը</translation>
 <translation id="2717722538473713889">Էլ․ հասցեներ</translation>
@@ -140,6 +141,7 @@
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4008040567710660924">Թույլատրել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
+<translation id="4048876521107516222">Առնչվող կայքերն օգտագործում են քուքիներ, որոնք օգնում են ձեզ, օրինակ, դուրս չգալ հաշվից</translation>
 <translation id="4149994727733219643">Կայքերի պարզեցված դիտակերպ</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
 <translation id="4169549551965910670">Կայքը միացած է USB սարքի</translation>
@@ -222,6 +224,7 @@
 <translation id="5887687176710214216">Վերջին այցելությունը՝ երեկ</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5922853908706496913">Էկրանը ցուցադրվում է</translation>
+<translation id="5922967540311291836">Արգելափակել երրորդ կողմի քուքիները․</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="5975083100439434680">Փոքրացնել</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -312,6 +315,7 @@
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
 <translation id="7846621471902887024">Դուք դուրս կգաք բոլոր կայքերից։</translation>
 <translation id="7882806643839505685">Թույլատրել ձայնը առանձին կայքերում</translation>
+<translation id="789180354981963912">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում․</translation>
 <translation id="7940722705963108451">Հիշեցնել ինձ</translation>
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
 <translation id="7999064672810608036">Համոզվա՞ծ եք, որ ուզում եք մաքրել բոլոր տեղային տվյալները, այդ թվում նաև քուքիները, և զրոյացնել այս կայքի թույլտվությունները:</translation>

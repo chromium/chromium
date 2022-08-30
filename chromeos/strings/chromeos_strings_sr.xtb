@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Измени фајл}one{Измени фајлове}few{Измени фајлове}other{Измени фајлове}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Смер кључа</translation>
+<translation id="3294437725009624529">Гост</translation>
 <translation id="3310640316857623290">Кашњење DNS-а знатно премашује дозвољену граничну вредност</translation>
 <translation id="3328783797891415197">Тест је у току</translation>
 <translation id="3340011300870565703">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије десне слушалице.</translation>

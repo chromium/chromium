@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Anuloje <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, i paaktivizuar, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detajet</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3722341589402358578">Ndodhi një gabim. Disa artikuj mund të mos jenë zhvendosur te koshi.</translation>
 <translation id="3726463242007121105">Kjo pajisje nuk mund të hapet sepse sistemi i saj i skedarëve nuk mbështetet.</translation>
 <translation id="3727148787322499904">Ndryshimi i këtij cilësimi do të ndikojë në të gjitha rrjetet e ndara</translation>
 <translation id="3737576078404241332">Hiq nga shiriti anësor</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Mos e hiq ende pajisjen tënde!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Heqja e pajisjes kur është në përdorim mund të shkaktojë humbje të të dhënave. Prit deri sa të përfundojë operacioni dhe më pas nxirre pajisjen duke përdorur aplikacionin "Skedarët".</translation>
-<translation id="5159560892333415631">Boshatis "Koshin"</translation>
 <translation id="5163869187418756376">Ndarja dështoi. Kontrollo lidhjen dhe provo përsëri më vonë.</translation>
 <translation id="516592729076796170">Amerikane Dvorak për programues</translation>
 <translation id="5172749059808361023">Detajet për kufizimet</translation>
@@ -965,7 +965,6 @@
 <translation id="9171921933192916600">Krimb librash</translation>
 <translation id="9172592259078059678">Guxharatisht me transliterim</translation>
 <translation id="9173120999827300720">Anglisht (SHBA) me tastierë ndërkombëtare</translation>
-<translation id="9174050671906956834">Artikujt te "Koshi" fshihen përgjithmonë pas 30 ditësh.</translation>
 <translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="9189836632794948435">Kazakisht</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> artikuj të nxjerrë.</translation>

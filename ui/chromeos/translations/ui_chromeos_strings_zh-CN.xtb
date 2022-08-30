@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />暂时请不要取出您的设备！<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    取出使用中的设备可能会导致数据丢失。请等待操作完成，然后使用“文件”菜单弹出设备。</translation>
-<translation id="5159560892333415631">清空回收站</translation>
 <translation id="5163869187418756376">共享失败。请检查连接是否正常，然后重试。</translation>
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
 <translation id="5172749059808361023">限制详情</translation>
@@ -962,7 +961,6 @@
 <translation id="9171921933192916600">书迷</translation>
 <translation id="9172592259078059678">古吉拉特语音译</translation>
 <translation id="9173120999827300720">英语（美国）国际键盘</translation>
-<translation id="9174050671906956834">移至回收站 30 天后，所移动的内容将被永久删除。</translation>
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="9189836632794948435">哈萨克语</translation>
 <translation id="9200427192836333033">已提取 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>

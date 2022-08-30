@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Küsi enne saidile kaitstud sisu esitamiseks loa andmist (soovitatav)</translation>
 <translation id="2146738493024040262">Ava installimata avatav rakendus</translation>
 <translation id="2148716181193084225">Täna</translation>
+<translation id="2155988908301433309">Kuva alati mobiilisait</translation>
 <translation id="2182457891543959921">Küsi enne saitidele loa andmist mind ümbritsevast 3D-kaardi loomiseks või kaamera asendi jälgimiseks (soovitatav)</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2687403674020088961">Blokeeri kõik küpsised (ei ole soovitatav)</translation>
+<translation id="2692299144678073135">Lubage seotud saitidel end saitidel meelde jätta</translation>
 <translation id="2704606927547763573">Kopeeritud</translation>
 <translation id="2713106313042589954">Lülita kaamera välja</translation>
 <translation id="2717722538473713889">E-posti aadressid</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4008040567710660924">Lubage konkreetse saidi küpsisefailid.</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
+<translation id="4048876521107516222">Seotud saidid kasutavad küpsisefaile, et aidata teid näiteks hoida sisselogituna</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
 <translation id="4169549551965910670">Ühendatud USB-seadmega</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Saidid ei saa küsida luba märguannete saatmiseks</translation>
 <translation id="5516455585884385570">Ava märguandeseaded</translation>
 <translation id="5527111080432883924">Küsi luba, kui sait soovib lugeda lõikelaual olevat teksti ja pilte (soovitatav)</translation>
+<translation id="5553273073880784901">Kuva alati arvutisait</translation>
 <translation id="5553374991681107062">Uusimad</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Viimati külastati eile</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5922853908706496913">Ekraanikuva jagamine</translation>
+<translation id="5922967540311291836">Kolmanda osapoole küpsisefailide blokeerimine</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
 <translation id="5975083100439434680">Suumib välja</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Tühista valik</translation>
 <translation id="7846621471902887024">Teid logitakse kõikidelt saitidelt välja.</translation>
 <translation id="7882806643839505685">Konkreetse saidi heli lubamine.</translation>
+<translation id="789180354981963912">Kolmanda osapoole küpsisefailide blokeerimine inkognito režiimis</translation>
 <translation id="7940722705963108451">Tuleta mulle meelde</translation>
 <translation id="7986741934819883144">Kontakti valimine</translation>
 <translation id="7999064672810608036">Kas soovite kindlasti kustutada kõik kohalikud andmed (sh küpsised) ja lähtestada kõik selle veebisaidi load?</translation>

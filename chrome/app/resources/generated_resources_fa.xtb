@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">‏مشکلی پیش آمد. Linux ممکن است به‌صورت جزئی ارتقا یافته باشد. برای اطلاعات بیشتر، گزارش‌ها را مرور کنید. گزارش‌ها در «Files &gt; فایل‌های من &gt; <ph name="LOG_FILE" />» ذخیره شده است</translation>
 <translation id="1043818413152647937">داده‌های این برنامه‌ها نیز پاک شود؟</translation>
 <translation id="1043824690776631483">برای بازدید از این سایت، به اجازه نیاز دارید. ممکن است حاوی محتوای نامناسب باشد.</translation>
+<translation id="104419033123549300">سبک نقشه‌کلید</translation>
 <translation id="104710386808485638">‏Linux بازراه‌اندازی شود؟</translation>
 <translation id="1047431265488717055">کپی کردن متن &amp;پیوند</translation>
 <translation id="1048286738600630630">نمایشگرها</translation>
@@ -781,6 +782,7 @@
 <translation id="1721312023322545264">برای بازدید این سایت باید از <ph name="NAME" /> اجازه بگیرید</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> شما توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود</translation>
 <translation id="1723824996674794290">پنجره &amp;جدید</translation>
+<translation id="1724801751621173132">حالت ورودی</translation>
 <translation id="1725562816265788801">پیمایش برگه</translation>
 <translation id="1729533290416704613">‏این برنامه صفحه‌ای را که هنگام جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="1730917990259790240">‏<ph name="BEGIN_PARAGRAPH1" />برای حذف برنامه‌ها به «تنظیمات &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; برنامه‌ها یا مدیر برنامه» بروید. سپس روی برنامه‌ای که می‌خواهید حذف نصب شود ضربه بزنید (ممکن است برای پیدا کردن برنامه نیاز باشد صفحه را تند به‌راست یا چپ بکشید). سپس روی «حذف نصب» یا «غیرفعال کردن» ضربه بزنید.<ph name="END_PARAGRAPH1" /></translation>
@@ -1964,6 +1966,7 @@
 <translation id="2796740370559399562">ادامه اجازه به کوکی‌ها</translation>
 <translation id="2798347533012571708">حفظ به‌روزرسانی‌ها</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
+<translation id="2800309299477632167">نقشه‌کلید سفارشی</translation>
 <translation id="2800760947029405028">بارگذاری تصویر</translation>
 <translation id="2801954693771979815">اندازه صفحه‌نمایش</translation>
 <translation id="2802557211515765772">چاپگر مدیریت‌شده‌ای وجود ندارد.</translation>
@@ -2025,6 +2028,7 @@
 <translation id="2849767214114481738">پین شما اضافه شده است</translation>
 <translation id="2849936225196189499">مهم</translation>
 <translation id="2850541429955027218">افزودن زمینه</translation>
+<translation id="2850672011315104382">سبک علامت‌گذاری</translation>
 <translation id="2851634818064021665">برای بازدید کردن از این سایت، مجوز لازم دارید</translation>
 <translation id="2851728849045278002">مشکلی پیش آمد. برای جزئیات بیشتر کلیک کنید.</translation>
 <translation id="2852385257476173980">وقتی وب را مرور می‌کنید، ممکن است فهرست سایت‌هایی که بازدید می‌کنید در اینجا نشان داده شود</translation>
@@ -2521,6 +2525,7 @@
 <translation id="3359256513598016054">محدودیت‌های سیاست گواهی</translation>
 <translation id="3360297538363969800">چاپ ناموفق بود. لطفاً چاپگرتان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}one{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}other{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}}</translation>
+<translation id="3361954577771524115">از برنامه</translation>
 <translation id="3363202073972776113">سازمانتان این نمایه جدید را مدیریت خواهد کرد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">ازطرف سرپرست: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏یا از Ctrl استفاده کنید یا از Alt</translation>
@@ -3045,6 +3050,7 @@
 <translation id="3848547754896969219">باز کردن در «پنجره ناشناس»</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="3851428669031642514">بارگیری اسکریپت‌های ناامن</translation>
+<translation id="3852215160863921508">دستیار ورودی</translation>
 <translation id="3854599674806204102">گزینه‌ای انتخاب کنید</translation>
 <translation id="3854967233147778866">پیشنهاد ترجمه وب‌سایت‌ها به زبان‌های دیگر</translation>
 <translation id="3854976556788175030">سینی خروجی پر است</translation>
@@ -3802,6 +3808,7 @@
 <translation id="4579453506923101210">فراموش کردن تلفن متصل</translation>
 <translation id="4579581181964204535">ارسال محتوای <ph name="HOST_NAME" /> امکان‌پذیر نیست.</translation>
 <translation id="4579876313423027742">‏برای اعلان‌های مرور، به <ph name="LINK_BEGIN" />تنظیمات مرورگر Chrome<ph name="LINK_END" /> بروید</translation>
+<translation id="4580587929153007251">‏دوباره به سیستم «مدیر گذرواژه Google» وارد شوید</translation>
 <translation id="4580596421317071374">گذرواژه‌ها در <ph name="GOOGLE_PASSWORD_MANAGER" /> در این دستگاه ذخیره می‌شود.</translation>
 <translation id="4580626299762849806">گذرواژه‌ها وارد نشد. <ph name="FILENAME" /> را بررسی کنید و مطمئن شوید درست قالب‌بندی شده باشد.</translation>
 <translation id="4581774856936278355">‏خطا هنگام بازیابی Linux</translation>
@@ -4483,6 +4490,7 @@
 <translation id="5268373933383932086">صفحه شما، روش شما</translation>
 <translation id="5269977353971873915">چاپ نشد</translation>
 <translation id="5273806377963980154">ویرایش نشانی وب سایت</translation>
+<translation id="5275084684151588738">فرهنگ‌های لغت کاربر</translation>
 <translation id="5275338516105640560">دکمه گروه برگه ذخیره‌شده</translation>
 <translation id="5275352920323889391">سگ</translation>
 <translation id="527605719918376753">بی‌صدا کردن برگه</translation>
@@ -4698,6 +4706,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{پین باید حداقل یک نویسه داشته باشد}one{پین باید حداقل # نویسه داشته باشد}other{پین باید حداقل # نویسه داشته باشد}}</translation>
 <translation id="5474859849784484111">‏<ph name="MANAGER" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).</translation>
 <translation id="5481273127572794904">اجازه ندارد چند فایل را به‌طور خودکار بارگیری کند</translation>
+<translation id="5481755802440890178">درحال‌حاضر این انتخاب نمی‌تواند ترجمه شود</translation>
 <translation id="5481941284378890518">افزودن چاپگرهای اطراف</translation>
 <translation id="5483785310822538350">لغو دسترسی به فایل و دستگاه</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را امروز برگردانید. <ph name="LINK_BEGIN" />دیدن جزئیات<ph name="LINK_END" />}one{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}other{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}}</translation>
@@ -4930,6 +4939,7 @@
 <translation id="5696143504434933566">گزارش سوء‌استفاده از «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="5696679855467848181">‏فایل PPD کنونی درحال استفاده: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">انتخاب‌گر اموجی</translation>
+<translation id="5698462638680260399">برای استفاده از گذرواژه‌ها، به سیستم وارد شوید</translation>
 <translation id="570043786759263127">‏خدمات و برنامه‌های Google Play</translation>
 <translation id="5700836101007545240">سرپرستتان افزودن اتصال را غیرفعال کرده است</translation>
 <translation id="5701080607174488915">خطا هنگام واکشی خط‌مشی از سرور.</translation>
@@ -4947,6 +4957,7 @@
 <translation id="5712153969432126546">‏سایت‌ها گاهی‌اوقات فایل‌های PDF (ازجمله سند، قرارداد، و فرم) منتشر می‌کنند</translation>
 <translation id="571222594670061844">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند</translation>
 <translation id="5713158217420111469">متصل به <ph name="DEVICE" /></translation>
+<translation id="5713960379473463904">سبک ورودی فاصله</translation>
 <translation id="5715711091495208045">واسطه افزایه:‌ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">موتورهای جستجوی پیش‌فرض</translation>
 <translation id="5719854774000914513">‏سایت‌ها می‌توانند برای اتصال به دستگاه‌های HID درخواست دهند</translation>
@@ -6371,6 +6382,7 @@
 <translation id="7069811530847688087">ممکن است <ph name="WEBSITE" /> به کلید امنیتی جدیدتر یا نوع دیگری نیاز داشته باشد</translation>
 <translation id="7070484045139057854">می‌تواند داده‌های سایت را بخواند و تغییر دهد</translation>
 <translation id="7072010813301522126">نام میان‌بر</translation>
+<translation id="7074066049407662839">برای ذخیره کردن گذرواژه‌ها، به سیستم وارد شوید</translation>
 <translation id="7075513071073410194">‏PKCS #1 MD5 با رمزگذاری RSA</translation>
 <translation id="7075625805486468288">‏مدیریت گواهی‌ها و تنظیمات HTTPS/SSL</translation>
 <translation id="7076875098323397992">ارتقا شروع نشد</translation>
@@ -6902,6 +6914,7 @@
 <translation id="7625568159987162309">مشاهده مجوزها و داده‌های ذخیره‌شده در همه سایت‌ها</translation>
 <translation id="7625823789272218216">برگه جدید در سمت چپ</translation>
 <translation id="7628201176665550262">نرخ بازآوری</translation>
+<translation id="7628392600831846024">سبک نماد</translation>
 <translation id="7629827748548208700">برگه: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و لازم می‌داند هربار به سیستم وارد شوید.</translation>
 <translation id="7631014249255418691">‏از برنامه‌ها و فایل‌های Linux پشتیبان‌گیری شد</translation>
@@ -8200,6 +8213,7 @@
 <translation id="8850251000316748990">دیدن موارد بیشتر...</translation>
 <translation id="885246833287407341">‏متغیرهای مستقل عملکرد API</translation>
 <translation id="8853586775156634952">این کارت فقط در این دستگاه ذخیره خواهد شد</translation>
+<translation id="8854745870658584490">میان‌بر انتخاب</translation>
 <translation id="8855977033756560989">‏این دستگاه Chromebook Enterprise به‌همراه «ارتقا Chrome Enterprise» عرضه می‌شود. برای بهره‌مندی از قابلیت‌های شرکتی، این دستگاه را با حساب سرپرست Google ثبت‌نام کنید.</translation>
 <translation id="8856028055086294840">بازیابی برنامه‌ها و صفحه‌ها</translation>
 <translation id="885701979325669005">فضای ذخیره‌سازی</translation>

@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />¡Todavía no retires el dispositivo!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Si retiras el dispositivo mientras está en uso, puedes perder datos. Espera hasta que la operación finalice y, luego, expulsa el dispositivo con la aplicación Archivos.</translation>
-<translation id="5159560892333415631">Vaciar la papelera</translation>
 <translation id="5163869187418756376">Se produjo un error al compartir el contenido. Comprueba tu conexión y vuelve a intentarlo.</translation>
 <translation id="516592729076796170">Programmer Dvorak, EE. UU.</translation>
 <translation id="5172749059808361023">Detalles de la restricción</translation>
@@ -967,7 +966,6 @@
 <translation id="9171921933192916600">Ratón de biblioteca</translation>
 <translation id="9172592259078059678">Guyaratí (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EE.UU.) con teclado internacional</translation>
-<translation id="9174050671906956834">Los elementos de la papelera se borrarán definitivamente tras 30 días.</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazajo</translation>
 <translation id="9200427192836333033">Elementos extraídos: <ph name="NUMBER_OF_ITEMS" />.</translation>

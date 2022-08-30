@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Ghairi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Haijawashwa, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao, asilimia <ph name="SIGNAL_STRENGTH" />, Maelezo</translation>
 <translation id="3691184985318546178">Kisinhala</translation>
+<translation id="3722341589402358578">Hitilafu fulani imetokea. Huenda baadhi ya vipengee havijafutwa.</translation>
 <translation id="3726463242007121105">Kifaa hakiwezi kufunguliwa kwa sababu mfumo wake wa faili hauwezi kutumika.</translation>
 <translation id="3727148787322499904">Kubadilisha mipangilio hii kutaathiri mitandao yote inayoshirikiwa</translation>
 <translation id="3737576078404241332">Ondoa kwenye utepe</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Bado usiondoe kifaa chako!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
       Kuondoa kifaa chako kikiwa kinatumika kunaweza kusababisha kupoteza data. Tafadhali subiri hadi uendeshaji ukamilike, kisha uondoe kifaa kwa kutumia programu ya Faili.</translation>
-<translation id="5159560892333415631">Futa Kila Kitu Kwenye Tupio</translation>
 <translation id="5163869187418756376">Kushiriki kumeshindwa. Angalia muunganisho wako na ujaribu tena baadaye.</translation>
 <translation id="516592729076796170">Kibodi ya Programmer Dvorak, Marekani</translation>
 <translation id="5172749059808361023">Maelezo ya faili iliyozuiwa</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Mbukuzi</translation>
 <translation id="9172592259078059678">Unukuzi wa mfumo wa kuandika Kigujarati</translation>
 <translation id="9173120999827300720">Kiingereza (Marekani) kwenye kibodi ya Kimataifa</translation>
-<translation id="9174050671906956834">Vipengee katika tupio hufutwa kabisa baada ya siku 30.</translation>
 <translation id="9183302530794969518">Hati za Google</translation>
 <translation id="9189836632794948435">Kikazaki</translation>
 <translation id="9200427192836333033">Vipengee <ph name="NUMBER_OF_ITEMS" /> vimetolewa.</translation>

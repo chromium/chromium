@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">ভিনাইল রেকর্ড</translation>
 <translation id="3290356915286466215">সুরক্ষিত নেই</translation>
 <translation id="3291218047831493686">সিম লক সেটিং পরিবর্তন করতে এই নেটওয়ার্কে কানেক্ট করুন</translation>
+<translation id="3293023191599135697">WEP নেটওয়ার্ক কাজ করবে না</translation>
 <translation id="3295357220137379386">ডিভাইসটি আগেই অন্য কোথাও কানেক্ট রয়েছে</translation>
 <translation id="3296763833017966289">জর্জিয়ান</translation>
 <translation id="3307875152560779385">ইউক্রেনিয়ান</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />এই মুহূর্তে আপনার ডিভাসটি সরাবেন না!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        ব্যবহার চলাকালীন অবস্থায় আপনার ডিভাইস সরিয়ে ফেলা হলে ডেটা হারিয়ে যেতে পারে৷ অনুগ্রহ করে কাজ শেষ হওয়া পর্যন্ত অপেক্ষা করুন, তারপর ফাইলগুলির অ্যাপ ব্যবহার করে ডিভাইসটি বের করে নিন৷</translation>
-<translation id="5159560892333415631">ট্র্যাশ খালি করুন</translation>
 <translation id="5163869187418756376">শেয়ার করে ব্যর্থ হয়েছে৷ আপনার সংযোগটি পরীক্ষা করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="516592729076796170">মার্কিন যুক্তরাষ্ট্র প্রোগ্রামার ডিভোরাক</translation>
 <translation id="5172749059808361023">সীমাবদ্ধতার বিবরণ</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">বইপোকা</translation>
 <translation id="9172592259078059678">গুজরাতি লিপ্যন্তর</translation>
 <translation id="9173120999827300720">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় ইন্টারন্যাশনাল কীবোর্ড</translation>
-<translation id="9174050671906956834">ট্র্যাশে থাকা আইটেম ৩০ দিন পরে স্থায়ীভাবে মুছে ফেলা হয়।</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">কাজাখ</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" />টি আইটেম এক্সট্যাক্ট করা হয়েছে।</translation>

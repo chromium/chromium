@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Tühista <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Võrk <ph name="NETWORK_INDEX" /> <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, inaktiveeritud, <ph name="CONNECTION_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="3691184985318546178">singali</translation>
+<translation id="3722341589402358578">Tekkis viga. Mõnda üksust ei pruugitud prügikasti teisaldada.</translation>
 <translation id="3726463242007121105">Seadet ei saa avada, sest selle failisüsteemi ei toetata.</translation>
 <translation id="3727148787322499904">Selle seade muutmine mõjutab kõiki jagatud võrke</translation>
 <translation id="3737576078404241332">Eemalda külgribalt</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Ärge eemaldage veel seadet!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Kasutuses oleva seadme eemaldamisel võivad andmed kaduma minna. Oodake, kuni toiming on lõpetatud, seejärel väljutage seade rakendusega Failid.</translation>
-<translation id="5159560892333415631">Tühjenda prügikast</translation>
 <translation id="5163869187418756376">Jagamine ebaõnnestus. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="516592729076796170">USA programmeerija Dvorak</translation>
 <translation id="5172749059808361023">Piirangu üksikasjad</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Raamatukoi</translation>
 <translation id="9172592259078059678">gudžarati, transliteratsioon</translation>
 <translation id="9173120999827300720">inglise (USA), rahvusvahelise klaviatuuriga</translation>
-<translation id="9174050671906956834">Prügikastis olevad üksused kustutatakse lõplikult 30 päeva pärast.</translation>
 <translation id="9183302530794969518">Google'i dokumendid</translation>
 <translation id="9189836632794948435">kasahhi</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> üksust ekstraktiti.</translation>

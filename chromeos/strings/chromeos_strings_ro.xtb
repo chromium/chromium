@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Editează fișierul}few{Editează fișierele}other{Editează fișierele}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direcția cheii</translation>
+<translation id="3294437725009624529">Invitat</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>

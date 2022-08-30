@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Muuda faili}other{Muuda faile}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Võtme suund</translation>
+<translation id="3294437725009624529">Külaline</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3328783797891415197">Test on pooleli</translation>
 <translation id="3340011300870565703">Seadme parema kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>

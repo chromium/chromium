@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Disco de vinilo</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291218047831493686">Debes conectarte a esta red para cambiar el ajuste de bloqueo de la SIM</translation>
+<translation id="3293023191599135697">Las redes WEP no son compatibles</translation>
 <translation id="3295357220137379386">Dispositivo ocupado</translation>
 <translation id="3296763833017966289">Georgiano</translation>
 <translation id="3307875152560779385">Ucraniano</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />¡No desconectes todavía el dispositivo!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Si desconectas el dispositivo mientras se utiliza, puedes perder tus datos. Espera hasta que finalice la operación y, a continuación, desconecta el dispositivo con la aplicación Archivos.</translation>
-<translation id="5159560892333415631">Vaciar papelera</translation>
 <translation id="5163869187418756376">Se ha producido un error al compartir contenido. Comprueba la conexión e inténtalo de nuevo más tarde.</translation>
 <translation id="516592729076796170">Programmer Dvorak de EE. UU.</translation>
 <translation id="5172749059808361023">Detalles de las restricciones</translation>
@@ -967,7 +967,6 @@
 <translation id="9171921933192916600">Ratón de biblioteca</translation>
 <translation id="9172592259078059678">Guyaratí (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EE. UU.) con teclado internacional</translation>
-<translation id="9174050671906956834">Los elementos de la papelera se eliminan definitivamente después de 30 días.</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazajo</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementos extraídos.</translation>

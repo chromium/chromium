@@ -312,6 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> megszakítása.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" /> hálózat, <ph name="NETWORK_NAME" />, Inaktiválva, <ph name="CONNECTION_STATUS" />, Jelerősség <ph name="SIGNAL_STRENGTH" />%, Részletek</translation>
 <translation id="3691184985318546178">szingaléz</translation>
+<translation id="3722341589402358578">Hiba történt. Előfordulhat, hogy egyes elemek kukába helyezésére nem került sor.</translation>
 <translation id="3726463242007121105">Ezt az eszközt nem lehet megnyitni, mert a fájlrendszere nem támogatott.</translation>
 <translation id="3727148787322499904">A beállítás módosítása az összes megosztott hálózatot érinti</translation>
 <translation id="3737576078404241332">Eltávolítás az oldalsávról</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Még ne távolítsa el eszközét!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Ha használat közben távolítja el eszközét, az adatvesztést eredményezhet. Kérjük, várjon, amíg a művelet befejeződik, majd válassza le az eszközt a Fájlok alkalmazás használatával.</translation>
-<translation id="5159560892333415631">Kuka kiürítése</translation>
 <translation id="5163869187418756376">Nem sikerült a megosztás. Ellenőrizze a kapcsolatot, és később próbálkozzon újra.</translation>
 <translation id="516592729076796170">US Dvorak programozó</translation>
 <translation id="5172749059808361023">A korlátozás részletei</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Könyvmoly</translation>
 <translation id="9172592259078059678">gudzsaráti, betű szerinti átírás</translation>
 <translation id="9173120999827300720">angol (USA) billentyűzet nemzetközi kiosztással</translation>
-<translation id="9174050671906956834">A kukában lévő elemek 30 nap elteltével végleg törlődnek.</translation>
 <translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="9189836632794948435">kazah</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elem kinyerve.</translation>

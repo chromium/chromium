@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Cancel·la <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
 <translation id="3691184985318546178">Singalès</translation>
+<translation id="3722341589402358578">S'ha produït un error. És possible que alguns elements no s'hagin enviat a la paperera.</translation>
 <translation id="3726463242007121105">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no és compatible.</translation>
 <translation id="3727148787322499904">Els canvis en aquesta opció de configuració afectaran totes les xarxes compartides</translation>
 <translation id="3737576078404241332">Suprimeix de la barra lateral</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />No retireu el dispositiu encara.<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Si retireu el dispositiu mentre encara s'està utilitzant, es poden perdre dades. Espereu fins que hagi acabat l'operació i, a continuació, expulseu el dispositiu amb l'aplicació Fitxers.</translation>
-<translation id="5159560892333415631">Buida la paperera</translation>
 <translation id="5163869187418756376">S'ha produït un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
 <translation id="5172749059808361023">Detalls de la restricció</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Rata de biblioteca</translation>
 <translation id="9172592259078059678">Gujarati (transliteració)</translation>
 <translation id="9173120999827300720">Anglès (EUA) amb teclat internacional</translation>
-<translation id="9174050671906956834">Els elements de la paperera se suprimeixen definitivament al cap de 30 dies.</translation>
 <translation id="9183302530794969518">Documents de Google</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033">S'han extret <ph name="NUMBER_OF_ITEMS" /> elements.</translation>

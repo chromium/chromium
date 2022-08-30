@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">發生錯誤，Linux 可能並未進行完整的升級程序。請參閱記錄檔以瞭解詳情。記錄檔已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">要一併清除這些應用程式中的資料嗎？</translation>
 <translation id="1043824690776631483">你必須獲得授權，才能造訪這個可能含有不當內容的網站。</translation>
+<translation id="104419033123549300">按鍵對應樣式</translation>
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
 <translation id="1048286738600630630">顯示</translation>
@@ -772,6 +773,7 @@
 <translation id="1721312023322545264">你必須獲得<ph name="NAME" />授權，才能造訪這個網站</translation>
 <translation id="1722460139690167654">你的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 是由 <ph name="ENROLLMENT_DOMAIN" /> 管理<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">新增視窗(&amp;N)</translation>
+<translation id="1724801751621173132">輸入模式</translation>
 <translation id="1725562816265788801">分頁捲動</translation>
 <translation id="1729533290416704613">這個擴充功能也會控管你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />如要移除應用程式，請依序前往 [設定] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [應用程式] 或 [應用程式管理員]，然後輕觸你要解除安裝的應用程式 (你可能需要向左或向右滑動才能找出應用程式)。接著，輕觸 [解除安裝] 或 [停用]。<ph name="END_PARAGRAPH1" /></translation>
@@ -1952,6 +1954,7 @@
 <translation id="2796740370559399562">繼續允許 Cookie</translation>
 <translation id="2798347533012571708">保留更新</translation>
 <translation id="2799223571221894425">重新啟動</translation>
+<translation id="2800309299477632167">自訂按鍵對應</translation>
 <translation id="2800760947029405028">上傳圖片</translation>
 <translation id="2801954693771979815">螢幕大小</translation>
 <translation id="2802557211515765772">沒有受管理的印表機。</translation>
@@ -2013,6 +2016,7 @@
 <translation id="2849767214114481738">已新增 PIN 碼</translation>
 <translation id="2849936225196189499">重要</translation>
 <translation id="2850541429955027218">新增主題</translation>
+<translation id="2850672011315104382">標點符號樣式</translation>
 <translation id="2851634818064021665">你必須獲得授權，才能造訪這個網站</translation>
 <translation id="2851728849045278002">發生錯誤，按一下即可瞭解詳情。</translation>
 <translation id="2852385257476173980">瀏覽網路時，你造訪的網站清單可能會顯示在這裡</translation>
@@ -2509,6 +2513,7 @@
 <translation id="3359256513598016054">憑證原則限制</translation>
 <translation id="3360297538363969800">列印失敗。請檢查你的印表機，然後再試一次。</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}}</translation>
+<translation id="3361954577771524115">來源應用程式</translation>
 <translation id="3363202073972776113">這個新的設定檔將由貴機構管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">來自系統管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">請擇一使用 Ctrl 或 Alt 鍵</translation>
@@ -3033,6 +3038,7 @@
 <translation id="3848547754896969219">在無痕式視窗中開啟(&amp;I)</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3851428669031642514">載入不安全的指令碼</translation>
+<translation id="3852215160863921508">輸入輔助</translation>
 <translation id="3854599674806204102">選擇所需選項</translation>
 <translation id="3854967233147778866">詢問是否要翻譯其他語言的網站內容</translation>
 <translation id="3854976556788175030">輸出紙匣已滿</translation>
@@ -3788,6 +3794,7 @@
 <translation id="4579453506923101210">清除已連結的手機</translation>
 <translation id="4579581181964204535">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">如要設定瀏覽器通知，請前往 <ph name="LINK_BEGIN" />Chrome 瀏覽器設定<ph name="LINK_END" /></translation>
+<translation id="4580587929153007251">重新登入 Google 密碼管理工具</translation>
 <translation id="4580596421317071374">密碼已儲存至這部裝置上的 <ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="4580626299762849806">無法匯入密碼，請檢查「<ph name="FILENAME" />」的格式是否正確。</translation>
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
@@ -4469,6 +4476,7 @@
 <translation id="5268373933383932086">依喜好自訂頁面</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5273806377963980154">編輯網站網址</translation>
+<translation id="5275084684151588738">使用者字典</translation>
 <translation id="5275338516105640560">「已儲存至分頁群組」按鈕</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605719918376753">關閉分頁音訊</translation>
@@ -4684,6 +4692,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
+<translation id="5481755802440890178">目前無法翻譯選取的內容</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在 {NUM_DAYS} 天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}}</translation>
@@ -4914,6 +4923,7 @@
 <translation id="5696143504434933566">檢舉「<ph name="EXTENSION_NAME" />」的濫用情形</translation>
 <translation id="5696679855467848181">目前使用中的 PPD：<ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">表情符號挑選器</translation>
+<translation id="5698462638680260399">必須登入才能使用密碼</translation>
 <translation id="570043786759263127">Google Play 應用程式和服務</translation>
 <translation id="5700836101007545240">你的管理員停用了新增連線功能</translation>
 <translation id="5701080607174488915">從伺服器擷取政策時發生錯誤。</translation>
@@ -4931,6 +4941,7 @@
 <translation id="5712153969432126546">網站有時會發布文件、合約和表單等 PDF 檔案</translation>
 <translation id="571222594670061844">網站可以顯示身分識別服務的登入提示</translation>
 <translation id="5713158217420111469">已連線至「<ph name="DEVICE" />」</translation>
+<translation id="5713960379473463904">空白鍵輸入樣式</translation>
 <translation id="5715711091495208045">外掛程式代理元件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">預設搜尋引擎</translation>
 <translation id="5719854774000914513">網站可以要求連線至 HID 裝置</translation>
@@ -6352,6 +6363,7 @@
 <translation id="7069811530847688087"><ph name="WEBSITE" /> 可能需要新的或不同種類的安全金鑰</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
+<translation id="7074066049407662839">必須登入才能儲存密碼</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 憑證和設定</translation>
 <translation id="7076875098323397992">無法開始升級</translation>
@@ -6883,6 +6895,7 @@
 <translation id="7625568159987162309">查看各網站的權限及儲存的資料</translation>
 <translation id="7625823789272218216">新分頁位於左側</translation>
 <translation id="7628201176665550262">重新整理頻率</translation>
+<translation id="7628392600831846024">符號樣式</translation>
 <translation id="7629827748548208700">分頁：<ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">這部裝置是由 <ph name="MANAGER" /> 所管理，你每次使用時都必須登入。</translation>
 <translation id="7631014249255418691">已成功備份 Linux 應用程式和檔案</translation>
@@ -8181,6 +8194,7 @@
 <translation id="8850251000316748990">顯示更多...</translation>
 <translation id="885246833287407341">API 函式引數</translation>
 <translation id="8853586775156634952">這張卡片只會儲存在這部裝置上</translation>
+<translation id="8854745870658584490">選項快速鍵</translation>
 <translation id="8855977033756560989">這台 Chromebook Enterprise 裝置隨附 Chrome Enterprise 升級版。為充分發揮企業版功能的優勢，請使用 Google 管理員帳戶註冊這台裝置。</translation>
 <translation id="8856028055086294840">還原應用程式和網頁</translation>
 <translation id="885701979325669005">儲存空間</translation>

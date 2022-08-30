@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">ஏதோ தவறாகிவிட்டது. Linux பகுதியளவு மட்டும் மேம்படுத்தப்பட்டிருக்கலாம். மேலும் தகவல்களுக்குப் பதிவுகளைப் பார்க்கவும். பதிவுகள் ஃபைல்கள் &gt; எனது ஃபைல்கள் &gt; <ph name="LOG_FILE" /> இல் சேமிக்கப்பட்டுள்ளன</translation>
 <translation id="1043818413152647937">இந்த ஆப்ஸிலிருந்தும் தரவை அழிக்க வேண்டுமா?</translation>
 <translation id="1043824690776631483">இந்தத் தளத்தைப் பார்க்க உங்களுக்கு அனுமதி தேவை. இதில் தகாத உள்ளடக்கம் இருக்கக்கூடும்.</translation>
+<translation id="104419033123549300">விசைவரைபட நடை</translation>
 <translation id="104710386808485638">Linuxஸை மீண்டும் தொடங்கவா?</translation>
 <translation id="1047431265488717055">இணைப்பு &amp;உரையை நகலெடு</translation>
 <translation id="1048286738600630630">திரை அமைப்புகள்</translation>
@@ -277,6 +278,7 @@
 <translation id="125220115284141797">இயல்பு</translation>
 <translation id="1252987234827889034">சுயவிவரப் பிழை ஏற்பட்டது</translation>
 <translation id="1254593899333212300">நேரடி இணைய இணைப்பு</translation>
+<translation id="1257336506558170607">தேர்ந்தெடுத்துள்ள சான்றிதழ்களைப் பதிவிறக்கும்</translation>
 <translation id="1258491128795710625">புதியவை</translation>
 <translation id="1259152067760398571">பாதுகாப்புச் சரிபார்ப்பு நேற்று மேற்கொள்ளப்பட்டது</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> இடமிருந்து பாப்-அப்களையும் திசைதிருப்புதல்களையும் எப்போதும் அனுமதி</translation>
@@ -782,6 +784,7 @@
 <translation id="1721312023322545264">இந்தத் தளத்திற்குச் செல்ல, <ph name="NAME" /> இன் அனுமதி வேண்டும்</translation>
 <translation id="1722460139690167654">உங்கள் <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" />ஐ நிர்வகிப்பது<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;புதிய சாளரம்</translation>
+<translation id="1724801751621173132">உள்ளீட்டு முறை</translation>
 <translation id="1725562816265788801">தாவலை நகர்த்துதல்</translation>
 <translation id="1729533290416704613">ஆம்னிபாக்ஸிலிருந்து தேடலை மேற்கொள்ளும்போது காண்பிக்கப்படும் பக்கத்தையும் இது கட்டுப்படுத்துகிறது.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ஆப்ஸை அகற்ற, 'அமைப்புகள் &gt; Google Play Store &gt; Android விருப்பத்தேர்வுகளை நிர்வகி &gt; ஆப்ஸ் அல்லது ஆப்ஸ் நிர்வாகி’ என்பதற்குச் செல்லவும். அதில், நிறுவல் நீக்க விரும்பும் ஆப்ஸைத் தட்டவும் (ஆப்ஸைக் கண்டறிய வலப்புறம் அல்லது இடப்புறம் ஸ்வைப் செய்ய வேண்டியிருக்கலாம்). பின்னர், ‘நிறுவல் நீக்கு’ அல்லது ‘முடக்கு’ என்பதைத் தட்டவும்.<ph name="END_PARAGRAPH1" /></translation>
@@ -1966,6 +1969,7 @@
 <translation id="2796740370559399562">தொடர்ந்து குக்கீகளை அனுமதி</translation>
 <translation id="2798347533012571708">தொடர்ந்து புதுப்பி</translation>
 <translation id="2799223571221894425">மீண்டும் தொடங்கு</translation>
+<translation id="2800309299477632167">பிரத்தியேக விசைவரைபடம்</translation>
 <translation id="2800760947029405028">படத்தை ஏற்று</translation>
 <translation id="2801954693771979815">திரையின் அளவு</translation>
 <translation id="2802557211515765772">நிர்வகிக்கப்படும் பிரிண்டர்கள் எதுவுமில்லை.</translation>
@@ -2027,6 +2031,7 @@
 <translation id="2849767214114481738">உங்கள் பின் (PIN) சேர்க்கப்பட்டது</translation>
 <translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="2850541429955027218">தீமினைச் சேர்</translation>
+<translation id="2850672011315104382">நிறுத்தக்குறி நடை</translation>
 <translation id="2851634818064021665">இந்தத் தளத்தைப் பார்ப்பதற்கு அனுமதி தேவை</translation>
 <translation id="2851728849045278002">ஏதோ தவறாகிவிட்டது. மேலும் விவரங்களுக்குக் கிளிக் செய்யவும்.</translation>
 <translation id="2852385257476173980">நீங்கள் இணையத்தில் தேடத் தேட நீங்கள் பார்க்கும் தளங்களின் பட்டியல் இங்கே காட்டப்படக்கூடும்</translation>
@@ -2523,6 +2528,7 @@
 <translation id="3359256513598016054">சான்றிதழ் கொள்கைக் கட்டுப்பாடுகள்</translation>
 <translation id="3360297538363969800">அச்சிடுவதில் தோல்வி. உங்கள் பிரிண்டரைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> உங்களுடன் <ph name="ATTACHMENTS" /> ஐப் பகிர்கிறது.}other{<ph name="DEVICE_NAME" /> உங்களுடன் <ph name="ATTACHMENTS" /> ஐப் பகிர்கிறது.}}</translation>
+<translation id="3361954577771524115">ஆப்ஸில் இருந்து</translation>
 <translation id="3363202073972776113">இந்தப் புதிய சுயவிவரத்தை உங்கள் நிறுவனம் நிர்வகிக்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">உங்கள் நிர்வாகியிடமிருந்து: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">கன்ட்ரோல் அல்லது ஆல்ட் விசையைப் பயன்படுத்தவும்</translation>
@@ -3047,6 +3053,7 @@
 <translation id="3848547754896969219">&amp;மறைநிலைச் சாளரத்தில் திற</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3851428669031642514">பாதுகாப்பற்ற ஸ்கிரிப்ட்களை ஏற்று</translation>
+<translation id="3852215160863921508">உள்ளீட்டிற்கான உதவி</translation>
 <translation id="3854599674806204102">ஒரு விருப்பத்தைத் தேர்வுசெய்யவும்</translation>
 <translation id="3854967233147778866">இணையதளங்களைப் பிற மொழிகளில் மொழிபெயர்க்க உலாவியை அனுமதிக்கும்</translation>
 <translation id="3854976556788175030">பிரிண்ட் வெளியே வரும் ட்ரே நிரம்பியுள்ளது</translation>
@@ -3804,6 +3811,7 @@
 <translation id="4579453506923101210">இணைக்கப்பட்டுள்ள மொபைலை மறந்திடு</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" />ஐ அலைபரப்ப முடியவில்லை.</translation>
 <translation id="4579876313423027742">உலாவி அறிவிப்புகளைக் கண்டறிய, <ph name="LINK_BEGIN" />Chrome உலாவி அமைப்புகள்<ph name="LINK_END" /> என்பதற்குச் செல்லவும்</translation>
+<translation id="4580587929153007251">Google Password Managerரில் மீண்டும் உள்நுழையவும்</translation>
 <translation id="4580596421317071374">இந்தச் சாதனத்தில் <ph name="GOOGLE_PASSWORD_MANAGER" /> இல் கடவுச்சொற்கள் சேமிக்கப்படுகின்றன.</translation>
 <translation id="4580626299762849806">கடவுச்சொற்களை ஏற்ற முடியவில்லை. <ph name="FILENAME" /> ஃபைலைச் சரிபார்த்து அது சரியாக ஃபார்மேட் செய்யப்பட்டுள்ளதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4581774856936278355">Linuxசை மீட்டமைக்கும் பொழுது பிழை நேர்ந்தது</translation>
@@ -4485,6 +4493,7 @@
 <translation id="5268373933383932086">உங்கள் பக்கத்தில் உங்களுக்குப் பிடித்த தகவல்கள்</translation>
 <translation id="5269977353971873915">அச்சிடுதல் தோல்வி</translation>
 <translation id="5273806377963980154">தள URLலை மாற்றுக</translation>
+<translation id="5275084684151588738">பயனர் அகராதிகள்</translation>
 <translation id="5275338516105640560">சேமிக்கப்பட்ட பக்கக் குழுவிற்கான பட்டன்</translation>
 <translation id="5275352920323889391">நாய்</translation>
 <translation id="527605719918376753">ஒலி வேண்டாம்</translation>
@@ -4700,6 +4709,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{பின்(PIN) குறைந்தது 1 எழுத்தைக் கொண்டிருக்க வேண்டும்}other{பின்(PIN) குறைந்தது # எழுத்துகளைக் கொண்டிருக்க வேண்டும்}}</translation>
 <translation id="5474859849784484111">இப்போதே வைஃபையுடன் இணைத்து புதுப்பிப்பைப் பதிவிறக்குமாறு <ph name="MANAGER" /> கோருகிறது. அல்லது கட்டண நெட்வொர்க் இணைப்பின் மூலம் இதைப் பதிவிறக்கலாம் (கட்டணங்கள் விதிக்கப்படலாம்).</translation>
 <translation id="5481273127572794904">பல ஃபைல்களைத் தானாகவே பதிவிறக்க அனுமதி இல்லாத தளங்கள்</translation>
+<translation id="5481755802440890178">இதைத் தற்சமயம் மொழிபெயர்க்க முடியாது</translation>
 <translation id="5481941284378890518">அருகிலுள்ள பிரிண்டர்களைச் சேர்</translation>
 <translation id="5483785310822538350">ஃபைல் மற்றும் சாதன அணுகலை ரத்துசெய்</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை இன்றே திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}other{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை {NUM_DAYS} நாட்களுக்குள் திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}}</translation>
@@ -4933,6 +4943,7 @@
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" இலிருந்து தவறான செயல்பாடு நடந்தது எனப் புகாரளி</translation>
 <translation id="5696679855467848181">தற்போது உபயோகத்திலுள்ள PPD ஃபைல்: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ஈமோஜி தேர்வுக் கருவி</translation>
+<translation id="5698462638680260399">கடவுச்சொற்களைப் பயன்படுத்த உள்நுழையவும்</translation>
 <translation id="570043786759263127">Google Play ஆப்ஸ் மற்றும் சேவைகள்</translation>
 <translation id="5700836101007545240">உங்கள் நிர்வாகி இணைய இணைப்பைச் சேர்ப்பதை முடக்கியுள்ளார்</translation>
 <translation id="5701080607174488915">சேவையகத்திலிருந்து கொள்கையைப் பெறுவதில் பிழை.</translation>
@@ -4950,6 +4961,7 @@
 <translation id="5712153969432126546">சிலசமயம் ஆவணங்கள், ஒப்பந்தங்கள், படிவங்கள் போன்ற PDFகளை தளங்கள் வெளியிடும்</translation>
 <translation id="571222594670061844">அடையாளச் சரிபார்ப்புச் சேவைகளில் இருந்து வரும் உள்நுழைவு அறிவிப்புகளைத் தளங்கள் காட்டும்</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> உடன் இணைக்கப்பட்டது</translation>
+<translation id="5713960379473463904">இடைவெளி உள்ளீட்டு நடை</translation>
 <translation id="5715711091495208045">செருகுநிரல் புரோக்கர்: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">இயல்புநிலை தேடல் இன்ஜின்கள்</translation>
 <translation id="5719854774000914513">HID சாதனங்களுடன் தளங்கள் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
@@ -6372,6 +6384,7 @@
 <translation id="7069811530847688087">புதியதொரு வேறு விதமான பாதுகாப்பு விசை <ph name="WEBSITE" /> தளத்திற்குத் தேவைப்படக்கூடும்</translation>
 <translation id="7070484045139057854">இந்த நீட்டிப்பால் தளத் தரவைப் படிக்கவும் மாற்றவும் முடியும்</translation>
 <translation id="7072010813301522126">ஷார்ட்கட் பெயர்</translation>
+<translation id="7074066049407662839">கடவுச்சொற்களைச் சேமிக்க உள்நுழையவும்</translation>
 <translation id="7075513071073410194">RSA என்க்ரிப்ஷனுடன் PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL சான்றிதழ்களையும் அமைப்புகளையும் நிர்வகிக்கவும்</translation>
 <translation id="7076875098323397992">மேம்படுத்தலைத் தொடங்க முடியவில்லை</translation>
@@ -6903,6 +6916,7 @@
 <translation id="7625568159987162309">பல்வேறு தளங்களிலும் சேமித்த அனுமதிகளையும் தரவையும் காட்டு</translation>
 <translation id="7625823789272218216">இடதுபுறத்தில் புதிய பக்கம்</translation>
 <translation id="7628201176665550262">புதுப்பிக்கும் விகிதம்</translation>
+<translation id="7628392600831846024">குறியீட்டின் நடை</translation>
 <translation id="7629827748548208700">தாவல்: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> நிர்வகிக்கும் இந்தச் சாதனத்தில் ஒவ்வொரு முறையும் நீங்கள் உள்நுழைய வேண்டும்.</translation>
 <translation id="7631014249255418691">Linux ஆப்ஸ் &amp; ஃபைல்கள்  வெற்றிகரமாக காப்புப் பிரதி எடுக்கப்பட்டன</translation>
@@ -8201,6 +8215,7 @@
 <translation id="8850251000316748990">மேலும் காட்டு...</translation>
 <translation id="885246833287407341">API செயல்பாட்டுத் தருமதிப்புகள்</translation>
 <translation id="8853586775156634952">இந்தக் கார்டு இச்சாதனத்தில் மட்டும் சேமிக்கப்படும்</translation>
+<translation id="8854745870658584490">தேர்வுக்கான ஷார்ட்கட்</translation>
 <translation id="8855977033756560989">இந்த Chromebook எண்டர்பிரைஸ் சாதனம் Chrome எண்டர்பிரைஸ் மேம்படுத்தலுடன் தொகுப்பாக வருகிறது. நிறுவன அம்சங்களின் பலன்களைப் பெறுவதற்கு Google நிர்வாகிக் கணக்குடன் இந்தச் சாதனத்தைப் பதிவு செய்யுங்கள்.</translation>
 <translation id="8856028055086294840">ஆப்ஸையும் பக்கங்களையும் மீட்டெடுத்தல்</translation>
 <translation id="885701979325669005">சேமிப்பிடம்</translation>

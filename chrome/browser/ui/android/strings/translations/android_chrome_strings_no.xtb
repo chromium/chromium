@@ -748,6 +748,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5091199029769593641">Snart ser du artikler fra <ph name="SITE_NAME" /> når du åpner nye faner. Nettstedene du følger, lagres i Google-kontoen din. Du kan administrere dem i innstillingene for Discover.</translation>
 <translation id="5091249083535528968">Utvidede bruksdata</translation>
 <translation id="509429900233858213">Det oppsto en feil.</translation>
+<translation id="5099845111805573968">Når du velger nettsted for datamaskiner én gang, brukes innstillingen for nettstedet hver gang du besøker det</translation>
 <translation id="5102401324271069229">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
 <translation id="510275257476243843">1 time igjen</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5958275228015807058">Du finner filene og sidene dine under Nedlastinger</translation>
 <translation id="5962718611393537961">Trykk for å skjule</translation>
 <translation id="5964869237734432770">Stopp bildebeskrivelser</translation>
+<translation id="5966233851250124270">Chrome husker valget ditt</translation>
 <translation id="5979084224081478209">Kontrollér passordene</translation>
 <translation id="5995726099713306770">Vil du laste ned siden på nytt?</translation>
 <translation id="6000066717592683814">Behold Google</translation>

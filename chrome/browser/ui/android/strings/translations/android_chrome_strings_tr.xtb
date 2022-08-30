@@ -748,6 +748,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5091199029769593641">Yakında yeni sekme açtığınızda <ph name="SITE_NAME" /> kaynağından haberler göreceksiniz. Takip ettiğiniz siteler Google hesabınıza kaydedilir. Bunları Keşfet ayarlarından yönetebilirsiniz.</translation>
 <translation id="5091249083535528968">Genişletilmiş kullanım verileri</translation>
 <translation id="509429900233858213">Bir hata oluştu.</translation>
+<translation id="5099845111805573968">Masaüstü sitesini bir kez seçtiğinizde bu ayar her ziyaret ettiğinizde siteye uygulanır</translation>
 <translation id="5102401324271069229">Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir</translation>
 <translation id="510275257476243843">1 saat kaldı</translation>
 <translation id="5115811374190515607">Hedef: <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5958275228015807058">Dosyalarınızı ve sayfalarınızı İndirilenler bölümünde bulabilirsiniz</translation>
 <translation id="5962718611393537961">Daraltmak için dokunun</translation>
 <translation id="5964869237734432770">Resim açıklamasını durdur</translation>
+<translation id="5966233851250124270">Chrome seçiminizi hatırlar</translation>
 <translation id="5979084224081478209">Şifreleri kontrol et</translation>
 <translation id="5995726099713306770">Sayfa tekrar indirilsin mi?</translation>
 <translation id="6000066717592683814">Google kalsın</translation>

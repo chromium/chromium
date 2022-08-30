@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Файлыг засах}other{Файлуудыг засах}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
 <translation id="3291996639387199448">Түлхүүрийн чиглэл</translation>
+<translation id="3294437725009624529">Зочин</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
 <translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>

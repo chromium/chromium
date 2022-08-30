@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Hætta við að <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, óvirkt, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, upplýsingar</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3722341589402358578">Villa kom upp. Tiltekin atriði voru hugsanlega ekki færð í ruslið.</translation>
 <translation id="3726463242007121105">Ekki er hægt að opna þetta tæki vegna þess að ekki er stuðningur við skráakerfi þess.</translation>
 <translation id="3727148787322499904">Ef þessari stillingu er breytt hefur það áhrif á öll samnýtt netkerfi</translation>
 <translation id="3737576078404241332">Fjarlægja af hliðarstiku</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Ekki fjarlægja tækið alveg strax!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Ef tækið er fjarlægt á meðan það er í notkun kunna gögn að tapast. Bíddu þangað til aðgerðinni er lokið og aftengdu síðan tækið úr skráaforritinu.</translation>
-<translation id="5159560892333415631">Tæma ruslið</translation>
 <translation id="5163869187418756376">Mistókst að deila. Athugaðu nettenginguna og reyndu aftur síðar.</translation>
 <translation id="516592729076796170">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
 <translation id="5172749059808361023">Upplýsingar um takmörkun</translation>
@@ -965,7 +965,6 @@
 <translation id="9171921933192916600">Bókaormur</translation>
 <translation id="9172592259078059678">Gujarati umritun</translation>
 <translation id="9173120999827300720">Enska (bandarísk) með alþjóðlegu lyklaborði</translation>
-<translation id="9174050671906956834">Atriðum í ruslinu verður eytt endanlega eftir 30 daga.</translation>
 <translation id="9183302530794969518">Google skjöl</translation>
 <translation id="9189836632794948435">Kasakstanska</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> atriði dregin út.</translation>

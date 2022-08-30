@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Annuler <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, renseignements</translation>
 <translation id="3691184985318546178">Singhalais</translation>
+<translation id="3722341589402358578">Une erreur s'est produite. Il est possible que certains éléments n'aient pas été placés dans la corbeille.</translation>
 <translation id="3726463242007121105">Impossible d'ouvrir cet appareil, car son système de fichiers n'est pas compatible.</translation>
 <translation id="3727148787322499904">La modification de ce paramètre aura des conséquences sur tous les réseaux partagés</translation>
 <translation id="3737576078404241332">Retirer de la barre latérale</translation>
@@ -490,7 +491,6 @@
    Le retrait de votre appareil alors qu'il est en cours d'utilisation peut entraîner la perte de
    données. Veuillez attendre que l'opération soit terminée, puis éjecter le périphérique
    en utilisant l'application Fichiers.</translation>
-<translation id="5159560892333415631">Vider la corbeille</translation>
 <translation id="5163869187418756376">Échec du partage. Veuillez vérifier votre connexion et réessayer plus tard.</translation>
 <translation id="516592729076796170">Dvorak programmeur américain</translation>
 <translation id="5172749059808361023">Détails des restrictions</translation>
@@ -967,7 +967,6 @@
 <translation id="9171921933192916600">Dévoreur de livres</translation>
 <translation id="9172592259078059678">Gujarati (translittération)</translation>
 <translation id="9173120999827300720">Anglais (É.-U.) avec clavier international</translation>
-<translation id="9174050671906956834">Les éléments placés dans la corbeille sont supprimés définitivement après 30 jours.</translation>
 <translation id="9183302530794969518">Google Documents</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> éléments extraits.</translation>

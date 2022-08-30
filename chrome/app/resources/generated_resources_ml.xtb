@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">എന്തോ കുഴപ്പമുണ്ടായി. Linux ഭാഗികമായി മാത്രമേ അപ്‍ഗ്രേഡ് ചെയ്യാനാകൂ. കൂടുതൽ വിവരങ്ങൾക്ക് ലോഗ് അവലോകനം ചെയ്യുക. ഫയലുകൾ &gt; എന്റെ ഫയലുകൾ &gt; <ph name="LOG_FILE" /> എന്നതിൽ ലോഗുകൾ സംരക്ഷിച്ചിരിക്കുന്നു</translation>
 <translation id="1043818413152647937">ഈ ആപ്പുകളിൽ നിന്നുള്ള ഡാറ്റയും മായ്ക്കണോ?</translation>
 <translation id="1043824690776631483">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് അനുമതി ആവശ്യമാണ്. ഇതിൽ അനുചിതമായ ഉള്ളടക്കം ഉണ്ടായിരിക്കാം.</translation>
+<translation id="104419033123549300">കീമാപ്പ് ശൈലി</translation>
 <translation id="104710386808485638">Linux റീസ്റ്റാർട്ട് ചെയ്യണോ?</translation>
 <translation id="1047431265488717055">ലിങ്ക് ടെ&amp;ക്‌സ്റ്റ് പകർത്തുക</translation>
 <translation id="1048286738600630630">ഡിസ്‌പ്ലേകൾ</translation>
@@ -771,6 +772,7 @@
 <translation id="1721312023322545264">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് <ph name="NAME" /> എന്നയാളിൽ നിന്നുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="1722460139690167654">നിങ്ങളുടെ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ആണ്</translation>
 <translation id="1723824996674794290">&amp;പുതിയ വിൻഡോ</translation>
+<translation id="1724801751621173132">ഇൻപുട്ട് മോഡ്</translation>
 <translation id="1725562816265788801">ടാബ് സ്ക്രോൾ ചെയ്യൽ</translation>
 <translation id="1729533290416704613">നിങ്ങൾ ഓമ്‌നിബോക്‌സിൽ നിന്ന് തിരയുമ്പോൾ ദൃശ്യമാകുന്ന പേജും അത് നിയന്ത്രിക്കും.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ആപ്പുകൾ നീക്കംചെയ്യാൻ, ക്രമീകരണം &gt; Google Play Store &gt; Android മുൻഗണനകൾ മാനേജ് ചെയ്യുക &gt; ആപ്പുകൾ അല്ലെങ്കിൽ ആപ്പ് മാനേജർ എന്നതിലേക്ക് പോവുക. അൺ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ആഗ്രഹിക്കുന്ന ആപ്പിൽ ടാപ്പ് ചെയ്യുക (ആപ്പ് കണ്ടെത്താൻ വലത്തോട്ടോ ഇടത്തോട്ടോ സ്വൈപ്പ് ചെയ്യേണ്ടതായി വന്നേക്കാം). തുടർന്ന്, ഇൻസ്‌റ്റാൾ ചെയ്യുക എന്നതിലോ പ്രവർത്തനരഹിതമാക്കുക എന്നതിലോ ടാപ്പ് ചെയ്യുക.<ph name="END_PARAGRAPH1" /></translation>
@@ -1951,6 +1953,7 @@
 <translation id="2796740370559399562">കുക്കികൾ അനുവദിക്കുന്നത് തുടരുക</translation>
 <translation id="2798347533012571708">അപ്ഡേറ്റുകൾ നിലനിർത്തുക</translation>
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
+<translation id="2800309299477632167">ഇഷ്‌ടാനുസൃത കീമാപ്പ്</translation>
 <translation id="2800760947029405028">ഒരു ചിത്രം അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="2801954693771979815">സ്‌ക്രീൻ വലുപ്പം</translation>
 <translation id="2802557211515765772">മാനേജ് ചെയ്യുന്ന പ്രിന്ററുകളൊന്നുമില്ല.</translation>
@@ -2012,6 +2015,7 @@
 <translation id="2849767214114481738">നിങ്ങളുടെ PIN ചേർത്തു</translation>
 <translation id="2849936225196189499">ഗുരുതരം</translation>
 <translation id="2850541429955027218">തീം ചേർക്കുക</translation>
+<translation id="2850672011315104382">വിരാമചിഹ്ന ശൈലി</translation>
 <translation id="2851634818064021665">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് അനുമതി ആവശ്യമാണ്</translation>
 <translation id="2851728849045278002">എന്തോ കുഴപ്പമുണ്ടായി. കൂടുതൽ വിശദാംശങ്ങൾക്ക് ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="2852385257476173980">നിങ്ങൾ വെബിൽ ബ്രൗസ് ചെയ്യുമ്പോൾ, സന്ദർശിക്കുന്ന സൈറ്റുകളുടെ ഒരു ലിസ്റ്റ് ഇവിടെ ദൃശ്യമായേക്കാം</translation>
@@ -2508,6 +2512,7 @@
 <translation id="3359256513598016054">സര്‍‌ട്ടിഫിക്കറ്റ് നയ നിയന്ത്രണങ്ങള്‍‌</translation>
 <translation id="3360297538363969800">പ്രിന്റ് ചെയ്യൽ പരാജയപ്പെട്ടു. നിങ്ങളുടെ പ്രിന്റർ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}other{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}}</translation>
+<translation id="3361954577771524115">ആപ്പിൽ നിന്നുള്ളത്</translation>
 <translation id="3363202073972776113">പുതിയ ഈ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമായിരിക്കും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">നിങ്ങളുടെ അഡ്‌മിനിൽ നിന്ന്: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl അല്ലെങ്കിൽ Alt ഉപയോഗിക്കുക</translation>
@@ -3032,6 +3037,7 @@
 <translation id="3848547754896969219">&amp;അദൃശ്യ വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3851428669031642514">സുരക്ഷിതമല്ലാത്ത സ്‌ക്രിപ്‌റ്റുകൾ ലോഡ് ചെയ്യുക</translation>
+<translation id="3852215160863921508">ഇൻപുട്ട് സഹായം</translation>
 <translation id="3854599674806204102">ഒരു ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="3854967233147778866">വെബ്‌സൈറ്റുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യുന്നു</translation>
 <translation id="3854976556788175030">ഔട്ട്പുട്ട് ട്രേ നിറഞ്ഞിരിക്കുന്നു</translation>
@@ -3788,6 +3794,7 @@
 <translation id="4579453506923101210">കണക്റ്റ് ചെയ്ത ഫോൺ മറക്കുക</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> കാസ്‌റ്റ് ചെയ്യാനാവുന്നില്ല.</translation>
 <translation id="4579876313423027742">ബ്രൗസർ അറിയിപ്പുകൾക്ക്, <ph name="LINK_BEGIN" />Chrome ബ്രൗസർ ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക</translation>
+<translation id="4580587929153007251">Google Password Manager-ലേക്ക് തിരികെ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4580596421317071374">പാസ്‌വേഡുകൾ ഈ ഉപകരണത്തിലെ <ph name="GOOGLE_PASSWORD_MANAGER" /> എന്നതിൽ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="4580626299762849806">പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യാനാകുന്നില്ല. <ph name="FILENAME" /> പരിശോധിച്ച് അത് ശരിയായി ഫോർമാറ്റ് ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="4581774856936278355">Linux പുനഃസ്ഥാപിക്കുന്നതിൽ പിശക്</translation>
@@ -4469,6 +4476,7 @@
 <translation id="5268373933383932086">നിങ്ങളുടെ പേജ്, നിങ്ങളുടെ രീതി</translation>
 <translation id="5269977353971873915">പ്രിന്‍റ് ചെയ്യൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5273806377963980154">സെെറ്റ് URL എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="5275084684151588738">ഉപയോക്തൃ നിഘണ്ടുകൾ</translation>
 <translation id="5275338516105640560">സംരക്ഷിച്ച ടാബ് ഗ്രൂപ്പ് ബട്ടൺ</translation>
 <translation id="5275352920323889391">നായ</translation>
 <translation id="527605719918376753">ടാബ് മ്യൂട്ട് ചെയ്യുക</translation>
@@ -4684,6 +4692,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{പിന്നിൽ ഒരു പ്രതീകമെങ്കിലും ഉണ്ടാകണം}other{പിന്നിൽ # പ്രതീകങ്ങളെങ്കിലും ഉണ്ടാകണം}}</translation>
 <translation id="5474859849784484111">നിങ്ങൾ ഇപ്പോൾ വൈഫൈയിൽ കണക്റ്റ് ചെയ്‌ത് അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു. അല്ലെങ്കിൽ, മീറ്റർ ചെയ്‌ത കണക്ഷനിൽ നിന്ന് ഡൗൺലോഡ് ചെയ്യുക (നിരക്കുകൾ ബാധകമായേക്കാം).</translation>
 <translation id="5481273127572794904">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ അനുവാദമില്ല</translation>
+<translation id="5481755802440890178">സെലക്ഷൻ ഇപ്പോൾ വിവർത്തനം ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="5481941284378890518">സമീപത്തുള്ള പ്രിന്ററുകൾ ചേർക്കുക</translation>
 <translation id="5483785310822538350">ഫയലിലേക്കും ഉപകരണത്തിലേക്കുമുള്ള ആക്‌സസ് റദ്ദാക്കുക</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഈ <ph name="DEVICE_TYPE" /> ഇന്ന് തന്നെ തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. <ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}other{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് {NUM_DAYS} ദിവസത്തിനുള്ളിൽ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}}</translation>
@@ -4917,6 +4926,7 @@
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" എന്നതിൽ നിന്നുള്ള ‌ദുരുപയോഗം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="5696679855467848181">നിലവിലെ PPD ഉപയോഗത്തിലാണ്: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ഇമോജി പിക്കർ</translation>
+<translation id="5698462638680260399">പാസ്‌വേഡുകൾ ഉപയോഗിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="570043786759263127">Google Play ആപ്പുകളും സേവനങ്ങളും</translation>
 <translation id="5700836101007545240">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ ‘കണക്ഷൻ ചേർക്കൽ‘ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="5701080607174488915">സെർവറിൽ നിന്ന് നയം ലഭ്യമാക്കുമ്പോൾ പിശക് സംഭവിച്ചു.</translation>
@@ -4934,6 +4944,7 @@
 <translation id="5712153969432126546">സൈറ്റുകൾ ചിലപ്പോൾ ഡോക്യുമെന്റുകളും കരാറുകളും ഫോമുകളും പോലുള്ള PDF-കൾ പ്രസിദ്ധീകരിക്കുന്നു</translation>
 <translation id="571222594670061844">സൈറ്റുകൾക്ക് സമാന സേവനങ്ങളിൽ നിന്നുള്ള സൈൻ ഇൻ നിർദ്ദേശങ്ങൾ കാണിക്കാം</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> എന്നതിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>
+<translation id="5713960379473463904">സ്പെയ്‌സ് ഇൻപുട്ട് ശൈലി</translation>
 <translation id="5715711091495208045">പ്ലഗിൻ ബ്രോക്കർ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ഡിഫോൾട്ട് തിരയൽ യന്ത്രങ്ങൾ</translation>
 <translation id="5719854774000914513">HID ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാം</translation>
@@ -6359,6 +6370,7 @@
 <translation id="7069811530847688087"><ph name="WEBSITE" />-ന് പുതിയതോ മറ്റൊരു തരത്തിലുള്ളതോ ആയ സുരക്ഷാ കീ ആവശ്യമായേക്കാം</translation>
 <translation id="7070484045139057854">ഇതിന് സൈറ്റ് ഡാറ്റ വായിക്കാനും മാറ്റാനുമാവും</translation>
 <translation id="7072010813301522126">കുറുക്കുവഴിയുടെ പേര്</translation>
+<translation id="7074066049407662839">പാസ്‌വേഡുകൾ സംരക്ഷിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="7075513071073410194">RSA എന്‍‌ക്രിപ്‌ഷനോടുകൂടിയ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL സർട്ടിഫിക്കറ്റുകളും ക്രമീകരണവും മാനേജ് ചെയ്യുക</translation>
 <translation id="7076875098323397992">അപ്‌ഗ്രേഡ് ചെയ്യൽ ആരംഭിക്കാനാകുന്നില്ല</translation>
@@ -6890,6 +6902,7 @@
 <translation id="7625568159987162309">സൈറ്റുകളിൽ ഉടനീളം സംഭരിച്ചിട്ടുള്ള അനുമതികളും ഡാറ്റയും കാണുക</translation>
 <translation id="7625823789272218216">പുതിയ ടാബ് ഇടതുവശത്തേക്ക്</translation>
 <translation id="7628201176665550262">റീഫ്രഷ് നിരക്ക്</translation>
+<translation id="7628392600831846024">ചിഹ്ന ശൈലി</translation>
 <translation id="7629827748548208700">ടാബ്: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്, ഓരോ തവണയും നിങ്ങൾ സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="7631014249255418691">Linux ആപ്പുകളും ഫയലുകളും വിജയകരമായി ബാക്കപ്പെടുത്തു</translation>
@@ -8188,6 +8201,7 @@
 <translation id="8850251000316748990">കൂടുതൽ കാണുക...</translation>
 <translation id="885246833287407341">API ഫംഗ്‌ഷൻ സൂത്രവാക്യങ്ങൾ</translation>
 <translation id="8853586775156634952">ഈ ഉപകരണത്തിൽ മാത്രമേ ഈ കാർഡ് സംരക്ഷിക്കപ്പെടൂ</translation>
+<translation id="8854745870658584490">സെലക്ഷൻ കുറുക്കുവഴി</translation>
 <translation id="8855977033756560989">Chrome എന്റർപ്രൈസ് അപ്‌ഗ്രേഡ് ഉൾപ്പെടുത്തിയാണ് ഈ Chromebook എന്റർപ്രൈസ് ഉപകരണം വരുന്നത്. എന്റർപ്രൈസ് കാര്യക്ഷമതകൾ പ്രയോജനപ്പെടുത്താൻ, Google അഡ്‌മിൻ അക്കൗണ്ട് ഉപയോഗിച്ച് ഈ ഉപകരണം എൻറോൾ ചെയ്യുക.</translation>
 <translation id="8856028055086294840">ആപ്പുകളും പേജുകളും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="885701979325669005">സംഭരണം</translation>

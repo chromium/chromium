@@ -748,6 +748,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5091199029769593641">Pronto se che mostrarán historias de <ph name="SITE_NAME" /> cando abras unha pestana nova. Os sitios que segues gárdanse na túa conta de Google. Podes xestionalos na configuración de Discover.</translation>
 <translation id="5091249083535528968">Datos de uso ampliados</translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
+<translation id="5099845111805573968">Se seleccionas o sitio para ordenadores unha vez, este axuste aplicarase ao sitio cada vez que o visites.</translation>
 <translation id="5102401324271069229">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5115811374190515607">á seguinte localización: <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5958275228015807058">Atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
 <translation id="5962718611393537961">Toca para contraer</translation>
 <translation id="5964869237734432770">Descricións de imaxes: non</translation>
+<translation id="5966233851250124270">Chrome lembrará a túa elección</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="5995726099713306770">Queres descargar esta páxina de novo?</translation>
 <translation id="6000066717592683814">Manter Google</translation>

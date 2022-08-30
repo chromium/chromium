@@ -1017,6 +1017,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1925017091976104802">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" />, če želite prilepiti</translation>
 <translation id="1925021887439448749">Vnesite spletni naslov po meri</translation>
 <translation id="1925124445985510535">Varnostno preverjanje je bilo izvedeno ob <ph name="TIME" /></translation>
+<translation id="192564025059434655">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah s sistemom Windows. Preverite lahko, ali je na voljo nova različica.</translation>
 <translation id="1926339101652878330">Te nastavitve ureja pravilnik podjetja. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="1927632033341042996">Prst <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Koda PIN za zaklepanje zaslona</translation>
@@ -2524,6 +2525,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3348131053948466246">Predlagan je bil emodži. Pritisnite tipko za navzdol ali navzdol in Enter, če ga želite vnesti.</translation>
 <translation id="3349933790966648062">Količina uporabljenega pomnilnika</translation>
 <translation id="3353786022389205125">Vklopite »Prikaži zaklenjen zaslon pri preklopu iz stanja pripravljenosti« in poskusite znova.</translation>
+<translation id="3354768182971982851">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah Mac. Preverite lahko, ali je na voljo nova različica.</translation>
 <translation id="3354972872297836698">Seznanitve z napravo <ph name="DEVICE_NAME" /> ni bilo mogoče opraviti; izberite napravo, če želite poskusiti znova</translation>
 <translation id="3355936511340229503">Napaka povezave</translation>
 <translation id="3356469410714175391">(Virtualna kartica je omogočena)</translation>
@@ -2802,6 +2804,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3617891479562106823">Ozadja niso na voljo. Poskusite znova pozneje.</translation>
 <translation id="3619115746895587757">Kapučino</translation>
 <translation id="3619962278978697442">Izberite eno od možnosti pri vsaki prijavi.</translation>
+<translation id="3620136223548713675">Geolokacija</translation>
 <translation id="3621807901162200696">Pomagajte izboljšati funkcije sistema Chrome OS in njegovo delovanje</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikacijo}one{# aplikacijo}two{# aplikaciji}few{# aplikacije}other{# aplikacij}}</translation>
 <translation id="362333465072914957">Čakanje, da overitelj potrdil izda potrdilo</translation>
@@ -3131,6 +3134,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3918972485393593704">Sporoči podrobnosti Googlu</translation>
 <translation id="3919145445993746351">Če želite dostopati do razširitev v vseh računalnikih, vklopite sinhronizacijo</translation>
 <translation id="3919229493046408863">Izklop obvestila, ko so v bližini druge naprave</translation>
+<translation id="3919262972282962508">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah Mac. Obrnite se na skrbnika, da to aplikacijo posodobi na novo različico ali jo odstrani.</translation>
 <translation id="3919798653937160644">Strani, ki si jih ogledujete v tem oknu, ne bodo prikazane v zgodovini brskanja in v računalniku ne bodo pustile drugih sledi, na primer piškotkov, ko boste zaprli vsa odprta okna načina za goste. Datoteke, ki jih prenesete, se bodo ohranile.</translation>
 <translation id="3920504717067627103">Pravilniki potrdila</translation>
 <translation id="3920909973552939961">Ni dovoljena namestitev rutin za obravnavo plačil</translation>
@@ -5644,6 +5648,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Vnovični poskus</translation>
 <translation id="6374635887697228982">Želite prejemati popuste?</translation>
+<translation id="637642201764944055">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah s sistemom Linux. Obrnite se na skrbnika, da to aplikacijo posodobi na novo različico ali jo odstrani.</translation>
 <translation id="6377268785556383139">1 rezultat za »<ph name="SEARCH_TEXT" />«</translation>
 <translation id="6378392501584240055">Odpri v omrežjih Wi-Fi</translation>
 <translation id="6380143666419481200">Sprejmite in nadaljujte</translation>
@@ -6127,6 +6132,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6826872289184051766">Preverite prek USB-ja</translation>
 <translation id="6827121912381363404">Vsem razširitvam dovoli, da berejo in spreminjajo <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Vaše aplikacije in nastavitve se bodo sinhronizirale v vseh napravah s sistemom Chrome OS, v katerih ste prijavljeni z računom Google. Če vas zanimajo možnosti sinhronizacije brskalnika, odprite <ph name="LINK_BEGIN" />Chromove nastavitve<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah s sistemom Windows. Obrnite se na skrbnika, da to aplikacijo posodobi na novo različico ali jo odstrani.</translation>
 <translation id="6828153365543658583">Omeji prijavo na te uporabnike:</translation>
 <translation id="6828182567531805778">Če želite sinhronizirati podatke, vnesite geslo</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7985,6 +7991,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="863109444997383731">Spletnim mestom bo blokirano, da bi vas pozvala, ali vam smejo prikazovati obvestila. Če spletno mesto zahteva obvestila, bo v naslovni vrstici prikazan indikator blokiranosti.</translation>
 <translation id="8632104508818855045">Predhodno ste se odločili, da ne odobritie nobenih razširitev v <ph name="ORIGIN" />.</translation>
 <translation id="8633025649649592204">Nedavna dejavnost</translation>
+<translation id="8633979878370972178">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah s sistemom Linux. Preverite lahko, ali je na voljo nova različica.</translation>
 <translation id="8634348081024879304">Navidezne kartice ne bo več mogoče uporabljati v Googlu Pay. <ph name="BEGIN_LINK" />Preberite več o navideznih karticah<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Vnovično nalaganje ...</translation>
 <translation id="8636284842992792762">Inicializacija razširitev …</translation>

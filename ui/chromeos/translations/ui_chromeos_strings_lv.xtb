@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Atcelt: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tīkls numur <ph name="NETWORK_INDEX" /> no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nav aktivizēts, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos ir <ph name="SIGNAL_STRENGTH" />, detalizēta informācija</translation>
 <translation id="3691184985318546178">Singāļu</translation>
+<translation id="3722341589402358578">Radās kļūda. Iespējams, daži vienumi netika ievietoti atkritnē.</translation>
 <translation id="3726463242007121105">Šo ierīci nevar atvērt, jo tās failu sistēma netiek atbalstīta.</translation>
 <translation id="3727148787322499904">Nomainot šo iestatījumu, tiks ietekmēti visi koplietotie tīkli.</translation>
 <translation id="3737576078404241332">Noņemt no sānjoslas</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Vēl neatvienojiet ierīci!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Atvienojot ierīci lietošanas laikā, var tikt zaudēti dati. Lūdzu, uzgaidiet, līdz tiks pabeigta darbība, un pēc tam atvienojiet ierīci, izmantojot lietotni Faili.</translation>
-<translation id="5159560892333415631">Iztukšot atkritni</translation>
 <translation id="5163869187418756376">Kopīgošana neizdevās. Pārbaudiet savienojumu un vēlāk mēģiniet vēlreiz.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Informācija par ierobežojumiem</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Grāmattārps</translation>
 <translation id="9172592259078059678">Gudžaratu, transliterācija</translation>
 <translation id="9173120999827300720">Angļu (ASV), ar starptautisko tastatūru</translation>
-<translation id="9174050671906956834">Atkritnē esošie vienumi tiek neatgriezeniski dzēsti pēc 30 dienām.</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">Kazahu</translation>
 <translation id="9200427192836333033">Izvilkto vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>

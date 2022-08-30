@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Kulcs iránya</translation>
+<translation id="3294437725009624529">Vendég</translation>
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
 <translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>

@@ -276,6 +276,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="125220115284141797">Par défaut</translation>
 <translation id="1252987234827889034">Une erreur liée au profil est survenue</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
+<translation id="1257336506558170607">Exporter le certificat sélectionné</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
 <translation id="1259152067760398571">La vérification de sécurité s'est exécutée hier</translation>
 <translation id="1260451001046713751">Toujours autoriser les fenêtres contextuelles et les redirections de <ph name="HOST" /></translation>
@@ -325,6 +326,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1307165550267142340">Votre NIP a été créé</translation>
 <translation id="1307431692088049276">Ne plus me demander</translation>
 <translation id="1307559529304613120">Oups! Le système n'a pas réussi à stocker le jeton d'accès aux API à long terme pour cet appareil.</translation>
+<translation id="1312811472299082263">Créer à partir d'un guide Ansible ou d'un fichier de sauvegarde Crostini</translation>
 <translation id="1313405956111467313">Configuration automatique du mandataire</translation>
 <translation id="131364520783682672">Verrouillage des majuscules</translation>
 <translation id="1313660246522271310">Vous serez déconnecté de tous les sites, y compris dans les onglets ouverts</translation>
@@ -1098,6 +1100,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="2028449514182362831">Les fonctionnalités qui nécessitent l'accès aux capteurs de mouvement ne seront pas accessibles</translation>
 <translation id="202918510990975568">Entrez votre mot de passe pour configurer la sécurité et la connexion</translation>
 <translation id="2030455719695904263">Pavé tactile</translation>
+<translation id="2031385797619033640">Cliquez pour autoriser <ph name="EXTENSIONS_REQUESTING_ACCESS" /> à lire et à modifier <ph name="ORIGIN" /> :</translation>
 <translation id="2031639749079821948">Votre mot de passe est enregistré dans votre compte Google</translation>
 <translation id="2031914984822377766">Ajoutez vos <ph name="LINK_BEGIN" />langues de site Web favorites<ph name="LINK_END" />. La langue dans la partie supérieure de la liste sera utilisée pour effectuer les traductions.</translation>
 <translation id="2033758234986231162">Impossible de maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés.</translation>
@@ -1454,6 +1457,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2328561734797404498">Veuillez redémarrer votre appareil pour utiliser <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quand vous êtes en mode de navigation privée, les sites peuvent uniquement utiliser des témoins pour connaître votre activité de navigation sur leur propre site. Les témoins sont supprimés à la fin de la session de navigation privée.</translation>
 <translation id="2329597144923131178">Connectez-vous pour synchroniser favoris, historique, mots de passe et autres sur vos appareils.</translation>
+<translation id="2332115969598251205">Impossible de charger les appareils enregistrés avec <ph name="PRIMARY_EMAIL" />. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="2332131598580221120">Afficher dans la boutique</translation>
 <translation id="2332192922827071008">Ouvrir les préférences</translation>
 <translation id="2332515770639153015">Navigation sécurisée améliorée activée</translation>
@@ -1898,6 +1902,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2749836841884031656">Carte SIM</translation>
 <translation id="2749881179542288782">Vérifier la grammaire et l'orthographe</translation>
 <translation id="2753677631968972007">Gérer manuellement les autorisations des sites.</translation>
+<translation id="2754226775788136540">Recherche d'appareils à association rapide enregistrés avec <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">De la productivité au divertissement, trouvez les applications dont vous avez besoin dans la boutique Google Play Store. Vous pouvez installer des applications à tout moment.</translation>
 <translation id="2755349111255270002">Réinitialiser ce <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gérer les fonctionnalités d'accessibilité</translation>
@@ -2113,6 +2118,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">En attente…</translation>
 <translation id="2942581856830209953">Personnaliser cette page</translation>
+<translation id="2943268899142471972">Sélectionner un guide Ansible ou un fichier de sauvegarde Crostini</translation>
 <translation id="2944060181911631861">Envoyer les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Accéder aux fichiers</translation>
 <translation id="2946119680249604491">Ajouter une connexion</translation>
@@ -2953,6 +2959,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3784472333786002075">Les témoins sont des fichiers créés par les sites Web. Il y a deux types de témoins : les témoins directs sont ceux que créent les sites que vous visitez. Le site en question figure dans la barre d'adresse. Les témoins tiers sont ceux que créent d'autres sites. Ces sites possèdent certains types de contenu, comme des annonces et des images, que vous voyez sur les sites que vous visitez.</translation>
 <translation id="3785308913036335955">Afficher le raccourci des applications</translation>
 <translation id="3785727820640310185">Mots de passe enregistrés pour ce site</translation>
+<translation id="3787434344076711519">En attente de traduction</translation>
 <translation id="3788301286821743879">Impossible de lancer l'application de kiosque.</translation>
 <translation id="3788331399335602504">ces fichiers</translation>
 <translation id="3788401245189148511">Elle pourrait :</translation>
@@ -3236,6 +3243,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4036778507053569103">La politique téléchargée du serveur n'est pas valide.</translation>
 <translation id="4037084878352560732">Cheval</translation>
 <translation id="403725336528835653">L'essayer d'abord</translation>
+<translation id="4040041015953651705">Langue à partir de laquelle traduire</translation>
 <translation id="4040105702484676956">Effacer les données et les autorisations relatives aux sites pour le site <ph name="SITE_NAME" /> ainsi que l'application qui y est installée?</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="4043267180218562935">Taille du curseur</translation>
@@ -4041,6 +4049,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4838170306476614339">Affichez les photos, les fichiers multimédias et les notifications de votre téléphone</translation>
 <translation id="4838836835474292213">Accès en lecture au presse-papiers autorisé</translation>
 <translation id="4838907349371614303">Mot de passe mis à jour</translation>
+<translation id="4838958829619609362">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Enregistrer la &amp;vidéo sous...</translation>
 <translation id="4840096453115567876">Quitter le mode de navigation privée quand même?</translation>
 <translation id="4841741146571978176">Une machine virtuelle requise n'existe pas. Veuillez essayer de configurer <ph name="VM_TYPE" /> pour continuer.</translation>
@@ -4812,6 +4821,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="558918721941304263">Chargement des applications en cours…</translation>
 <translation id="5590418976913374224">Faire jouer un son au démarrage de l'appareil</translation>
 <translation id="5592595402373377407">Données insuffisantes pour l'instant.</translation>
+<translation id="5594899180331219722">Sélectionner un fichier</translation>
 <translation id="5595307023264033512">Espace de stockage total utilisé par les sites : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5596627076506792578">Autres options</translation>
@@ -5044,6 +5054,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5834581999798853053">Il reste environ <ph name="TIME" /> min</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Enregistrement de la caméra ou du micro</translation>
 <translation id="583673505367439042">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil</translation>
+<translation id="5836999627049108525">Langue à partir de laquelle traduire</translation>
 <translation id="583756221537636748">Cas</translation>
 <translation id="5840658767386246331">Rechercher avec Google</translation>
 <translation id="5840680448799937675">Les fichiers seront toujours partagés hors ligne</translation>
@@ -5554,6 +5565,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6318944945640833942">Impossible de détecter une imprimante. Veuillez entrer l'adresse de l'imprimante à nouveau.</translation>
 <translation id="6322370287306604163">Déverrouiller plus rapidement avec une empreinte digitale</translation>
 <translation id="6322559670748154781">Ce fichier n'est pas souvent téléchargé et a été bloqué par la protection avancée</translation>
+<translation id="6324083483652497048">Cliquez pour autoriser ces extensions à lire et à modifier <ph name="ORIGIN" /> :</translation>
 <translation id="6324916366299863871">Modifier un raccourci</translation>
 <translation id="6325191661371220117">Désactiver le lancement automatique</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
@@ -6586,6 +6598,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7343372807593926528">Veuillez décrire le problème avant d'envoyer des commentaires.</translation>
 <translation id="7344585835349671209">Gérer les certificats HTTPS/SSL sur votre appareil</translation>
 <translation id="7345706641791090287">Confirmer votre mot de passe</translation>
+<translation id="7345919885156673810">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="7347452120014970266">Cette action effacera toutes les données et tous les témoins stockés par <ph name="ORIGIN_NAME" /> et ses applications installées</translation>
 <translation id="7347751611463936647">Pour utiliser cette extension, entrez « <ph name="EXTENSION_KEYWORD" /> », appuyez sur TAB, puis entrez votre commande ou votre recherche.</translation>

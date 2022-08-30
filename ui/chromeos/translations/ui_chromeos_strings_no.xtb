@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Avbryt <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktivert, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, detaljer</translation>
 <translation id="3691184985318546178">Singalesisk</translation>
+<translation id="3722341589402358578">Det oppsto en feil. Noen elementer er kanskje ikke lagt i papirkurven.</translation>
 <translation id="3726463242007121105">Denne enheten kan ikke åpnes fordi den har et filsystem som ikke støttes.</translation>
 <translation id="3727148787322499904">Endringer i denne innstillingen påvirker alle delte nettverk</translation>
 <translation id="3737576078404241332">Fjern fra sidefeltet</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Ikke fjern enheten ennå.<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Fjerning av enheten mens den er i bruk kan resultere i tap av data. Vent til handlingen er utført før du mater ut enheten ved bruk av Filer-appen.</translation>
-<translation id="5159560892333415631">Tøm papirkurven</translation>
 <translation id="5163869187418756376">Delingen mislyktes. Sjekk tilkoblingen din og prøv på nytt senere.</translation>
 <translation id="516592729076796170">Amerikansk programmeringstastatur (Dvorak)</translation>
 <translation id="5172749059808361023">Begrensningsdetaljer</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Lesehest</translation>
 <translation id="9172592259078059678">Gujarati, translitterasjon</translation>
 <translation id="9173120999827300720">Engelsk (USA) med internasjonalt tastatur</translation>
-<translation id="9174050671906956834">Elementer i papirkurven slettes for godt etter 30 dager.</translation>
 <translation id="9183302530794969518">Google Dokumenter</translation>
 <translation id="9189836632794948435">Kasakhisk</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementer er pakket ut.</translation>

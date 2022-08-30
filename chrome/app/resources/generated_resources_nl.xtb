@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">Er is iets misgegaan. Linux is misschien maar gedeeltelijk geüpgraded. Bekijk de logboeken voor meer informatie. De logboeken zijn opgeslagen in Bestanden &gt; Mijn bestanden &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Ook gegevens van deze apps wissen?</translation>
 <translation id="1043824690776631483">Je hebt toestemming nodig om deze site te bezoeken. De site kan ongepaste content bevatten.</translation>
+<translation id="104419033123549300">Stijl van toetsenindeling</translation>
 <translation id="104710386808485638">Linux opnieuw starten?</translation>
 <translation id="1047431265488717055">Lin&amp;ktekst kopiëren</translation>
 <translation id="1048286738600630630">Schermen</translation>
@@ -772,6 +773,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1721312023322545264">Je hebt rechten van <ph name="NAME" /> nodig om deze site te bezoeken</translation>
 <translation id="1722460139690167654">Je <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> wordt beheerd<ph name="END_LINK" /> door <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nieuw venster</translation>
+<translation id="1724801751621173132">Invoermodus</translation>
 <translation id="1725562816265788801">Tabbladstrook scrollen</translation>
 <translation id="1729533290416704613">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je vanuit de omnibox zoekt.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Als je apps wilt verwijderen, ga je naar Instellingen &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer en tik je op de app die je wilt verwijderen (je moet mogelijk naar rechts of links swipen om de app te vinden). Tik vervolgens op Verwijderen of Uitzetten.<ph name="END_PARAGRAPH1" /></translation>
@@ -1952,6 +1954,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2796740370559399562">Cookies blijven toestaan</translation>
 <translation id="2798347533012571708">Updates behouden</translation>
 <translation id="2799223571221894425">Opnieuw starten</translation>
+<translation id="2800309299477632167">Aangepaste toetsenindeling</translation>
 <translation id="2800760947029405028">Een afbeelding uploaden</translation>
 <translation id="2801954693771979815">Schermgrootte</translation>
 <translation id="2802557211515765772">Er zijn geen beheerde printers.</translation>
@@ -2013,6 +2016,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2849767214114481738">Je pincode is toegevoegd</translation>
 <translation id="2849936225196189499">Kritiek</translation>
 <translation id="2850541429955027218">Thema toevoegen</translation>
+<translation id="2850672011315104382">Stijl van interpunctie</translation>
 <translation id="2851634818064021665">Je hebt rechten nodig om deze site te bezoeken</translation>
 <translation id="2851728849045278002">Er is iets misgegaan. Klik voor meer informatie.</translation>
 <translation id="2852385257476173980">Hier kan een lijst met door jou bezochte sites worden getoond als je browst op internet</translation>
@@ -2509,6 +2513,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3359256513598016054">Beleidsbeperkingen voor certificaat</translation>
 <translation id="3360297538363969800">Afdrukken is mislukt. Controleer je printer en probeer het opnieuw.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deelt <ph name="ATTACHMENTS" /> met jou.}other{<ph name="DEVICE_NAME" /> deelt <ph name="ATTACHMENTS" /> met jou.}}</translation>
+<translation id="3361954577771524115">Uit de app</translation>
 <translation id="3363202073972776113">Dit nieuwe profiel wordt beheerd door je organisatie. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Van je beheerder: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Gebruik Ctrl of Alt</translation>
@@ -3033,6 +3038,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3848547754896969219">Openen in &amp;incognitovenster</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3851428669031642514">Onveilige scripts laden</translation>
+<translation id="3852215160863921508">Invoerondersteuning</translation>
 <translation id="3854599674806204102">Kies een optie</translation>
 <translation id="3854967233147778866">Aanbieden websites in andere talen te vertalen</translation>
 <translation id="3854976556788175030">De uitvoerlade is vol</translation>
@@ -3269,6 +3275,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4062561150282203854">De apps, instellingen en meer van je <ph name="DEVICE_TYPE" /> synchroniseren</translation>
 <translation id="4065876735068446555">Het is mogelijk dat je de inlogpagina moet bezoeken van het netwerk dat je gebruikt (<ph name="NETWORK_ID" />).</translation>
 <translation id="4066207411788646768">Controleer je verbinding om beschikbare printers in je netwerk te bekijken</translation>
+<translation id="4066945815577305767">Wachtwoorden in time-out</translation>
 <translation id="4068776064906523561">Opgeslagen vingerafdrukken</translation>
 <translation id="407173827865827707">Bij klik</translation>
 <translation id="4072701974556190758">Het wachtwoord wordt opgeslagen in je Google-account, <ph name="ACCOUNT" />. Je hoeft het niet te onthouden.</translation>
@@ -3788,6 +3795,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4579453506923101210">Verbonden telefoon vergeten</translation>
 <translation id="4579581181964204535">Kan <ph name="HOST_NAME" /> niet casten.</translation>
 <translation id="4579876313423027742">Ga voor browsermeldingen naar <ph name="LINK_BEGIN" />Chrome-browserinstellingen<ph name="LINK_END" /></translation>
+<translation id="4580587929153007251">Log weer in bij Google Wachtwoordmanager</translation>
 <translation id="4580596421317071374">Wachtwoorden worden opgeslagen in <ph name="GOOGLE_PASSWORD_MANAGER" /> op dit apparaat.</translation>
 <translation id="4580626299762849806">Kan wachtwoorden niet importeren. Check of <ph name="FILENAME" /> de juiste indeling heeft.</translation>
 <translation id="4581774856936278355">Fout bij het herstellen van Linux</translation>
@@ -4468,6 +4476,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5268373933383932086">Jouw pagina, jouw manier</translation>
 <translation id="5269977353971873915">Afdrukken mislukt</translation>
 <translation id="5273806377963980154">Site-URL bewerken</translation>
+<translation id="5275084684151588738">Gebruikerswoordenboeken</translation>
 <translation id="5275338516105640560">Knop Tabbladgroep opgeslagen</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605719918376753">Tabblad dempen</translation>
@@ -4683,6 +4692,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{De pincode moet ten minste 1 teken bevatten}other{De pincode moet ten minste # tekens bevatten}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).</translation>
 <translation id="5481273127572794904">Geen toestemming om automatisch meerdere bestanden te downloaden</translation>
+<translation id="5481755802440890178">De selectie kan op dit moment niet worden vertaald</translation>
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
 <translation id="5483785310822538350">Toegang tot bestand en apparaat intrekken</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}}</translation>
@@ -4913,6 +4923,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5696143504434933566">Misbruik melden vanuit '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="5696679855467848181">PPD-bestand dat momenteel wordt gebruikt: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emoji-kiezer</translation>
+<translation id="5698462638680260399">Log in om wachtwoorden te gebruiken</translation>
 <translation id="570043786759263127">Google Play-apps en -services</translation>
 <translation id="5700836101007545240">Verbinding toevoegen is uitgezet door je beheerder</translation>
 <translation id="5701080607174488915">Fout bij het ophalen van beleid van de server.</translation>
@@ -4930,6 +4941,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5712153969432126546">Sites publiceren soms pdf's, zoals documenten, contracten en formulieren</translation>
 <translation id="571222594670061844">Sites kunnen inlogprompts van identiteitsservices tonen</translation>
 <translation id="5713158217420111469">Verbonden met <ph name="DEVICE" /></translation>
+<translation id="5713960379473463904">Stijl van spatie-invoer</translation>
 <translation id="5715711091495208045">Plug-inbroker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standaardzoekmachines</translation>
 <translation id="5719854774000914513">Sites kunnen vragen of ze verbinding mogen maken met HID-apparaten</translation>
@@ -5569,6 +5581,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6335920438823100346">Als je Linux wilt starten, vereist <ph name="MANAGER" /> dat je een back-up maakt van je gegevens en dat je deze Chromebook terugzet naar de fabrieksinstellingen.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgezet. Hierdoor wordt je <ph name="DEVICE_TYPE" /> over 24 uur gereset. Maak een back-up van de bestanden die je wilt houden.</translation>
 <translation id="6338402296920404442">Overweeg <ph name="FILENAME" /> te verwijderen, zodat anderen die dit apparaat gebruiken je wachtwoorden niet kunnen zien.</translation>
+<translation id="6338968693068997776">USB-apparaat toevoegen</translation>
 <translation id="6338981933082930623">Alle sites kunnen alle soorten advertenties aan je laten zien</translation>
 <translation id="6339668969738228384">Een nieuw profiel maken voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetafdrukprotocol (IPPS)</translation>
@@ -6166,6 +6179,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6903907808598579934">Synchronisatie aanzetten</translation>
 <translation id="6904344821472985372">Toegang tot bestand intrekken</translation>
 <translation id="6904655473976120856">Druk op de app-knop om af te sluiten</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{Google Wachtwoordmanager wordt na 1 minuut inactiviteit vergrendeld om je wachtwoorden te beschermen}other{Google Wachtwoordmanager wordt na {NUM_MINS} minuten inactiviteit vergrendeld om je wachtwoorden te beschermen}}</translation>
 <translation id="6909422577741440844">Wil je van dit apparaat ontvangen?</translation>
 <translation id="6910211073230771657">Verwijderd</translation>
 <translation id="691106080621596509">Hiermee wis je alle gegevens en cookies die zijn opgeslagen door <ph name="SITE_GROUP_NAME" />, eventuele onderliggende sites en de bijbehorende geïnstalleerde app</translation>
@@ -6349,6 +6363,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7069811530847688087"><ph name="WEBSITE" /> vereist mogelijk een nieuwere of een ander type beveiligingssleutel</translation>
 <translation id="7070484045139057854">Hiermee kun je sitegegevens lezen en wijzigen</translation>
 <translation id="7072010813301522126">Naam van snelkoppeling</translation>
+<translation id="7074066049407662839">Log in om wachtwoorden op te slaan</translation>
 <translation id="7075513071073410194">PKCS nr. 1 MD5 met RSA-encryptie</translation>
 <translation id="7075625805486468288">HTTPS/SSL-certificaten en -instellingen beheren</translation>
 <translation id="7076875098323397992">Kan upgrade niet starten</translation>
@@ -6880,6 +6895,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7625568159987162309">Rechten en op sites opgeslagen gegevens bekijken</translation>
 <translation id="7625823789272218216">Nieuw tabblad aan de linkerkant</translation>
 <translation id="7628201176665550262">Vernieuwingssnelheid</translation>
+<translation id="7628392600831846024">Stijl van symbolen</translation>
 <translation id="7629827748548208700">Tabblad: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Dit apparaat wordt beheerd door <ph name="MANAGER" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
@@ -8003,6 +8019,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8688672835843460752">Beschikbaar</translation>
 <translation id="8690129572193755009">Sites kunnen vragen of ze protocollen mogen verwerken</translation>
 <translation id="8692107307702113268">Het wachtwoord is langer dan 1000 tekens</translation>
+<translation id="8694596275649352090">Vergrendelen in de slaapstand of als de klep is gesloten</translation>
 <translation id="8695139659682234808">Ouderlijk toezicht toevoegen na het instellen</translation>
 <translation id="8695825812785969222">&amp;Locatie openen...</translation>
 <translation id="8698269656364382265">Swipe vanaf de linkerkant om terug te gaan naar het vorige scherm.</translation>
@@ -8051,6 +8068,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8732844209475700754">Meer instellingen die verband houden met privacy, beveiliging en gegevensverzameling</translation>
 <translation id="8734073480934656039">Door deze instelling aan te zetten, kunnen kiosk-apps tijdens het starten automatisch worden gestart.</translation>
 <translation id="8734674662128056360">Cookies van derden blokkeren</translation>
+<translation id="8734755021067981851">Er zijn geen USB-apparaten aangesloten.</translation>
 <translation id="873545264931343897">Wanneer het updaten van <ph name="PLUGIN_NAME" /> is voltooid, laad je de pagina opnieuw om de plug-in te activeren</translation>
 <translation id="8736288397686080465">Deze site is geüpdatet op de achtergrond.</translation>
 <translation id="8737709691285775803">Shill</translation>
@@ -8176,6 +8194,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8850251000316748990">Meer bekijken…</translation>
 <translation id="885246833287407341">Argumenten voor API-functie</translation>
 <translation id="8853586775156634952">Deze pas wordt alleen op dit apparaat opgeslagen</translation>
+<translation id="8854745870658584490">Sneltoets voor selectie</translation>
 <translation id="8855977033756560989">Dit Chromebook Enterprise-apparaat wordt geleverd met de Chrome Enterprise Upgrade. Schrijf dit apparaat in met een Google-beheerdersaccount om gebruik te maken van alle zakelijke mogelijkheden.</translation>
 <translation id="8856028055086294840">Apps en pagina's herstellen</translation>
 <translation id="885701979325669005">Opslag</translation>

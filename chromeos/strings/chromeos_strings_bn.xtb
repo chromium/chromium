@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{ফাইলটি এডিট করুন}one{ফাইলগুলি এডিট করুন}other{ফাইলগুলি এডিট করুন}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">মূল দিকনির্দেশ</translation>
+<translation id="3294437725009624529">অতিথি</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>

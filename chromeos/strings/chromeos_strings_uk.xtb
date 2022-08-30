@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Редагувати файл}one{Редагувати файли}few{Редагувати файли}many{Редагувати файли}other{Редагувати файли}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3291996639387199448">Напрямок ключа</translation>
+<translation id="3294437725009624529">Гість</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>

@@ -313,7 +313,7 @@
 <translation id="3689865792480713551">取消 <ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3691184985318546178">錫蘭文</translation>
-<translation id="3722341589402358578">發生錯誤，某些項目可能尚未移至垃圾桶。</translation>
+<translation id="3722341589402358578">發生錯誤，部分項目可能未移至垃圾桶。</translation>
 <translation id="3726463242007121105">這部裝置所用的檔案系統不受支援，因此系統無法開啟這部裝置。</translation>
 <translation id="3727148787322499904">變更此設定將會影響所有共用網絡</translation>
 <translation id="3737576078404241332">從側欄中移除</translation>
@@ -490,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />請先不要移除您的裝置！<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    您的裝置仍在運作中，現在移除裝置可能會導致數據遺失。請耐心等候操作結束，再使用「檔案」應用程式退出裝置。</translation>
-<translation id="5159560892333415631">清空垃圾桶</translation>
 <translation id="5163869187418756376">共用失敗。請檢查連線狀態，然後再試一次。</translation>
 <translation id="516592729076796170">Programmer Dvorak 美式</translation>
 <translation id="5172749059808361023">限制條件詳情</translation>
@@ -968,7 +967,6 @@
 <translation id="9171921933192916600">書蟲</translation>
 <translation id="9172592259078059678">古吉拉特文 (音譯)</translation>
 <translation id="9173120999827300720">英文 (美國)，國際鍵盤</translation>
-<translation id="9174050671906956834">垃圾桶中的項目會在 30 天後永久刪除。</translation>
 <translation id="9183302530794969518">Google 文件</translation>
 <translation id="9189836632794948435">哈薩克文</translation>
 <translation id="9200427192836333033">已解壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>

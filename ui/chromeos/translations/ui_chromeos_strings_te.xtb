@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">వినైల్ రికార్డ్</translation>
 <translation id="3290356915286466215">అసురక్షితమైనది</translation>
 <translation id="3291218047831493686">SIM లాక్ సెట్టింగ్‌ను మార్చడానికి ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయండి</translation>
+<translation id="3293023191599135697">WEP నెట్‌వర్క్‌లకు సపోర్ట్ లేదు</translation>
 <translation id="3295357220137379386">పరికరం బిజీగా ఉంది</translation>
 <translation id="3296763833017966289">జార్జియన్</translation>
 <translation id="3307875152560779385">ఉక్రెయినియన్</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />మీ పరికరాన్ని వెంటనే తీసివేయవద్దు!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        మీ పరికరం వినియోగంలో ఉన్నప్పుడు తీసివేస్తే డేటా నష్టం కలగవచ్చు. దయచేసి చర్య పూర్తయ్యే వరకు వేచి ఉండి ఆపై 'ఫైళ్లు' యాప్‌ను ఉపయోగించి పరికరాన్ని తీసివేయండి.</translation>
-<translation id="5159560892333415631">ట్రాష్‌ను ఖాళీ చేయి</translation>
 <translation id="5163869187418756376">షేర్ చేయడం విఫలమైంది. మీ కనెక్షన్‌ను చెక్ చేసి, తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="516592729076796170">US ప్రోగ్రామర్ డ్వోరక్</translation>
 <translation id="5172749059808361023">నియంత్రణ వివరాలు</translation>
@@ -967,7 +967,6 @@
 <translation id="9171921933192916600">పుస్తకాలను తినే పురుగు</translation>
 <translation id="9172592259078059678">గుజరాతీ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="9173120999827300720">అంతర్జాతీయ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
-<translation id="9174050671906956834">ట్రాష్‌లోని ఐటెమ్‌లు 30 రోజుల తర్వాత శాశ్వతంగా తొలగించబడతాయి.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">కజక్</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు సంగ్రహించబడ్డాయి.</translation>

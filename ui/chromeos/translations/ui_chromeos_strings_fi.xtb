@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Peru <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ei aktivoitu, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, tiedot</translation>
 <translation id="3691184985318546178">sinhala</translation>
+<translation id="3722341589402358578">Tapahtui virhe. Kaikkia kohteita ei välttämättä poistettu.</translation>
 <translation id="3726463242007121105">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tueta.</translation>
 <translation id="3727148787322499904">Tämän asetuksen muuttaminen vaikuttaa kaikkiin jaettuihin verkkoihin.</translation>
 <translation id="3737576078404241332">Poista sivupalkista</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Älä irrota laitettasi vielä!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Jos irrotat laitteen sen ollessa käytössä, voit menettää tietoja. Odota, kunnes toiminto on suoritettu, ja poista laite sitten käytöstä Tiedostot-sovelluksen kautta.</translation>
-<translation id="5159560892333415631">Tyhjennä roskakori</translation>
 <translation id="5163869187418756376">Jakaminen epäonnistui. Tarkista internetyhteytesi ja yritä myöhemmin uudelleen.</translation>
 <translation id="516592729076796170">US, Dvorak ohjelmoijille</translation>
 <translation id="5172749059808361023">Rajoitustiedot</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Lukutoukka</translation>
 <translation id="9172592259078059678">translitteroitu gudžarati</translation>
 <translation id="9173120999827300720">englanti (Yhdysvallat), kansainvälinen näppäimistö</translation>
-<translation id="9174050671906956834">Roskakorin kohteet poistetaan pysyvästi 30 päivän kuluttua.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">kazakki</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> kohdetta noudettu</translation>

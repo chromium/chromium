@@ -312,6 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> işlemi iptal edilecek.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> ağdan <ph name="NETWORK_INDEX" />., <ph name="NETWORK_NAME" />, Etkinleştirilmemiş, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Ayrıntılar</translation>
 <translation id="3691184985318546178">Seylanca</translation>
+<translation id="3722341589402358578">Bir hata oluştu. Bazı öğeler çöp kutusuna gönderilmemiş olabilir.</translation>
 <translation id="3726463242007121105">Bu cihaz, dosya sistemi desteklenmediğinden açılamıyor.</translation>
 <translation id="3727148787322499904">Bu ayarı değiştirmek tüm paylaşılan ağları etkiler</translation>
 <translation id="3737576078404241332">Kenar çubuğundan kaldır</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Cihazınızı henüz kaldırmayın!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Cihazınızı kullanımdayken kaldırırsanız veri kaybına uğrayabilirsiniz. Lütfen işlem bitinceye kadar bekleyin, daha sonra Dosyalar uygulamasını kullanarak cihazı çıkarın.</translation>
-<translation id="5159560892333415631">Çöp Kutusunu Boşalt</translation>
 <translation id="5163869187418756376">Paylaşılamadı. Bağlantınızı kontrol edin ve daha sonra tekrar deneyin.</translation>
 <translation id="516592729076796170">ABD Programcı Dvorak</translation>
 <translation id="5172749059808361023">Kısıtlama ayrıntıları</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Kitap kurdu</translation>
 <translation id="9172592259078059678">Guceratça Harf Çevirisi</translation>
 <translation id="9173120999827300720">Uluslararası klavye ile İngilizce (ABD)</translation>
-<translation id="9174050671906956834">Çöp kutusundaki öğeler 30 gün sonunda tamamıyla silinir.</translation>
 <translation id="9183302530794969518">Google Dokümanlar</translation>
 <translation id="9189836632794948435">Kazakça</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> öğe çıkarıldı.</translation>

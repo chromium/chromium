@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára védett tartalmak lejátszását (ajánlott)</translation>
 <translation id="2146738493024040262">Azonnali alkalmazás megnyitása</translation>
 <translation id="2148716181193084225">Ma</translation>
+<translation id="2155988908301433309">Mindig a mobilwebhely megtekintése</translation>
 <translation id="2182457891543959921">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára 3D-s térkép létrehozását az Ön környezetéről, valamint a kamera pozíciójának követését (ajánlott)</translation>
 <translation id="2212565012507486665">Cookie-k engedélyezése</translation>
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2687403674020088961">Az összes cookie letiltása (nem ajánlott)</translation>
+<translation id="2692299144678073135">Engedélyezheti, hogy a kapcsolódó webhelyek emlékezzenek Önre a webhelyeken</translation>
 <translation id="2704606927547763573">Másolt</translation>
 <translation id="2713106313042589954">Kamera kikapcsolása</translation>
 <translation id="2717722538473713889">E-mail-címek</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Cím</translation>
 <translation id="4008040567710660924">Adott webhely cookie-jainak engedélyezése.</translation>
 <translation id="4046123991198612571">Következő szám</translation>
+<translation id="4048876521107516222">A kapcsolódó webhelyek cookie-k használatával segítenek például a bejelentkezésben.</translation>
 <translation id="4149994727733219643">Weboldalak egyszerűsített nézete</translation>
 <translation id="4165986682804962316">Webhelybeállítások</translation>
 <translation id="4169549551965910670">Csatlakoztatva USB-eszközhöz</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">A webhelyek nem kérdezhetnek rá, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="5516455585884385570">Értesítési beállítások megnyitása</translation>
 <translation id="5527111080432883924">Kérdezzen rá, mielőtt engedélyezi a webhelyeknek, hogy megtekintsék a vágólapon található szövegeket és képeket (ajánlott)</translation>
+<translation id="5553273073880784901">Mindig az asztali webhely megtekintése</translation>
 <translation id="5553374991681107062">Legutóbbi</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5922853908706496913">Képernyő megosztása</translation>
+<translation id="5922967540311291836">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Kijelölés törlése</translation>
 <translation id="7846621471902887024">Ki fog jelentkezni az összes webhelyről.</translation>
 <translation id="7882806643839505685">Egy adott webhely hangjának engedélyezése.</translation>
+<translation id="789180354981963912">Harmadik felektől származó cookie-k letiltása Inkognitó módban:</translation>
 <translation id="7940722705963108451">Emlékeztessen</translation>
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
 <translation id="7999064672810608036">Biztosan törli a webhellyel kapcsolatos összes helyi adatot (a cookie-kkal együtt), és visszaállítja az összes engedélyt?</translation>

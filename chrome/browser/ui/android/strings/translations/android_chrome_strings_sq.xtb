@@ -748,6 +748,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5091199029769593641">Së shpejti do të shikosh histori nga <ph name="SITE_NAME" /> kur të hapësh një skedë të re. Sajtet që ndjek ruhen në llogarinë tënde të Google. Mund t'i menaxhosh te cilësimet e "Zbulo".</translation>
 <translation id="5091249083535528968">Të dhënat e zgjeruara të përdorimit</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
+<translation id="5099845111805573968">Kur zgjedh një herë sajtin për desktop, cilësimi zbatohet te sajti sa herë që e viziton atë</translation>
 <translation id="5102401324271069229">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë URL-të, duke përfshirë pjesë të përmbajtjes së faqeve te "Shfletimi i sigurt"</translation>
 <translation id="510275257476243843">1 orë e mbetur</translation>
 <translation id="5115811374190515607">te <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5958275228015807058">Gjej skedarët dhe faqet e tua te "Shkarkimet"</translation>
 <translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
+<translation id="5966233851250124270">Chrome do ta kujtojë këtë zgjedhje</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
 <translation id="5995726099713306770">Të shkarkohet faqja sërish?</translation>
 <translation id="6000066717592683814">Mbaj Google</translation>

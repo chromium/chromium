@@ -748,6 +748,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5091199029769593641">Brzy se vám po otevření nové karty začnou zobrazovat články z webu <ph name="SITE_NAME" />. Weby, které sledujete, se ukládají do vašeho účtu Google. Můžete je spravovat v nastavení funkce Objevit.</translation>
 <translation id="5091249083535528968">Rozšířené údaje o využití</translation>
 <translation id="509429900233858213">Došlo k chybě.</translation>
+<translation id="5099845111805573968">Když jednou vyberete web pro počítače, toto nastavení bude na web použito při každé návštěvě</translation>
 <translation id="5102401324271069229">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat adresy URL, včetně částí obsahu stránky</translation>
 <translation id="510275257476243843">Zbývá: 1 h</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
+<translation id="5966233851250124270">Chrome si váš výběr zapamatuje</translation>
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
 <translation id="5995726099713306770">Stáhnout stránku znovu?</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>

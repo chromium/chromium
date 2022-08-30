@@ -687,6 +687,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">卓球</translation>
 <translation id="2742870351467570537">選択したアイテムを削除</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> でパスワードを入力してください</translation>
 <translation id="2764001903315068341">コミック</translation>
 <translation id="2765217105034171413">小</translation>
 <translation id="277133753123645258">配送方法</translation>
@@ -879,6 +880,7 @@
 <translation id="3338095232262050444">保護された通信</translation>
 <translation id="3339440062908617027">ランニング、ウォーキング</translation>
 <translation id="3339446062576134663">クラウド（Ash）</translation>
+<translation id="3340978935015468852">設定</translation>
 <translation id="3342366525167526994">ボディアート</translation>
 <translation id="3345782426586609320">目</translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
@@ -1741,6 +1743,7 @@
 <translation id="5633066919399395251"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では現在、悪意のあるユーザーによって、お使いのパソコン上に危険なプログラム（写真、パスワード、メッセージ、クレジット カードなどの情報を盗んだり削除したりするプログラム）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">不正の可能性があるコンテンツがブロックされました。</translation>
 <translation id="5633259641094592098">カルト映画、インディーズ映画</translation>
+<translation id="563371367637259496">モバイル</translation>
 <translation id="5635237618724097525">スマートフォン</translation>
 <translation id="5644090287519800334">1 面の画像の X 軸移動</translation>
 <translation id="5645854190134202180">2 番目のシフト</translation>
@@ -2065,6 +2068,7 @@
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
 <translation id="6592952801936330159">サイトの設定を管理するボタンです。Enter キーを押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
 <translation id="6596325263575161958">暗号化オプション</translation>
+<translation id="6599642189720630047">トラッキングしている商品</translation>
 <translation id="6609880536175561541">Prc7（封筒）</translation>
 <translation id="6611723696964473273">経済ニュース</translation>
 <translation id="6612010098632894193">オンライン動画</translation>

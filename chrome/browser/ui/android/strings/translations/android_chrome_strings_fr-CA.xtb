@@ -748,6 +748,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5091199029769593641">Vous verrez bientôt des histoires de <ph name="SITE_NAME" /> lorsque vous ouvrez un nouvel onglet. Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres de Découvertes.</translation>
 <translation id="5091249083535528968">Données d'utilisation étendues</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
+<translation id="5099845111805573968">Lorsque vous sélectionnez le site pour ordinateurs une fois, le paramètre est appliqué au site à chaque fois que vous le visitez</translation>
 <translation id="5102401324271069229">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, au service de navigation sécurisée</translation>
 <translation id="510275257476243843">Il reste 1 heure</translation>
 <translation id="5115811374190515607">à <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5958275228015807058">Trouvez vos fichiers et vos pages dans Téléchargements</translation>
 <translation id="5962718611393537961">Toucher pour réduire</translation>
 <translation id="5964869237734432770">Arrêter les descriptions</translation>
+<translation id="5966233851250124270">Chrome se souviendra de votre choix</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
 <translation id="5995726099713306770">Télécharger la page de nouveau?</translation>
 <translation id="6000066717592683814">Conserver Google</translation>

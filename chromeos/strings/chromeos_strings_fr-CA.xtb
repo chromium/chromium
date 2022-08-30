@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direction de la clé</translation>
+<translation id="3294437725009624529">Invité</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>

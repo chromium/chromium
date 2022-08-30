@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}many{Upravit soubory}other{Upravit soubory}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Směr klíče</translation>
+<translation id="3294437725009624529">Host</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>

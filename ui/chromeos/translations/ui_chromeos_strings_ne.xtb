@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">भाइनल रेकर्ड</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3291218047831493686">SIM लकसम्बन्धी सेटिङ बदल्न यो नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
+<translation id="3293023191599135697">WEP नेटवर्कमा कनेक्ट गर्न मिल्दैन</translation>
 <translation id="3295357220137379386">डिभाइस व्यस्त छ</translation>
 <translation id="3296763833017966289">जोर्जियन</translation>
 <translation id="3307875152560779385">युक्रेनियाली</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />तपाइँको यन्त्र अहिले नहटाउनुहोस्!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    तपाइँको यन्त्र प्रयोगमा हुँदा प्रयोग गर्नाले लगत हराउन सक्छ।  कृपया सञ्चालन नसक्किएसम्म प्रतिक्षा गर्नुहोस् र, त्यसपछि फाइल एप प्रयोग गर्दै यन्त्र हटाउनुहोस्।</translation>
-<translation id="5159560892333415631">ट्र्यास खाली गर्नुहोस्</translation>
 <translation id="5163869187418756376">साझा गर्न असफल। आफ्नो जडान जाँच गर्नुहोस् र पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="516592729076796170">अमेरिकी प्रोग्रामर भोराक किबोर्ड</translation>
 <translation id="5172749059808361023">प्रतिबन्धसम्बन्धी विवरणहरू</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">किताबी किरो</translation>
 <translation id="9172592259078059678">गुजराती लिपि रूपान्तरण</translation>
 <translation id="9173120999827300720">अन्तर्राष्ट्रिय ढाँचाको अङ्ग्रेजी (सं. रा. अमेरिकी) किबोर्ड</translation>
-<translation id="9174050671906956834">ट्र्यासमा रहेका वस्तुहरू ३० दिनपछि सदाका लागि मेटाइन्छन्।</translation>
 <translation id="9183302530794969518">Google कागजात</translation>
 <translation id="9189836632794948435">काजाख</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु एक्स्ट्रयाक्ट गरिए।</translation>

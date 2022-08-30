@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Rediger fil}one{Rediger fil}other{Rediger filer}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Nøgleretning</translation>
+<translation id="3294437725009624529">Gæst</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>

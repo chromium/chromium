@@ -691,7 +691,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2740531572673183784">Uredu</translation>
 <translation id="2742511345840685325">Stoni tenis</translation>
 <translation id="2742870351467570537">Ukloni odabrane stavke</translation>
-<translation id="2759825833388495838">unijeti zaporku u aplikaciju <ph name="APP_NAME" /></translation>
+<translation id="2759825833388495838">popuniti vašu lozinku u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Stripovi</translation>
 <translation id="2765217105034171413">Malo</translation>
 <translation id="277133753123645258">Način dostave</translation>
@@ -885,6 +885,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3338095232262050444">Sigurno</translation>
 <translation id="3339440062908617027">Trčanje i brzo hodanje</translation>
 <translation id="3339446062576134663">Oblak (Ash)</translation>
+<translation id="3340978935015468852">postavke</translation>
 <translation id="3342366525167526994">Body art</translation>
 <translation id="3345782426586609320">Oči</translation>
 <translation id="3355823806454867987">Promijeni postavke proksi servera...</translation>
@@ -1758,6 +1759,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5633066919399395251">Napadači koji su trenutno na web lokaciji <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogu pokušati instalirati opasne programe na vaš računar koji kradu ili brišu informacije (npr, fotografije, lozinke, poruke i podatke s kreditnih kartica). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Blokiran je obmanjujući sadržaj.</translation>
 <translation id="5633259641094592098">Kultni i indie filmovi</translation>
+<translation id="563371367637259496">Mobilna mreža</translation>
 <translation id="5635237618724097525">Pametni telefoni</translation>
 <translation id="5644090287519800334">Pomak slike X sa strane 1</translation>
 <translation id="5645854190134202180">Druga smjena</translation>

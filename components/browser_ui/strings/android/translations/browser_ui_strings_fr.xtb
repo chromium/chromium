@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Demander avant d'autoriser les sites à lire les contenus protégés (recommandé)</translation>
 <translation id="2146738493024040262">Ouvrir l'appli instantanée</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
+<translation id="2155988908301433309">Toujours afficher le site mobile</translation>
 <translation id="2182457891543959921">Demander avant d'autoriser les sites à créer un plan 3D de votre environnement ou à suivre la position de la caméra (recommandé)</translation>
 <translation id="2212565012507486665">Autoriser les cookies</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre caméra, activez-la également dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
+<translation id="2692299144678073135">Autoriser les sites associés à mémoriser vos informations sur l'ensemble des sites</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses e-mail</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4008040567710660924">Autorisez les cookies pour un site spécifique.</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
+<translation id="4048876521107516222">Les sites associés utilisent des cookies pour vous aider à rester connecté, par exemple</translation>
 <translation id="4149994727733219643">Vue simplifiée pour les pages Web</translation>
 <translation id="4165986682804962316">Paramètres de site</translation>
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5516455585884385570">Ouvrir les paramètres de notification</translation>
 <translation id="5527111080432883924">Demander avant d'autoriser les sites à accéder en lecture au texte et aux images du presse-papiers (recommandé)</translation>
+<translation id="5553273073880784901">Toujours afficher la version ordinateur</translation>
 <translation id="5553374991681107062">Les plus récents</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Dernière visite : hier</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5922853908706496913">Partage de votre écran…</translation>
+<translation id="5922967540311291836">Bloquer les cookies tiers :</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7846621471902887024">Vous allez être déconnecté de tous les sites.</translation>
 <translation id="7882806643839505685">Autorisez le son pour un site spécifique.</translation>
+<translation id="789180354981963912">Bloquer les cookies tiers en mode navigation privée :</translation>
 <translation id="7940722705963108451">M'envoyer un rappel</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7999064672810608036">Voulez-vous vraiment effacer toutes les données locales, y compris les cookies, et réinitialiser toutes les autorisations pour ce site Web ?</translation>

@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Đĩa than</translation>
 <translation id="3290356915286466215">Không bảo mật</translation>
 <translation id="3291218047831493686">Kết nối với mạng này để thay đổi chế độ cài đặt khóa SIM</translation>
+<translation id="3293023191599135697">Không hỗ trợ mạng WEP</translation>
 <translation id="3295357220137379386">Thiết bị đang bận</translation>
 <translation id="3296763833017966289">Tiếng Georgia</translation>
 <translation id="3307875152560779385">Tiếng Ukraina</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Không tháo thiết bị của bạn khi chưa đến lúc!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Tháo thiết bị của bạn khi đang được sử dụng có thể gây mất dữ liệu. Vui lòng đợi cho đến khi thao tác kết thúc, sau đó đẩy thiết bị ra bằng ứng dụng Tệp.</translation>
-<translation id="5159560892333415631">Dọn sạch thùng rác</translation>
 <translation id="5163869187418756376">Chia sẻ không thành công. Hãy kiểm tra kết nối và thử lại sau.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Thông tin chi tiết về chế độ hạn chế</translation>
@@ -967,7 +967,6 @@
 <translation id="9171921933192916600">Mọt sách</translation>
 <translation id="9172592259078059678">Tiếng Gujarati (chuyển tự)</translation>
 <translation id="9173120999827300720">Tiếng Anh (Mỹ) bằng bàn phím quốc tế</translation>
-<translation id="9174050671906956834">Các mục trong thùng rác sẽ bị xóa vĩnh viễn sau 30 ngày.</translation>
 <translation id="9183302530794969518">Google Tài liệu</translation>
 <translation id="9189836632794948435">Tiếng Kazakh</translation>
 <translation id="9200427192836333033">Đã giải nén <ph name="NUMBER_OF_ITEMS" /> mục.</translation>

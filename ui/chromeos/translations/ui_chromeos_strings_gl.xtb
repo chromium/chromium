@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Cancelar esta actividade: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3691184985318546178">Cingalés</translation>
+<translation id="3722341589402358578">Produciuse un erro. Pode que non se enviasen á papeleira algúns elementos.</translation>
 <translation id="3726463242007121105">Este dispositivo non se pode abrir debido a que o seu sistema de ficheiros non é compatible.</translation>
 <translation id="3727148787322499904">Ao cambiar esta opción de configuración, veranse afectadas todas as redes compartidas</translation>
 <translation id="3737576078404241332">Quitar da barra lateral</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Non retires aínda o dispositivo.<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Retirar o dispositivo mentres se está usando pode provocar a perda de datos. Agarda a que finalice a operación e, a continuación, expulsa o dispositivo mediante a aplicación Ficheiros.</translation>
-<translation id="5159560892333415631">Baleirar papeleira</translation>
 <translation id="5163869187418756376">Non se puido compartir. Comproba a túa conexión e téntao de novo máis tarde.</translation>
 <translation id="516592729076796170">Dvorak de programador para EUA</translation>
 <translation id="5172749059808361023">Detalles das restricións</translation>
@@ -965,7 +965,6 @@
 <translation id="9171921933192916600">Papalibros</translation>
 <translation id="9172592259078059678">Guxarati (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EUA) con teclado internacional</translation>
-<translation id="9174050671906956834">Os elementos da papeleira elimínanse para sempre ao cabo de 30 días.</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
 <translation id="9200427192836333033">Extraéronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>

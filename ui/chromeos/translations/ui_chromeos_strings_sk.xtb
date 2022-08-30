@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Zariadenie ešte neodpájajte.<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Odpojením zariadenia počas používania môžete spôsobiť stratu údajov. Počkajte na dokončenie operácie a následne zariadenie vysuňte pomocou aplikácie Súbory.</translation>
-<translation id="5159560892333415631">Vyprázdniť kôš</translation>
 <translation id="5163869187418756376">Zdieľanie zlyhalo. Skontrolujte pripojenie a skúste to neskôr.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Podrobnosti o obmedzeniach</translation>
@@ -967,7 +966,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9171921933192916600">Knihomoľ</translation>
 <translation id="9172592259078059678">Gudžarátska klávesnica (prepis)</translation>
 <translation id="9173120999827300720">Anglická (US) klávesnica s medzinárodným rozložením klávesov</translation>
-<translation id="9174050671906956834">Položky v koši sú po 30 dňoch navždy odstránené.</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9189836632794948435">Kazašská klávesnica</translation>
 <translation id="9200427192836333033">Počet extrahovaných položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>

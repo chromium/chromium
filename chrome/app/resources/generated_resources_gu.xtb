@@ -3273,6 +3273,7 @@
 <translation id="4062561150282203854">તમારી <ph name="DEVICE_TYPE" /> ઍપ, સેટિંગ અને બીજું ઘણું બધું સિંક કરો</translation>
 <translation id="4065876735068446555">તમે ઉપયોગમાં લઈ રહ્યાં છો તે નેટવર્ક (<ph name="NETWORK_ID" />) માટે, તમારે તેના લૉગ ઇન પેજની મુલાકાત લેવાની જરૂર હોઈ શકે છે.</translation>
 <translation id="4066207411788646768">તમારા નેટવર્કમાં ઉપલબ્ધ હોય એવા પ્રિન્ટર જોવા માટે, કૃપા કરીને તમારું નેટવર્ક ચેક કરો</translation>
+<translation id="4066945815577305767">પાસવર્ડની સમયસીમા સમાપ્ત થઈ</translation>
 <translation id="4068776064906523561">સાચવેલ ફિંગરપ્રિન્ટ</translation>
 <translation id="407173827865827707">ક્લિક કરવા પર</translation>
 <translation id="4072701974556190758">પાસવર્ડ તમારા Google એકાઉન્ટ, <ph name="ACCOUNT" />માં સાચવવામાં આવશે. તમારે યાદ રાખવું જરૂરી રહેશે નહીં.</translation>
@@ -5586,6 +5587,7 @@ USB ડિવાઇસ</translation>
 <translation id="6335920438823100346">Linux શરૂ કરવા, <ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લો અને આ Chromebookને ફેક્ટરી સેટિંગ પર રીસેટ કરો.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે. આમ કરવાથી 24 કલાકમાં તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. તમે રાખવા માગતા હો તેવી કોઈપણ ફાઇલોનું બૅકઅપ લો.</translation>
 <translation id="6338402296920404442"><ph name="FILENAME" />ને ડિલીટ કરવાનું વિચારો, જેથી આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારા પાસવર્ડ ન જોઈ શકે.</translation>
+<translation id="6338968693068997776">USB ડિવાઇસ ઉમેરો</translation>
 <translation id="6338981933082930623">બધી સાઇટ તમને બધા પ્રકારની જાહેરાતો બતાવી શકે છે</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> માટે એક નવી પ્રોફાઇલ બનાવો</translation>
 <translation id="6340071272923955280">ઇન્ટરનેટ પ્રિંટિંગ પ્રોટોકોલ (IPPS)</translation>
@@ -6185,6 +6187,7 @@ USB ડિવાઇસ</translation>
 <translation id="6903907808598579934">સમન્વયન ચાલુ કરો</translation>
 <translation id="6904344821472985372">ફાઇલ ઍક્સેસને રદબાતલ કરો</translation>
 <translation id="6904655473976120856">બહાર નીકળવા માટે ઍપ્લિકેશન બટન દવાબો</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, 1 મિનિટની નિષ્ક્રિયતા પછી Google Password Manager તેમને લૉક કરે છે}one{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, {NUM_MINS} મિનિટની નિષ્ક્રિયતા પછી Google Password Manager તેમને લૉક કરે છે}other{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, {NUM_MINS} મિનિટની નિષ્ક્રિયતા પછી Google Password Manager તેમને લૉક કરે છે}}</translation>
 <translation id="6909422577741440844">શું આ ડિવાઇસમાંથી મેળવીએ?</translation>
 <translation id="6910211073230771657">કાઢી નાખ્યું</translation>
 <translation id="691106080621596509">આમ કરવાથી <ph name="SITE_GROUP_NAME" />, તેની હેઠળ આવતી કોઈપણ સાઇટ અને તેને ઇન્સ્ટૉલ કરેલી ઍપ દ્વારા સ્ટોર થયેલો બધો ડેટા અને કુકી સાફ કરવામાં આવશે</translation>
@@ -8022,6 +8025,7 @@ USB ડિવાઇસ</translation>
 <translation id="8688672835843460752">ઉપલબ્ધ</translation>
 <translation id="8690129572193755009">સાઇટ પ્રોટોકૉલ હૅન્ડલ કરવાનું પૂછી શકે છે</translation>
 <translation id="8692107307702113268">પાસવર્ડ 1000 કરતાં વધુ અક્ષર ધરાવે છે</translation>
+<translation id="8694596275649352090">સૂતી વખતે કે જ્યારે લિડ બંધ કરવામાં આવે, ત્યારે લૉક કરો</translation>
 <translation id="8695139659682234808">સેટઅપ પૂર્ણ થયા પછી માતાપિતાના યોગ્ય નિયંત્રણો ઉમેરો</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
 <translation id="8698269656364382265">પાછલી સ્ક્રીન પર પાછા જવા માટે, ડાબી બાજુથી સ્વાઇપ કરો.</translation>
@@ -8070,6 +8074,7 @@ USB ડિવાઇસ</translation>
 <translation id="8732844209475700754">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહ સંબંધિત વધુ સેટિંગ</translation>
 <translation id="8734073480934656039">આ સેટિંગને ચાલુ કરવું કિઓસ્ક ઍપને સ્ટાર્ટઅપ પર ઑટોમૅટિક રીતે લૉન્ચ કરવાની મંજૂરી આપે છે.</translation>
 <translation id="8734674662128056360">ત્રીજા પક્ષની કુકીને બ્લૉક કરી રહ્યું છે</translation>
+<translation id="8734755021067981851">કોઈ USB ડિવાઇસ જોડેલું નથી.</translation>
 <translation id="873545264931343897">જ્યારે <ph name="PLUGIN_NAME" /> અપડેટ કરવાનું સમાપ્ત કરી લે, ત્યારે તેને સક્રિય કરવા માટે પેજને ફરીથી લોડ કરો</translation>
 <translation id="8736288397686080465">બૅકગ્રાઉન્ડમાં આ સાઇટ અપડેટ કરવામાં આવી છે.</translation>
 <translation id="8737709691285775803">શિલ</translation>

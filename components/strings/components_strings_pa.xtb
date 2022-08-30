@@ -882,6 +882,7 @@
 <translation id="3338095232262050444">ਸੁਰੱਖਿਅਤ</translation>
 <translation id="3339440062908617027">ਦੌੜਨਾ ਅਤੇ ਪੈਦਲ-ਸੈਰ</translation>
 <translation id="3339446062576134663">ਕਲਾਊਡ (ਐਸ਼)</translation>
+<translation id="3340978935015468852">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3342366525167526994">ਸਰੀਰਕ ਕਲਾ</translation>
 <translation id="3345782426586609320">ਅੱਖਾਂ</translation>
 <translation id="3355823806454867987">ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਬਦਲੋ...</translation>
@@ -1754,6 +1755,7 @@
 <translation id="5633066919399395251">ਇਸ ਵੇਲੇ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 'ਤੇ ਮੌਜੂਦ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਅਜਿਹੇ ਖਤਰਨਾਕ ਪ੍ਰੋਗਰਾਮ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ, ਜੋ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰ ਸਕਦੇ ਹਨ ਜਾਂ ਮਿਟਾ ਸਕਦੇ ਹਨ (ਉਦਾਹਰਨ ਲਈ, ਫ਼ੋਟੋਆਂ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ, ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ)। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">ਭਰਮਪੂਰਨ ਸਮੱਗਰੀ ਬਲਾਕ ਕੀਤੀ ਗਈ।</translation>
 <translation id="5633259641094592098">ਪ੍ਰਸਿੱਧ ਅਤੇ ਇੰਡੀ ਫ਼ਿਲਮਾਂ</translation>
+<translation id="563371367637259496">ਮੋਬਾਈਲ</translation>
 <translation id="5635237618724097525">ਸਮਾਰਟ ਫ਼ੋਨ</translation>
 <translation id="5644090287519800334">ਸਾਈਡ 1 ਚਿੱਤਰ X ਸ਼ਿਫਟ</translation>
 <translation id="5645854190134202180">ਦੂਜੀ ਸ਼ਿਫਟ</translation>

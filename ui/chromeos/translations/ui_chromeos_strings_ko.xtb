@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />아직 기기를 분리하지 마세요!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    사용 중인 기기를 분리하면 데이터가 삭제될 수 있습니다. 작업이 끝날 때까지 기다린 다음 파일 앱을 사용하여 기기를 꺼내세요.</translation>
-<translation id="5159560892333415631">휴지통 비우기</translation>
 <translation id="5163869187418756376">공유하지 못했습니다. 인터넷 연결을 확인하고 나중에 다시 시도해 주세요.</translation>
 <translation id="516592729076796170">미국 프로그래머 드보락</translation>
 <translation id="5172749059808361023">제한사항 세부정보</translation>
@@ -967,7 +966,6 @@
 <translation id="9171921933192916600">책벌레</translation>
 <translation id="9172592259078059678">구자라트어(음역)</translation>
 <translation id="9173120999827300720">영어(미국, 국제 키보드)</translation>
-<translation id="9174050671906956834">30일 후 휴지통에 있는 항목이 완전히 삭제됩니다.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">카자흐어</translation>
 <translation id="9200427192836333033">항목 <ph name="NUMBER_OF_ITEMS" />개가 추출되었습니다.</translation>

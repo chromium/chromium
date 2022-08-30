@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Скасувати <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="3691184985318546178">Сингальська</translation>
+<translation id="3722341589402358578">Сталася помилка. Можливо, видалено не всі об’єкти.</translation>
 <translation id="3726463242007121105">Не вдається відкрити пристрій, оскільки його файлова система не підтримується.</translation>
 <translation id="3727148787322499904">Зміна цього налаштування вплине на всі спільні мережі</translation>
 <translation id="3737576078404241332">Видалити з бічної панелі</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Не видаляйте пристрій зараз!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Видалення пристрою під час його використання може спричинити втрату даних. Зачекайте, доки операція завершиться, а потім відключіть пристрій за допомогою програми "Файли".</translation>
-<translation id="5159560892333415631">Очистити кошик</translation>
 <translation id="5163869187418756376">Помилка надання доступу. Перевірте з’єднання та повторіть спробу пізніше.</translation>
 <translation id="516592729076796170">Розкладка Дворака для програмістів (США)</translation>
 <translation id="5172749059808361023">Відомості щодо обмеження</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Книжковий хробак</translation>
 <translation id="9172592259078059678">Гуджараті, транслітерація</translation>
 <translation id="9173120999827300720">Англійська (США), міжнародна розкладка</translation>
-<translation id="9174050671906956834">Файли зберігаються в кошику 30 днів, а потім видаляються назавжди.</translation>
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахська</translation>
 <translation id="9200427192836333033">Видобуто об’єктів: <ph name="NUMBER_OF_ITEMS" />.</translation>

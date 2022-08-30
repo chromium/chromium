@@ -1109,6 +1109,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="2043770014371753404">Impresoras empresariales inhabilitadas</translation>
 <translation id="2057317273526988987">Permitir el acceso a una lista de URL</translation>
 <translation id="2058055310819710697">Habilitar el modo de desarrollador de apps aisladas</translation>
+<translation id="205807990145127714">Datos de telemetría para informar sobre eventos de intensidad de la señal</translation>
 <translation id="2061123930713023976">Permitir la depuración de capturas de paquetes de red</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
 <translation id="2062632109797189011">Volver a habilitar la API de window.webkitStorageInfo obsoleta</translation>
@@ -3740,6 +3741,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si la inhabilitas o no la estableces, la inscripción en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional y no se bloqueará el proceso de ejecución de <ph name="PRODUCT_NAME" /> si esta falla.
 
       Esta política se usa en máquinas de escritorio con inscripción en las políticas de nube. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="488996881569316769">Telemetría de red</translation>
 <translation id="4890453377345554695">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedir a los usuarios acceso de escritura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
@@ -4073,6 +4075,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si no estableces la opción o el valor ingresado no es válido, el comportamiento será el mismo que la opción "Espera a que el canal objetivo complete el cambio a la versión inferior del canal".</translation>
 <translation id="5229339291699779956">Habilitar la tunelización PCIe para los dispositivos periféricos Thunderbolt/USB4 (los dispositivos periféricos funcionarán con todas sus capacidades)</translation>
+<translation id="5230095739094490896">Plantilla del atributo IPP de "nombre del cliente" para trabajos de impresión</translation>
 <translation id="5233239004553860036">Si estableces esta política con el valor <ph name="POLICY_VALUE_ALL" /> o no la estableces, se permitirán todos los usos de cuentas administradas. De esta manera, es posible que una cuenta administrada se utilice como secundaria, por lo que solo recibiría políticas si se accede a esta como cuenta principal en un perfil de navegador.
       Las políticas establecidas para la cuenta no se aplicarán de manera forzosa en los siguientes casos:
         -  Si es una cuenta secundaria a nivel de SO (Configuración de la cuenta)
@@ -5289,6 +5292,7 @@ principal del string usuario-agente en 99.
 <translation id="6506486086262398387">Si habilitas la política, la función Network File Shares para <ph name="PRODUCT_OS_NAME" /> utilizará el protocolo NTLM para autenticar archivos compartidos SMB en caso de ser necesario. Si inhabilitas la política, se desactivará la autenticación de archivos compartidos SMB mediante NTLM.
 
       Si no la estableces, de forma predeterminada se desactivará para los usuarios administrados y se activará para los demás usuarios.</translation>
+<translation id="6513453889192806240">Latencia de HTTPS</translation>
 <translation id="6515357889978918016">Imagen de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Espera a que el canal objetivo complete el cambio a la versión inferior del canal</translation>
 <translation id="6520802717075138474">Importar los motores de búsqueda desde el navegador predeterminado en la primera ejecución</translation>
@@ -5558,6 +5562,12 @@ principal del string usuario-agente en 99.
 
       Si estableces el valor "False" para la política, o no la configuras, no se habilitará <ph name="PLUGIN_VM_NAME" /> para este usuario.
       Si estableces el valor "True", se habilitará <ph name="PLUGIN_VM_NAME" /> para el usuario, siempre y cuando lo permitan otras opciones de configuración. Para ejecutar <ph name="PLUGIN_VM_NAME" />, se debe establecer el valor "True" para <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />, y se deben configurar las políticas <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />.</translation>
+<translation id="6750902920405577210">Lista de los datos de telemetría que se informarán en los eventos de cambio de intensidad de la señal.
+
+      Los datos de telemetría especificados solo se informarán si su política de control no los inhabilitó.
+      La política de control de https_latency y network_telemetry es ReportDeviceNetworkStatus.
+
+      Si no la estableces, no se informarán datos de telemetría adicionales sobre los eventos de cambio de intensidad de la señal.</translation>
 <translation id="6752711782954612641">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros para la búsqueda de una URL con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se enviarán solicitudes de búsqueda con el método GET.</translation>
@@ -7359,6 +7369,18 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si se establece la política como falsa, no se inmovilizará ninguna pestaña.</translation>
 <translation id="8619748440665904084">Inhabilitar la importación de datos para autocompletar formularios en la primera ejecución</translation>
+<translation id="8620103780247748230">Esta política controla el valor del atributo <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> del protocolo de impresión de Internet (IPP) en los trabajos de impresión.
+
+      Si estableces la política como una string, se agregará un elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a cada trabajo de impresión. El miembro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> del elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> agregado se establecerá con el valor de la política después de la sustitución de variables.
+
+      La variables admitidas son<ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. No se expandirán las variables de marcador de posición no admitidas.
+
+      El valor resultante después de la sustitución de variables se considera válido si contiene solo caracteres imprimibles <ph name="ASCII" /> y su longitud no supera los 255 caracteres.
+
+      Ten en cuenta que, por motivos de privacidad, esta política se aplica solo cuando te comunicas con una impresora mediante los protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Además, ten en cuenta que esta política solo se aplica a las impresoras que admiten <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      Si no estableces la política o la estableces como un valor vacío o no válido, no se agregará un <ph name="CLIENT_INFO_PLACEHOLDER" /> adicional a las solicitudes de trabajos de impresión.
+      </translation>
 <translation id="8623672932476443039">Si habilitas la política, los usuarios podrán acceder al modo de desarrollador de apps aisladas.
       Si inhabilitas la política, los usuarios no podrán acceder a esa función.
       Si no estableces la política, no se permitirá la acción predeterminada para los usuarios administrados por empresas en Chrome OS, pero sí estará permitida para todos los demás usuarios y sistemas operativos.</translation>

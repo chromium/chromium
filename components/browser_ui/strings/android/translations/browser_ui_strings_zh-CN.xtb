@@ -80,6 +80,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
+<translation id="2692299144678073135">允许相关网站记住您在各个网站上的身份</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
@@ -140,6 +141,7 @@
 <translation id="4002066346123236978">标题</translation>
 <translation id="4008040567710660924">允许特定网站使用 Cookie。</translation>
 <translation id="4046123991198612571">下一曲</translation>
+<translation id="4048876521107516222">相关网站会使用 Cookie 协助您处理一些事项，例如让您保持登录状态</translation>
 <translation id="4149994727733219643">使用简化版视图查看网页</translation>
 <translation id="4165986682804962316">网站设置</translation>
 <translation id="4169549551965910670">已连接 USB 设备</translation>
@@ -222,6 +224,7 @@
 <translation id="5887687176710214216">上次访问时间：昨天</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5922853908706496913">正在共享您的屏幕</translation>
+<translation id="5922967540311291836">阻止第三方 Cookie：</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -312,6 +315,7 @@
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7846621471902887024">您将会自动退出所有网站。</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
+<translation id="789180354981963912">阻止无痕模式下的第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7999064672810608036">确定要清除该网站的所有本地数据（包括 Cookie）并重置该网站的所有权限吗？</translation>

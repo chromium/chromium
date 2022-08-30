@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Iulize kabla ya kuruhusu tovuti kucheza maudhui yanayolindwa (inapendekezwa)</translation>
 <translation id="2146738493024040262">Fungua Programu Inayofunguka Papo Hapo</translation>
 <translation id="2148716181193084225">Leo</translation>
+<translation id="2155988908301433309">Angalia katika hali ya tovuti ya kifaa cha mkononi kila wakati</translation>
 <translation id="2182457891543959921">Uliza kabla ya kuruhusu tovuti zibuni ramani ya 3D ya mazingira yako au kufuatilia mkao wa kamera (inapendekezwa)</translation>
 <translation id="2212565012507486665">Ruhusu vidakuzi</translation>
 <translation id="2228071138934252756">Ili uruhusu <ph name="APP_NAME" /> ifikie kamera yako, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Wasilisha</translation>
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2687403674020088961">Zuia vidakuzi vyote (haipendekezwi)</translation>
+<translation id="2692299144678073135">Ruhusu tovuti zinazohusiana kukumbuka taarifa zako kwenye tovuti mbalimbali</translation>
 <translation id="2704606927547763573">Imenakiliwa</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2717722538473713889">Anwani za barua pepe</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Kichwa</translation>
 <translation id="4008040567710660924">Ruhusu vidakuzi katika tovuti maalum.</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
+<translation id="4048876521107516222">Tovuti zinazohusiana hutumia vidakuzi ili kukusaidia kufanya mambo mbalimbali kama vile kuhakikisha unasalia katika akaunti</translation>
 <translation id="4149994727733219643">Mwonekano uliorahisishwa kwa ajili ya kurasa za wavuti</translation>
 <translation id="4165986682804962316">Mipangilio ya tovuti</translation>
 <translation id="4169549551965910670">Imeunganishwa kwenye kifaa cha USB</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Tovuti haziwezi kukuuliza kutuma arifa</translation>
 <translation id="5516455585884385570">Fungua mipangilio ya arifa</translation>
 <translation id="5527111080432883924">Iulize kabla ya kuruhusu tovuti kusoma maandishi na picha kutoka ubao wa kunakili (inapendekezwa)</translation>
+<translation id="5553273073880784901">Angalia katika hali ya tovuti ya kompyuta ya mezani kila wakati</translation>
 <translation id="5553374991681107062">Za hivi punde</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Ilitembelewa mara ya mwisho jana</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5922853908706496913">Inashiriki skrini yako</translation>
+<translation id="5922967540311291836">Kuzuia vidakuzi vya washirika wengine:</translation>
 <translation id="5939518447894949180">Weka upya</translation>
 <translation id="5975083100439434680">Fifiza</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>
 <translation id="7846621471902887024">Utaondolewa kwenye akaunti za tovuti zote.</translation>
 <translation id="7882806643839505685">Ruhusu sauti katika tovuti mahususi.</translation>
+<translation id="789180354981963912">Kuzuia vidakuzi vya washirika wengine katika hali fiche:</translation>
 <translation id="7940722705963108451">Nikumbushe</translation>
 <translation id="7986741934819883144">Chagua anwani</translation>
 <translation id="7999064672810608036">Una uhakika unataka kufuta data zote za ndani, ikiwemo vidakuzi, na kuweka upya ruhusa za tovuti hii?</translation>

@@ -80,6 +80,7 @@
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2687403674020088961">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
+<translation id="2692299144678073135">السماح لجميع المواقع الإلكترونية ذات الصلة بتذكُّر بياناتك</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
 <translation id="2713106313042589954">إيقاف الكاميرا</translation>
 <translation id="2717722538473713889">عنوان البريد الإلكتروني</translation>
@@ -140,6 +141,7 @@
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4008040567710660924">السماح لموقع إلكتروني معيّن بتشغيل ملفات تعريف الارتباط</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
+<translation id="4048876521107516222">تستخدم المواقع الإلكترونية ذات الصلة ملفات تعريف الارتباط للمساعدة في تنفيذ إجراءات معيّنة، مثل إبقائك مسجّلاً الدخول.</translation>
 <translation id="4149994727733219643">عرض مبسَّط لصفحات الويب</translation>
 <translation id="4165986682804962316">إعدادات المواقع الإلكترونية</translation>
 <translation id="4169549551965910670">‏تم ربط الموقع الإلكتروني بجهاز USB.</translation>
@@ -222,6 +224,7 @@
 <translation id="5887687176710214216">تمّت زيارة الموقع الإلكتروني آخر مرة أمس.</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5922853908706496913">جارٍ مشاركة شاشتك</translation>
+<translation id="5922967540311291836">حظر ملفات تعريف الارتباط التابعة لجهات خارجية:</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="5975083100439434680">تصغير</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -312,6 +315,7 @@
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7846621471902887024">سيتم تسجيل خروجك من جميع المواقع الإلكترونية.</translation>
 <translation id="7882806643839505685">السماح بتشغيل الصوت لموقع معين.</translation>
+<translation id="789180354981963912">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي:</translation>
 <translation id="7940722705963108451">تذكير</translation>
 <translation id="7986741934819883144">اختيار جهة اتصال</translation>
 <translation id="7999064672810608036">هل أنت متأكّد أنك تريد محو كل البيانات المحلية، بما في ذلك ملفات تعريف الارتباط، وإعادة ضبط كافة الأذونات لهذا الموقع الإلكتروني؟</translation>

@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2742511345840685325">የጠረጴዛ ቴኒስ</translation>
 <translation id="2742870351467570537">የተመረጡትን ንጥሎች አስወግድ</translation>
+<translation id="2759825833388495838">የይለፍ ቃልዎን በ<ph name="APP_NAME" /> ላይ ይሙሉ</translation>
 <translation id="2764001903315068341">ኮሚክ</translation>
 <translation id="2765217105034171413">ትንሽ</translation>
 <translation id="277133753123645258">የመላኪያ ዘዴ</translation>
@@ -883,6 +884,7 @@
 <translation id="3338095232262050444">ደህንነቱ የተጠበቀ ነው</translation>
 <translation id="3339440062908617027">መሮጥ እና መራመድ</translation>
 <translation id="3339446062576134663">ደመና (Ash)</translation>
+<translation id="3340978935015468852">ቅንብሮች</translation>
 <translation id="3342366525167526994">የሰውነት ስነ ጥበብ</translation>
 <translation id="3345782426586609320">አይኖች</translation>
 <translation id="3355823806454867987">የተኪ ቅንብሮችን በመቀየር ላይ...</translation>
@@ -1756,6 +1758,7 @@
 <translation id="5633066919399395251">በአሁኑ ጊዜ በ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ላይ የሚገኙ አጥቂዎች የእርስዎን መረጃ (ለምሳሌ፦ ፎቶዎች፣ የይለፍ ቃላት፣ መልዕክቶች እና ክሬዲት ካርዶች) የሚሰርቁ ወይም የሚሰርዙ አደገኛ ፕሮግራሞችን በእርስዎ ኮምፒውተር ላይ ለመጫን እየሞከሩ ሊሆኑ ይችላሉ። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">አታላይ ይዘት ታግዷል።</translation>
 <translation id="5633259641094592098">የአምልኮ እና ኢንዲ ፊልሞች</translation>
+<translation id="563371367637259496">ተንቀሳቃሽ ስልክ</translation>
 <translation id="5635237618724097525">ዘመናዊ ስልኮች</translation>
 <translation id="5644090287519800334">ጎን 1 ምስል X ሽግሽግ</translation>
 <translation id="5645854190134202180">ሁለተኛ ፈረቃ</translation>

@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Avbryt <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inaktiverat, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="3691184985318546178">singalesiska</translation>
+<translation id="3722341589402358578">Ett fel har uppstått. Vissa objekt kanske inte har slängts.</translation>
 <translation id="3726463242007121105">Enheten kan inte öppnas eftersom dess filsystem inte stöds.</translation>
 <translation id="3727148787322499904">Om du ändrar denna inställning påverkas alla delade nätverk</translation>
 <translation id="3737576078404241332">Ta bort från sidofältet</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Ta inte bort enheten ännu!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Om du tar bort enheten medan den används kan du förlora data. Vänta tills åtgärden är slutförd och koppla sedan från enheten med appen Files.</translation>
-<translation id="5159560892333415631">Töm papperskorgen</translation>
 <translation id="5163869187418756376">Delningen misslyckades. Kontrollera anslutningen och försök igen senare.</translation>
 <translation id="516592729076796170">Dvorak för programmerare i USA</translation>
 <translation id="5172749059808361023">Begränsningsdetaljer</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Bokmal</translation>
 <translation id="9172592259078059678">gujarati, translitterering</translation>
 <translation id="9173120999827300720">engelska (USA) med internationellt tangentbord</translation>
-<translation id="9174050671906956834">Objekt i papperskorgen raderas permanent efter 30 dagar.</translation>
 <translation id="9183302530794969518">Google Dokument</translation>
 <translation id="9189836632794948435">kazakiska</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> objekt har extraherats</translation>

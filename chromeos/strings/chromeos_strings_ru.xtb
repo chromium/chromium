@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{Редактировать файл}one{Редактировать файлы}few{Редактировать файлы}many{Редактировать файлы}other{Редактировать файлы}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3291996639387199448">Направление ключа</translation>
+<translation id="3294437725009624529">Гость</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
 <translation id="3340011300870565703">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>

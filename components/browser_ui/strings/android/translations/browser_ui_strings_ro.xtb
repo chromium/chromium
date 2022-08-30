@@ -80,6 +80,7 @@
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2687403674020088961">Blochează toate cookie-urile (nu este recomandat)</translation>
+<translation id="2692299144678073135">Permite site-urilor conexe să te rețină pe toate site-urile</translation>
 <translation id="2704606927547763573">Copiat</translation>
 <translation id="2713106313042589954">Dezactivează camera foto</translation>
 <translation id="2717722538473713889">Adrese de e-mail</translation>
@@ -140,6 +141,7 @@
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4008040567710660924">Permite cookie-uri pentru un anumit site.</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
+<translation id="4048876521107516222">Site-urile asociate folosesc cookie-uri, de exemplu, pentru a te menține conectat(ă)</translation>
 <translation id="4149994727733219643">Afișare simplificată pentru paginile web</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
 <translation id="4169549551965910670">Conectat la un dispozitiv USB</translation>
@@ -222,6 +224,7 @@
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5922853908706496913">Se permite accesul la ecran</translation>
+<translation id="5922967540311291836">Blochează cookie-urile terță parte:</translation>
 <translation id="5939518447894949180">Resetează</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -312,6 +315,7 @@
 <translation id="7846076177841592234">Anulează selecția</translation>
 <translation id="7846621471902887024">Te vei deconecta de la toate site-urile.</translation>
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
+<translation id="789180354981963912">Blochează cookie-urile terță parte în modul incognito:</translation>
 <translation id="7940722705963108451">Reamintește-mi</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7999064672810608036">Sigur dorești să ștergi toate datele locale, inclusiv cookie-urile pentru acest site și să îi resetezi permisiunile?</translation>

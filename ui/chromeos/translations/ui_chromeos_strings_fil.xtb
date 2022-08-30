@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Huwag munang alisin ang iyong device!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Maaaring magsanhi ng pagkawala ng data ang pag-aalis sa iyong device habang ginagamit ito.  Mangyaring maghintay hanggang matapos ang operasyon, pagkatapos ay i-eject ang device gamit ang Files app.</translation>
-<translation id="5159560892333415631">Alisin ang laman ng Trash</translation>
 <translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukang muli sa ibang pagkakataon.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Mga detalye ng paghihigpit</translation>
@@ -967,7 +966,6 @@
 <translation id="9171921933192916600">Bookworm</translation>
 <translation id="9172592259078059678">Gujarati Transliteration</translation>
 <translation id="9173120999827300720">English (US) na may International keyboard</translation>
-<translation id="9174050671906956834">Tuluyang made-delete ang mga item sa trash pagkalipas ng 30 araw.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033">Na-extract ang <ph name="NUMBER_OF_ITEMS" /> (na) item.</translation>

@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Скасаваць дзеянне "<ph name="ACTIVITY_DESCRIPTION" />".</translation>
 <translation id="3690128548376345212">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, адключана, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="3691184985318546178">Сінгальская</translation>
+<translation id="3722341589402358578">Адбылася памылка. Некаторыя элементы маглі не трапіць у сметніцу.</translation>
 <translation id="3726463242007121105">Прыладу адкрыць не ўдалося: яе файлавая сістэма не падтрымліваецца.</translation>
 <translation id="3727148787322499904">Змена гэтай налады закране ўсе абагуленыя сеткі</translation>
 <translation id="3737576078404241332">Выдаліць з бакавой панэлі</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Пакуль што не выдаляйце прыладу!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Выдаленне прылады падчас яе выкарыстання можа прывесці да страты даных.  Дачакайцеся заканчэння аперацыі, затым выміце прыладу, выкарыстаўшы праграму "Файлы".</translation>
-<translation id="5159560892333415631">Ачысціць сметніцу</translation>
 <translation id="5163869187418756376">Збой абагульвання. Праверце падключэнне і паўтарыце спробу пазней.</translation>
 <translation id="516592729076796170">Праграмісцкая Дворака для ЗША</translation>
 <translation id="5172749059808361023">Звесткі пра абмежаванні</translation>
@@ -965,7 +965,6 @@
 <translation id="9171921933192916600">Кніжны чарвяк</translation>
 <translation id="9172592259078059678">Гуджараці (транслітарацыя)</translation>
 <translation id="9173120999827300720">Англійская (ЗША) з міжнароднай клавіятурай</translation>
-<translation id="9174050671906956834">Элементы выдаляюцца са сметніцы назаўсёды праз 30 дзён.</translation>
 <translation id="9183302530794969518">Дакументы Google</translation>
 <translation id="9189836632794948435">Казахская</translation>
 <translation id="9200427192836333033">Вынята элементаў: <ph name="NUMBER_OF_ITEMS" />.</translation>

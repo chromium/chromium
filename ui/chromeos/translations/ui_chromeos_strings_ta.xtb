@@ -312,6 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ரத்துசெய்யப்படும்.</translation>
 <translation id="3690128548376345212">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="3691184985318546178">சிங்களம்</translation>
+<translation id="3722341589402358578">பிழை ஏற்பட்டது. இதில் சில நீக்கப்படாமல் இருக்கக்கூடும்.</translation>
 <translation id="3726463242007121105">இந்த சாதனத்தின் கோப்புமுறைமை ஆதரிக்கப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
 <translation id="3727148787322499904">இந்த அமைப்பை மாற்றினால், பகிர்ந்த எல்லா நெட்வொர்க்குகளும் பாதிக்கப்படும்</translation>
 <translation id="3737576078404241332">பக்கப்பட்டியில் இருந்து அகற்று</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />உங்கள் சாதனத்தை உடனே அகற்ற வேண்டாம்!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    பயன்பாட்டில் இருக்கும்போது உங்கள் சாதனத்தை அகற்றுவது தரவு இழப்பை ஏற்படுத்தலாம்.  செயல்முறை முடியும்வரை காத்திருந்து, பின்பு ஃபைல்கள்  பயன்பாட்டைப் பயன்படுத்தி சாதனத்தை வெளியேற்றலாம்.</translation>
-<translation id="5159560892333415631">‘நீக்கியவையில்’ உள்ளவற்றை நீக்கு</translation>
 <translation id="5163869187418756376">பகிர்வு தோல்வியடைந்தது. உங்கள் இணைப்பைச் சரிபார்த்து, பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="516592729076796170">US புரோகிராமர் டிவோரக்</translation>
 <translation id="5172749059808361023">கட்டுப்பாடு விவரங்கள்</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">புத்தகப்புழு</translation>
 <translation id="9172592259078059678">குஜராத்தி ஒலிபெயர்ப்பு</translation>
 <translation id="9173120999827300720">ஆங்கிலம் (யூஎஸ்) - சர்வதேசக் கீபோர்டு</translation>
-<translation id="9174050671906956834">‘நீக்கியவையில்’ உள்ளவை 30 நாட்களுக்குப் பின் நிரந்தரமாக நீக்கப்படும்.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">கஸக்</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள்/டைரக்டரிகள் பிரிக்கப்பட்டன.</translation>

@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">키 방향</translation>
+<translation id="3294437725009624529">게스트</translation>
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>

@@ -759,6 +759,12 @@ Unabhängig davon, ob die Option aktiviert oder deaktiviert ist, kann der Nutzer
 
 Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bestehenden Browserdaten nicht verfügbar ist. Dies ist der Fall, wenn die Trennung von Unternehmensprofilen streng durchgesetzt wird oder die Daten aus einem bereits verwalteten Profil stammen.
 </translation>
+<translation id="1795105105645381965">
+      Wenn die Richtlinie aktiviert (auf „True“ gesetzt) ist, darf <ph name="PRODUCT_NAME" /> vor der Freigabe von Gerätesignalen auf nicht verwalteten Geräten verwaltete Nutzer um Einwilligung bitten, um Zugriff zu erhalten.
+
+      Ist die Richtlinie deaktiviert (auf „False“ gesetzt) oder nicht konfiguriert, darf <ph name="PRODUCT_NAME" /> keine Gerätesignale erfassen.
+
+      Beispiele für Gerätesignale sind unter anderem Betriebssysteminformationen, Registry-Daten und ob bestimmte Dateien vorhanden sind.</translation>
 <translation id="179694024208061102">Ist die Richtlinie aktiviert, versucht <ph name="PRODUCT_NAME" />, einige URLs in einem alternativen Browser, wie z. B. <ph name="IE_PRODUCT_NAME" />, zu öffnen. Diese Funktion wird mithilfe der Richtlinien in der Gruppe "<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />" festgelegt.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, versucht <ph name="PRODUCT_NAME" /> nicht, bestimmte URLs in einem alternativen Browser zu öffnen.</translation>
@@ -1374,6 +1380,19 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="2384233438419344179">Wenn diese Richtlinie aktiviert ist, können Websiteelemente, die nicht von der Domain in der Adressleiste des Browsers stammen, keine Cookies setzen. Wenn die Richtlinie deaktiviert ist, können diese Elemente Cookies setzen und Nutzer können diese Einstellung nicht ändern.
 
       Wenn sie nicht konfiguriert ist, werden Cookies von Drittanbietern zugelassen, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="2384553027681594203">Hiermit aktivierst du <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> für eine Liste von URLs auf dem Anmelde- und Sperrbildschirm.
+
+      Wenn du diese Richtlinie konfigurierst, legst du damit fest, welche URLs für den Attestierungsablauf zugelassen sein sollen, um die Signalgruppe vom Computer abzurufen.
+
+      Wenn du sie nicht konfigurierst oder leer lässt, bedeutet das, dass kein Endpunkt dazu in der Lage ist, den Attestierungsablauf zu starten oder Signale vom Computer abzurufen.
+
+      URLs müssen dem HTTPS-Schema folgen (z. B. „https://beispiel.de“).
+
+      Hinweis: Platzhalter (<ph name="WILDCARD_VALUE" />) sind zulässig.
+
+      Diese Richtlinie wirkt sich nur auf den Attestierungsablauf auf dem Anmelde- und Sperrbildschirm aus. Den Attestierungsablauf während der Sitzung kannst du mit der Richtlinie <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> ändern.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2386362615870139244">Bildschirm-Wakelocks zulassen</translation>
 <translation id="2387469539700985783">Diese Richtlinie hat keine Auswirkung auf die Berichterstellung durch Android.</translation>
 <translation id="238885588439957890">Zeitpunkt, an dem der Akku mit Netzstrom aufgeladen werden soll, angegeben in der lokalen Zeit des Geräts.</translation>
@@ -2066,6 +2085,27 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Ist die Richtlinie deaktiviert, wird die Mediensteuerung auf dem Sperrbildschirm ausgeschaltet.</translation>
 <translation id="3072847235228302527">Nutzungsbedingungen für ein lokales Gerätekonto festlegen</translation>
+<translation id="3077650998740742747">
+Standardverhalten (Richtlinie nicht konfiguriert)
+Wenn im Inhaltsbereich ein Konto hinzugefügt wird, wird der Nutzer möglicherweise über ein kleines Dialogfeld gebeten, ein neues Profil zu erstellen. Dieses Dialogfeld kann geschlossen werden.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Wenn sich ein Nutzer das erste Mal über einen <ph name="PRODUCT_NAME" />-Browser in einem Google-Dienst anmeldet, wird er über ein Dialogfeld gebeten, ein neues Profil für sein Unternehmenskonto zu erstellen. Der Nutzer kann auf „Abbrechen“ klicken, um abgemeldet zu werden, oder auf „Weiter“, um ein neues Profil zu erstellen. Vorhandene Browserdaten werden nicht in das neue Profil übernommen. Das neu erstellte Profil darf sekundäre Konten enthalten. Nutzer können sich also beispielsweise im Inhaltsbereich in einem anderen Konto anmelden.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, außer dass das neu erstellte Profil keine sekundären Konten enthalten darf.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, außer dass dem Dialogfeld ein Kästchen hinzugefügt wird, das es Nutzern ermöglicht, lokale Browserdaten beizubehalten.
+Wenn der Nutzer das Kästchen markiert, werden die vorhandenen Profildaten mit dem verwalteten Konto verknüpft.
+– Alle vorhandenen Browserdaten sind im neuen Profil enthalten.
+– Diese Daten umfassen z. B. Lesezeichen, Verlauf, Passwörter, Autofill-Daten, geöffnete Tabs, Cookies, Cache, Webspeicherplatz und Erweiterungen.
+Wenn der Nutzer das Kästchen nicht markiert:
+– Das alte Profil bleibt bestehen und es gehen keine Daten verloren.
+– Ein neues Profil wird erstellt.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, außer dass das neu erstellte Profil keine sekundären Konten enthalten darf.</translation>
 <translation id="3083259245974004342">Passwortschutz</translation>
 <translation id="3086995894968271156">Konfigurieren von Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann</translation>
@@ -3806,6 +3846,12 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="5085647276663819155">Druckvorschau deaktivieren</translation>
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" /> die Authentifizierung für HTTP erlauben</translation>
+<translation id="5099239365323299669">Ab Version M106 wird das persistente Kontingent nicht mehr unterstützt. Durch diese Richtlinie wird die Funktion für persistente Kontingente bis Version M107 wieder aktiviert.
+
+      Wenn diese Richtlinie aktiviert ist, hat „webkitRequestFileSystem“ mit persistentem Typ ein persistentes Kontingent.
+
+      Wenn diese Richtlinie nicht konfiguriert oder deaktiviert ist, hat „webkitRequestFileSystem“ mit persistentem Typ ein temporäres Kontingent.
+      </translation>
 <translation id="5103112931744164177">Mit dieser Richtlinie wird festgelegt, welcher Software-Stack zur Kommunikation mit dem DNS-Server verwendet wird: der DNS-Client des Betriebssystems oder der integrierte DNS-Client von <ph name="PRODUCT_NAME" />. Sie beeinflusst nicht, welche DNS-Server verwendet werden. Wenn beispielsweise das Betriebssystem für die Verwendung eines Unternehmens-DNS-Servers konfiguriert ist, verwendet der integrierte DNS-Client genau diesen Server. Mit der Richtlinie wird auch nicht gesteuert, ob DoH (DNS over HTTPS) verwendet wird. <ph name="PRODUCT_NAME" /> nutzt immer den integrierten Resolver für DoH-Anfragen. Weitere Informationen zum Steuern von DoH findest du in der Richtlinie „<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />“.
 
       Wenn diese Richtlinie aktiviert ist, wird, falls verfügbar, der integrierte DNS-Client verwendet.

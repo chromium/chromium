@@ -433,6 +433,7 @@
 <translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
 <translation id="3297344142967351106">音声アシスタント</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
+<translation id="3305795716056605962">[その他のオプション] からページを翻訳できます</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="3341262203274374114">フォローを解除できません。エラーが発生しました。</translation>
 <translation id="3359667936385849800">現在のサービス プロバイダを使用</translation>
@@ -1268,6 +1269,7 @@
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7857691613771368249">ファイルをいつ保存するか確認する</translation>
 <translation id="7859988229622350291">翻訳しない</translation>
+<translation id="7866213166286285359">ここでページを翻訳できます</translation>
 <translation id="78707286264420418">デバイスに接続するには、<ph name="PRODUCT_NAME" /> に付近のデバイスへのアクセスを許可する必要があります</translation>
 <translation id="7875915731392087153">メールを作成</translation>
 <translation id="7876243839304621966">すべて削除</translation>

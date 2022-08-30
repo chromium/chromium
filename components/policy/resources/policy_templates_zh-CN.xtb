@@ -1069,6 +1069,7 @@
 <translation id="2043770014371753404">已停用企业打印机</translation>
 <translation id="2057317273526988987">允许访问指定的一系列网址</translation>
 <translation id="2058055310819710697">启用已隔离应用的开发者模式</translation>
+<translation id="205807990145127714">要针对信号强度事件报告的遥测数据。</translation>
 <translation id="2061123930713023976">允许调试网络数据包捕获流程</translation>
 <translation id="2061810934846663491">为远程访问主机配置所需的域名</translation>
 <translation id="2062632109797189011">重新启用已弃用的 window.webkitStorageInfo API</translation>
@@ -3668,6 +3669,7 @@
       如果此政策已停用或未设置，<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />则是可选的。如果注册失败，<ph name="PRODUCT_NAME" /> 仍能正常启动。
 
       在桌面设备上进行机器范围云政策注册时会用到此政策。如需了解详情，请访问 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
+<translation id="488996881569316769">网络遥测</translation>
 <translation id="4890453377345554695">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以请求用户向其授予对主机操作系统的文件系统中的文件或目录的写入权限。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -3999,6 +4001,7 @@
 
       如果此政策未设置或无效，则等同于选择了“为实现版本降级，等待当前版本有可用的稳定版”这一行为选项。</translation>
 <translation id="5229339291699779956">为 Thunderbolt/USB4 外围设备启用 PCIe 隧道，外围设备会将自身的所有功能都发挥到极致</translation>
+<translation id="5230095739094490896">输出“client-name”IPP 属性模板</translation>
 <translation id="5233239004553860036">如果此政策设为<ph name="POLICY_VALUE_ALL" />或未设置，系统会允许受管理的帐号的所有使用情况。这可能会导致受管理的帐号成为辅助帐号，从而只能在该帐号作为浏览器配置文件中的主帐号登录时接收政策。
       在以下情况下，系统将不会强制执行针对帐号设定的政策：
         -  在操作系统级别将该帐号作为辅助帐号（帐号设置）
@@ -5182,6 +5185,7 @@
 <translation id="6506486086262398387">如果此政策已启用，适用于 <ph name="PRODUCT_OS_NAME" />的网络文件共享功能会酌情使用 NTLM 对 SMB 共享文件进行身份验证。如果此政策已停用，系统会关闭对 SMB 共享文件的 NTLM 身份验证机制。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
+<translation id="6513453889192806240">HTTPS 延迟</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> 图片</translation>
 <translation id="6518102411616460786">为实现版本降级，等待当前版本有可用的稳定版</translation>
 <translation id="6520802717075138474">首次运行时，从默认浏览器导入搜索引擎</translation>
@@ -5451,6 +5455,12 @@
 
       如果此政策设为 false 或未设置，系统不会为该用户启用 <ph name="PLUGIN_VM_NAME" />。
       如果此政策设为 true，系统会为该用户启用 <ph name="PLUGIN_VM_NAME" />，但前提是其他设置也允许该用户运行它。若要允许 <ph name="PLUGIN_VM_NAME" /> 运行，您需将 <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 和 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> 设为 true，并设置 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 或 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />。</translation>
+<translation id="6750902920405577210">要针对信号强度变化事件报告的遥测数据列表。
+
+      仅当所指定的每项遥测数据未被其控制政策停用时，系统才会报告该数据。
+      https_latency 和 network_telemetry 对应的控制政策为 ReportDeviceNetworkStatus。
+
+      如果此政策未设置，系统将不会针对信号强度变化事件报告任何其他遥测数据。</translation>
 <translation id="6752711782954612641">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> 来指定在借助 POST 搜索网址时应使用的参数。所指定的内容由一系列以英文逗号分隔的名称-值对组成。如果值为模板参数（例如<ph name="SEARCH_TERM_MARKER" />），系统会将其替换成真实的搜索字词数据。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />，系统将使用 GET 方法发送网址搜索请求。</translation>
@@ -7222,6 +7232,18 @@
 
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
 <translation id="8619748440665904084">禁止在首次运行时导入自动填充表单数据</translation>
+<translation id="8620103780247748230">此政策旨在控制打印任务中<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />IPP（互联网打印协议）属性的值。
+
+      如果此政策设为一个字符串，系统会为每个打印任务额外添加一个<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />项。替换变量后，所添加的<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />项的<ph name="CLIENT_NAME_IPP_ATTRIBUTE" />成员将设为此政策的值。
+
+      支持的变量包括 <ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />、<ph name="USER_EMAIL_PLACEHOLDER" />、<ph name="USER_EMAIL_NAME_PLACEHOLDER" />、<ph name="USER_EMAIL_DOMAIN" />。不支持的占位符变量不会展开。
+
+      如果替换变量后得到的值仅包含 <ph name="ASCII" /> 个可打印字符且长度不超过 255 个字符，该值将被视为有效。
+
+      请注意，为了保护隐私，仅当用户使用 <ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" /> 或 <ph name="IPP_USB_PROTOCOL" /> 协议与打印机通信时，此政策才适用。另请注意，此政策仅适用于支持<ph name="CLIENT_NAME_IPP_ATTRIBUTE" />的打印机。
+
+      如果此政策未设置或设为空值/无效值，系统将不会向打印任务请求中添加额外的<ph name="CLIENT_INFO_PLACEHOLDER" />。
+      </translation>
 <translation id="8623672932476443039">如果启用此政策，用户可以访问已隔离应用的开发者模式。
       如果停用此政策，用户将无法使用这些功能。
       如果未设置此政策，则默认情况下，受企业管理的用户无法在 Chrome 操作系统上使用该模式，但在其他操作系统上可以使用，而其他用户在任何操作系统上均可使用。</translation>

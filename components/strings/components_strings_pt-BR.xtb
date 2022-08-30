@@ -691,6 +691,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742511345840685325">Tênis de mesa</translation>
 <translation id="2742870351467570537">Remover itens selecionados</translation>
+<translation id="2759825833388495838">preencher sua senha no app <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Quadrinhos</translation>
 <translation id="2765217105034171413">Pequeno</translation>
 <translation id="277133753123645258">Método de envio</translation>
@@ -884,6 +885,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="3339440062908617027">Corrida e caminhada</translation>
 <translation id="3339446062576134663">Nuvem (Ash)</translation>
+<translation id="3340978935015468852">configurações</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
 <translation id="3345782426586609320">Olhos</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
@@ -1757,6 +1759,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5633066919399395251">Invasores que estão em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> no momento podem tentar instalar programas perigosos no seu computador e roubar ou excluir suas informações (por exemplo, fotos, senhas, mensagens e cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Conteúdo enganoso bloqueado.</translation>
 <translation id="5633259641094592098">Filmes cult e indie</translation>
+<translation id="563371367637259496">Celular</translation>
 <translation id="5635237618724097525">Smartphones</translation>
 <translation id="5644090287519800334">Mudança X no lado 1 da imagem</translation>
 <translation id="5645854190134202180">Segundo turno</translation>

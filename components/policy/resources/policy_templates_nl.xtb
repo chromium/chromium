@@ -2030,6 +2030,7 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de grote muisaanwijzer in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
+<translation id="3027837632741099453">De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt.</translation>
 <translation id="3028296787914825213">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
 
       * Als je <ph name="PRINTERS_BLACKLIST" /> (waarde 0) selecteert, beperkt <ph name="BULK_PRINTERS_BLACKLIST" /> de toegang tot de opgegeven printers.
@@ -2073,6 +2074,7 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="3063302084011279315">Screencast uitzetten</translation>
 <translation id="3064530882228745118">CNAME-lookup tijdens Kerberos-verificatie gebruiken</translation>
 <translation id="3066446511111537292">Toestaan dat gekoppelde gebruikers van dit apparaat ADB-sideloading gebruiken</translation>
+<translation id="3067462824622454143">Toestaan dat gebruikers beslissen of het apparaat moet worden vergrendeld als het in de slaapstand wordt gezet of als de klep wordt gesloten</translation>
 <translation id="3070119171976169951">Voorkomen dat afbeeldingen van derden een verificatieprompt tonen</translation>
 <translation id="3072045631333522102">Screensaver voor gebruik in het inlogvenster in de winkelmodus</translation>
 <translation id="3072788420987305247">Als je het beleid toepast of niet instelt, worden mediabedieningsopties op het vergrendelscherm getoond als gebruikers het apparaat vergrendelen wanneer er media wordt afgespeeld.
@@ -2945,6 +2947,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 
       Als je het beleid instelt op False, worden er nooit creditcardgegevens voorgesteld of ingevuld door 'Automatisch invullen'. Ook worden er geen aanvullende creditcardgegevens opgeslagen die gebruikers opgeven als ze internetten.</translation>
 <translation id="3989829840000169163">Verouderde extensiepunten van browser blokkeren</translation>
+<translation id="3990391739475801018">De batterijbesparingsmodus wordt uitgezet.</translation>
 <translation id="3994043824457743421">De aankondiging in de middelste ruimte op de pagina Nieuw tabblad tonen</translation>
 <translation id="3997519162482760140">URL's die toegang krijgen tot apparaten voor het vastleggen van video op SAML-inlogpagina's</translation>
 <translation id="4004523942550416237">Voice Match-proces van de Google Assistent niet laten zien tijdens de eerste installatie</translation>
@@ -3262,6 +3265,7 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
 <translation id="4347908978527632940">Als beleid 'True' is en de gebruiker een gebruiker met beperkte rechten is, kunnen andere Android-apps de internetbeperkingen van de gebruiker opvragen via de contentprovider.
 
           Als het beleid 'False' of niet ingesteld is, retourneert de contentprovider geen informatie.</translation>
+<translation id="435395045087992163">Het apparaat niet vergrendelen als het in de slaapstand wordt gezet of als de klep wordt gesloten</translation>
 <translation id="4357587374229381015">Hiermee wordt een naam voor de URL-parameter opgegeven die wordt gebruikt op de SAML IdP-inlogpagina om het gebruikersnaamveld automatisch in te vullen.
 
       Het e-mailadres van de gebruiker voor het <ph name="PRODUCT_OS_NAME" />-profiel wordt gebruikt als waarde voor de URL-parameter. Zet deze instelling dus uit als gebruikers waarschijnlijk verschillende e-mailadressen gebruiken met SAML IdP.
@@ -3561,6 +3565,13 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 
       Als dit beleid niet is ingesteld of als het is toegepast, worden de controles voor DNS-onderschepping uitgevoerd. Als het beleid expliciet niet is toegepast, is dit niet het geval.</translation>
 <translation id="4700190441681139987">Geen sites toegang geven tot sensoren</translation>
+<translation id="4701899474784891858">Met dit beleid kun je de instelling voor batterijbesparing aan- of uitzetten. Met deze instelling wordt de framesnelheid beperkt voor een lager stroomverbruik.
+      Als je dit beleid niet instelt, kan de eindgebruiker deze instelling beheren in chrome://settings/performance.
+      Dit zijn de verschillende niveaus:
+<ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): De batterijbesparingsmodus wordt uitgezet.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt en het batterijniveau laag is.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt.
+      </translation>
 <translation id="4703402283970867140">Slim dimmodel aanzetten, zodat het langer duurt tot het scherm wordt gedimd</translation>
 <translation id="4704958130749494760">Automatisch toestemming aan sites geven om verbinding te maken met seriële USB-apparaten.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo is niet beschikbaar.</translation>
@@ -5275,6 +5286,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6575944031719151455">Als je het beleid instelt, specificeer je de lijst met lokale accounts op het apparaat die moeten worden getoond op het inlogscherm. De verschillende lokale accounts op het apparaat worden aangegeven door ID's.
 
       Als je het beleid niet instelt of de lijst leeg is, zijn er geen lokale accounts op het apparaat.</translation>
+<translation id="6580851705156412587">Het apparaat vergrendelen als het in de slaapstand wordt gezet of de klep wordt gesloten</translation>
 <translation id="6581048059229620221">Als je dit beleid niet toepast, kan de host voor externe support niet worden gestart of ingesteld om inkomende verbindingen te accepteren.
 
           Dit beleid heeft geen effect op scenario's voor externe toegang.
@@ -6089,6 +6101,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, wordt netwerkvoorspelling aangezet, maar kan de gebruiker dit wijzigen.</translation>
 <translation id="7408815947231046196">Back-up van <ph name="PRODUCT_NAME" />-gegevens toestaan</translation>
+<translation id="740885188496462583">Batterijbesparingsmodus aanzetten</translation>
 <translation id="7410074797376205571">Toestaan dat <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-verzoeken uitvoert die afkomstig zijn van een externe host.</translation>
 <translation id="7412456346709338637">Gegevenstoegang voor Thunderbolt/USB4-randapparaten aanzetten</translation>
 <translation id="7417438464912687020">Verbindingen voor externe toegang tot deze machine toestaan</translation>
@@ -6570,6 +6583,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
 <translation id="7941528208359969119">Toestaan dat online <ph name="OCSP_CRL_LABEL" />-checks worden uitgevoerd</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
+<translation id="7945445169067895719">Vergrendeling aanzetten als het apparaat in de slaapstand wordt gezet of de klep wordt gesloten</translation>
 <translation id="7946350455013548764">Als je het beleid instelt op 3, kunnen websites toegang vragen tot HID-apparaten. Als je het beleid instelt op 2, wordt toegang tot HID-apparaten geweigerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.
@@ -6900,6 +6914,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
           Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="8288199156259560552">Google-locatieservice voor Android aanzetten</translation>
+<translation id="8289824033213234651">De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt en het batterijniveau laag is.</translation>
 <translation id="8290875622178450531">Zet de toegankelijkheidsfunctie voor dicteren aan.
 
           Als dit beleid is toegepast, staat de functie voor dicteren altijd aan.

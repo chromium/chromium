@@ -489,7 +489,6 @@
 <translation id="5159383109919732130">‏<ph name="BEGIN_BOLD" />هنوز دستگاه خود را جدا نکنید!<ph name="END_BOLD" />
  <ph name="LINE_BREAKS" />
  جداکردن دستگاه هنگامی که در حال استفاده است ممکن است باعث از دست رفتن داده‌ها شود.  لطفاً تا به پایان رسیدن عملیات صبر کنید، سپس دستگاه را با استفاده از برنامه Files خارج نمایید.</translation>
-<translation id="5159560892333415631">خالی کردن حذف‌شده‌ها</translation>
 <translation id="5163869187418756376">اشتراک‌گذاری انجام نشد. اتصال خود را بررسی کرده، بعداً دوباره امتحان کنید.</translation>
 <translation id="516592729076796170">دووراک آمریکایی برنامه‌نویس‌ها</translation>
 <translation id="5172749059808361023">جزئیات محدودیت</translation>
@@ -529,7 +528,7 @@
 <translation id="5428105026674456456">اسپانیایی</translation>
 <translation id="5438282218546237410">نتیجه‌ای برای <ph name="SEARCH_TERM" /> پیدا نشد.</translation>
 <translation id="5449551289610225147">گذرواژه نامعتبر است</translation>
-<translation id="5463231940765244860">وارد کنید</translation>
+<translation id="5463231940765244860">وارد کردن</translation>
 <translation id="5469868506864199649">ایتالیایی</translation>
 <translation id="5473333559083690127">پین جدید را دوباره وارد کنید</translation>
 <translation id="5489067830765222292">لتونیایی</translation>
@@ -967,7 +966,6 @@
 <translation id="9171921933192916600">کتاب‌باز</translation>
 <translation id="9172592259078059678">نویسه‌گردانی گجراتی</translation>
 <translation id="9173120999827300720">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی</translation>
-<translation id="9174050671906956834">موارد موجود در «حذف‌شده‌ها» بعداز ٣۰ روز برای همیشه حذف می‌شود.</translation>
 <translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="9189836632794948435">قزاقی</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> مورد استخراج شد.</translation>

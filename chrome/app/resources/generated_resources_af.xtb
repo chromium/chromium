@@ -3284,6 +3284,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4062561150282203854">Sinkroniseer jou <ph name="DEVICE_TYPE" />-programme, -instellings en meer</translation>
 <translation id="4065876735068446555">Die netwerk wat jy tans gebruik (<ph name="NETWORK_ID" />) kan vereis dat jy sy aanmeldbladsy besoek.</translation>
 <translation id="4066207411788646768">Gaan jou verbinding na om beskikbare drukkers in jou netwerk te sien</translation>
+<translation id="4066945815577305767">Wagwoorde het uitgetel</translation>
 <translation id="4068776064906523561">Gestoorde vingerafdrukke</translation>
 <translation id="407173827865827707">Met klik</translation>
 <translation id="4072701974556190758">Wagwoord sal in jou Google-rekening <ph name="ACCOUNT" /> gestoor word. Jy hoef dit nie te onthou nie.</translation>
@@ -5592,6 +5593,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie Chromebook na die fabriekinstellings terugstel om Linux te begin.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
 <translation id="6338402296920404442">Oorweeg dit om <ph name="FILENAME" /> uit te vee sodat ander wat hierdie toestel gebruik, nie jou wagwoorde kan sien nie.</translation>
+<translation id="6338968693068997776">Voeg USB-toestel by</translation>
 <translation id="6338981933082930623">Alle werwe kan enige advertensies vir jou wys</translation>
 <translation id="6339668969738228384">Skep 'n nuwe profiel vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetdrukkerprotokol (IPPS)</translation>
@@ -6189,6 +6191,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6903907808598579934">Skakel sinkronisering aan</translation>
 <translation id="6904344821472985372">Trek lêertoegang terug</translation>
 <translation id="6904655473976120856">Druk Program-knoppie om uit te gaan</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{Google Wagwoordbestuurder sluit ná 1 minuut van onaktiwiteit om jou wagwoorde veilig te hou}other{Google Wagwoordbestuurder sluit ná {NUM_MINS} minute van onaktiwiteit om jou wagwoorde veilig te hou}}</translation>
 <translation id="6909422577741440844">Ontvang van hierdie toestel af?</translation>
 <translation id="6910211073230771657">Uitgevee</translation>
 <translation id="691106080621596509">Dit sal alle data en webkoekies uitvee wat deur <ph name="SITE_GROUP_NAME" />, enige werwe daaronder en die geïnstalleerde program daarvan geberg word</translation>
@@ -8029,6 +8032,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8688672835843460752">Beskikbaar</translation>
 <translation id="8690129572193755009">Werwe kan vra om protokolle te hanteer</translation>
 <translation id="8692107307702113268">Wagwoord is meer as 1 000 karakters</translation>
+<translation id="8694596275649352090">Sluit wanneer dit gaan slaap of deksel toegemaak word</translation>
 <translation id="8695139659682234808">Voeg ouerkontroles by ná opstelling</translation>
 <translation id="8695825812785969222">Maak ligging oop …</translation>
 <translation id="8698269656364382265">Swiep van die linkerkant af om na die vorige skerm toe terug te keer.</translation>
@@ -8077,6 +8081,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8732844209475700754">Nog instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
 <translation id="8734073480934656039">Deur hierdie instelling te aktiveer, kan kioskprogramme outomaties met afskop begin.</translation>
 <translation id="8734674662128056360">Blokkering van derdeparty-webkoekies</translation>
+<translation id="8734755021067981851">Geen USB-toestelle is gekoppel nie.</translation>
 <translation id="873545264931343897">Herlaai die bladsy om <ph name="PLUGIN_NAME" /> te aktiveer wanneer dit klaar opgedateer is</translation>
 <translation id="8736288397686080465">Hierdie werf is in die agtergrond opgedateer.</translation>
 <translation id="8737709691285775803">Shill</translation>

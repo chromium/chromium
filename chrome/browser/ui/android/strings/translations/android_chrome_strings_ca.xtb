@@ -748,6 +748,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5091199029769593641">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="SITE_NAME" />. Els llocs web que segueixes es desen al teu Compte de Google. Pots gestionar-los a la configuració de Discover.</translation>
 <translation id="5091249083535528968">Dades d'ús ampliades</translation>
 <translation id="509429900233858213">S'ha produït un error.</translation>
+<translation id="5099845111805573968">Quan seleccionis "lloc web per a ordinadors" una vegada, aquesta opció s'aplicarà al lloc web cada vegada que el visitis.</translation>
 <translation id="5102401324271069229">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura</translation>
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5958275228015807058">Trobaràs els teus fitxers i les teves pàgines a Baixades</translation>
 <translation id="5962718611393537961">Toca per replegar</translation>
 <translation id="5964869237734432770">Atura descripcions d'imatges</translation>
+<translation id="5966233851250124270">Chrome recordarà la teva elecció</translation>
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
 <translation id="5995726099713306770">Vols tornar a baixar la pàgina?</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>

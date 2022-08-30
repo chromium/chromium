@@ -1111,6 +1111,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2043770014371753404">Impresoras de empresa inhabilitadas</translation>
 <translation id="2057317273526988987">Permitir el acceso a una lista de URLs</translation>
 <translation id="2058055310819710697">Habilitar el modo desarrollador de aplicaciones aisladas</translation>
+<translation id="205807990145127714">Datos de telemetría para registrar en los cambios de intensidad de la señal</translation>
 <translation id="2061123930713023976">Permite capturas de paquetes de red de depuración</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
 <translation id="2062632109797189011">Volver a habilitar la API obsoleta window.webkitStorageInfo</translation>
@@ -2072,6 +2073,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Si asignas un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no asignas ningún valor a esta política, el cursor grande se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="3027837632741099453">El modo Ahorro de batería se habilitará cuando el dispositivo funcione con batería.</translation>
 <translation id="3028296787914825213">Si se establece esta política, se designará qué política de acceso se utiliza para configurar impresoras en bloque y controlará qué impresoras de la política <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> están disponibles para los usuarios.
 
       * Si se selecciona <ph name="PRINTERS_BLACKLIST" /> (valor 0), <ph name="BULK_PRINTERS_BLACKLIST" /> restringe el acceso a las impresoras especificadas
@@ -2115,6 +2117,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo usen la instalación de fuente desconocida adb</translation>
+<translation id="3067462824622454143">Permitir que los usuarios decidan si el dispositivo se debe bloquear al suspenderlo o al cerrar la tapa</translation>
 <translation id="3070119171976169951">Evitar que las imágenes de terceros muestren una solicitud de autenticación</translation>
 <translation id="3072045631333522102">Protector de pantalla a utilizar en la pantalla de inicio de sesión del modo de venta</translation>
 <translation id="3072788420987305247">Si se habilita la política o no se establece, se mostrarán los controles multimedia en la pantalla de bloqueo cuando el usuario bloquee el dispositivo mientras se esté reproduciendo contenido multimedia.
@@ -2998,6 +3001,7 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 
       Si se le asigna el valor "False", la función Autocompletar nunca sugerirá ni completará información de tarjetas de crédito, ni tampoco guardará la información adicional de tarjetas de crédito que puedan enviar los usuarios mientras navegan por la Web.</translation>
 <translation id="3989829840000169163">Bloquea los puntos de extensión antiguos del navegador</translation>
+<translation id="3990391739475801018">El modo Ahorro de batería se inhabilitará.</translation>
 <translation id="3994043824457743421">Mostrar el anuncio del espacio intermedio en la página Nueva pestaña</translation>
 <translation id="3997519162482760140">URLs a las que los dispositivos de captura de vídeo podrán acceder en las páginas de inicio de sesión con SAML</translation>
 <translation id="4004523942550416237">No mostrar el flujo de Voice Match del Asistente de Google durante la configuración inicial</translation>
@@ -3329,6 +3333,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4347908978527632940">Si la política está activada y se trata de un usuario supervisado, otras aplicaciones de Android pueden consultar las restricciones web del usuario a través de un proveedor de contenido.
 
           Si está desactivada o no se ha establecido, el proveedor de contenido no devuelve ninguna información.</translation>
+<translation id="435395045087992163">No bloquear el dispositivo al suspenderlo o al cerrar la tapa</translation>
 <translation id="4357587374229381015">Especifica el nombre del parámetro de URL que se usará en la página de inicio de sesión del proveedor de identidades SAML para autocompletar el campo del nombre de usuario.
 
       El correo del usuario asociado a su perfil de <ph name="PRODUCT_OS_NAME" /> se utilizará como valor del parámetro de URL. Por lo tanto, esta opción debe estar inhabilitada si se espera que los usuarios utilicen otros correos con el proveedor de identidades SAML.
@@ -3629,6 +3634,13 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
       Si esta política se habilita o no se establece, se realizarán las comprobaciones de interceptación de DNS. Si se inhabilita, no se realizarán las comprobaciones.</translation>
 <translation id="4700190441681139987">No permitir a ningún sitio web acceder a los sensores</translation>
+<translation id="4701899474784891858">Esta política habilita o inhabilita el ajuste del modo Ahorro de batería. Este ajuste permite limitar la velocidad de fotogramas para reducir el consumo de energía.
+      Si no se define esta política, el usuario final podrá controlar este ajuste en chrome://settings/performance.
+      Los diferentes niveles son:
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): se inhabilitará el modo Ahorro de batería.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): el modo Ahorro de batería se habilitará cuando el dispositivo funcione con batería y el nivel de la batería sea bajo.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): el modo Ahorro de batería se habilitará cuando el dispositivo funcione con batería.
+      </translation>
 <translation id="4703402283970867140">Habilitar el modelo de atenuación inteligente para alargar el tiempo que pasa hasta que la pantalla se atenúe.</translation>
 <translation id="4704958130749494760">Permite conceder permiso automáticamente a sitios para conectarse a dispositivos serie USB.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo no estará disponible.</translation>
@@ -3741,6 +3753,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si se inhabilita esta política o no se le asigna ningún valor, el registro en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional y, si no se puede hacer, no se bloqueará el proceso de inicio de <ph name="PRODUCT_NAME" />.
 
       En ordenadores, el registro de políticas de permisos de nube utiliza esta política. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="488996881569316769">Telemetría de red</translation>
 <translation id="4890453377345554695">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de escritura a archivos o directorios en el sistema de archivos del sistema operativo del host.
 
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -4074,6 +4087,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si esta política no se establece o no es válida, el comportamiento será el mismo que en el caso de "Esperar a que la versión actual iguale a la versión inferior objetivo".</translation>
 <translation id="5229339291699779956">Habilita la tunelización de PCIe desde dispositivos periféricos Thunderbolt/USB4, y los dispositivos periféricos funcionarán a plena capacidad</translation>
+<translation id="5230095739094490896">Imprimir plantilla del atributo IPP "client-name"</translation>
 <translation id="5233239004553860036">Si se asigna el valor <ph name="POLICY_VALUE_ALL" /> a esta política o no se establece, se permitirán todos los usos de las cuentas gestionadas. Esto podría provocar que una cuenta gestionada fuera secundaria, por lo que solo recibiría políticas cuando se inicie sesión en la cuenta como cuenta principal en el perfil del navegador.
       Las políticas establecidas en la cuenta no se implementarán en los siguientes casos:
         -  Si se trata de una cuenta secundaria en el nivel del sistema operativo (Configuración de la cuenta).
@@ -5288,6 +5302,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6506486086262398387">Si se habilita esta política, la función de sistemas de archivos compartidos en red de <ph name="PRODUCT_OS_NAME" /> usará NTLM para la autenticación en sistemas de archivos compartidos SMB si es necesario. Si se inhabilita, se desactivará el uso de NTLM para la autenticación en sistemas de archivos compartidos SMB.
 
       Si no se asigna ningún valor a esta política, el comportamiento estará inhabilitado para los usuarios gestionados y habilitado para el resto de los usuarios de forma predeterminada.</translation>
+<translation id="6513453889192806240">Latencia de HTTPS</translation>
 <translation id="6515357889978918016">Imagen de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Esperar a que la versión actual iguale a la versión inferior objetivo</translation>
 <translation id="6520802717075138474">Importa los motores de búsqueda desde el navegador predeterminado en la primera ejecución.</translation>
@@ -5373,6 +5388,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6575944031719151455">Si se define esta política, especificará la lista de cuentas locales del dispositivo que se muestran en la pantalla de inicio de sesión. Los identificadores se usan para distinguir las diversas cuentas locales del dispositivo.
 
       Si no se define esta política o se le asigna una lista vacía, no habrá ninguna cuenta local del dispositivo.</translation>
+<translation id="6580851705156412587">Bloquear el dispositivo al suspenderlo o al cerrar la tapa</translation>
 <translation id="6581048059229620221">Si se inhabilita esta política, el host de asistencia remota no se podrá iniciar ni configurar para aceptar conexiones entrantes.
 
           Esta política no afecta a los accesos remotos.
@@ -5557,6 +5573,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se le asigna el valor "false" a esta política o no se le asigna ninguno, <ph name="PLUGIN_VM_NAME" /> no estará habilitado para el usuario.
       Si se le asigna el valor "true", <ph name="PLUGIN_VM_NAME" /> estará habilitado para el usuario (si los demás ajustes lo permiten). A <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> se les debe haber asignado el valor "true", y <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> deben haberse configurado para que <ph name="PLUGIN_VM_NAME" /> pueda ejecutarse.</translation>
+<translation id="6750902920405577210">Lista de datos de telemetría que deben registrarse en los eventos de cambio de intensidad de la señal.
+
+      Cada dato de telemetría especificado solo se registrará si no se ha inhabilitado mediante la política de control.
+      La política de control de https_latency y network_telemetry es ReportDeviceNetworkStatus.
+
+      Si no se define, no se registrarán datos de telemetría adicionales en los eventos de cambio de intensidad de la señal.</translation>
 <translation id="6752711782954612641">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar una URL con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda se enviarán mediante el método GET.</translation>
@@ -6185,6 +6207,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se define, se habilita la predicción de red, pero el usuario puede cambiarlo.</translation>
 <translation id="7408815947231046196">Permitir que se cree una copia de seguridad de los datos de <ph name="PRODUCT_NAME" /></translation>
+<translation id="740885188496462583">Habilitar el modo Ahorro de batería</translation>
 <translation id="7410074797376205571">Permitir que <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ejecute las solicitudes a la API WebAuthn mediante un proxy desde un host remoto.</translation>
 <translation id="7412456346709338637">Habilita el acceso a datos desde periféricos Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Permitir conexiones de acceso remoto a este equipo</translation>
@@ -6668,6 +6691,7 @@ De forma predeterminada, una extensión o aplicación Android no puede utilizar 
 <translation id="7937766917976512374">Permitir o denegar captura de vídeo</translation>
 <translation id="7941528208359969119">Permitir que se hagan comprobaciones de <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">No predecir las acciones de red en ninguna conexión de red</translation>
+<translation id="7945445169067895719">Bloquear el dispositivo al suspenderlo o al cerrar la tapa</translation>
 <translation id="7946350455013548764">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los dispositivos HID. Si se le asigna el valor 2, se denegará el acceso a los dispositivos HID.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.
@@ -7000,6 +7024,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 
           Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8288199156259560552">Habilitar los servicios de ubicación de Google para aplicaciones de Android</translation>
+<translation id="8289824033213234651">El modo Ahorro de batería se habilitará cuando el dispositivo funcione con batería y el nivel de la batería sea bajo.</translation>
 <translation id="8290875622178450531">Habilita la función de accesibilidad de dictado.
 
           Si se habilita esta política, el dictado siempre estará activado.
@@ -7352,6 +7377,18 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 
       Si se asigna el valor "false" a esta política, no se inmovilizará ninguna pestaña.</translation>
 <translation id="8619748440665904084">Inhabilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
+<translation id="8620103780247748230">Esta política controla el valor del atributo IPP (protocolo de impresión en Internet) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> en los trabajos de impresión.
+
+      Si se define esta política en una cadena, se añadirá un elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a cada trabajo de impresión. Al miembro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> del elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> añadido se le asignará el valor de la política después de sustituir las variables.
+
+      Las variables admitidas son <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> y <ph name="USER_EMAIL_DOMAIN" />. Las variables de marcador de posición no admitidas no se sustituirán.
+
+      El valor resultante después de sustituir las variables se considera válido si contiene solo caracteres <ph name="ASCII" /> que se puedan imprimir y su longitud no es superior a 255.
+
+      Ten en cuenta que, por motivos de privacidad, esta política solo se aplica para comunicarse con una impresora mediante los protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Asimismo, esta política solo se aplica a las impresoras compatibles con <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      Si no se define esta política o se le asigna un valor vacío o no válido, no se añadirá un <ph name="CLIENT_INFO_PLACEHOLDER" /> adicional a las solicitudes de trabajo de impresión.
+      </translation>
 <translation id="8623672932476443039">Si se habilita la política, los usuarios podrán acceder al modo desarrollador para aplicaciones aisladas.
       Si se inhabilita, los usuarios no podrán acceder a esta función.
       Si no se establece, la opción predeterminada no estará disponible para usuarios gestionados por empresas en ChromeOS, pero sí estará disponible para el resto de los usuarios y sistemas operativos.</translation>

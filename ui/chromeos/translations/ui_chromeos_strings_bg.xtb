@@ -313,6 +313,7 @@
 <translation id="3689865792480713551">Анулиране на <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, <ph name="CONNECTION_STATUS" />, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3691184985318546178">Синхалски</translation>
+<translation id="3722341589402358578">Възникна грешка. Някои елементи може да не са преместени в кошчето.</translation>
 <translation id="3726463242007121105">Това устройство не може да бъде отворено, защото файловата му система не се поддържа.</translation>
 <translation id="3727148787322499904">Промяната на тази настройка ще засегне всички споделени мрежи</translation>
 <translation id="3737576078404241332">Премахване от страничната лента</translation>
@@ -489,7 +490,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Не премахвайте устройството си все още!<ph name="END_BOLD" />
 <ph name="LINE_BREAKS" />
    Премахването на устройството, докато се използва, може да доведе до загуба на данни. Моля, изчакайте завършването на операцията, след което го извадете посредством приложението Файлове.</translation>
-<translation id="5159560892333415631">Изчистване на кошчето</translation>
 <translation id="5163869187418756376">Споделянето не бе успешно. Проверете връзката си и опитайте отново по-късно.</translation>
 <translation id="516592729076796170">Американска (Дворак) клавиатура за програмисти</translation>
 <translation id="5172749059808361023">Подробности за ограничението</translation>
@@ -967,7 +967,6 @@
 <translation id="9171921933192916600">Книжен червей</translation>
 <translation id="9172592259078059678">Гуджарати (транслитерация)</translation>
 <translation id="9173120999827300720">Английски (САЩ) с международна клавиатура</translation>
-<translation id="9174050671906956834">Елементите в кошчето се изтриват завинаги след 30 дни.</translation>
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахски</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> елемента са извлечени.</translation>

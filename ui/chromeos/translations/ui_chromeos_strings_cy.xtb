@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Peidiwch â thynnu'ch dyfais eto<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Mae'n bosib y bydd tynnu'ch dyfais tra'i bod yn cael ei defnyddio achosi colli data.  Arhoswch nes bod y weithred wedi gorffen, yna tynnwch y ddyfais gan ddefnyddio'r ap Files.</translation>
-<translation id="5159560892333415631">Gwagio'r Bin Sbwriel</translation>
 <translation id="5163869187418756376">Wedi methu â rhannu. Gwiriwch eich cysylltiad a rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="516592729076796170">Dvorak Rhaglennwr UDA</translation>
 <translation id="5172749059808361023">Manylion cyfyngiad</translation>
@@ -966,7 +965,6 @@
 <translation id="9171921933192916600">Pryf llyfr</translation>
 <translation id="9172592259078059678">Trawslythrennu Gwjarati</translation>
 <translation id="9173120999827300720">Saesneg (UDA) gyda bysellfwrdd Rhyngwladol</translation>
-<translation id="9174050671906956834">Mae eitemau yn y Bin Sbwriel yn cael eu dileu am byth ar ôl 30 diwrnod.</translation>
 <translation id="9183302530794969518">Dogfennau Google</translation>
 <translation id="9189836632794948435">Kazaceg</translation>
 <translation id="9200427192836333033">Echdynnwyd <ph name="NUMBER_OF_ITEMS" /> eitem.</translation>

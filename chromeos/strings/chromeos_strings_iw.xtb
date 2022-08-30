@@ -233,6 +233,7 @@
 <translation id="3283504360622356314">{0,plural, =1{עריכת הקובץ}two{עריכת הקבצים}many{עריכת הקבצים}other{עריכת הקבצים}}</translation>
 <translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3291996639387199448">כיוון המפתח</translation>
+<translation id="3294437725009624529">אורח</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>

@@ -80,6 +80,7 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Salir</translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (no recomendado)</translation>
+<translation id="2692299144678073135">Permitir que los sitios relacionados te recuerden de un sitio a otro</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
@@ -140,6 +141,7 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permitir cookies en un sitio específico.</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
+<translation id="4048876521107516222">Los sitios relacionados usan cookies para ayudarte, por ejemplo, a mantener tu sesión iniciada</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas web</translation>
 <translation id="4165986682804962316">Configuración del sitio</translation>
 <translation id="4169549551965910670">Conectado a un dispositivo USB</translation>
@@ -222,6 +224,7 @@
 <translation id="5887687176710214216">Última visita: ayer</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5922853908706496913">Compartiendo tu pantalla</translation>
+<translation id="5922967540311291836">Bloquea cookies de terceros:</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="5975083100439434680">Reducir</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -312,6 +315,7 @@
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7846621471902887024">Se cerrarán tus sesiones en todos los sitios.</translation>
 <translation id="7882806643839505685">Permite que se reproduzcan sonidos en un sitio específico.</translation>
+<translation id="789180354981963912">Bloquea cookies de terceros en incógnito:</translation>
 <translation id="7940722705963108451">Recuérdamelo</translation>
 <translation id="7986741934819883144">Selecciona un contacto</translation>
 <translation id="7999064672810608036">¿Seguro que quieres borrar todos los datos locales, incluidas las cookies, y restablecer todos los permisos para este sitio web?</translation>

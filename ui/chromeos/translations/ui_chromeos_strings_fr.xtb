@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Annulez <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, désactivé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="3691184985318546178">Cingalais</translation>
+<translation id="3722341589402358578">Une erreur s'est produite. Il se peut que certains éléments n'aient pas été supprimés.</translation>
 <translation id="3726463242007121105">Impossible d'ouvrir ce périphérique, car son système de fichiers n'est pas compatible.</translation>
 <translation id="3727148787322499904">Les modifications apportées à ce paramètre s'appliquent à tous les réseaux partagés</translation>
 <translation id="3737576078404241332">Supprimer de la barre latérale</translation>
@@ -488,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Ne retirez pas votre périphérique pour le moment !<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Si vous retirez votre périphérique pendant qu'il est utilisé, vous risquez de perdre des données. Veuillez attendre la fin de l'opération, puis éjecter le périphérique à l'aide de l'application Fichiers.</translation>
-<translation id="5159560892333415631">Vider la corbeille</translation>
 <translation id="5163869187418756376">Échec du partage. Veuillez vérifier la connexion, puis réessayer.</translation>
 <translation id="516592729076796170">Dvorak américain pour programmeurs</translation>
 <translation id="5172749059808361023">Détails des restrictions</translation>
@@ -966,7 +966,6 @@
 <translation id="9171921933192916600">Ver de livre</translation>
 <translation id="9172592259078059678">Gujarati (translittération)</translation>
 <translation id="9173120999827300720">Anglais (États-Unis) avec clavier international</translation>
-<translation id="9174050671906956834">Les éléments dans la corbeille sont définitivement supprimés au bout de 30 jours.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> éléments extraits.</translation>

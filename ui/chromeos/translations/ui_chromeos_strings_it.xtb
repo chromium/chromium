@@ -489,7 +489,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Non rimuovere ancora il dispositivo.<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    La rimozione del dispositivo mentre è in uso potrebbe causare la perdita di dati. Attendi fino al termine dell'operazione, quindi espelli il dispositivo utilizzando l'app File.</translation>
-<translation id="5159560892333415631">Svuota cestino</translation>
 <translation id="5163869187418756376">Condivisione non riuscita. Controlla la connessione e riprova più tardi.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Dettagli limitazioni</translation>
@@ -966,7 +965,6 @@
 <translation id="9171921933192916600">Topo di biblioteca</translation>
 <translation id="9172592259078059678">Traslitterazione gujarati</translation>
 <translation id="9173120999827300720">Inglese (USA) con tastiera internazionale</translation>
-<translation id="9174050671906956834">Gli elementi nel cestino vengono eliminati definitivamente dopo 30 giorni.</translation>
 <translation id="9183302530794969518">Documenti Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementi estratti.</translation>

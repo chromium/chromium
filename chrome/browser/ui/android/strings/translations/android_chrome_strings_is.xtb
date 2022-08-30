@@ -748,6 +748,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5091199029769593641">Fljótlega sérðu sögur frá <ph name="SITE_NAME" /> þegar þú opnar nýjan flipa. Vefsvæði sem þú fylgir eru vistuð á Google reikningnum þínum. Þú getur stjórnað þeim í stillingum Tillagna.</translation>
 <translation id="5091249083535528968">Ítarleg notkunargögn</translation>
 <translation id="509429900233858213">Villa kom upp.</translation>
+<translation id="5099845111805573968">Þegar þú velur tölvuvef einu sinni er stillingin notuð fyrir vefsvæðið í hvert skipti sem þú opnar það.</translation>
 <translation id="5102401324271069229">Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, kann Chrome að senda vefslóðir í örugga vefskoðun, þar á meðal hluta af innihaldi síðna</translation>
 <translation id="510275257476243843">Ein klst. eftir</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5958275228015807058">Þú finnur skrár og síður í Niðurhali</translation>
 <translation id="5962718611393537961">Ýttu til að draga saman</translation>
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
+<translation id="5966233851250124270">Chrome man valið þitt</translation>
 <translation id="5979084224081478209">Yfirfara aðgangsorð</translation>
 <translation id="5995726099713306770">Sækja síðu aftur?</translation>
 <translation id="6000066717592683814">Nota Google áfram</translation>
