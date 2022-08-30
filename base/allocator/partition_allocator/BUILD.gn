@@ -55,6 +55,7 @@ component("partition_alloc") {
     "dangling_raw_ptr_checks.cc",
     "dangling_raw_ptr_checks.h",
     "freeslot_bitmap.h",
+    "freeslot_bitmap_constants.h",
     "memory_reclaimer.cc",
     "memory_reclaimer.h",
     "oom.cc",

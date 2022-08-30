@@ -7,38 +7,67 @@
 
 #include <climits>
 #include <cstdint>
+#include <utility>
 
-#include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/freeslot_bitmap_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_page.h"
+
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
 
 namespace partition_alloc::internal {
 
-using FreeSlotBitmapCellType = uintptr_t;
-constexpr size_t kFreeSlotBitmapBitsPerCell =
-    sizeof(FreeSlotBitmapCellType) * CHAR_BIT;
-
-// The number of bits necessary for the bitmap is equal to the maximum number of
-// slots in a super page. We divide this by kBitsPerCell to get the number of
-// cells in a bitmap.
-constexpr size_t kFreeSlotBitmapSize = (kSuperPageSize / kAlignment) / CHAR_BIT;
-
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
-ReservedFreeSlotBitmapSize() {
-#if BUILDFLAG(USE_FREESLOT_BITMAP)
-  return base::bits::AlignUp(kFreeSlotBitmapSize, PartitionPageSize());
-#else
-  return 0;
-#endif
+PA_ALWAYS_INLINE uintptr_t GetFreeSlotBitmapAddressForPointer(uintptr_t ptr) {
+  uintptr_t super_page = ptr & kSuperPageBaseMask;
+  return SuperPageFreeSlotBitmapAddr(super_page);
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
-NumPartitionPagesPerFreeSlotBitmap() {
-  return ReservedFreeSlotBitmapSize() / PartitionPageSize();
+// Calculates the cell address and the offset inside the cell corresponding to
+// the |slot_address|.
+PA_ALWAYS_INLINE std::pair<FreeSlotBitmapCellType*, size_t>
+GetFreeSlotBitmapCellPtrAndBitIndex(uintptr_t slot_address) {
+  uintptr_t slot_superpage_offset = slot_address & kSuperPageOffsetMask;
+  uintptr_t superpage_bitmap_start =
+      GetFreeSlotBitmapAddressForPointer(slot_address);
+  uintptr_t cell_addr = base::bits::AlignDown(
+      superpage_bitmap_start + (slot_superpage_offset / kAlignment) / CHAR_BIT,
+      sizeof(FreeSlotBitmapCellType));
+  PA_DCHECK(cell_addr < superpage_bitmap_start + kFreeSlotBitmapSize);
+  size_t bit_index =
+      (slot_superpage_offset / kAlignment) & kFreeSlotBitmapOffsetMask;
+  PA_DCHECK(bit_index < kFreeSlotBitmapBitsPerCell);
+  return {reinterpret_cast<FreeSlotBitmapCellType*>(cell_addr), bit_index};
+}
+
+// This bitmap marks the used slot as 0 and free one as 1. This is because we
+// would like to set all the slots as "used" by default to prevent allocating a
+// used slot when the freelist entry is overwritten.
+
+// Returns true if the bit corresponding to |address| is used( = 0)
+PA_ALWAYS_INLINE bool FreeSlotBitmapSlotIsUsed(uintptr_t address) {
+  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(address);
+  return (*cell & (static_cast<FreeSlotBitmapCellType>(1) << bit_index)) == 0;
+}
+
+// Mark the bit corresponding to |address| as used( = 0).
+PA_ALWAYS_INLINE void FreeSlotBitmapMarkSlotAsUsed(uintptr_t address) {
+  PA_DCHECK(!FreeSlotBitmapSlotIsUsed(address));
+  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(address);
+  *cell &= ~(static_cast<FreeSlotBitmapCellType>(1) << bit_index);
+}
+
+// Mark the bit corresponding to |address| as free( = 1).
+PA_ALWAYS_INLINE void FreeSlotBitmapMarkSlotAsFree(uintptr_t address) {
+  PA_DCHECK(FreeSlotBitmapSlotIsUsed(address));
+  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(address);
+  *cell |= (static_cast<FreeSlotBitmapCellType>(1) << bit_index);
 }
 
 }  // namespace partition_alloc::internal
+
+#endif  // BUILDFLAG(USE_FREESLOT_BITMAP)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_FREESLOT_BITMAP_H_
