@@ -41,6 +41,7 @@
 #include "chromeos/ui/base/tablet_state.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -360,8 +361,9 @@ void AppServiceContextMenu::OnGetMenuModel(
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
   size_t index = 0;
-  if (apps::PopulateNewItemFromMojoMenuItems(
-          menu_items->items, menu_model.get(), submenu_.get(),
+  if (apps::PopulateNewItemFromMenuItems(
+          apps::ConvertMojomMenuItemsToMenuItems(menu_items), menu_model.get(),
+          submenu_.get(),
           base::BindOnce(&AppServiceContextMenu::GetMenuItemVectorIcon))) {
     index = 1;
   }
@@ -394,9 +396,9 @@ void AppServiceContextMenu::OnGetMenuModel(
           static_cast<ash::CommandId>(menu_items->items[i]->command_id),
           menu_items->items[i]->string_id);
     } else {
-      apps::PopulateItemFromMojoMenuItems(std::move(menu_items->items[i]),
-                                          menu_model.get(),
-                                          app_shortcut_items_.get());
+      apps::PopulateItemFromMenuItem(
+          apps::ConvertMojomMenuItemToMenuItem(menu_items->items[i]),
+          menu_model.get(), app_shortcut_items_.get());
     }
   }
 

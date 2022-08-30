@@ -46,6 +46,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -297,8 +298,9 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
   size_t index = 0;
   // Unretained is safe here because PopulateNewItemFromMojoMenuItems should
   // call GetVectorIcon synchronously.
-  if (apps::PopulateNewItemFromMojoMenuItems(
-          menu_items->items, menu_model.get(), submenu_.get(),
+  if (apps::PopulateNewItemFromMenuItems(
+          apps::ConvertMojomMenuItemsToMenuItems(menu_items), menu_model.get(),
+          submenu_.get(),
           base::BindOnce(&AppServiceShelfContextMenu::GetCommandIdVectorIcon,
                          base::Unretained(this)))) {
     ++index;
@@ -397,9 +399,9 @@ void AppServiceShelfContextMenu::BuildAppShortcutsMenu(
     size_t shortcut_index) {
   app_shortcut_items_ = std::make_unique<apps::AppShortcutItems>();
   for (size_t i = shortcut_index; i < menu_items->items.size(); i++) {
-    apps::PopulateItemFromMojoMenuItems(std::move(menu_items->items[i]),
-                                        menu_model.get(),
-                                        app_shortcut_items_.get());
+    apps::PopulateItemFromMenuItem(
+        apps::ConvertMojomMenuItemToMenuItem(menu_items->items[i]),
+        menu_model.get(), app_shortcut_items_.get());
   }
   std::move(callback).Run(std::move(menu_model));
 }

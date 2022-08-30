@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "components/services/app_service/public/cpp/menu.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -70,20 +69,19 @@ bool ShouldAddCloseItem(const std::string& app_id,
                         MenuType menu_type,
                         Profile* profile);
 
-// Populates the LAUNCH_NEW menu item to a simple menu model |model| from mojo
-// menu items |menu_items|. Returns true if the LAUNCH_NEW menu item is added to
+// Populates the LAUNCH_NEW menu item to a simple menu model |model| from menu
+// items |menu_items|. Returns true if the LAUNCH_NEW menu item is added to
 // |model|, otherwise returns false.
-bool PopulateNewItemFromMojoMenuItems(
-    const std::vector<apps::mojom::MenuItemPtr>& menu_items,
-    ui::SimpleMenuModel* model,
-    ui::SimpleMenuModel* submenu,
-    GetVectorIconCallback get_vector_icon);
+bool PopulateNewItemFromMenuItems(const MenuItems& menu_items,
+                                  ui::SimpleMenuModel* model,
+                                  ui::SimpleMenuModel* submenu,
+                                  GetVectorIconCallback get_vector_icon);
 
-// Populates the menu item to a simple menu model |model| from mojo
-// menu items |menu_items|.
-void PopulateItemFromMojoMenuItems(apps::mojom::MenuItemPtr menu_item,
-                                   ui::SimpleMenuModel* model,
-                                   apps::AppShortcutItems* arc_shortcut_items);
+// Populates the menu item to a simple menu model |model| from menu item
+// |menu_item|.
+void PopulateItemFromMenuItem(const MenuItemPtr& menu_item,
+                              ui::SimpleMenuModel* model,
+                              apps::AppShortcutItems* arc_shortcut_items);
 
 // Convert |menu_type| to string. Useful to pass |menu_type| enum as string id.
 base::StringPiece MenuTypeToString(MenuType menu_type);

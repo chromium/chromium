@@ -37,6 +37,18 @@ apps::MenuItemPtr CreateRadioItem(uint32_t command_id,
   menu_item->radio_group_id = group_id;
   return menu_item;
 }
+
+void PopulateRadioItemFromMenuItems(
+    const std::vector<apps::MenuItemPtr>& menu_items,
+    ui::SimpleMenuModel* model) {
+  for (const auto& item : menu_items) {
+    DCHECK_EQ(apps::MenuItemType::kRadio, item->type);
+    model->AddRadioItem(item->command_id,
+                        l10n_util::GetStringUTF16(item->string_id),
+                        item->radio_group_id);
+  }
+}
+
 }  // namespace
 
 namespace apps {
@@ -124,33 +136,21 @@ bool ShouldAddCloseItem(const std::string& app_id,
       .ContainsAppId(app_id);
 }
 
-void PopulateRadioItemFromMojoMenuItems(
-    const std::vector<apps::mojom::MenuItemPtr>& menu_items,
-    ui::SimpleMenuModel* model) {
-  for (auto& item : menu_items) {
-    DCHECK_EQ(apps::mojom::MenuItemType::kRadio, item->type);
-    model->AddRadioItem(item->command_id,
-                        l10n_util::GetStringUTF16(item->string_id),
-                        item->radio_group_id);
-  }
-}
-
-bool PopulateNewItemFromMojoMenuItems(
-    const std::vector<apps::mojom::MenuItemPtr>& menu_items,
-    ui::SimpleMenuModel* model,
-    ui::SimpleMenuModel* submenu,
-    GetVectorIconCallback get_vector_icon) {
-  if (menu_items.empty()) {
+bool PopulateNewItemFromMenuItems(const MenuItems& menu_items,
+                                  ui::SimpleMenuModel* model,
+                                  ui::SimpleMenuModel* submenu,
+                                  GetVectorIconCallback get_vector_icon) {
+  if (menu_items.items.empty()) {
     return false;
   }
 
-  auto& item = menu_items[0];
+  const auto& item = menu_items.items[0];
   if (item->command_id != ash::LAUNCH_NEW)
     return false;
 
   const ui::ColorId color_id = GetColorIdForMenuItemIcon();
   switch (item->type) {
-    case apps::mojom::MenuItemType::kCommand: {
+    case apps::MenuItemType::kCommand: {
       const gfx::VectorIcon& icon =
           std::move(get_vector_icon).Run(item->command_id, item->string_id);
       model->AddItemWithStringIdAndIcon(
@@ -159,9 +159,9 @@ bool PopulateNewItemFromMojoMenuItems(
                                          ash::kAppContextMenuIconSize));
       break;
     }
-    case apps::mojom::MenuItemType::kSubmenu:
+    case apps::MenuItemType::kSubmenu:
       if (!item->submenu.empty()) {
-        PopulateRadioItemFromMojoMenuItems(item->submenu, submenu);
+        PopulateRadioItemFromMenuItems(item->submenu, submenu);
         const gfx::VectorIcon& icon =
             std::move(get_vector_icon).Run(item->command_id, item->string_id);
         model->AddActionableSubmenuWithStringIdAndIcon(
@@ -170,23 +170,23 @@ bool PopulateNewItemFromMojoMenuItems(
                                            ash::kAppContextMenuIconSize));
       }
       break;
-    case apps::mojom::MenuItemType::kRadio:
-    case apps::mojom::MenuItemType::kSeparator:
-    case apps::mojom::MenuItemType::kPublisherCommand:
+    case apps::MenuItemType::kRadio:
+    case apps::MenuItemType::kSeparator:
+    case apps::MenuItemType::kPublisherCommand:
       NOTREACHED();
       return false;
   }
   return true;
 }
 
-void PopulateItemFromMojoMenuItems(apps::mojom::MenuItemPtr item,
-                                   ui::SimpleMenuModel* model,
-                                   apps::AppShortcutItems* arc_shortcut_items) {
+void PopulateItemFromMenuItem(const apps::MenuItemPtr& item,
+                              ui::SimpleMenuModel* model,
+                              apps::AppShortcutItems* arc_shortcut_items) {
   switch (item->type) {
-    case apps::mojom::MenuItemType::kSeparator:
+    case apps::MenuItemType::kSeparator:
       model->AddSeparator(static_cast<ui::MenuSeparatorType>(item->command_id));
       break;
-    case apps::mojom::MenuItemType::kPublisherCommand: {
+    case apps::MenuItemType::kPublisherCommand: {
       model->AddItemWithIcon(item->command_id, base::UTF8ToUTF16(item->label),
                              ui::ImageModel::FromImageSkia(item->image));
       apps::AppShortcutItem arc_shortcut_item;
@@ -194,9 +194,9 @@ void PopulateItemFromMojoMenuItems(apps::mojom::MenuItemPtr item,
       arc_shortcut_items->push_back(arc_shortcut_item);
       break;
     }
-    case apps::mojom::MenuItemType::kCommand:
-    case apps::mojom::MenuItemType::kRadio:
-    case apps::mojom::MenuItemType::kSubmenu:
+    case apps::MenuItemType::kCommand:
+    case apps::MenuItemType::kRadio:
+    case apps::MenuItemType::kSubmenu:
       NOTREACHED();
       break;
   }
