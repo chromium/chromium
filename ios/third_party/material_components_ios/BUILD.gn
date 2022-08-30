@@ -1582,10 +1582,7 @@ config("config") {
 
 config("disable_deprecated") {
   cflags = [ "-Wno-deprecated" ]
-}
-
-config("disable_deprecated_declarations") {
-  cflags = [ "-Wno-deprecated-declarations" ]
+  cflags += [ "-Wno-deprecated-declarations" ]
 }
 
 # TODO(crbug.com/1153275): MDCTabBarViewItemView.h has incomplete nullability
@@ -1649,14 +1646,6 @@ ios_framework_bundle("material_components_ios") {
     # specification, causing compilation to fail. Disable the warning until this
     # is fixed in MDC. Remove this once fixed.
     ":disable_availability",
-  ]
-
-  public_configs = [
-    # TODO(crbug.com/1344830): A number of components used by Chrome are
-    # marked deprecated in material_components_ios. Disable deprecation
-    # warnings as a temporary measure, until we remove all existing use in
-    # Chrome.
-    ":disable_deprecated_declarations",
   ]
 }
 

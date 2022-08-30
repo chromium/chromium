@@ -2,8 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
+config("disable_deprecated_declarations") {
+  cflags = [ "-Wno-deprecated-declarations" ]
+}
+
 source_set("collection_view") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
   sources = [
     "collection_view_controller.h",
     "collection_view_controller.mm",
@@ -22,7 +30,10 @@ source_set("collection_view") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
   testonly = true
   sources = [
     "collection_view_controller_test.h",
@@ -40,7 +51,10 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
   testonly = true
   sources = [ "collection_view_controller_unittest.mm" ]
   deps = [

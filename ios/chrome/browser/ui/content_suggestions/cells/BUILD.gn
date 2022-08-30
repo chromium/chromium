@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
+config("disable_deprecated_declarations") {
+  cflags = [ "-Wno-deprecated-declarations" ]
+}
+
 source_set("cells") {
   sources = [
     "content_suggestions_gesture_commands.h",
@@ -68,7 +73,10 @@ source_set("cells") {
     "//ui/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
 }
 
 source_set("constants") {
@@ -102,5 +110,8 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
 }

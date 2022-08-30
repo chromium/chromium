@@ -63,8 +63,16 @@ source_set("autofill") {
   frameworks = [ "UIKit.framework" ]
 }
 
+# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
+config("disable_deprecated_declarations") {
+  cflags = [ "-Wno-deprecated-declarations" ]
+}
+
 source_set("bridges") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
   sources = [
     "card_expiration_date_fix_flow_view_bridge.h",
     "card_expiration_date_fix_flow_view_bridge.mm",

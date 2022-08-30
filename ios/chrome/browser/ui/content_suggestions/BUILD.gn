@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
+config("disable_deprecated_declarations") {
+  cflags = [ "-Wno-deprecated-declarations" ]
+}
+
 source_set("start_suggest") {
   sources = [
     "start_suggest_service_factory.h",
@@ -118,7 +123,10 @@ source_set("content_suggestions") {
     "//ui/base",
     "//ui/strings",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
@@ -213,7 +221,10 @@ source_set("content_suggestions_ui") {
     "//ui/base",
   ]
   public_deps = [ ":content_suggestions_ui_util" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
 }
 
 source_set("content_suggestions_constant") {
@@ -319,7 +330,10 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//third_party/ocmock",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
 }
 
 source_set("eg2_tests") {
