@@ -156,6 +156,12 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
       auto* device = MakeGarbageCollected<GPUDevice>(
           execution_context, GetDawnControlClient(), this, dawn_device,
           descriptor);
+      if (is_invalid_) {
+        GetProcs().deviceForceLoss(
+            device->GetHandle(), WGPUDeviceLostReason_Undefined,
+            "Cannot request device on invalidated adapter.");
+        FlushNow();
+      }
       resolver->Resolve(device);
 
       ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
