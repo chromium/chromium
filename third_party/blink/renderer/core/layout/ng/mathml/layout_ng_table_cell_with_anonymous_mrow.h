@@ -15,6 +15,13 @@ class LayoutNGTableCellWithAnonymousMrow : public LayoutNGTableCell {
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
+
+  // The multicol flow thread expects to be a direct child of the multicol
+  // container, but the AddChild() override above prevents that.
+  bool AllowsColumns() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 };
 
 }  // namespace blink
