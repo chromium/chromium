@@ -1895,7 +1895,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R106-15054.10.0",
+        "cros_img": "atlas-release/R106-15054.14.0",
         "name": "lacros_all_tast_tests ATLAS_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1927,7 +1927,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R104-14909.124.0",
+        "cros_img": "atlas-release/R104-14909.132.0",
         "name": "lacros_all_tast_tests ATLAS_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1959,7 +1959,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R106-15048.0.0",
+        "cros_img": "eve-release/R106-15054.14.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1991,7 +1991,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R104-14909.124.0",
+        "cros_img": "eve-release/R104-14909.132.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2066,7 +2066,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R106-15054.10.0",
+        "cros_img": "jacuzzi-release/R106-15054.14.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2098,7 +2098,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R104-14909.100.0",
+        "cros_img": "jacuzzi-release/R104-14909.132.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
