@@ -876,7 +876,7 @@ id<GREYMatcher> GetSyncSettings() {
   [self verifyDisclaimerFooterWithStrings:disclaimerStrings];
 }
 
-// Checks the disclaimer footer with the list of strings. |strings| can contain
+// Checks the disclaimer footer with the list of strings. `strings` can contain
 // "BEGIN_LINK" and "END_LINK" for URL tags.
 - (void)verifyDisclaimerFooterWithStrings:(NSArray*)strings {
   NSString* disclaimerText = [strings componentsJoinedByString:@" "];
