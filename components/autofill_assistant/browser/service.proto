@@ -283,6 +283,10 @@ message GetNoRoundTripScriptsByHashPrefixRequestProto {
   // Optional script parameters. Note that only a subset of parameters are
   // allowed to be sent from the client.
   repeated ScriptParameterProto script_parameters = 4;
+
+  // CUP-signed version of this proto. When set, the rest of the fields should
+  // be ignored.
+  optional CUPRequestData cup_data = 5;
 }
 
 message GetNoRoundTripScriptsByHashPrefixResponseProto {
@@ -312,6 +316,9 @@ message GetNoRoundTripScriptsByHashPrefixResponseProto {
   // List of potential scripts matches for the request URL hash prefix. Callers
   // should inspect each element of the list to find the exact match, if any.
   repeated MatchInfo match_infos = 2;
+
+  // Mentions non-fatal errors, such as an empty request.
+  repeated string warnings = 3;
 }
 
 // Request to get user data.

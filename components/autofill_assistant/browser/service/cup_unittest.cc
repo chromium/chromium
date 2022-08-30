@@ -28,17 +28,27 @@ class CUPTest : public testing::Test {
     if (enableSigning) {
       enabled_features.push_back(
           features::kAutofillAssistantSignGetActionsRequests);
+      enabled_features.push_back(
+          features::kAutofillAssistantSignGetNoRoundTripScriptsByHashRequests);
     } else {
       disabled_features.push_back(
           features::kAutofillAssistantSignGetActionsRequests);
+      disabled_features.push_back(
+          features::kAutofillAssistantSignGetNoRoundTripScriptsByHashRequests);
     }
 
     if (enableVerifying) {
       enabled_features.push_back(
           features::kAutofillAssistantVerifyGetActionsResponses);
+      enabled_features.push_back(
+          features::
+              kAutofillAssistantVerifyGetNoRoundTripScriptsByHashResponses);
     } else {
       disabled_features.push_back(
           features::kAutofillAssistantVerifyGetActionsResponses);
+      disabled_features.push_back(
+          features::
+              kAutofillAssistantVerifyGetNoRoundTripScriptsByHashResponses);
     }
 
     scoped_feature_list_.Reset();
@@ -61,6 +71,14 @@ TEST_F(CUPTest, ShouldSignAndVerify) {
       {false, false, RpcType::GET_ACTIONS, false, false},
       {false, false, RpcType::GET_TRIGGER_SCRIPTS, false, false},
       {true, true, RpcType::GET_TRIGGER_SCRIPTS, false, false},
+      {true, true, RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX, true,
+       true},
+      {true, false, RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX, true,
+       false},
+      {false, true, RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX, false,
+       false},
+      {false, false, RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX, false,
+       false},
   };
 
   RpcType unsupported_rpc_types[] = {

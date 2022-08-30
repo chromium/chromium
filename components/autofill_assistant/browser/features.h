@@ -30,6 +30,8 @@ extern const base::Feature kAutofillAssistantLoadDFMForTriggerScripts;
 extern const base::Feature kAutofillAssistantProactiveHelp;
 extern const base::Feature kAutofillAssistantRemoteAssistantUi;
 extern const base::Feature kAutofillAssistantSignGetActionsRequests;
+extern const base::Feature
+    kAutofillAssistantSignGetNoRoundTripScriptsByHashRequests;
 extern const base::Feature kAutofillAssistantUrlHeuristic1;
 extern const base::Feature kAutofillAssistantUrlHeuristic2;
 extern const base::Feature kAutofillAssistantUrlHeuristic3;
@@ -38,6 +40,8 @@ extern const base::Feature kAutofillAssistantUrlHeuristic5;
 extern const base::Feature kAutofillAssistantUrlHeuristics;
 extern const base::Feature kAutofillAssistantVerifyGetActionsResponses;
 extern const base::Feature kAutofillAssistantCudFilterProfiles;
+extern const base::Feature
+    kAutofillAssistantVerifyGetNoRoundTripScriptsByHashResponses;
 
 }  // namespace features
 }  // namespace autofill_assistant

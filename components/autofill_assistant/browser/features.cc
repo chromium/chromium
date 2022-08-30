@@ -34,6 +34,19 @@ const base::Feature kAutofillAssistantSignGetActionsRequests{
     "AutofillAssistantSignGetActionsRequests",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether RPC requests to the backend should be signed for
+// |GetNoRoundTripScriptsByHash| calls.
+const base::Feature kAutofillAssistantSignGetNoRoundTripScriptsByHashRequests{
+    "AutofillAssistantSignGetNoRoundTripByHashRequests",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether RPC responses from the backend should be verified for
+// |GetNoRoundTripScriptsByHash| calls.
+const base::Feature
+    kAutofillAssistantVerifyGetNoRoundTripScriptsByHashResponses{
+        "AutofillAssistantVerifyGetNoRoundTripByHashResponses",
+        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable dialog onboarding for Autofill Assistant
 const base::Feature kAutofillAssistantDialogOnboarding{
     "AutofillAssistantDialogOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};

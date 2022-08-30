@@ -63,7 +63,31 @@ TEST(CUPImplTest, PacksAndSignsGetActionsRequest) {
   EXPECT_FALSE(actual_user_request.has_cup_data());
 }
 
-TEST(CUPImplTest, IgnoresNonGetActionsRequest) {
+TEST(CUPImplTest, PacksAndSignsGetNoRoundTripByHashRequest) {
+  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(),
+                   RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX};
+  GetNoRoundTripScriptsByHashPrefixRequestProto user_request;
+  user_request.mutable_client_context()->set_experiment_ids("test");
+  std::string user_request_str;
+  user_request.SerializeToString(&user_request_str);
+
+  auto packed_request_str = cup.PackAndSignRequest(user_request_str);
+
+  GetNoRoundTripScriptsByHashPrefixRequestProto packed_request;
+  EXPECT_TRUE(packed_request.ParseFromString(packed_request_str));
+  EXPECT_TRUE(packed_request.client_context().experiment_ids().empty());
+  EXPECT_FALSE(packed_request.cup_data().request().empty());
+  EXPECT_FALSE(packed_request.cup_data().query_cup2key().empty());
+  EXPECT_FALSE(packed_request.cup_data().hash_hex().empty());
+
+  GetNoRoundTripScriptsByHashPrefixRequestProto actual_user_request;
+  EXPECT_TRUE(
+      actual_user_request.ParseFromString(packed_request.cup_data().request()));
+  EXPECT_EQ(actual_user_request.client_context().experiment_ids(), "test");
+  EXPECT_FALSE(actual_user_request.has_cup_data());
+}
+
+TEST(CUPImplTest, IgnoresUnsupportedRequest) {
   cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(),
                    RpcType::GET_TRIGGER_SCRIPTS};
 
@@ -100,6 +124,64 @@ TEST(CUPImplTest, VerifiesTrustedGetActionsResponse) {
   std::string serialized_response_bytes;
   ASSERT_TRUE(
       base::Base64Decode(kExampleResponseBase64, &serialized_response_bytes));
+  packed_response.mutable_cup_data()->set_response(serialized_response_bytes);
+  std::string serialized_packed_response;
+  packed_response.SerializeToString(&serialized_packed_response);
+
+  // Expect that unpacking gives as a result the cup_data.response field of
+  // the packed response proto.
+  EXPECT_EQ(cup.UnpackResponse(serialized_packed_response),
+            serialized_response_bytes);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_FAILED, 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_SUCCEEDED, 1);
+}
+
+TEST(CUPImplTest, VerifiesTrustedGetNoRoundTripScriptsByHashResponse) {
+  base::HistogramTester histogram_tester;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantCupPublicKeyBase64, kPublicKeyBase64);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantCupKeyVersion, kPublicKeyVersion);
+
+  // Valid server etag generated from the server for the autofill_assistant key
+  // for the example request, response and nonce in this test.
+  const base::StringPiece server_etag =
+      "3044"
+      "0220409f3dcc50f9e5a1708c845dd062fe657c636cb63f14f0b68385413f0cbc"
+      "4208022046586b13463d8171e87fb1c6f7fbf26ad0eb7ab7fe9139063523e48476203c27"
+      ":976b91e914e68d5c8907b1e9752b814ff6c1986276cec6e0d0c92d90eb02838f";
+  // Sign the request and override the nonce so that result is deterministic.
+  cup::CUPImpl cup(cup::CUPImpl::CreateQuerySigner(),
+                   RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX);
+
+  // Base64 encoded version of
+  //   GetNoRoundTripByHashResponseProto {
+  //    hash_prefix: 64,
+  //    hash_prefix_length: 15
+  //   }`
+  const std::string request_base64 = "EEAIDw==";
+  std::string request_bytes;
+  ASSERT_TRUE(base::Base64Decode(request_base64, &request_bytes));
+  cup.PackAndSignRequest(request_bytes);
+  cup.GetQuerySigner().OverrideNonceForTesting(kPublicKeyVersionInt,
+                                               kExampleNonce);
+
+  // Construct server response as it would have been received by the client.
+  GetNoRoundTripScriptsByHashPrefixResponseProto packed_response;
+  packed_response.mutable_cup_data()->set_ecdsa_signature(
+      std::string(server_etag));
+
+  // Base64 encoded version of
+  //   GetNoRoundTripByHashResponseProto {
+  //    warnings: "foo",
+  //   }`
+  const std::string response_base64 = "GgNmb28=";
+  std::string serialized_response_bytes;
+  ASSERT_TRUE(base::Base64Decode(response_base64, &serialized_response_bytes));
   packed_response.mutable_cup_data()->set_response(serialized_response_bytes);
   std::string serialized_packed_response;
   packed_response.SerializeToString(&serialized_packed_response);
@@ -236,7 +318,7 @@ TEST(CUPImplTest, FailsToParseInvalidProtoResponse) {
       Metrics::CupRpcVerificationEvent::PARSING_FAILED, 1);
 }
 
-TEST(CUPImplTest, IgnoresNonGetActionsResponse) {
+TEST(CUPImplTest, IgnoresUnsupportedResponse) {
   cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(),
                    RpcType::GET_TRIGGER_SCRIPTS};
 
