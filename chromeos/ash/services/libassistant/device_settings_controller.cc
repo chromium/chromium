@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/services/libassistant/device_settings_controller.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
@@ -349,10 +349,7 @@ DeviceSettingsController::GetSupportedDeviceSettings(
 
 bool DeviceSettingsController::IsSettingSupported(
     const std::string& setting_id) const {
-  return std::any_of(settings_.begin(), settings_.end(),
-                     [&setting_id](const auto& setting) {
-                       return setting->setting_id() == setting_id;
-                     });
+  return base::Contains(settings_, setting_id, &Setting::setting_id);
 }
 
 void DeviceSettingsController::AddSetting(std::unique_ptr<Setting> setting) {

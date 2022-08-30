@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/services/libassistant/network_provider_impl.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/services/network_config/public/mojom/constants.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -43,10 +43,9 @@ NetworkProviderImpl::~NetworkProviderImpl() = default;
 
 void NetworkProviderImpl::OnActiveNetworksChanged(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
-  const bool is_any_network_online =
-      std::any_of(networks.begin(), networks.end(), [](const auto& network) {
-        return network->connection_state == ConnectionStateType::kOnline;
-      });
+  const bool is_any_network_online = base::Contains(
+      networks, ConnectionStateType::kOnline,
+      &network_config::mojom::NetworkStateProperties::connection_state);
 
   if (is_any_network_online)
     connection_status_ = ConnectionStatus::CONNECTED;

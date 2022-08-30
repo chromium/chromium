@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier_impl.h"
+
 #include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
@@ -150,13 +152,8 @@ bool BluetoothDeviceStatusNotifierImpl::IsNearbyConnectionsDevice(
   // NOTE(http://b/215024088): If the newly paired device is connected via a
   // Nearby Connections client (e.g., Nearby Share), do not display this
   // notification.
-  device::BluetoothDevice::UUIDSet uuids = device.GetUUIDs();
-  if (std::any_of(uuids.begin(), uuids.end(),
-                  ash::nearby::IsNearbyClientUuid)) {
-    return true;
-  }
-
-  return false;
+  return base::ranges::any_of(device.GetUUIDs(),
+                              ash::nearby::IsNearbyClientUuid);
 }
 
 device::BluetoothDevice* BluetoothDeviceStatusNotifierImpl::FindDevice(
