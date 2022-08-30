@@ -226,7 +226,22 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
-// TODO(crbug.com/1293679): Add tests to cover timeout behaviors.
+IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
+                       SendOnPageDiscardNotUsingTimeout) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with various timeout, which should all be sent on
+  // page A discard.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {timeout: $2});
+  )",
+                                    kBeaconEndpoint, GetParam().timeout));
+  ASSERT_TRUE(previous_document().WaitUntilRenderFrameDeleted());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
 
 // Tests to cover PendingBeacon's backgroundTimeout behaviors.
 // Sets `PendingBeaconMaxBackgroundTimeoutInMs` (10s) > BFCache timeout (5s) to
@@ -345,6 +360,125 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
+// Tests to cover PendingBeacon's timeout behaviors.
+// Sets `BeaconTimeToLiveInMs` (10s) > BFCache timeout (5s) to also cover beacon
+// sending on page eviction.
+using PendingBeaconTimeoutBrowserTest =
+    PendingBeaconBackgroundTimeoutBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest, SendOnZeroTimeout) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with 0s timeout. It should be sent out right away
+  // (without the page entering 'hidden' state).
+  RunScriptInA(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {timeout: 0});
+  )",
+                         kBeaconEndpoint));
+  ASSERT_THAT(current_document(), IsFrameVisible());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// When timeout is set, it's not relevant whether the page is hidden or not.
+IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest,
+                       SendOnTimeoutWhenPageIsHidden) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with a timeout which should expire when the page A
+  // is still hidden.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {timeout: 1000});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  WaitForAllBeaconsSent(total_beacon);
+  // Verify that beacon is sent.
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// When timeout is set, it's not relevant whether the page is visible or not.
+IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest,
+                       SendOnTimeoutWhenPageIsVisible) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with a timeout longer enough such that page can
+  // experience visible -> hidden -> visible.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {timeout: 4000});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+  // beacon is not yet sent.
+  ASSERT_EQ(sent_beacon_count(), 0u);
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // The page A becomes visible again, but timeout timer never stops.
+  ASSERT_THAT(current_document(), IsFrameVisible());
+
+  WaitForAllBeaconsSent(total_beacon);
+  // Verify that beacon is sent.
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest, SendOnShorterTimeout) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with long (5s) timeout. And then quickly updates
+  // to a very short (0.01s) timeout. The beacon should be sent out right away.
+  RunScriptInA(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {timeout: 5000});
+    p.timeout = 10;
+  )",
+                         kBeaconEndpoint));
+  ASSERT_THAT(current_document(), IsFrameVisible());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest, SendOnlyOnce) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon which should be sent out right way.
+  // But it won't be sent out twice.
+  RunScriptInA(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {timeout: 0});
+    p.timeout = 1;
+  )",
+                         kBeaconEndpoint));
+  ASSERT_THAT(current_document(), IsFrameVisible());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest, SendMultipleOnTimeout) {
+  const size_t total_beacon = 5;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  RunScriptInA(JsReplace(R"(
+    let p1 = new PendingGetBeacon($1, {timeout: 200});
+    let p2 = new PendingGetBeacon($1, {timeout: 100});
+    let p3 = new PendingGetBeacon($1, {timeout: 500});
+    let p4 = new PendingGetBeacon($1, {timeout: 700});
+    let p5 = new PendingGetBeacon($1, {timeout: 300});
+  )",
+                         kBeaconEndpoint));
+  ASSERT_THAT(current_document(), IsFrameVisible());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
 // Tests to cover PendingBeacon's backgroundTimeout & timeout mutual behaviors.
 // Sets a long BFCache timeout (1min) so that beacon won't be sent out due to
 // page eviction.
@@ -410,6 +544,52 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 
   // Verify that beacon is not sent.
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// When both backgroundTimeout & timeout is set, whichever expires earlier will
+// trigger beacon sending (part 1).
+IN_PROC_BROWSER_TEST_F(
+    PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest,
+    SendOnEarlierTimeout) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with long backgroundTimeout (60s) & short
+  // timeout (1s).
+  // The shorter one, i.e. timeout, should be reachable such that the beacon
+  // can be sent before this test case times out.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {backgroundTimeout: 60000, timeout: 1000});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  WaitForAllBeaconsSent(total_beacon);
+  // Verify that beacon is sent.
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// When both backgroundTimeout & timeout is set, whichever expires earlier will
+// trigger beacon sending (part 2).
+IN_PROC_BROWSER_TEST_F(
+    PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest,
+    SendOnEarlierBackgroundTimeout) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with short backgroundTimeout (1s) & long
+  // timeout (60s).
+  // The shorter one, i.e. backgroundTimeout, should be reachable such that the
+  // beacon can be sent before this test case times out.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {backgroundTimeout: 1000, timeout: 60000});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  WaitForAllBeaconsSent(total_beacon);
+  // Verify that beacon is sent.
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
