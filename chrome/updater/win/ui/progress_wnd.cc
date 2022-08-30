@@ -4,12 +4,11 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
-#include <algorithm>
-
 #include "base/check_op.h"
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
@@ -73,9 +72,9 @@ int GetPriority(CompletionCodes code) {
 
 // Returns true if all apps are cancelled or if the range is empty.
 bool AreAllAppsCanceled(const std::vector<AppCompletionInfo>& apps_info) {
-  return std::all_of(
-      apps_info.begin(), apps_info.end(),
-      [](const AppCompletionInfo& app_info) { return app_info.is_canceled; });
+  return base::ranges::all_of(apps_info, [](const AppCompletionInfo& app_info) {
+    return app_info.is_canceled;
+  });
 }
 
 }  // namespace

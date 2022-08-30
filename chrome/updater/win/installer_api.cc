@@ -4,7 +4,6 @@
 
 #include "chrome/updater/win/installer_api.h"
 
-#include <algorithm>
 #include <iterator>
 #include <string>
 
@@ -12,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -117,8 +117,7 @@ bool DeleteInstallerOutput(UpdaterScope updater_scope,
   if (!key)
     return false;
   auto delete_value = [&key](const wchar_t* value) {
-    return key->HasValue(value) ? key->DeleteValue(value) == ERROR_SUCCESS
-                                : true;
+    return !key->HasValue(value) || key->DeleteValue(value) == ERROR_SUCCESS;
   };
   const bool results[] = {
       delete_value(kRegValueInstallerProgress),
@@ -128,8 +127,7 @@ bool DeleteInstallerOutput(UpdaterScope updater_scope,
       delete_value(kRegValueInstallerResultUIString),
       delete_value(kRegValueInstallerSuccessLaunchCmdLine),
   };
-  return std::all_of(std::begin(results), std::end(results),
-                     [](auto result) { return result; });
+  return !base::Contains(results, false);
 }
 
 absl::optional<InstallerOutcome> GetInstallerOutcome(
