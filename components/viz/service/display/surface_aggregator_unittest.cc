@@ -9231,7 +9231,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
   {
     auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
     frame.metadata.transition_directives.emplace_back(
-        1, CompositorFrameTransitionDirective::Type::kSave, false,
+        1, CompositorFrameTransitionDirective::Type::kSave,
         CompositorFrameTransitionDirective::Effect::kCoverLeft);
 
     root_sink_->SubmitCompositorFrame(local_surface_id, std::move(frame));
@@ -9246,7 +9246,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
   {
     auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
     frame.metadata.transition_directives.emplace_back(
-        2, CompositorFrameTransitionDirective::Type::kAnimate, false);
+        2, CompositorFrameTransitionDirective::Type::kAnimate);
     root_sink_->SubmitCompositorFrame(local_surface_id, std::move(frame));
   }
   AggregateFrame(surface_id);

@@ -27,13 +27,10 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
   EXPECT_GT(directive.sequence_id(), 0u);
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kSave,
             directive.type());
-  EXPECT_TRUE(directive.is_renderer_driven_animation());
 
   auto duplicate = request->ConstructDirective({});
   EXPECT_EQ(duplicate.sequence_id(), directive.sequence_id());
   EXPECT_EQ(duplicate.type(), directive.type());
-  EXPECT_EQ(duplicate.is_renderer_driven_animation(),
-            directive.is_renderer_driven_animation());
 }
 
 TEST(DocumentTransitionRequestTest, StartRequest) {
@@ -47,7 +44,6 @@ TEST(DocumentTransitionRequestTest, StartRequest) {
   EXPECT_GT(directive.sequence_id(), 0u);
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer,
             directive.type());
-  EXPECT_TRUE(directive.is_renderer_driven_animation());
 }
 
 }  // namespace cc

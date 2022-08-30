@@ -57,10 +57,6 @@ SurfaceSavedFrameStorage::ProcessSaveDirective(
 
 std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {
   expiry_closure_.Cancel();
-
-  // We might not have a saved frame here if it expired.
-  if (saved_frame_)
-    saved_frame_->ReleaseSurface();
   return std::move(saved_frame_);
 }
 

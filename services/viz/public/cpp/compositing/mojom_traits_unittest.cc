@@ -604,9 +604,8 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
   element.render_pass_id = frame.render_pass_list.front()->id;
   frame.metadata.transition_directives.push_back(
       CompositorFrameTransitionDirective(
-          1u, CompositorFrameTransitionDirective::Type::kSave, false,
-          CompositorFrameTransitionDirective::Effect::kNone,
-          CompositorFrameTransitionDirective::TransitionConfig(), {element}));
+          1u, CompositorFrameTransitionDirective::Type::kSave,
+          CompositorFrameTransitionDirective::Effect::kNone, {element}));
 
   // This ensures de-serialization succeeds if all passes are present.
   CompositorFrame output;
@@ -617,9 +616,8 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
       frame.render_pass_list.back()->id.GetUnsafeValue() + 1);
   frame.metadata.transition_directives.push_back(
       CompositorFrameTransitionDirective(
-          1u, CompositorFrameTransitionDirective::Type::kSave, false,
-          CompositorFrameTransitionDirective::Effect::kNone,
-          CompositorFrameTransitionDirective::TransitionConfig(), {element}));
+          1u, CompositorFrameTransitionDirective::Type::kSave,
+          CompositorFrameTransitionDirective::Effect::kNone, {element}));
 
   // This ensures de-serialization fails if a pass is missing.
   ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(

@@ -117,8 +117,8 @@ DocumentTransitionRequest::ConstructDirective(
 
   // TODO(vmpstr): Clean up the directive parameters.
   return viz::CompositorFrameTransitionDirective(
-      sequence_id_, type_, /*is_renderer_driven_animation=*/true,
-      viz::CompositorFrameTransitionDirective::Effect::kNone, {},
+      sequence_id_, type_,
+      viz::CompositorFrameTransitionDirective::Effect::kNone,
       std::move(shared_elements));
 }
 

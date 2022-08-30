@@ -90,7 +90,6 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // Appends copy output requests to the needed render passes in the active
   // frame.
   void RequestCopyOfOutput(Surface* surface);
-  void ReleaseSurface();
 
   [[nodiscard]] absl::optional<FrameResult> TakeResult();
 
@@ -101,27 +100,6 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
  private:
   enum class ResultType { kRoot, kShared };
-
-  // Replaced the CompositorFrame on the |surface| with a copy that places
-  // shared elements in individual render passes. This effectively allows them
-  // to be in independent layers that can be cached as textures.
-  class ScopedCleanSurface {
-   public:
-    ScopedCleanSurface(Surface* surface, CompositorFrame clean_frame);
-    ~ScopedCleanSurface();
-
-   private:
-    Surface* surface_;
-  };
-
-  // Queues copy requests by creating a copy of the CompositorFrame as specified
-  // in ScopedCleanSurface.
-  void CopyUsingCleanFrame(Surface* surface);
-
-  // Queues copy requests from the original CompositorFrame. This mode is used
-  // when the frame produced by the renderer already has independent render
-  // passes for each shared element.
-  void CopyUsingOriginalFrame(Surface* surface);
 
   std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
       const CompositorRenderPass& render_pass,
@@ -176,11 +154,6 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // smaller than the number of requests we made. This is used to determine
   // whether the SurfaceSavedFrame is "valid".
   size_t valid_result_count_ = 0;
-
-  // Tracks whether the root render pass should be copied.
-  bool copy_root_render_pass_ = true;
-
-  absl::optional<ScopedCleanSurface> clean_surface_;
 
   base::WeakPtrFactory<SurfaceSavedFrame> weak_factory_{this};
 };

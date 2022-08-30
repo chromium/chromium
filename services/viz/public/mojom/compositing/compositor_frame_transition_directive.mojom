@@ -30,17 +30,9 @@ enum CompositorFrameTransitionDirectiveEffect {
   kRevealUp
 };
 
-// For a viz driven animation, these values are currently limited to 5 seconds
-// so no animation can run for longer than 10 seconds.
-struct CompositorFrameTransitionDirectiveConfig {
-  mojo_base.mojom.TimeDelta duration;
-  mojo_base.mojom.TimeDelta delay;
-};
-
 // This struct identifes a shared element.
 struct CompositorFrameTransitionDirectiveSharedElement {
   CompositorRenderPassId render_pass_id;
-  CompositorFrameTransitionDirectiveConfig config;
   SharedElementResourceId shared_element_resource_id;
 };
 
@@ -55,14 +47,8 @@ struct CompositorFrameTransitionDirective {
   // The type of this directive.
   CompositorFrameTransitionDirectiveType type;
 
-  // A value indicating whether this is a viz or renderer driven animation.
-  bool is_renderer_driven_animation;
-
   // The effect for the transition.
   CompositorFrameTransitionDirectiveEffect effect;
-
-  // The config struct for the root (element) transition
-  CompositorFrameTransitionDirectiveConfig root_config;
 
   // A collection of shared elements.
   array<CompositorFrameTransitionDirectiveSharedElement> shared_elements;

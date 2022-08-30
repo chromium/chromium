@@ -71,6 +71,9 @@ constexpr float kTranslationProportion = 0.05f;
 // determines the scaling done to achieve the larger of the two sizes.
 constexpr float kScaleProportion = 1.1f;
 
+constexpr base::TimeDelta kDefaultTransitionDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kDefaultTransitionDelay = base::Milliseconds(0);
+
 void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
                                    const gfx::Rect& output_rect,
                                    const gfx::Transform& src_transform,
@@ -944,9 +947,6 @@ void SurfaceAnimationManager::UpdateFrameTime(base::TimeTicks now) {
 
 void SurfaceAnimationManager::CreateRootAnimationCurves(
     const gfx::Size& output_size) {
-  if (save_directive_->root_config().duration.is_zero())
-    return;
-
   // A small translation. We want to roughly scale this with screen size, but
   // we choose the minimum screen dimension to keep horizontal and vertical
   // transitions consistent and to avoid the impact of very oblong screen.
@@ -1068,8 +1068,8 @@ void SurfaceAnimationManager::CreateRootAnimationCurves(
               : gfx::CubicBezierTimingFunction::EaseType::EASE_OUT);
 
   // Create the transform curve.
-  base::TimeDelta total_duration = save_directive_->root_config().duration;
-  base::TimeDelta total_delay = save_directive_->root_config().delay;
+  base::TimeDelta total_duration = kDefaultTransitionDuration;
+  base::TimeDelta total_delay = kDefaultTransitionDelay;
 
   // The transform animation runs for the entire duration of the root
   // transition.
@@ -1120,16 +1120,12 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
   // Since we don't have a target state yet, create animations as if all of the
   // shared elements are targeted to stay in place with opacity going to 0.
   for (size_t i = 0; i < saved_textures_->shared.size(); ++i) {
-    if (save_directive_->shared_elements()[i].config.duration.is_zero())
-      continue;
-
     auto& shared = saved_textures_->shared[i];
     auto& state = shared_animations_[i];
     const bool has_src_element = shared.has_value();
 
-    const auto& config = save_directive_->shared_elements()[i].config;
-    const auto total_duration = config.duration;
-    const auto total_delay = config.delay;
+    const auto total_duration = kDefaultTransitionDuration;
+    const auto total_delay = kDefaultTransitionDelay;
 
     const auto opacity_duration =
         total_duration * kSharedOpacityTransitionDurationScaleFactor;

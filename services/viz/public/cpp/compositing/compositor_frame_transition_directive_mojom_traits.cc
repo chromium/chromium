@@ -141,23 +141,13 @@ bool EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
 }
 
 // static
-bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveConfigDataView,
-                  viz::CompositorFrameTransitionDirective::TransitionConfig>::
-    Read(viz::mojom::CompositorFrameTransitionDirectiveConfigDataView data,
-         viz::CompositorFrameTransitionDirective::TransitionConfig* out) {
-  return data.ReadDuration(&out->duration) && data.ReadDelay(&out->delay) &&
-         out->IsValid();
-}
-
-// static
 bool StructTraits<
     viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView,
     viz::CompositorFrameTransitionDirective::SharedElement>::
     Read(viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView
              data,
          viz::CompositorFrameTransitionDirective::SharedElement* out) {
-  return data.ReadConfig(&out->config) &&
-         data.ReadRenderPassId(&out->render_pass_id) &&
+  return data.ReadRenderPassId(&out->render_pass_id) &&
          data.ReadSharedElementResourceId(&out->shared_element_resource_id);
 }
 
@@ -170,19 +160,15 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
 
   viz::CompositorFrameTransitionDirective::Type type;
   viz::CompositorFrameTransitionDirective::Effect effect;
-  viz::CompositorFrameTransitionDirective::TransitionConfig root_config;
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements;
   if (!data.ReadType(&type) || !data.ReadEffect(&effect) ||
-      !data.ReadRootConfig(&root_config) ||
       !data.ReadSharedElements(&shared_elements)) {
     return false;
   }
-  bool is_renderer_driven_animation = data.is_renderer_driven_animation();
 
-  *out = viz::CompositorFrameTransitionDirective(
-      sequence_id, type, is_renderer_driven_animation, effect, root_config,
-      std::move(shared_elements));
+  *out = viz::CompositorFrameTransitionDirective(sequence_id, type, effect,
+                                                 std::move(shared_elements));
   return true;
 }
 

@@ -58,25 +58,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     kRevealUp
   };
 
-  // This provides configuration options for the root transition and for each
-  // shared element transition.
-  struct VIZ_COMMON_EXPORT TransitionConfig {
-    TransitionConfig();
-
-    // The duration for the transform and/or size animation. Opacity will be a
-    // subset of this duration.
-    base::TimeDelta duration;
-
-    // The delay in starting all animations for this element's transition. The
-    // offset is from the time when the frame with the kStart directive is
-    // drawn.
-    base::TimeDelta delay;
-
-    // Returns true if the config is valid. If |error| is not null, it's
-    // populated with an error message when the config is invalid.
-    bool IsValid(std::string* error = nullptr) const;
-  };
-
   struct VIZ_COMMON_EXPORT SharedElement {
     SharedElement();
     ~SharedElement();
@@ -94,8 +75,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     // An identifier to tag the cached texture for this shared element in the
     // Viz process.
     SharedElementResourceId shared_element_resource_id;
-
-    TransitionConfig config;
   };
 
   CompositorFrameTransitionDirective();
@@ -106,9 +85,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   CompositorFrameTransitionDirective(
       uint32_t sequence_id,
       Type type,
-      bool is_renderer_driven_animation = false,
       Effect effect = Effect::kNone,
-      const TransitionConfig& root_config = TransitionConfig(),
       std::vector<SharedElement> shared_elements = {});
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
@@ -128,16 +105,9 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The effect for the transition.
   Effect effect() const { return effect_; }
 
-  const TransitionConfig& root_config() const { return root_config_; }
-
   // Shared elements.
   const std::vector<SharedElement>& shared_elements() const {
     return shared_elements_;
-  }
-
-  // Returns true if this is a directive for a renderer driven animation.
-  bool is_renderer_driven_animation() const {
-    return is_renderer_driven_animation_;
   }
 
  private:
@@ -145,11 +115,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
 
   Type type_ = Type::kSave;
 
-  bool is_renderer_driven_animation_ = false;
-
   Effect effect_ = Effect::kNone;
-
-  TransitionConfig root_config_;
 
   std::vector<SharedElement> shared_elements_;
 };

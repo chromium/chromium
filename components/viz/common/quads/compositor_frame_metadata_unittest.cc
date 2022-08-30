@@ -48,8 +48,7 @@ bool AreDelegatedInkMetadataEqual(const gfx::DelegatedInkMetadata& a,
 bool AreTransitionDirectivesEqual(const CompositorFrameTransitionDirective& a,
                                   const CompositorFrameTransitionDirective& b) {
   return a.sequence_id() == b.sequence_id() && a.type() == b.type() &&
-         a.effect() == b.effect() &&
-         a.is_renderer_driven_animation() == b.is_renderer_driven_animation();
+         a.effect() == b.effect();
 }
 
 TEST(CompositorFrameMetadata, Clone) {
@@ -84,7 +83,7 @@ TEST(CompositorFrameMetadata, Clone) {
       gfx::PointF(88.8, 44.4), 1.f, SK_ColorRED,
       base::TimeTicks() + base::Seconds(125), gfx::RectF(1, 2, 3, 4), true);
   metadata.transition_directives.emplace_back(
-      4u, CompositorFrameTransitionDirective::Type::kSave, true,
+      4u, CompositorFrameTransitionDirective::Type::kSave,
       CompositorFrameTransitionDirective::Effect::kCoverUp);
 
   CompositorFrameMetadata clone = metadata.Clone();

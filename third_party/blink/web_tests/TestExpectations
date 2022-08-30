@@ -307,10 +307,6 @@ crbug.com/1276999 virtual/document-transition/* [ Pass ]
 crbug.com/1276999 virtual/document-transition-wide-gamut/* [ Pass ]
 
 crbug.com/1351556 virtual/document-transition-wide-gamut/wpt_internal/document-transition/commit-timeout-crash.html [ Failure Timeout ]
-crbug.com/1351556 [ Win ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
-crbug.com/1351556 [ Mac11 ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
-crbug.com/1351556 [ Win ] virtual/document-transition/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
-crbug.com/1351556 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
 crbug.com/1351556 virtual/document-transition/document-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/document-transition-wide-gamut/document-transition/capture-callback-exception.html [ Failure ]
 
