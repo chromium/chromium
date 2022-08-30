@@ -44,6 +44,7 @@ ClientIdData::ClientIdData(const GURL& terms_of_service_url,
                            const GURL& privacy_policy_url)
     : terms_of_service_url{terms_of_service_url},
       privacy_policy_url(privacy_policy_url) {}
+ClientIdData::ClientIdData(const ClientIdData& other) = default;
 
 IdentityProviderMetadata::IdentityProviderMetadata() = default;
 IdentityProviderMetadata::~IdentityProviderMetadata() = default;

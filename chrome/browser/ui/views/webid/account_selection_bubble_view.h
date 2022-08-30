@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/webid/account_selection_bubble_view_interface.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -26,21 +27,47 @@ class MdTextButton;
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
 // account chooser for the user, and it changes the content of that dialog as
 // user moves through the FedCM flow steps.
-class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
+class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
+                                   public AccountSelectionBubbleViewInterface {
  public:
+  // Used to observe changes to the account selection bubble.
+  class Observer {
+   public:
+    // Called when the user either selects the account from the multi-account
+    // chooser or clicks the "continue" button.
+    // Takes `account_id` as a parameter in order to avoid copying
+    // content::IdentityRequestAccount.
+    virtual void OnAccountSelected(const std::string& account_id) = 0;
+
+    // Called when the user clicks "privacy policy" or "terms of service" link.
+    virtual void OnLinkClicked(const GURL& url) = 0;
+
+    // Called when the user clicks "back" button.
+    virtual void OnBackButtonClicked() = 0;
+
+    // Called when the user clicks "close" button.
+    virtual void OnCloseButtonClicked() = 0;
+  };
+
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
-      const std::string& rp_for_display,
-      const std::string& idp_for_display,
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientIdData& client_data,
+      const std::u16string& rp_for_display,
+      const std::u16string& idp_for_display,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      TabStripModel* tab_strip_model,
-      base::OnceCallback<void(const content::IdentityRequestAccount&)>
-          on_account_selected_callback);
+      Observer* observer);
   ~AccountSelectionBubbleView() override;
+
+  // AccountSelectionBubbleViewInterface:
+  void ShowAccountPicker(
+      const std::u16string& idp_for_display,
+      bool show_back_button,
+      base::span<const content::IdentityRequestAccount> accounts,
+      const content::IdentityProviderMetadata& idp_metadata,
+      const content::ClientIdData& client_data) override;
+  void ShowVerifyingSheet(
+      const content::IdentityRequestAccount& account,
+      const content::IdentityProviderMetadata& idp_metadata) override;
 
  private:
   gfx::Rect GetBubbleBounds() override;
@@ -49,12 +76,13 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // of the bubble, properly formatted.
   std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title);
 
-  void CloseBubble();
-
   // Returns a View containing the account chooser, i.e. everything that goes
   // below the horizontal separator on the initial FedCM bubble.
   std::unique_ptr<views::View> CreateAccountChooser(
-      base::span<const content::IdentityRequestAccount> accounts);
+      const std::u16string& idp_for_display,
+      base::span<const content::IdentityRequestAccount> accounts,
+      const content::IdentityProviderMetadata& idp_metadata,
+      const content::ClientIdData& client_data);
 
   // Returns a View for single account chooser. It contains the account
   // information, disclosure text and a button for the user to confirm the
@@ -90,27 +118,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   void OnBrandImageFetched(const gfx::Image& image,
                            const image_fetcher::RequestMetadata& metadata);
 
-  // Called when the user clicks on the privacy policy or terms of service
-  // URL. Opens the URL in a new tab.
-  void OnLinkClicked(const GURL& gurl);
-
-  // Called when the user selects an account from the multiple account chooser
-  // menu. Modifies the UI to show one of the following:
-  // 1. For new users, the single account chooser.
-  // 2. For returning users, fetch the ID token automatically while displaying
-  // "Signing you in".
-  void OnSingleAccountPicked(const content::IdentityRequestAccount& account);
-
-  // Called when the user clicks on the back button.
-  void HandleBackPressed();
-
-  // Called when the user clicks on the 'continue' button from the single
-  // account chooser.
-  void OnClickedContinue(const content::IdentityRequestAccount& account);
-
-  // Shows 'verifying' once the user has clicked to continue with a given
-  // account.
-  void ShowVerifySheet(const content::IdentityRequestAccount& account);
+  // Updates the header title, the header icon visibility and the header back
+  // button visibiltiy.
+  void UpdateHeader(const content::IdentityProviderMetadata& idp_metadata,
+                    const std::u16string title,
+                    bool show_back_button);
 
   // Sets the brand views::ImageView visibility and image. Initiates the
   // download of the brand icon if necessary.
@@ -118,37 +130,22 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
       views::ImageView* image_view,
       const content::IdentityProviderMetadata& idp_metadata);
 
-  // Sets whether the back button in the header is visible.
-  void SetBackButtonVisible(bool is_visible);
-
   // Removes all children except for `header_view_`.
   void RemoveNonHeaderChildViews();
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
-  // Used in various messages so the user is aware of who the IDP is.
-  std::u16string idp_for_display_;
-
-  const content::IdentityProviderMetadata idp_metadata_;
-
-  // The privacy policy and terms of service URLs.
-  const content::ClientIdData client_data_;
-
-  // The list of accounts to select from. Not updated when the user selects an
-  // account and navigates to the privacy policy / terms of service page.
-  const std::vector<content::IdentityRequestAccount> account_list_;
+  // The accessible title.
+  std::u16string accessible_title_;
 
   // The image for the IDP icon. Stored so that it can be reused upon pressing
   // the back button after choosing an account on the multi IDP chooser.
   gfx::ImageSkia idp_image_;
 
-  // The TabStripModel of the current browser. We need this in order to show the
-  // privacy policy and terms of service urls when the user clicks on the links.
-  const raw_ptr<TabStripModel> tab_strip_model_;
-
-  base::OnceCallback<void(const content::IdentityRequestAccount&)>
-      on_account_selected_callback_;
+  // Whether the dialog has been populated via either ShowAccountPicker() or
+  // ShowVerifyingSheet().
+  bool has_sheet_{false};
 
   // View containing the logo of the identity provider and the title.
   raw_ptr<views::View> header_view_ = nullptr;
@@ -168,11 +165,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // View containing the continue button.
   raw_ptr<views::MdTextButton> continue_button_ = nullptr;
 
-  // Used to differentiate UI dismissal scenarios.
-  bool verify_sheet_shown_ = false;
-
   // The icon URLs which have been fetched.
   std::set<GURL> fetched_icons_;
+
+  // Observes events on AccountSelectionBubbleView.
+  raw_ptr<Observer> observer_{nullptr};
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

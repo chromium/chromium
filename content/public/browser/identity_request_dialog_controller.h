@@ -69,6 +69,7 @@ struct CONTENT_EXPORT IdentityRequestAccount {
 
 struct CONTENT_EXPORT ClientIdData {
   ClientIdData(const GURL& tos_url, const GURL& privacy_policy_url);
+  ClientIdData(const ClientIdData& other);
 
   GURL terms_of_service_url;
   GURL privacy_policy_url;

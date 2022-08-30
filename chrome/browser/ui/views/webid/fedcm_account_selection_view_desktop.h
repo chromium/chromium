@@ -12,10 +12,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
+class AccountSelectionBubbleViewInterface;
+class Browser;
+
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
 // account chooser to the user.
 class FedCmAccountSelectionView : public AccountSelectionView,
+                                  public AccountSelectionBubbleView::Observer,
                                   content::WebContentsObserver,
                                   TabStripModelObserver,
                                   views::WidgetObserver {
@@ -48,9 +52,37 @@ class FedCmAccountSelectionView : public AccountSelectionView,
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
+  // Creates bubble views::Widget.
+  virtual views::Widget* CreateBubble(Browser* browser,
+                                      const std::u16string& rp_etld_plus_one,
+                                      const std::u16string& idp_etld_plus_one);
+
+  // Returns AccountSelectionBubbleViewInterface for bubble views::Widget.
+  virtual AccountSelectionBubbleViewInterface* GetBubbleView();
+
  private:
+  enum class State {
+    // User is shown list of accounts they have with IDP and is prompted to
+    // select an account.
+    ACCOUNT_PICKER,
+
+    // User is prompted to grant permission for specific account they have with
+    // IDP to communicate with RP.
+    PERMISSION,
+
+    // Shown after the user has granted permission while the id token is being
+    // fetched.
+    VERIFYING
+  };
+
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // AccountSelectionBubbleView::Observer:
+  void OnAccountSelected(const std::string& account_id) override;
+  void OnLinkClicked(const GURL& url) override;
+  void OnBackButtonClicked() override;
+  void OnCloseButtonClicked() override;
 
   // Called when the user selected an account AND granted consent.
   void OnAccountSelected(const content::IdentityRequestAccount& account);
@@ -62,6 +94,16 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // `dismiss_reason`.
   void OnDismiss(
       content::IdentityRequestDialogController::DismissReason dismiss_reason);
+
+  std::u16string idp_etld_plus_one_;
+  content::IdentityProviderMetadata idp_metadata_;
+  std::unique_ptr<content::ClientIdData> client_data_;
+
+  // The list of accounts to select from. Not updated when the user selects an
+  // account and navigates to the privacy policy / terms of service page.
+  std::vector<content::IdentityRequestAccount> account_list_;
+
+  State state_{State::ACCOUNT_PICKER};
 
   // Whether to notify the delegate when the widget is closed.
   bool notify_delegate_of_dismiss_{true};
