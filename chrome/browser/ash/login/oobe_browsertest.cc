@@ -198,7 +198,7 @@ class DisplayOobeTest : public OobeBaseTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets4kDisplay) {
+IN_PROC_BROWSER_TEST_F(DisplayOobeTest, DISABLED_OobeMeets4kDisplay) {
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(
       policy::EnrollmentRequisitionManager::kRemoraRequisition);
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets4kDisplay) {
   EXPECT_EQ(display.height(), 2160);
 }
 
-IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets2kDisplay) {
+IN_PROC_BROWSER_TEST_F(DisplayOobeTest, DISABLED_OobeMeets2kDisplay) {
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(
       policy::EnrollmentRequisitionManager::kRemoraRequisition);
 
