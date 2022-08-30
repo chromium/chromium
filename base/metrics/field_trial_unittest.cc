@@ -1429,6 +1429,54 @@ TEST_F(FieldTrialListTest, CheckReadOnlySharedMemoryRegion) {
 }
 #endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
 
+TEST_F(FieldTrialListTest, TestGetRandomizedFieldTrialCount) {
+  EXPECT_EQ(0u, FieldTrialList::GetFieldTrialCount());
+  EXPECT_EQ(0u, FieldTrialList::GetRandomizedFieldTrialCount());
+
+  const char name1[] = "name 1 test";
+  const char name2[] = "name 2 test";
+  const char name3[] = "name 3 test";
+  const char group1[] = "group 1";
+
+  // Create a field trial with a single group.
+  scoped_refptr<FieldTrial> trial1 =
+      FieldTrialList::CreateFieldTrial(name1, group1);
+  EXPECT_NE(FieldTrial::kNotFinalized, trial1->group_);
+  EXPECT_EQ(group1, trial1->group_name_internal());
+
+  EXPECT_EQ(1u, FieldTrialList::GetFieldTrialCount());
+  EXPECT_EQ(0u, FieldTrialList::GetRandomizedFieldTrialCount());
+
+  // Create a randomized field trial.
+  scoped_refptr<FieldTrial> trial2 =
+      CreateFieldTrial(name2, 10, "default name 2 test");
+  EXPECT_EQ(FieldTrial::kNotFinalized, trial2->group_);
+  EXPECT_EQ(name2, trial2->trial_name());
+  EXPECT_EQ("", trial2->group_name_internal());
+
+  EXPECT_EQ(2u, FieldTrialList::GetFieldTrialCount());
+  EXPECT_EQ(1u, FieldTrialList::GetRandomizedFieldTrialCount());
+
+  // Append a first group to trial 2. This doesn't affect GetFieldTrialCount()
+  // and GetRandomizedFieldTrialCount().
+  trial2->AppendGroup("a first group", 7);
+
+  EXPECT_EQ(2u, FieldTrialList::GetFieldTrialCount());
+  EXPECT_EQ(1u, FieldTrialList::GetRandomizedFieldTrialCount());
+
+  // Create another randomized field trial.
+  scoped_refptr<FieldTrial> trial3 =
+      CreateFieldTrial(name3, 10, "default name 3 test");
+  EXPECT_EQ(FieldTrial::kNotFinalized, trial3->group_);
+  EXPECT_EQ(name3, trial3->trial_name());
+  EXPECT_EQ("", trial3->group_name_internal());
+
+  EXPECT_EQ(3u, FieldTrialList::GetFieldTrialCount());
+  EXPECT_EQ(2u, FieldTrialList::GetRandomizedFieldTrialCount());
+
+  // Note: FieldTrialList should delete the objects at shutdown.
+}
+
 TEST_F(FieldTrialTest, TestAllParamsToString) {
   std::string exptected_output = "t1.g1:p1/v1/p2/v2";
 

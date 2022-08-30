@@ -274,6 +274,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
                            DoNotAddSimulatedFieldTrialsToAllocator);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, ClearParamsFromSharedMemory);
+  FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
+                           TestGetRandomizedFieldTrialCount);
 
   friend class base::FieldTrialList;
 
@@ -599,6 +601,11 @@ class BASE_EXPORT FieldTrialList {
   // Return the number of active field trials.
   static size_t GetFieldTrialCount();
 
+  // Return the number of active field trials registered as randomized trials.
+  // Trials created using the CreateFieldTrial() do not count towards this
+  // total.
+  static size_t GetRandomizedFieldTrialCount();
+
   // Gets the parameters for |field_trial| from shared memory and stores them in
   // |params|. This is only exposed for use by FieldTrialParamAssociator and
   // shouldn't be used by anything else.
@@ -745,7 +752,10 @@ class BASE_EXPORT FieldTrialList {
   // Register() stores a pointer to the given trial in a global map.
   // This method also AddRef's the indicated trial.
   // This should always be called after creating a new FieldTrial instance.
-  static void Register(FieldTrial* trial);
+  // If the caller wants to select the instance's group randomly,
+  // |is_randomized_trial| should be true to count the number of randomized
+  // trials correctly. Otherwise, false.
+  static void Register(FieldTrial* trial, bool is_randomized_trial);
 
   // Returns all the registered trials.
   static RegistrationMap GetRegisteredTrials();
@@ -764,9 +774,13 @@ class BASE_EXPORT FieldTrialList {
   // FieldTrialList is created after that.
   static bool used_without_global_;
 
-  // Lock for access to |registered_|, |observers_|.
+  // Lock for access to |registered_|, |observers_|,
+  // |count_of_manually_created_field_trials_|.
   Lock lock_;
   RegistrationMap registered_ GUARDED_BY(lock_);
+
+  // Counts the number of field trials whose groups are selected randomly.
+  size_t num_registered_randomized_trials_ GUARDED_BY(lock_) = 0;
 
   // Entropy provider to be used for one-time randomized field trials. If NULL,
   // one-time randomization is not supported.

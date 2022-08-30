@@ -366,7 +366,10 @@ void FieldTrial::SetForced() {
 
 // static
 void FieldTrial::EnableBenchmarking() {
-  DCHECK_EQ(0u, FieldTrialList::GetFieldTrialCount());
+  // We don't need to see field trials created via CreateFieldTrial() for
+  // benchmarking, because such field trials have only a single group and are
+  // not affected by randomization that |enable_benchmarking_| would disable.
+  DCHECK_EQ(0u, FieldTrialList::GetRandomizedFieldTrialCount());
   enable_benchmarking_ = true;
 }
 
@@ -509,7 +512,7 @@ FieldTrial* FieldTrialList::FactoryGetFieldTrial(
 
   FieldTrial* field_trial = new FieldTrial(trial_name, total_probability,
                                            default_group_name, entropy_value);
-  FieldTrialList::Register(field_trial);
+  FieldTrialList::Register(field_trial, /*is_randomized_trial=*/true);
   return field_trial;
 }
 
@@ -871,7 +874,9 @@ FieldTrial* FieldTrialList::CreateFieldTrial(StringPiece name,
   }
   const int kTotalProbability = 100;
   field_trial = new FieldTrial(name, kTotalProbability, group_name, 0);
-  FieldTrialList::Register(field_trial);
+  // The group choice will be finalized in this method. So
+  // |is_randomized_trial| should be false.
+  FieldTrialList::Register(field_trial, /*is_randomized_trial=*/false);
   // Force the trial, which will also finalize the group choice.
   field_trial->SetForced();
   return field_trial;
@@ -952,6 +957,14 @@ size_t FieldTrialList::GetFieldTrialCount() {
     return 0;
   AutoLock auto_lock(global_->lock_);
   return global_->registered_.size();
+}
+
+// static
+size_t FieldTrialList::GetRandomizedFieldTrialCount() {
+  if (!global_)
+    return 0;
+  AutoLock auto_lock(global_->lock_);
+  return global_->num_registered_randomized_trials_;
 }
 
 // static
@@ -1431,7 +1444,7 @@ FieldTrial* FieldTrialList::PreLockedFind(StringPiece name) {
 }
 
 // static
-void FieldTrialList::Register(FieldTrial* trial) {
+void FieldTrialList::Register(FieldTrial* trial, bool is_randomized_trial) {
   if (!global_) {
     used_without_global_ = true;
     return;
@@ -1441,6 +1454,9 @@ void FieldTrialList::Register(FieldTrial* trial) {
   trial->AddRef();
   trial->SetTrialRegistered();
   global_->registered_[trial->trial_name()] = trial;
+
+  if (is_randomized_trial)
+    ++global_->num_registered_randomized_trials_;
 }
 
 // static
