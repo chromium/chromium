@@ -593,12 +593,13 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam
-    kOmniboxRemoveSuggestionHeaderChevron_AllowCollapse[] = {
-        {"allow_group_collapsed_state", "true"}};
+    kOmniboxRemoveSuggestionHeaderChevron_DisallowCollapse[] = {
+        {"allow_group_collapsed_state", "false"}};
 const FeatureEntry::FeatureVariation
     kOmniboxRemoveSuggestionHeaderChevronVariations[] = {
-        {"AllowCollapse", kOmniboxRemoveSuggestionHeaderChevron_AllowCollapse,
-         std::size(kOmniboxRemoveSuggestionHeaderChevron_AllowCollapse),
+        {"DisallowCollapse",
+         kOmniboxRemoveSuggestionHeaderChevron_DisallowCollapse,
+         std::size(kOmniboxRemoveSuggestionHeaderChevron_DisallowCollapse),
          nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
