@@ -11,6 +11,43 @@
 // once the bug is fixed.
 #include <linux/media/av1-ctrls.h>
 
+// XXX(wenst): Revert to old API definitions while the headers are being
+// landed to avoid build break. Remove after updated header has landed
+#ifdef V4L2_CID_STATELESS_AV1_FRAME_HEADER
+
+// Name changes
+#define V4L2_CID_STATELESS_AV1_FRAME V4L2_CID_STATELESS_AV1_FRAME_HEADER
+#define v4l2_ctrl_av1_frame v4l2_ctrl_av1_frame_header
+
+// Copied from new header file. New macros simply strip out the "_HEADER"
+// from the name, and replace BIT() macro usage with hex values.
+#define V4L2_AV1_FRAME_FLAG_SHOW_FRAME 0x00000001
+#define V4L2_AV1_FRAME_FLAG_SHOWABLE_FRAME 0x00000002
+#define V4L2_AV1_FRAME_FLAG_ERROR_RESILIENT_MODE 0x00000004
+#define V4L2_AV1_FRAME_FLAG_DISABLE_CDF_UPDATE 0x00000008
+#define V4L2_AV1_FRAME_FLAG_ALLOW_SCREEN_CONTENT_TOOLS 0x00000010
+#define V4L2_AV1_FRAME_FLAG_FORCE_INTEGER_MV 0x00000020
+#define V4L2_AV1_FRAME_FLAG_ALLOW_INTRABC 0x00000040
+#define V4L2_AV1_FRAME_FLAG_USE_SUPERRES 0x00000080
+#define V4L2_AV1_FRAME_FLAG_ALLOW_HIGH_PRECISION_MV 0x00000100
+#define V4L2_AV1_FRAME_FLAG_IS_MOTION_MODE_SWITCHABLE 0x00000200
+#define V4L2_AV1_FRAME_FLAG_USE_REF_FRAME_MVS 0x00000400
+#define V4L2_AV1_FRAME_FLAG_DISABLE_FRAME_END_UPDATE_CDF 0x00000800
+#define V4L2_AV1_FRAME_FLAG_UNIFORM_TILE_SPACING 0x00001000
+#define V4L2_AV1_FRAME_FLAG_ALLOW_WARPED_MOTION 0x00002000
+#define V4L2_AV1_FRAME_FLAG_REFERENCE_SELECT 0x00004000
+#define V4L2_AV1_FRAME_FLAG_REDUCED_TX_SET 0x00008000
+#define V4L2_AV1_FRAME_FLAG_SKIP_MODE_ALLOWED 0x00010000
+#define V4L2_AV1_FRAME_FLAG_SKIP_MODE_PRESENT 0x00020000
+#define V4L2_AV1_FRAME_FLAG_FRAME_SIZE_OVERRIDE 0x00040000
+#define V4L2_AV1_FRAME_FLAG_BUFFER_REMOVAL_TIME_PRESENT 0x00080000
+#define V4L2_AV1_FRAME_FLAG_FRAME_REFS_SHORT_SIGNALING 0x00100000
+
+// Does not exist in old header file as this was originally
+// v4l2_av1_loop_filter::delta_lf_multi
+#define V4L2_AV1_LOOP_FILTER_FLAG_DELTA_LF_MULTI 0x8
+#endif
+
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
@@ -86,7 +123,7 @@ class Av1Decoder : public VideoDecoder {
   // Sets up per frame parameters |v4l2_frame_params| needed for AV1 decoding
   // with VIDIOC_S_EXT_CTRLS ioctl call.
   void SetupFrameParams(
-      struct v4l2_ctrl_av1_frame_header* v4l2_frame_params,
+      struct v4l2_ctrl_av1_frame* v4l2_frame_params,
       const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
       const libgav1::ObuFrameHeader& frm_header);
 

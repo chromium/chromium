@@ -154,9 +154,10 @@ void FillLoopFilterDeltaParams(struct v4l2_av1_loop_filter* v4l2_lf,
                                const libgav1::Delta& delta_lf) {
   conditionally_set_flags(&v4l2_lf->flags, delta_lf.present,
                           V4L2_AV1_LOOP_FILTER_FLAG_DELTA_LF_PRESENT);
+  conditionally_set_flags(&v4l2_lf->flags, delta_lf.multi,
+                          V4L2_AV1_LOOP_FILTER_FLAG_DELTA_LF_MULTI);
 
   v4l2_lf->delta_lf_res = delta_lf.scale;
-  v4l2_lf->delta_lf_multi = delta_lf.multi;
 }
 
 // Section 5.9.12. Quantization params syntax
@@ -439,7 +440,6 @@ void FillGlobalMotionParams(
 
 // Section 5.11. Tile Group OBU syntax
 void FillTileGroupParams(
-    v4l2_ctrl_av1_tile_group* tile_group_params,
     std::vector<struct v4l2_ctrl_av1_tile_group_entry>*
         tile_group_entry_vectors,
     const base::span<const uint8_t> frame_obu_data,
@@ -453,14 +453,6 @@ void FillTileGroupParams(
 
   CHECK_GT(tile_columns, 0u);
   const uint16_t num_tiles = base::checked_cast<uint16_t>(tile_buffers.size());
-
-  conditionally_set_flags(&tile_group_params->flags, num_tiles > 1,
-                          V4L2_AV1_TILE_GROUP_FLAG_START_AND_END_PRESENT);
-
-  if (num_tiles >= 1) {
-    tile_group_params->tg_start = 0;
-    tile_group_params->tg_end = num_tiles - 1;
-  }
 
   for (uint16_t tile_index = 0; tile_index < num_tiles; ++tile_index) {
     struct v4l2_ctrl_av1_tile_group_entry tile_group_entry_params = {};
@@ -613,7 +605,7 @@ void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
 
 // 5.9.2. Uncompressed header syntax
 void Av1Decoder::SetupFrameParams(
-    struct v4l2_ctrl_av1_frame_header* v4l2_frame_params,
+    struct v4l2_ctrl_av1_frame* v4l2_frame_params,
     const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
     const libgav1::ObuFrameHeader& frm_header) {
   FillLoopFilterParams(&v4l2_frame_params->loop_filter, frm_header.loop_filter);
@@ -643,70 +635,70 @@ void Av1Decoder::SetupFrameParams(
                          frm_header.global_motion);
 
   conditionally_set_u32_flags(&v4l2_frame_params->flags, frm_header.show_frame,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SHOW_FRAME);
+                              V4L2_AV1_FRAME_FLAG_SHOW_FRAME);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.showable_frame,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SHOWABLE_FRAME);
+                              V4L2_AV1_FRAME_FLAG_SHOWABLE_FRAME);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.error_resilient_mode,
-                              V4L2_AV1_FRAME_HEADER_FLAG_ERROR_RESILIENT_MODE);
+                              V4L2_AV1_FRAME_FLAG_ERROR_RESILIENT_MODE);
   // libgav1 header has |enable_cdf_update| instead of |disable_cdf_update|.
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               !frm_header.enable_cdf_update,
-                              V4L2_AV1_FRAME_HEADER_FLAG_DISABLE_CDF_UPDATE);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.allow_screen_content_tools,
-      V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_SCREEN_CONTENT_TOOLS);
+                              V4L2_AV1_FRAME_FLAG_DISABLE_CDF_UPDATE);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.allow_screen_content_tools,
+                              V4L2_AV1_FRAME_FLAG_ALLOW_SCREEN_CONTENT_TOOLS);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.force_integer_mv,
-                              V4L2_AV1_FRAME_HEADER_FLAG_FORCE_INTEGER_MV);
+                              V4L2_AV1_FRAME_FLAG_FORCE_INTEGER_MV);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.allow_intrabc,
-                              V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_INTRABC);
+                              V4L2_AV1_FRAME_FLAG_ALLOW_INTRABC);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.use_superres,
-                              V4L2_AV1_FRAME_HEADER_FLAG_USE_SUPERRES);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.allow_high_precision_mv,
-      V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_HIGH_PRECISION_MV);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.is_motion_mode_switchable,
-      V4L2_AV1_FRAME_HEADER_FLAG_IS_MOTION_MODE_SWITCHABLE);
+                              V4L2_AV1_FRAME_FLAG_USE_SUPERRES);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.allow_high_precision_mv,
+                              V4L2_AV1_FRAME_FLAG_ALLOW_HIGH_PRECISION_MV);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.is_motion_mode_switchable,
+                              V4L2_AV1_FRAME_FLAG_IS_MOTION_MODE_SWITCHABLE);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.use_ref_frame_mvs,
-                              V4L2_AV1_FRAME_HEADER_FLAG_USE_REF_FRAME_MVS);
+                              V4L2_AV1_FRAME_FLAG_USE_REF_FRAME_MVS);
   // libgav1 header has |enable_frame_end_update_cdf| instead.
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, !frm_header.enable_frame_end_update_cdf,
-      V4L2_AV1_FRAME_HEADER_FLAG_DISABLE_FRAME_END_UPDATE_CDF);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              !frm_header.enable_frame_end_update_cdf,
+                              V4L2_AV1_FRAME_FLAG_DISABLE_FRAME_END_UPDATE_CDF);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.tile_info.uniform_spacing,
-                              V4L2_AV1_FRAME_HEADER_FLAG_UNIFORM_TILE_SPACING);
+                              V4L2_AV1_FRAME_FLAG_UNIFORM_TILE_SPACING);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.allow_warped_motion,
-                              V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_WARPED_MOTION);
+                              V4L2_AV1_FRAME_FLAG_ALLOW_WARPED_MOTION);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.reference_mode_select,
-                              V4L2_AV1_FRAME_HEADER_FLAG_REFERENCE_SELECT);
+                              V4L2_AV1_FRAME_FLAG_REFERENCE_SELECT);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.reduced_tx_set,
-                              V4L2_AV1_FRAME_HEADER_FLAG_REDUCED_TX_SET);
+                              V4L2_AV1_FRAME_FLAG_REDUCED_TX_SET);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.skip_mode_frame[0] > 0,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SKIP_MODE_ALLOWED);
+                              V4L2_AV1_FRAME_FLAG_SKIP_MODE_ALLOWED);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.skip_mode_present,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SKIP_MODE_PRESENT);
+                              V4L2_AV1_FRAME_FLAG_SKIP_MODE_PRESENT);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.frame_size_override_flag,
-                              V4L2_AV1_FRAME_HEADER_FLAG_FRAME_SIZE_OVERRIDE);
+                              V4L2_AV1_FRAME_FLAG_FRAME_SIZE_OVERRIDE);
   // libgav1 header doesn't have |buffer_removal_time_present_flag|.
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.buffer_removal_time[0] > 0,
-      V4L2_AV1_FRAME_HEADER_FLAG_BUFFER_REMOVAL_TIME_PRESENT);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.frame_refs_short_signaling,
-      V4L2_AV1_FRAME_HEADER_FLAG_FRAME_REFS_SHORT_SIGNALING);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.buffer_removal_time[0] > 0,
+                              V4L2_AV1_FRAME_FLAG_BUFFER_REMOVAL_TIME_PRESENT);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.frame_refs_short_signaling,
+                              V4L2_AV1_FRAME_FLAG_FRAME_REFS_SHORT_SIGNALING);
 
   switch (frm_header.frame_type) {
     case libgav1::kFrameKey:
@@ -954,34 +946,21 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                               .size = sizeof(v4l2_seq_params),
                               .ptr = &v4l2_seq_params});
 
-  struct v4l2_ctrl_av1_frame_header v4l2_frame_params = {};
+  struct v4l2_ctrl_av1_frame v4l2_frame_params = {};
 
   SetupFrameParams(&v4l2_frame_params, current_sequence_header_,
                    current_frame_header);
 
-  // TODO(stevecho): V4L2_CID_STATELESS_AV1_FRAME_HEADER is trending to be
-  // changed to V4L2_CID_STATELESS_AV1_FRAME
-  ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_FRAME_HEADER,
+  ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_FRAME,
                               .size = sizeof(v4l2_frame_params),
                               .ptr = &v4l2_frame_params});
 
-  struct v4l2_ctrl_av1_tile_group tile_group_params = {};
   std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vectors;
 
   FillTileGroupParams(
-      &tile_group_params, &tile_group_entry_vectors,
+      &tile_group_entry_vectors,
       base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
       current_frame_header.tile_info, obu_parser_->tile_buffers());
-
-  // TODO(b/240736764): We are discussing to remove tile group control.
-  // But current MTK driver expects this control with error check, so we need
-  // this setup for the time being. Also, current libgav1 parser doesn't have
-  // information about start & end index of each tile group. Thus, we are
-  // setting up this control only for the 1st tile group. In fact, current tests
-  // don't have cases when 2+ tile groups exist within a frame.
-  ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_TILE_GROUP,
-                              .size = sizeof(tile_group_params),
-                              .ptr = &tile_group_params});
 
   ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY,
                               .size = base::checked_cast<__u32>(
