@@ -211,23 +211,19 @@ class APIBindingUnittest : public APIBindingTest {
   }
 
   void SetFunctions(const char* functions) {
-    binding_functions_ = DeprecatedListValueFromString(functions);
-    ASSERT_TRUE(binding_functions_);
+    binding_functions_ = ListValueFromString(functions);
   }
 
   void SetEvents(const char* events) {
-    binding_events_ = DeprecatedListValueFromString(events);
-    ASSERT_TRUE(binding_events_);
+    binding_events_ = ListValueFromString(events);
   }
 
   void SetTypes(const char* types) {
-    binding_types_ = DeprecatedListValueFromString(types);
-    ASSERT_TRUE(binding_types_);
+    binding_types_ = ListValueFromString(types);
   }
 
   void SetProperties(const char* properties) {
-    binding_properties_ = DeprecatedDictionaryValueFromString(properties);
-    ASSERT_TRUE(binding_properties_);
+    binding_properties_ = DictValueFromString(properties);
   }
 
   void SetHooks(std::unique_ptr<APIBindingHooks> hooks) {
@@ -311,11 +307,10 @@ class APIBindingUnittest : public APIBindingTest {
     access_checker_ = std::make_unique<BindingAccessChecker>(
         api_availability_callback_, promise_availability_callback_);
     binding_ = std::make_unique<APIBinding>(
-        kBindingName, binding_functions_.get(), binding_types_.get(),
-        binding_events_.get(), binding_properties_.get(), create_custom_type_,
-        on_silent_request_, std::move(binding_hooks_), &type_refs_,
-        request_handler_.get(), event_handler_.get(), access_checker_.get());
-    EXPECT_EQ(!binding_types_.get(), type_refs_.empty());
+        kBindingName, &binding_functions_, &binding_types_, &binding_events_,
+        &binding_properties_, create_custom_type_, on_silent_request_,
+        std::move(binding_hooks_), &type_refs_, request_handler_.get(),
+        event_handler_.get(), access_checker_.get());
   }
 
   v8::Local<v8::Value> ExpectPass(
@@ -386,10 +381,10 @@ class APIBindingUnittest : public APIBindingTest {
   std::unique_ptr<BindingAccessChecker> access_checker_;
   APITypeReferenceMap type_refs_;
 
-  std::unique_ptr<base::ListValue> binding_functions_;
-  std::unique_ptr<base::ListValue> binding_events_;
-  std::unique_ptr<base::ListValue> binding_types_;
-  std::unique_ptr<base::DictionaryValue> binding_properties_;
+  base::Value::List binding_functions_;
+  base::Value::List binding_events_;
+  base::Value::List binding_types_;
+  base::Value::Dict binding_properties_;
   std::unique_ptr<APIBindingHooks> binding_hooks_;
   std::unique_ptr<APIBindingHooksDelegate> binding_hooks_delegate_;
   APIBinding::CreateCustomType create_custom_type_;
@@ -802,7 +797,7 @@ TEST_F(APIBindingUnittest, TestRefProperties) {
   auto create_custom_type = [](v8::Isolate* isolate,
                                const std::string& type_name,
                                const std::string& property_name,
-                               const base::ListValue* property_values) {
+                               const base::Value::List* property_values) {
     v8::Local<v8::Context> context = isolate->GetCurrentContext();
     v8::Local<v8::Object> result = v8::Object::New(isolate);
     if (type_name == "AlphaRef") {

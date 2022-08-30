@@ -243,7 +243,7 @@ StorageArea::~StorageArea() = default;
 v8::Local<v8::Object> StorageArea::CreateStorageArea(
     v8::Isolate* isolate,
     const std::string& property_name,
-    const base::ListValue* property_values,
+    const base::Value::List*,
     APIRequestHandler* request_handler,
     APIEventHandler* event_handler,
     APITypeReferenceMap* type_refs,

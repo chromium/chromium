@@ -108,9 +108,9 @@ std::unique_ptr<base::DictionaryValue> DeprecatedDictionaryValueFromString(
   return base::DictionaryValue::From(DeprecatedValueFromString(str));
 }
 
-std::string ValueToString(const base::Value& value) {
+std::string ValueToString(const base::ValueView& value_view) {
   std::string json;
-  EXPECT_TRUE(base::JSONWriter::Write(value, &json));
+  EXPECT_TRUE(base::JSONWriter::Write(value_view, &json));
   return json;
 }
 

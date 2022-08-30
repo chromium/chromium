@@ -13,12 +13,9 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/values.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "v8/include/v8.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace gin {
 class Arguments;
@@ -50,7 +47,7 @@ class APIBinding {
       v8::Isolate* isolate,
       const std::string& type_name,
       const std::string& property_name,
-      const base::ListValue* property_values)>;
+      const base::Value::List* property_values)>;
 
   // Called when a request is handled without notifying the browser.
   using OnSilentRequest = base::RepeatingCallback<void(
@@ -65,10 +62,10 @@ class APIBinding {
   // |function_definitions|, |type_definitions| and |event_definitions|
   // may be null if the API does not specify any of that category.
   APIBinding(const std::string& name,
-             const base::ListValue* function_definitions,
-             const base::ListValue* type_definitions,
-             const base::ListValue* event_definitions,
-             const base::DictionaryValue* property_definitions,
+             const base::Value::List* function_definitions,
+             const base::Value::List* type_definitions,
+             const base::Value::List* event_definitions,
+             const base::Value::Dict* property_definitions,
              CreateCustomType create_custom_type,
              OnSilentRequest on_silent_request,
              std::unique_ptr<APIBindingHooks> binding_hooks,
@@ -103,7 +100,7 @@ class APIBinding {
   void DecorateTemplateWithProperties(
       v8::Isolate* isolate,
       v8::Local<v8::ObjectTemplate> object_template,
-      const base::DictionaryValue& properties,
+      const base::Value::Dict& properties,
       bool is_root);
 
   // Handler for getting the v8::Object associated with an event on the API.
@@ -144,7 +141,7 @@ class APIBinding {
   std::map<std::string, std::vector<EnumEntry>> enums_;
 
   // The associated properties of the API, if any.
-  const base::DictionaryValue* property_definitions_;
+  const base::Value::Dict* property_definitions_;
   // The names of all the "root properties" added to the API; i.e., properties
   // exposed on the API object itself.
   base::flat_set<std::string> root_properties_;

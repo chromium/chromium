@@ -7,14 +7,10 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8-forward.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
 
 namespace gin {
 class Arguments;
@@ -37,7 +33,7 @@ class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
   static v8::Local<v8::Object> Create(
       v8::Isolate* isolate,
       const std::string& property_name,
-      const base::ListValue* property_values,
+      const base::Value::List* property_values,
       APIRequestHandler* request_handler,
       APIEventHandler* event_handler,
       APITypeReferenceMap* type_refs,

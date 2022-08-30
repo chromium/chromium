@@ -66,16 +66,14 @@ v8::Local<v8::Object> APIBindingsSystem::CreateAPIInstance(
 
 std::unique_ptr<APIBinding> APIBindingsSystem::CreateNewAPIBinding(
     const std::string& api_name) {
-  const base::DictionaryValue& api_schema = get_api_schema_.Run(api_name);
+  const base::Value::Dict& api_schema = get_api_schema_.Run(api_name).GetDict();
 
-  const base::ListValue* function_definitions = nullptr;
-  api_schema.GetList("functions", &function_definitions);
-  const base::ListValue* type_definitions = nullptr;
-  api_schema.GetList("types", &type_definitions);
-  const base::ListValue* event_definitions = nullptr;
-  api_schema.GetList("events", &event_definitions);
-  const base::DictionaryValue* property_definitions = nullptr;
-  api_schema.GetDictionary("properties", &property_definitions);
+  const base::Value::List* function_definitions =
+      api_schema.FindList("functions");
+  const base::Value::List* type_definitions = api_schema.FindList("types");
+  const base::Value::List* event_definitions = api_schema.FindList("events");
+  const base::Value::Dict* property_definitions =
+      api_schema.FindDict("properties");
 
   // Find the hooks for the API. If none exist, an empty set will be created so
   // we can use JS custom bindings.
@@ -160,7 +158,7 @@ v8::Local<v8::Object> APIBindingsSystem::CreateCustomType(
     v8::Isolate* isolate,
     const std::string& type_name,
     const std::string& property_name,
-    const base::ListValue* property_values) {
+    const base::Value::List* property_values) {
   auto iter = custom_types_.find(type_name);
   DCHECK(iter != custom_types_.end()) << "Custom type not found: " << type_name;
   return iter->second.Run(isolate, property_name, property_values,

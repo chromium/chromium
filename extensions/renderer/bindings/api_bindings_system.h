@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -19,11 +20,6 @@
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "extensions/renderer/bindings/exception_handler.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
 
 namespace extensions {
 class APIBindingHooks;
@@ -39,7 +35,7 @@ class APIBindingsSystem {
   using CustomTypeHandler = base::RepeatingCallback<v8::Local<v8::Object>(
       v8::Isolate* isolate,
       const std::string& property_name,
-      const base::ListValue* property_values,
+      const base::Value::List* property_values,
       APIRequestHandler* request_handler,
       APIEventHandler* event_handler,
       APITypeReferenceMap* type_refs,
@@ -120,7 +116,7 @@ class APIBindingsSystem {
       v8::Isolate* isolate,
       const std::string& type_name,
       const std::string& property_name,
-      const base::ListValue* property_values);
+      const base::Value::List* property_values);
 
   // The map of cached API reference types.
   APITypeReferenceMap type_reference_map_;

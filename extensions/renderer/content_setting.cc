@@ -54,15 +54,14 @@ bool IsDeprecated(base::StringPiece type) {
 v8::Local<v8::Object> ContentSetting::Create(
     v8::Isolate* isolate,
     const std::string& property_name,
-    const base::ListValue* property_values,
+    const base::Value::List* property_values,
     APIRequestHandler* request_handler,
     APIEventHandler* event_handler,
     APITypeReferenceMap* type_refs,
     const BindingAccessChecker* access_checker) {
-  const base::Value::List& property_values_list = property_values->GetList();
-  CHECK_GE(property_values_list.size(), 2u);
-  const std::string& pref_name = property_values_list[0].GetString();
-  const base::Value& value_spec = property_values_list[1u];
+  CHECK_GE(property_values->size(), 2u);
+  const std::string& pref_name = (*property_values)[0].GetString();
+  const base::Value& value_spec = (*property_values)[1u];
   CHECK(value_spec.is_dict());
 
   gin::Handle<ContentSetting> handle = gin::CreateHandle(
