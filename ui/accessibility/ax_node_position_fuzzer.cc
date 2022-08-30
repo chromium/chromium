@@ -376,7 +376,6 @@ struct Environment {
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
-  size = kMaxFuzzDataSize;
   if (size < kMinFuzzDataSize || size > kMaxFuzzDataSize)
     return 0;
   static Environment env;
