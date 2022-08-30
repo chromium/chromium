@@ -43,15 +43,15 @@ class MacDeviceTrustConnectorServiceTest
 
   void UpdateAllowlistProfilePreference() {
     is_policy_enabled()
-        ? profile_prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                                     base::Value(GetOrigins()))
-        : profile_prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                                     base::Value(base::Value::List()));
+        ? profile_prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                                        base::Value(GetOrigins()))
+        : profile_prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                                        base::Value(base::Value::List()));
   }
 
   void UpdateKeyCreationLocalPreference() {
-    local_prefs_.SetUserPref(kDeviceTrustDisableKeyCreationPref,
-                             base::Value(!is_key_creation_enabled()));
+    local_prefs_.SetManagedPref(kDeviceTrustDisableKeyCreationPref,
+                                base::Value(!is_key_creation_enabled()));
   }
 
   std::unique_ptr<MacDeviceTrustConnectorService> CreateService() {

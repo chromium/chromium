@@ -16,16 +16,15 @@ namespace enterprise_connectors {
 
 namespace {
 
-// TODO when adding this service to the login-screen: Check if the preference is
-// unmanaged, while we are in sign-in profile to address
-// security-/privacy-concerns
-const base::Value::List& GetPolicyUrlPatterns(PrefService* prefs) {
-  return prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref);
+const base::Value::List* GetPolicyUrlPatterns(PrefService* prefs) {
+  if (!prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref))
+    return nullptr;
+  return &prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref);
 }
 
 bool ConnectorPolicyHasValues(PrefService* profile_prefs) {
-  const auto& list = GetPolicyUrlPatterns(profile_prefs);
-  return !list.empty();
+  const auto* list = GetPolicyUrlPatterns(profile_prefs);
+  return list && !list->empty();
 }
 
 }  // namespace
@@ -74,16 +73,16 @@ void DeviceTrustConnectorService::OnConnectorEnabled() {
 void DeviceTrustConnectorService::OnPolicyUpdated() {
   DCHECK(IsDeviceTrustConnectorFeatureEnabled());
 
-  const base::Value::List& url_patterns = GetPolicyUrlPatterns(profile_prefs_);
+  const base::Value::List* url_patterns = GetPolicyUrlPatterns(profile_prefs_);
 
   if (!matcher_ || !matcher_->IsEmpty()) {
     // Reset the matcher.
     matcher_ = std::make_unique<url_matcher::URLMatcher>();
   }
 
-  if (!url_patterns.empty()) {
+  if (url_patterns && !url_patterns->empty()) {
     // Add the new endpoints to the conditions.
-    url_matcher::util::AddAllowFilters(matcher_.get(), url_patterns);
+    url_matcher::util::AddAllowFilters(matcher_.get(), *url_patterns);
 
     // Call the hook which signals that the connector has been enabled.
     OnConnectorEnabled();

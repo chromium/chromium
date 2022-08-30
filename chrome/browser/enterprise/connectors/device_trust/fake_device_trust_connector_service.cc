@@ -18,8 +18,8 @@ FakeDeviceTrustConnectorService::~FakeDeviceTrustConnectorService() = default;
 
 void FakeDeviceTrustConnectorService::update_policy(
     base::Value::List new_urls) {
-  test_prefs_->SetList(kContextAwareAccessSignalsAllowlistPref,
-                       std::move(new_urls));
+  test_prefs_->SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                              base::Value(std::move(new_urls)));
 }
 
 }  // namespace enterprise_connectors

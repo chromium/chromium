@@ -31,6 +31,8 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -157,6 +159,13 @@ class DeviceTrustBrowserTest
                     embedded_test_server()->StartAndReturnHandle());
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
@@ -169,16 +178,29 @@ class DeviceTrustBrowserTest
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  void PopulatePref(bool as_empty_list = false,
-                    Browser* active_browser = nullptr) {
+  void SetPolicy(bool as_empty_list = false,
+                 Browser* active_browser = nullptr) {
+    policy::PolicyMap policy_map;
     base::Value list_value(base::Value::Type::LIST);
 
     if (!as_empty_list) {
       list_value.Append(kAllowedHost);
     }
 
-    prefs(active_browser)
-        ->Set(kContextAwareAccessSignalsAllowlistPref, std::move(list_value));
+    policy_map.Set(policy::key::kContextAwareAccessSignalsAllowlist,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD, std::move(list_value), nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(provider_.UpdateChromePolicy(policy_map));
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_EQ(prefs(active_browser)
+                  ->GetValueList(kContextAwareAccessSignalsAllowlistPref)
+                  .empty(),
+              as_empty_list);
+    EXPECT_TRUE(
+        prefs(active_browser)
+            ->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref));
   }
 
   void NavigateToUrl(const GURL& url) {
@@ -253,6 +275,7 @@ class DeviceTrustBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   absl::optional<const net::test_server::HttpRequest>
       initial_attestation_request_;
   absl::optional<const net::test_server::HttpRequest>
@@ -270,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
   TestNavigationManager first_navigation(web_contents(), redirect_url);
 
   // Add allowed domain to Prefs and trigger a navigation to it.
-  PopulatePref();
+  SetPolicy();
   NavigateToUrl(redirect_url);
 
   first_navigation.WaitForNavigationFinished();
@@ -340,7 +363,7 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
   // Add allowed domain to Prefs and trigger a navigation to another domain.
-  PopulatePref();
+  SetPolicy();
   NavigateToUrl(navigation_url);
 
   navigation_manager.WaitForNavigationFinished();
@@ -362,7 +385,7 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
   // Set the allow-list Pref to an empty list and trigger a navigation.
-  PopulatePref(/*as_empty_list=*/true);
+  SetPolicy(/*as_empty_list=*/true);
   NavigateToUrl(navigation_url);
 
   navigation_manager.WaitForNavigationFinished();
@@ -407,7 +430,7 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest,
       web_contents(incognito_browser));
 
   // Add allowed domain to Prefs.
-  PopulatePref(true, incognito_browser);
+  SetPolicy(false, incognito_browser);
 
   // Try to create the device trust navigation throttle.
   EXPECT_TRUE(enterprise_connectors::DeviceTrustNavigationThrottle::

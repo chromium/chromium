@@ -55,12 +55,9 @@ bool AreContextAwareAccessSignalsEnabledForUrl(const GURL& url,
   if (!prefs || !prefs->HasPrefPath(kContextAwareAccessSignalsAllowlistPref))
     return false;
 
-  if (!ash::ProfileHelper::IsRegularProfile(profile) &&
-      !prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref))
-    return false;
-
-  return UrlMatchesPattern(
-      url, prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref));
+  return prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref) &&
+         UrlMatchesPattern(
+             url, prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref));
 }
 }  // namespace
 

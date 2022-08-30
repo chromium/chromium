@@ -60,18 +60,18 @@ class DeviceTrustConnectorServiceTest
   }
 
   void EnableServicePolicy() {
-    prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       base::Value(GetOrigins()));
+    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                          base::Value(GetOrigins()));
   }
 
   void UpdateServicePolicy() {
-    prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       base::Value(GetMoreOrigins()));
+    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                          base::Value(GetMoreOrigins()));
   }
 
   void DisableServicePolicy() {
-    prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       base::Value(base::Value::List()));
+    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                          base::Value(base::Value::List()));
   }
 
   std::unique_ptr<DeviceTrustConnectorService> CreateService() {

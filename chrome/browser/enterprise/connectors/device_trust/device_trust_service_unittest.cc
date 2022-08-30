@@ -98,13 +98,13 @@ class DeviceTrustServiceTest
   }
 
   void EnableServicePolicy() {
-    prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       base::Value(GetOrigins()));
+    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                          base::Value(GetOrigins()));
   }
 
   void DisableServicePolicy() {
-    prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       base::Value(base::Value::List()));
+    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                          base::Value(base::Value::List()));
   }
 
   std::unique_ptr<DeviceTrustService> CreateService() {
