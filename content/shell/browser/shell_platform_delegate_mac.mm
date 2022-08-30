@@ -27,7 +27,7 @@
 // tear-down process. Is responsible for deleting itself when done.
 @interface ContentShellWindowDelegate : NSObject <NSWindowDelegate> {
  @private
-  raw_ptr<content::Shell> _shell;
+  raw_ptr<content::Shell, DanglingUntriaged> _shell;
 }
 - (id)initWithShell:(content::Shell*)shell;
 @end
@@ -69,7 +69,7 @@
 
 @interface CrShellWindow : UnderlayOpenGLHostingWindow {
  @private
-  raw_ptr<content::Shell> _shell;
+  raw_ptr<content::Shell, DanglingUntriaged> _shell;
 }
 - (void)setShell:(content::Shell*)shell;
 - (void)showDevTools:(id)sender;
