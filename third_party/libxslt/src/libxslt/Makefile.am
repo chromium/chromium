@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libxslt
 
-AM_CFLAGS = $(LIBXML_CFLAGS)
+AM_CFLAGS = $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
 
 lib_LTLIBRARIES = libxslt.la
 

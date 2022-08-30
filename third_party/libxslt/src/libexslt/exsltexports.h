@@ -2,133 +2,56 @@
  * Summary: macros for marking symbols as exportable/importable.
  *
  * Copy: See Copyright for the status of this software.
- *
- * Author: Igor Zlatkovic <igor@zlatkovic.com>
  */
 
 #ifndef __EXSLT_EXPORTS_H__
 #define __EXSLT_EXPORTS_H__
 
-/**
- * EXSLTPUBFUN, EXSLTPUBVAR, EXSLTCALL
- *
- * Macros which declare an exportable function, an exportable variable and
- * the calling convention used for functions.
- *
- * Please use an extra block for every platform/compiler combination when
- * modifying this, rather than overlong #ifdef lines. This helps
- * readability as well as the fact that different compilers on the same
- * platform might need different definitions.
- */
+#if defined(_WIN32) || defined(__CYGWIN__)
+/** DOC_DISABLE */
+
+#ifdef LIBEXSLT_STATIC
+  #define EXSLTPUBLIC
+#elif defined(IN_LIBEXSLT)
+  #define EXSLTPUBLIC __declspec(dllexport)
+#else
+  #define EXSLTPUBLIC __declspec(dllimport)
+#endif
+
+#define EXSLTCALL __cdecl
+
+/** DOC_ENABLE */
+#else /* not Windows */
 
 /**
- * EXSLTPUBFUN:
+ * EXSLTPUBLIC:
  *
- * Macros which declare an exportable function
+ * Macro which declares a public symbol
  */
-#define EXSLTPUBFUN
-/**
- * EXSLTPUBVAR:
- *
- * Macros which declare an exportable variable
- */
-#define EXSLTPUBVAR extern
+#define EXSLTPUBLIC
+
 /**
  * EXSLTCALL:
  *
- * Macros which declare the called convention for exported functions
+ * Macro which declares the calling convention for exported functions
  */
 #define EXSLTCALL
 
-/** DOC_DISABLE */
+#endif /* platform switch */
 
-/* Windows platform with MS compiler */
-#if defined(_WIN32) && defined(_MSC_VER)
-  #undef EXSLTPUBFUN
-  #undef EXSLTPUBVAR
-  #undef EXSLTCALL
-  #if defined(IN_LIBEXSLT) && !defined(LIBEXSLT_STATIC)
-    #define EXSLTPUBFUN __declspec(dllexport)
-    #define EXSLTPUBVAR __declspec(dllexport)
-  #else
-    #define EXSLTPUBFUN
-    #if !defined(LIBEXSLT_STATIC)
-      #define EXSLTPUBVAR __declspec(dllimport) extern
-    #else
-      #define EXSLTPUBVAR extern
-    #endif
-  #endif
-  #define EXSLTCALL __cdecl
-  #if !defined _REENTRANT
-    #define _REENTRANT
-  #endif
-#endif
-
-/* Windows platform with Borland compiler */
-#if defined(_WIN32) && defined(__BORLANDC__)
-  #undef EXSLTPUBFUN
-  #undef EXSLTPUBVAR
-  #undef EXSLTCALL
-  #if defined(IN_LIBEXSLT) && !defined(LIBEXSLT_STATIC)
-    #define EXSLTPUBFUN __declspec(dllexport)
-    #define EXSLTPUBVAR __declspec(dllexport) extern
-  #else
-    #define EXSLTPUBFUN
-    #if !defined(LIBEXSLT_STATIC)
-      #define EXSLTPUBVAR __declspec(dllimport) extern
-    #else
-      #define EXSLTPUBVAR extern
-    #endif
-  #endif
-  #define EXSLTCALL __cdecl
-  #if !defined _REENTRANT
-    #define _REENTRANT
-  #endif
-#endif
-
-/* Windows platform with GNU compiler (Mingw) */
-#if defined(_WIN32) && defined(__MINGW32__)
-  #undef EXSLTPUBFUN
-  #undef EXSLTPUBVAR
-  #undef EXSLTCALL
 /*
-  #if defined(IN_LIBEXSLT) && !defined(LIBEXSLT_STATIC)
-*/
-  #if !defined(LIBEXSLT_STATIC)
-    #define EXSLTPUBFUN __declspec(dllexport)
-    #define EXSLTPUBVAR __declspec(dllexport) extern
-  #else
-    #define EXSLTPUBFUN
-    #if !defined(LIBEXSLT_STATIC)
-      #define EXSLTPUBVAR __declspec(dllimport) extern
-    #else
-      #define EXSLTPUBVAR extern
-    #endif
-  #endif
-  #define EXSLTCALL __cdecl
-  #if !defined _REENTRANT
-    #define _REENTRANT
-  #endif
-#endif
+ * EXSLTPUBFUN:
+ *
+ * Macro which declares an exportable function
+ */
+#define EXSLTPUBFUN EXSLTPUBLIC
 
-/* Cygwin platform (does not define _WIN32), GNU compiler */
-#if defined(__CYGWIN__)
-  #undef EXSLTPUBFUN
-  #undef EXSLTPUBVAR
-  #undef EXSLTCALL
-  #if defined(IN_LIBEXSLT) && !defined(LIBEXSLT_STATIC)
-    #define EXSLTPUBFUN __declspec(dllexport)
-    #define EXSLTPUBVAR __declspec(dllexport)
-  #else
-    #define EXSLTPUBFUN
-    #if !defined(LIBEXSLT_STATIC)
-      #define EXSLTPUBVAR __declspec(dllimport) extern
-    #else
-      #define EXSLTPUBVAR extern
-    #endif
-  #endif
-  #define EXSLTCALL __cdecl
-#endif
+/**
+ * EXSLTPUBVAR:
+ *
+ * Macro which declares an exportable variable
+ */
+#define EXSLTPUBVAR EXSLTPUBLIC extern
 
 /* Compatibility */
 #if !defined(LIBEXSLT_PUBLIC)

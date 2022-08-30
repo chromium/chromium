@@ -193,6 +193,10 @@ set(
 add_library(LibXslt ${LIBXSLT_HDRS} ${LIBXSLT_SRCS})
 add_library(LibXslt::LibXslt ALIAS LibXslt)
 
+if(NOT BUILD_SHARED_LIBS)
+	target_compile_definitions(LibXslt INTERFACE LIBXSLT_STATIC)
+endif()
+
 target_include_directories(
 	LibXslt
 	PUBLIC
@@ -275,6 +279,10 @@ set(
 
 add_library(LibExslt ${LIBEXSLT_HDRS} ${LIBEXSLT_SRCS})
 add_library(LibXslt::LibExslt ALIAS LibExslt)
+
+if(NOT BUILD_SHARED_LIBS)
+	target_compile_definitions(LibExslt INTERFACE LIBEXSLT_STATIC)
+endif()
 
 target_include_directories(
 	LibExslt

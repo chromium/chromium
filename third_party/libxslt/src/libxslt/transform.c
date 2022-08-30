@@ -3637,12 +3637,12 @@ xsltDocumentElem(xsltTransformContextPtr ctxt, xmlNodePtr node,
 
 	element = elements;
 	while (*element != 0) {
-	    while (IS_BLANK_CH(*element))
+	    while (xmlIsBlank_ch(*element))
 		element++;
 	    if (*element == 0)
 		break;
 	    end = element;
-	    while ((*end != 0) && (!IS_BLANK_CH(*end)))
+	    while ((*end != 0) && (!xmlIsBlank_ch(*end)))
 		end++;
 	    element = xmlStrndup(element, end - element);
 	    if (element) {

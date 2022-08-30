@@ -3,7 +3,7 @@ AC_PREREQ(2.63)
 
 m4_define([MAJOR_VERSION], [1])
 m4_define([MINOR_VERSION], [1])
-m4_define([MICRO_VERSION], [35])
+m4_define([MICRO_VERSION], [37])
 
 AC_INIT([libxslt], [MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
 AC_CONFIG_SRCDIR([libxslt/xslt.c])
@@ -67,7 +67,7 @@ AC_SUBST(LIBEXSLT_VERSION_INFO)
 AC_SUBST(LIBEXSLT_VERSION_NUMBER)
 AC_SUBST(LIBEXSLT_VERSION_EXTRA)
 
-AM_INIT_AUTOMAKE([1.15 foreign no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([1.16.3 foreign no-dist-gzip dist-xz])
 AM_MAINTAINER_MODE([enable])
 AM_SILENT_RULES([yes])
 
@@ -492,7 +492,6 @@ case "$host" in
 esac
 
 
-AC_SUBST(XSLTPROCDV)
 AC_SUBST(XML_CONFIG)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
@@ -505,6 +504,21 @@ AC_SUBST(XSLT_LIBDIR)
 AC_SUBST(XSLT_INCLUDEDIR)
 AC_SUBST(XSLT_LIBS)
 AC_SUBST(XSLT_PRIVATE_LIBS)
+
+LIBXSLT_CFLAGS=""
+case ${host} in
+    *-*-mingw* | *-*-cygwin* | *-*-msvc* )
+        # If the host is Windows, and shared libraries are disabled, we
+        # need to add -DLIBXML_STATIC to EXTRA_CFLAGS in order for linking to
+        # work properly (without it, xmlexports.h would force the use of
+        # DLL imports, which obviously aren't present in a static
+        # library).
+        if test "x$enable_shared" = "xno"; then
+           LIBXSLT_CFLAGS="$LIBXSLT_CFLAGS -DLIBXSLT_STATIC -DLIBEXSLT_STATIC"
+        fi
+        ;;
+esac
+AC_SUBST(LIBXSLT_CFLAGS)
 
 EXSLT_LIBDIR='-L${libdir}'
 EXSLT_INCLUDEDIR='-I${includedir}'

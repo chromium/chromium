@@ -963,6 +963,8 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr variable,
 		xmlDocPtr container;
 		xmlNodePtr oldInsert;
 		xmlDocPtr  oldOutput;
+                const xmlChar *oldLastText;
+                int oldLastTextSize, oldLastTextUse;
 		xsltStackElemPtr oldVar = ctxt->contextVariable;
 
 		/*
@@ -988,6 +990,9 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr variable,
 
 		oldOutput = ctxt->output;
 		oldInsert = ctxt->insert;
+                oldLastText = ctxt->lasttext;
+                oldLastTextSize = ctxt->lasttsize;
+                oldLastTextUse = ctxt->lasttuse;
 
 		ctxt->output = container;
 		ctxt->insert = (xmlNodePtr) container;
@@ -1002,6 +1007,9 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr variable,
 		ctxt->contextVariable = oldVar;
 		ctxt->insert = oldInsert;
 		ctxt->output = oldOutput;
+                ctxt->lasttext = oldLastText;
+                ctxt->lasttsize = oldLastTextSize;
+                ctxt->lasttuse = oldLastTextUse;
 
 		result = xmlXPathNewValueTree((xmlNodePtr) container);
 	    }

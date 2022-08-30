@@ -12,17 +12,15 @@ confexec_DATA = xsltConf.sh
 
 bin_SCRIPTS = xslt-config
 
-dist-hook: cleanup libxslt.spec
+dist-hook: cleanup
 	touch $(distdir)/doc/*.xml
 	touch $(distdir)/doc/EXSLT/*.xml
 	touch $(distdir)/libxslt/*.syms
 	(cd $(srcdir) ; tar -cf - win32 vms examples) | (cd $(distdir); tar xf -)
 
-EXTRA_DIST = xsltConf.sh.in xslt-config.in libxslt.spec libxslt.spec.in \
-             FEATURES TODO Copyright libxslt.m4 \
-	     win32/libxslt/libxslt.def win32/libxslt/libxslt.dsw \
-	     win32/libxslt/libxslt_so.dsp win32/libxslt/xsltproc.dsp \
-	     CMakeLists.txt config.h.cmake.in FindGcrypt.cmake libxslt-config.cmake.in libxslt-config.cmake.cmake.in
+EXTRA_DIST = xsltConf.sh.in \
+             FEATURES TODO Copyright \
+	     CMakeLists.txt config.h.cmake.in libxslt-config.cmake.in libxslt-config.cmake.cmake.in
 
 ## We create xsltConf.sh here and not from configure because we want
 ## to get the paths expanded correctly.  Macros like srcdir are given
@@ -73,8 +71,9 @@ pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA = libxslt.pc libexslt.pc
 
 cmakedir = $(libdir)/cmake/libxslt
-cmake_DATA = FindGcrypt.cmake libxslt-config.cmake
+dist_cmake_DATA = FindGcrypt.cmake
+cmake_DATA = libxslt-config.cmake
 
 m4datadir = $(datadir)/aclocal
-m4data_DATA = libxslt.m4
+dist_m4data_DATA = libxslt.m4
 

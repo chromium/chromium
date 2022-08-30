@@ -1192,7 +1192,7 @@ xsltCompMatchClearCache(xsltTransformContextPtr ctxt, xsltCompMatchPtr comp) {
 #define CUR_PTR ctxt->cur
 
 #define SKIP_BLANKS							\
-    while (IS_BLANK_CH(CUR)) NEXT
+    while (xmlIsBlank_ch(CUR)) NEXT
 
 #define CURRENT (*ctxt->cur)
 #define NEXT ((*ctxt->cur) ?  ctxt->cur++: ctxt->cur)
@@ -1235,11 +1235,11 @@ xsltScanLiteral(xsltParserContextPtr ctxt) {
         NEXT;
 	cur = q = CUR_PTR;
 	val = xmlStringCurrentChar(NULL, cur, &len);
-	while ((IS_CHAR(val)) && (val != '"')) {
+	while ((xmlIsCharQ(val)) && (val != '"')) {
 	    cur += len;
 	    val = xmlStringCurrentChar(NULL, cur, &len);
 	}
-	if (!IS_CHAR(val)) {
+	if (!xmlIsCharQ(val)) {
 	    ctxt->error = 1;
 	    return(NULL);
 	} else {
@@ -1251,11 +1251,11 @@ xsltScanLiteral(xsltParserContextPtr ctxt) {
         NEXT;
 	cur = q = CUR_PTR;
 	val = xmlStringCurrentChar(NULL, cur, &len);
-	while ((IS_CHAR(val)) && (val != '\'')) {
+	while ((xmlIsCharQ(val)) && (val != '\'')) {
 	    cur += len;
 	    val = xmlStringCurrentChar(NULL, cur, &len);
 	}
-	if (!IS_CHAR(val)) {
+	if (!xmlIsCharQ(val)) {
 	    ctxt->error = 1;
 	    return(NULL);
 	} else {
@@ -1264,7 +1264,6 @@ xsltScanLiteral(xsltParserContextPtr ctxt) {
 	cur += len;
 	CUR_PTR = cur;
     } else {
-	/* XP_ERROR(XPATH_START_LITERAL_ERROR); */
 	ctxt->error = 1;
 	return(NULL);
     }
@@ -1290,14 +1289,15 @@ xsltScanNCName(xsltParserContextPtr ctxt) {
 
     cur = q = CUR_PTR;
     val = xmlStringCurrentChar(NULL, cur, &len);
-    if (!IS_LETTER(val) && (val != '_'))
+    if (!xmlIsBaseCharQ(val) && !xmlIsIdeographicQ(val) && (val != '_'))
 	return(NULL);
 
-    while ((IS_LETTER(val)) || (IS_DIGIT(val)) ||
+    while (xmlIsBaseCharQ(val) || xmlIsIdeographicQ(val) ||
+           xmlIsDigitQ(val) ||
            (val == '.') || (val == '-') ||
 	   (val == '_') ||
-	   (IS_COMBINING(val)) ||
-	   (IS_EXTENDER(val))) {
+	   xmlIsCombiningQ(val) ||
+	   xmlIsExtenderQ(val)) {
 	cur += len;
 	val = xmlStringCurrentChar(NULL, cur, &len);
     }
@@ -1853,7 +1853,7 @@ xsltCompilePatternInternal(const xmlChar *pattern, xmlDocPtr doc,
     current = end = 0;
     while (pattern[current] != 0) {
 	start = current;
-	while (IS_BLANK_CH(pattern[current]))
+	while (xmlIsBlank_ch(pattern[current]))
 	    current++;
 	end = current;
 	level = 0;

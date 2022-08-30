@@ -607,7 +607,8 @@ xsltFormatNumberFunction(xmlXPathParserContextPtr ctxt, int nargs)
 
     switch (nargs) {
     case 3:
-	CAST_TO_STRING;
+        if ((ctxt->value != NULL) && (ctxt->value->type != XPATH_STRING))
+            xmlXPathStringFunction(ctxt, 1);
 	decimalObj = valuePop(ctxt);
         ncname = xsltSplitQName(sheet->dict, decimalObj->stringval, &prefix);
         if (prefix != NULL) {
@@ -633,13 +634,16 @@ xsltFormatNumberFunction(xmlXPathParserContextPtr ctxt, int nargs)
 	}
 	/* Intentional fall-through */
     case 2:
-	CAST_TO_STRING;
+        if ((ctxt->value != NULL) && (ctxt->value->type != XPATH_STRING))
+            xmlXPathStringFunction(ctxt, 1);
 	formatObj = valuePop(ctxt);
-	CAST_TO_NUMBER;
+        if ((ctxt->value != NULL) && (ctxt->value->type != XPATH_NUMBER))
+            xmlXPathNumberFunction(ctxt, 1);
 	numberObj = valuePop(ctxt);
 	break;
     default:
-	XP_ERROR(XPATH_INVALID_ARITY);
+	xmlXPathErr(ctxt, XPATH_INVALID_ARITY);
+        return;
     }
 
     if (formatValues != NULL) {
