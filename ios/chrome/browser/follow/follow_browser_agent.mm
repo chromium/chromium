@@ -7,6 +7,7 @@
 #import "base/bind.h"
 #import "base/callback.h"
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feed/core/shared_prefs/pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -206,6 +207,10 @@ void FollowBrowserAgent::OnFollowSuccess(WebPageURLs* web_page_urls,
     [metrics_recorder_ recordFollowCount:count
                             forLogReason:FollowCountLogReasonAfterFollow];
   }
+
+  base::UmaHistogramBoolean(
+      "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended",
+      service_->GetRecommendedSiteURL(web_page_urls) ? 1 : 0);
 
   // Enable the feed prefs to show the feed and to expand it if they
   // are disabled.
