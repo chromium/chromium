@@ -153,6 +153,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // StoragePartition interface.
   base::FilePath GetPath() override;
   network::mojom::NetworkContext* GetNetworkContext() override;
+  network::mojom::URLLoaderFactoryParamsPtr CreateURLLoaderFactoryParams();
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcess() override;
   std::unique_ptr<network::PendingSharedURLLoaderFactory>

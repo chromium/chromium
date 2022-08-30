@@ -56,6 +56,8 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -486,6 +488,11 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
   blink::mojom::ServiceWorkerRegistrationOptions options_to_pass(
       net::SimplifyUrlForRequest(options.scope), options.type,
       options.update_via_cache);
+
+  // TODO(https://crbug.com/1239551): initialize remaining fields
+  PolicyContainerPolicies policy_container_policies;
+  policy_container_policies.is_web_secure_context =
+      network::IsUrlPotentiallyTrustworthy(script_url);
   // TODO(bashi): Pass a valid outside fetch client settings object. Perhaps
   // changing this method to take a settings object.
   context()->RegisterServiceWorker(
@@ -499,7 +506,7 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
              const std::string&, int64_t) { std::move(callback).Run(status); },
           std::move(callback)),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
-      PolicyContainerPolicies());
+      policy_container_policies);
 }
 
 void ServiceWorkerContextWrapper::UnregisterServiceWorker(
@@ -1573,23 +1580,27 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(https://crbug.com/1211361): Do we want to instrument this with
   // devtools? It is currently not recorded at all.
+  // TODO(https://crbug.com/1239551): pass in proper client security state
   return GetLoaderFactoryForBrowserInitiatedRequest(
       scope,
-      /*version_id=*/absl::nullopt);
+      /*version_id=*/absl::nullopt, /*client_security_state=*/nullptr);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForMainScriptFetch(
     const GURL& scope,
-    int64_t version_id) {
+    int64_t version_id,
+    network::mojom::ClientSecurityStatePtr client_security_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GetLoaderFactoryForBrowserInitiatedRequest(scope, version_id);
+  return GetLoaderFactoryForBrowserInitiatedRequest(
+      scope, version_id, std::move(client_security_state));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     const GURL& scope,
-    absl::optional<int64_t> version_id) {
+    absl::optional<int64_t> version_id,
+    network::mojom::ClientSecurityStatePtr client_security_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(falken): Replace this with URLLoaderInterceptor.
@@ -1636,12 +1647,21 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
         std::move(header_client), std::move(pending_receiver),
         storage_partition());
   } else {
-    // Set up a Mojo connection to the network loader factory if it's not been
-    // created yet.
     DCHECK(storage_partition());
-    scoped_refptr<network::SharedURLLoaderFactory> network_factory =
-        storage_partition_->GetURLLoaderFactoryForBrowserProcess();
-    network_factory->Clone(std::move(pending_receiver));
+    if (base::FeatureList::IsEnabled(
+            features::kPrivateNetworkAccessForWorkers)) {
+      network::mojom::URLLoaderFactoryParamsPtr params =
+          storage_partition_->CreateURLLoaderFactoryParams();
+      params->client_security_state = std::move(client_security_state);
+      storage_partition_->GetNetworkContext()->CreateURLLoaderFactory(
+          std::move(pending_receiver), std::move(params));
+    } else {
+      // Set up a Mojo connection to the network loader factory if it's not been
+      // created yet.
+      scoped_refptr<network::SharedURLLoaderFactory> network_factory =
+          storage_partition_->GetURLLoaderFactoryForBrowserProcess();
+      network_factory->Clone(std::move(pending_receiver));
+    }
   }
 
   // Clone context()->loader_factory_bundle_for_update_check() and set up the

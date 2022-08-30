@@ -2918,6 +2918,22 @@ void StoragePartitionImpl::InitNetworkContext() {
   }
 }
 
+network::mojom::URLLoaderFactoryParamsPtr
+StoragePartitionImpl::CreateURLLoaderFactoryParams() {
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      network::mojom::URLLoaderFactoryParams::New();
+  params->process_id = network::mojom::kBrowserProcessId;
+  params->automatically_assign_isolation_info = true;
+  params->is_corb_enabled = false;
+  params->is_trusted = true;
+  params->url_loader_network_observer =
+      CreateAuthCertObserverForServiceWorker();
+  params->disable_web_security =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity);
+  return params;
+}
+
 network::mojom::URLLoaderFactory*
 StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal() {
   // Create the URLLoaderFactory as needed, but make sure not to reuse a
@@ -2930,16 +2946,7 @@ StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal() {
   }
 
   network::mojom::URLLoaderFactoryParamsPtr params =
-      network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
-  params->automatically_assign_isolation_info = true;
-  params->is_corb_enabled = false;
-  params->is_trusted = true;
-  params->url_loader_network_observer =
-      CreateAuthCertObserverForServiceWorker();
-  params->disable_web_security =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableWebSecurity);
+      CreateURLLoaderFactoryParams();
   url_loader_factory_for_browser_process_.reset();
   if (!GetCreateURLLoaderFactoryCallback()) {
     GetNetworkContext()->CreateURLLoaderFactory(

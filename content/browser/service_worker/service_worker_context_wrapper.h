@@ -27,6 +27,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -378,7 +379,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Returns nullptr on failure.
   // Note: This is currently only used for plzServiceWorker.
   scoped_refptr<network::SharedURLLoaderFactory>
-  GetLoaderFactoryForMainScriptFetch(const GURL& scope, int64_t version_id);
+  GetLoaderFactoryForMainScriptFetch(
+      const GURL& scope,
+      int64_t version_id,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Binds a ServiceWorkerStorageControl.
   void BindStorageControl(
@@ -483,7 +487,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   scoped_refptr<network::SharedURLLoaderFactory>
   GetLoaderFactoryForBrowserInitiatedRequest(
       const GURL& scope,
-      absl::optional<int64_t> version_id);
+      absl::optional<int64_t> version_id,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Observers of |context_core_| which live within content's implementation
   // boundary. Shared with |context_core_|.

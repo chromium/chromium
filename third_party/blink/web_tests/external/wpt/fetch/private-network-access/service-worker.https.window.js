@@ -15,7 +15,7 @@ const TestResult = {
     unregister: { unregistered: true },
   },
   FAILURE: {
-    register: { loaded: false, error: "TypeError" },
+    register: { error: "TypeError" },
     unregister: { unregistered: false, error: "no registration" },
   },
 };

@@ -19,6 +19,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -467,7 +469,13 @@ void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
       context_->wrapper()->GetLoaderFactoryForMainScriptFetch(
-          version->scope(), version->version_id());
+          version->scope(), version->version_id(),
+          network::mojom::ClientSecurityState::New(
+              creator_policy_container_policies_.cross_origin_embedder_policy,
+              creator_policy_container_policies_.is_web_secure_context,
+              creator_policy_container_policies_.ip_address_space,
+              DerivePrivateNetworkRequestPolicy(
+                  creator_policy_container_policies_)));
 
   new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
       *context_, version, std::move(loader_factory),
