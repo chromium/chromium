@@ -128,7 +128,7 @@ class CustomArtifactsTestOutputs(TestOutputs):
     """Places all files/directories matched by a glob into a destination."""
     directory = self._ffx_session.get_custom_artifact_directory()
     if not directory:
-      logger.error(
+      logging.error(
           'Failed to parse custom artifact directory from test summary output '
           'files. Not copying %s from the device', glob)
       return
