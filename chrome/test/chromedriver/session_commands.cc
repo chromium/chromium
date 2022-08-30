@@ -314,10 +314,12 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   // |session| will own the |CommandListener|s.
   session->command_listeners.swap(command_listeners);
 
-  BidiTracker* bidi_tracker = new BidiTracker();
-  bidi_tracker->SetBidiCallback(
-      base::BindRepeating(&Session::OnBidiResponse, base::Unretained(session)));
-  devtools_event_listeners.emplace_back(bidi_tracker);
+  if (session->webSocketUrl) {
+    BidiTracker* bidi_tracker = new BidiTracker();
+    bidi_tracker->SetBidiCallback(base::BindRepeating(
+        &Session::OnBidiResponse, base::Unretained(session)));
+    devtools_event_listeners.emplace_back(bidi_tracker);
+  }
 
   status =
       LaunchChrome(bound_params.url_loader_factory, bound_params.socket_factory,
@@ -364,6 +366,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     status = session->GetTargetWindow(&web_view);
     if (status.IsError())
       return status;
+    session->bidi_mapper_web_view_id = session->window;
     ChromeImpl* chrome = static_cast<ChromeImpl*>(session->chrome.get());
     DevToolsClient* client = chrome->Client();
 
@@ -1446,14 +1449,9 @@ Status ExecuteBidiCommand(Session* session,
   std::string data;
   params.GetString("bidiCommand", &data);
 
-  std::string web_view_id;
-  Status status = session->chrome->GetWebViewIdForFirstTab(
-      &web_view_id, session->w3c_compliant);
-  if (status.IsError()) {
-    return status;
-  }
   WebView* web_view = nullptr;
-  status = session->chrome->GetWebViewById(web_view_id, &web_view);
+  Status status = session->chrome->GetWebViewById(
+      session->bidi_mapper_web_view_id, &web_view);
   if (status.IsError()) {
     return status;
   }

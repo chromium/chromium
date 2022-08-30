@@ -117,6 +117,7 @@ struct Session {
   int awaited_bidi_response_id = -1;
   std::unique_ptr<Chrome> chrome;
   std::string window;
+  std::string bidi_mapper_web_view_id;
   int sticky_modifiers;
   // List of input sources for each active input. Everytime a new input source
   // is added, there must be a corresponding entry made in input_state_table.
