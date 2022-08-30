@@ -331,6 +331,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "privacyGuide2Enabled",
       base::FeatureList::IsEnabled(features::kPrivacyGuide2));
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  html_source->AddBoolean(
+      "biometricAuthenticationForFilling",
+      // TODO(crbug.com/1358100): Check if promo for biometric authentication
+      // was shown.
+      base::FeatureList::IsEnabled(
+          password_manager::features::kBiometricAuthenticationForFilling));
+#endif
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

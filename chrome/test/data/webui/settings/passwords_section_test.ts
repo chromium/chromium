@@ -7,7 +7,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isMac, isWindows, isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PasswordsSectionElement} from 'chrome://settings/lazy_load.js';
@@ -247,6 +247,7 @@ suite('PasswordsSection', function() {
     loadTimeData.overrideValues({
       enableAutomaticPasswordChangeInSettings: false,
       enablePasswordViewPage: false,
+      biometricAuthenticationForFilling: false,
     });
   });
 
@@ -266,6 +267,26 @@ suite('PasswordsSection', function() {
     assertTrue(
         !!element.shadowRoot!.querySelector('#passwordsExtensionIndicator'));
   });
+
+  if (isMac || isWindows) {
+    test('testBiometricAuthenticationForFillingToggleVisibility', function() {
+      loadTimeData.overrideValues({biometricAuthenticationForFilling: false});
+      const passwordsSectionBiometricForFillingDisabled =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      assertFalse(
+          isVisible(passwordsSectionBiometricForFillingDisabled.shadowRoot!
+                        .querySelector<HTMLElement>(
+                            '#biometricAuthenticationForFillingToggle')));
+
+      loadTimeData.overrideValues({biometricAuthenticationForFilling: true});
+      const passwordsSectionBiometricForFillingEnabled =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      assertTrue(
+          isVisible(passwordsSectionBiometricForFillingEnabled.shadowRoot!
+                        .querySelector<HTMLElement>(
+                            '#biometricAuthenticationForFillingToggle')));
+    });
+  }
 
   test('verifyNoSavedPasswords', function() {
     const passwordsSection =

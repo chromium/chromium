@@ -1156,6 +1156,13 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"managePasskeysCannotDeleteBody",
      IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_BODY},
 #endif
+#if BUILDFLAG(IS_MAC)
+    {"biometricAuthenticaionForFillingLabel",
+     IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
+#elif BUILDFLAG(IS_WIN)
+    {"biometricAuthenticaionForFillingLabel",
+     IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
+#endif
   };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(

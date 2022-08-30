@@ -241,6 +241,15 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         reflectToAttribute: true,
       },
 
+      // <if expr="is_win or is_macosx">
+      isBiometricAuthenticationForFillingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('biometricAuthenticationForFilling');
+        },
+      },
+      // </if>
+
       showImportPasswords_: {
         type: Boolean,
         value() {
