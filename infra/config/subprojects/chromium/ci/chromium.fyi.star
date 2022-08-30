@@ -494,8 +494,10 @@ ci.builder(
         category = "default",
         short_name = "rev",
     ),
-    # To avoid peak hours, we run it from 1 AM to 4 PM UTC.
-    schedule = "0,30 1-15 * * *",
+    os = os.LINUX_DEFAULT,
+    # To avoid peak hours, we run it from 8PM TO 4AM PST. It is
+    # 3 AM to 11 AM UTC.
+    schedule = "0 3,5,7,9 * * *",
 )
 
 ci.builder(

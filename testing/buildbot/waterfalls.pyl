@@ -3678,16 +3678,15 @@
         'mixins': [
           'isolate_profile_data',
           'linux-bionic',
-          'gtest_run_disabled',
+          'gtest_run_disabled_only',
         ],
         'additional_compile_targets': [
           'chrome',
           'chrome_sandbox',
-          'linux_symbols',
           'symupload'
         ],
         'test_suites': {
-          'gtest_tests': 'linux_lacros_chrome_browsertests_non_version_skew',
+          'gtest_tests': 'linux_lacros_reviver_tests',
         },
       },
       'linux-lacros-version-skew-fyi': {

@@ -192,6 +192,15 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-lacros-tester-rel-reviver",
+    mirrors = [
+        "ci/linux-lacros-tester-rel-reviver",
+    ],
+    builderless = True,
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "chromeos-kevin-compile-rel",
     mirrors = [
         "ci/chromeos-kevin-rel",
