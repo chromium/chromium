@@ -32,6 +32,8 @@ ApcScrimManagerImpl::ApcScrimManagerImpl(content::WebContents* web_contents)
 }
 
 ApcScrimManagerImpl::~ApcScrimManagerImpl() {
+  web_contents()->SetIgnoreInputEvents(false);
+
   // Makes sure the browser is still in the browser list.
   // If yes, we can safely access it. The browser might not be in the list
   // in the case where a tab is dragged to a browser B causing
@@ -52,10 +54,12 @@ ApcScrimManagerImpl::~ApcScrimManagerImpl() {
 }
 
 void ApcScrimManagerImpl::Show() {
+  web_contents()->SetIgnoreInputEvents(true);
   overlay_view_ref_->SetVisible(true);
 }
 
 void ApcScrimManagerImpl::Hide() {
+  web_contents()->SetIgnoreInputEvents(false);
   overlay_view_ref_->SetVisible(false);
 }
 
