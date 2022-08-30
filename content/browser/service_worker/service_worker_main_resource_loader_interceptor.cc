@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
@@ -225,7 +226,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // cause for https://crbug.com/1346450.
   absl::optional<blink::StorageKey> storage_key =
       GetStorageKeyFromRenderFrameHost(
-          new_origin, base::OptionalOrNullptr(isolation_info_.nonce()));
+          new_origin, base::OptionalToPtr(isolation_info_.nonce()));
   if (!storage_key.has_value()) {
     storage_key = GetStorageKeyFromWorkerHost(new_origin);
   }
