@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.annotation.DimenRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -71,8 +70,8 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
         mDividerView.setVisibility(visible ? VISIBLE : GONE);
     }
 
-    void setDividerHeight(@DimenRes int dimenResId) {
-        mDividerView.setHeightRes(dimenResId);
+    void setHasThickDivider(boolean hasThickDivider) {
+        mDividerView.setIsThickDivider(hasThickDivider);
     }
 
     void setEndButtonVisibility(boolean visible) {

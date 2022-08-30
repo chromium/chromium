@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -64,7 +63,7 @@ class HistoryClustersRelatedSearchesChipLayout extends FrameLayout {
         mDividerView.setVisibility(visible ? VISIBLE : GONE);
     }
 
-    void setDividerHeight(@DimenRes int dimenResId) {
-        mDividerView.setHeightRes(dimenResId);
+    void setHasThickDivider(boolean hasThickDivider) {
+        mDividerView.setIsThickDivider(hasThickDivider);
     }
 }

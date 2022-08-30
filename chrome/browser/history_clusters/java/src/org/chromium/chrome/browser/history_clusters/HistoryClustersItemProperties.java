@@ -42,7 +42,7 @@ class HistoryClustersItemProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<ClusterVisit> CLUSTER_VISIT =
             new WritableObjectPropertyKey<>();
-    static final WritableIntPropertyKey DIVIDER_HEIGHT_RES = new WritableIntPropertyKey();
+    static final WritableBooleanPropertyKey DIVIDER_IS_THICK = new WritableBooleanPropertyKey();
     static final WritableObjectPropertyKey<Boolean> DIVIDER_VISIBLE =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<OnClickListener> END_BUTTON_CLICK_HANDLER =
@@ -62,7 +62,7 @@ class HistoryClustersItemProperties {
     static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = {ACCESSIBILITY_STATE, CHIP_CLICK_HANDLER, CLICK_HANDLER,
-            CLUSTER_VISIT, DIVIDER_HEIGHT_RES, DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER,
+            CLUSTER_VISIT, DIVIDER_IS_THICK, DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER,
             END_BUTTON_DRAWABLE, END_BUTTON_VISIBLE, ICON_DRAWABLE, LABEL, PROGRESS_BUTTON_STATE,
             RELATED_SEARCHES, START_ICON_VISIBILITY, TITLE, URL, VISIBILITY};
 }
