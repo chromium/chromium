@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2022-05-17T17:14:30.770Z",
+  "time_generated": "2022-08-17T19:26:00.212Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -9581,7 +9581,12 @@
               ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "clear history",
+            "erase browsing history",
+            "delete cookies",
+            "clear browser cache"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Clear browsing data",
@@ -9626,7 +9631,10 @@
               ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "manage chrome passwords",
+            "view password in chrome"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage passwords",
@@ -9676,7 +9684,10 @@
               ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "update credit card",
+            "manage payment methods"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage payment methods",
@@ -9724,7 +9735,11 @@
               ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "new incognito window",
+            "open incognito tab",
+            "enter incognito mode"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Open Incognito window",
@@ -9766,7 +9781,10 @@
               ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "translate this page",
+            "translate webpage"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Translate page",
@@ -9799,7 +9817,10 @@
               ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "update chrome",
+            "upgrade browser"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Update Chrome",
