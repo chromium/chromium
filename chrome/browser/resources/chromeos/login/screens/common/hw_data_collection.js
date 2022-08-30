@@ -41,16 +41,9 @@ class HWDataCollectionScreen extends HWDataCollectionScreenElementBase {
     super();
   }
 
-  get EXTERNAL_API() {
-    return ['setHWDataUsage'];
-  }
-
-  /**
-   * Called to restore the data usage checkbox.
-   * @param {boolean} checked Is the checkbox checked?
-   */
-  setHWDataUsage(checked) {
-    this.dataUsageChecked = checked;
+  onBeforeShow(data) {
+    this.dataUsageChecked =
+        'hwDataUsageEnabled' in data && data.hwDataUsageEnabled;
   }
 
   ready() {
@@ -76,11 +69,7 @@ class HWDataCollectionScreen extends HWDataCollectionScreenElementBase {
    * @private
    */
   onDataUsageChanged_() {
-    if (this.dataUsageChecked) {
-      this.userActed('select-hw-data-usage');
-    } else {
-      this.userActed('unselect-hw-data-usage');
-    }
+    this.userActed(['select-hw-data-usage', this.dataUsageChecked]);
   }
 }
 

@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_HARDWARE_DATA_COLLECTION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_HARDWARE_DATA_COLLECTION_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/login/secure_module_util_chromeos.h"
-
-namespace ash {
-class HWDataCollectionScreen;
-}
 
 namespace base {
 class DictionaryValue;
@@ -22,17 +19,14 @@ namespace chromeos {
 // Interface between HWDataCollection screen and its representation, either
 // WebUI or Views one. Note, do not forget to call OnViewDestroyed in the
 // dtor.
-class HWDataCollectionView {
+class HWDataCollectionView
+    : public base::SupportsWeakPtr<HWDataCollectionView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"hw-data-collection"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "hw-data-collection", "HWDataCollectionScreen"};
 
-  virtual ~HWDataCollectionView() {}
-
-  virtual void Show() = 0;
-  virtual void Hide() = 0;
-  virtual void Bind(ash::HWDataCollectionScreen* screen) = 0;
-  virtual void Unbind() = 0;
-  virtual void ShowHWDataUsageLearnMore() = 0;
+  virtual ~HWDataCollectionView() = default;
+  virtual void Show(bool enabled) = 0;
 };
 
 // WebUI implementation of HWDataCollectionView. It is used to interact
@@ -51,22 +45,11 @@ class HWDataCollectionScreenHandler : public HWDataCollectionView,
   ~HWDataCollectionScreenHandler() override;
 
   // HWDataCollectionView implementation:
-  void Show() override;
-  void Hide() override;
-  void Bind(ash::HWDataCollectionScreen* screen) override;
-  void Unbind() override;
-  void ShowHWDataUsageLearnMore() override;
+  void Show(bool enabled) override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
- private:
-  ash::HWDataCollectionScreen* screen_ = nullptr;
-
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

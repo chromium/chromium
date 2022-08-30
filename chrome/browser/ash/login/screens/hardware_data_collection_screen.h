@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/hardware_data_collection_screen_handler.h"
@@ -26,7 +27,7 @@ class HWDataCollectionScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  HWDataCollectionScreen(HWDataCollectionView* view,
+  HWDataCollectionScreen(base::WeakPtr<HWDataCollectionView> view,
                          const ScreenExitCallback& exit_callback);
 
   HWDataCollectionScreen(const HWDataCollectionScreen&) = delete;
@@ -36,23 +37,14 @@ class HWDataCollectionScreen : public BaseScreen {
 
   void SetHWDataUsageEnabled(bool enabled);
 
-  // Returns true if user enabled HW data storage and usage.
-  bool IsHWDataUsageEnabled() const;
-
-  // This method is called, when view is being destroyed.
-  void OnViewDestroyed(HWDataCollectionView* view);
-
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  // HDDataCollectionView:
-  void ShowHWDataUsageLearnMore();
-
-  HWDataCollectionView* view_;
+  base::WeakPtr<HWDataCollectionView> view_;
 
   bool hw_data_usage_enabled_ = true;
 

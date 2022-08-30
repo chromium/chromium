@@ -14,43 +14,22 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId HWDataCollectionView::kScreenId;
+namespace {
+
+constexpr char kHardwareUsageEnabled[] = "hwDataUsageEnabled";
+
+}  // namespace
 
 HWDataCollectionScreenHandler::HWDataCollectionScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.HWDataCollectionScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-HWDataCollectionScreenHandler::~HWDataCollectionScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+HWDataCollectionScreenHandler::~HWDataCollectionScreenHandler() = default;
 
-void HWDataCollectionScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowInWebUI();
-}
+void HWDataCollectionScreenHandler::Show(bool enabled) {
+  base::Value::Dict data;
+  data.Set(kHardwareUsageEnabled, enabled);
 
-void HWDataCollectionScreenHandler::Hide() {
-  show_on_init_ = false;
-}
-
-void HWDataCollectionScreenHandler::Bind(ash::HWDataCollectionScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void HWDataCollectionScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
-void HWDataCollectionScreenHandler::ShowHWDataUsageLearnMore() {
-  // TODO(dkuzmin): add help article here b/190964241
+  ShowInWebUI(std::move(data));
 }
 
 void HWDataCollectionScreenHandler::DeclareLocalizedValues(
@@ -63,19 +42,6 @@ void HWDataCollectionScreenHandler::DeclareLocalizedValues(
                 IDS_INSTALLED_PRODUCT_OS_NAME);
   builder->Add("HWDataCollectionNextButton",
                IDS_HW_DATA_COLLECTION_ACCEPT_AND_CONTINUE_BUTTON_TEXT);
-}
-
-void HWDataCollectionScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed() || !screen_)
-    return;
-
-  CallJS("login.HWDataCollectionScreen.setHWDataUsage",
-         screen_->IsHWDataUsageEnabled());
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
 }
 
 }  // namespace chromeos

@@ -796,7 +796,7 @@ WizardController::CreateScreens() {
 
   if (switches::IsRevenBranding()) {
     append(std::make_unique<HWDataCollectionScreen>(
-        oobe_ui->GetView<HWDataCollectionScreenHandler>(),
+        oobe_ui->GetView<HWDataCollectionScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnHWDataCollectionScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
