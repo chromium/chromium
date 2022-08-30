@@ -296,7 +296,7 @@ void LockStateController::OnLockScreenHide(
   start_unlock_callback_ = std::move(callback);
   StartUnlockAnimationBeforeLockUIDestroyed(base::BindOnce(
       &LockStateController::OnUnlockAnimationBeforeLockUIDestroyedFinished,
-      base::Unretained(this)));
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LockStateController::SetLockScreenDisplayedCallback(
