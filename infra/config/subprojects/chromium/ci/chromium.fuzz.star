@@ -404,6 +404,7 @@ ci.builder(
         short_name = "linux32-dbg",
     ),
     executable = "recipe:chromium_libfuzzer",
+    execution_timeout = 4 * time.hour,
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
