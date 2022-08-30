@@ -148,12 +148,11 @@ class VideoEncodeAcceleratorAdapter::ReadOnlyRegionPool
     : public base::RefCountedThreadSafe<ReadOnlyRegionPool> {
  public:
   struct Handle {
-    Handle() = default;
     ~Handle() {
       if (recycle_cb)
         std::move(recycle_cb).Run();
     }
-    bool IsValid() { return region && mapping; }
+    bool IsValid() const { return region && mapping; }
     base::ReadOnlySharedMemoryRegion* region = nullptr;
     base::WritableSharedMemoryMapping* mapping = nullptr;
     base::OnceClosure recycle_cb;
