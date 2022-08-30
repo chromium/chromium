@@ -11,7 +11,7 @@ import sys
 import urllib.request as rq
 
 # Placeholder filled in with an ISO 8601 format date (YYYY-MM-DD).
-_PACKAGE_URL = 'https://static.rust-lang.org/dist/{}/rust-src-nightly.tar.xz'
+_PACKAGE_URL = 'https://static.rust-lang.org/dist/{}/rustc-nightly-src.tar.xz'
 _MAX_DATES_TO_CHECK = 10
 
 def find_latest_release_date():
@@ -42,7 +42,7 @@ def do_get_url():
         {
             'url': [_PACKAGE_URL.format(version)],
             'ext': '.tar.xz',
-            'name': ['rust-src-nightly.tar.xz'],
+            'name': ['rustc-nightly-src.tar.xz'],
         }
     ))
 
