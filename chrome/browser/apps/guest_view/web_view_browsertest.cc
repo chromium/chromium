@@ -1251,7 +1251,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DisplayNoneSetSrc) {
                            "WebViewTest.LAUNCHED");
   // Navigate the guest while it's in "display: none" state.
   SendMessageToEmbedder("navigate-guest");
-  GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+  GetGuestViewManager()->WaitForSingleGuestViewCreated();
 
   // Now attempt to navigate the guest again.
   SendMessageToEmbedder("navigate-guest");
