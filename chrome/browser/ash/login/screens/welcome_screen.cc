@@ -147,12 +147,8 @@ void RecordA11yUserAction(const std::string& action_id) {
 // for testing. Note: Can be overridden with the command line switch
 // --enable-requisition-edits.
 bool IsRemoraRequisitionConfigurable() {
-#if BUILDFLAG(PLATFORM_CFM)
-  return true;
-#else
-  return policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
+  return policy::EnrollmentRequisitionManager::IsMeetDevice() ||
          switches::IsDeviceRequisitionConfigurable();
-#endif
 }
 
 }  // namespace
