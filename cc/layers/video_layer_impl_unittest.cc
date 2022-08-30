@@ -333,10 +333,10 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.height(),
-            (yuv_draw_quad->ya_tex_size.height() + 1) / 2);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.width(),
-            (yuv_draw_quad->ya_tex_size.width() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().height(),
+            (yuv_draw_quad->ya_tex_size().height() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().width(),
+            (yuv_draw_quad->ya_tex_size().width() + 1) / 2);
 }
 
 TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
@@ -373,8 +373,8 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-  EXPECT_EQ(5, yuv_draw_quad->uv_tex_size.height());
-  EXPECT_EQ(10, yuv_draw_quad->uv_tex_size.width());
+  EXPECT_EQ(5, yuv_draw_quad->uv_tex_size().height());
+  EXPECT_EQ(10, yuv_draw_quad->uv_tex_size().width());
 }
 
 TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
@@ -415,10 +415,10 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.height(),
-            (yuv_draw_quad->ya_tex_size.height() + 1) / 2);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.width(),
-            (yuv_draw_quad->ya_tex_size.width() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().height(),
+            (yuv_draw_quad->ya_tex_size().height() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().width(),
+            (yuv_draw_quad->ya_tex_size().width() + 1) / 2);
 }
 
 TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {

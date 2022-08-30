@@ -213,10 +213,8 @@ bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
     viz::mojom::YUVVideoQuadStateDataView data,
     viz::DrawQuad* out) {
   viz::YUVVideoDrawQuad* quad = static_cast<viz::YUVVideoDrawQuad*>(out);
-  if (!data.ReadYaTexCoordRect(&quad->ya_tex_coord_rect) ||
-      !data.ReadUvTexCoordRect(&quad->uv_tex_coord_rect) ||
-      !data.ReadYaTexSize(&quad->ya_tex_size) ||
-      !data.ReadUvTexSize(&quad->uv_tex_size) ||
+  if (!data.ReadCodedSize(&quad->coded_size) ||
+      !data.ReadVideoVisibleRect(&quad->video_visible_rect) ||
       !data.ReadVideoColorSpace(&quad->video_color_space) ||
       !data.ReadProtectedVideoType(&quad->protected_video_type) ||
       !data.ReadHdrMetadata(&quad->hdr_metadata) ||
@@ -237,6 +235,10 @@ bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
   static_assert(viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex ==
                     viz::DrawQuad::Resources::kMaxResourceIdCount - 1,
                 "The A plane resource should be the last resource ID.");
+
+  quad->u_scale = data.u_scale();
+  quad->v_scale = data.v_scale();
+
   quad->resources.count =
       quad->resources.ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex] ? 4
                                                                          : 3;

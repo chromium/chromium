@@ -28,6 +28,7 @@
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/modules/skcms/skcms.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace gl {
 struct HDRMetadata;
@@ -1327,10 +1328,12 @@ void YUVVideoDrawQuadToDict(const YUVVideoDrawQuad* draw_quad,
                             base::Value* dict) {
   DCHECK(draw_quad);
   DCHECK(dict);
-  dict->SetKey("ya_tex_coord_rect", RectFToDict(draw_quad->ya_tex_coord_rect));
-  dict->SetKey("uv_tex_coord_rect", RectFToDict(draw_quad->uv_tex_coord_rect));
-  dict->SetKey("ya_tex_size", SizeToDict(draw_quad->ya_tex_size));
-  dict->SetKey("uv_tex_size", SizeToDict(draw_quad->uv_tex_size));
+  dict->SetKey("ya_tex_coord_rect",
+               RectFToDict(draw_quad->ya_tex_coord_rect()));
+  dict->SetKey("uv_tex_coord_rect",
+               RectFToDict(draw_quad->uv_tex_coord_rect()));
+  dict->SetKey("ya_tex_size", SizeToDict(draw_quad->ya_tex_size()));
+  dict->SetKey("uv_tex_size", SizeToDict(draw_quad->uv_tex_size()));
   dict->SetDoubleKey("resource_offset", draw_quad->resource_offset);
   dict->SetDoubleKey("resource_multiplier", draw_quad->resource_multiplier);
   dict->SetIntKey("bits_per_channel", draw_quad->bits_per_channel);
@@ -1653,11 +1656,21 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict,
   if (common.resources.count == 3u && a_plane_resource_id)
     return false;
 
+  // TODO(elgarawany): Change the unit test data to reflect the new class
+  // members.
+  // This is a bit hacky, but recreate coded_size, video_visible_rect, and the
+  // UV plane sample size from the tex coord sizes and rects.
+  const gfx::Size coded_size = t_ya_tex_size;
+  const gfx::Rect video_visible_rect = gfx::ToRoundedRect(t_ya_tex_coord_rect);
+  const gfx::Size uv_sample_size(
+      t_ya_tex_size.width() / t_uv_tex_size.width(),
+      t_ya_tex_size.height() / t_uv_tex_size.height());
+
   draw_quad->SetAll(
       common.shared_quad_state, common.rect, common.visible_rect,
-      common.needs_blending, t_ya_tex_coord_rect, t_uv_tex_coord_rect,
-      t_ya_tex_size, t_uv_tex_size, y_plane_resource_id, u_plane_resource_id,
-      v_plane_resource_id, a_plane_resource_id, t_video_color_space,
+      common.needs_blending, coded_size, video_visible_rect, uv_sample_size,
+      y_plane_resource_id, u_plane_resource_id, v_plane_resource_id,
+      a_plane_resource_id, t_video_color_space,
       static_cast<float>(resource_offset.value()),
       static_cast<float>(resource_multiplier.value()),
       static_cast<uint32_t>(bits_per_channel.value()),

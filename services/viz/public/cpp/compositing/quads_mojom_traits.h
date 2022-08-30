@@ -525,28 +525,28 @@ struct StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad> {
 
 template <>
 struct StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad> {
-  static const gfx::RectF& ya_tex_coord_rect(const viz::DrawQuad& input) {
+  static const gfx::Size& coded_size(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
-    return quad->ya_tex_coord_rect;
+    return quad->coded_size;
   }
 
-  static const gfx::RectF& uv_tex_coord_rect(const viz::DrawQuad& input) {
+  static const gfx::Rect& video_visible_rect(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
-    return quad->uv_tex_coord_rect;
+    return quad->video_visible_rect;
   }
 
-  static const gfx::Size& ya_tex_size(const viz::DrawQuad& input) {
+  static uint8_t u_scale(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
-    return quad->ya_tex_size;
+    return quad->u_scale;
   }
 
-  static const gfx::Size& uv_tex_size(const viz::DrawQuad& input) {
+  static uint8_t v_scale(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
-    return quad->uv_tex_size;
+    return quad->v_scale;
   }
 
   static viz::ResourceId y_plane_resource_id(const viz::DrawQuad& input) {

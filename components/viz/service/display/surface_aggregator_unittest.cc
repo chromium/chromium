@@ -56,6 +56,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/video_types.h"
 
 namespace viz {
 namespace {
@@ -453,10 +454,10 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
     quad->SetNew(shared_state, output_rect, output_rect, false,
-                 gfx::RectF(output_rect), gfx::RectF(), output_rect.size(),
-                 gfx::Size(), ResourceId(1), ResourceId(2), ResourceId(3),
-                 kInvalidResourceId, gfx::ColorSpace::CreateREC709(), 0, 1.0,
-                 8);
+                 output_rect.size(), gfx::Rect(output_rect.size()),
+                 gfx::Size(1, 1), ResourceId(1), ResourceId(2), ResourceId(3),
+                 kInvalidResourceId, gfx::ColorSpace::CreateREC709(), 0, 1.0, 8,
+                 gfx::ProtectedVideoType::kClear, absl::nullopt);
     if (per_quad_damage_output) {
       quad->damage_rect = output_rect;
     }

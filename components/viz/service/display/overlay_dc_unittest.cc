@@ -37,6 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/latency/latency_info.h"
 
@@ -160,7 +161,6 @@ YUVVideoDrawQuad* CreateFullscreenCandidateYUVVideoQuad(
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass) {
   bool needs_blending = false;
-  gfx::RectF tex_coord_rect(0, 0, 1, 1);
   gfx::Rect rect = render_pass->output_rect;
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
@@ -169,11 +169,11 @@ YUVVideoDrawQuad* CreateFullscreenCandidateYUVVideoQuad(
       resource_size_in_pixels, is_overlay_candidate);
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-  overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
-                       tex_coord_rect, tex_coord_rect, resource_size_in_pixels,
-                       resource_size_in_pixels, resource_id, resource_id,
-                       resource_id, resource_id,
-                       gfx::ColorSpace::CreateREC601(), 0, 1.0, 8);
+  overlay_quad->SetNew(
+      shared_quad_state, rect, rect, needs_blending, resource_size_in_pixels,
+      gfx::Rect(resource_size_in_pixels), gfx::Size(1, 1), resource_id,
+      resource_id, resource_id, resource_id, gfx::ColorSpace::CreateREC601(), 0,
+      1.0, 8, gfx::ProtectedVideoType::kClear, absl::nullopt);
 
   return overlay_quad;
 }

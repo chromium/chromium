@@ -136,7 +136,7 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   dc_layer->resources[kUVPlaneResourceIndex] = quad->u_plane_resource_id();
 
   dc_layer->z_order = 1;
-  dc_layer->content_rect = gfx::ToNearestRect(quad->ya_tex_coord_rect);
+  dc_layer->content_rect = gfx::ToNearestRect(quad->ya_tex_coord_rect());
   dc_layer->quad_rect = quad->rect;
   // Quad rect is in quad content space so both quad to target, and target to
   // root transforms must be applied to it.

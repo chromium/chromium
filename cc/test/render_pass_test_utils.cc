@@ -29,6 +29,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/video_types.h"
 
 namespace cc {
 
@@ -294,11 +295,11 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   auto* yuv_quad = to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
   yuv_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
-                   gfx::RectF(.0f, .0f, 100.0f, 100.0f),
-                   gfx::RectF(.0f, .0f, 50.0f, 50.0f), gfx::Size(100, 100),
-                   gfx::Size(50, 50), plane_resources[0], plane_resources[1],
+                   gfx::Size(100, 100), gfx::Rect(0, 0, 50, 50),
+                   gfx::Size(2, 2), plane_resources[0], plane_resources[1],
                    plane_resources[2], plane_resources[3],
-                   gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8);
+                   gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8,
+                   gfx::ProtectedVideoType::kClear, absl::nullopt);
 
   return {resource1,          resource2,          resource3,
           resource4,          resource5,          resource6,
@@ -476,12 +477,12 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::YUVVideoDrawQuad* yuv_quad =
       to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
-  yuv_quad->SetNew(
-      shared_state2, rect, visible_rect, needs_blending,
-      gfx::RectF(.0f, .0f, 100.0f, 100.0f), gfx::RectF(.0f, .0f, 50.0f, 50.0f),
-      gfx::Size(100, 100), gfx::Size(50, 50), mapped_plane_resources[0],
-      mapped_plane_resources[1], mapped_plane_resources[2],
-      mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8);
+  yuv_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
+                   gfx::Size(200, 200), gfx::Rect(0, 0, 100, 100),
+                   gfx::Size(2, 1), mapped_plane_resources[0],
+                   mapped_plane_resources[1], mapped_plane_resources[2],
+                   mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(),
+                   0.0, 1.0, 8, gfx::ProtectedVideoType::kClear, absl::nullopt);
 }
 
 }  // namespace cc

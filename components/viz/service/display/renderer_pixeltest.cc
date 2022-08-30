@@ -48,6 +48,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/renderers/video_resource_updater.h"
 #include "media/video/half_float_maker.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -59,6 +60,7 @@
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/test/icc_profiles.h"
+#include "ui/gfx/video_types.h"
 
 namespace viz {
 namespace {
@@ -445,29 +447,28 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
   ResourceId mapped_resource_u = resource_map[resource_u];
   ResourceId mapped_resource_v = resource_map[resource_v];
   ResourceId mapped_resource_a = kInvalidResourceId;
-  if (with_alpha)
-    mapped_resource_a = resource_map[resource_a];
-  const gfx::Size ya_tex_size = video_frame->coded_size();
-  const gfx::Size uv_tex_size = media::VideoFrame::PlaneSizeInSamples(
-      video_frame->format(), media::VideoFrame::kUPlane,
-      video_frame->coded_size());
-  DCHECK(uv_tex_size == media::VideoFrame::PlaneSizeInSamples(
-                            video_frame->format(), media::VideoFrame::kVPlane,
-                            video_frame->coded_size()));
+
   if (with_alpha) {
-    DCHECK(ya_tex_size == media::VideoFrame::PlaneSizeInSamples(
-                              video_frame->format(), media::VideoFrame::kAPlane,
-                              video_frame->coded_size()));
+    mapped_resource_a = resource_map[resource_a];
+  }
+  const gfx::Size uv_sample_size = media::VideoFrame::SampleSize(
+      video_frame->format(), media::VideoFrame::kUPlane);
+  const gfx::Size coded_size = video_frame->coded_size();
+  DCHECK_EQ(uv_sample_size,
+            media::VideoFrame::SampleSize(video_frame->format(),
+                                          media::VideoFrame::kVPlane));
+  if (with_alpha) {
+    DCHECK_EQ(gfx::Size(1, 1),
+              media::VideoFrame::SampleSize(video_frame->format(),
+                                            media::VideoFrame::kAPlane))
+        << "Expected A plane to have same size as Y plane.";
   }
 
-  gfx::RectF ya_tex_coord_rect(tex_coord_rect.x() * ya_tex_size.width(),
-                               tex_coord_rect.y() * ya_tex_size.height(),
-                               tex_coord_rect.width() * ya_tex_size.width(),
-                               tex_coord_rect.height() * ya_tex_size.height());
-  gfx::RectF uv_tex_coord_rect(tex_coord_rect.x() * uv_tex_size.width(),
-                               tex_coord_rect.y() * uv_tex_size.height(),
-                               tex_coord_rect.width() * uv_tex_size.width(),
-                               tex_coord_rect.height() * uv_tex_size.height());
+  const gfx::Rect video_visible_rect = gfx::ToNearestRect(
+      gfx::RectF(tex_coord_rect.x() * coded_size.width(),
+                 tex_coord_rect.y() * coded_size.height(),
+                 tex_coord_rect.width() * coded_size.width(),
+                 tex_coord_rect.height() * coded_size.height()));
 
   auto* yuv_quad = render_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
   uint32_t bits_per_channel = 8;
@@ -494,11 +495,11 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
     bits_per_channel = 8;
   }
 
-  yuv_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                   ya_tex_coord_rect, uv_tex_coord_rect, ya_tex_size,
-                   uv_tex_size, mapped_resource_y, mapped_resource_u,
-                   mapped_resource_v, mapped_resource_a, video_color_space,
-                   offset, multiplier, bits_per_channel);
+  yuv_quad->SetNew(shared_state, rect, visible_rect, needs_blending, coded_size,
+                   video_visible_rect, uv_sample_size, mapped_resource_y,
+                   mapped_resource_u, mapped_resource_v, mapped_resource_a,
+                   video_color_space, offset, multiplier, bits_per_channel,
+                   gfx::ProtectedVideoType::kClear, absl::nullopt);
 }
 
 void CreateTestY16TextureDrawQuad_FromVideoFrame(
@@ -762,6 +763,8 @@ void CreateTestYUVVideoDrawQuad_NV12(
   const gfx::Size ya_tex_size = rect.size();
   const gfx::Size uv_tex_size = media::VideoFrame::PlaneSizeInSamples(
       media::PIXEL_FORMAT_NV12, media::VideoFrame::kUVPlane, rect.size());
+  const gfx::Size uv_sample_size = media::VideoFrame::SampleSize(
+      media::PIXEL_FORMAT_NV12, media::VideoFrame::kUVPlane);
 
   std::vector<uint8_t> y_pixels(ya_tex_size.GetArea(), y);
   ResourceId resource_y = CreateGpuResource(
@@ -787,20 +790,18 @@ void CreateTestYUVVideoDrawQuad_NV12(
   ResourceId mapped_resource_u = resource_map[resource_u];
   ResourceId mapped_resource_v = resource_map[resource_v];
 
-  gfx::RectF ya_tex_coord_rect(tex_coord_rect.x() * ya_tex_size.width(),
-                               tex_coord_rect.y() * ya_tex_size.height(),
-                               tex_coord_rect.width() * ya_tex_size.width(),
-                               tex_coord_rect.height() * ya_tex_size.height());
-  gfx::RectF uv_tex_coord_rect(tex_coord_rect.x() * uv_tex_size.width(),
-                               tex_coord_rect.y() * uv_tex_size.height(),
-                               tex_coord_rect.width() * uv_tex_size.width(),
-                               tex_coord_rect.height() * uv_tex_size.height());
+  const gfx::Rect video_frame_visible_rect = gfx::ToNearestRect(
+      gfx::RectF(tex_coord_rect.x() * ya_tex_size.width(),
+                 tex_coord_rect.y() * ya_tex_size.height(),
+                 tex_coord_rect.width() * ya_tex_size.width(),
+                 tex_coord_rect.height() * ya_tex_size.height()));
 
   auto* yuv_quad = render_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
   yuv_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                   ya_tex_coord_rect, uv_tex_coord_rect, ya_tex_size,
-                   uv_tex_size, mapped_resource_y, mapped_resource_u,
-                   mapped_resource_v, resource_a, color_space, 0.0f, 1.0f, 8);
+                   ya_tex_size, video_frame_visible_rect, uv_sample_size,
+                   mapped_resource_y, mapped_resource_u, mapped_resource_v,
+                   resource_a, color_space, 0.0f, 1.0f, 8,
+                   gfx::ProtectedVideoType::kClear, absl::nullopt);
 }
 
 void CreateTestY16TextureDrawQuad_TwoColor(

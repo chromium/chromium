@@ -1187,10 +1187,9 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   const gfx::Rect rect(1234, 4321, 1357, 7531);
   const gfx::Rect visible_rect(1337, 7331, 561, 293);
   const bool needs_blending = true;
-  const gfx::RectF ya_tex_coord_rect(1234.1f, 5678.2f, 9101112.3f, 13141516.4f);
-  const gfx::RectF uv_tex_coord_rect(1234.1f, 4321.2f, 1357.3f, 7531.4f);
-  const gfx::Size ya_tex_size(1234, 5678);
-  const gfx::Size uv_tex_size(4321, 8765);
+  const gfx::Size coded_size(1234, 5678);
+  const gfx::Rect video_visible_rect(123, 456, 789, 1011);
+  const gfx::Size uv_sample_size(1, 2);
   const ResourceId y_plane_resource_id(1337);
   const ResourceId u_plane_resource_id(1234);
   const ResourceId v_plane_resource_id(2468);
@@ -1208,8 +1207,8 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
   YUVVideoDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-  quad->SetAll(sqs, rect, visible_rect, needs_blending, ya_tex_coord_rect,
-               uv_tex_coord_rect, ya_tex_size, uv_tex_size, y_plane_resource_id,
+  quad->SetAll(sqs, rect, visible_rect, needs_blending, coded_size,
+               video_visible_rect, uv_sample_size, y_plane_resource_id,
                u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
                video_color_space, resource_offset, resource_multiplier,
                bits_per_channel, protected_video_type, hdr_metadata);
@@ -1226,10 +1225,10 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   EXPECT_EQ(rect, out_quad->rect);
   EXPECT_EQ(visible_rect, out_quad->visible_rect);
   EXPECT_EQ(needs_blending, out_quad->needs_blending);
-  EXPECT_EQ(ya_tex_coord_rect, out_quad->ya_tex_coord_rect);
-  EXPECT_EQ(uv_tex_coord_rect, out_quad->uv_tex_coord_rect);
-  EXPECT_EQ(ya_tex_size, out_quad->ya_tex_size);
-  EXPECT_EQ(uv_tex_size, out_quad->uv_tex_size);
+  EXPECT_EQ(coded_size, out_quad->coded_size);
+  EXPECT_EQ(video_visible_rect, out_quad->video_visible_rect);
+  EXPECT_EQ(uv_sample_size.width(), out_quad->u_scale);
+  EXPECT_EQ(uv_sample_size.height(), out_quad->v_scale);
   EXPECT_EQ(y_plane_resource_id, out_quad->y_plane_resource_id());
   EXPECT_EQ(u_plane_resource_id, out_quad->u_plane_resource_id());
   EXPECT_EQ(v_plane_resource_id, out_quad->v_plane_resource_id());

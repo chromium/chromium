@@ -671,7 +671,7 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
                          : SkYUVAInfo::PlaneConfig::kY_U_V_A;
     }
     SkYUVAInfo::Subsampling subsampling =
-        SubsamplingFromTextureSizes(quad->ya_tex_size, quad->uv_tex_size);
+        SubsamplingFromTextureSizes(quad->ya_tex_size(), quad->uv_tex_size());
     const int number_of_textures = SkYUVAInfo::NumPlanes(plane_config);
     std::vector<ExternalUseClient::ImageContext*> contexts;
     contexts.reserve(number_of_textures);
@@ -2562,7 +2562,7 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
     return;
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
-      quad->ya_tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
+      quad->ya_tex_coord_rect(), gfx::RectF(quad->rect), params->visible_rect);
 
   sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
       src_color_space, quad->hdr_metadata, dst_color_space,
@@ -2577,7 +2577,8 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   // entire YUV image.
   SkPaint paint = params->paint(color_filter);
 
-  DrawSingleImage(image, quad->ya_tex_coord_rect, rpdq_params, &paint, params);
+  DrawSingleImage(image, quad->ya_tex_coord_rect(), rpdq_params, &paint,
+                  params);
 }
 
 void SkiaRenderer::DrawUnsupportedQuad(const DrawQuad* quad,

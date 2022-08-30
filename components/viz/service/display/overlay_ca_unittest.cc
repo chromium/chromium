@@ -39,6 +39,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/video_types.h"
 #include "ui/latency/latency_info.h"
 
 using testing::_;
@@ -361,6 +362,7 @@ TEST_F(CALayerOverlayTest, SkipNonVisible) {
 TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
   const gfx::Size y_size(640, 480);
   const gfx::Size uv_size(320, 240);
+  const gfx::Size uv_sample_size(2, 2);
   bool is_overlay_candidate = true;
   ResourceId y_resource_id =
       CreateResource(resource_provider_.get(), child_resource_provider_.get(),
@@ -385,13 +387,16 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
     yuv_quad->SetNew(pass->shared_quad_state_list.back(), gfx::Rect(y_size),
                      gfx::Rect(y_size),
                      /*needs_blending=*/false,
-                     /*ya_texcoord_rect=*/gfx::RectF(0, 0, 640, 480),
-                     /*uv_texcoord_rect=*/gfx::RectF(0, 0, 320, 240), y_size,
-                     uv_size, y_resource_id, uv_resource_id, uv_resource_id,
+                     /*coded_size=*/y_size,
+                     /*video_frame_visible_rect=*/gfx::Rect(0, 0, 320, 240),
+                     /*video_frame_uv_sample_size=*/uv_sample_size,
+                     y_resource_id, uv_resource_id, uv_resource_id,
                      kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
                      /*offset=*/0.0f,
                      /*multiplier=*/1.0f,
-                     /*bits_per_channel=*/8);
+                     /*bits_per_channel=*/8,
+                     /*video_type=*/gfx::ProtectedVideoType::kClear,
+                     /*metadata=*/absl::nullopt);
 
     CALayerOverlayList ca_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -418,13 +423,16 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
     yuv_quad->SetNew(pass->shared_quad_state_list.back(), gfx::Rect(y_size),
                      gfx::Rect(y_size),
                      /*needs_blending=*/false,
-                     /*ya_texcoord_rect=*/gfx::RectF(0, 0, 640, 480),
-                     /*uv_texcoord_rect=*/gfx::RectF(0, 0, 320, 240), y_size,
-                     uv_size, y_resource_id, u_resource_id, v_resource_id,
+                     /*coded_size=*/y_size,
+                     /*video_frame_visible_rect=*/gfx::Rect(0, 0, 320, 240),
+                     /*video_frame_uv_sample_size=*/uv_sample_size,
+                     y_resource_id, u_resource_id, v_resource_id,
                      kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
                      /*offset=*/0.0f,
                      /*multiplier=*/1.0f,
-                     /*bits_per_channel=*/8);
+                     /*bits_per_channel=*/8,
+                     /*video_type=*/gfx::ProtectedVideoType::kClear,
+                     /*metadata=*/absl::nullopt);
 
     CALayerOverlayList ca_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;

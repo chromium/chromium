@@ -398,10 +398,10 @@ class RendererPerfTest : public VizPerfTest {
                 YUVVideoDrawQuad::kAPlaneResourceIdIndex,
             };
             const gfx::Size kSize[] = {
-                yuv_quad->ya_tex_size,
-                yuv_quad->uv_tex_size,
-                yuv_quad->uv_tex_size,
-                yuv_quad->ya_tex_size,
+                yuv_quad->ya_tex_size(),
+                yuv_quad->uv_tex_size(),
+                yuv_quad->uv_tex_size(),
+                yuv_quad->ya_tex_size(),
             };
             for (size_t ii = 0; ii < yuv_quad->resources.count; ++ii) {
               ResourceId recorded_id = yuv_quad->resources.ids[kIndex[ii]];

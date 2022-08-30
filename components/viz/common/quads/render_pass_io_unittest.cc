@@ -260,9 +260,8 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(
           render_pass0->shared_quad_state_list.ElementAt(sqs_index),
           gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 15, 780, 570), false,
-          gfx::RectF(0.f, 0.f, 0.5f, 0.6f), gfx::RectF(0.1f, 0.2f, 0.7f, 0.8f),
-          gfx::Size(400, 200), gfx::Size(800, 400), ResourceId(1u),
-          ResourceId(2u), ResourceId(3u), ResourceId(4u),
+          gfx::Size(800, 400), gfx::Rect(10, 20, 300, 400), gfx::Size(2, 2),
+          ResourceId(1u), ResourceId(2u), ResourceId(3u), ResourceId(4u),
           gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func), 3.f,
           1.1f, 12u, gfx::ProtectedVideoType::kClear, gfx::HDRMetadata());
       ++sqs_index;

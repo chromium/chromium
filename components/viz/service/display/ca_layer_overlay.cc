@@ -213,33 +213,33 @@ gfx::CALayerResult FromYUVVideoQuad(DisplayResourceProvider* resource_provider,
   // gfx::ScaleRect (which would multiply by the reciprocal), to avoid
   // introducing excessive floating-point errors.
   gfx::RectF ya_contents_rect = {
-      (quad->ya_tex_coord_rect.x() / quad->ya_tex_size.width()),
-      (quad->ya_tex_coord_rect.y() / quad->ya_tex_size.height()),
-      (quad->ya_tex_coord_rect.width() / quad->ya_tex_size.width()),
-      (quad->ya_tex_coord_rect.height() / quad->ya_tex_size.height())};
+      (quad->ya_tex_coord_rect().x() / quad->ya_tex_size().width()),
+      (quad->ya_tex_coord_rect().y() / quad->ya_tex_size().height()),
+      (quad->ya_tex_coord_rect().width() / quad->ya_tex_size().width()),
+      (quad->ya_tex_coord_rect().height() / quad->ya_tex_size().height())};
   gfx::RectF uv_contents_rect = {
-      (quad->uv_tex_coord_rect.x() / quad->uv_tex_size.width()),
-      (quad->uv_tex_coord_rect.y() / quad->uv_tex_size.height()),
-      (quad->uv_tex_coord_rect.width() / quad->uv_tex_size.width()),
-      (quad->uv_tex_coord_rect.height() / quad->uv_tex_size.height())};
+      (quad->uv_tex_coord_rect().x() / quad->uv_tex_size().width()),
+      (quad->uv_tex_coord_rect().y() / quad->uv_tex_size().height()),
+      (quad->uv_tex_coord_rect().width() / quad->uv_tex_size().width()),
+      (quad->uv_tex_coord_rect().height() / quad->uv_tex_size().height())};
   // For odd-sized videos, |ya_tex_coord_rect| and |uv_tex_coord_rect| might not
   // be identical.
-  float tolerance_x = 1.5f / quad->uv_tex_size.width();
-  float tolerance_y = 1.5f / quad->uv_tex_size.height();
+  float tolerance_x = 1.5f / quad->uv_tex_size().width();
+  float tolerance_y = 1.5f / quad->uv_tex_size().height();
   if (!ya_contents_rect.ApproximatelyEqual(uv_contents_rect, tolerance_x,
                                            tolerance_y)) {
     return gfx::kCALayerFailedYUVTexcoordMismatch;
   }
 
   // Check any odd sized and odd offset video in the current frame.
-  if (quad->ya_tex_size.width() % 2)
+  if (quad->ya_tex_size().width() % 2)
     video_with_odd_width_out = true;
-  if (quad->ya_tex_size.height() % 2)
+  if (quad->ya_tex_size().height() % 2)
     video_with_odd_height_out = true;
   float integer = 0;
-  if (std::modf(quad->ya_tex_coord_rect.x() / 2.f, &integer) != 0)
+  if (std::modf(quad->ya_tex_coord_rect().x() / 2.f, &integer) != 0)
     video_with_odd_x_out = true;
-  if (std::modf(quad->ya_tex_coord_rect.y() / 2.f, &integer) != 0)
+  if (std::modf(quad->ya_tex_coord_rect().y() / 2.f, &integer) != 0)
     video_with_odd_y_out = true;
 
   ca_layer_overlay->contents_resource_id = y_resource_id;
