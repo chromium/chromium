@@ -5998,13 +5998,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
   content::WebContents* embedder = GetEmbedderWebContents();
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* main_frame = GetGuestRenderFrameHost();
+  ASSERT_TRUE(main_frame);
   auto* web_view_renderer_state =
       extensions::WebViewRendererState::GetInstance();
 
   // Ensure the <webview>'s SiteInstance is for a guest.
-  content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
   scoped_refptr<content::SiteInstance> starting_instance =
       main_frame->GetSiteInstance();
   EXPECT_TRUE(starting_instance->IsGuest());
@@ -6050,7 +6049,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
 
     // Ensure the new content script is now tracked for the <webview> in the
     // browser process.
-    main_frame = guest->GetPrimaryMainFrame();
+    main_frame = GetGuestRenderFrameHost();
     {
       extensions::WebViewRendererState::WebViewInfo info;
       ASSERT_TRUE(
@@ -6073,7 +6072,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
   EXPECT_TRUE(script_listener.WaitUntilSatisfied());
 
   // Check that the content script is tracked for the new <webview> process.
-  main_frame = guest->GetPrimaryMainFrame();
+  main_frame = GetGuestRenderFrameHost();
   EXPECT_TRUE(main_frame->GetSiteInstance()->IsGuest());
   EXPECT_NE(main_frame->GetSiteInstance(), starting_instance);
   {
