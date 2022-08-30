@@ -722,8 +722,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // Reset local state watching, as this object outlives the prefs system.
   _localPrefRegistrar.RemoveAll();
 
-  _isShuttingDown = true;
-
   // It's safe to delete |_lastProfile| now.
   [self setLastProfile:nullptr];
 
@@ -1731,13 +1729,9 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   // Before tearing down the menu controller bridges, return the history menu to
   // its initial state.
-  if (profile != nullptr) {
-    if (_historyMenuBridge)
-      _historyMenuBridge->ResetMenu();
-    _historyMenuBridge.reset();
-  } else if (_historyMenuBridge && !_isShuttingDown) {
-    _historyMenuBridge->OnProfileWillBeDestroyed();
-  }
+  if (_historyMenuBridge)
+    _historyMenuBridge->ResetMenu();
+  _historyMenuBridge.reset();
 
   _profilePrefRegistrar.reset();
 

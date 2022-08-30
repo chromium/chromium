@@ -61,8 +61,6 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kCommanderFrontend";
     case ProfileKeepAliveOrigin::kDiceWebSigninInterceptionBubble:
       return out << "kDiceWebSigninInterceptionBubble";
-    case ProfileKeepAliveOrigin::kHistoryMenuBridge:
-      return out << "kHistoryMenuBridge";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
