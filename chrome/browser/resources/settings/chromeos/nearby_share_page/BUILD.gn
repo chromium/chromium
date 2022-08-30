@@ -76,9 +76,10 @@ js_library("nearby_share_device_name_dialog") {
 js_library("nearby_share_high_visibility_page") {
   deps = [
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
 }
 
 js_library("nearby_share_receive_dialog") {

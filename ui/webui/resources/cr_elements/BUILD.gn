@@ -88,7 +88,6 @@ if (include_polymer) {
     out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
     in_files = [
       "cr_icons_css.m.js",
-      "cr_lottie/cr_lottie.js",
       "hidden_style_css.m.js",
       "icons.m.js",
       "policy/cr_policy_indicator.js",
@@ -109,7 +108,6 @@ if (include_polymer) {
     deps = [
       # Targets for auto-generated Polymer 3 JS Modules
       ":cr_elements_module_resources",
-      "cr_lottie:closure_compile_module",
       "policy:closure_compile_module",
     ]
   }
@@ -156,7 +154,6 @@ if (include_polymer) {
       ":icons_module",
       ":shared_style_css_module",
       ":shared_vars_css_module",
-      "cr_lottie:web_components",
       "policy:web_components",
     ]
 

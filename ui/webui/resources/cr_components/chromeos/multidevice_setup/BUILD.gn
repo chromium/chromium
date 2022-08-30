@@ -111,9 +111,10 @@ js_library("start_setup_page.m") {
     ":multidevice_setup_delegate.m",
     ":multidevice_setup_shared_css.m",
     ":ui_page_container_behavior.m",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
   extra_deps = [ ":start_setup_page_module" ]
 }
 
@@ -191,7 +192,7 @@ polymer_modulizer("start_setup_page") {
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   migrated_imports = cr_components_migrated_imports
-  auto_imports = cr_components_chromeos_auto_imports + [ "ui/webui/resources/cr_elements/cr_lottie/cr_lottie.html|CrLottieElement" ]
+  auto_imports = cr_components_chromeos_auto_imports
 }
 
 polymer_modulizer("multidevice_setup_shared_css") {

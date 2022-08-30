@@ -15,14 +15,38 @@
  * drawn on is resized.
  */
 
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert_ts.js';
+
+import {getTemplate} from './cr_lottie.html.js';
+
 /**
  * The resource url for the lottier web worker script.
- * @const {string}
  */
 export const LOTTIE_JS_URL = 'chrome://resources/lottie/lottie_worker.min.js';
 
-import {assert} from '../../js/assert.m.js';
-import {PolymerElement, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+interface OffscreenCanvas {
+  width: number;
+  height: number;
+}
+
+interface MessageData {
+  animationData: object|null|string;
+  drawSize: {width: number, height: number};
+  params: {loop: boolean, autoplay: boolean};
+  canvas?: OffscreenCanvas;
+}
+
+interface CanvasElementWithOffscreen extends HTMLCanvasElement {
+  transferControlToOffscreen: () => OffscreenCanvas;
+}
+
+export interface CrLottieElement {
+  $: {
+    canvas: CanvasElementWithOffscreen,
+  };
+}
 
 export class CrLottieElement extends PolymerElement {
   static get is() {
@@ -30,7 +54,7 @@ export class CrLottieElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -58,76 +82,67 @@ export class CrLottieElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  animationUrl: string;
+  autoplay: boolean;
+  override hidden: boolean;
+  singleLoop: boolean;
 
-    /** @private {?HTMLCanvasElement} */
-    this.canvasElement_ = null;
+  private canvasElement_: CanvasElementWithOffscreen|null = null;
+  private isAnimationLoaded_: boolean = false;
+  private offscreenCanvas_: OffscreenCanvas|null = null;
 
-    /** @private {boolean} Whether the animation has loaded successfully */
-    this.isAnimationLoaded_ = false;
+  /** Whether the canvas has been transferred to the worker thread. */
+  private hasTransferredCanvas_: boolean = false;
 
-    /** @private {?OffscreenCanvas} */
-    this.offscreenCanvas_ = null;
+  private resizeObserver_: ResizeObserver|null = null;
 
-    /**
-     * @private {boolean} Whether the canvas has been transferred to the worker
-     * thread.
-     */
-    this.hasTransferredCanvas_ = false;
+  /**
+   * The last state that was explicitly set via setPlay.
+   * In case setPlay() is invoked before the animation is initialized, the
+   * state is stored in this variable. Once the animation initializes, the
+   * state is sent to the worker.
+   */
+  private playState_: boolean = false;
 
-    /** @private {?ResizeObserver} */
-    this.resizeObserver_ = null;
+  /**
+   * Whether the Worker needs to receive new size
+   * information about the canvas. This is necessary for the corner case
+   * when the size information is received when the animation is still being
+   * loaded into the worker.
+   */
+  private workerNeedsSizeUpdate_: boolean = false;
 
-    /**
-     * @private {boolean} The last state that was explicitly set via setPlay.
-     * In case setPlay() is invoked before the animation is initialized, the
-     * state is stored in this variable. Once the animation initializes, the
-     * state is sent to the worker.
-     */
-    this.playState_ = false;
+  /**
+   * Whether the Worker needs to receive new control
+   * information about its desired state. This is necessary for the corner
+   * case when the control information is received when the animation is still
+   * being loaded into the worker.
+   */
+  private workerNeedsPlayControlUpdate_: boolean = false;
 
-    /**
-     * @private {boolean} Whether the Worker needs to receive new size
-     * information about the canvas. This is necessary for the corner case
-     * when the size information is received when the animation is still being
-     * loaded into the worker.
-     */
-    this.workerNeedsSizeUpdate_ = false;
+  private worker_: Worker|null = null;
 
-    /**
-     * @private {boolean} Whether the Worker needs to receive new control
-     * information about its desired state. This is necessary for the corner
-     * case when the control information is received when the animation is still
-     * being loaded into the worker.
-     */
-    this.workerNeedsPlayControlUpdate_ = false;
+  /** The current in-flight request. */
+  private xhr_: XMLHttpRequest|null = null;
 
-    /** @private {?Worker} */
-    this.worker_ = null;
-
-    /** @private {?XMLHttpRequest} The current in-flight request. */
-    this.xhr_ = null;
-  }
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // CORS blocks loading worker script from a different origin but
     // loading scripts as blob and then instantiating it as web worker
     // is possible.
-    this.sendXmlHttpRequest_(LOTTIE_JS_URL, 'blob', function(response) {
-      if (this.isConnected) {
-        this.worker_ = new Worker(URL.createObjectURL(response));
-        this.worker_.onmessage = this.onMessage_.bind(this);
-        this.initialize_();
-      }
-    }.bind(this));
+    this.sendXmlHttpRequest_(
+        LOTTIE_JS_URL, 'blob', (response: Blob|MediaSource|object|null) => {
+          if (this.isConnected) {
+            this.worker_ =
+                new Worker(URL.createObjectURL(response as Blob | MediaSource));
+            this.worker_.onmessage = this.onMessage_.bind(this);
+            this.initialize_();
+          }
+        });
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
@@ -146,9 +161,9 @@ export class CrLottieElement extends PolymerElement {
    * Controls the animation based on the value of |shouldPlay|. If the
    * animation is being loaded into the worker when this method is invoked,
    * the action will be postponed to when the animation is fully loaded.
-   * @param {boolean} shouldPlay True for play, false for pause.
+   * @param shouldPlay True for play, false for pause.
    */
-  setPlay(shouldPlay) {
+  setPlay(shouldPlay: boolean) {
     this.playState_ = shouldPlay;
     if (this.isAnimationLoaded_) {
       this.sendPlayControlInformationToWorker_();
@@ -159,20 +174,18 @@ export class CrLottieElement extends PolymerElement {
 
   /**
    * Sends control (play/pause) information to the worker.
-   * @private
    */
-  sendPlayControlInformationToWorker_() {
+  private sendPlayControlInformationToWorker_() {
+    assert(this.worker_);
     this.worker_.postMessage({control: {play: this.playState_}});
   }
 
   /**
    * Initializes all the members of this polymer element.
-   * @private
    */
-  initialize_() {
+  private initialize_() {
     // Generate an offscreen canvas.
-    this.canvasElement_ =
-        /** @type {HTMLCanvasElement} */ (this.$.canvas);
+    this.canvasElement_ = this.$.canvas;
     this.offscreenCanvas_ = this.canvasElement_.transferControlToOffscreen();
 
     this.resizeObserver_ =
@@ -190,11 +203,8 @@ export class CrLottieElement extends PolymerElement {
 
   /**
    * Updates the animation that is being displayed.
-   * @param {string} animationUrl the new animation URL.
-   * @param {string} oldAnimationUrl the previous animation URL.
-   * @private
    */
-  animationUrlChanged_(animationUrl, oldAnimationUrl) {
+  private animationUrlChanged_() {
     if (!this.worker_) {
       // The worker hasn't loaded yet. We will load the new animation once the
       // worker loads.
@@ -217,10 +227,9 @@ export class CrLottieElement extends PolymerElement {
   /**
    * Computes the draw buffer size for the canvas. This ensures that the
    * rasterization is crisp and sharp rather than blurry.
-   * @return {Object} Size of the canvas draw buffer
-   * @private
+   * @return Size of the canvas draw buffer
    */
-  getCanvasDrawBufferSize_() {
+  private getCanvasDrawBufferSize_(): {width: number, height: number} {
     const canvasElement = this.$.canvas;
     const devicePixelRatio = window.devicePixelRatio;
     const clientRect = canvasElement.getBoundingClientRect();
@@ -234,11 +243,9 @@ export class CrLottieElement extends PolymerElement {
   /**
    * Returns true if the |maybeValidUrl| provided is safe to use in an
    * XMLHTTPRequest.
-   * @param {string} maybeValidUrl The url string to check for validity.
-   * @return {boolean}
-   * @private
+   * @param maybeValidUrl The url string to check for validity.
    */
-  isValidUrl_(maybeValidUrl) {
+  private isValidUrl_(maybeValidUrl: string): boolean {
     const url = new URL(maybeValidUrl, document.location.href);
     return url.protocol === 'chrome:' ||
         (url.protocol === 'data:' &&
@@ -248,22 +255,24 @@ export class CrLottieElement extends PolymerElement {
   /**
    * Sends an XMLHTTPRequest to load a resource and runs the callback on
    * getting a successful response.
-   * @param {string} url The URL to load the resource.
-   * @param {string} responseType The type of response the request would
+   * @param url The URL to load the resource.
+   * @param responseType The type of response the request would
    *     give on success.
-   * @param {function((Object|null|string))} successCallback The callback to run
+   * @param successCallback The callback to run
    *     when a successful response is received.
-   * @private
    */
-  sendXmlHttpRequest_(url, responseType, successCallback) {
+  private sendXmlHttpRequest_(
+      url: string, responseType: XMLHttpRequestResponseType,
+      successCallback: (p: object|null|Blob|MediaSource) => void) {
     assert(this.isValidUrl_(url), 'Invalid scheme or data url used.');
     assert(!this.xhr_);
 
     this.xhr_ = new XMLHttpRequest();
-    this.xhr_.open('GET', url, true);
-    this.xhr_.responseType = responseType;
-    this.xhr_.send();
-    this.xhr_.onreadystatechange = () => {
+    this.xhr_!.open('GET', url, true);
+    this.xhr_!.responseType = responseType;
+    this.xhr_!.send();
+    this.xhr_!.onreadystatechange = () => {
+      assert(this.xhr_);
       if (this.xhr_.readyState === 4 && this.xhr_.status === 200) {
         // |successCallback| might trigger another xhr, so we set to null before
         // calling it.
@@ -277,9 +286,8 @@ export class CrLottieElement extends PolymerElement {
   /**
    * Handles the canvas element resize event. If the animation isn't fully
    * loaded, the canvas size is sent later, once the loading is done.
-   * @private
    */
-  onCanvasElementResized_() {
+  private onCanvasElementResized_() {
     if (this.isAnimationLoaded_) {
       this.sendCanvasSizeToWorker_();
     } else {
@@ -290,48 +298,43 @@ export class CrLottieElement extends PolymerElement {
 
   /**
    * This informs the offscreen canvas worker of the current canvas size.
-   * @private
    */
-  sendCanvasSizeToWorker_() {
+  private sendCanvasSizeToWorker_() {
+    assert(this.worker_);
     this.worker_.postMessage({drawSize: this.getCanvasDrawBufferSize_()});
   }
 
   /**
    * Initializes the the animation on the web worker with the data provided.
-   * @param {Object|null|string} animationData The animation that will be
-   * played.
-   * @private
+   * @param animationData The animation that will be played.
    */
-  initAnimation_(animationData) {
-    const message = [{
+  private initAnimation_(animationData: object|null|string) {
+    const message: MessageData = {
       animationData,
       drawSize: this.getCanvasDrawBufferSize_(),
       params: {loop: !this.singleLoop, autoplay: this.autoplay},
-    }];
+    };
+    assert(this.worker_);
     if (!this.hasTransferredCanvas_) {
-      message[0].canvas = this.offscreenCanvas_;
-      message.push([this.offscreenCanvas_]);
+      message.canvas = this.offscreenCanvas_!;
       this.hasTransferredCanvas_ = true;
+      this.worker_.postMessage(
+          message, [this.offscreenCanvas_! as unknown as Transferable]);
+    } else {
+      this.worker_.postMessage(message);
     }
-    this.worker_.postMessage(...message);
   }
 
-  /**
-   * @param {string} eventName
-   * @param {number=} eventData
-   * @private
-   */
-  fire_(eventName, eventData) {
+  private fire_(eventName: string, eventData?: number) {
     this.dispatchEvent(new CustomEvent(
         eventName, {bubbles: true, composed: true, detail: eventData}));
   }
 
   /**
    * Handles the messages sent from the web worker to its parent thread.
-   * @param {Event} event Event sent by the web worker.
-   * @private
+   * @param event Event sent by the web worker.
    */
-  onMessage_(event) {
+  private onMessage_(event: MessageEvent) {
     if (event.data.name === 'initialized' && event.data.success) {
       this.isAnimationLoaded_ = true;
       this.sendPendingInfo_();
@@ -351,9 +354,8 @@ export class CrLottieElement extends PolymerElement {
    * Called once the animation is fully loaded into the worker. Sends any
    * size or control information that may have arrived while the animation
    * was not yet fully loaded.
-   * @private
    */
-  sendPendingInfo_() {
+  private sendPendingInfo_() {
     if (this.workerNeedsSizeUpdate_) {
       this.workerNeedsSizeUpdate_ = false;
       this.sendCanvasSizeToWorker_();
@@ -362,6 +364,12 @@ export class CrLottieElement extends PolymerElement {
       this.workerNeedsPlayControlUpdate_ = false;
       this.sendPlayControlInformationToWorker_();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-lottie': CrLottieElement;
   }
 }
 

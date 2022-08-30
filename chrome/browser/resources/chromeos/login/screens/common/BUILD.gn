@@ -486,11 +486,11 @@ js_library("os_trial.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
   ]
 
   externs_list = [
     "$externs_path/webview_tag.js",
+    "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
 
@@ -624,11 +624,12 @@ js_library("user_creation.m") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
+    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
+  ]
   extra_deps = [ ":user_creation_module" ]
 }
 

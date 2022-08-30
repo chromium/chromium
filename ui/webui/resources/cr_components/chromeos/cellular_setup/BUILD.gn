@@ -60,9 +60,10 @@ js_library("activation_verification_page.m") {
   deps = [
     ":base_page.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
   extra_deps = [ ":activation_verification_page_module" ]
 }
 
@@ -141,9 +142,10 @@ js_library("setup_loading_page.m") {
   deps = [
     ":base_page.m",
     ":cellular_setup_delegate.m",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:assert.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
   extra_deps = [ ":setup_loading_page_module" ]
 }
 
