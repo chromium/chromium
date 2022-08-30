@@ -97,6 +97,8 @@ component("network") {
     "hidden_network_handler.h",
     "hotspot_state_handler.cc",
     "hotspot_state_handler.h",
+    "hotspot_util.cc",
+    "hotspot_util.h",
     "managed_cellular_pref_handler.cc",
     "managed_cellular_pref_handler.h",
     "managed_network_configuration_handler.cc",

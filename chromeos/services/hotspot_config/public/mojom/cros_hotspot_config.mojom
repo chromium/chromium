@@ -10,3 +10,42 @@ enum HotspotState {
   kEnabling,
   kDisabling,
 };
+
+// Represents security modes for WiFi downstream.
+enum WiFiSecurityMode {
+  kWpa2,
+  kWpa3,
+  kWpa2Wpa3,
+};
+
+// Represents bandwidth for WiFi downstream.
+enum WiFiBand {
+  // 2.4GHz bandwidth
+  k2_4GHz,
+  k5GHz,
+};
+
+// Configuration properties for Hotspot.
+struct HotspotConfig {
+  // When set Hotspot will disable automatically when inactive for a fixed
+  // amount of time.
+  bool auto_disable;
+  // Security mode for WiFi downstream.
+  WiFiSecurityMode security;
+  // The tethering band preference, this should be one of "2.4GHz" or "5GHz".
+  WiFiBand band;
+  // SSID of WiFi downstream.
+  string ssid;
+  // Passphrase for WiFi downstream.
+  string passphrase;
+};
+
+// Result code when setting hotspot configuration.
+enum SetHotspotConfigResult {
+  // Operation succeeded.
+  kSuccess,
+  // Failed because the user is not logged in.
+  kFailedNotLogin,
+  // Failed for invalid hotspot configuration.
+  kFailedInvalidConfiguration,
+};

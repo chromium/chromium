@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -15,6 +16,24 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
+namespace {
+
+const char kHotspotConfigSSID[] = "hotspot_SSID";
+const char kHotspotConfigPassphrase[] = "hotspot_passphrase";
+
+chromeos::hotspot_config::mojom::HotspotConfigPtr GenerateTestConfig() {
+  auto mojom_config = chromeos::hotspot_config::mojom::HotspotConfig::New();
+  mojom_config->auto_disable = false;
+  mojom_config->band = chromeos::hotspot_config::mojom::WiFiBand::k5GHz;
+  mojom_config->security =
+      chromeos::hotspot_config::mojom::WiFiSecurityMode::kWpa2;
+  mojom_config->ssid = kHotspotConfigSSID;
+  mojom_config->passphrase = kHotspotConfigPassphrase;
+  return mojom_config;
+}
+
+}  // namespace
 
 class TestObserver : public HotspotStateHandler::Observer {
  public:
@@ -49,6 +68,8 @@ class HotspotStateHandlerTest : public ::testing::Test {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kHotspot);
     shill_clients::InitializeFakes();
+    LoginState::Initialize();
+    LoginState::Get()->set_always_logged_in(false);
     base::RunLoop().RunUntilIdle();
 
     if (hotspot_state_handler_ &&
@@ -64,6 +85,35 @@ class HotspotStateHandlerTest : public ::testing::Test {
     hotspot_state_handler_->RemoveObserver(&observer_);
     hotspot_state_handler_.reset();
     shill_clients::Shutdown();
+    LoginState::Shutdown();
+  }
+
+  chromeos::hotspot_config::mojom::SetHotspotConfigResult SetHotspotConfig(
+      chromeos::hotspot_config::mojom::HotspotConfigPtr mojom_config) {
+    base::RunLoop run_loop;
+    chromeos::hotspot_config::mojom::SetHotspotConfigResult result;
+    hotspot_state_handler_->SetHotspotConfig(
+        std::move(mojom_config),
+        base::BindLambdaForTesting(
+            [&](chromeos::hotspot_config::mojom::SetHotspotConfigResult
+                    success) {
+              result = success;
+              run_loop.QuitClosure();
+            }));
+    run_loop.RunUntilIdle();
+    return result;
+  }
+
+  void LoginToRegularUser() {
+    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
+                                        LoginState::LOGGED_IN_USER_REGULAR);
+    task_environment_.RunUntilIdle();
+  }
+
+  void Logout() {
+    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_NONE,
+                                        LoginState::LOGGED_IN_USER_NONE);
+    task_environment_.RunUntilIdle();
   }
 
  protected:
@@ -187,6 +237,32 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
 
   EXPECT_EQ(0u, hotspot_state_handler_->GetHotspotActiveClientCount());
   EXPECT_EQ(3u, observer_.hotspot_status_changed_count());
+}
+
+TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
+  EXPECT_EQ(
+      chromeos::hotspot_config::mojom::SetHotspotConfigResult::kFailedNotLogin,
+      SetHotspotConfig(GenerateTestConfig()));
+  ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());
+  EXPECT_EQ(0u, observer_.hotspot_status_changed_count());
+
+  LoginToRegularUser();
+  EXPECT_EQ(chromeos::hotspot_config::mojom::SetHotspotConfigResult::kSuccess,
+            SetHotspotConfig(GenerateTestConfig()));
+  EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
+  auto hotspot_config = hotspot_state_handler_->GetHotspotConfig();
+  ASSERT_TRUE(hotspot_config);
+  ASSERT_FALSE(hotspot_config->auto_disable);
+  EXPECT_EQ(hotspot_config->band,
+            chromeos::hotspot_config::mojom::WiFiBand::k5GHz);
+  EXPECT_EQ(hotspot_config->security,
+            chromeos::hotspot_config::mojom::WiFiSecurityMode::kWpa2);
+  EXPECT_EQ(hotspot_config->ssid, kHotspotConfigSSID);
+  EXPECT_EQ(hotspot_config->passphrase, kHotspotConfigPassphrase);
+
+  Logout();
+  ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());
+  EXPECT_EQ(2u, observer_.hotspot_status_changed_count());
 }
 
 }  // namespace ash

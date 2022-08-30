@@ -10,13 +10,11 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace ash {
 
@@ -24,13 +22,15 @@ namespace ash {
 // current state, active client count, capabilities and configure the hotspot
 // configurations.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
-    : public ShillPropertyChangedObserver {
+    : public ShillPropertyChangedObserver,
+      public LoginState::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
 
-    // Invoked when hotspot state or active client count is changed.
+    // Invoked when hotspot state, active client count or hotspot config is
+    // changed.
     virtual void OnHotspotStatusChanged() = 0;
     // Invoked when hotspot state is failed.
     virtual void OnHotspotStateFailed(const std::string& error) = 0;
@@ -46,6 +46,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   const chromeos::hotspot_config::mojom::HotspotState& GetHotspotState() const;
   // Return the latest hotspot active client count
   size_t GetHotspotActiveClientCount() const;
+  // Return the current hotspot configuration
+  chromeos::hotspot_config::mojom::HotspotConfigPtr GetHotspotConfig() const;
+
+  // Return callback for the SetHotspotConfig method. |success| indicates
+  // whether the operation is success or not.
+  using SetHotspotConfigCallback = base::OnceCallback<void(
+      chromeos::hotspot_config::mojom::SetHotspotConfigResult result)>;
+
+  // Set hotspot configuration with given |config|. |callback| is called with
+  // the success result of SetHotspotConfig operation.
+  void SetHotspotConfig(
+      chromeos::hotspot_config::mojom::HotspotConfigPtr config,
+      SetHotspotConfigCallback callback);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -55,6 +68,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& key,
                          const base::Value& value) override;
+
+  // LoginState::Observer
+  void LoggedInStateChanged() override;
 
   // Callback to handle the manager properties with hotspot related properties.
   void OnManagerProperties(absl::optional<base::Value> properties);
@@ -73,8 +89,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Notify observers that hotspot state was failure.
   void NotifyHotspotStateFailed(const std::string& error);
 
+  // Update the cached hotspot_config_ with the tethering configuration
+  // from |manager_properties|, and then run the |callback|.
+  void UpdateHotspotConfigAndRunCallback(
+      SetHotspotConfigCallback callback,
+      absl::optional<base::Value> manager_properties);
+
+  // Callback when the SetHotspotConfig operation succeeded.
+  void OnSetHotspotConfigSuccess(SetHotspotConfigCallback callback);
+
+  // Callback when the SetHotspotConfig operation failed.
+  void OnSetHotspotConfigFailure(SetHotspotConfigCallback callback,
+                                 const std::string& error_name,
+                                 const std::string& error_message);
+
   chromeos::hotspot_config::mojom::HotspotState hotspot_state_ =
       chromeos::hotspot_config::mojom::HotspotState::kDisabled;
+  absl::optional<base::Value> hotspot_config_ = absl::nullopt;
   size_t active_client_count_ = 0;
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotStateHandler> weak_ptr_factory_{this};
