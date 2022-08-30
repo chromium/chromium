@@ -734,12 +734,8 @@
   },
   {
     "prefix": "backface-visibility-interop",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "external/wpt/css/css-transforms",
-               "transforms/",
-               "compositing/geometry/",
-               "compositing/overflow/",
-               "paint/invalidation/" ],
+    "platforms": ["Linux"],
+    "bases": [ "external/wpt/css/css-transforms" ],
     "args": [ "--enable-features=BackfaceVisibilityInterop" ]
   },
   {

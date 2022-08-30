@@ -4878,10 +4878,6 @@ crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-trans
 crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-005.tentative.html [ Pass ]
 crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html [ Pass ]
 
-crbug.com/1008483 virtual/backface-visibility-interop/compositing/overflow/scroll-parent-with-non-stacking-context-composited-ancestor.html [ Failure ]
-crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/stacking-context-lost.html [ Failure ]
-crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/multicol/multicol-as-paint-container.html [ Failure ]
-
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerwidth.html [ Crash Timeout ]
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Timeout ]
@@ -6283,7 +6279,6 @@ crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Time
 
 # Sheriff 2022-01-07
 crbug.com/1285438 fast/layers/clip-rects-transformed.html [ Failure Pass ]
-crbug.com/1285431 [ Mac ] virtual/backface-visibility-interop/compositing/overflow/transform-should-update-absolute-clip-rects.html [ Crash Failure Pass ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-browser-navigate.js [ Crash Failure Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-navigate.js [ Crash Failure Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-subresource.js [ Crash Failure Pass Timeout ]
