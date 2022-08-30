@@ -131,16 +131,14 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
   }
 
   /**
-   * TODO(lucmult): Update this doc.
+   * Dispatches an Action to the Store.
    *
-   * Handles a 'deferred' action, which can asynchronously dispatch actions
-   * to the Store in order to reach a new UI state. DeferredActions have the
-   * form `dispatchAsync(function(dispatch) { ... })`). Inside that function,
-   * the |dispatch| callback can be called asynchronously to dispatch Actions
-   * directly to the Store.
-   * param {DeferredAction} action
+   * For synchronous actions it sends the action to the reducers, which updates
+   * the Store state, then the Store notifies all subscribers.
+   * If the Store isn't initialized, the action is queued and dispatched to
+   * reducers during the initialization.
    */
-  dispatchAsync(action: ActionType) {
+  dispatch(action: ActionType) {
     if (!this.initialized_) {
       this.queuedActions_.push(action);
       return;
@@ -148,22 +146,8 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
     this.dispatchInternal_(action);
   }
 
-  /**
-   * TODO(lucmult): Update this doc and review this implementation.
-   * Transition to a new UI state based on the supplied |action|, and notify
-   * observers of the change. If the Store has not yet been initialized, the
-   * action will be queued and performed upon initialization.
-   */
-  dispatch(action: ActionType) {
-    this.dispatchAsync(action);
-    // this.dispatchAsync(function(dispatch) {
-    //   dispatch(action);
-    // });
-  }
-
   /** Synchronously call apply the `action` by calling the reducer.  */
   private dispatchInternal_(action: ActionType) {
-    // action(this.reduce.bind(this));
     this.reduce(action);
   }
 
