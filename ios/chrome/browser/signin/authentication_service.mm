@@ -123,13 +123,10 @@ void AuthenticationService::Initialize(
   HandleForgottenIdentity(nil, /*should_prompt=*/true,
                           device_restore_session == signin::Tribool::kTrue);
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // TODO(crbug.com/1305527): Remove this once this bug is fixed.
-    // For some reasons the approved account list might not be empty when the
-    // user is signed out. To avoid a DCHECK failure in
-    // AuthenticationService::OnPrimaryAccountChanged(), when the user will
-    // sign-in again, we need to clear this list.
-    // This if() can be removed, once we understand how this account list is not
-    // cleared out on sign-ou.
+    // If the user is signed out, the list is supposed to be empty. To avoid
+    // any issue if a crash happened between the sign-out and clearing out
+    // the list, it is better to clear out this list.
+    // See crbug.com/3862523.
     user_approved_account_list_manager_.ClearApprovedAccountList();
   }
 
