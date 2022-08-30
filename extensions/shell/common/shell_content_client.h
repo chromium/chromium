@@ -5,9 +5,7 @@
 #ifndef EXTENSIONS_SHELL_COMMON_SHELL_CONTENT_CLIENT_H_
 #define EXTENSIONS_SHELL_COMMON_SHELL_CONTENT_CLIENT_H_
 
-#include "base/compiler_specific.h"
 #include "content/public/common/content_client.h"
-#include "url/url_util.h"
 
 namespace extensions {
 
@@ -20,8 +18,7 @@ class ShellContentClient : public content::ContentClient {
 
   ~ShellContentClient() override;
 
-  void AddPepperPlugins(
-      std::vector<content::PepperPluginInfo>* plugins) override;
+  void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) override;
   void AddAdditionalSchemes(Schemes* schemes) override;
   std::u16string GetLocalizedString(int message_id) override;
   base::StringPiece GetDataResource(

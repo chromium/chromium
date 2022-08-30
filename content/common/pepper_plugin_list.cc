@@ -15,8 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_plugin_info.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/pepper_plugin_info.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
 
 namespace content {
@@ -26,7 +26,7 @@ namespace {
 const size_t kMaxPluginsToRegisterFromCommandLine = 64;
 
 // Appends any plugins from the command line to the given vector.
-void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
+void ComputePluginsFromCommandLine(std::vector<ContentPluginInfo>* plugins) {
   // On Linux, once we're sandboxed, we can't know if a plugin is available or
   // not. But (on Linux) this function is always called once before we're
   // sandboxed. So when this function is called for the first time we set a
@@ -79,7 +79,7 @@ void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
     std::vector<std::string> name_parts = base::SplitString(
         parts[0], "#", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-    PepperPluginInfo plugin;
+    ContentPluginInfo plugin;
     plugin.is_out_of_process = out_of_process;
     plugin.path = base::FilePath::FromUTF8Unsafe(name_parts[0]);
 
@@ -128,7 +128,7 @@ void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
 }  // namespace
 
 bool MakePepperPluginInfo(const WebPluginInfo& webplugin_info,
-                          PepperPluginInfo* pepper_info) {
+                          ContentPluginInfo* pepper_info) {
   if (!webplugin_info.is_pepper_plugin())
     return false;
 
@@ -145,8 +145,8 @@ bool MakePepperPluginInfo(const WebPluginInfo& webplugin_info,
   return true;
 }
 
-void ComputePepperPluginList(std::vector<PepperPluginInfo>* plugins) {
-  GetContentClient()->AddPepperPlugins(plugins);
+void ComputePepperPluginList(std::vector<ContentPluginInfo>* plugins) {
+  GetContentClient()->AddPlugins(plugins);
   ComputePluginsFromCommandLine(plugins);
 }
 

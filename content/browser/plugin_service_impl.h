@@ -27,12 +27,11 @@
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "content/browser/ppapi_plugin_process_host.h"
-#include "content/public/common/pepper_plugin_info.h"
 #endif
 
 namespace content {
 class PluginServiceFilter;
-struct PepperPluginInfo;
+struct ContentPluginInfo;
 
 // This class responds to requests from renderers for the list of plugins, and
 // also a proxy object for plugin instances.
@@ -63,7 +62,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   std::u16string GetPluginDisplayNameByPath(
       const base::FilePath& path) override;
   void GetPlugins(GetPluginsCallback callback) override;
-  const PepperPluginInfo* GetRegisteredPpapiPluginInfo(
+  const ContentPluginInfo* GetRegisteredPluginInfo(
       const base::FilePath& plugin_path) override;
   void SetFilter(PluginServiceFilter* filter) override;
   PluginServiceFilter* GetFilter() override;
@@ -126,9 +125,9 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       const absl::optional<url::Origin>& origin_lock);
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
-  void RegisterPepperPlugins();
+  void RegisterPlugins();
 
-  std::vector<PepperPluginInfo> ppapi_plugins_;
+  std::vector<ContentPluginInfo> plugins_;
 
   int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 

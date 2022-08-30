@@ -34,7 +34,7 @@
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "content/public/browser/plugin_service.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/webplugininfo.h"
 #endif
 
 namespace content {

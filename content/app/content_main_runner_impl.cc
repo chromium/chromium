@@ -153,7 +153,7 @@
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "content/common/pepper_plugin_list.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -367,7 +367,7 @@ void InitializeZygoteSandboxForBrowserProcess(
 // call PPP_InitializeModule). This is needed by the zygote on Linux to get
 // access to the plugins before entering the sandbox.
 void PreloadPepperPlugins() {
-  std::vector<PepperPluginInfo> plugins;
+  std::vector<ContentPluginInfo> plugins;
   ComputePepperPluginList(&plugins);
   for (const auto& plugin : plugins) {
     if (!plugin.is_internal) {

@@ -20,7 +20,7 @@
 #include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_NACL)
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 namespace embedder_support {
@@ -49,15 +49,14 @@ class ChromeContentClient : public content::ContentClient {
   // the split DLL.
 #if BUILDFLAG(ENABLE_NACL)
   static void SetNaClEntryFunctions(
-      content::PepperPluginInfo::GetInterfaceFunc get_interface,
-      content::PepperPluginInfo::PPP_InitializeModuleFunc initialize_module,
-      content::PepperPluginInfo::PPP_ShutdownModuleFunc shutdown_module);
+      content::ContentPluginInfo::GetInterfaceFunc get_interface,
+      content::ContentPluginInfo::PPP_InitializeModuleFunc initialize_module,
+      content::ContentPluginInfo::PPP_ShutdownModuleFunc shutdown_module);
 #endif
 
   void SetActiveURL(const GURL& url, std::string top_origin) override;
   void SetGpuInfo(const gpu::GPUInfo& gpu_info) override;
-  void AddPepperPlugins(
-      std::vector<content::PepperPluginInfo>* plugins) override;
+  void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) override;
   void AddContentDecryptionModules(
       std::vector<content::CdmInfo>* cdms,
       std::vector<media::CdmHostFilePath>* cdm_host_file_paths) override;

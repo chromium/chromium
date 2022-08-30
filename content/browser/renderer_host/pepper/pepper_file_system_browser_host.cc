@@ -16,7 +16,7 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #include "net/base/mime_util.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/dispatch_host_message.h"
@@ -568,8 +568,8 @@ void PepperFileSystemBrowserHost::GotReservedQuota(
 
 std::string PepperFileSystemBrowserHost::GetPluginMimeType() const {
   base::FilePath plugin_path = browser_ppapi_host_->GetPluginPath();
-  const PepperPluginInfo* info =
-      PluginService::GetInstance()->GetRegisteredPpapiPluginInfo(plugin_path);
+  const ContentPluginInfo* info =
+      PluginService::GetInstance()->GetRegisteredPluginInfo(plugin_path);
   if (!info || info->mime_types.empty())
     return std::string();
   // Use the first element in |info->mime_types| even if several elements exist.

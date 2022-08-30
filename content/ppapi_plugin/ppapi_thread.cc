@@ -28,8 +28,8 @@
 #include "content/ppapi_plugin/plugin_process_dispatcher.h"
 #include "content/ppapi_plugin/ppapi_blink_platform_impl.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_plugin_info.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/pepper_plugin_info.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_platform_file.h"
 #include "ipc/ipc_sync_channel.h"
@@ -244,8 +244,8 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   // Trusted Pepper plugins may be "internal", i.e. built-in to the browser
   // binary.  If we're being asked to load such a plugin (e.g. the Chromoting
   // client) then fetch the entry points from the embedder, rather than a DLL.
-  std::vector<PepperPluginInfo> plugins;
-  GetContentClient()->AddPepperPlugins(&plugins);
+  std::vector<ContentPluginInfo> plugins;
+  GetContentClient()->AddPlugins(&plugins);
   for (const auto& plugin : plugins) {
     if (plugin.is_internal && plugin.path == path) {
       // An internal plugin is being loaded, so fetch the entry points.

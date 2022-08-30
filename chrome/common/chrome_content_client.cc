@@ -78,7 +78,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -98,9 +98,9 @@
 namespace {
 
 #if BUILDFLAG(ENABLE_NACL)
-content::PepperPluginInfo::GetInterfaceFunc g_nacl_get_interface;
-content::PepperPluginInfo::PPP_InitializeModuleFunc g_nacl_initialize_module;
-content::PepperPluginInfo::PPP_ShutdownModuleFunc g_nacl_shutdown_module;
+content::ContentPluginInfo::GetInterfaceFunc g_nacl_get_interface;
+content::ContentPluginInfo::PPP_InitializeModuleFunc g_nacl_initialize_module;
+content::ContentPluginInfo::PPP_ShutdownModuleFunc g_nacl_shutdown_module;
 #endif
 
 }  // namespace
@@ -111,9 +111,9 @@ ChromeContentClient::~ChromeContentClient() = default;
 
 #if BUILDFLAG(ENABLE_NACL)
 void ChromeContentClient::SetNaClEntryFunctions(
-    content::PepperPluginInfo::GetInterfaceFunc get_interface,
-    content::PepperPluginInfo::PPP_InitializeModuleFunc initialize_module,
-    content::PepperPluginInfo::PPP_ShutdownModuleFunc shutdown_module) {
+    content::ContentPluginInfo::GetInterfaceFunc get_interface,
+    content::ContentPluginInfo::PPP_InitializeModuleFunc initialize_module,
+    content::ContentPluginInfo::PPP_ShutdownModuleFunc shutdown_module) {
   g_nacl_get_interface = get_interface;
   g_nacl_initialize_module = initialize_module;
   g_nacl_shutdown_module = shutdown_module;
@@ -134,14 +134,12 @@ void ChromeContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
   gpu::SetKeysForCrashLogging(gpu_info);
 }
 
-void ChromeContentClient::AddPepperPlugins(
-    std::vector<content::PepperPluginInfo>* plugins) {
+void ChromeContentClient::AddPlugins(
+    std::vector<content::ContentPluginInfo>* plugins) {
 #if BUILDFLAG(ENABLE_PDF)
-  // TODO(crbug.com/1344644): Expose the PDF viewer without using
-  // `PepperPluginInfo`.
   static constexpr char kPDFPluginExtension[] = "pdf";
   static constexpr char kPDFPluginDescription[] = "Portable Document Format";
-  content::PepperPluginInfo pdf_info;
+  content::ContentPluginInfo pdf_info;
   pdf_info.is_internal = true;
   pdf_info.is_out_of_process = true;
   pdf_info.name = ChromeContentClient::kPDFInternalPluginName;
@@ -158,7 +156,7 @@ void ChromeContentClient::AddPepperPlugins(
   // enabled by default for the non-portable case.  This allows apps installed
   // from the Chrome Web Store to use NaCl even if the command line switch
   // isn't set.  For other uses of NaCl we check for the command line switch.
-  content::PepperPluginInfo nacl;
+  content::ContentPluginInfo nacl;
   // The nacl plugin is now built into the Chromium binary.
   nacl.is_internal = true;
   nacl.path = base::FilePath(nacl::kInternalNaClPluginFileName);

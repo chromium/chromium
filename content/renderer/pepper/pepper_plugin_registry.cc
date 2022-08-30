@@ -26,7 +26,7 @@ PepperPluginRegistry* PepperPluginRegistry::GetInstance() {
   return registry;
 }
 
-const PepperPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
+const ContentPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
     const WebPluginInfo& info) {
   for (const auto& plugin : plugin_list_) {
     if (info.path == plugin.path)
@@ -37,7 +37,7 @@ const PepperPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
   // is actually in |info| and we can use it to construct it and add it to
   // the list. This same deal needs to be done in the browser side in
   // PluginService.
-  PepperPluginInfo plugin;
+  ContentPluginInfo plugin;
   if (!MakePepperPluginInfo(info, &plugin))
     return nullptr;
 

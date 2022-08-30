@@ -38,8 +38,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_plugin_info.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/pepper_plugin_info.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -111,7 +111,7 @@ void PluginServiceImpl::Init() {
   PluginList::Singleton()->set_will_load_plugins_callback(base::BindRepeating(
       &WillLoadPluginsCallback, &plugin_list_sequence_checker_));
 
-  RegisterPepperPlugins();
+  RegisterPlugins();
 }
 
 #if BUILDFLAG(ENABLE_PPAPI)
@@ -142,7 +142,7 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
   }
 
   // Validate that the plugin is actually registered.
-  const PepperPluginInfo* info = GetRegisteredPpapiPluginInfo(plugin_path);
+  const ContentPluginInfo* info = GetRegisteredPluginInfo(plugin_path);
   if (!info) {
     VLOG(1) << "Unable to find ppapi plugin registration for: "
             << plugin_path.MaybeAsASCII();
@@ -269,20 +269,20 @@ void PluginServiceImpl::GetPlugins(GetPluginsCallback callback) {
       std::move(callback));
 }
 
-void PluginServiceImpl::RegisterPepperPlugins() {
+void PluginServiceImpl::RegisterPlugins() {
 #if BUILDFLAG(ENABLE_PPAPI)
-  ComputePepperPluginList(&ppapi_plugins_);
+  ComputePepperPluginList(&plugins_);
 #else
-  GetContentClient()->AddPepperPlugins(&ppapi_plugins_);
+  GetContentClient()->AddPlugins(&plugins_);
 #endif  // BUILDFLAG(ENABLE_PPAPI)
-  for (const auto& plugin : ppapi_plugins_)
+  for (const auto& plugin : plugins_)
     RegisterInternalPlugin(plugin.ToWebPluginInfo(), /*add_at_beginning=*/true);
 }
 
 // There should generally be very few plugins so a brute-force search is fine.
-const PepperPluginInfo* PluginServiceImpl::GetRegisteredPpapiPluginInfo(
+const ContentPluginInfo* PluginServiceImpl::GetRegisteredPluginInfo(
     const base::FilePath& plugin_path) {
-  for (auto& plugin : ppapi_plugins_) {
+  for (auto& plugin : plugins_) {
     if (plugin.path == plugin_path)
       return &plugin;
   }
@@ -296,11 +296,11 @@ const PepperPluginInfo* PluginServiceImpl::GetRegisteredPpapiPluginInfo(
   WebPluginInfo webplugin_info;
   if (!GetPluginInfoByPath(plugin_path, &webplugin_info))
     return nullptr;
-  PepperPluginInfo new_pepper_info;
+  ContentPluginInfo new_pepper_info;
   if (!MakePepperPluginInfo(webplugin_info, &new_pepper_info))
     return nullptr;
-  ppapi_plugins_.push_back(new_pepper_info);
-  return &ppapi_plugins_.back();
+  plugins_.push_back(new_pepper_info);
+  return &plugins_.back();
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_PPAPI)

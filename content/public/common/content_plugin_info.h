@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_PEPPER_PLUGIN_INFO_H_
-#define CONTENT_PUBLIC_COMMON_PEPPER_PLUGIN_INFO_H_
+#ifndef CONTENT_PUBLIC_COMMON_CONTENT_PLUGIN_INFO_H_
+#define CONTENT_PUBLIC_COMMON_CONTENT_PLUGIN_INFO_H_
 
 #include <stdint.h>
 
@@ -26,8 +26,7 @@
 
 namespace content {
 
-// TODO(crbug.com/1344644): Rename `PepperPluginInfo`, which has non-PPAPI uses.
-struct CONTENT_EXPORT PepperPluginInfo {
+struct CONTENT_EXPORT ContentPluginInfo {
 #if BUILDFLAG(ENABLE_PPAPI)
   typedef const void* (*GetInterfaceFunc)(const char*);
   typedef int (*PPP_InitializeModuleFunc)(PP_Module, PPB_GetInterface);
@@ -43,10 +42,10 @@ struct CONTENT_EXPORT PepperPluginInfo {
   };
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
-  PepperPluginInfo();
-  PepperPluginInfo(const PepperPluginInfo& other);
-  PepperPluginInfo(PepperPluginInfo&& other) noexcept;
-  ~PepperPluginInfo();
+  ContentPluginInfo();
+  ContentPluginInfo(const ContentPluginInfo& other);
+  ContentPluginInfo(ContentPluginInfo&& other) noexcept;
+  ~ContentPluginInfo();
 
   WebPluginInfo ToWebPluginInfo() const;
 
@@ -77,4 +76,4 @@ struct CONTENT_EXPORT PepperPluginInfo {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_COMMON_PEPPER_PLUGIN_INFO_H_
+#endif  // CONTENT_PUBLIC_COMMON_CONTENT_PLUGIN_INFO_H_

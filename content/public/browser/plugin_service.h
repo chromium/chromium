@@ -27,7 +27,7 @@ namespace content {
 
 class BrowserContext;
 class PluginServiceFilter;
-struct PepperPluginInfo;
+struct ContentPluginInfo;
 struct WebPluginInfo;
 
 // This must be created on the main thread but it's only called on the IO/file
@@ -98,10 +98,10 @@ class CONTENT_EXPORT PluginService {
   // This can be called from any thread.
   virtual void GetPlugins(GetPluginsCallback callback) = 0;
 
-  // Returns information about a pepper plugin if it exists, otherwise nullptr.
-  // The caller does not own the pointer, and it's not guaranteed to live past
-  // the call stack.
-  virtual const PepperPluginInfo* GetRegisteredPpapiPluginInfo(
+  // Returns information about a plugin if it exists, otherwise `nullptr`. The
+  // caller does not own the pointer, and it's not guaranteed to live past the
+  // call stack.
+  virtual const ContentPluginInfo* GetRegisteredPluginInfo(
       const base::FilePath& plugin_path) = 0;
 
   virtual void SetFilter(PluginServiceFilter* filter) = 0;

@@ -340,8 +340,8 @@ source_set("common_sources") {
 
   if (enable_plugins) {
     sources += [
-      "pepper_plugin_info.cc",
-      "pepper_plugin_info.h",
+      "content_plugin_info.cc",
+      "content_plugin_info.h",
     ]
 
     if (enable_ppapi) {
