@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -355,7 +356,7 @@ bool ParseHost(base::StringPiece host, mojom::CSPSource* csp_source) {
 
   for (const base::StringPiece& piece : base::SplitStringPiece(
            host, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    if (piece.empty() || !std::all_of(piece.begin(), piece.end(), [](auto c) {
+    if (piece.empty() || !base::ranges::all_of(piece, [](auto c) {
           return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-';
         }))
       return false;
@@ -375,8 +376,8 @@ bool ParsePort(base::StringPiece port, mojom::CSPSource* csp_source) {
     return true;
   }
 
-  if (!std::all_of(port.begin(), port.end(),
-                   base::IsAsciiDigit<base::StringPiece::value_type>)) {
+  if (!base::ranges::all_of(
+          port, base::IsAsciiDigit<base::StringPiece::value_type>)) {
     return false;
   }
 

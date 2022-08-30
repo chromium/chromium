@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/cors/cors.h"
 
-#include <algorithm>
 #include <cctype>
 #include <set>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
@@ -107,7 +107,7 @@ bool IsCorsUnsafeRequestHeaderByte(char c) {
 // |value| should be lower case.
 bool IsCorsSafelistedLowerCaseContentType(const std::string& value) {
   DCHECK_EQ(value, base::ToLowerASCII(value));
-  if (std::any_of(value.begin(), value.end(), IsCorsUnsafeRequestHeaderByte))
+  if (base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))
     return false;
 
   std::string mime_type = ExtractMIMETypeFromMediaType(value);
@@ -402,12 +402,11 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
     return lower_value == "on";
 
   if (lower_name == "accept") {
-    return !std::any_of(value.begin(), value.end(),
-                        IsCorsUnsafeRequestHeaderByte);
+    return !base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte);
   }
 
   if (lower_name == "accept-language" || lower_name == "content-language") {
-    return std::all_of(value.begin(), value.end(), [](char c) {
+    return base::ranges::all_of(value, [](char c) {
       return (0x30 <= c && c <= 0x39) || (0x41 <= c && c <= 0x5a) ||
              (0x61 <= c && c <= 0x7a) || c == 0x20 || c == 0x2a || c == 0x2c ||
              c == 0x2d || c == 0x2e || c == 0x3b || c == 0x3d;
@@ -424,7 +423,7 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
     // - Only one range is provided
     // - No suffix (bytes=-x) ranges
 
-    if (std::any_of(lower_value.begin(), lower_value.end(), [](char c) {
+    if (base::ranges::any_of(lower_value, [](char c) {
           return net::HttpUtil::IsLWS(c) || c == ',';
         })) {
       return false;

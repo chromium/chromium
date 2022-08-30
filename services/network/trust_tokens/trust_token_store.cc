@@ -195,11 +195,10 @@ void TrustTokenStore::PruneStaleIssuerState(
 
   google::protobuf::RepeatedPtrField<TrustToken> filtered_tokens;
   for (auto& token : *config->mutable_tokens()) {
-    if (std::any_of(keys.begin(), keys.end(),
-                    [&token](const mojom::TrustTokenVerificationKeyPtr& key) {
-                      return key->body == token.signing_key();
-                    }))
+    if (base::Contains(keys, token.signing_key(),
+                       &mojom::TrustTokenVerificationKey::body)) {
       *filtered_tokens.Add() = std::move(token);
+    }
   }
 
   config->mutable_tokens()->Swap(&filtered_tokens);
