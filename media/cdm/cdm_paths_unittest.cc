@@ -29,6 +29,8 @@ const char kComponentPlatform[] =
     "cros";
 #elif BUILDFLAG(IS_LINUX)
     "linux";
+#elif BUILDFLAG(IS_FUCHSIA)
+    "fuchsia";
 #else
 #error unsupported platform
 #endif
