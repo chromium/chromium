@@ -243,6 +243,9 @@ bool ShouldShowSettingsUI() {
   // Shared password auto-fill status manager that contains the most updated
   // status of password auto-fill for Chrome.
   PasswordAutoFillStatusManager* _sharedPasswordAutoFillStatusManager;
+  // Boolean containing whether `self` should be updated after dismissing
+  // the Search Controller.
+  BOOL _shouldUpdateAfterSearchControllerDismissed;
 }
 
 // Object handling passwords export operations.
@@ -458,6 +461,14 @@ bool ShouldShowSettingsUI() {
       appearanceWhenContainedInInstancesOfClasses:@[ [UISearchBar class] ]];
   [cancelButton setTitlePositionAdjustment:UIOffsetZero
                              forBarMetrics:UIBarMetricsDefault];
+
+  // Dismiss the search bar if presented; otherwise UIKit may retain it and
+  // cause a memory leak. If this dismissal happens before viewWillDisappear
+  // (e.g., settingsWillBeDismissed) an internal UIKit crash occurs. See also:
+  // crbug.com/947417, crbug.com/1350625.
+  if (self.navigationItem.searchController.active == YES) {
+    self.navigationItem.searchController.active = NO;
+  }
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -749,12 +760,6 @@ bool ShouldShowSettingsUI() {
 }
 
 - (void)settingsWillBeDismissed {
-  // Dismiss the search bar if presented, otherwise the VC will be retained by
-  // UIKit thus cause a memory leak.
-  // TODO(crbug.com/947417): Remove this once the memory leak issue is fixed.
-  if (self.navigationItem.searchController.active == YES) {
-    self.navigationItem.searchController.active = NO;
-  }
   _accountManagerServiceObserver.reset();
 }
 
@@ -1216,6 +1221,7 @@ bool ShouldShowSettingsUI() {
 #pragma mark - UISearchControllerDelegate
 
 - (void)willPresentSearchController:(UISearchController*)searchController {
+  _shouldUpdateAfterSearchControllerDismissed = YES;
   [self showScrim];
   // Remove save passwords switch section, password check section and
   // on device encryption.
@@ -1246,6 +1252,17 @@ bool ShouldShowSettingsUI() {
 }
 
 - (void)willDismissSearchController:(UISearchController*)searchController {
+  // No need to restore UI if the Password Manager is being dismissed or if a
+  // previous call to `willDismissSearchController` already restored the UI.
+  if (self.navigationController.isBeingDismissed ||
+      !_shouldUpdateAfterSearchControllerDismissed) {
+    return;
+  }
+  // If `willDismissSearchController` is invoked again before the search
+  // controller is presented, we don't want to do any updates because they are
+  // only needed once the search controller is presented and dismissed again.
+  _shouldUpdateAfterSearchControllerDismissed = NO;
+
   [self hideScrim];
   [self searchForTerm:@""];
   // Recover save passwords switch section.
