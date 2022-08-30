@@ -105,6 +105,12 @@ DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(content::WebUI* web_ui,
   data_source->SetRequestFilter(
       base::BindRepeating(&ShouldSourceFromComponent, webui_resource_paths),
       base::BindRepeating(&SourceDataFromComponent, component_path));
+  data_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' 'unsafe-inline';");
+  data_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types lit-html;");
 }
 
 DemoModeAppUntrustedUI::~DemoModeAppUntrustedUI() = default;
