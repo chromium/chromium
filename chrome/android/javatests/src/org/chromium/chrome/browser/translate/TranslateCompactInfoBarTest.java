@@ -94,7 +94,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarAppears() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -111,7 +112,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarOverflowMenus() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -135,7 +137,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTabMenuDismissedOnOrientationChange() throws Exception {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -166,7 +169,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarReopenOnTarget() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -194,6 +198,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testStartTranslateOnManualInitiation() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that won't trigger the translate recommendation.
@@ -215,7 +220,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testManualInitiationWithBarOpen() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));

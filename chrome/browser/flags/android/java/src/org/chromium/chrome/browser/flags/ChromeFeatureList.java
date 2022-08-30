@@ -571,6 +571,7 @@ public abstract class ChromeFeatureList {
     public static final String TOUCH_TO_FILL_PASSWORD_SUBMISSION = "TouchToFillPasswordSubmission";
     public static final String TRANSLATE_ASSIST_CONTENT = "TranslateAssistContent";
     public static final String TRANSLATE_INTENT = "TranslateIntent";
+    public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";
     public static final String TRANSLATE_TFLITE = "TFLiteLanguageDetectionEnabled";
     public static final String TRUSTED_WEB_ACTIVITY_POST_MESSAGE = "TrustedWebActivityPostMessage";
     public static final String TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT =
