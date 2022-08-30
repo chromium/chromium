@@ -104,3 +104,6 @@ class MockGit(object):
 
     def unstaged_changes(self):
         return {}
+
+    def uncommitted_changes(self):
+        return []

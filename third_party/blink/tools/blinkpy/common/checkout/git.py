@@ -145,6 +145,10 @@ class Git(object):
             command.extend(['--', pathspec])
         return self.run(command) != ''
 
+    def uncommitted_changes(self):
+        """List files with uncommitted changes, including untracked files."""
+        return [path for _, _, path in self._working_changes()]
+
     def unstaged_changes(self):
         """Lists files with unstaged changes, including untracked files.
 
@@ -152,20 +156,24 @@ class Git(object):
         to one-character codes identifying the change, e.g. 'M' for modified,
         'D' for deleted, '?' for untracked.
         """
+        return {
+            path: unstaged_status
+            for _, unstaged_status, path in self._working_changes()
+            if unstaged_status
+        }
+
+    def _working_changes(self):
         # `git status -z` is a version of `git status -s`, that's recommended
         # for machine parsing. Lines are terminated with NUL rather than LF.
-        change_lines = self.run(['status', '-z',
-                                 '--untracked-files=all']).rstrip('\x00')
+        change_lines = self.run(
+            ['status', '-z', '--no-renames',
+             '--untracked-files=all']).rstrip('\x00')
         if not change_lines:
-            return {}  # No changes.
-        unstaged_changes = {}
+            return
         for line in change_lines.split('\x00'):
             assert len(line) >= 4, 'Unexpected change line format %s' % line
-            if line[1] == ' ':
-                continue  # Already staged for commit.
             path = line[3:]
-            unstaged_changes[path] = line[1]
-        return unstaged_changes
+            yield line[0].strip(), line[1].strip(), path
 
     def add_list(self, paths, return_exit_code=False):
         return self.run(['add'] + paths, return_exit_code=return_exit_code)

@@ -156,12 +156,17 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
-            "INFO: Updated 'crash.html' (1/5)\n",
+            "INFO: Updated 'crash.html' (1/5, modified)\n",
             "INFO: Updated 'dir/multiglob.https.any.js' (2/5)\n",
             "INFO: Updated 'fail.html' (3/5)\n",
             "INFO: Updated 'pass.html' (4/5)\n",
             "INFO: Updated 'variant.html' (5/5)\n",
+            'INFO: Staged 1 metadata file.\n',
         ])
+        self.assertEqual(self.command.git.added_paths, {
+            self.finder.path_from_web_tests('external', 'wpt',
+                                            'crash.html.ini')
+        })
 
     def test_execute_explicit_include_patterns(self):
         self.tool.filesystem.write_text_file(
@@ -184,6 +189,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             "INFO: Updated 'dir/multiglob.https.any.js' (1/3)\n",
             "INFO: Updated 'pass.html' (2/3)\n",
             "INFO: Updated 'variant.html' (3/3)\n",
+            'INFO: Staged 0 metadata files.\n',
         ])
 
     def test_execute_with_no_issue_number_aborts(self):
@@ -245,6 +251,74 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             "'--dry-run' passed.\n",
         ])
         self.assertEqual(self.command.git_cl.calls, [])
+
+    def test_execute_dry_run(self):
+        files_before = dict(self.tool.filesystem.files)
+        with self._patch_builtins():
+            exit_code = self.command.main(['--dry-run'])
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Processing wptrunner report (1/1)\n',
+            "INFO: Updated 'crash.html' (1/5, modified)\n",
+            "INFO: Updated 'dir/multiglob.https.any.js' (2/5)\n",
+            "INFO: Updated 'fail.html' (3/5)\n",
+            "INFO: Updated 'pass.html' (4/5)\n",
+            "INFO: Updated 'variant.html' (5/5)\n",
+        ])
+        self.assertEqual(self.tool.filesystem.files, files_before)
+        self.assertEqual(self.tool.executive.calls, [['luci-auth', 'token']])
+        self.assertEqual(self.tool.git().added_paths, set())
+
+    def test_execute_only_changed_tests(self):
+        changed_files = [
+            'third_party/blink/web_tests/external/wpt/crash.html',
+        ]
+        with self._patch_builtins() as stack:
+            stack.enter_context(
+                patch.object(self.command.git,
+                             'changed_files',
+                             return_value=changed_files))
+            exit_code = self.command.main(['--only-changed-tests'])
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Processing wptrunner report (1/1)\n',
+            "INFO: Updated 'crash.html' (1/1, modified)\n",
+            'INFO: Staged 1 metadata file.\n',
+        ])
+
+    def test_execute_only_changed_tests_none(self):
+        with self._patch_builtins() as stack:
+            stack.enter_context(
+                patch.object(self.command.git,
+                             'changed_files',
+                             return_value=[]))
+            exit_code = self.command.main(['--only-changed-tests'])
+        self.assertEqual(exit_code, 1)
+        self.assertLog([
+            'ERROR: No metadata to update.\n',
+        ])
+
+    def test_execute_abort_with_uncommitted_change(self):
+        uncommitted_changes = [
+            'third_party/blink/web_tests/external/wpt/fail.html.ini',
+            'third_party/blink/web_tests/external/wpt/pass.html.ini',
+            'third_party/blink/web_tests/external/wpt/variant.html.ini',
+        ]
+        with self._patch_builtins() as stack:
+            stack.enter_context(
+                patch.object(self.command.git,
+                             'uncommitted_changes',
+                             return_value=uncommitted_changes))
+            exit_code = self.command.main(['fail.html', 'pass.html'])
+        self.assertEqual(exit_code, 1)
+        self.assertLog([
+            'ERROR: Aborting: there are uncommitted metadata files:\n',
+            'ERROR:   external/wpt/fail.html.ini\n',
+            'ERROR:   external/wpt/pass.html.ini\n',
+            'ERROR: Please commit or reset these files to continue.\n',
+        ])
 
     def test_gather_reports(self):
         local_report = {
@@ -314,7 +388,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     **result
                 } for result in report['results']]
                 buf = io.StringIO(json.dumps(report))
-                updater.collect_results(buf)
+                updater.collect_results([buf])
             for test_file in updater.test_files_to_update():
                 updater.update(test_file)
 

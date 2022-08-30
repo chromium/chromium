@@ -12,12 +12,20 @@ import logging
 import pathlib
 import optparse
 import re
-from typing import Iterator, List, Literal, Mapping, Optional
+from typing import (
+    Iterable,
+    Iterator,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+)
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL
 from blinkpy.common.net.rpc import Build, RPCError
+from blinkpy.tool import grammar
 from blinkpy.tool.commands.build_resolver import (
     BuildResolver,
     UnresolvedBuildException,
@@ -116,7 +124,13 @@ class UpdateMetadata(Command):
         # to reduce download overhead. Expected results should be filtered out
         # (similar to '{full,failing}_results.json') and messages removed.
         self._io_pool = ThreadPoolExecutor(max_workers=max_io_workers)
+        self._path_finder = path_finder.PathFinder(self._tool.filesystem)
+        self.git = self._tool.git(path=self._path_finder.web_tests_dir())
         self.git_cl = git_cl or GitCL(self._tool)
+
+    @property
+    def _fs(self):
+        return self._tool.filesystem
 
     def execute(self, options: optparse.Values, args: List[str],
                 _tool: Host) -> Optional[int]:
@@ -125,35 +139,103 @@ class UpdateMetadata(Command):
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not options.dry_run))
         updater = MetadataUpdater.from_path_finder(
-            path_finder.PathFinder(self._tool.filesystem),
+            self._path_finder,
             self._explicit_include_patterns(options, args),
             overwrite_conditions=options.overwrite_conditions,
             disable_intermittent=options.disable_intermittent,
             keep_statuses=options.keep_statuses,
-            bug=options.bug)
+            bug=options.bug,
+            dry_run=options.dry_run)
         try:
+            test_files = updater.test_files_to_update()
+            if options.only_changed_tests:
+                test_files = self._filter_unchanged_test_files(test_files)
+            self._check_test_files(test_files)
             build_statuses = build_resolver.resolve_builds(
                 self._select_builds(options), options.patchset)
             with contextlib.ExitStack() as stack:
                 stack.enter_context(self._trace('Updated metadata'))
                 stack.enter_context(self._io_pool)
-                for report in self.gather_reports(build_statuses,
-                                                  options.reports or []):
-                    updater.collect_results(report)
-                test_files = updater.test_files_to_update()
-                for i, test_file in enumerate(
-                        self._io_pool.map(updater.update, test_files)):
-                    _log.info("Updated '%s' (%d/%d)",
-                              pathlib.Path(test_file.test_path).as_posix(),
-                              i + 1, len(test_files))
+                updater.collect_results(
+                    self.gather_reports(build_statuses, options.reports or []))
+                self.update_and_stage(updater,
+                                      test_files,
+                                      dry_run=options.dry_run)
         except RPCError as error:
             _log.error('%s', error)
             _log.error('Request payload: %s',
                        json.dumps(error.request_body, indent=2))
             return 1
-        except (UnresolvedBuildException, OSError) as error:
+        except (UnresolvedBuildException, UpdateAbortError, OSError) as error:
             _log.error('%s', error)
             return 1
+
+    def update_and_stage(self,
+                         updater: 'MetadataUpdater',
+                         test_files: List[metadata.TestFileData],
+                         dry_run: bool = False,
+                         chunk_size: int = 128):
+        test_files_to_stage = []
+        update_results = self._io_pool.map(updater.update, test_files)
+        for i, (test_file,
+                modified) in enumerate(zip(test_files, update_results)):
+            test_path = pathlib.Path(test_file.test_path).as_posix()
+            _log.info("Updated '%s' (%d/%d%s)", test_path, i + 1,
+                      len(test_files), ', modified' if modified else '')
+            if modified:
+                test_files_to_stage.append(test_file)
+
+        if not dry_run:
+            paths = self._metadata_paths(test_files_to_stage)
+            # Stage the files in chunks to avoid a Windows command line length
+            # limit. The chunk size was picked heuristically.
+            for chunk_start in range(0, len(paths), chunk_size):
+                self.git.add_list(paths[chunk_start:chunk_start + chunk_size])
+            _log.info(
+                'Staged %s.',
+                grammar.pluralize('metadata file', len(test_files_to_stage)))
+
+    def _filter_unchanged_test_files(
+            self,
+            test_files: List[metadata.TestFileData],
+    ) -> List[metadata.TestFileData]:
+        files_changed_since_branch = {
+            self._path_finder.path_from_chromium_base(path)
+            for path in self.git.changed_files(diff_filter='AM')
+        }
+        return [
+            test_file for test_file in test_files
+            if self._fs.join(test_file.metadata_path, test_file.test_path) in
+            files_changed_since_branch
+        ]
+
+    def _check_test_files(self, test_files: List[metadata.TestFileData]):
+        if not test_files:
+            raise UpdateAbortError('No metadata to update.')
+        uncommitted_changes = {
+            self._path_finder.path_from_chromium_base(path)
+            for path in self.git.uncommitted_changes()
+        }
+        metadata_paths = set(self._metadata_paths(test_files))
+        uncommitted_metadata = uncommitted_changes & metadata_paths
+        if uncommitted_metadata:
+            _log.error('Aborting: there are uncommitted metadata files:')
+            web_tests_root = self._path_finder.web_tests_dir()
+            for path in sorted(uncommitted_metadata):
+                rel_path = pathlib.Path(path).relative_to(web_tests_root)
+                _log.error('  %s', rel_path.as_posix())
+            raise UpdateAbortError('Please commit or reset these files '
+                                   'to continue.')
+
+    def _metadata_paths(
+            self,
+            test_files: List[metadata.TestFileData],
+    ) -> List[str]:
+        return [
+            metadata.expected_path(test_file.metadata_path,
+                                   test_file.test_path)
+            for test_file in test_files
+        ]
 
     def _select_builds(self, options: optparse.Values) -> List[Build]:
         if options.builds:
@@ -212,9 +294,8 @@ class UpdateMetadata(Command):
             urls: List[str],
             report_paths: List[str],
     ) -> Iterator[io.TextIOBase]:
-        fs = self._tool.filesystem
         for path in report_paths:
-            with fs.open_text_file_for_reading(path) as file_handle:
+            with self._fs.open_text_file_for_reading(path) as file_handle:
                 yield file_handle
             _log.debug('Read report from %r', path)
         responses = self._io_pool.map(self._tool.web.get_binary, urls)
@@ -235,19 +316,22 @@ class UpdateMetadata(Command):
     def _append_reports(self, option: optparse.Option, _opt_str: str,
                         value: str, parser: optparse.OptionParser):
         reports = getattr(parser.values, option.dest, None) or []
-        fs = self._tool.filesystem
-        path = fs.expanduser(value)
-        if fs.isfile(path):
+        path = self._fs.expanduser(value)
+        if self._fs.isfile(path):
             reports.append(path)
-        elif fs.isdir(path):
-            for filename in fs.listdir(path):
-                child_path = fs.join(path, filename)
-                if fs.isfile(child_path):
+        elif self._fs.isdir(path):
+            for filename in self._fs.listdir(path):
+                child_path = self._fs.join(path, filename)
+                if self._fs.isfile(child_path):
                     reports.append(child_path)
         else:
             raise optparse.OptionValueError(
                 '%r is neither a regular file nor a directory' % value)
         setattr(parser.values, option.dest, reports)
+
+
+class UpdateAbortError(Exception):
+    """Exception raised when the update should be aborted."""
 
 
 TestFileMap = Mapping[str, metadata.TestFileData]
@@ -264,9 +348,9 @@ class MetadataUpdater:
             disable_intermittent: Optional[str] = None,
             keep_statuses: bool = False,
             bug: Optional[int] = None,
+            dry_run: bool = False,
     ):
         self._test_files = test_files
-        self._updater = metadata.ExpectedUpdater(self._test_files)
         self._default_expected = _default_expected_by_type()
         self._primary_properties = primary_properties or [
             'debug',
@@ -283,6 +367,7 @@ class MetadataUpdater:
         self._disable_intermittent = disable_intermittent
         self._keep_statuses = keep_statuses
         self._bug = bug
+        self._dry_run = dry_run
 
     @classmethod
     def from_path_finder(
@@ -332,9 +417,11 @@ class MetadataUpdater:
                 metadata.create_test_tree(paths['metadata_path'], manifest))
         return MetadataUpdater(test_files, **options)
 
-    def collect_results(self, report: io.TextIOBase):
+    def collect_results(self, reports: Iterable[io.TextIOBase]):
         """Parse and record test results."""
-        self._updater.update_from_log(report)
+        updater = metadata.ExpectedUpdater(self._test_files)
+        for report in reports:
+            updater.update_from_log(report)
 
     def test_files_to_update(self) -> List[metadata.TestFileData]:
         test_files = {
@@ -357,8 +444,12 @@ class MetadataUpdater:
         else:
             return False
 
-    def update(self, test_file: metadata.TestFileData):
-        """Update the AST of each metadata file and serialize them to disk."""
+    def update(self, test_file: metadata.TestFileData) -> bool:
+        """Update and serialize the AST of a metadata file.
+
+        Returns:
+            Whether the test file's metadata was modified.
+        """
         expected = test_file.update(
             self._default_expected,
             (self._primary_properties, self._dependent_properties),
@@ -369,11 +460,14 @@ class MetadataUpdater:
             #   https://github.com/web-platform-tests/wpt/blob/merge_pr_35624/tools/wptrunner/wptrunner/manifestupdate.py#L422-L436
             update_intermittent=(not self._disable_intermittent),
             remove_intermittent=(not self._keep_statuses))
-        if expected and expected.modified:
+
+        modified = expected and expected.modified
+        if modified:
             if self._bug:
                 self._add_bug_url(expected)
-            metadata.write_new_expected(test_file.metadata_path, expected)
-        return test_file
+            if not self._dry_run:
+                metadata.write_new_expected(test_file.metadata_path, expected)
+        return modified
 
     def _add_bug_url(self, expected: conditional.ManifestItem):
         for test_id_section in expected.iterchildren():
