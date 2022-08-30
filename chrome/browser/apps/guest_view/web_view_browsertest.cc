@@ -4479,20 +4479,18 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, BlobInWebviewAccessibleResource) {
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 
   content::WebContents* embedder_contents = GetEmbedderWebContents();
-  content::WebContents* web_view_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+  content::RenderFrameHost* webview_rfh =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   ASSERT_TRUE(embedder_contents);
-  ASSERT_TRUE(web_view_contents);
+  ASSERT_TRUE(webview_rfh);
 
   GURL embedder_url(embedder_contents->GetLastCommittedURL());
   GURL webview_url(embedder_url.DeprecatedGetOriginAsURL().spec() +
                    "assets/foo.html");
 
-  EXPECT_EQ(webview_url, web_view_contents->GetLastCommittedURL());
+  EXPECT_EQ(webview_url, webview_rfh->GetLastCommittedURL());
 
-  content::RenderFrameHost* main_frame =
-      web_view_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* blob_frame = ChildFrameAt(main_frame, 0);
+  content::RenderFrameHost* blob_frame = ChildFrameAt(webview_rfh, 0);
   EXPECT_TRUE(blob_frame->GetLastCommittedURL().SchemeIsBlob());
 
   std::string result;
