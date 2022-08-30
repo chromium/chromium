@@ -62,7 +62,7 @@ class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
   void GetMenuModel(const std::string& app_id,
                     MenuType menu_type,
                     int64_t display_id,
-                    base::OnceCallback<void(MenuItems)> callback);
+                    base::OnceCallback<void(MenuItems)> callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

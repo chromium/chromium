@@ -108,7 +108,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   void GetMenuModel(const std::string& app_id,
                     MenuType menu_type,
                     int64_t display_id,
-                    base::OnceCallback<void(MenuItems)> callback);
+                    base::OnceCallback<void(MenuItems)> callback) override;
   void SetWindowMode(const std::string& app_id,
                      WindowMode window_mode) override;
 

@@ -86,6 +86,13 @@ void AppPublisher::StopApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
+void AppPublisher::GetMenuModel(const std::string& app_id,
+                                MenuType menu_type,
+                                int64_t display_id,
+                                base::OnceCallback<void(MenuItems)> callback) {
+  NOTIMPLEMENTED();
+}
+
 void AppPublisher::ExecuteContextMenuCommand(const std::string& app_id,
                                              int command_id,
                                              const std::string& shortcut_id,

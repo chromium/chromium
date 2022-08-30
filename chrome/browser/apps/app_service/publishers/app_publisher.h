@@ -18,6 +18,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 
@@ -152,6 +153,13 @@ class AppPublisher {
   // Stops all running instances of |app_id|.
   virtual void StopApp(const std::string& app_id);
 
+  // Returns the menu items for an app with |app_id|.
+  virtual void GetMenuModel(const std::string& app_id,
+                            MenuType menu_type,
+                            int64_t display_id,
+                            base::OnceCallback<void(MenuItems)> callback);
+
+  // Executes the menu item command for an app with |app_id|.
   virtual void ExecuteContextMenuCommand(const std::string& app_id,
                                          int command_id,
                                          const std::string& shortcut_id,

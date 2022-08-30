@@ -120,10 +120,11 @@ class WebApps : public apps::PublisherBase,
                  apps::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
-  void GetMenuModel(const std::string& app_id,
-                    apps::MenuType menu_type,
-                    int64_t display_id,
-                    base::OnceCallback<void(apps::MenuItems)> callback);
+  void GetMenuModel(
+      const std::string& app_id,
+      apps::MenuType menu_type,
+      int64_t display_id,
+      base::OnceCallback<void(apps::MenuItems)> callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetWindowMode(const std::string& app_id,

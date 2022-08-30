@@ -133,7 +133,7 @@ class ArcApps : public KeyedService,
   void GetMenuModel(const std::string& app_id,
                     MenuType menu_type,
                     int64_t display_id,
-                    base::OnceCallback<void(MenuItems)> callback);
+                    base::OnceCallback<void(MenuItems)> callback) override;
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,

@@ -87,7 +87,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void GetMenuModel(const std::string& app_id,
                     MenuType menu_type,
                     int64_t display_id,
-                    base::OnceCallback<void(MenuItems)> callback);
+                    base::OnceCallback<void(MenuItems)> callback) override;
 
   // apps::mojom::Publisher overrides.
   void LaunchAppWithIntent(const std::string& app_id,
