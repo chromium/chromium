@@ -2727,7 +2727,7 @@
   {
     "name": "enable-prerender2",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "enable-projector",
@@ -4954,7 +4954,7 @@
   {
     "name": "omnibox-trigger-for-prerender2",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "omnibox-ui-max-autocomplete-matches",
@@ -5753,7 +5753,7 @@
   {
     "name": "search-suggestion-for-prerender2",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "secondary-google-account-usage",
