@@ -623,19 +623,19 @@ void LayerTreeImpl::PullPropertiesFrom(
   TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
   lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
 
-  PullLayerTreePropertiesFrom(commit_state);
-
-  PassSwapPromises(std::move(commit_state.swap_promises));
-  AppendEventsMetricsFromMainThread(std::move(commit_state.event_metrics));
-
-  set_ui_resource_request_queue(commit_state.ui_resource_request_queue);
-
   // This must happen after synchronizing property trees and after pushing
   // properties, which updates the clobber_active_value flag.
   // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
   property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
       unsafe_state.property_trees, this,
       settings().commit_fractional_scroll_deltas);
+
+  PullLayerTreePropertiesFrom(commit_state);
+
+  PassSwapPromises(std::move(commit_state.swap_promises));
+  AppendEventsMetricsFromMainThread(std::move(commit_state.event_metrics));
+
+  set_ui_resource_request_queue(commit_state.ui_resource_request_queue);
 
   // This must happen after synchronizing property trees and after push
   // properties, which updates property tree indices, but before animation

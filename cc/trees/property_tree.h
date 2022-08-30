@@ -556,8 +556,11 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // Returns true if the scroll offset is changed.
   bool SetScrollOffset(ElementId id, const gfx::PointF& scroll_offset);
   void SetScrollOffsetClobberActiveValue(ElementId id) {
-    GetOrCreateSyncedScrollOffset(id)->set_clobber_active_value();
+    if (auto* synced_offset = GetSyncedScrollOffset(id))
+      synced_offset->set_clobber_active_value();
   }
+
+  SyncedScrollOffset* GetOrCreateSyncedScrollOffsetForTesting(ElementId id);
   bool UpdateScrollOffsetBaseForTesting(ElementId id,
                                         const gfx::PointF& offset);
   bool SetScrollOffsetDeltaForTesting(ElementId id,
@@ -572,6 +575,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   gfx::PointF ClampScrollOffsetToLimits(gfx::PointF offset,
                                         const ScrollNode& scroll_node) const;
 
+  SyncedScrollOffset* GetSyncedScrollOffset(ElementId id);
   const SyncedScrollOffset* GetSyncedScrollOffset(ElementId id) const;
 
 #if DCHECK_IS_ON()
@@ -610,7 +614,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   using SyncedScrollOffsetMap =
       base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
 
-  int currently_scrolling_node_id_;
+  int currently_scrolling_node_id_ = kInvalidPropertyNodeId;
 
   // On the main thread we store the scroll offsets directly since the main
   // thread only needs to keep track of the current main thread state. The impl
@@ -622,7 +626,6 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
 
   base::WeakPtr<ScrollCallbacks> callbacks_;
 
-  SyncedScrollOffset* GetOrCreateSyncedScrollOffset(ElementId id);
   gfx::Vector2dF PullDeltaForMainThread(SyncedScrollOffset* scroll_offset,
                                         bool use_fractional_deltas);
 };

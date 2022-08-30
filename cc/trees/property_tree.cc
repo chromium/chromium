@@ -1360,9 +1360,7 @@ bool EffectTree::operator==(const EffectTree& other) const {
 #endif
 
 ScrollTree::ScrollTree(PropertyTrees* property_trees)
-    : PropertyTree<ScrollNode>(property_trees),
-      currently_scrolling_node_id_(kInvalidPropertyNodeId),
-      scroll_offset_map_(ScrollTree::ScrollOffsetMap()) {}
+    : PropertyTree<ScrollNode>(property_trees) {}
 
 ScrollTree::~ScrollTree() = default;
 
@@ -1547,19 +1545,15 @@ gfx::Transform ScrollTree::ScreenSpaceTransform(int scroll_node_id) const {
   return screen_space_transform;
 }
 
-SyncedScrollOffset* ScrollTree::GetOrCreateSyncedScrollOffset(ElementId id) {
+SyncedScrollOffset* ScrollTree::GetSyncedScrollOffset(ElementId id) {
   DCHECK(!property_trees()->is_main_thread());
-  if (synced_scroll_offset_map_.find(id) == synced_scroll_offset_map_.end()) {
-    synced_scroll_offset_map_[id] = new SyncedScrollOffset;
-  }
-  return synced_scroll_offset_map_[id].get();
+  auto it = synced_scroll_offset_map_.find(id);
+  return it != synced_scroll_offset_map_.end() ? it->second.get() : nullptr;
 }
 
 const SyncedScrollOffset* ScrollTree::GetSyncedScrollOffset(
     ElementId id) const {
-  DCHECK(!property_trees()->is_main_thread());
-  auto it = synced_scroll_offset_map_.find(id);
-  return it != synced_scroll_offset_map_.end() ? it->second.get() : nullptr;
+  return const_cast<ScrollTree*>(this)->GetSyncedScrollOffset(id);
 }
 
 gfx::Vector2dF ScrollTree::ClampScrollToMaxScrollOffset(
@@ -1717,8 +1711,13 @@ void ScrollTree::PushScrollUpdatesFromMainThread(
 
   for (auto map_entry : main_scroll_offset_map) {
     ElementId id = map_entry.first;
-    SyncedScrollOffset* synced_scroll_offset =
-        GetOrCreateSyncedScrollOffset(id);
+    // In non-test code, this should be the only code path that creates a new
+    // SyncedScrollOffset.
+    SyncedScrollOffset* synced_scroll_offset = GetSyncedScrollOffset(id);
+    if (!synced_scroll_offset) {
+      synced_scroll_offset = new SyncedScrollOffset();
+      synced_scroll_offset_map_[id] = synced_scroll_offset;
+    }
 
     // If the value on the main thread differs from the value on the pending
     // tree after state sync, we need to update the scroll state on the newly
@@ -1782,10 +1781,8 @@ void ScrollTree::SetBaseScrollOffset(ElementId id,
     return;
   }
 
-  // Scroll offset updates on the impl thread should only be for layers which
-  // were created on the main thread. But this method is called when we build
-  // PropertyTrees on the impl thread from LayerTreeImpl.
-  GetOrCreateSyncedScrollOffset(id)->PushMainToPending(scroll_offset);
+  DCHECK(GetSyncedScrollOffset(id));
+  GetSyncedScrollOffset(id)->PushMainToPending(scroll_offset);
 }
 
 bool ScrollTree::SetScrollOffset(ElementId id,
@@ -1800,16 +1797,29 @@ bool ScrollTree::SetScrollOffset(ElementId id,
     return true;
   }
 
-  if (property_trees()->is_active())
-    return GetOrCreateSyncedScrollOffset(id)->SetCurrent(scroll_offset);
+  if (property_trees()->is_active()) {
+    DCHECK(GetSyncedScrollOffset(id));
+    return GetSyncedScrollOffset(id)->SetCurrent(scroll_offset);
+  }
 
   return false;
+}
+
+SyncedScrollOffset* ScrollTree::GetOrCreateSyncedScrollOffsetForTesting(
+    ElementId id) {
+  auto it = synced_scroll_offset_map_.find(id);
+  if (it == synced_scroll_offset_map_.end()) {
+    it = synced_scroll_offset_map_.try_emplace(id, new SyncedScrollOffset())
+             .first;
+  }
+  return it->second.get();
 }
 
 bool ScrollTree::UpdateScrollOffsetBaseForTesting(ElementId id,
                                                   const gfx::PointF& offset) {
   DCHECK(!property_trees()->is_main_thread());
-  SyncedScrollOffset* synced_scroll_offset = GetOrCreateSyncedScrollOffset(id);
+  SyncedScrollOffset* synced_scroll_offset =
+      GetOrCreateSyncedScrollOffsetForTesting(id);  // IN-TEST
   bool changed = synced_scroll_offset->PushMainToPending(offset);
   if (property_trees()->is_active())
     changed |= synced_scroll_offset->PushPendingToActive();
@@ -1818,8 +1828,10 @@ bool ScrollTree::UpdateScrollOffsetBaseForTesting(ElementId id,
 
 bool ScrollTree::SetScrollOffsetDeltaForTesting(ElementId id,
                                                 const gfx::Vector2dF& delta) {
-  return GetOrCreateSyncedScrollOffset(id)->SetCurrent(
-      GetOrCreateSyncedScrollOffset(id)->ActiveBase() + delta);
+  auto* synced_scroll_offset =
+      GetOrCreateSyncedScrollOffsetForTesting(id);  // IN-TEST
+  return synced_scroll_offset->SetCurrent(synced_scroll_offset->ActiveBase() +
+                                          delta);
 }
 
 const gfx::PointF ScrollTree::GetScrollOffsetBaseForTesting(

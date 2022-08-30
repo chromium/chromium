@@ -368,6 +368,18 @@ class LayerTreeHostImplTest : public testing::Test,
   void PushScrollOffsetsToPendingTree(
       const base::flat_map<ElementId, gfx::PointF>& offsets) {
     PropertyTrees property_trees(*host_impl_);
+    auto& scroll_tree =
+        host_impl_->active_tree()->property_trees()->scroll_tree_mutable();
+    if (auto* layer = InnerViewportScrollLayer()) {
+      property_trees.scroll_tree_mutable().SetBaseScrollOffset(
+          layer->element_id(),
+          scroll_tree.current_scroll_offset(layer->element_id()));
+    }
+    if (auto* layer = OuterViewportScrollLayer()) {
+      property_trees.scroll_tree_mutable().SetBaseScrollOffset(
+          layer->element_id(),
+          scroll_tree.current_scroll_offset(layer->element_id()));
+    }
     for (auto& entry : offsets) {
       property_trees.scroll_tree_mutable().SetBaseScrollOffset(entry.first,
                                                                entry.second);

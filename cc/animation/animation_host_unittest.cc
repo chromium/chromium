@@ -288,6 +288,10 @@ void CreateScrollingNodeForElement(ElementId element_id,
 
   int scroll_node_id =
       property_trees->scroll_tree_mutable().Insert(scroll_node, 0);
+  if (!property_trees->is_main_thread()) {
+    property_trees->scroll_tree_mutable()
+        .GetOrCreateSyncedScrollOffsetForTesting(element_id);
+  }
   property_trees->scroll_tree_mutable().SetElementIdForNodeId(scroll_node_id,
                                                               element_id);
 }
