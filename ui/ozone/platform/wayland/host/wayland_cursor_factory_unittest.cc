@@ -84,17 +84,9 @@ class WaylandCursorFactoryTest : public WaylandTest,
   bool theme_was_loaded_ = false;
 };
 
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE(x) DISABLED_##x
-#else
-#define MAYBE(x) x
-#endif
-
 // Tests that the factory holds the cursor theme until a buffer taken from it
 // released.
-// TODO(1357512): enable this test back.
-TEST_P(WaylandCursorFactoryTest,
-       MAYBE(RetainOldThemeUntilNewBufferIsAttached)) {
+TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
   std::unique_ptr<WaylandCursorFactory> cursor_factory =
       std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
   cursor_factory->AddObserver(this);
@@ -168,8 +160,7 @@ TEST_P(WaylandCursorFactoryTest,
 
 // Tests that the factory keeps the caches when either cursor size or buffer
 // scale are changed, and only resets them when the theme is changed.
-// TODO(1357512): enable this test back.
-TEST_P(WaylandCursorFactoryTest, MAYBE(CachesSizesUntilThemeNameIsChanged)) {
+TEST_P(WaylandCursorFactoryTest, CachesSizesUntilThemeNameIsChanged) {
   std::unique_ptr<WaylandCursorFactory> cursor_factory =
       std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
   cursor_factory->AddObserver(this);
