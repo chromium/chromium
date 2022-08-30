@@ -225,6 +225,11 @@ std::unique_ptr<CastMediaSource> CastMediaSourceForDesktopMirroring(
                                            std::vector<CastAppInfo>({info}));
 }
 
+std::unique_ptr<CastMediaSource> CastMediaSourceForRemotePlayback(
+    const MediaSource& source) {
+  return CastMediaSourceForTabMirroring(source.id());
+}
+
 // The logic shared by ParseCastUrl() and ParseLegacyCastUrl().
 std::unique_ptr<CastMediaSource> CreateFromURLParams(
     const MediaSource::Id& source_id,
@@ -428,6 +433,9 @@ std::unique_ptr<CastMediaSource> CastMediaSource::FromMediaSource(
 
   if (source.IsDesktopMirroringSource())
     return CastMediaSourceForDesktopMirroring(source);
+
+  if (source.IsRemotePlaybackSource())
+    return CastMediaSourceForRemotePlayback(source);
 
   const GURL& url = source.url();
 

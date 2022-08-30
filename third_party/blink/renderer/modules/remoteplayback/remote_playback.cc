@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
+#include "third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -76,7 +78,9 @@ KURL GetAvailabilityUrl(const WebURL& source, bool is_source_supported) {
       source_string.data(),
       base::checked_cast<unsigned>(source_string.length()));
 
-  return KURL("remote-playback://" + encoded_source);
+  return KURL(
+      base::StrCat({kRemotePlaybackPresentationUrlScheme, "://"}).c_str() +
+      encoded_source);
 }
 
 bool IsBackgroundAvailabilityMonitoringDisabled() {

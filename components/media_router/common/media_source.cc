@@ -14,6 +14,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/media_router/common/media_source.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
+#include "third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -35,7 +38,8 @@ constexpr base::StringPiece kUnchosenDesktopMediaUrn =
 // List of non-http(s) schemes that are allowed in a Presentation URL.
 constexpr std::array<const char* const, 5> kAllowedSchemes{
     {kCastPresentationUrlScheme, kCastDialPresentationUrlScheme,
-     kDialPresentationUrlScheme, kRemotePlaybackPresentationUrlScheme, "test"}};
+     kDialPresentationUrlScheme, blink::kRemotePlaybackPresentationUrlScheme,
+     "test"}};
 
 bool IsSchemeAllowed(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS() ||
@@ -93,6 +97,21 @@ MediaSource MediaSource::ForTab(int tab_id) {
 }
 
 // static
+MediaSource MediaSource::ForPresentationUrl(const GURL& presentation_url) {
+  return MediaSource(presentation_url);
+}
+
+// static
+MediaSource MediaSource::ForRemotePlayback(int tab_id,
+                                           media::VideoCodec video_codec,
+                                           media::AudioCodec audio_codec) {
+  return MediaSource(
+      base::StringPrintf(blink::kRemotePlaybackDesktopUrlFormat, tab_id,
+                         media::GetCodecName(video_codec).c_str(),
+                         media::GetCodecName(audio_codec).c_str()));
+}
+
+// static
 MediaSource MediaSource::ForDesktop(
     const std::string& registered_desktop_stream_id,
     bool with_audio) {
@@ -110,11 +129,6 @@ MediaSource MediaSource::ForUnchosenDesktop() {
   return MediaSource(std::string(kUnchosenDesktopMediaUrn));
 }
 
-// static
-MediaSource MediaSource::ForPresentationUrl(const GURL& presentation_url) {
-  return MediaSource(presentation_url);
-}
-
 bool MediaSource::IsTabMirroringSource() const {
   return id() == kAnyTabMediaUrn || TabId() > 0;
 }
@@ -128,6 +142,10 @@ bool MediaSource::IsDesktopMirroringSource() const {
 bool MediaSource::IsCastPresentationUrl() const {
   return url_.SchemeIs(kCastPresentationUrlScheme) ||
          IsLegacyCastPresentationUrl(url_);
+}
+
+bool MediaSource::IsRemotePlaybackSource() const {
+  return url_.SchemeIs(kRemotePlaybackPresentationUrlScheme);
 }
 
 int MediaSource::TabId() const {
