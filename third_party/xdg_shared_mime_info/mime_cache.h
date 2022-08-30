@@ -11,7 +11,7 @@ namespace xdg_shared_mime_info {
 
 // Gets the mime type (if any) that is associated with the file extension.
 // Returns true if a corresponding mime type exists.
-bool GetMimeCacheTypeFromExtension(std::string ext, std::string* result);
+bool GetMimeCacheTypeFromExtension(const std::string& ext, std::string* result);
 
 }  // namespace xdg_shared_mime_info
 
