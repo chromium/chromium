@@ -29,9 +29,7 @@ TEST_F(ModelTypeTest, ModelTypeToValue) {
 TEST_F(ModelTypeTest, ModelTypeSetToValue) {
   const ModelTypeSet model_types(BOOKMARKS, APPS);
 
-  std::unique_ptr<base::ListValue> value(ModelTypeSetToValue(model_types));
-  ASSERT_TRUE(value->is_list());
-  base::Value::ConstListView value_list = value->GetListDeprecated();
+  base::Value::List value_list(ModelTypeSetToValue(model_types));
   ASSERT_EQ(2u, value_list.size());
   ASSERT_TRUE(value_list[0].is_string());
   EXPECT_EQ("Bookmarks", value_list[0].GetString());

@@ -1300,10 +1300,9 @@ BackendMigrator* SyncServiceImpl::GetBackendMigratorForTest() {
   return migrator_.get();
 }
 
-std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging()
-    const {
+base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto result = std::make_unique<base::ListValue>();
+  base::Value::List result;
 
   if (!engine_ || !engine_->IsInitialized()) {
     return result;
@@ -1320,7 +1319,7 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging()
   type_status_header.Set("num_live", "Live Entries");
   type_status_header.Set("message", "Message");
   type_status_header.Set("state", "State");
-  result->Append(base::Value(std::move(type_status_header)));
+  result.Append(base::Value(std::move(type_status_header)));
 
   for (const auto& [type, controller] : data_type_controllers_) {
     base::Value::Dict type_status;
@@ -1379,7 +1378,7 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging()
     type_status.Set("state",
                     DataTypeController::StateToString(controller->state()));
 
-    result->Append(base::Value(std::move(type_status)));
+    result.Append(base::Value(std::move(type_status)));
   }
   return result;
 }

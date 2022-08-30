@@ -180,7 +180,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
       const std::string& payload,
       const ModelTypeSet& interested_data_types);
 
-  // Returns a ListValue representing Nigori node.
+  // Returns a Value::List representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
 
   bool HasUnsyncedItemsForTest() const;

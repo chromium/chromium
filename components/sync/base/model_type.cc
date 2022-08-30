@@ -497,10 +497,10 @@ std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set) {
   return out << ModelTypeSetToDebugString(model_type_set);
 }
 
-std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types) {
-  std::unique_ptr<base::ListValue> value(new base::ListValue());
+base::Value::List ModelTypeSetToValue(ModelTypeSet model_types) {
+  base::Value::List value;
   for (ModelType type : model_types) {
-    value->Append(ModelTypeToDebugString(type));
+    value.Append(ModelTypeToDebugString(type));
   }
   return value;
 }

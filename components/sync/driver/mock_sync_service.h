@@ -98,7 +98,7 @@ class MockSyncService : public SyncService {
               GetLastCycleSnapshotForDebugging,
               (),
               (const override));
-  MOCK_METHOD(std::unique_ptr<base::Value>,
+  MOCK_METHOD(base::Value::List,
               GetTypeStatusMapForDebugging,
               (),
               (const override));

@@ -43,7 +43,7 @@ class ModelTypeControllerDelegate {
   // |metadata_fate|, might delete all local sync metadata.
   virtual void OnSyncStopping(SyncStopMetadataFate metadata_fate) = 0;
 
-  // Returns a ListValue representing all nodes for the type to |callback|.
+  // Returns a Value::List representing all nodes for the type to |callback|.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodesForDebugging(AllNodesCallback callback) = 0;
 

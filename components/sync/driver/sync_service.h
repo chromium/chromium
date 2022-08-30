@@ -396,7 +396,7 @@ class SyncService : public KeyedService {
   // Returns some statistics on the most-recently completed sync cycle.
   virtual SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const = 0;
 
-  // Returns a ListValue indicating the status of all registered types.
+  // Returns a Value indicating the status of all registered types.
   //
   // The format is:
   // [ {"name": <name>, "value": <value>, "status": <status> }, ... ]
@@ -405,10 +405,10 @@ class SyncService : public KeyedService {
   // depending on the type's current status.
   //
   // This function is used by sync_internals_util.cc to help populate the
-  // chrome://sync-internals page.  It returns a ListValue rather than a
-  // DictionaryValue in part to make it easier to iterate over its elements when
+  // chrome://sync-internals page.  It returns a Value::List rather than a
+  // Value::Dict in part to make it easier to iterate over its elements when
   // constructing that page.
-  virtual std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() const = 0;
+  virtual base::Value::List GetTypeStatusMapForDebugging() const = 0;
 
   // Retrieves the TypeEntitiesCount for all registered data types.
   virtual void GetEntityCountsForDebugging(

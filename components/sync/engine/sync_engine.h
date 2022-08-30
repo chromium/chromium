@@ -182,7 +182,7 @@ class SyncEngine : public ModelTypeConfigurer {
   // Enables/Disables invalidations for session sync related datatypes.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
-  // Returns a ListValue representing Nigori node.
+  // Returns a Value::List representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
 };
 

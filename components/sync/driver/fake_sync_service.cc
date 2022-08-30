@@ -112,9 +112,8 @@ SyncCycleSnapshot FakeSyncService::GetLastCycleSnapshotForDebugging() const {
   return SyncCycleSnapshot();
 }
 
-std::unique_ptr<base::Value> FakeSyncService::GetTypeStatusMapForDebugging()
-    const {
-  return nullptr;
+base::Value::List FakeSyncService::GetTypeStatusMapForDebugging() const {
+  return base::Value::List();
 }
 
 void FakeSyncService::GetEntityCountsForDebugging(

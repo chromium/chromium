@@ -108,7 +108,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // transport-only mode (see syncer::SyncMode enum).
   virtual bool ShouldRunInTransportOnlyMode() const = 0;
 
-  // Returns a ListValue representing all nodes for this data type through
+  // Returns a Value::List representing all nodes for this data type through
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodes(AllNodesCallback callback) = 0;

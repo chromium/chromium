@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/json/json_writer.h"
@@ -75,14 +76,14 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
   if (!entities) {
     return DictionaryCreationAssertionFailure();
   }
-
+  base::DictAdapterForMigration entities_dict =
+      base::DictAdapterForMigration(*entities);
   string model_type_string = ModelTypeToDebugString(model_type);
-  base::ListValue* entity_list = nullptr;
-  if (!entities->GetList(model_type_string, &entity_list)) {
-    return UnknownTypeAssertionFailure(model_type_string);
-  } else if (expected_count != entity_list->GetListDeprecated().size()) {
-    return VerificationCountAssertionFailure(
-               entity_list->GetListDeprecated().size(), expected_count)
+  const base::Value::List* entity_list;
+  entity_list = entities_dict.FindList(model_type_string);
+  if (expected_count != entity_list->size()) {
+    return VerificationCountAssertionFailure(entity_list->size(),
+                                             expected_count)
            << "\n\n"
            << ConvertFakeServerContentsToString(*entities);
   }
@@ -100,20 +101,25 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     return DictionaryCreationAssertionFailure();
   }
 
+  base::DictAdapterForMigration entities_dict =
+      base::DictAdapterForMigration(*entities);
+
   string model_type_string = ModelTypeToDebugString(model_type);
-  base::ListValue* entity_list = nullptr;
+  const base::Value::List* entity_list;
+  entity_list = entities_dict.FindList(model_type_string);
   size_t actual_count = 0;
-  if (entities->GetList(model_type_string, &entity_list)) {
-    base::Value name_value(name);
-    for (const base::Value& entity : entity_list->GetListDeprecated()) {
-      if (name_value == entity)
-        actual_count++;
-    }
-  }
+  base::Value name_value(name);
 
   if (!entity_list) {
     return UnknownTypeAssertionFailure(model_type_string);
-  } else if (actual_count != expected_count) {
+  }
+
+  for (auto& entity : *entity_list) {
+    if (name_value == entity)
+      actual_count++;
+  }
+
+  if (actual_count != expected_count) {
     return VerificationCountAssertionFailure(actual_count, expected_count)
            << "; Name: " << name << "\n\n"
            << ConvertFakeServerContentsToString(*entities);

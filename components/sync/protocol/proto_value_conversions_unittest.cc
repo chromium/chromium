@@ -5,6 +5,7 @@
 #include "components/sync/protocol/proto_value_conversions.h"
 
 #include <string>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -178,27 +179,23 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
   std::string encoded_icon_url;
   EXPECT_TRUE(value->GetString("icon_url", &encoded_icon_url));
   EXPECT_EQ(icon_url, encoded_icon_url);
-  base::ListValue* meta_info_list;
-  ASSERT_TRUE(value->GetList("meta_info", &meta_info_list));
-  EXPECT_EQ(2u, meta_info_list->GetListDeprecated().size());
-  const base::Value* meta_info_value;
-  const base::DictionaryValue* meta_info;
+
+  base::DictAdapterForMigration value_dict =
+      base::DictAdapterForMigration(std::move(*value));
+
+  const base::Value::List* meta_info_list = value_dict.FindList("meta_info");
+
+  EXPECT_EQ(2u, meta_info_list->size());
   std::string meta_key;
   std::string meta_value;
-  meta_info_value = &meta_info_list->GetListDeprecated()[0];
-  ASSERT_TRUE(meta_info_value->is_dict());
-  meta_info = &base::Value::AsDictionaryValue(*meta_info_value);
-  EXPECT_TRUE(meta_info->GetString("key", &meta_key));
-  EXPECT_TRUE(meta_info->GetString("value", &meta_value));
-  EXPECT_EQ("key1", meta_key);
-  EXPECT_EQ("value1", meta_value);
-  meta_info_value = &meta_info_list->GetListDeprecated()[1];
-  ASSERT_TRUE(meta_info_value->is_dict());
-  meta_info = &base::Value::AsDictionaryValue(*meta_info_value);
-  EXPECT_TRUE(meta_info->GetString("key", &meta_key));
-  EXPECT_TRUE(meta_info->GetString("value", &meta_value));
-  EXPECT_EQ("key2", meta_key);
-  EXPECT_EQ("value2", meta_value);
+  const auto& meta_info_value = (*meta_info_list)[0].GetDict();
+  ASSERT_TRUE((*meta_info_list)[0].is_dict());
+  EXPECT_STREQ("key1", meta_info_value.FindString("key")->c_str());
+  EXPECT_STREQ("value1", meta_info_value.FindString("value")->c_str());
+  const auto& meta_info_value_1 = (*meta_info_list)[1].GetDict();
+  ASSERT_TRUE((*meta_info_list)[1].is_dict());
+  EXPECT_STREQ("key2", meta_info_value_1.FindString("key")->c_str());
+  EXPECT_STREQ("value2", meta_info_value_1.FindString("value")->c_str());
 }
 
 TEST(ProtoValueConversionsTest, UniquePositionToValue) {
@@ -232,12 +229,15 @@ namespace {
 // path.
 bool ValueHasSpecifics(const base::DictionaryValue& value,
                        const std::string& path) {
-  const base::ListValue* entities_list = nullptr;
-  if (!value.GetList(path, &entities_list))
+  base::DictAdapterForMigration value_dict =
+      base::DictAdapterForMigration(value);
+  const base::Value::List* entities_list =
+      value_dict.FindListByDottedPath(path);
+  if (!entities_list) {
     return false;
+  }
 
-  const base::Value& entry_dictionary_value =
-      entities_list->GetListDeprecated()[0];
+  const base::Value& entry_dictionary_value = (*entities_list)[0];
   if (!entry_dictionary_value.is_dict())
     return false;
 
@@ -249,14 +249,17 @@ bool ValueHasSpecifics(const base::DictionaryValue& value,
 
 MATCHER(ValueHasNonEmptyGetUpdateTriggers, "") {
   const base::DictionaryValue& value = arg;
+  base::DictAdapterForMigration value_dict =
+      base::DictAdapterForMigration(value);
 
-  const base::ListValue* entities_list = nullptr;
-  if (!value.GetList("get_updates.from_progress_marker", &entities_list)) {
+  const base::Value::List* entities_list =
+      value_dict.FindListByDottedPath("get_updates.from_progress_marker");
+  if (!entities_list) {
     *result_listener << "no from_progress_marker list";
     return false;
   }
 
-  const base::Value& entry_dictionary_value = entities_list->GetList().front();
+  const base::Value& entry_dictionary_value = entities_list->front();
   if (!entry_dictionary_value.is_dict()) {
     *result_listener << "from_progress_marker does not contain a dictionary";
     return false;

@@ -779,10 +779,11 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
   std::unique_ptr<base::DictionaryValue> dictionary(
       new base::DictionaryValue());
 
-  // Initialize an empty ListValue for all ModelTypes.
+  // Initialize an empty Value::List for all ModelTypes.
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    dictionary->SetKey(ModelTypeToDebugString(type), base::ListValue());
+    dictionary->SetKey(ModelTypeToDebugString(type),
+                       base::Value(base::Value::Type::LIST));
   }
 
   for (const auto& [id, entity] : entities_) {
@@ -792,9 +793,9 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
       // consider them.
       continue;
     }
-    base::ListValue* list_value;
-    if (!dictionary->GetList(ModelTypeToDebugString(entity->GetModelType()),
-                             &list_value)) {
+    base::Value* list_value;
+    if (!dictionary->Get(ModelTypeToDebugString(entity->GetModelType()),
+                         &list_value)) {
       return nullptr;
     }
     // TODO(pvalenzuela): Store more data for each entity so additional

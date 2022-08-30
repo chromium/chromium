@@ -11,11 +11,7 @@
 #include <string>
 
 #include "base/containers/enum_set.h"
-
-namespace base {
-class ListValue;
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 namespace sync_pb {
 class EntitySpecifics;
@@ -403,8 +399,8 @@ std::string ModelTypeSetToDebugString(ModelTypeSet model_types);
 // Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set);
 
-// Generates a base::ListValue from |model_types|.
-std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types);
+// Generates a base::Value::List from |model_types|.
+base::Value::List ModelTypeSetToValue(ModelTypeSet model_types);
 
 // Returns a string corresponding to the syncable tag for this datatype.
 std::string ModelTypeToRootTag(ModelType type);

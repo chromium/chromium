@@ -5,6 +5,7 @@
 #include "components/sync/driver/sync_policy_handler.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -71,13 +72,14 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
 
   // Create a policy that disables some types.
   policy::PolicyMap policy;
-  base::ListValue disabled_types;
+  base::Value::List disabled_types;
   disabled_types.Append("bookmarks");
   disabled_types.Append("readingList");
   disabled_types.Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
   SyncPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
 
@@ -117,13 +119,14 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
 
   // Create a policy that disables the types.
   policy::PolicyMap policy;
-  base::ListValue disabled_types;
+  base::Value::List disabled_types;
   disabled_types.Append("osApps");
   disabled_types.Append("osPreferences");
   disabled_types.Append("osWifiConfigurations");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
   SyncPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
 
@@ -146,13 +149,14 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   // Create a policy that disables the types, but using the original browser
   // policy names from before the SplitSettingsSync launch.
   policy::PolicyMap policy;
-  base::ListValue disabled_types;
+  base::Value::List disabled_types;
   disabled_types.Append("apps");
   disabled_types.Append("wifiConfigurations");
   disabled_types.Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
   SyncPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
 

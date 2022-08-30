@@ -611,8 +611,7 @@ base::Value::Dict ConstructAboutInformation(
                    base::Value(unrecoverable_error_message));
   }
 
-  about_info.Set("type_status", base::Value::FromUniquePtrValue(
-                                    service->GetTypeStatusMapForDebugging()));
+  about_info.Set("type_status", service->GetTypeStatusMapForDebugging());
 
   return about_info;
 }

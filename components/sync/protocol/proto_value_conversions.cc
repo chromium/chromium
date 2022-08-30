@@ -151,11 +151,11 @@ class ToValueVisitor {
              const char* field_name,
              const google::protobuf::RepeatedPtrField<F>& repeated_field) {
     if (!repeated_field.empty()) {
-      std::unique_ptr<base::ListValue> list(new base::ListValue());
+      base::Value::List list;
       for (const auto& field : repeated_field) {
-        list->Append(base::Value::FromUniquePtrValue(ToValue(field)));
+        list.Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
-      value_->Set(field_name, std::move(list));
+      value_->Set(field_name, std::make_unique<base::Value>(std::move(list)));
     }
   }
 
@@ -164,11 +164,11 @@ class ToValueVisitor {
              const char* field_name,
              const google::protobuf::RepeatedField<F>& repeated_field) {
     if (!repeated_field.empty()) {
-      std::unique_ptr<base::ListValue> list(new base::ListValue());
+      base::Value::List list;
       for (const auto& field : repeated_field) {
-        list->Append(base::Value::FromUniquePtrValue(ToValue(field)));
+        list.Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
-      value_->Set(field_name, std::move(list));
+      value_->Set(field_name, std::make_unique<base::Value>(std::move(list)));
     }
   }
 

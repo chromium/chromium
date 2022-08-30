@@ -1378,6 +1378,6 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
                   << GetClient(client_index)
                          ->service()
                          ->GetTypeStatusMapForDebugging()
-                         ->DebugString();
+                         .DebugString();
   }
 }
