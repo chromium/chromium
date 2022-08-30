@@ -73,7 +73,7 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
 
   void SetValue(const State& value);
   void MakeRestOfToggleGroupZero();
-
+  const ToggleRoot* FindToggleSpecifier() const;
   void FireToggleChangeEvent();
 
   enum class PostRecalcAt : uint8_t {
@@ -82,7 +82,8 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
   };
   void SetNeedsStyleRecalc(Element* toggle_element, PostRecalcAt when);
 
-  bool ValueMatches(const State& other) const;
+  bool ValueMatches(const State& other,
+                    const States* states_override = nullptr) const;
 
  private:
   void setStatesInternal(const States& states, ExceptionState& exception_state);

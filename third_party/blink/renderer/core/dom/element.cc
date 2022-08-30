@@ -8992,19 +8992,8 @@ void Element::FireToggleActivation(const ToggleTrigger& activation) {
 
   DCHECK_EQ(toggle->OwnerElement(), element);
 
-  const ToggleRoot* toggle_specifier = nullptr;
-  if (const ComputedStyle* style = element->GetComputedStyle()) {
-    if (const ToggleRootList* toggle_root = style->ToggleRoot()) {
-      for (const auto& item : toggle_root->Roots()) {
-        if (item.Name() == name) {
-          toggle_specifier = &item;
-        }
-      }
-    }
-  }
-
   CSSToggle::State old_value = toggle->Value();
-  ChangeToggle(toggle, activation, toggle_specifier);
+  ChangeToggle(toggle, activation, toggle->FindToggleSpecifier());
   CSSToggle::State new_value = toggle->Value();
 
   if (old_value != new_value)
@@ -9120,7 +9109,7 @@ void Element::ChangeToggle(CSSToggle* t,
 
   // If t’s value does not match 0, and group is true, then set the value of
   // all other toggles in the same toggle group as t to 0.
-  if (is_group && !t->ValueMatches(State(0u)))
+  if (is_group && !t->ValueMatches(State(0u), &states))
     t->MakeRestOfToggleGroupZero();
 }
 

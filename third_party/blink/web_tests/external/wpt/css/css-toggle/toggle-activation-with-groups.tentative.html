@@ -265,6 +265,71 @@ for (let t of finding_group_tests) {
   }, `toggle groups test: ${t}`);
 }
 
+promise_test(async () => {
+  container.innerHTML = `
+    <div id="e" style="toggle: tog [a b] at b self group"></div>
+    <div id="f" style="toggle: tog [a b] at a self group"></div>
+  `;
+  let e = document.getElementById("e");
+  let f = document.getElementById("f");
+  await Promise.all([wait_for_toggle_creation(e),
+                     wait_for_toggle_creation(f)]);
+
+  let te = e.toggles.get("tog");
+  let tf = f.toggles.get("tog");
+  assert_equals(te.value, "b", "e value before first click");
+  assert_true(e.matches(':toggle(tog b):toggle(tog 1)'),
+              "e selector matching before first click");
+  assert_equals(tf.value, "a", "f value before first click");
+  assert_true(f.matches(':toggle(tog a):toggle(tog 0)'),
+              "f selector matching before first click");
+  f.click();
+  assert_equals(te.value, 0, "e value after first click");
+  assert_equals(tf.value, "b", "f value after first click");
+  f.click();
+  assert_equals(te.value, 0, "e value after second click");
+  assert_equals(tf.value, "a", "f value after second click");
+  te.value = "b";
+  assert_equals(te.value, "b", "e value after first value set");
+  assert_equals(tf.value, 0, "f value after first value set");
+  tf.value = "b";
+  assert_equals(te.value, 0, "e value after second value set");
+  assert_equals(tf.value, "b", "f value after second value set");
+  tf.value = "a";
+  assert_equals(te.value, 0, "e value after third value set");
+  assert_equals(tf.value, "a", "f value after third value set");
+
+  // Swap the order of the state names in 'toggle-root'.  This does not affect
+  // the states on the toggle, but still affects the override specifier used
+  // in some algorithms.
+  e.style.toggleRoot = "tog [b a] at 0 self group";
+  f.style.toggleRoot = "tog [b a] at 0 self group";
+  await Promise.all([wait_for_toggle_creation(e),
+                     wait_for_toggle_creation(f)]);
+
+  assert_equals(te.value, 0, "e value after changing toggle-root");
+  assert_equals(tf.value, "a", "f value after changing toggle-root");
+  e.click();
+  assert_equals(te.value, "a", "e value after third click");
+  assert_equals(tf.value, 0, "f value after third click");
+  e.click();
+  assert_equals(te.value, "b", "e value after fourth click");
+  assert_equals(tf.value, 0, "f value after fourth click");
+  assert_true(e.matches(':toggle(tog b):toggle(tog 1)'),
+              "e selector matching after changing toggle-root");
+  assert_true(f.matches(':toggle(tog a):toggle(tog 0)'),
+              "f selector matching after changing toggle-root");
+  tf.value = "a";
+  assert_equals(te.value, 0, "e value after fourth value set");
+  assert_equals(tf.value, "a", "f value after fourth value set");
+  tf.value = "b";
+  assert_equals(te.value, 0, "e value after fifth value set");
+  assert_equals(tf.value, "b", "f value after fifth value set");
+  te.value = "b";
+  assert_equals(te.value, "b", "e value after sixth value set");
+  assert_equals(tf.value, "b", "f value after sixth value set");
+}, "zeroing toggle group uses states from override specifier");
+
 // TODO(dbaron): This could probably use a few additional tests for multiple
 // values of the list-valued properties.  (But they're hard to auto-generate.)
 

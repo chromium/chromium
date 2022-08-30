@@ -286,10 +286,21 @@ CSSToggle* CSSToggle::Create(CSSToggleData* options,
 }
 
 void CSSToggle::SetValueAndCheckGroup(const State& value) {
+  // The specification says that we should go through the whole ChangeToggle
+  // algorithm (with a "set" value), but this implements a more direct way of
+  // doing the same thing.
   SetValue(value);
 
-  if (is_group_ && OwnerElement() && !ValueMatches(State(0u)))
-    MakeRestOfToggleGroupZero();
+  if (is_group_ && OwnerElement()) {
+    const ToggleRoot* specifier = FindToggleSpecifier();
+    const States* states = nullptr;
+    if (specifier)
+      states = &specifier->StateSet();
+
+    if (!ValueMatches(State(0u), states)) {
+      MakeRestOfToggleGroupZero();
+    }
+  }
 }
 
 void CSSToggle::SetValue(const State& value) {
@@ -344,12 +355,33 @@ void CSSToggle::SetLaterSiblingsNeedStyleRecalc(Element* toggle_element,
   }
 }
 
+const ToggleRoot* CSSToggle::FindToggleSpecifier() const {
+  Element* owner_element = OwnerElement();
+  if (!owner_element)
+    return nullptr;
+
+  const ToggleRoot* toggle_specifier = nullptr;
+  if (const ComputedStyle* style = owner_element->GetComputedStyle()) {
+    if (const ToggleRootList* toggle_root = style->ToggleRoot()) {
+      for (const auto& item : toggle_root->Roots()) {
+        if (item.Name() == name_) {
+          toggle_specifier = &item;
+        }
+      }
+    }
+  }
+  return toggle_specifier;
+}
+
 // https://tabatkins.github.io/css-toggle/#toggle-match-value
-bool CSSToggle::ValueMatches(const State& other) const {
+bool CSSToggle::ValueMatches(const State& other,
+                             const States* states_override) const {
   if (value_ == other)
     return true;
 
-  if (value_.IsInteger() == other.IsInteger() || !states_.IsNames())
+  const States& states = states_override ? *states_override : states_;
+
+  if (value_.IsInteger() == other.IsInteger() || !states.IsNames())
     return false;
 
   State::IntegerType integer;
@@ -362,7 +394,7 @@ bool CSSToggle::ValueMatches(const State& other) const {
     ident = &value_.AsName();
   }
 
-  auto ident_index = states_.AsNames().Find(*ident);
+  auto ident_index = states.AsNames().Find(*ident);
   return ident_index != kNotFound && integer == ident_index;
 }
 
