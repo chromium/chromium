@@ -32,7 +32,7 @@ using content::test::PrerenderHostRegistryObserver;
 // fallback in the NavigationThrottle.
 class BlockAllPluginServiceFilter : public content::PluginServiceFilter {
  public:
-  bool IsPluginAvailable(int render_process_id,
+  bool IsPluginAvailable(content::BrowserContext* browser_context,
                          const content::WebPluginInfo& plugin) override {
     return false;
   }

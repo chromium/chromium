@@ -37,10 +37,6 @@ class ChromePluginServiceFilterTest : public ChromeRenderViewHostTestHarness {
     filter_->RegisterProfile(profile());
   }
 
-  int main_frame_process_id() {
-    return web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
-  }
-
   raw_ptr<ChromePluginServiceFilter> filter_ = nullptr;
 };
 
@@ -53,19 +49,18 @@ content::WebPluginInfo GetFakePdfPluginInfo() {
 }  // namespace
 
 TEST_F(ChromePluginServiceFilterTest, IsPluginAvailable) {
-  EXPECT_TRUE(filter_->IsPluginAvailable(main_frame_process_id(),
-                                         GetFakePdfPluginInfo()));
+  EXPECT_TRUE(
+      filter_->IsPluginAvailable(browser_context(), GetFakePdfPluginInfo()));
 }
 
 TEST_F(ChromePluginServiceFilterTest, IsPluginAvailableForInvalidProcess) {
-  EXPECT_FALSE(filter_->IsPluginAvailable(
-      content::ChildProcessHost::kInvalidUniqueID, GetFakePdfPluginInfo()));
+  EXPECT_FALSE(filter_->IsPluginAvailable(nullptr, GetFakePdfPluginInfo()));
 }
 
 TEST_F(ChromePluginServiceFilterTest, IsPluginAvailableForDisabledPlugin) {
   profile()->GetPrefs()->SetBoolean(prefs::kPluginsAlwaysOpenPdfExternally,
                                     true);
 
-  EXPECT_FALSE(filter_->IsPluginAvailable(main_frame_process_id(),
-                                          GetFakePdfPluginInfo()));
+  EXPECT_FALSE(
+      filter_->IsPluginAvailable(browser_context(), GetFakePdfPluginInfo()));
 }

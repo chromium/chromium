@@ -59,14 +59,11 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper);
 // also sets |is_stale| to true if the plugin list needs a reload.
 bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle,
                         bool* is_stale) {
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  int process_id = web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
-
   content::WebPluginInfo plugin_info;
   return content::PluginService::GetInstance()->GetPluginInfo(
-      process_id, navigation_handle->GetURL(), kPDFMimeType,
-      false /* allow_wildcard */, is_stale, &plugin_info,
-      nullptr /* actual_mime_type */);
+      navigation_handle->GetWebContents()->GetBrowserContext(),
+      navigation_handle->GetURL(), kPDFMimeType, false /* allow_wildcard */,
+      is_stale, &plugin_info, nullptr /* actual_mime_type */);
 }
 #endif
 

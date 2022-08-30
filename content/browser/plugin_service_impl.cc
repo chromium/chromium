@@ -204,7 +204,7 @@ bool PluginServiceImpl::GetPluginInfoArray(
       url, mime_type, allow_wildcard, plugins, actual_mime_types);
 }
 
-bool PluginServiceImpl::GetPluginInfo(int render_process_id,
+bool PluginServiceImpl::GetPluginInfo(content::BrowserContext* browser_context,
                                       const GURL& url,
                                       const std::string& mime_type,
                                       bool allow_wildcard,
@@ -214,13 +214,14 @@ bool PluginServiceImpl::GetPluginInfo(int render_process_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<WebPluginInfo> plugins;
   std::vector<std::string> mime_types;
-  bool stale = GetPluginInfoArray(
-      url, mime_type, allow_wildcard, &plugins, &mime_types);
+
+  bool stale =
+      GetPluginInfoArray(url, mime_type, allow_wildcard, &plugins, &mime_types);
   if (is_stale)
     *is_stale = stale;
 
   for (size_t i = 0; i < plugins.size(); ++i) {
-    if (!filter_ || filter_->IsPluginAvailable(render_process_id, plugins[i])) {
+    if (!filter_ || filter_->IsPluginAvailable(browser_context, plugins[i])) {
       *info = plugins[i];
       if (actual_mime_type)
         *actual_mime_type = mime_types[i];

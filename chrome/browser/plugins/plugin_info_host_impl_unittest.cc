@@ -45,7 +45,7 @@ class FakePluginServiceFilter : public content::PluginServiceFilter {
   FakePluginServiceFilter() = default;
   ~FakePluginServiceFilter() override = default;
 
-  bool IsPluginAvailable(int render_process_id,
+  bool IsPluginAvailable(content::BrowserContext* browser_context,
                          const content::WebPluginInfo& plugin) override;
 
   bool CanLoadPlugin(int render_process_id,
@@ -60,7 +60,7 @@ class FakePluginServiceFilter : public content::PluginServiceFilter {
 };
 
 bool FakePluginServiceFilter::IsPluginAvailable(
-    int render_process_id,
+    content::BrowserContext* browser_context,
     const content::WebPluginInfo& plugin) {
   auto it = plugin_state_.find(plugin.path);
   if (it == plugin_state_.end()) {

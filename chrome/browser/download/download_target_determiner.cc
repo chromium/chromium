@@ -708,7 +708,7 @@ enum ActionOnStalePluginList {
   IGNORE_IF_STALE_PLUGIN_LIST
 };
 
-void IsHandledBySafePlugin(int render_process_id,
+void IsHandledBySafePlugin(content::BrowserContext* browser_context,
                            const GURL& url,
                            const std::string& mime_type,
                            ActionOnStalePluginList stale_plugin_action,
@@ -724,7 +724,7 @@ void IsHandledBySafePlugin(int render_process_id,
   content::PluginService* plugin_service =
       content::PluginService::GetInstance();
   bool plugin_found =
-      plugin_service->GetPluginInfo(render_process_id, url, mime_type, false,
+      plugin_service->GetPluginInfo(browser_context, url, mime_type, false,
                                     &is_stale, &plugin_info, &actual_mime_type);
   if (is_stale && stale_plugin_action == RETRY_IF_STALE_PLUGIN_LIST) {
     // The GetPlugins call causes the plugin list to be refreshed. Once that's
@@ -732,9 +732,8 @@ void IsHandledBySafePlugin(int render_process_id,
     // after a single retry in order to avoid retrying indefinitely.
     plugin_service->GetPlugins(base::BindOnce(
         &InvokeClosureAfterGetPluginCallback,
-        base::BindOnce(&IsHandledBySafePlugin, render_process_id, url,
-                       mime_type, IGNORE_IF_STALE_PLUGIN_LIST,
-                       std::move(callback))));
+        base::BindOnce(&IsHandledBySafePlugin, browser_context, url, mime_type,
+                       IGNORE_IF_STALE_PLUGIN_LIST, std::move(callback))));
     return;
   }
   // In practice, we assume that retrying once is enough.
@@ -769,14 +768,9 @@ DownloadTargetDeterminer::Result
   }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  int render_process_id = -1;
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(download_);
-  if (web_contents)
-    render_process_id =
-        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   IsHandledBySafePlugin(
-      render_process_id, net::FilePathToFileURL(local_path_), mime_type_,
+      content::DownloadItemUtils::GetBrowserContext(download_),
+      net::FilePathToFileURL(local_path_), mime_type_,
       RETRY_IF_STALE_PLUGIN_LIST,
       base::BindOnce(&DownloadTargetDeterminer::DetermineIfHandledSafelyDone,
                      weak_ptr_factory_.GetWeakPtr()));
