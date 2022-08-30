@@ -61,7 +61,9 @@ bool CheckIfEligibleForDelay(const KURL& url,
   if (element.IsPotentiallyRenderBlocking())
     return false;
 
-  if (features::kDelayAsyncScriptExecutionCrossSiteOnlyParam.Get()) {
+  static const bool delay_async_script_execution_cross_site_only =
+      features::kDelayAsyncScriptExecutionCrossSiteOnlyParam.Get();
+  if (delay_async_script_execution_cross_site_only) {
     ExecutionContext* context = element_document.GetExecutionContext();
     scoped_refptr<const SecurityOrigin> src_security_origin =
         SecurityOrigin::Create(url);
