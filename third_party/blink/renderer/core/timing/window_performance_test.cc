@@ -1001,22 +1001,27 @@ TEST_F(WindowPerformanceTest, EventTimingTraceEvents) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
   base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
-  base::TimeTicks processing_start = start_time + base::Milliseconds(10);
+  base::TimeTicks processing_start = start_time + base::Milliseconds(5);
   base::TimeTicks processing_end = processing_start + base::Milliseconds(10);
   RegisterPointerEvent("pointerdown", start_time, processing_start,
                        processing_end, 4, GetWindow()->document());
 
-  base::TimeTicks start_time2 = start_time + base::Microseconds(200);
-  RegisterPointerEvent("pointerup", start_time2, processing_start,
-                       processing_end, 4, GetWindow()->document());
-  base::TimeTicks swap_time = start_time + base::Microseconds(100);
+  base::TimeTicks swap_time = processing_end + base::Milliseconds(10);
   SimulateSwapPromise(swap_time);
 
-  base::TimeTicks start_time3 = start_time2 + base::Microseconds(2000);
-  RegisterPointerEvent("click", start_time3, processing_start, processing_end,
+  base::TimeTicks start_time2 = start_time + base::Milliseconds(100);
+  base::TimeTicks processing_start2 = start_time2 + base::Milliseconds(5);
+  base::TimeTicks processing_end2 = processing_start2 + base::Milliseconds(10);
+  RegisterPointerEvent("pointerup", start_time2, processing_start2,
+                       processing_end2, 4, GetWindow()->document());
+
+  base::TimeTicks start_time3 = start_time2;
+  base::TimeTicks processing_start3 = processing_end2;
+  base::TimeTicks processing_end3 = processing_start3 + base::Milliseconds(10);
+  RegisterPointerEvent("click", start_time3, processing_start3, processing_end3,
                        4, GetWindow()->document());
 
-  base::TimeTicks swap_time2 = start_time + base::Microseconds(4000);
+  base::TimeTicks swap_time2 = processing_end3 + base::Milliseconds(5);
   SimulateSwapPromise(swap_time2);
 
   // Only the longer event should have been reported.
@@ -1025,11 +1030,29 @@ TEST_F(WindowPerformanceTest, EventTimingTraceEvents) {
   Query q = Query::EventNameIs("EventTiming");
   analyzer->FindEvents(q, &events);
   EXPECT_EQ(6u, events.size());
-  EXPECT_EQ("devtools.timeline", events[0]->category);
-  EXPECT_EQ("devtools.timeline", events[1]->category);
+  for (int i = 0; i < 6; i++)
+    EXPECT_EQ("devtools.timeline", events[i]->category);
 
-  ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  // Items in the trace events list is ordered chronologically, that is -- trace
+  // event with smaller timestamp comes eairlier.
+  //
+  // --Timestamps--
+  // pointerdown_begin: 1000ms
+  const trace_analyzer::TraceEvent* pointerdown_begin = events[0];
+  // pointerdown_end: 1025ms
+  const trace_analyzer::TraceEvent* pointerdown_end = events[1];
+  // pointerup_begin: 1100ms
+  const trace_analyzer::TraceEvent* pointerup_begin = events[2];
+  // click_begin: 1100ms
+  const trace_analyzer::TraceEvent* click_begin = events[3];
+  // pointerup_end: 1130ms
+  const trace_analyzer::TraceEvent* pointerup_end = events[4];
+  // click_end: 1130ms
+  const trace_analyzer::TraceEvent* click_end = events[5];
+
+  // pointerdown
+  ASSERT_TRUE(pointerdown_begin->HasDictArg("data"));
+  base::Value::Dict arg_dict = pointerdown_begin->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("interactionId").value_or(-1), 0);
   std::string* event_name = arg_dict.FindString("type");
   ASSERT_TRUE(event_name);
@@ -1038,12 +1061,13 @@ TEST_F(WindowPerformanceTest, EventTimingTraceEvents) {
   EXPECT_EQ(*frame_trace_value, ToTraceValue(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
-  EXPECT_EQ(events[0]->id, events[3]->id);
-  EXPECT_LT(events[0]->timestamp, events[3]->timestamp);
-  ASSERT_FALSE(events[3]->HasDictArg("data"));
+  EXPECT_EQ(pointerdown_begin->id, pointerdown_end->id);
+  EXPECT_LT(pointerdown_begin->timestamp, pointerdown_end->timestamp);
+  ASSERT_FALSE(pointerdown_end->HasDictArg("data"));
 
-  ASSERT_TRUE(events[1]->HasDictArg("data"));
-  arg_dict = events[1]->GetKnownArgAsDict("data");
+  // pointerup
+  ASSERT_TRUE(pointerup_begin->HasDictArg("data"));
+  arg_dict = pointerup_begin->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("interactionId").value_or(-1), 0);
   event_name = arg_dict.FindString("type");
   ASSERT_TRUE(event_name);
@@ -1052,12 +1076,13 @@ TEST_F(WindowPerformanceTest, EventTimingTraceEvents) {
   EXPECT_EQ(*frame_trace_value, ToTraceValue(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
-  EXPECT_EQ(events[1]->id, events[4]->id);
-  EXPECT_LT(events[1]->timestamp, events[4]->timestamp);
-  ASSERT_FALSE(events[4]->HasDictArg("data"));
+  EXPECT_EQ(pointerup_begin->id, pointerup_end->id);
+  EXPECT_LT(pointerup_begin->timestamp, pointerup_end->timestamp);
+  ASSERT_FALSE(pointerup_end->HasDictArg("data"));
 
-  ASSERT_TRUE(events[2]->HasDictArg("data"));
-  arg_dict = events[2]->GetKnownArgAsDict("data");
+  // click
+  ASSERT_TRUE(click_begin->HasDictArg("data"));
+  arg_dict = click_begin->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("interactionId").value_or(-1), 0);
   event_name = arg_dict.FindString("type");
   ASSERT_TRUE(event_name);
@@ -1066,9 +1091,9 @@ TEST_F(WindowPerformanceTest, EventTimingTraceEvents) {
   EXPECT_EQ(*frame_trace_value, ToTraceValue(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
-  EXPECT_EQ(events[2]->id, events[5]->id);
-  EXPECT_LT(events[2]->timestamp, events[5]->timestamp);
-  ASSERT_FALSE(events[5]->HasDictArg("data"));
+  EXPECT_EQ(click_begin->id, click_end->id);
+  EXPECT_LT(click_begin->timestamp, click_end->timestamp);
+  ASSERT_FALSE(click_end->HasDictArg("data"));
 }
 
 TEST_F(WindowPerformanceTest, InteractionID) {

@@ -87,6 +87,15 @@ void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {
   interaction_id_ = interaction_id;
 }
 
+base::TimeTicks PerformanceEventTiming::unsafePresentationTimestamp() const {
+  return unsafe_presentation_timestamp_;
+}
+
+void PerformanceEventTiming::SetUnsafePresentationTimestamp(
+    base::TimeTicks presentation_timestamp) {
+  unsafe_presentation_timestamp_ = presentation_timestamp;
+}
+
 void PerformanceEventTiming::SetDuration(double duration) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(0, duration);
