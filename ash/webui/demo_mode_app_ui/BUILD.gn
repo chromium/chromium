@@ -69,8 +69,6 @@ generate_grd("build_grd") {
   deps = [ ":build_mojo_grdp" ]
   input_files = [
     "app_icon_192.png",
-    "demo_mode_app.js",
-    "demo_mode_app.html",
     "page_handler.js",
   ]
   grd_prefix = grd_prefix

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -15,7 +16,7 @@
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
   std::unique_ptr<WebAppInstallInfo> info =
       std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL);
+  info->start_url = GURL(ash::kChromeUntrustedUIDemoModeAppIndexURL);
   info->scope = GURL(ash::kChromeUntrustedUIDemoModeAppURL);
   // TODO(b/185608502): Convert the title to a localized string
   info->title = u"Demo Mode App";

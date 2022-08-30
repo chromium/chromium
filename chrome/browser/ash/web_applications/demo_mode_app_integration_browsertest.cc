@@ -91,27 +91,9 @@ class WidgetFullscreenWaiter : public views::WidgetObserver {
 
 // Test that the Demo Mode App installs and launches correctly
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
-  const GURL url(ash::kChromeUntrustedUIDemoModeAppURL);
+  const GURL url(ash::kChromeUntrustedUIDemoModeAppIndexURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       ash::SystemWebAppType::DEMO_MODE, url, "Demo Mode App"));
-}
-
-// Test that Demo Mode app starts in fullscreen from initial call to
-// ToggleFullscreen() Mojo API, and subsequent call exits fullscreen
-IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
-                       DemoModeAppToggleFullscreen) {
-  WaitForTestSystemAppInstall();
-  Browser* browser;
-  content::WebContents* web_contents =
-      LaunchApp(ash::SystemWebAppType::DEMO_MODE, &browser);
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      web_contents->GetTopLevelNativeWindow());
-  WidgetFullscreenWaiter(widget).WaitThenAssert(true);
-
-  bool success = content::ExecuteScript(
-      web_contents, "window.pageHandler.toggleFullscreen();");
-  EXPECT_TRUE(success);
-  WidgetFullscreenWaiter(widget).WaitThenAssert(false);
 }
 
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,

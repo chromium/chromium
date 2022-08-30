@@ -9,6 +9,7 @@ namespace ash {
 
 extern const char kChromeUntrustedUIDemoModeAppHost[];
 extern const char kChromeUntrustedUIDemoModeAppURL[];
+extern const char kChromeUntrustedUIDemoModeAppIndexURL[];
 
 }  // namespace ash
 

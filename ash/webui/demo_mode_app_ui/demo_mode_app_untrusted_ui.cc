@@ -63,11 +63,14 @@ void DemoModeAppUntrustedUI::SourceDataFromComponent(
     const base::FilePath& component_path,
     const std::string& resource_path,
     content::WebUIDataSource::GotDataCallback callback) {
+  std::string resource_path_or_root =
+      resource_path == "" ? "index.html" : resource_path;
   // Convert to GURL to strip out query params and URL fragments
   //
   // TODO (b/234170189): Verify that query params won't be used in the prod Demo
   // App, or add support for them here instead of ignoring them.
-  GURL full_url = GURL(kChromeUntrustedUIDemoModeAppURL + resource_path);
+  GURL full_url =
+      GURL(kChromeUntrustedUIDemoModeAppURL + resource_path_or_root);
   // Trim leading slash from path
   std::string path = full_url.path().substr(1);
 
@@ -96,11 +99,6 @@ DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(content::WebUI* web_ui,
                                  kAshDemoModeAppResources[i].id);
     webui_resource_paths.insert(kAshDemoModeAppResources[i].path);
   }
-
-  data_source->SetDefaultResource(IDR_ASH_DEMO_MODE_APP_DEMO_MODE_APP_HTML);
-  // Add empty string so default resource is still shown for
-  // chrome-untrusted://demo-mode-app
-  webui_resource_paths.insert("");
 
   data_source->SetRequestFilter(
       base::BindRepeating(&ShouldSourceFromComponent, webui_resource_paths),
