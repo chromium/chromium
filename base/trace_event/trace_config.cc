@@ -20,6 +20,10 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"  // nogncheck
+#endif
+
 namespace base {
 namespace trace_event {
 
@@ -735,6 +739,35 @@ std::string TraceConfig::ToTraceOptionsString() const {
   }
   return ret;
 }
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+std::string TraceConfig::ToPerfettoTrackEventConfigRaw(
+    bool privacy_filtering_enabled) const {
+  perfetto::protos::gen::TrackEventConfig te_cfg;
+  // If no categories are explicitly enabled, enable the default ones.
+  // Otherwise only matching categories are enabled.
+  if (!category_filter_.included_categories().empty())
+    te_cfg.add_disabled_categories("*");
+  // Metadata is always enabled.
+  te_cfg.add_enabled_categories("__metadata");
+  for (const auto& excluded : category_filter_.excluded_categories()) {
+    te_cfg.add_disabled_categories(excluded);
+  }
+  for (const auto& included : category_filter_.included_categories()) {
+    te_cfg.add_enabled_categories(included);
+  }
+  for (const auto& disabled : category_filter_.disabled_categories()) {
+    te_cfg.add_enabled_categories(disabled);
+  }
+  te_cfg.set_enable_thread_time_sampling(true);
+  te_cfg.set_timestamp_unit_multiplier(1000);
+  if (privacy_filtering_enabled) {
+    te_cfg.set_filter_dynamic_event_names(true);
+    te_cfg.set_filter_debug_annotations(true);
+  }
+  return te_cfg.SerializeAsString();
+}
+#endif
 
 }  // namespace trace_event
 }  // namespace base

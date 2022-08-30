@@ -934,27 +934,9 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
     source_config->mutable_interceptor_config()->set_name("console");
   }
 
-  // Translate the category filter into included and excluded categories.
-  perfetto::protos::gen::TrackEventConfig te_cfg;
-  // If no categories are explicitly enabled, enable the default ones. Otherwise
-  // only matching categories are enabled.
-  if (!trace_config.category_filter().included_categories().empty())
-    te_cfg.add_disabled_categories("*");
-  // Metadata is always enabled.
-  te_cfg.add_enabled_categories("__metadata");
-  for (const auto& excluded :
-       trace_config.category_filter().excluded_categories()) {
-    te_cfg.add_disabled_categories(excluded);
-  }
-  for (const auto& included :
-       trace_config.category_filter().included_categories()) {
-    te_cfg.add_enabled_categories(included);
-  }
-  for (const auto& disabled :
-       trace_config.category_filter().disabled_categories()) {
-    te_cfg.add_enabled_categories(disabled);
-  }
-  source_config->set_track_event_config_raw(te_cfg.SerializeAsString());
+  source_config->set_track_event_config_raw(
+      trace_config.ToPerfettoTrackEventConfigRaw(
+          /*privacy_filtering_enabled = */ false));
 
   // Clear incremental state every 5 seconds, so that we lose at most the first
   // 5 seconds of the trace (if we wrap around Perfetto's central buffer).

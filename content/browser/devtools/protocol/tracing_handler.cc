@@ -261,6 +261,34 @@ absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
   return absl::nullopt;
 }
 
+// Perfetto SDK build expects track_event data source to be configured via
+// track_event_config. But some devtools users (e.g. Perfetto UI) send
+// a chrome_config instead. We build a track_event_config based on the
+// chrome_config if no other track_event data sources have been configured.
+void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  for (const auto& data_source : trace_config.data_sources()) {
+    if (!data_source.config().track_event_config_raw().empty()) {
+      return;
+    }
+  }
+  for (auto& data_source : *trace_config.mutable_data_sources()) {
+    if (data_source.config().name() ==
+            tracing::mojom::kTraceEventDataSourceName &&
+        data_source.config().has_chrome_config()) {
+      data_source.mutable_config()->set_name("track_event");
+      base::trace_event::TraceConfig base_config(
+          data_source.config().chrome_config().trace_config());
+      bool privacy_filtering_enabled =
+          data_source.config().chrome_config().privacy_filtering_enabled();
+      data_source.mutable_config()->set_track_event_config_raw(
+          base_config.ToPerfettoTrackEventConfigRaw(privacy_filtering_enabled));
+      return;
+    }
+  }
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+}
+
 // We currently don't support concurrent tracing sessions, but are planning to.
 // For the time being, we're using this flag as a workaround to prevent devtools
 // users from accidentally starting two concurrent sessions.
@@ -716,6 +744,8 @@ void TracingHandler::Start(Maybe<std::string> categories,
         break;
       }
     }
+
+    ConvertToTrackEventConfigIfNeeded(trace_config);
   } else {
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
