@@ -33,6 +33,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -180,7 +181,7 @@ public class StartupLoadingMetricsTest {
     @LargeTest
     public void testNTPNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
-                () -> mTabbedActivityTestRule.startMainActivityFromLauncher());
+                () -> mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
         assertHistogramsRecorded(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
         assertHistogramsRecorded(0, TABBED_SUFFIX);

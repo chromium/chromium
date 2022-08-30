@@ -74,6 +74,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -105,7 +106,7 @@ public class TabGroupUiTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         CriteriaHelper.pollUiThread(
