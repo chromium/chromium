@@ -16,7 +16,6 @@ import "cast_assistant_logs.proto";
 import "chrome_os_app_list_launch_event.proto";
 import "custom_tab_session.proto";
 import "histogram_event.proto";
-import "memory_leak_report.proto";
 import "omnibox_event.proto";
 import "perf_data.proto";
 import "printer_event.proto";
@@ -118,6 +117,20 @@ message ChromeUserMetricsExtension {
   // - logs recovered from a previous run of Chrome ("persisted UMA"), such as
   //   one that didn't shut down cleanly.
   // - the initial stability log.
+  //
+  // Warning: in some cases |time_log_created| can contain events that happened
+  // slightly before this timestamp. If you only care about differences of more
+  // than a minute, you can skip reading this section. In particular, at the
+  // time of writing, the "initial metric log" includes all metrics from startup
+  // until it is closed, which happens 60 seconds after startup on desktop
+  // platforms and 15 seconds after startup on mobile platforms. (See
+  // components/metrics/metrics_scheduler.cc kInitialIntervalSeconds.) Yet, the
+  // initial metrics log is only created 30 seconds after startup on desktop
+  // platforms and 5 seconds after startup on mobile platforms. (See
+  // components/metrics/metrics_service.cc kInitializationDelaySeconds.) This
+  // means histograms that are stored in a record could have been emitted up to
+  // 30 seconds before the log was created. This logic may change in the
+  // future; see http://crbug.com/1171830
   optional RealLocalTime time_log_created = 25;
   optional RealLocalTime time_log_closed = 26;
 
@@ -151,9 +164,6 @@ message ChromeUserMetricsExtension {
 
   // Additional data related with Cast-enabled devices.
   optional CastLogsProto cast_logs = 12;
-
-  // Memory leak reports generated since the last UMA upload.
-  repeated MemoryLeakReportProto memory_leak_report = 13;
 
   // Additional data related with CastAssistant devices.
   // Appears in gfstmp/cast_assistant logs only.

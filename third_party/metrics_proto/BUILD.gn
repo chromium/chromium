@@ -19,7 +19,6 @@ _proto_files = [
   "execution_context.proto",
   "extension_install.proto",
   "histogram_event.proto",
-  "memory_leak_report.proto",
   "omnibox_event.proto",
   "omnibox_focus_type.proto",
   "omnibox_input_type.proto",
