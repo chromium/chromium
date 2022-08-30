@@ -87,8 +87,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   // Sets the dynamically loaded singleton that draws the desktop native UI.
   // Returns the old instance if any.
-  static std::unique_ptr<LinuxUi> SetInstance(
-      std::unique_ptr<LinuxUi> instance);
+  static LinuxUi* SetInstance(LinuxUi* instance);
 
   // Returns a LinuxUI instance for the toolkit used in the user's desktop
   // environment.
@@ -126,10 +125,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   // Sets a callback that determines whether to use the system theme.
   void SetUseSystemThemeCallback(UseSystemThemeCallback callback);
-
-  // Returns whether we should be using the native theme provided by this
-  // object by default.
-  bool GetDefaultUsesSystemTheme() const;
 
   // Returns true on success.  If false is returned, this instance shouldn't
   // be used and the behavior of all functions is undefined.

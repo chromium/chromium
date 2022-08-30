@@ -80,32 +80,31 @@ class PlatformFontSkiaTest : public testing::Test {
 
   void SetUp() override {
     DCHECK_EQ(ui::LinuxUi::instance(), nullptr);
-    auto test_font_delegate = std::make_unique<TestFontDelegate>();
-    test_font_delegate_ = test_font_delegate.get();
-    ui::LinuxUi::SetInstance(std::move(test_font_delegate));
+    old_linux_ui_ = ui::LinuxUi::SetInstance(&test_font_delegate_);
     PlatformFontSkia::ReloadDefaultFont();
   }
 
   void TearDown() override {
-    DCHECK_EQ(test_font_delegate_, ui::LinuxUi::instance());
-    ui::LinuxUi::SetInstance(nullptr);
+    DCHECK_EQ(&test_font_delegate_, ui::LinuxUi::instance());
+    ui::LinuxUi::SetInstance(old_linux_ui_);
     PlatformFontSkia::ReloadDefaultFont();
   }
 
  protected:
-  TestFontDelegate* test_font_delegate_ = nullptr;
+  TestFontDelegate test_font_delegate_;
+  raw_ptr<ui::LinuxUi> old_linux_ui_ = nullptr;
 };
 
 // Test that PlatformFontSkia's default constructor initializes the instance
 // with the correct parameters.
 TEST_F(PlatformFontSkiaTest, DefaultFont) {
-  test_font_delegate_->set_family(kTestFontName);
-  test_font_delegate_->set_size_pixels(13);
-  test_font_delegate_->set_style(Font::NORMAL);
+  test_font_delegate_.set_family(kTestFontName);
+  test_font_delegate_.set_size_pixels(13);
+  test_font_delegate_.set_style(Font::NORMAL);
   FontRenderParams params;
   params.antialiasing = false;
   params.hinting = FontRenderParams::HINTING_FULL;
-  test_font_delegate_->set_params(params);
+  test_font_delegate_.set_params(params);
   scoped_refptr<gfx::PlatformFontSkia> font(new gfx::PlatformFontSkia());
   EXPECT_EQ(kTestFontName, font->GetFontName());
   EXPECT_EQ(13, font->GetFontSize());
@@ -115,10 +114,10 @@ TEST_F(PlatformFontSkiaTest, DefaultFont) {
   EXPECT_EQ(params.hinting, font->GetFontRenderParams().hinting);
 
   // Drop the old default font and check that new settings are loaded.
-  test_font_delegate_->set_family(kSymbolFontName);
-  test_font_delegate_->set_size_pixels(15);
-  test_font_delegate_->set_style(gfx::Font::ITALIC);
-  test_font_delegate_->set_weight(gfx::Font::Weight::BOLD);
+  test_font_delegate_.set_family(kSymbolFontName);
+  test_font_delegate_.set_size_pixels(15);
+  test_font_delegate_.set_style(gfx::Font::ITALIC);
+  test_font_delegate_.set_weight(gfx::Font::Weight::BOLD);
   PlatformFontSkia::ReloadDefaultFont();
   scoped_refptr<gfx::PlatformFontSkia> font2(new gfx::PlatformFontSkia());
   EXPECT_EQ(kSymbolFontName, font2->GetFontName());

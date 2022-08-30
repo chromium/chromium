@@ -43,13 +43,15 @@ source_set("linux_ui_impl") {
   ]
 }
 
-source_set("linux_ui_factory") {
-  sources = [
-    "linux_ui_factory.cc",
-    "linux_ui_factory.h",
-  ]
+component("linux_ui_factory") {
+  defines = [ "IS_LINUX_UI_FACTORY_IMPL" ]
+  public = [ "linux_ui_factory.h" ]
+  sources = [ "linux_ui_factory.cc" ]
 
-  public_deps = [ ":linux_ui" ]
+  public_deps = [
+    ":linux_ui",
+    "//ui/color:color_headers",
+  ]
 
   deps = [
     "//base",

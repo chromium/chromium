@@ -116,8 +116,8 @@ class QtNativeTheme : public ui::NativeThemeAura {
   raw_ptr<QtInterface> const shim_;
 };
 
-QtUi::QtUi(std::unique_ptr<ui::LinuxUi> fallback_linux_ui)
-    : fallback_linux_ui_(std::move(fallback_linux_ui)) {}
+QtUi::QtUi(ui::LinuxUi* fallback_linux_ui)
+    : fallback_linux_ui_(fallback_linux_ui) {}
 
 QtUi::~QtUi() {
   shell_dialog_linux::Finalize();
@@ -491,9 +491,8 @@ absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
   }
 }
 
-std::unique_ptr<ui::LinuxUi> CreateQtUi(
-    std::unique_ptr<ui::LinuxUi> fallback_linux_ui) {
-  return std::make_unique<QtUi>(std::move(fallback_linux_ui));
+std::unique_ptr<ui::LinuxUi> CreateQtUi(ui::LinuxUi* fallback_linux_ui) {
+  return std::make_unique<QtUi>(fallback_linux_ui);
 }
 
 }  // namespace qt

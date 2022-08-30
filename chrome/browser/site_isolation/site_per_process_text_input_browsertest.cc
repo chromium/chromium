@@ -1211,8 +1211,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
     }
   };
 
-  auto old_linux_ui =
-      ui::LinuxUi::SetInstance(std::make_unique<TextDeleteDelegate>());
+  auto test_delete_delegate = std::make_unique<TextDeleteDelegate>();
+  auto* old_linux_ui = ui::LinuxUi::SetInstance(test_delete_delegate.get());
 
   // Press ctrl-alt-shift-D.  The test's delegate will pretend that this
   // corresponds to the command to delete everyting to the beginning of the
@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // commands logic that's tested here.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_D, true, true,
                                               true, false));
-  ui::LinuxUi::SetInstance(std::move(old_linux_ui));
+  ui::LinuxUi::SetInstance(old_linux_ui);
 
   // Verify that the input field in the subframe is erased.
   EXPECT_TRUE(ExecuteScriptAndExtractString(

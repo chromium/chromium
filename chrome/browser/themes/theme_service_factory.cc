@@ -28,7 +28,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_factory.h"
 #endif
 
 namespace {
@@ -96,14 +96,13 @@ void ThemeServiceFactory::RegisterProfilePrefs(
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool default_uses_system_theme = false;
+  ui::SystemTheme default_system_theme = ui::SystemTheme::kDefault;
 #if BUILDFLAG(IS_LINUX)
-  const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
-  if (linux_ui)
-    default_uses_system_theme = linux_ui->GetDefaultUsesSystemTheme();
+  default_system_theme = ui::GetDefaultSystemTheme();
 #endif
-  registry->RegisterBooleanPref(prefs::kUsesSystemTheme,
-                                default_uses_system_theme);
+  registry->RegisterBooleanPref(
+      prefs::kUsesSystemTheme,
+      default_system_theme != ui::SystemTheme::kDefault);
 #endif
   registry->RegisterFilePathPref(prefs::kCurrentThemePackFilename,
                                  base::FilePath());

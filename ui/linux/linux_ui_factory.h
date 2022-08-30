@@ -5,15 +5,23 @@
 #ifndef UI_LINUX_LINUX_UI_FACTORY_H_
 #define UI_LINUX_LINUX_UI_FACTORY_H_
 
-#include <memory>
+#include "base/component_export.h"
 
 namespace ui {
 
 class LinuxUi;
+enum class SystemTheme : int;
 
-// Returns a new LinuxUI based on a Linux toolkit.  May return nullptr if the
-// preferred toolkits are unavailable.
-std::unique_ptr<LinuxUi> CreateLinuxUi();
+// Returns a LinuxUi for the default toolkit.  May create a LinuxUi instance if
+// one does not exist.  May return nullptr if no toolkits are available.
+COMPONENT_EXPORT(LINUX_UI_FACTORY)
+LinuxUi* GetDefaultLinuxUi();
+
+COMPONENT_EXPORT(LINUX_UI_FACTORY)
+LinuxUi* GetLinuxUi(SystemTheme system_theme);
+
+COMPONENT_EXPORT(LINUX_UI_FACTORY)
+SystemTheme GetDefaultSystemTheme();
 
 }  // namespace ui
 

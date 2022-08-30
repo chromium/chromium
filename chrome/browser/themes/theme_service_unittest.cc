@@ -202,9 +202,9 @@ class ColorProviderTest
       ui::OzonePlatform::InitParams ozone_params;
       ozone_params.single_process = true;
       ui::OzonePlatform::InitializeForUI(ozone_params);
-      auto linux_ui = ui::CreateLinuxUi();
+      auto* linux_ui = ui::GetDefaultLinuxUi();
       ASSERT_TRUE(linux_ui);
-      ui::LinuxUi::SetInstance(std::move(linux_ui));
+      ui::LinuxUi::SetInstance(linux_ui);
 #endif  // BUILDFLAG(IS_LINUX)
 
       // Add the Chrome ColorMixers after native ColorMixers.
@@ -231,7 +231,7 @@ class ColorProviderTest
     native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
 #if BUILDFLAG(IS_LINUX)
     if (system_theme == SystemTheme::kCustom) {
-      const auto* linux_ui = ui::LinuxUi::instance();
+      const auto* linux_ui = ui::GetDefaultLinuxUi();
       native_theme_ = linux_ui->GetNativeTheme(nullptr);
     }
 #endif

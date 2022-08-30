@@ -8,32 +8,26 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/environment.h"
-#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 
+namespace ui {
+
 namespace {
 
-std::unique_ptr<ui::LinuxUi>& GetLinuxUiInstance() {
-  static base::NoDestructor<std::unique_ptr<ui::LinuxUi>> linux_ui;
-  return *linux_ui;
-}
+LinuxUi* g_linux_ui = nullptr;
 
 }  // namespace
 
-namespace ui {
-
 // static
-std::unique_ptr<LinuxUi> LinuxUi::SetInstance(
-    std::unique_ptr<LinuxUi> instance) {
-  return std::exchange(GetLinuxUiInstance(), std::move(instance));
+LinuxUi* LinuxUi::SetInstance(LinuxUi* instance) {
+  return std::exchange(g_linux_ui, instance);
 }
 
 // static
 LinuxUi* LinuxUi::instance() {
-  return GetLinuxUiInstance().get();
+  return g_linux_ui;
 }
 
 LinuxUi::LinuxUi() = default;
@@ -89,28 +83,6 @@ ui::NativeTheme* LinuxUi::GetNativeTheme(aura::Window* window) const {
 
 void LinuxUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
   use_system_theme_callback_ = std::move(callback);
-}
-
-bool LinuxUi::GetDefaultUsesSystemTheme() const {
-  std::unique_ptr<base::Environment> env = base::Environment::Create();
-
-  // TODO(https://crbug.com/1317782): This logic won't be necessary after
-  // the GTK/QT backend is chosen based on the environment.
-  switch (base::nix::GetDesktopEnvironment(env.get())) {
-    case base::nix::DESKTOP_ENVIRONMENT_CINNAMON:
-    case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:
-    case base::nix::DESKTOP_ENVIRONMENT_GNOME:
-    case base::nix::DESKTOP_ENVIRONMENT_PANTHEON:
-    case base::nix::DESKTOP_ENVIRONMENT_UKUI:
-    case base::nix::DESKTOP_ENVIRONMENT_UNITY:
-    case base::nix::DESKTOP_ENVIRONMENT_XFCE:
-      return true;
-    case base::nix::DESKTOP_ENVIRONMENT_KDE3:
-    case base::nix::DESKTOP_ENVIRONMENT_KDE4:
-    case base::nix::DESKTOP_ENVIRONMENT_KDE5:
-    case base::nix::DESKTOP_ENVIRONMENT_OTHER:
-      return false;
-  }
 }
 
 // static

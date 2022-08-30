@@ -17,13 +17,13 @@
 
 namespace {
 
-std::unique_ptr<ui::LinuxUi> BuildLinuxUI() {
+ui::LinuxUi* BuildLinuxUI() {
   // If the ozone backend hasn't provided a LinuxUiDelegate, don't try to create
   // a LinuxUi instance as this may result in a crash in toolkit initialization.
   if (!ui::LinuxUiDelegate::GetInstance())
     return nullptr;
 
-  return ui::CreateLinuxUi();
+  return ui::GetDefaultLinuxUi();
 }
 
 }  // namespace
@@ -37,7 +37,7 @@ ChromeBrowserMainExtraPartsViewsLinux::
 void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
   ChromeBrowserMainExtraPartsViews::ToolkitInitialized();
 
-  if (auto linux_ui = BuildLinuxUI()) {
+  if (auto* linux_ui = BuildLinuxUI()) {
     linux_ui->SetUseSystemThemeCallback(
         base::BindRepeating([](aura::Window* window) {
           if (!window)

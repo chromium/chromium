@@ -1604,7 +1604,8 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
     }
   };
 
-  ui::LinuxUi::SetInstance(std::make_unique<TestDelegate>());
+  auto test_delegate = std::make_unique<TestDelegate>();
+  auto* old_linux_ui = ui::LinuxUi::SetInstance(test_delegate.get());
 #endif
 
   SendKeyEvent(ui::VKEY_A, false, false);
@@ -1625,7 +1626,7 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
   textfield_->clear();
 
 #if BUILDFLAG(IS_LINUX)
-  ui::LinuxUi::SetInstance(nullptr);
+  ui::LinuxUi::SetInstance(old_linux_ui);
 #endif
 }
 

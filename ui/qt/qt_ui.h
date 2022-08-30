@@ -27,7 +27,7 @@ class QtNativeTheme;
 // Interface to QT desktop features.
 class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
  public:
-  explicit QtUi(std::unique_ptr<ui::LinuxUi> fallback_linux_ui);
+  explicit QtUi(ui::LinuxUi* fallback_linux_ui);
 
   QtUi(const QtUi&) = delete;
   QtUi& operator=(const QtUi&) = delete;
@@ -101,7 +101,7 @@ class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
 
   // TODO(https://crbug.com/1317782): This is a fallback for any unimplemented
   // functionality in the QT backend and should eventually be removed.
-  std::unique_ptr<ui::LinuxUi> fallback_linux_ui_;
+  ui::LinuxUi* const fallback_linux_ui_;
 
   // QT modifies argc and argv, and they must be kept alive while
   // `shim_` is alive.
@@ -122,8 +122,7 @@ class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
 
 // This should be the only symbol exported from this component.
 COMPONENT_EXPORT(QT)
-std::unique_ptr<ui::LinuxUi> CreateQtUi(
-    std::unique_ptr<ui::LinuxUi> fallback_linux_ui);
+std::unique_ptr<ui::LinuxUi> CreateQtUi(ui::LinuxUi* fallback_linux_ui);
 
 }  // namespace qt
 

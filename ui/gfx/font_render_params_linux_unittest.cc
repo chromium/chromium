@@ -111,9 +111,7 @@ std::string CreateFontconfigAliasStanza(const std::string& original_family,
 class FontRenderParamsTest : public testing::Test {
  public:
   FontRenderParamsTest() {
-    auto test_font_delegate = std::make_unique<TestFontDelegate>();
-    test_font_delegate_ = test_font_delegate.get();
-    ui::LinuxUi::SetInstance(std::move(test_font_delegate));
+    ui::LinuxUi::SetInstance(&test_font_delegate_);
     ClearFontRenderParamsCacheForTest();
 
     // Create a new fontconfig configuration and load the default fonts
@@ -138,12 +136,12 @@ class FontRenderParamsTest : public testing::Test {
     OverrideGlobalFontConfigForTesting(original_config_);
     FcConfigDestroy(override_config_);
 
-    ui::LinuxUi::SetInstance(nullptr);
-    test_font_delegate_ = nullptr;
+    ui::LinuxUi::SetInstance(old_linux_ui_);
   }
 
  protected:
-  raw_ptr<TestFontDelegate> test_font_delegate_;
+  TestFontDelegate test_font_delegate_;
+  raw_ptr<ui::LinuxUi> old_linux_ui_ = nullptr;
 
   raw_ptr<FcConfig> override_config_ = nullptr;
   raw_ptr<FcConfig> original_config_ = nullptr;
@@ -378,7 +376,7 @@ TEST_F(FontRenderParamsTest, OnlySetConfiguredValues) {
   // Configure the LinuxUi to request subpixel rendering.
   FontRenderParams system_params;
   system_params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_RGB;
-  test_font_delegate_->set_params(system_params);
+  test_font_delegate_.set_params(system_params);
 
   // Load a Fontconfig config that enables antialiasing but doesn't say anything
   // about subpixel rendering.
@@ -402,7 +400,7 @@ TEST_F(FontRenderParamsTest, NoFontconfigMatch) {
   system_params.antialiasing = true;
   system_params.hinting = FontRenderParams::HINTING_MEDIUM;
   system_params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_RGB;
-  test_font_delegate_->set_params(system_params);
+  test_font_delegate_.set_params(system_params);
 
   FontRenderParamsQuery query;
   query.families.push_back("Arimo");

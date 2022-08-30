@@ -154,7 +154,7 @@ void ShellBrowserMainParts::ToolkitInitialized() {
     return;
 
 #if BUILDFLAG(IS_LINUX)
-  ui::LinuxUi::SetInstance(ui::CreateLinuxUi());
+  ui::LinuxUi::SetInstance(ui::GetDefaultLinuxUi());
 #endif
 }
 
