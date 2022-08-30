@@ -4,17 +4,24 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.PROFILE_MODEL_LIST;
 
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -27,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -34,7 +42,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -57,12 +69,19 @@ public class FastCheckoutDetailScreenViewTest {
     private Runnable mBackClickHandler;
     @Mock
     private Runnable mSettingsClickHandler;
+    @Mock
+    private Runnable mCallback1;
+    @Mock
+    private Runnable mCallback2;
 
     private PropertyModel mModel;
     private View mView;
+    // Test support.
+    private ShadowLooper mShadowLooper;
 
     @Before
     public void setUp() {
+        mShadowLooper = ShadowLooper.shadowMainLooper();
         mActivityScenarioRule.getScenario().onActivity(activity -> {
             mModel = FastCheckoutProperties.createDefaultModel();
             mModel.set(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
@@ -75,6 +94,7 @@ public class FastCheckoutDetailScreenViewTest {
 
             // Let the coordinator connect model and view.
             new DetailScreenCoordinator(activity, mView, mModel);
+            activity.setContentView(mView);
         });
     }
 
@@ -117,5 +137,43 @@ public class FastCheckoutDetailScreenViewTest {
         assertNotNull(settingsMenuElement);
         settingsMenuElement.performClick();
         waitForEvent(mSettingsClickHandler).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecyclerViewPopulatesItemEntriesAndReactsToClicks() {
+        assertNotNull(mView);
+
+        FastCheckoutAutofillProfile profile1 =
+                FastCheckoutTestUtils.createDummyProfile("John Moe", "john.moe@gmail.com");
+        FastCheckoutAutofillProfile profile2 =
+                FastCheckoutTestUtils.createDummyProfile("Jane Doe", "doe.jane@gmail.com");
+
+        ListModel<ListItem> models = mModel.get(PROFILE_MODEL_LIST);
+        models.add(new ListItem(AutofillProfileItemProperties.DEFAULT_ITEM_TYPE,
+                AutofillProfileItemProperties.create(profile1, /*isSelected=*/false,
+                        /*onClickListener=*/mCallback1)));
+        models.add(new ListItem(AutofillProfileItemProperties.DEFAULT_ITEM_TYPE,
+                AutofillProfileItemProperties.create(profile2, /*isSelected=*/true,
+                        /*onClickListener=*/mCallback2)));
+        mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
+
+        // Check that the sheet is populated properly.
+        mShadowLooper.idle();
+        assertThat(getProfileItems().getChildCount(), is(2));
+
+        // Check that clicks are handled properly.
+        getProfileItemAt(0).performClick();
+        mShadowLooper.idle();
+        verify(mCallback1, times(1)).run();
+        verify(mCallback2, never()).run();
+    }
+
+    private RecyclerView getProfileItems() {
+        return mView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
+    }
+
+    private View getProfileItemAt(int index) {
+        return getProfileItems().getChildAt(index);
     }
 }

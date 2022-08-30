@@ -54,8 +54,8 @@
             android:layout_width="@dimen/fast_checkout_address_icon"
             android:layout_height="@dimen/fast_checkout_address_icon"
             android:background="@null"
-            android:layout_marginStart="18dp"
-            android:layout_marginEnd="18dp"
+            android:layout_marginStart="@dimen/fast_checkout_address_icon_margin_horizontal"
+            android:layout_marginEnd="@dimen/fast_checkout_address_icon_margin_horizontal"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/gm_filled_location_on_24" />
         <LinearLayout
@@ -77,7 +77,7 @@
               android:id="@+id/fast_checkout_home_sheet_profile_email"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_marginTop="8dp"
+              android:layout_marginTop="@dimen/fast_checkout_address_item_email_margin_top"
               android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
             <TextView
               android:id="@+id/fast_checkout_home_sheet_profile_phone_number"

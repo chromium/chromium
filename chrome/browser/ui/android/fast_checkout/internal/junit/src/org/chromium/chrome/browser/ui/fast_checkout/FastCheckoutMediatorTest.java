@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillPro
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
-import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -58,11 +57,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class FastCheckoutMediatorTest {
     private static final FastCheckoutAutofillProfile[] DUMMY_PROFILES = {
-            createDummyProfile("John Doe", "john@gmail.com"),
-            createDummyProfile("Jane Doe", "jane@gmail.com"),
-            createDummyProfile("Foo Boo", "foo@gmail.com")};
+            FastCheckoutTestUtils.createDummyProfile("John Doe", "john@gmail.com"),
+            FastCheckoutTestUtils.createDummyProfile("Jane Doe", "jane@gmail.com"),
+            FastCheckoutTestUtils.createDummyProfile("Foo Boo", "foo@gmail.com")};
     private static final FastCheckoutCreditCard[] DUMMY_CARDS = {
-            createDummyCreditCard("https://example.com", "4111111111111111")};
+            FastCheckoutTestUtils.createDummyCreditCard("https://example.com", "4111111111111111")};
 
     @Mock
     RecyclerView mMockParentView;
@@ -199,28 +198,5 @@ public class FastCheckoutMediatorTest {
         assertThat(mModel.get(SELECTED_PROFILE),
                 is(model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE)));
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
-    }
-
-    private static FastCheckoutAutofillProfile createDummyProfile(String name, String email) {
-        return new FastCheckoutAutofillProfile(/* guid= */ "", /* origin= */ "",
-                /* isLocal= */ true,
-                /* honorificPrefix= */ "", name,
-                /* companyName= */ "", /* streetAddress= */ "", /* region= */ "",
-                /* locality= */ "",
-                /* dependentLocality= */ "", /* postalCode= */ "", /* sortingCode= */ "",
-                /* countryCode= */ "", /* countryName= */ "", /* phoneNumber= */ "", email,
-                /* languageCode= */ "en-US");
-    }
-
-    private static FastCheckoutCreditCard createDummyCreditCard(String origin, String number) {
-        return new FastCheckoutCreditCard(/* guid= */ "john", origin, /* isLocal= */ true,
-                /* isCached= */ true, "John Doe", number, "1111", "12", "2050", "visa",
-                /* billingAddressId= */
-                "",
-                /* billingAddressId= */ "john",
-                /* serverId= */ "",
-                /* instrumentId= */ 0, /* nickname= */ "", /* cardArtUrl= */ null,
-                /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
-                /* productDescription= */ "");
     }
 }

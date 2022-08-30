@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE;
@@ -14,10 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.RecyclerViewAdapter;
+import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
 /**
  * A ViewHolder and a static bind method for FastCheckout's Autofill profile screen.
@@ -25,12 +29,20 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class DetailScreenViewBinder {
     /** A ViewHolder that inflates the toolbar and provides easy item look-up. */
     static class ViewHolder {
+        final RecyclerView mRecyclerView;
         final Toolbar mToolbar;
         final MenuItem mSettingsMenuItem;
 
         ViewHolder(Context context, View contentView) {
+            mRecyclerView =
+                    contentView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
             mToolbar = contentView.findViewById(R.id.action_bar);
             mSettingsMenuItem = mToolbar.getMenu().findItem(R.id.settings_menu_id);
+        }
+
+        /** Sets the adapter for the RecyclerView that contains the profile items. */
+        public void setAdapter(RecyclerView.Adapter adapter) {
+            mRecyclerView.setAdapter(adapter);
         }
     }
 
@@ -49,6 +61,13 @@ public class DetailScreenViewBinder {
             view.mToolbar.setTitle(model.get(DETAIL_SCREEN_TITLE));
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
             view.mSettingsMenuItem.setTitle(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
+        } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {
+            view.setAdapter(new RecyclerViewAdapter<>(
+                    new SimpleRecyclerViewMcp<>(model.get(DETAIL_SCREEN_MODEL_LIST),
+                            (item)
+                                    -> item.type,
+                            AutofillProfileItemViewBinder::connectPropertyModel),
+                    AutofillProfileItemViewBinder::createViewHolder));
         }
     }
 }

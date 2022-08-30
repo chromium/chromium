@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -34,6 +36,11 @@ public class DetailScreenCoordinator {
         toolbar.setNavigationIcon(tintedBackIcon);
         toolbar.setNavigationContentDescription(
                 R.string.fast_checkout_back_to_home_screen_icon_description);
+
+        RecyclerView recyclerView =
+                view.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
 
         DetailScreenViewBinder.ViewHolder viewHolder =
                 new DetailScreenViewBinder.ViewHolder(context, view);

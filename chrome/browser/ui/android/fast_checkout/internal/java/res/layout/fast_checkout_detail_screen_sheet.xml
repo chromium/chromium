@@ -18,6 +18,11 @@
         android:titleTextAppearance="@style/TextAppearance.Headline"
         style="@style/ModernToolbar" />
 
-    <!-- TODO(crbug.com/1355310): Add RecyclerView for item list. -->
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/fast_checkout_detail_screen_recycler_view"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:divider="@null"
+      android:background="@drawable/fast_checkout_list_view_background_middle" />
 
 </LinearLayout>
