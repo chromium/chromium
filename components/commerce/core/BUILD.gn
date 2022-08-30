@@ -208,6 +208,8 @@ source_set("shopping_service_test_support") {
     "mock_shopping_service.h",
     "shopping_service_test_base.cc",
     "shopping_service_test_base.h",
+    "test_utils.cc",
+    "test_utils.h",
   ]
 
   # Expose all deps for test support.

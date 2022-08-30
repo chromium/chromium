@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,7 +29,10 @@ constexpr int kLableSpacing = 4;
 constexpr int kHorizontalSpacing = 16;
 }  // namespace
 
-PriceTrackingView::PriceTrackingView() {
+PriceTrackingView::PriceTrackingView(Profile* profile,
+                                     GURL page_url,
+                                     bool is_price_track_enabled)
+    : profile_(profile), is_price_track_enabled_(is_price_track_enabled) {
   // image column
   auto product_image_containter = std::make_unique<views::BoxLayoutView>();
   product_image_containter->SetCrossAxisAlignment(
@@ -66,9 +74,11 @@ PriceTrackingView::PriceTrackingView() {
   AddChildView(std::move(text_container));
 
   // Toggle button column
-  toggle_button_ = AddChildView(std::make_unique<views::ToggleButton>());
-  toggle_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY));
+  toggle_button_ = AddChildView(std::make_unique<views::ToggleButton>(
+      base::BindRepeating(&PriceTrackingView::OnToggleButtonPressed,
+                          weak_ptr_factory_.GetWeakPtr(), page_url)));
+  toggle_button_->SetIsOn(is_price_track_enabled_);
+  toggle_button_->SetAccessibleName(GetToggleAccessibleName());
   toggle_button_->SetProperty(views::kMarginsKey,
                               gfx::Insets::TLBR(0, kHorizontalSpacing, 0, 0));
 
@@ -79,4 +89,45 @@ PriceTrackingView::PriceTrackingView() {
                           kProductImageSize -
                           toggle_button_->GetPreferredSize().width();
   body_label_->SizeToFit(label_width);
+}
+
+PriceTrackingView::~PriceTrackingView() = default;
+
+bool PriceTrackingView::IsToggleOn() {
+  return toggle_button_->GetIsOn();
+}
+
+std::u16string PriceTrackingView::GetToggleAccessibleName() {
+  return l10n_util::GetStringUTF16(
+      IsToggleOn() ? IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY
+                   : IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY);
+}
+
+void PriceTrackingView::OnToggleButtonPressed(const GURL url) {
+  is_price_track_enabled_ = !is_price_track_enabled_;
+  toggle_button_->SetAccessibleName(GetToggleAccessibleName());
+  UpdatePriceTrackingState(url);
+}
+
+void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
+  bookmarks::BookmarkModel* const model =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+  const bookmarks::BookmarkNode* node =
+      model->GetMostRecentlyAddedUserNodeForURL(url);
+  commerce::SetPriceTrackingStateForBookmark(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_), model,
+      node, is_price_track_enabled_,
+      base::BindOnce(&PriceTrackingView::OnPriceTrackingStateUpdated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PriceTrackingView::OnPriceTrackingStateUpdated(bool success) {
+  // TODO(crbug.com/1346612): Record latency for the update status.
+  if (!success) {
+    is_price_track_enabled_ = !is_price_track_enabled_;
+    toggle_button_->SetIsOn(is_price_track_enabled_);
+    toggle_button_->SetAccessibleName(GetToggleAccessibleName());
+    body_label_->SetText(l10n_util::GetStringUTF16(
+        IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_DESCRIPTION));
+  }
 }
