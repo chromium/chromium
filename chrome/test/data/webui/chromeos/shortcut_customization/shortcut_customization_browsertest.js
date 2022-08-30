@@ -45,7 +45,7 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://shortcut-customization/test_loader.html` +
-          `?module=chromeos/shortcut_customization/${module}&host=test`;
+          `?module=chromeos/shortcut_customization/${module}`;
     }
   };
 
