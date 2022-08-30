@@ -20,9 +20,11 @@ namespace cast_streaming {
 class ReceiverSession;
 }  // namespace cast_streaming
 
-namespace chromecast {
+namespace content {
+class WebContents;
+}  // namespace content
 
-class CastWebContents;
+namespace chromecast {
 
 // This class provides an implementation of StreamingControllerBase using the
 // remoting functionality provided in the cast_streaming component.
@@ -30,7 +32,7 @@ class StreamingControllerRemoting : public StreamingControllerBase {
  public:
   StreamingControllerRemoting(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-      CastWebContents* cast_web_contents);
+      content::WebContents* web_contents);
   ~StreamingControllerRemoting() override;
 
  private:

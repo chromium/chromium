@@ -5,8 +5,8 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_WEB_RUNTIME_APPLICATION_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_WEB_RUNTIME_APPLICATION_H_
 
-#include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace chromecast {
 
@@ -14,7 +14,7 @@ class BindingsManagerWebRuntime;
 class CastWebService;
 
 class WebRuntimeApplication final : public RuntimeApplicationBase,
-                                    public CastWebContents::Observer {
+                                    public content::WebContentsObserver {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   WebRuntimeApplication(std::string cast_session_id,
@@ -30,12 +30,23 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   void LaunchApplication() override;
   bool IsStreamingApplication() const override;
 
-  // CastWebContents::Observer implementation:
-  void InnerContentsCreated(CastWebContents* inner_contents,
-                            CastWebContents* outer_contents) override;
-  void PageStateChanged(PageState page_state) override;
-  void PageStopped(PageState page_state, int32_t error_code) override;
-  void MediaPlaybackChanged(bool media_playing) override;
+  // content::WebContentsObserver implementation:
+  void InnerWebContentsCreated(
+      content::WebContents* inner_web_contents) override;
+  void MediaStartedPlaying(const MediaPlayerInfo& video_type,
+                           const content::MediaPlayerId& id) override;
+  void MediaStoppedPlaying(
+      const MediaPlayerInfo& video_type,
+      const content::MediaPlayerId& id,
+      content::WebContentsObserver::MediaStoppedReason reason) override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+  void DidFailLoad(content::RenderFrameHost* render_frame_host,
+                   const GURL& validated_url,
+                   int error_code) override;
+  void WebContentsDestroyed() override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   void OnAllBindingsReceived(
       cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);

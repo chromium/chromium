@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chromecast/browser/cast_web_contents.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
@@ -22,6 +21,10 @@ class SequencedTaskRunner;
 namespace gfx {
 class Rect;
 }  // namespace gfx
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace media {
 class AudioDecoderConfig;
@@ -75,7 +78,7 @@ class StreamingReceiverSessionClient
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       cast_streaming::NetworkContextGetter network_context_getter,
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-      CastWebContents* cast_web_contents,
+      content::WebContents* web_contents,
       Handler* handler,
       bool supports_audio,
       bool supports_video);
@@ -84,8 +87,8 @@ class StreamingReceiverSessionClient
 
   // Schedules starting the Streaming Receiver owned by this instance. May only
   // be called once. At time of calling, this instance will be set as the
-  // observer of |cast_web_contents|, for which streaming will be started
-  // following the latter of:
+  // observer of |web_contents|, for which streaming will be started following
+  // the latter of:
   // - Navigation to an associated URL by |cast_web_contents| as provided in the
   //   ctor.
   // - Receipt of supported AV Settings.

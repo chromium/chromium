@@ -15,11 +15,10 @@ namespace chromecast {
 
 StreamingControllerBase::StreamingControllerBase(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-    CastWebContents* cast_web_contents)
-    : message_port_(std::move(message_port)) {
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents),
+      message_port_(std::move(message_port)) {
   DCHECK(message_port_);
-
-  CastWebContents::Observer::Observe(cast_web_contents);
 }
 
 StreamingControllerBase::~StreamingControllerBase() = default;
@@ -27,7 +26,7 @@ StreamingControllerBase::~StreamingControllerBase() = default;
 void StreamingControllerBase::ProcessAVConstraints(
     cast_streaming::ReceiverSession::AVConstraints* constraints) {}
 
-void StreamingControllerBase::MainFrameReadyToCommitNavigation(
+void StreamingControllerBase::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(navigation_handle);

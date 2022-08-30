@@ -10,10 +10,10 @@
 #include <memory>
 
 #include "base/sequence_checker.h"
-#include "chromecast/browser/cast_web_contents.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace cast_api_bindings {
@@ -29,18 +29,18 @@ namespace chromecast {
 // This class provides an implementation of StreamingController using the types
 // provided in the cast_streaming component.
 class StreamingControllerBase : public StreamingController,
-                                public CastWebContents::Observer {
+                                public content::WebContentsObserver {
  public:
   static std::unique_ptr<StreamingController> Create(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-      CastWebContents* cast_web_contents);
+      content::WebContents* web_contents);
 
   ~StreamingControllerBase() override;
 
  protected:
   StreamingControllerBase(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-      CastWebContents* cast_web_contents);
+      content::WebContents* web_contents);
 
   // Begins playback of |receiver_session|.
   virtual void StartPlayback(
@@ -56,8 +56,8 @@ class StreamingControllerBase : public StreamingController,
       cast_streaming::ReceiverSession::AVConstraints* constraints);
 
  private:
-  // CastWebContents::Observer overrides:
-  void MainFrameReadyToCommitNavigation(
+  // content::WebContentsObserver overrides:
+  void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) final;
 
   // Partial StreamingController overrides:

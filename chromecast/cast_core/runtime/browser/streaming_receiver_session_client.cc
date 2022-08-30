@@ -180,7 +180,7 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-    CastWebContents* cast_web_contents,
+    content::WebContents* web_contents,
     Handler* handler,
     bool supports_audio,
     bool supports_video)
@@ -188,7 +188,7 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
           std::move(task_runner),
           std::move(network_context_getter),
           StreamingControllerBase::Create(std::move(message_port),
-                                          cast_web_contents),
+                                          web_contents),
           handler,
           supports_audio,
           supports_video) {}

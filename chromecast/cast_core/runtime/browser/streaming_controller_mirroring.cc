@@ -16,8 +16,8 @@ void OnCastStreamingRendererAcquired() {
 
 StreamingControllerMirroring::StreamingControllerMirroring(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-    CastWebContents* cast_web_contents)
-    : StreamingControllerBase(std::move(message_port), cast_web_contents) {}
+    content::WebContents* web_contents)
+    : StreamingControllerBase(std::move(message_port), web_contents) {}
 
 StreamingControllerMirroring::~StreamingControllerMirroring() = default;
 
