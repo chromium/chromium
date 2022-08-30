@@ -30,6 +30,7 @@ if (include_polymer) {
   web_component_files_polymer_ts = [
     "cr_a11y_announcer/cr_a11y_announcer.ts",
     "cr_action_menu/cr_action_menu.ts",
+    "cr_button/cr_button.ts",
     "cr_checkbox/cr_checkbox.ts",
     "cr_dialog/cr_dialog.ts",
     "cr_drawer/cr_drawer.ts",

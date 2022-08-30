@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -75,9 +76,10 @@ export class SettingsParentalControlsPageElement extends
    * Returns the setup parental controls CrButtonElement.
    */
   getSetupButton(): CrButtonElement {
-    const setupButton = this.shadowRoot!.querySelector('#setupButton');
+    const setupButton =
+        this.shadowRoot!.querySelector<CrButtonElement>('#setupButton');
     assert(setupButton);
-    return setupButton as CrButtonElement;
+    return setupButton;
   }
 
   /**

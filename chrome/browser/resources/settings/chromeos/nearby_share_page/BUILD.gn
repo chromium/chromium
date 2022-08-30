@@ -40,10 +40,11 @@ js_library("nearby_share_contact_visibility_dialog") {
   deps = [
     "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("nearby_share_data_usage_dialog") {
@@ -51,10 +52,10 @@ js_library("nearby_share_data_usage_dialog") {
     ":types",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
   ]
@@ -63,10 +64,10 @@ js_library("nearby_share_data_usage_dialog") {
 js_library("nearby_share_device_name_dialog") {
   deps = [
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
@@ -89,12 +90,12 @@ js_library("nearby_share_receive_dialog") {
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data",
   ]
   externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js",
   ]
@@ -106,11 +107,12 @@ js_library("nearby_share_receive_manager") {
     ":nearby_share_high_visibility_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("nearby_share_subpage") {

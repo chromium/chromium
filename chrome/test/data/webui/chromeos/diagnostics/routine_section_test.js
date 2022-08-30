@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/routine_section.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
@@ -13,7 +14,6 @@ import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
 import {getRoutineType} from 'chrome://diagnostics/routine_result_entry.js';
 import {BadgeType} from 'chrome://diagnostics/text_badge.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

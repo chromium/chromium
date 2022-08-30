@@ -46,12 +46,12 @@ js_library("change_dictation_locale_dialog") {
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js",
   ]
@@ -189,26 +189,28 @@ js_library("switch_access_action_assignment_dialog") {
     ":switch_access_constants",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("switch_access_action_assignment_pane") {
   deps = [
     ":switch_access_constants",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("switch_access_constants") {
@@ -222,12 +224,12 @@ js_library("switch_access_setup_guide_dialog") {
     ":switch_access_constants",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js",
   ]
@@ -236,11 +238,12 @@ js_library("switch_access_setup_guide_dialog") {
 js_library("switch_access_setup_guide_warning_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("switch_access_subpage") {
@@ -274,11 +277,11 @@ js_library("tts_subpage") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos/os_languages_page:languages_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
     "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js",
   ]

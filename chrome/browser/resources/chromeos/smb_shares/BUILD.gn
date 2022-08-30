@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
 
 js_library("smb_share_dialog") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/smb_shares:add_smb_share_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -22,6 +23,7 @@ js_library("smb_share_dialog") {
 
 js_library("smb_credentials_dialog") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/smb_shares:smb_browser_proxy",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",

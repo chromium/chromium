@@ -12,34 +12,24 @@ import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
 
-/** @interface */
-class PaperRippleBehaviorInterface {
-  /** @return {Element} */
-  getRipple() {}
+import {getTemplate} from './cr_button.html.js';
 
-  ensureRipple() {}
-}
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PaperRippleBehaviorInterface}
- */
 const CrButtonElementBase =
-    mixinBehaviors([PaperRippleBehavior], PolymerElement);
+    mixinBehaviors([PaperRippleBehavior], PolymerElement) as {
+      new (): PolymerElement & PaperRippleBehavior,
+    };
 
-/** @polymer */
 export class CrButtonElement extends CrButtonElementBase {
   static get is() {
     return 'cr-button';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -70,36 +60,34 @@ export class CrButtonElement extends CrButtonElementBase {
     };
   }
 
+  disabled: boolean;
+  customTabIndex: number;
+  circleRipple: boolean;
+
+  /**
+   * It is possible to activate a tab when the space key is pressed down. When
+   * this element has focus, the keyup event for the space key should not
+   * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and
+   * handled by this element. Space keyup will only result in a 'click' when
+   * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element
+   * loses focus.
+   */
+  private spaceKeyDown_: boolean = false;
+  private timeoutIds_: Set<number> = new Set();
+
   constructor() {
     super();
-
-    /**
-     * It is possible to activate a tab when the space key is pressed down. When
-     * this element has focus, the keyup event for the space key should not
-     * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and
-     * handled by this element. Space keyup will only result in a 'click' when
-     * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element
-     * loses focus.
-     * @private {boolean}
-     */
-    this.spaceKeyDown_ = false;
-
-    /** @private {Set<number>} */
-    this.timeoutIds_ = null;
 
     this.addEventListener('blur', this.onBlur_.bind(this));
     // Must be added in constructor so that stopImmediatePropagation() works as
     // expected.
     this.addEventListener('click', this.onClick_.bind(this));
-    this.addEventListener(
-        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
-    this.addEventListener(
-        'keyup', e => this.onKeyUp_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
+    this.addEventListener('keyup', this.onKeyUp_.bind(this));
     this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
@@ -108,26 +96,19 @@ export class CrButtonElement extends CrButtonElementBase {
       this.setAttribute('tabindex', '0');
     }
     if (!this.hasAttribute('aria-disabled')) {
-      this.setAttribute('aria-disabled', 'false');
+      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
     }
 
     FocusOutlineManager.forDocument(document);
-    this.timeoutIds_ = new Set();
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.timeoutIds_.forEach(clearTimeout);
     this.timeoutIds_.clear();
   }
 
-  /**
-   * @param {!Function} fn
-   * @param {number=} delay
-   * @private
-   */
-  setTimeout_(fn, delay) {
+  private setTimeout_(fn: () => void, delay?: number) {
     if (!this.isConnected) {
       return;
     }
@@ -138,12 +119,7 @@ export class CrButtonElement extends CrButtonElementBase {
     this.timeoutIds_.add(id);
   }
 
-  /**
-   * @param {boolean} newValue
-   * @param {boolean|undefined} oldValue
-   * @private
-   */
-  disabledChanged_(newValue, oldValue) {
+  private disabledChanged_(newValue: boolean, oldValue: boolean|undefined) {
     if (!newValue && oldValue === undefined) {
       return;
     }
@@ -156,9 +132,8 @@ export class CrButtonElement extends CrButtonElementBase {
 
   /**
    * Updates the tabindex HTML attribute to the actual value.
-   * @private
    */
-  applyTabIndex_() {
+  private applyTabIndex_() {
     let value = this.customTabIndex;
     if (value === undefined) {
       value = this.disabled ? -1 : 0;
@@ -166,26 +141,17 @@ export class CrButtonElement extends CrButtonElementBase {
     this.setAttribute('tabindex', value.toString());
   }
 
-  /** @private */
-  onBlur_() {
+  private onBlur_() {
     this.spaceKeyDown_ = false;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onClick_(e) {
+  private onClick_(e: Event) {
     if (this.disabled) {
       e.stopImmediatePropagation();
     }
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }
@@ -208,11 +174,7 @@ export class CrButtonElement extends CrButtonElementBase {
     }
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyUp_(e) {
+  private onKeyUp_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }
@@ -227,17 +189,16 @@ export class CrButtonElement extends CrButtonElementBase {
     }
   }
 
-  /** @private */
-  onPointerDown_() {
+  private onPointerDown_() {
     this.ensureRipple();
   }
 
   /**
    * Customize the element's ripple. Overriding the '_createRipple' function
    * from PaperRippleBehavior.
-   * @return {PaperRippleElement}
    */
-  _createRipple() {
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  override _createRipple() {
     const ripple = super._createRipple();
 
     if (this.circleRipple) {
@@ -246,6 +207,12 @@ export class CrButtonElement extends CrButtonElementBase {
     }
 
     return ripple;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-button': CrButtonElement;
   }
 }
 
