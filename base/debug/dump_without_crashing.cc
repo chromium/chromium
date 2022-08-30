@@ -5,7 +5,6 @@
 #include "base/debug/dump_without_crashing.h"
 
 #include "base/check.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
@@ -59,20 +58,6 @@ bool ShouldDumpWithoutCrashWithLocationAndUniqueId(
                     time_between_dumps);
 }
 
-void MaybeLogThatDumpWithoutCrashingHappened() {
-#if !defined(OFFICIAL_BUILD)
-  // Exit early if logging of error messages is disabled.  This is not strictly
-  // required (since `LOG(ERROR)` below would discard the message), but avoids
-  // the somewhat unnecessary and expensive call to AppendCrashInfoForDevBuilds.
-  if (logging::LOG_ERROR < logging::GetMinLogLevel())
-    return;
-
-  std::ostringstream string_stream;
-  logging::LogMessage::AppendCrashInfoForDevBuilds(string_stream);
-  LOG(ERROR) << "DumpWithoutCrashing: " << string_stream.str();
-#endif
-}
-
 }  // namespace
 
 namespace base {
@@ -81,7 +66,6 @@ namespace debug {
 
 bool DumpWithoutCrashingUnthrottled() {
   TRACE_EVENT0("base", "DumpWithoutCrashingUnthrottled");
-  MaybeLogThatDumpWithoutCrashingHappened();
   if (dump_without_crashing_function_) {
     (*dump_without_crashing_function_)();
     return true;
@@ -92,7 +76,6 @@ bool DumpWithoutCrashingUnthrottled() {
 bool DumpWithoutCrashing(const base::Location& location,
                          base::TimeDelta time_between_dumps) {
   TRACE_EVENT0("base", "DumpWithoutCrashing");
-  MaybeLogThatDumpWithoutCrashingHappened();
   if (dump_without_crashing_function_ &&
       ShouldDumpWithoutCrashWithLocation(location, time_between_dumps)) {
     (*dump_without_crashing_function_)();
@@ -109,7 +92,6 @@ bool DumpWithoutCrashingWithUniqueId(size_t unique_identifier,
                                      const base::Location& location,
                                      base::TimeDelta time_between_dumps) {
   TRACE_EVENT0("base", "DumpWithoutCrashingWithUniqueId");
-  MaybeLogThatDumpWithoutCrashingHappened();
   if (dump_without_crashing_function_ &&
       ShouldDumpWithoutCrashWithLocationAndUniqueId(unique_identifier, location,
                                                     time_between_dumps)) {
