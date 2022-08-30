@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 

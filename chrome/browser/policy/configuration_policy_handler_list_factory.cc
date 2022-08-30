@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/browsing_data_lifetime_policy_handler.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/browser/first_party_sets/first_party_sets_overrides_policy_handler.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"

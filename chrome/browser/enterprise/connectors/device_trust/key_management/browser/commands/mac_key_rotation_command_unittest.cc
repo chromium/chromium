@@ -10,12 +10,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,7 +72,7 @@ class MacKeyRotationCommandTest : public testing::Test {
     mock_persistence_delegate_ = mock_persistence_delegate.get();
     EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
 
-    RegisterLocalPrefs(local_prefs_.registry());
+    RegisterDeviceTrustConnectorLocalPrefs(local_prefs_.registry());
 
     rotation_command_ = absl::WrapUnique(new MacKeyRotationCommand(
         &local_prefs_, KeyRotationManager::CreateForTesting(

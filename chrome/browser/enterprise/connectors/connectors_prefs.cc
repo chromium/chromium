@@ -8,6 +8,7 @@
 
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 
@@ -31,13 +32,6 @@ const char kOnFileTransferPref[] = "enterprise_connectors.on_file_transfer";
 #endif
 
 const char kOnSecurityEventPref[] = "enterprise_connectors.on_security_event";
-
-const char kContextAwareAccessSignalsAllowlistPref[] =
-    "enterprise_connectors.device_trust.origins";
-#if BUILDFLAG(IS_MAC)
-const char kDeviceTrustDisableKeyCreationPref[] =
-    "enterprise_connectors.device_trust.disable_key_creation";
-#endif
 
 const char kOnFileAttachedScopePref[] =
     "enterprise_connectors.scope.on_file_attached";
@@ -85,14 +79,13 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileTransferScopePref, 0);
 #endif
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
-  registry->RegisterListPref(kContextAwareAccessSignalsAllowlistPref);
-
+  RegisterDeviceTrustConnectorProfilePrefs(registry);
   RegisterFileSystemPrefs(registry);
 }
 
 #if BUILDFLAG(IS_MAC)
 void RegisterLocalPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kDeviceTrustDisableKeyCreationPref, false);
+  RegisterDeviceTrustConnectorLocalPrefs(registry);
 }
 #endif
 

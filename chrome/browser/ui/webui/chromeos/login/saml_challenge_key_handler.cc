@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/login/login_state/login_state.h"

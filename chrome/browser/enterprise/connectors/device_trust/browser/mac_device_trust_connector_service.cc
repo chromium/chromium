@@ -4,8 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.h"
 
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "components/prefs/pref_service.h"
 

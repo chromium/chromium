@@ -15,10 +15,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/mock_attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/prefs/testing_pref_service.h"
@@ -85,7 +85,7 @@ class DeviceTrustServiceTest
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   void SetUp() override {
-    RegisterProfilePrefs(prefs_.registry());
+    RegisterDeviceTrustConnectorProfilePrefs(prefs_.registry());
 
     feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
                                        is_flag_enabled());

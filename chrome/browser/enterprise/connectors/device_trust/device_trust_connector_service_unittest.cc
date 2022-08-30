@@ -6,8 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +47,7 @@ class DeviceTrustConnectorServiceTest
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   void SetUp() override {
-    RegisterProfilePrefs(prefs_.registry());
+    RegisterDeviceTrustConnectorProfilePrefs(prefs_.registry());
 
     feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
                                        is_flag_enabled());

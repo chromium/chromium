@@ -5,8 +5,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 
 #include "base/check.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"

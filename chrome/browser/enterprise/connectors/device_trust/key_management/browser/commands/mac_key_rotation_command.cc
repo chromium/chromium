@@ -13,6 +13,7 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
@@ -22,11 +23,6 @@
 namespace enterprise_connectors {
 
 namespace {
-
-// TODO: b/243796438 create a device trust preference file to handle the
-// dependency cycle issue.
-const char kDeviceTrustDisableKeyCreationPref[] =
-    "enterprise_connectors.device_trust.disable_key_creation";
 
 constexpr char kStableChannelHostName[] = "m.google.com";
 
