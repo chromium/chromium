@@ -468,6 +468,7 @@ bool RootView::OnMouseDragged(const ui::MouseEvent& event) {
         DispatchEvent(mouse_pressed_handler_, &mouse_event);
     if (dispatch_details.dispatcher_destroyed)
       return false;
+    return true;
   }
   return false;
 }

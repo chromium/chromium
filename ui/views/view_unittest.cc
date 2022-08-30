@@ -531,6 +531,44 @@ TEST_F(ViewTest, DeleteOnPressed) {
   EXPECT_TRUE(v1->children().empty());
 }
 
+// Detect the return value of OnMouseDragged
+TEST_F(ViewTest, DetectReturnFormDrag) {
+  auto view1 = std::make_unique<TestView>();
+  view1->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+
+  auto view2 = std::make_unique<TestView>();
+  view2->SetBoundsRect(gfx::Rect(100, 100, 100, 100));
+
+  UniqueWidgetPtr widget(std::make_unique<Widget>());
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  TestView* v1 = root->AddChildView(std::move(view1));
+  TestView* v2 = v1->AddChildView(std::move(view2));
+
+  v1->Reset();
+  v2->Reset();
+  gfx::Point p1(110, 120);
+  ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, p1, p1, ui::EventTimeForNow(),
+                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  root->OnMousePressed(pressed);
+
+  v1->Reset();
+  v2->Reset();
+  gfx::Point p2(50, 40);
+  ui::MouseEvent dragged(ui::ET_MOUSE_DRAGGED, p2, p2, ui::EventTimeForNow(),
+                         ui::EF_LEFT_MOUSE_BUTTON, 0);
+  EXPECT_TRUE(root->OnMouseDragged(dragged));
+
+  v1->Reset();
+  v2->Reset();
+  ui::MouseEvent released(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                          ui::EventTimeForNow(), 0, 0);
+  EXPECT_TRUE(root->OnMouseDragged(released));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Painting
 ////////////////////////////////////////////////////////////////////////////////
