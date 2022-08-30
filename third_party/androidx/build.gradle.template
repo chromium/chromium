@@ -99,6 +99,7 @@ dependencies {
     androidTestCompile 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestCompile 'androidx.test.espresso:espresso-web:3.2.0'
     androidTestCompile 'androidx.test.ext:junit:1.1.1'
+    androidTestCompile 'androidx.test.services:storage:1.4.1'
     androidTestCompile 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
 
