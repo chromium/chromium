@@ -60,7 +60,7 @@
       generate_inverted: true,
     },
     color_positive: {
-      light: "$google_green_600",
+      light: "$google_green_700",
       dark: "$google_green_300",
     },
     color_selection: {

@@ -204,7 +204,7 @@ INSTANTIATE_TEST_SUITE_P(
           SkColorSetRGB(0xE3, 0x74, 0x0)},
          {ColorMode::kLight,
           ColorProvider::ControlsLayerType::kControlBackgroundColorPositive,
-          SkColorSetRGB(0x1E, 0x8E, 0x3E)},
+          SkColorSetRGB(0x18, 0x80, 0x38)},
          {ColorMode::kLight, ColorProvider::ControlsLayerType::kFocusAuraColor,
           SkColorSetARGB(0x3D, 0x1A, 0x73, 0xE8)},
          {ColorMode::kLight, ColorProvider::ControlsLayerType::kFocusRingColor,
@@ -259,7 +259,7 @@ INSTANTIATE_TEST_SUITE_P(
           SkColorSetRGB(0xE3, 0x74, 0x0)},
          {ColorMode::kLight,
           ColorProvider::ContentLayerType::kTextColorPositive,
-          SkColorSetRGB(0x1E, 0x8E, 0x3E)},
+          SkColorSetRGB(0x18, 0x80, 0x38)},
          {ColorMode::kLight, ColorProvider::ContentLayerType::kTextColorURL,
           SkColorSetRGB(0x1A, 0x73, 0xE8)},
 
@@ -274,7 +274,7 @@ INSTANTIATE_TEST_SUITE_P(
           SkColorSetRGB(0xE3, 0x74, 0x0)},
          {ColorMode::kLight,
           ColorProvider::ContentLayerType::kIconColorPositive,
-          SkColorSetRGB(0x1E, 0x8E, 0x3E)},
+          SkColorSetRGB(0x18, 0x80, 0x38)},
          {ColorMode::kLight,
           ColorProvider::ContentLayerType::kIconColorProminent,
           SkColorSetRGB(0x1A, 0x73, 0xE8)},
@@ -365,7 +365,7 @@ INSTANTIATE_TEST_SUITE_P(
 
          {ColorMode::kLight,
           ColorProvider::ContentLayerType::kBatterySystemInfoBackgroundColor,
-          SkColorSetRGB(0x1E, 0x8E, 0x3E)},
+          SkColorSetRGB(0x18, 0x80, 0x38)},
 
          {ColorMode::kLight,
           ColorProvider::ContentLayerType::kBatterySystemInfoIconColor,
