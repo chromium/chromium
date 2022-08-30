@@ -1215,7 +1215,7 @@ name="TransactionalReauthEntryPoint" -->
 </histogram>
 
 <histogram name="Signin.TransactionalReauthUserAction"
-    enum="SigninReauthUserAction" expires_after="2022-12-25">
+    enum="SigninReauthUserAction" expires_after="2023-02-26">
 <!-- Name completed by histogram_suffixes
 name="TransactionalReauthEntryPoint" -->
 
