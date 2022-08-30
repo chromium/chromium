@@ -44,8 +44,8 @@ const char kEndpointResponseSuccess[] =
 class AccessCodeCastSinkServiceBrowserTest
     : public AccessCodeCastIntegrationBrowserTest {};
 
-// TODO(b/242928209): Saved device tests are flaky on linux-rel.
-#if BUILDFLAG(IS_LINUX)
+// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_PRE_InstantExpiration DISABLED_PRE_InstantExpiration
 #define MAYBE_InstantExpiration DISABLED_InstantExpiration
 #else
@@ -130,8 +130,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-// TODO(b/242928209): Saved device tests are flaky on linux-rel.
-#if BUILDFLAG(IS_LINUX)
+// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_PRE_SavedDevice DISABLED_PRE_SavedDevice
 #define MAYBE_SavedDevice DISABLED_SavedDevice
 #else
