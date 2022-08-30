@@ -206,10 +206,10 @@ bool IsConnectedState(const std::string& state) {
          state == shill::kStateReady;
 }
 
-void UpdatePortaledWifiState(const std::string& service_path) {
+void UpdatePortaledState(const std::string& service_path,
+                         const std::string& state) {
   ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
-      service_path, shill::kStateProperty,
-      base::Value(shill::kStateNoConnectivity));
+      service_path, shill::kStateProperty, base::Value(state));
 }
 
 bool IsCellularTechnology(const std::string& type) {
@@ -924,8 +924,10 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   state = GetInitialStateForType(shill::kTypeWifi, &enabled);
   if (state != kTechnologyUnavailable) {
     bool portaled = false;
+    std::string portal_state;
     if (IsPortalledState(state)) {
       portaled = true;
+      portal_state = state;
       state = shill::kStateIdle;
     }
     AddTechnology(shill::kTypeWifi, enabled);
@@ -989,7 +991,8 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                                    base::Value(shill::kSecurityClassNone));
       services->SetConnectBehavior(
           kPortaledWifiPath,
-          base::BindRepeating(&UpdatePortaledWifiState, kPortaledWifiPath));
+          base::BindRepeating(&UpdatePortaledState, kPortaledWifiPath,
+                              portal_state));
       services->SetServiceProperty(
           kPortaledWifiPath, shill::kConnectableProperty, base::Value(true));
       profiles->AddService(shared_profile, kPortaledWifiPath);
@@ -1366,8 +1369,17 @@ bool FakeShillManagerClient::SetInitialNetworkState(
   } else if (state_arg == "initializing") {
     // Technology available but not initialized.
     state = kTechnologyInitializing;
-  } else if (state_arg == "portal") {
-    // Technology is enabled, a service is connected and in Portal state.
+  } else if (state_arg == "redirect-found" || state_arg == "portal") {
+    // Technology is enabled, a service is connected and in redirect-found
+    // state.
+    state = shill::kStateRedirectFound;
+  } else if (state_arg == "portal-suspected") {
+    // Technology is enabled, a service is connected and in portal-suspected
+    // state.
+    state = shill::kStatePortalSuspected;
+  } else if (state_arg == "no-connectivity") {
+    // Technology is enabled, a service is connected and in no-connectivity
+    // state.
     state = shill::kStateNoConnectivity;
   } else if (state_arg == "active" || state_arg == "activated") {
     // Technology is enabled, a service is connected and Activated.
