@@ -17,14 +17,12 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
-#include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
-#include "components/commerce/core/test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -64,10 +62,11 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
     widget_params.context = GetContext();
     anchor_widget_->Init(std::move(widget_params));
 
-    bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile());
-    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+    BookmarkModel* bookmark_model =
+        BookmarkModelFactory::GetForBrowserContext(profile());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-    bookmarks::AddIfNotBookmarked(bookmark_model_, GURL(kTestBookmarkURL),
+    bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestBookmarkURL),
                                   std::u16string());
   }
 
@@ -96,8 +95,6 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
     return factories;
   }
 
-  raw_ptr<BookmarkModel> GetBookmarkModel() { return bookmark_model_; }
-
  protected:
   // Creates a bookmark bubble view.
   void CreateBubbleView() {
@@ -107,22 +104,9 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
                                    GURL(kTestBookmarkURL), true);
   }
 
-  PriceTrackingView* GetPriceTrackingView() {
-    const ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForView(
-            BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
-    views::View* matched_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kPriceTrackingBookmarkViewElementId, context);
-
-    return matched_view ? views::AsViewClass<PriceTrackingView>(matched_view)
-                        : nullptr;
-  }
-
  private:
   views::UniqueWidgetPtr anchor_widget_;
   base::test::ScopedFeatureList test_features_;
-  raw_ptr<BookmarkModel> bookmark_model_;
 };
 
 // Verifies that the sync promo is not displayed for a signed in user.
@@ -155,10 +139,12 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
   mock_shopping_service->SetResponseForGetProductInfoForUrl(
       commerce::ProductInfo());
   CreateBubbleView();
-  // Verify the view is displayed with toggle off
-  auto* price_tracking_view = GetPriceTrackingView();
-  EXPECT_TRUE(price_tracking_view);
-  EXPECT_FALSE(price_tracking_view->IsToggleOn());
+  // Verify the view is displayed
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(
+          BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
+  EXPECT_TRUE(views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      kPriceTrackingBookmarkViewElementId, context));
 }
 
 TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsHidden) {
@@ -167,24 +153,9 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsHidden) {
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
   mock_shopping_service->SetResponseForGetProductInfoForUrl(absl::nullopt);
   CreateBubbleView();
-  auto* price_tracking_view = GetPriceTrackingView();
-  EXPECT_FALSE(price_tracking_view);
-}
-
-// Verifies that the price tracking view is displayed with the correct toggle
-// state
-TEST_F(BookmarkBubbleViewTest, PriceTrackingViewWithToggleOn) {
-  commerce::AddProductBookmark(GetBookmarkModel(), u"title",
-                               GURL(kTestBookmarkURL), 0, true);
-
-  commerce::MockShoppingService* mock_shopping_service =
-      static_cast<commerce::MockShoppingService*>(
-          commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
-  mock_shopping_service->SetResponseForGetProductInfoForUrl(
-      commerce::ProductInfo());
-
-  CreateBubbleView();
-  auto* price_tracking_view = GetPriceTrackingView();
-  EXPECT_TRUE(price_tracking_view);
-  EXPECT_TRUE(price_tracking_view->IsToggleOn());
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(
+          BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
+  EXPECT_FALSE(views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      kPriceTrackingBookmarkViewElementId, context));
 }
