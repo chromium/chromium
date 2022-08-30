@@ -86,6 +86,10 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetScreenCaptureViews();
 
+  // Returns the collection of suggestion chips in holding space UI.
+  // If holding space UI is not visible, an empty collection is returned.
+  std::vector<views::View*> GetSuggestionChips();
+
   // Returns the holding space tray in the shelf.
   views::View* GetTray();
 

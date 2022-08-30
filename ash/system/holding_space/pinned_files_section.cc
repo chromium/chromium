@@ -130,7 +130,9 @@ PinnedFilesSection::PinnedFilesSection(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
                                    /*supported_types=*/
                                    {HoldingSpaceItem::Type::kPinnedFile},
-                                   /*max_count=*/absl::nullopt) {}
+                                   /*max_count=*/absl::nullopt) {
+  SetID(kHoldingSpacePinnedFilesSectionId);
+}
 
 PinnedFilesSection::~PinnedFilesSection() = default;
 

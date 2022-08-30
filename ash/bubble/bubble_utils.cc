@@ -124,6 +124,11 @@ void ApplyStyle(views::Label* label, LabelStyle style) {
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 16,
                                        gfx::Font::Weight::MEDIUM));
       break;
+    case LabelStyle::kSubheader:
+      text_color = AshColorProvider::ContentLayerType::kTextColorSecondary;
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
+                                       gfx::Font::Weight::MEDIUM));
+      break;
     case LabelStyle::kSubtitle:
       text_color = AshColorProvider::ContentLayerType::kTextColorSecondary;
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 12,

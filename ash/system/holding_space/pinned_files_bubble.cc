@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/system/holding_space/pinned_files_section.h"
+#include "ash/system/holding_space/suggestions_section.h"
 
 namespace ash {
 
@@ -24,6 +25,7 @@ std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>
 PinnedFilesBubble::CreateSections() {
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> sections;
   sections.push_back(std::make_unique<PinnedFilesSection>(delegate()));
+  sections.push_back(std::make_unique<SuggestionsSection>(delegate()));
   return sections;
 }
 

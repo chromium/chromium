@@ -153,7 +153,7 @@ std::vector<views::View*> HoldingSpaceTestApi::GetPinnedFileChips() {
   if (holding_space_tray_->GetBubbleView()) {
     FindDescendentsOfClass<HoldingSpaceItemChipView>(
         holding_space_tray_->GetBubbleView()->GetViewByID(
-            kHoldingSpacePinnedFilesBubbleId),
+            kHoldingSpacePinnedFilesSectionId),
         &pinned_file_chips);
   }
   return pinned_file_chips;
@@ -168,6 +168,17 @@ std::vector<views::View*> HoldingSpaceTestApi::GetScreenCaptureViews() {
         &screen_capture_views);
   }
   return screen_capture_views;
+}
+
+std::vector<views::View*> HoldingSpaceTestApi::GetSuggestionChips() {
+  std::vector<views::View*> suggestion_chips;
+  if (holding_space_tray_->GetBubbleView()) {
+    FindDescendentsOfClass<HoldingSpaceItemChipView>(
+        holding_space_tray_->GetBubbleView()->GetViewByID(
+            kHoldingSpaceSuggestionsSectionId),
+        &suggestion_chips);
+  }
+  return suggestion_chips;
 }
 
 views::View* HoldingSpaceTestApi::GetTray() {

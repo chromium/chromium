@@ -1211,6 +1211,8 @@ component("ash") {
     "system/holding_space/recent_files_bubble.h",
     "system/holding_space/screen_captures_section.cc",
     "system/holding_space/screen_captures_section.h",
+    "system/holding_space/suggestions_section.cc",
+    "system/holding_space/suggestions_section.h",
     "system/human_presence/human_presence_metrics.h",
     "system/human_presence/human_presence_orientation_controller.cc",
     "system/human_presence/human_presence_orientation_controller.h",
