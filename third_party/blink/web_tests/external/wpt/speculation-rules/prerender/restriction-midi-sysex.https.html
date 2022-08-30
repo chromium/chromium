@@ -1,9 +1,4 @@
 <!DOCTYPE html>
-<!--
-This file cannot be upstreamed to WPT until:
-* The code that allows the test to pass when navigator.requestMIDIAccess()
-  rejects in resources/midi.https.html is removed.
--->
 <title>Access to the Midi API with sysex=true is deferred</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
@@ -14,6 +9,7 @@ This file cannot be upstreamed to WPT until:
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   const uid = token();
