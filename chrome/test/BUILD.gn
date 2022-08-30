@@ -9837,7 +9837,7 @@ if (!is_android) {
     }
 
     if (is_linux) {
-      deps += [ "//ui/linux:linux_ui_impl" ]
+      deps += [ "//ui/linux:linux_ui" ]
     }
 
     if (is_linux || is_chromeos_lacros) {

@@ -93,7 +93,7 @@ component("qt") {
     "//ui/color",
     "//ui/color:mixers",
     "//ui/gfx",
-    "//ui/linux:linux_ui_impl",
+    "//ui/linux:linux_ui",
     "//ui/native_theme",
     "//ui/shell_dialogs",
     "//ui/views",

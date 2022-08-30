@@ -13,7 +13,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/linux/linux_ui_base.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/qt/qt_interface.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -25,7 +25,7 @@ namespace qt {
 class QtNativeTheme;
 
 // Interface to QT desktop features.
-class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
+class QtUi : public ui::LinuxUi, QtInterface::Delegate {
  public:
   explicit QtUi(ui::LinuxUi* fallback_linux_ui);
 
@@ -54,6 +54,7 @@ class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
 
   // ui::LinuxUi:
   bool Initialize() override;
+  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   SkColor GetFocusRingColor() const override;
@@ -75,7 +76,6 @@ class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
-  ui::NativeTheme* GetNativeThemeImpl() const override;
 
   // ui::TextEditKeybindingDelegate:
   bool GetTextEditCommandsForEvent(

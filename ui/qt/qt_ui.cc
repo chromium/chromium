@@ -182,6 +182,11 @@ bool QtUi::Initialize() {
   return true;
 }
 
+ui::NativeTheme* QtUi::GetNativeTheme(bool use_system_theme) const {
+  return use_system_theme ? native_theme_.get()
+                          : ui::NativeTheme::GetInstanceForNativeUi();
+}
+
 bool QtUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {
   auto value = GetColor(id, use_custom_frame);
   if (value)
@@ -296,10 +301,6 @@ int QtUi::GetCursorThemeSize() {
   // This is only used on X11 where QT obtains the cursor size from XSettings.
   // However, ui/base/x/x11_cursor_loader.cc already handles this.
   return 0;
-}
-
-ui::NativeTheme* QtUi::GetNativeThemeImpl() const {
-  return native_theme_.get();
 }
 
 bool QtUi::GetTextEditCommandsForEvent(

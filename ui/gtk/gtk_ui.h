@@ -16,7 +16,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gtk/gtk_ui_platform.h"
-#include "ui/linux/linux_ui_base.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/linux/window_frame_provider.h"
 #include "ui/views/window/frame_buttons.h"
 
@@ -37,7 +37,7 @@ class NativeThemeGtk;
 class SettingsProvider;
 
 // Interface to GTK desktop features.
-class GtkUi : public ui::LinuxUiBase {
+class GtkUi : public ui::LinuxUi {
  public:
   GtkUi();
 
@@ -77,6 +77,7 @@ class GtkUi : public ui::LinuxUiBase {
 
   // ui::LinuxUi:
   bool Initialize() override;
+  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   SkColor GetFocusRingColor() const override;
@@ -98,7 +99,6 @@ class GtkUi : public ui::LinuxUiBase {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
-  ui::NativeTheme* GetNativeThemeImpl() const override;
 
   // ui::TextEditKeybindingDelegate:
   bool GetTextEditCommandsForEvent(

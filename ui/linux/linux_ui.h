@@ -120,9 +120,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // Returns the NativeTheme that reflects the theme used by `window`.
   ui::NativeTheme* GetNativeTheme(aura::Window* window) const;
 
-  // Returns the classic or system NativeTheme depending on `use_system_theme`.
-  virtual ui::NativeTheme* GetNativeTheme(bool use_system_theme) const = 0;
-
   // Sets a callback that determines whether to use the system theme.
   void SetUseSystemThemeCallback(UseSystemThemeCallback callback);
 
@@ -261,7 +258,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
     return cursor_theme_observer_list_;
   }
 
-  virtual ui::NativeTheme* GetNativeThemeImpl() const = 0;
+  virtual ui::NativeTheme* GetNativeTheme(bool use_system_theme) const = 0;
 
  private:
   // Used to determine whether the system theme should be used for a window.  If

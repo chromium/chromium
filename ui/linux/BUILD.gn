@@ -30,19 +30,6 @@ component("linux_ui") {
   public_deps = [ "//printing/buildflags" ]
 }
 
-source_set("linux_ui_impl") {
-  public = [ "linux_ui_base.h" ]
-  sources = [ "linux_ui_base.cc" ]
-  public_deps = [ ":linux_ui" ]
-  deps = [
-    "//base",
-    "//skia",
-    "//ui/gfx",
-    "//ui/native_theme",
-    "//ui/shell_dialogs",
-  ]
-}
-
 component("linux_ui_factory") {
   defines = [ "IS_LINUX_UI_FACTORY_IMPL" ]
   public = [ "linux_ui_factory.h" ]
@@ -72,7 +59,7 @@ source_set("test_support") {
   public = [ "fake_linux_ui.h" ]
   sources = [ "fake_linux_ui.cc" ]
 
-  public_deps = [ ":linux_ui_impl" ]
+  public_deps = [ ":linux_ui" ]
   deps = [
     "//base",
     "//skia",

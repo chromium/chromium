@@ -288,6 +288,11 @@ bool GtkUi::Initialize() {
   return true;
 }
 
+ui::NativeTheme* GtkUi::GetNativeTheme(bool use_system_theme) const {
+  return use_system_theme ? native_theme_
+                          : ui::NativeTheme::GetInstanceForNativeUi();
+}
+
 bool GtkUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {
   for (const ColorMap& color_map :
        {colors_,
@@ -588,10 +593,6 @@ int GtkUi::GetCursorThemeSize() {
   g_object_get(gtk_settings_get_default(), "gtk-cursor-theme-size", &size,
                nullptr);
   return size;
-}
-
-ui::NativeTheme* GtkUi::GetNativeThemeImpl() const {
-  return native_theme_;
 }
 
 bool GtkUi::GetTextEditCommandsForEvent(
