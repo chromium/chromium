@@ -6,6 +6,7 @@
 
 #include <random>
 
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace {
 
@@ -63,18 +65,6 @@ aura::Window* GetWindowWithTabStripModel(TabStripModel* tab_strip_model) {
     }
   }
   return nullptr;
-}
-
-wm::ActivationClient* GetActivationClientWithTabStripModel(
-    TabStripModel* tab_strip_model) {
-  auto* window = GetWindowWithTabStripModel(tab_strip_model);
-  if (!window) {
-    return nullptr;
-  }
-
-  auto* root_window = window->GetRootWindow();
-  DCHECK(root_window);
-  return wm::GetActivationClient(root_window);
 }
 
 }  // namespace
@@ -178,6 +168,8 @@ void WebsiteMetrics::OnBrowserAdded(Browser* browser) {
 
   auto* window = GetWindowWithBrowser(browser);
   if (window) {
+    observed_windows_.AddObservation(window);
+    MaybeObserveWindowActivationClient();
     window_to_web_contents_[window] = nullptr;
   }
 }
@@ -235,6 +227,14 @@ void WebsiteMetrics::OnURLsDeleted(history::HistoryService* history_service,
   dict.clear();
 }
 
+void WebsiteMetrics::OnWindowDestroying(aura::Window* window) {
+  if (base::Contains(window_to_web_contents_, window)) {
+    window_to_web_contents_.erase(window);
+  }
+  observed_windows_.RemoveObservation(window);
+  MaybeRemoveObserveWindowActivationClient();
+}
+
 void WebsiteMetrics::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   DCHECK(history_observation_.IsObservingSource(history_service));
@@ -266,23 +266,34 @@ void WebsiteMetrics::OnTwoHours() {
   url_infos.swap(url_infos_);
 }
 
+void WebsiteMetrics::MaybeObserveWindowActivationClient() {
+  if (activation_client_observation_.IsObserving() ||
+      !ash::Shell::HasInstance()) {
+    return;
+  }
+
+  aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  if (root_window) {
+    auto* activation_client = wm::GetActivationClient(root_window);
+    if (activation_client) {
+      activation_client_observation_.Observe(activation_client);
+    }
+  }
+}
+
+void WebsiteMetrics::MaybeRemoveObserveWindowActivationClient() {
+  if (window_to_web_contents_.empty() &&
+      activation_client_observation_.IsObserving()) {
+    activation_client_observation_.Reset();
+  }
+}
+
 void WebsiteMetrics::OnTabStripModelChangeInsert(
     TabStripModel* tab_strip_model,
     const TabStripModelChange::Insert& insert,
     const TabStripSelectionChange& selection) {
   if (insert.contents.size() == 0) {
     return;
-  }
-  // First tab attached.
-  if (tab_strip_model->count() == static_cast<int>(insert.contents.size())) {
-    // Observe the activation client of the root window of the browser's aura
-    // window if this is the first browser matching it (there is no other
-    // tracked browser matching it).
-    auto* activation_client =
-        GetActivationClientWithTabStripModel(tab_strip_model);
-    if (!activation_client_observations_.IsObservingSource(activation_client)) {
-      activation_client_observations_.AddObservation(activation_client);
-    }
   }
 
   for (const auto& inserted_tab : insert.contents) {
@@ -307,20 +318,13 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
 
   // Last tab detached.
   if (tab_strip_model->count() == 0) {
-    // Unobserve the activation client of the root window of the browser's aura
-    // window if the last browser using it was just removed.
-    auto* activation_client =
-        GetActivationClientWithTabStripModel(tab_strip_model);
-    if (activation_client_observations_.IsObservingSource(activation_client)) {
-      activation_client_observations_.RemoveObservation(activation_client);
-    }
-
     // The browser window will be closed, so remove the window and the web
     // contents.
     auto it = window_to_web_contents_.find(window);
     if (it != window_to_web_contents_.end()) {
       OnTabClosed(it->second);
       window_to_web_contents_.erase(it);
+      MaybeRemoveObserveWindowActivationClient();
     }
   }
 }
@@ -338,13 +342,16 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
 
     // Clear `old_contents` from `window_to_web_contents_`.
     auto it = window_to_web_contents_.find(window);
-    if (it != window_to_web_contents_.end())
+    if (it != window_to_web_contents_.end()) {
       it->second = nullptr;
+    }
   }
 
   if (new_contents) {
-    SetTabActivated(new_contents);
     window_to_web_contents_[window] = new_contents;
+    if (wm::IsActiveWindow(window)) {
+      SetTabActivated(new_contents);
+    }
   }
 }
 

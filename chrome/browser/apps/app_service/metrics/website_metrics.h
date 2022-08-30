@@ -22,6 +22,8 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 #include "url/gurl.h"
@@ -54,6 +56,7 @@ extern const char kPromotableKey[];
 // TabStripModel to record the website usage time metrics.
 class WebsiteMetrics : public BrowserListObserver,
                        public TabStripModelObserver,
+                       public aura::WindowObserver,
                        public wm::ActivationChangeObserver,
                        public history::HistoryServiceObserver {
  public:
@@ -77,6 +80,9 @@ class WebsiteMetrics : public BrowserListObserver,
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -145,6 +151,14 @@ class WebsiteMetrics : public BrowserListObserver,
     // }
     base::Value ConvertToValue() const;
   };
+
+  // Observes the root window's activation client for the OnWindowActivated
+  // callback.
+  void MaybeObserveWindowActivationClient();
+
+  // Removes observing the root window's activation client when the last browser
+  // window is closed.
+  void MaybeRemoveObserveWindowActivationClient();
 
   void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Insert& insert,
@@ -234,10 +248,11 @@ class WebsiteMetrics : public BrowserListObserver,
 
   bool should_record_ukm_from_pref_ = true;
 
-  // A set of observed activation clients for all browser's windows.
-  base::ScopedMultiSourceObservation<wm::ActivationClient,
-                                     wm::ActivationChangeObserver>
-      activation_client_observations_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_windows_{this};
+
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      activation_client_observation_{this};
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

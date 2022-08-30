@@ -703,11 +703,6 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   i = browser2->tab_strip_model()->GetIndexOfWebContents(tab_app4);
   browser2->tab_strip_model()->CloseWebContentsAt(
       i, TabCloseTypes::CLOSE_USER_GESTURE);
-  // Simulate the window's activated status is switched from `window2` to
-  // `window1`.
-  website_metrics()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      window1, window2);
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
