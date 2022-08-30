@@ -23,18 +23,18 @@ const mandatory = {
     "packetsReceived",
     "packetsLost",
     "jitter",
-    "packetsDiscarded",
     "framesDropped"
   ],
   RTCInboundRtpStreamStats: [
-    "receiverId",
+    "trackIdentifier",
     "remoteId",
     "framesDecoded",
     "nackCount",
     "framesReceived",
     "bytesReceived",
     "totalAudioEnergy",
-    "totalSamplesDuration"
+    "totalSamplesDuration",
+    "packetsDiscarded"
   ],
   RTCRemoteInboundRtpStreamStats: [
     "localId",
@@ -45,7 +45,6 @@ const mandatory = {
     "bytesSent"
   ],
   RTCOutboundRtpStreamStats: [
-    "senderId",
     "remoteId",
     "framesEncoded",
     "nackCount",
@@ -81,17 +80,6 @@ const mandatory = {
     "width",
     "height",
     "framesPerSecond"
-  ],
-  RTCMediaHandlerStats: [
-    "trackIdentifier",
-  ],
-  RTCAudioHandlerStats: [
-  ],
-  RTCVideoHandlerStats: [
-  ],
-  RTCVideoSenderStats: [
-  ],
-  RTCVideoReceiverStats: [
   ],
   RTCCodecStats: [
     "payloadType",
@@ -179,16 +167,8 @@ const dictionaryNames = {
 // From https://w3c.github.io/webrtc-stats/webrtc-stats.html (webidl)
 
 const parents = {
-  RTCVideoHandlerStats: "RTCMediaHandlerStats",
-  RTCVideoSenderStats: "RTCVideoHandlerStats",
   RTCVideoSourceStats: "RTCMediaSourceStats",
-  RTCSenderVideoTrackAttachmentStats: "RTCVideoSenderStats",
-  RTCVideoReceiverStats: "RTCVideoHandlerStats",
-  RTCAudioHandlerStats: "RTCMediaHandlerStats",
-  RTCAudioSenderStats: "RTCAudioHandlerStats",
   RTCAudioSourceStats: "RTCMediaSourceStats",
-  RTCSenderAudioTrackAttachmentStats: "RTCAudioSenderStats",
-  RTCAudioReceiverStats: "RTCAudioHandlerStats",
   RTCReceivedRtpStreamStats: "RTCRtpStreamStats",
   RTCInboundRtpStreamStats: "RTCReceivedRtpStreamStats",
   RTCRemoteInboundRtpStreamStats: "RTCReceivedRtpStreamStats",

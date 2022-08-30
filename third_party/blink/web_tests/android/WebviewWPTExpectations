@@ -4954,7 +4954,6 @@ crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Ti
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-helper-test.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-iceConnectionState-disconnected.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-iceGatheringState.html [ Timeout ]
-crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-onicecandidateerror.https.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-onsignalingstatechanged.https.html [ Timeout ]

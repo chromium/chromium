@@ -13,25 +13,21 @@
     // Empty tech() is not valid
     { src: 'url("foo.ttf") tech()', valid: false },
     // Check that each valid keyword is accepted
-    { src: 'url("foo.ttf") tech(feature-opentype)', valid: true },
-    { src: 'url("foo.ttf") tech(feature-aat)', valid: true },
-    { src: 'url("foo.ttf") tech(feature-graphite)', valid: true },
-    { src: 'url("foo.ttf") tech(color-colrv0)', valid: true },
-    { src: 'url("foo.ttf") tech(color-colrv1)', valid: true },
-    { src: 'url("foo.ttf") tech(color-svg)', valid: true },
+    { src: 'url("foo.ttf") tech(features-opentype)', valid: true },
+    { src: 'url("foo.ttf") tech(features-aat)', valid: true },
+    { src: 'url("foo.ttf") tech(color-COLRv0)', valid: true },
+    { src: 'url("foo.ttf") tech(color-COLRv1)', valid: true },
     { src: 'url("foo.ttf") tech(color-sbix)', valid: true },
-    { src: 'url("foo.ttf") tech(color-cbdt)', valid: true },
+    { src: 'url("foo.ttf") tech(color-CBDT)', valid: true },
     { src: 'url("foo.ttf") tech(variations)', valid: true },
     { src: 'url("foo.ttf") tech(palettes)', valid: true },
-    { src: 'url("foo.ttf") tech(incremental)', valid: true },
     // tech() does not accept strings (unlike format()!)
-    { src: 'url("foo.ttf") tech("feature-opentype")', valid: false },
-    { src: 'url("foo.ttf") tech("color-colrv0")', valid: false },
+    { src: 'url("foo.ttf") tech("features-opentype")', valid: false },
+    { src: 'url("foo.ttf") tech("color-COLRv0")', valid: false },
     { src: 'url("foo.ttf") tech("variations")', valid: false },
     // tech() accepts a comma-separated list of keywords
-    { src: 'url("foo.ttf") tech(feature-opentype, color-colrv0, variations, palettes)', valid: true },
-    { src: 'url("foo.ttf") tech(incremental, color-svg, feature-graphite, feature-aat)', valid: true },
-    { src: 'url("foo.ttf") tech(feature-opentype color-colrv0 variations palettes)', valid: false },
+    { src: 'url("foo.ttf") tech(features-opentype, color-COLRv0, variations, palettes)', valid: true },
+    { src: 'url("foo.ttf") tech(features-opentype color-COLRv0 variations palettes)', valid: false },
     // Invalid font-tech keywords should be a parse error
     { src: 'url("foo.ttf") tech(auto)', valid: false },
     { src: 'url("foo.ttf") tech(default)', valid: false },
@@ -41,8 +37,22 @@
     { src: 'url("foo.ttf") tech(normal)', valid: false },
     { src: 'url("foo.ttf") tech(xyzzy)', valid: false },
     // format() function must precede tech() if both are present
-    { src: 'url("foo.ttf") format(opentype) tech(feature-opentype)', valid: true },
-    { src: 'url("foo.ttf") tech(feature-opentype) format(opentype)', valid: false },
+    { src: 'url("foo.ttf") format(opentype) tech(features-opentype)', valid: true },
+    { src: 'url("foo.ttf") tech(features-opentype) format(opentype)', valid: false },
+    // Unsupported technology (for example: no browser has incremental transfer yet), might be
+    // dropped from the list, next component of the list should be accepted.
+    { src: 'url("foo.ttf") tech(incremental), url("bar.html")', dontcomparetech: true, valid: true },
+    { src: 'url("foo.ttf") tech(incremental, color-SVG, features-graphite, features-aat), url("bar.html")', dontcomparetech: true, valid: true },
+    { src: 'url("foo.ttf") tech(color-SVG, features-graphite), url("bar.html")', dontcomparetech: true, valid: true },
+    { src: 'url("foo.ttf") tech(color-SVG), url("bar.html")', dontcomparetech: true, valid: true },
+    { src: 'url("foo.ttf") tech(features-graphite), url("bar.html")', dontcomparetech: true, valid: true },
+    // No invalid functions.
+    { src: 'url("foo.ttf") dummy("opentype") tech(variations)', valid: false },
+    { src: 'url("foo.ttf") dummy("opentype") dummy(variations)', valid: false },
+    { src: 'url("foo.ttf") format(opentype) tech(features-opentype) dummy(something)', valid: false },
+    // Valid value after unparseable value must be ignored.
+    { src: 'url("foo.ttf") format(dummy), url("foo.ttf") tech(variations)', valid: false },
+    { src: 'url("foo.ttf") tech(color, url("bar.html")', valid: false },
   ];
 
   // Assert that the two arguments have the same set of keywords in the tech() function,
@@ -56,7 +66,7 @@
     const tech = /tech\((.+)\)/;
     var specified_techs = tech.exec(specified)[1].split(/,\s*/).sort().join(", ");
     var serialized_techs = tech.exec(serialized)[1].split(/,\s*/).sort().join(", ");
-    assert_equals(specified_techs, serialized_techs, "expected matching tech() lists");
+    assert_equals(serialized_techs, specified_techs, "expected matching tech() lists");
   }
 
   for (let t of tests) {
@@ -65,7 +75,7 @@
       sheet.insertRule("@font-face { src: " + t.src + "}");
       try {
         assert_equals(sheet.cssRules[0].style.getPropertyValue("src") != "", t.valid);
-        if (t.valid) {
+        if (t.valid && !t.dontcomparetech) {
           check_same_tech(sheet.cssRules[0].style.getPropertyValue("src"), t.src);
         }
       } finally {
