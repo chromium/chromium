@@ -12,12 +12,12 @@
 // store with StoreKit.
 @protocol StoreKitLauncher
 
-// Opens StoreKit modal to present a product identified with |productID|.
+// Opens StoreKit modal to present a product identified with `productID`.
 - (void)openAppStore:(NSString*)productID;
 
-// Opens StoreKit modal to present a product using |productParameters|.
+// Opens StoreKit modal to present a product using `productParameters`.
 // SKStoreProductParameterITunesItemIdentifier key must be set in
-// |productParameters|.
+// `productParameters`.
 - (void)openAppStoreWithParameters:(NSDictionary*)productParameters;
 
 @end

@@ -48,14 +48,14 @@
 
 - (void)stop {
   // Do not call -dismissViewControllerAnimated:completion: on
-  // |self.baseViewController|, since the receiver of the method can be
+  // `self.baseViewController`, since the receiver of the method can be
   // dismissed if there is no presented view controller. On iOS 12
   // SKStoreProductViewControllerDelegate is responsible for dismissing
   // SKStoreProductViewController. On iOS 13.0 OS dismisses
   // SKStoreProductViewController after calling -productViewControllerDidFinish:
   // On iOS 13.2 OS dismisses SKStoreProductViewController before calling
   // -productViewControllerDidFinish: Calling
-  // -dismissViewControllerAnimated:completion: on |self.baseViewController| on
+  // -dismissViewControllerAnimated:completion: on `self.baseViewController` on
   // iOS 13.2 will dismiss base view controller and break the application UI.
   // According to SKStoreProductViewController documentation the delegate is
   // responsible for calling deprecated dismissModalViewControllerAnimated: so

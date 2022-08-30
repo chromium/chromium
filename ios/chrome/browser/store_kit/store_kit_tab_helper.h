@@ -22,11 +22,11 @@ class StoreKitTabHelper : public web::WebStateUserData<StoreKitTabHelper> {
   void SetLauncher(id<StoreKitLauncher> launcher);
   id<StoreKitLauncher> GetLauncher();
 
-  // Use StoreKitLauncher to launch storekit with |app_id| application
+  // Use StoreKitLauncher to launch storekit with `app_id` application
   // identifier.
   void OpenAppStore(NSString* app_id);
 
-  // Use StoreKitLauncher to launch storekit using |product_params| as product
+  // Use StoreKitLauncher to launch storekit using `product_params` as product
   // parameters, application id must be set for key:
   // SKStoreProductParameterITunesItemIdentifier. Additional key/value pairs can
   // be set in the dictionary to represent analytic/marketing parameters.
