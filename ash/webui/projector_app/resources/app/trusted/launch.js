@@ -44,13 +44,17 @@ function wrappedLaunchConsumer(params) {
  * @return {!Promise<undefined>}
  */
 async function launchConsumer(params) {
-  if (!params || !params.files || params.files.length < 1) {
+  if (!params || !params.files || params.files.length !== 2) {
     console.error('Invalid launch (missing files): ', params);
     return;
   }
-  const fileHandle = assert(params.files[0]);
+  // Caution! This first param is a file handler with the file id as its name,
+  // not a real file. Don't try to access it on disk. Calling getFile() on it
+  // will throw a DOM exception.
+  const fileId = assert(params.files[0]).name;
+  const fileHandle = assert(params.files[1]);
   try {
-    await launchVideoFile(fileHandle);
+    await launchVideoFile(fileId, fileHandle);
   } catch (e) {
     console.error(e, '(launchFile aborted)');
   }
@@ -58,15 +62,16 @@ async function launchConsumer(params) {
 
 /**
  * Sends the provided video file to the untrusted context.
+ * @param {string} fileId
  * @param {!FileSystemHandle} handle
  */
-async function launchVideoFile(handle) {
+async function launchVideoFile(fileId, handle) {
   try {
     const file = await getVideoFileFromHandle(handle);
-    sendVideoFileToUntrusted(file, /*error=*/ null);
+    sendVideoFileToUntrusted(fileId, file, /*error=*/ null);
   } catch (/** @type {!DOMException} */ e) {
     console.error(`${handle.name}: ${e.message}`);
-    sendVideoFileToUntrusted(/*file=*/ null, /*error=*/ e);
+    sendVideoFileToUntrusted(fileId, /*file=*/ null, /*error=*/ e);
   }
 }
 
@@ -96,10 +101,11 @@ async function getVideoFileFromHandle(fileSystemHandle) {
 
 /**
  * Loads the provided file into the untrusted context.
+ * @param {string} fileId
  * @param {?File} file
  * @param {?DOMException} error
  */
-function sendVideoFileToUntrusted(file, error) {
+function sendVideoFileToUntrusted(fileId, file, error) {
   const client = AppTrustedCommFactory.getPostMessageAPIClient();
-  client.onFileLoaded(file, error);
+  client.onFileLoaded(fileId, file, error);
 }

@@ -62,11 +62,12 @@ export class UntrustedAppClient extends PostMessageAPIClient {
 
   /**
    * Notifies the untrusted context when a new video file is available.
-   * @param {?File} videoFile to provide to the untrusted context
-   * @param {?DOMException} error if retrieving the video file failed
+   * @param {string} videoFileId the Drive item id of the video file.
+   * @param {?File} videoFile to provide to the untrusted context.
+   * @param {?DOMException} error if retrieving the video file failed.
    */
-  onFileLoaded(videoFile, error) {
-    return this.callApiFn('onFileLoaded', [videoFile, error]);
+  onFileLoaded(videoFileId, videoFile, error) {
+    return this.callApiFn('onFileLoaded', [videoFileId, videoFile, error]);
   }
 }
 

@@ -10,18 +10,16 @@ import {ProjectorError} from '../../communication/message_types.js';
 
 const TARGET_URL = 'chrome://projector/';
 
-// By using a global promise resolver, we are assuming that the app won't send
-// out simultaneous or overlapping getVideo() requests. Each request should
-// complete before the next one.
-// TODO(b/237089852): Consider converting to a map of promises keyed by the
-// video file id.
-let loadFilePromise = null;
+// Maps video file id to promises of video files.
+const loadingFiles = new Map /*<string, PromiseResolver>*/ ();
 
-function getOrCreateLoadFilePromise() {
-  if (!loadFilePromise) {
-    loadFilePromise = new PromiseResolver();
+function getOrCreateLoadFilePromise(fileId) {
+  if (loadingFiles.has(fileId)) {
+    return loadingFiles.get(fileId);
   }
-  return loadFilePromise;
+  const promise = new PromiseResolver();
+  loadingFiles.set(fileId, promise);
+  return promise;
 }
 
 /**
@@ -203,17 +201,23 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<!projectorApp.Video>}
    */
   async getVideo(videoFileId, resourceKey) {
-    loadFilePromise = null;
-    const video =
-        await AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-            'getVideo', [videoFileId, resourceKey]);
-    const videoFile = await getOrCreateLoadFilePromise().promise;
-    // The streaming url must be generated in the untrusted context.
-    // We are not calling URL.revokeObjectURL() because we currently don't have
-    // a signal for when the viewer is done with this streaming URL. Browsers
-    // will release object URLs automatically when the document is unloaded.
-    video.srcUrl = URL.createObjectURL(videoFile);
-    return video;
+    try {
+      const video =
+          await AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+              'getVideo', [videoFileId, resourceKey]);
+      const videoFile = await getOrCreateLoadFilePromise(videoFileId).promise;
+      // The streaming url must be generated in the untrusted context.
+      // The corresponding cleanup call to URL.revokeObjectURL() happens in
+      // ProjectorViewer::maybeResetUI() in Google3.
+      video.srcUrl = URL.createObjectURL(videoFile);
+      return video;
+    } catch (e) {
+      return Promise.reject(e);
+    } finally {
+      // Do not cache video files in the map because it's unclear when to
+      // invalidate entries. Delete the key once we are finally done with it.
+      loadingFiles.delete(videoFileId);
+    }
   },
 };
 
@@ -256,13 +260,14 @@ export class UntrustedAppRequestHandler extends RequestHandler {
       getAppElement().onScreencastsStateChange(pendingScreencasts);
     });
     this.registerMethod('onFileLoaded', (args) => {
-      if (args.length !== 2) {
+      if (args.length !== 3) {
         console.error('Invalid argument to onFileLoaded', args);
         return;
       }
-      const file = args[0];
-      const error = args[1];
-      const resolver = getOrCreateLoadFilePromise();
+      const fileId = args[0];
+      const file = args[1];
+      const error = args[2];
+      const resolver = getOrCreateLoadFilePromise(fileId);
       if (!file || error) {
         resolver.reject(error);
         return;

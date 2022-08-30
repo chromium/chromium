@@ -65,7 +65,11 @@ void OnMediaMetadataParsed(
   video->duration_millis =
       base::NumberToString(metadata->duration * kOneSecondInMillisecond);
   // Launches app on UI thread when duration is valid.
-  SendFilesToProjectorApp({video_path});
+
+  // Even though the video file id is not a file path, we need to pass it to the
+  // launch event to match up with the original request.
+  base::FilePath video_id_as_path(video->file_id);
+  SendFilesToProjectorApp({video_id_as_path, video_path});
   std::move(callback).Run(std::move(video), /*error_message=*/std::string());
 }
 

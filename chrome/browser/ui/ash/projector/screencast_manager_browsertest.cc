@@ -297,9 +297,11 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   ASSERT_TRUE(first_browser);
   EXPECT_EQ(first_browser->tab_strip_model()->GetActiveWebContents(), app);
 
+  base::FilePath fake_path(kVideoFileId);
   base::FilePath absolute_path =
       GetTestFile(kVideoFileName, /*relative=*/false);
-  SendFilesToProjectorApp({absolute_path});
+  SendFilesToProjectorApp({fake_path, absolute_path});
+
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
   // Launching the app with files should not open a new window.
   EXPECT_EQ(first_browser, second_browser);
@@ -364,9 +366,10 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   // Launch the app for the first time.
   content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
   EXPECT_TRUE(WaitForLoadStop(app));
+  base::FilePath fake_path(kVideoFileId);
   base::FilePath absolute_path =
       GetTestFile("NotFoundError.file", /*relative=*/false);
-  SendFilesToProjectorApp({absolute_path});
+  SendFilesToProjectorApp({fake_path, absolute_path});
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result =
@@ -386,9 +389,10 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
   // Launch the app for the first time.
   content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
   EXPECT_TRUE(WaitForLoadStop(app));
+  base::FilePath fake_path(kVideoFileId);
   base::FilePath absolute_path =
       GetTestFile("MyTestScreencast.txt", /*relative=*/false);
-  SendFilesToProjectorApp({absolute_path});
+  SendFilesToProjectorApp({fake_path, absolute_path});
 
   AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName, "text/plain",
                                   /*shared_with_me=*/true);
