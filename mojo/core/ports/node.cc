@@ -262,7 +262,19 @@ int Node::ClosePort(const PortRef& port_ref) {
   uint64_t last_sequence_num = 0;
   bool was_initialized = false;
   {
+    // Avoid warnings when closing ports when events are disallowed by
+    // passing through events in this case.
+    // See also AutoLockMaybeEventsDisallowed.
+    if (recordreplay::AreEventsDisallowed()) {
+      recordreplay::BeginPassThroughEvents();
+    }
+
     SinglePortLocker locker(&port_ref);
+
+    if (recordreplay::AreEventsDisallowed()) {
+      recordreplay::EndPassThroughEvents();
+    }
+
     auto* port = locker.port();
     switch (port->state) {
       case Port::kUninitialized:
