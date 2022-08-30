@@ -4138,7 +4138,8 @@
     "EnableCbdSignOut": [
         {
             "platforms": [
-                "android"
+                "android",
+                "ios"
             ],
             "experiments": [
                 {

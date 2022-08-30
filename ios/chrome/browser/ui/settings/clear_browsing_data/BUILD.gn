@@ -145,6 +145,7 @@ source_set("eg2_tests") {
   sources = [ "clear_browsing_data_egtest.mm" ]
   deps = [
     "//base/test:test_support",
+    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",

@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #include "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -68,6 +69,15 @@ using chrome_test_util::WindowWithNumber;
 @end
 
 @implementation ClearBrowsingDataSettingsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector(testTapLearnMore)] ||
+      [self isRunningTest:@selector(testTapLearnMoreFromHistory)]) {
+    config.features_disabled.push_back(switches::kEnableCbdSignOut);
+  }
+  return config;
+}
 
 - (void)openClearBrowsingDataDialog {
   [ChromeEarlGreyUI openSettingsMenu];
