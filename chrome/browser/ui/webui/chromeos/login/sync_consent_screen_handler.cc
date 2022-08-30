@@ -28,8 +28,8 @@ namespace {
 void GetConsentIDs(const std::unordered_map<std::string, int>& known_strings,
                    const login::StringList& consent_description,
                    const std::string& consent_confirmation,
-                   std::vector<int>* consent_description_ids,
-                   int* consent_confirmation_id) {
+                   std::vector<int>& consent_description_ids,
+                   int& consent_confirmation_id) {
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in `string_to_grd_id_map_`). As
   // this has privacy and legal implications, CHECK the integrity of the strings
@@ -37,25 +37,21 @@ void GetConsentIDs(const std::unordered_map<std::string, int>& known_strings,
   for (const std::string& text : consent_description) {
     auto iter = known_strings.find(text);
     CHECK(iter != known_strings.end()) << "Unexpected string:\n" << text;
-    consent_description_ids->push_back(iter->second);
+    consent_description_ids.push_back(iter->second);
   }
 
   auto iter = known_strings.find(consent_confirmation);
   CHECK(iter != known_strings.end()) << "Unexpected string:\n"
                                      << consent_confirmation;
-  *consent_confirmation_id = iter->second;
+  consent_confirmation_id = iter->second;
 }
 
 }  // namespace
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId SyncConsentScreenView::kScreenId;
-
 SyncConsentScreenHandler::SyncConsentScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.SyncConsentScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
 SyncConsentScreenHandler::~SyncConsentScreenHandler() = default;
 
@@ -140,53 +136,27 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2, builder);
 }
 
-void SyncConsentScreenHandler::Bind(SyncConsentScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
 void SyncConsentScreenHandler::Show(bool is_arc_restricted) {
   base::Value::Dict data;
   data.Set("isArcRestricted", is_arc_restricted);
   ShowInWebUI(std::move(data));
 }
 
-void SyncConsentScreenHandler::Hide() {}
-
 void SyncConsentScreenHandler::ShowLoadedStep() {
-  CallJS("login.SyncConsentScreen.showLoadedStep");
+  CallExternalAPI("showLoadedStep");
 }
 
 void SyncConsentScreenHandler::SetIsMinorMode(bool value) {
-  CallJS("login.SyncConsentScreen.setIsMinorMode", value);
+  CallExternalAPI("setIsMinorMode", value);
 }
 
-void SyncConsentScreenHandler::InitializeDeprecated() {}
-
-void SyncConsentScreenHandler::RegisterMessages() {
-  AddCallback("login.SyncConsentScreen.continue",
-              &SyncConsentScreenHandler::HandleContinue);
-}
-
-void SyncConsentScreenHandler::HandleContinue(
-    const bool opted_in,
-    const bool review_sync,
-    const base::Value::List& consent_description_list,
-    const std::string& consent_confirmation) {
-  auto consent_description =
-      login::ConvertToStringList(consent_description_list);
-  std::vector<int> consent_description_ids;
-  int consent_confirmation_id;
+void SyncConsentScreenHandler::RetrieveConsentIDs(
+    ::login::StringList& consent_description,
+    const std::string& consent_confirmation,
+    std::vector<int>& consent_description_ids,
+    int& consent_confirmation_id) {
   GetConsentIDs(known_strings_, consent_description, consent_confirmation,
-                &consent_description_ids, &consent_confirmation_id);
-  screen_->OnContinue(opted_in, review_sync, consent_description_ids,
-                      consent_confirmation_id);
-  SyncConsentScreen::SyncConsentScreenTestDelegate* test_delegate =
-      screen_->GetDelegateForTesting();
-  if (test_delegate) {
-    test_delegate->OnConsentRecordedStrings(consent_description,
-                                            consent_confirmation);
-  }
+                consent_description_ids, consent_confirmation_id);
 }
 
 }  // namespace chromeos

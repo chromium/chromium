@@ -140,7 +140,8 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    */
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.composedPath());
-    chrome.send('login.SyncConsentScreen.continue', [
+    this.userActed([
+      'continue',
       opted_in,
       this.$.reviewSettingsBox.checked,
       this.getConsentDescription_(),

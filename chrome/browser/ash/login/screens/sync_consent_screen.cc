@@ -12,7 +12,9 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -41,6 +43,12 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/user_manager/user_manager.h"
+
+namespace {
+
+constexpr char kUserActionContinue[] = "continue";
+
+}  // namespace
 
 namespace ash {
 namespace {
@@ -135,19 +143,15 @@ void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
   }
 }
 
-SyncConsentScreen::SyncConsentScreen(SyncConsentScreenView* view,
+SyncConsentScreen::SyncConsentScreen(base::WeakPtr<SyncConsentScreenView> view,
                                      const ScreenExitCallback& exit_callback)
     : BaseScreen(SyncConsentScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 }
 
-SyncConsentScreen::~SyncConsentScreen() {
-  if (view_)
-    view_->Bind(nullptr);
-}
+SyncConsentScreen::~SyncConsentScreen() = default;
 
 void SyncConsentScreen::Init(const WizardContext& context) {
   if (is_initialized_)
@@ -222,13 +226,13 @@ void SyncConsentScreen::ShowImpl() {
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
-  view_->Show(is_arc_restricted);
+  if (view_)
+    view_->Show(is_arc_restricted);
 }
 
 void SyncConsentScreen::HideImpl() {
   sync_service_observation_.Reset();
   timeout_waiter_.AbandonAndStop();
-  view_->Hide();
 }
 
 void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
@@ -352,7 +356,9 @@ void SyncConsentScreen::UpdateScreen(const WizardContext& context) {
 
   if (behavior_ == SyncScreenBehavior::kShow) {
     PrepareScreenBasedOnCapability();
-    view_->ShowLoadedStep();
+    if (view_) {
+      view_->ShowLoadedStep();
+    }
     GetSyncService(profile_)->RemoveObserver(this);
     timeout_waiter_.AbandonAndStop();
     base::UmaHistogramCustomTimes("OOBE.SyncConsentScreen.LoadingTime",
@@ -418,7 +424,9 @@ void SyncConsentScreen::PrepareScreenBasedOnCapability() {
   // Turn on "sync everything" toggle for non-minor users; turn off all data
   // types for minor users.
   SetSyncEverythingEnabled(!is_minor_mode);
-  view_->SetIsMinorMode(is_minor_mode);
+  if (view_) {
+    view_->SetIsMinorMode(is_minor_mode);
+  }
 }
 
 void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {
@@ -443,6 +451,46 @@ void SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(bool value) {
 // static
 void SyncConsentScreen::SetProfileSyncEngineInitializedForTesting(bool value) {
   sync_engine_initialized_for_test = value;
+}
+
+void SyncConsentScreen::HandleContinue(
+    const bool opted_in,
+    const bool review_sync,
+    const base::Value::List& consent_description_list,
+    const std::string& consent_confirmation) {
+  auto consent_description =
+      ::login::ConvertToStringList(consent_description_list);
+  std::vector<int> consent_description_ids;
+  int consent_confirmation_id;
+  if (view_) {
+    view_->RetrieveConsentIDs(consent_description, consent_confirmation,
+                              consent_description_ids, consent_confirmation_id);
+    OnContinue(opted_in, review_sync, consent_description_ids,
+               consent_confirmation_id);
+  }
+  // IN-TEST
+  SyncConsentScreen::SyncConsentScreenTestDelegate* test_delegate =
+      GetDelegateForTesting();  // IN-TEST
+  if (test_delegate) {
+    CHECK_IS_TEST();
+    test_delegate->OnConsentRecordedStrings(consent_description,
+                                            consent_confirmation);
+  }
+}
+
+void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+  if (action_id == kUserActionContinue) {
+    CHECK_EQ(args.size(), 5);
+    const bool opted_in = args[1].GetBool();
+    const bool review_sync = args[2].GetBool();
+    const base::Value::List& consent_description_list = args[3].GetList();
+    const std::string& consent_confirmation = args[4].GetString();
+    HandleContinue(opted_in, review_sync, consent_description_list,
+                   consent_confirmation);
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -88,7 +89,7 @@ class SyncConsentScreen : public BaseScreen,
   // them after completing OOBE.
   static void MaybeLaunchSyncConsentSettings(Profile* profile);
 
-  SyncConsentScreen(SyncConsentScreenView* view,
+  SyncConsentScreen(base::WeakPtr<SyncConsentScreenView> view,
                     const ScreenExitCallback& exit_callback);
 
   SyncConsentScreen(const SyncConsentScreen&) = delete;
@@ -113,6 +114,11 @@ class SyncConsentScreen : public BaseScreen,
 
   // Called when sync engine initialization timed out.
   void OnTimeout();
+
+  void HandleContinue(const bool opted_in,
+                      const bool review_sync,
+                      const base::Value::List& consent_description_list,
+                      const std::string& consent_confirmation);
 
   // Sets internal condition "Sync disabled by policy" for tests.
   static void SetProfileSyncDisabledByPolicyForTesting(bool value);
@@ -141,6 +147,7 @@ class SyncConsentScreen : public BaseScreen,
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // Returns new SyncScreenBehavior value.
   SyncScreenBehavior GetSyncScreenBehavior(const WizardContext& context) const;
@@ -172,7 +179,7 @@ class SyncConsentScreen : public BaseScreen,
   // Spinner is shown until sync status has been decided.
   SyncScreenBehavior behavior_ = SyncScreenBehavior::kUnknown;
 
-  SyncConsentScreenView* const view_;
+  base::WeakPtr<SyncConsentScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   // Manages sync service observer lifetime.
