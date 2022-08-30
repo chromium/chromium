@@ -8,12 +8,13 @@
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <algorithm>
+
 #include <limits>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
@@ -781,10 +782,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
   }
 
   // TODO(crbug.com/1108607): Only allow wildcards to be specified standalone.
-  if (std::any_of(origins.begin(), origins.end(),
-                  [kWildcardOrigin](base::StringPiece origin) {
-                    return origin == kWildcardOrigin;
-                  })) {
+  if (base::Contains(origins, kWildcardOrigin)) {
     script_injector_.AddScriptForAllOrigins(id, *script_as_string);
   } else {
     std::vector<url::Origin> origins_converted;
