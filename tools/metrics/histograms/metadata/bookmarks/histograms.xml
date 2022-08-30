@@ -661,6 +661,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Opened.TimeSinceAdded" units="days"
+    expires_after="2023-02-19">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records when a bookmark is added sliced by when it was added.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Opened.TimeSinceLastUsed" units="days"
+    expires_after="2023-02-19">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records when a bookmark is added sliced by when it was last
+    used.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
     expires_after="2023-02-19">
   <owner>shaktisahu@chromium.org</owner>

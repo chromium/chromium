@@ -18,7 +18,15 @@ void RecordBookmarkAdded() {
   base::RecordAction(base::UserMetricsAction("Bookmarks.Added"));
 }
 
-void RecordBookmarkOpened() {
+void RecordBookmarkOpened(base::Time now,
+                          base::Time date_last_used,
+                          base::Time date_added) {
+  if (date_last_used != base::Time()) {
+    base::UmaHistogramCounts10000("Bookmarks.Opened.TimeSinceLastUsed",
+                                  (now - date_last_used).InDays());
+  }
+  base::UmaHistogramCounts10000("Bookmarks.Opened.TimeSinceAdded",
+                                (now - date_added).InDays());
   base::RecordAction(base::UserMetricsAction("Bookmarks.Opened"));
 }
 

@@ -17,7 +17,9 @@ namespace metrics {
 void RecordBookmarkAdded();
 
 // Records when a bookmark is opened by the user.
-void RecordBookmarkOpened();
+void RecordBookmarkOpened(base::Time now,
+                          base::Time date_last_used,
+                          base::Time date_added);
 
 // Records the time since the last save with a 1 hour max. The first save will
 // record the time since startup.

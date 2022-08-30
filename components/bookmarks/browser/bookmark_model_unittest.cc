@@ -23,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -31,6 +32,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -496,10 +498,13 @@ class BookmarkModelTest : public testing::Test,
     return managed_node;
   }
 
+  base::HistogramTester* histogram() { return &histogram_; }
+
  protected:
   std::unique_ptr<BookmarkModel> model_;
   ObserverDetails observer_details_;
   std::vector<NodeRemovalDetail> node_removal_details_;
+  base::HistogramTester histogram_;
 
  private:
   int added_count_;
@@ -833,6 +838,35 @@ TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
   ASSERT_EQ(2u, node_removal_details_.size());
   EXPECT_EQ(expected_node_removal_details[0], node_removal_details_[0]);
   EXPECT_EQ(expected_node_removal_details[1], node_removal_details_[1]);
+}
+
+TEST_F(BookmarkModelTest, UpdateLastUsedTimeInRange) {
+  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+
+  ClearCounts();
+
+  base::Time added_time = base::Time::Now();
+  base::Time used_time_1 = added_time + base::Days(2);
+
+  // Add a url to bookmark bar.
+  std::u16string title(u"foo");
+  GURL url("http://foo.com");
+  const BookmarkNode* url_node =
+      model_->AddURL(bookmark_bar_node, 0, title, url, nullptr, added_time);
+  model_->UpdateLastUsedTime(url_node, used_time_1);
+  EXPECT_EQ(used_time_1, url_node->date_last_used());
+  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 0);
+  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 1);
+  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2, 1);
+
+  base::Time used_time_2 = added_time + base::Days(7);
+  model_->UpdateLastUsedTime(url_node, used_time_2);
+  EXPECT_EQ(used_time_2, url_node->date_last_used());
+  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 1);
+  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceLastUsed", 5, 1);
+  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 2);
+  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2, 1);
+  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 7, 1);
 }
 
 TEST_F(BookmarkModelTest, ClearLastUsedTimeInRange) {

@@ -335,8 +335,9 @@ void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
   DCHECK(loaded_);
   DCHECK(node);
 
+  base::Time last_used_time = node->date_last_used();
   UpdateLastUsedTimeImpl(node, time);
-  metrics::RecordBookmarkOpened();
+  metrics::RecordBookmarkOpened(time, last_used_time, node->date_added());
 }
 
 void BookmarkModel::UpdateLastUsedTimeImpl(const BookmarkNode* node,
