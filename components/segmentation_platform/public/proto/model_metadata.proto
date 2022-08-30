@@ -77,6 +77,11 @@ message UMAFeature {
   // Matches are only valid when the enum ID matches any of these.
   // Works like an OR condition, e.g.: [url, search, …] or just [url].
   repeated int32 enum_ids = 7;
+
+  // Only set if aggregation == LATEST_OR_DEFAULT.
+  // Value used for model if latest value requested is not available in the
+  // database. The number of entries should be equal to the tensor_length.
+  repeated float default_values = 8;
 }
 
 message CustomInput {

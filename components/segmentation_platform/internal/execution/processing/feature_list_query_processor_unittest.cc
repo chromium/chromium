@@ -81,7 +81,8 @@ class FeatureListQueryProcessorTest : public testing::Test {
       uint64_t bucket_count,
       uint64_t tensor_length,
       proto::Aggregation aggregation,
-      const std::vector<int32_t>& accepted_enum_ids) {
+      const std::vector<int32_t>& accepted_enum_ids,
+      std::vector<float> default_value) {
     proto::UMAFeature uma_feature;
     uma_feature.set_type(signal_type);
     uma_feature.set_name(name);
@@ -90,6 +91,9 @@ class FeatureListQueryProcessorTest : public testing::Test {
     uma_feature.set_tensor_length(tensor_length);
     uma_feature.set_aggregation(aggregation);
 
+    for (float value : default_value) {
+      uma_feature.add_default_values(value);
+    }
     for (int32_t accepted_enum_id : accepted_enum_ids)
       uma_feature.add_enum_ids(accepted_enum_id);
     return uma_feature;
@@ -100,12 +104,13 @@ class FeatureListQueryProcessorTest : public testing::Test {
                      uint64_t bucket_count,
                      uint64_t tensor_length,
                      proto::Aggregation aggregation,
-                     const std::vector<int32_t>& accepted_enum_ids) {
+                     const std::vector<int32_t>& accepted_enum_ids,
+                     std::vector<float> default_value = {}) {
     auto* input_feature = model_metadata.add_input_features();
     auto* uma_feature = input_feature->mutable_uma_feature();
     uma_feature->CopyFrom(CreateUmaFeature(signal_type, name, bucket_count,
                                            tensor_length, aggregation,
-                                           accepted_enum_ids));
+                                           accepted_enum_ids, default_value));
   }
 
   void AddOutputUmaFeature(proto::SignalType signal_type,
@@ -113,14 +118,15 @@ class FeatureListQueryProcessorTest : public testing::Test {
                            uint64_t bucket_count,
                            uint64_t tensor_length,
                            proto::Aggregation aggregation,
-                           const std::vector<int32_t>& accepted_enum_ids) {
+                           const std::vector<int32_t>& accepted_enum_ids,
+                           std::vector<float> default_value = {}) {
     model_metadata.mutable_training_outputs()
         ->add_outputs()
         ->mutable_uma_output()
         ->mutable_uma_feature()
         ->CopyFrom(CreateUmaFeature(signal_type, name, bucket_count,
                                     tensor_length, aggregation,
-                                    accepted_enum_ids));
+                                    accepted_enum_ids, default_value));
   }
   void AddUserActionWithProcessingSetup(base::TimeDelta bucket_duration) {
     // Set up a single user action feature.
@@ -288,6 +294,61 @@ TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
 
   // The next step should be to run the feature processor.
   ExpectProcessedFeatureList(false, std::vector<float>{3});
+}
+
+TEST_F(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
+  CreateFeatureListQueryProcessor();
+
+  // Initialize with required metadata.
+  SetBucketDuration(3, proto::TimeUnit::HOUR);
+  base::TimeDelta bucket_duration = base::Hours(3);
+
+  // Set up uma features.
+  std::string user_action_name_1 = "some_action_1";
+  AddUmaFeature(proto::SignalType::USER_ACTION, user_action_name_1, 2, 1,
+                proto::Aggregation::LATEST_OR_DEFAULT, {}, {6});
+
+  std::string user_action_name_2 = "some_action_2";
+  AddUmaFeature(proto::SignalType::USER_ACTION, user_action_name_2, 2, 1,
+                proto::Aggregation::LATEST_OR_DEFAULT, {}, {6});
+
+  // When the particular user action is looked up with the correct start time,
+  // end time, and aggregation type, return once with 3 samples and once with
+  // empty samples.
+  std::vector<SignalDatabaseSample> samples{
+      {clock_.Now(), 1},
+      {clock_.Now(), 2},
+      {clock_.Now(), 3},
+  };
+  std::vector<SignalDatabaseSample> empty_samples{};
+
+  EXPECT_CALL(*signal_database_,
+              GetSamples(proto::SignalType::USER_ACTION,
+                         base::HashMetricName(user_action_name_1),
+                         StartTime(bucket_duration, 2), clock_.Now(), _))
+      .WillOnce(RunOnceCallback<4>(samples));
+
+  EXPECT_CALL(*signal_database_,
+              GetSamples(proto::SignalType::USER_ACTION,
+                         base::HashMetricName(user_action_name_2),
+                         StartTime(bucket_duration, 2), clock_.Now(), _))
+      .WillOnce(RunOnceCallback<4>(empty_samples));
+
+  // After retrieving the samples, they should be processed and aggregated.
+  EXPECT_CALL(*feature_aggregator_,
+              Process(proto::SignalType::USER_ACTION,
+                      proto::Aggregation::LATEST_OR_DEFAULT, 2, clock_.Now(),
+                      bucket_duration, samples))
+      .WillOnce(Return(std::vector<float>{3}));
+
+  EXPECT_CALL(*feature_aggregator_,
+              Process(proto::SignalType::USER_ACTION,
+                      proto::Aggregation::LATEST_OR_DEFAULT, 2, clock_.Now(),
+                      bucket_duration, empty_samples))
+      .WillOnce(Return(absl::nullopt));
+
+  // The next step should be to run the feature processor.
+  ExpectProcessedFeatureList(false, std::vector<float>{3, 6});
 }
 
 TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {

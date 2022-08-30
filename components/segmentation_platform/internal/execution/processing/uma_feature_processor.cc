@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform::processing {
@@ -138,13 +139,22 @@ void UmaFeatureProcessor::OnGetSamplesForUmaFeature(
   // process it synchronously, and insert it into the
   // FeatureProcessorState::input_tensor so we can later pass it to the ML model
   // executor.
-  std::vector<float> feature_data = feature_aggregator_->Process(
+  absl::optional<std::vector<float>> result = feature_aggregator_->Process(
       feature.type(), feature.aggregation(), feature.bucket_count(),
       prediction_time_, bucket_duration_, samples);
 
-  DCHECK_EQ(feature.tensor_length(), feature_data.size());
-  result_[index] =
-      std::vector<ProcessedValue>(feature_data.begin(), feature_data.end());
+  // If no feature data is available, use the default values specified instead.
+  if (result.has_value()) {
+    const std::vector<float>& feature_data = result.value();
+    DCHECK_EQ(feature.tensor_length(), feature_data.size());
+    result_[index] =
+        std::vector<ProcessedValue>(feature_data.begin(), feature_data.end());
+  } else {
+    DCHECK_EQ(feature.tensor_length(),
+              static_cast<unsigned int>(feature.default_values_size()));
+    result_[index] = std::vector<ProcessedValue>(
+        feature.default_values().begin(), feature.default_values().end());
+  }
 
   stats::RecordModelExecutionDurationFeatureProcessing(segment_id_,
                                                        timer.Elapsed());

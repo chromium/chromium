@@ -99,8 +99,8 @@ class FeatureAggregatorImplTest : public testing::Test {
               uint64_t bucket_count,
               base::TimeDelta bucket_duration,
               std::vector<Sample> samples,
-              std::vector<float> expected) {
-    std::vector<float> res =
+              absl::optional<std::vector<float>> expected) {
+    absl::optional<std::vector<float>> res =
         feature_aggregator_->Process(signal_type, aggregation, bucket_count,
                                      clock_.Now(), bucket_duration, samples);
     EXPECT_EQ(expected, res);
@@ -109,11 +109,11 @@ class FeatureAggregatorImplTest : public testing::Test {
   // Verifies the result of a multiple invocations of Process(...), comparing to
   // the expected output in the cases of using value samples, zero-value
   // samples, no-value samples, and an empty input vector.
-  void VerifyAll(SignalType signal_type,
-                 Aggregation aggregation,
-                 std::vector<float> expected_value,
-                 std::vector<float> expected_zero_value,
-                 std::vector<float> expected_empty) {
+  void VerifyAllOptional(SignalType signal_type,
+                         Aggregation aggregation,
+                         absl::optional<std::vector<float>> expected_value,
+                         absl::optional<std::vector<float>> expected_zero_value,
+                         absl::optional<std::vector<float>> expected_empty) {
     // Value is always assumed to be 1 for USER_ACTION.
     Verify(signal_type, aggregation, kDefaultBucketCount,
            kDefaultBucketDuration, value_samples(), expected_value);
@@ -124,6 +124,16 @@ class FeatureAggregatorImplTest : public testing::Test {
 
     Verify(signal_type, aggregation, kDefaultBucketCount,
            kDefaultBucketDuration, {}, expected_empty);
+  }
+
+  // Calls VerifyAllOptional with non optional parameters.
+  void VerifyAll(SignalType signal_type,
+                 Aggregation aggregation,
+                 std::vector<float> expected_value,
+                 std::vector<float> expected_zero_value,
+                 std::vector<float> expected_empty) {
+    VerifyAllOptional(signal_type, aggregation, expected_value,
+                      expected_zero_value, expected_empty);
   }
 
   base::SimpleTestClock clock_;
@@ -254,6 +264,20 @@ TEST_F(FeatureAggregatorImplTest, BucketedCumulativeSumAggregation) {
             {3, 15, 45, 55, 55, 120}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0});
 }
 
+TEST_F(FeatureAggregatorImplTest, LatestOrDefaultAggregation) {
+  VerifyAllOptional(SignalType::USER_ACTION, Aggregation::LATEST_OR_DEFAULT,
+                    absl::optional<std::vector<float>>({15}),
+                    absl::optional<std::vector<float>>({0}), absl::nullopt);
+
+  VerifyAllOptional(SignalType::HISTOGRAM_ENUM, Aggregation::LATEST_OR_DEFAULT,
+                    absl::optional<std::vector<float>>({15}),
+                    absl::optional<std::vector<float>>({0}), absl::nullopt);
+
+  VerifyAllOptional(SignalType::HISTOGRAM_VALUE, Aggregation::LATEST_OR_DEFAULT,
+                    absl::optional<std::vector<float>>({15}),
+                    absl::optional<std::vector<float>>({0}), absl::nullopt);
+}
+
 TEST_F(FeatureAggregatorImplTest, BucketizationThresholds) {
   std::vector<Sample> samples{
       // First sample is exactly 1 day ago, part of second bucket.
@@ -265,17 +289,17 @@ TEST_F(FeatureAggregatorImplTest, BucketizationThresholds) {
   };
 
   Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT, 2, base::Days(1),
-         samples, {1, 2});
+         samples, absl::optional<std::vector<float>>({1, 2}));
   Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM, 2, base::Days(1),
-         samples, {1, 2});
+         samples, absl::optional<std::vector<float>>({1, 2}));
   Verify(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_COUNT, 2,
-         base::Days(1), samples, {1, 2});
+         base::Days(1), samples, absl::optional<std::vector<float>>({1, 2}));
   Verify(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_SUM, 2,
-         base::Days(1), samples, {3, 3});
+         base::Days(1), samples, absl::optional<std::vector<float>>({3, 3}));
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT, 2,
-         base::Days(1), samples, {1, 2});
+         base::Days(1), samples, absl::optional<std::vector<float>>({1, 2}));
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM, 2,
-         base::Days(1), samples, {3, 3});
+         base::Days(1), samples, absl::optional<std::vector<float>>({3, 3}));
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketsOutOfBounds) {
@@ -290,9 +314,9 @@ TEST_F(FeatureAggregatorImplTest, BucketsOutOfBounds) {
   // Using bucket count of 3, means the first sample is out of bounds for being
   // in the future, and the last sample is out of bounds for being too old.
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT, 3,
-         base::Days(1), samples, {1, 1, 1});
+         base::Days(1), samples, absl::optional<std::vector<float>>({1, 1, 1}));
   Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM, 3,
-         base::Days(1), samples, {2, 3, 4});
+         base::Days(1), samples, absl::optional<std::vector<float>>({2, 3, 4}));
 }
 
 TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {

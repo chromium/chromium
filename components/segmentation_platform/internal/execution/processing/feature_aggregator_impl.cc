@@ -221,7 +221,7 @@ FeatureAggregatorImpl::FeatureAggregatorImpl() = default;
 
 FeatureAggregatorImpl::~FeatureAggregatorImpl() = default;
 
-std::vector<float> FeatureAggregatorImpl::Process(
+absl::optional<std::vector<float>> FeatureAggregatorImpl::Process(
     proto::SignalType signal_type,
     proto::Aggregation aggregation,
     uint64_t bucket_count,
@@ -264,6 +264,13 @@ std::vector<float> FeatureAggregatorImpl::Process(
     case proto::Aggregation::BUCKETED_CUMULATIVE_SUM:
       return BucketedCumulativeSumAggregation(
           signal_type, bucket_count, end_time, bucket_duration, samples);
+    case proto::Aggregation::LATEST_OR_DEFAULT:
+      if (samples.empty()) {
+        // If empty, then latest data cannot be found.
+        return absl::nullopt;
+      }
+      return std::vector<float>(
+          {static_cast<float>(samples[samples.size() - 1].second)});
   }
 }
 

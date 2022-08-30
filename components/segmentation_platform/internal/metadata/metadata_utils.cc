@@ -40,6 +40,8 @@ uint64_t GetExpectedTensorLength(const proto::UMAFeature& feature) {
     case proto::Aggregation::BUCKETED_SUM_BOOLEAN:
     case proto::Aggregation::BUCKETED_CUMULATIVE_SUM:
       return feature.bucket_count();
+    case proto::Aggregation::LATEST_OR_DEFAULT:
+      return 1;
     case proto::Aggregation::UNKNOWN:
       NOTREACHED();
       return 0;

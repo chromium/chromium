@@ -76,4 +76,14 @@ enum Aggregation {
   // etc. The last value is the same value as a SUM aggregation for the same
   // |bucket_count|.
   BUCKETED_CUMULATIVE_SUM = 12;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // The latest entry recorded for a feature. If no data is available,
+  // |default_value| will be returned instead. If you need an additional feature
+  // to tell if a value exists in the database or not, then consider using
+  // COUNT_BOOLEAN in addition.
+  // Warning: this will only consider the latest among the samples within the
+  // specified time range. This also may not have the most updated value since
+  // the histograms are stored to database asynchronously.
+  LATEST_OR_DEFAULT = 13;
 }
