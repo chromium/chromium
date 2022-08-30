@@ -6201,7 +6201,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return ScriptPromise::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kSecurityError,
-                          "requestStorageAccess Cannot be used unless the "
+                          "requestStorageAccess: Cannot be used unless the "
                           "document is fully active."));
   }
 
