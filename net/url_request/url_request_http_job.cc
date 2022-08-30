@@ -32,6 +32,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
@@ -335,7 +336,7 @@ void URLRequestHttpJob::OnGotFirstPartySetMetadata(
 
     cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
         request_->isolation_info().network_isolation_key(),
-        base::OptionalOrNullptr(
+        base::OptionalToPtr(
             first_party_set_metadata_.top_frame_entry().has_value()
                 ? absl::make_optional(
                       first_party_set_metadata_.top_frame_entry()->primary())
