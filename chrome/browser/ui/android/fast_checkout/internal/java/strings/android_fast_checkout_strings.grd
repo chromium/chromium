@@ -200,6 +200,15 @@
       <message name="IDS_FAST_CHECKOUT_SHEET_CLOSED" desc="Accessibility string read when the Fast Checkout bottom sheet showing a list of the user stored addresses and payment options is closed.">
         List of addresses and payment options to be filled during checkout flows is closed.
       </message>
+      <message name="IDS_FAST_CHECKOUT_BACK_TO_HOME_SCREEN_ICON_DESCRIPTION" desc="Acessibility string describing the back icon on the autofill profile and credit card detail sheets.">
+        Go back
+      </message>
+      <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SHEET_TITLE" desc="Header of the autofill profile selection sheet.">
+        Shipping address
+      </message>
+      <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open Autofill profile settings.">
+        Open Autofill profile settings
+      </message>
     </messages>
   </release>
 </grit>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.fast_checkout.autofill_profile_screen;
+package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -11,7 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /**
- * Model for an {@link FastCheckoutAutofillProfile} entry in the autofill Profile screen sheet.
+ * Model for an {@link FastCheckoutAutofillProfile} entry in the Autofill profile screen sheet.
  */
 public class AutofillProfileItemProperties {
     public static final int DEFAULT_ITEM_TYPE = 0;

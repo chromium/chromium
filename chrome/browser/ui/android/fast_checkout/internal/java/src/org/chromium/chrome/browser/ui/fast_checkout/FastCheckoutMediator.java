@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
-import org.chromium.chrome.browser.ui.fast_checkout.autofill_profile_screen.AutofillProfileItemProperties;
+import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -59,41 +62,47 @@ public class FastCheckoutMediator {
             }
         };
 
-        mModel.set(
-                FastCheckoutProperties.HOME_SCREEN_DELEGATE, new HomeScreenCoordinator.Delegate() {
-                    @Override
-                    public void onOptionsAccepted() {
-                        if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
-                            return; // Dismiss only if not dismissed yet.
-                        }
-                        FastCheckoutAutofillProfile profile =
-                                mModel.get(FastCheckoutProperties.SELECTED_PROFILE);
-                        FastCheckoutCreditCard creditCard =
-                                mModel.get(FastCheckoutProperties.SELECTED_CREDIT_CARD);
-                        assert profile != null && creditCard != null;
-                        mModel.set(FastCheckoutProperties.VISIBLE, false);
-                        mDelegate.onOptionsSelected(profile, creditCard);
-                    };
+        mModel.set(FastCheckoutProperties.HOME_SCREEN_DELEGATE, createHomeScreenDelegate());
+        mModel.set(FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER,
+                () -> setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN));
+    }
 
-                    @Override
-                    public void onDismiss() {
-                        if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
-                            return; // Dismiss only if not dismissed yet.
-                        }
-                        mModel.set(FastCheckoutProperties.VISIBLE, false);
-                        mDelegate.onDismissed();
-                    }
+    /** Returns an implementation the {@link HomeScreenCoordinator.Delegate} interface. */
+    private HomeScreenCoordinator.Delegate createHomeScreenDelegate() {
+        return new HomeScreenCoordinator.Delegate() {
+            @Override
+            public void onOptionsAccepted() {
+                if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
+                    return; // Dismiss only if not dismissed yet.
+                }
+                FastCheckoutAutofillProfile profile =
+                        mModel.get(FastCheckoutProperties.SELECTED_PROFILE);
+                FastCheckoutCreditCard creditCard =
+                        mModel.get(FastCheckoutProperties.SELECTED_CREDIT_CARD);
+                assert profile != null && creditCard != null;
+                mModel.set(FastCheckoutProperties.VISIBLE, false);
+                mDelegate.onOptionsSelected(profile, creditCard);
+            };
 
-                    @Override
-                    public void onShowAddressesList() {
-                        // TODO(crbug.com/1334642): Show addresses list screen.
-                    }
+            @Override
+            public void onDismiss() {
+                if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
+                    return; // Dismiss only if not dismissed yet.
+                }
+                mModel.set(FastCheckoutProperties.VISIBLE, false);
+                mDelegate.onDismissed();
+            }
 
-                    @Override
-                    public void onShowCreditCardList() {
-                        // TODO(crbug.com/1334642): Show credit cards list screen.
-                    }
-                });
+            @Override
+            public void onShowAddressesList() {
+                setCurrentScreen(FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN);
+            }
+
+            @Override
+            public void onShowCreditCardList() {
+                // TODO(crbug.com/1334642): Show credit cards list screen.
+            }
+        };
     }
 
     public void showOptions(
@@ -222,7 +231,42 @@ public class FastCheckoutMediator {
      *         shown.
      */
     public void setCurrentScreen(int screenType) {
+        if (screenType == FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN) {
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE,
+                    R.string.fast_checkout_autofill_profile_sheet_title);
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
+                    R.string.fast_checkout_autofill_profile_settings_button_description);
+            // TODO(crbug.com/1355310): Implement handler for opening Autofill profile settings.
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
+                    createSettingsOnClickListener(() -> {}));
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
+                    mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST));
+        } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
+            // TODO(crbug.com/1355310): Implement handler for opening credit card settings.
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
+                    createSettingsOnClickListener(() -> {}));
+            // TODO(crbug.com/1355310): Switch to credit card model, set title, etc.
+        }
+
         mModel.set(FastCheckoutProperties.CURRENT_SCREEN, screenType);
+    }
+
+    /**
+     * Creates and returns an {@link Toolbar.OnMenuItemClickListener} that
+     * executes a Runnable if and only if the Settings MenuItem was clicked.
+     * @param runnable The Runnable to execute.
+     */
+    static OnMenuItemClickListener createSettingsOnClickListener(Runnable runnable) {
+        return new OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.settings_menu_id) {
+                    runnable.run();
+                    return true;
+                }
+                return false;
+            }
+        };
     }
 
     /**

@@ -1,0 +1,54 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
+
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE;
+
+import android.content.Context;
+import android.view.MenuItem;
+import android.view.View;
+
+import androidx.appcompat.widget.Toolbar;
+
+import org.chromium.chrome.browser.ui.fast_checkout.R;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/**
+ * A ViewHolder and a static bind method for FastCheckout's Autofill profile screen.
+ */
+public class DetailScreenViewBinder {
+    /** A ViewHolder that inflates the toolbar and provides easy item look-up. */
+    static class ViewHolder {
+        final Toolbar mToolbar;
+        final MenuItem mSettingsMenuItem;
+
+        ViewHolder(Context context, View contentView) {
+            mToolbar = contentView.findViewById(R.id.action_bar);
+            mSettingsMenuItem = mToolbar.getMenu().findItem(R.id.settings_menu_id);
+        }
+    }
+
+    /**
+     * Binds the {@link ViewHolder} to a {@link PropertyModel} with properties defined in
+     * {@link FastCheckoutProperties} and prefix DETAIL_SCREEN.
+     */
+    public static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
+        if (propertyKey == DETAIL_SCREEN_BACK_CLICK_HANDLER) {
+            view.mToolbar.setNavigationOnClickListener(
+                    (v) -> model.get(DETAIL_SCREEN_BACK_CLICK_HANDLER).run());
+        } else if (propertyKey == DETAIL_SCREEN_SETTINGS_CLICK_HANDLER) {
+            view.mToolbar.setOnMenuItemClickListener(
+                    model.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
+        } else if (propertyKey == DETAIL_SCREEN_TITLE) {
+            view.mToolbar.setTitle(model.get(DETAIL_SCREEN_TITLE));
+        } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
+            view.mSettingsMenuItem.setTitle(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
+        }
+    }
+}

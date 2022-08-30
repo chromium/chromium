@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,11 +34,17 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         View homeScreenView = rootView.findViewById(R.id.fast_checkout_home_screen_sheet);
         HomeScreenCoordinator homeScreenCoordinator =
                 new HomeScreenCoordinator(context, homeScreenView, mModel, delegate);
-        // TODO(crbug.com/1334642): Create remaining 2 screens.
+
+        // The detail screen can display the Autofill profile or the credit
+        // card selection.
+        View detailScreenView = rootView.findViewById(R.id.fast_checkout_detail_screen_sheet);
+        DetailScreenCoordinator detailScreenCoordinator =
+                new DetailScreenCoordinator(context, detailScreenView, mModel);
 
         mModel.addObserver((source, propertyKey) -> {
             if (FastCheckoutProperties.CURRENT_SCREEN == propertyKey) {
-                rootView.setDisplayedChild(mModel.get(FastCheckoutProperties.CURRENT_SCREEN));
+                rootView.setDisplayedChild(getScreenIndexForScreenType(
+                        mModel.get(FastCheckoutProperties.CURRENT_SCREEN)));
             } else if (FastCheckoutProperties.VISIBLE == propertyKey) {
                 // Dismiss the sheet if it can't be immediately shown.
                 boolean visibilityChangeSuccessful =
@@ -46,6 +54,24 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
                 }
             }
         });
+    }
+
+    /**
+     * Acts as a helper function to convert a {@link FastCheckoutProperties.ScreenType}
+     * the index of the screen in the ViewFlipper.
+     */
+    private static int getScreenIndexForScreenType(@ScreenType int screenType) {
+        switch (screenType) {
+            case ScreenType.HOME_SCREEN:
+                return 0;
+            // Both the Autofill profile selection and the credit card selection
+            // are displayed on the detail screen.
+            case ScreenType.AUTOFILL_PROFILE_SCREEN:
+            case ScreenType.CREDIT_CARD_SCREEN:
+                return 1;
+        }
+        assert false : "Undefined ScreenType: " + screenType;
+        return 0;
     }
 
     @Override

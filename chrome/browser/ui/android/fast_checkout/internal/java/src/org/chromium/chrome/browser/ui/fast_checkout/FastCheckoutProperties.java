@@ -5,12 +5,13 @@
 package org.chromium.chrome.browser.ui.fast_checkout;
 
 import androidx.annotation.IntDef;
+import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -28,33 +29,18 @@ public class FastCheckoutProperties {
     /**
      * The different screens that can be shown on the sheet.
      */
-    @IntDef({ScreenType.HOME_SCREEN, ScreenType.AUTOFILL_PROFILES_SCREEN,
-            ScreenType.CREDIT_CARDS_SCREEN})
+    @IntDef({ScreenType.HOME_SCREEN, ScreenType.AUTOFILL_PROFILE_SCREEN,
+            ScreenType.CREDIT_CARD_SCREEN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenType {
         int HOME_SCREEN = 0;
-        int AUTOFILL_PROFILES_SCREEN = 1;
-        int CREDIT_CARDS_SCREEN = 2;
+        int AUTOFILL_PROFILE_SCREEN = 1;
+        int CREDIT_CARD_SCREEN = 2;
     }
 
     /** Property that indicates the bottom sheet visibility. */
     public static final WritableBooleanPropertyKey VISIBLE =
             new WritableBooleanPropertyKey("visible");
-
-    /** The chosen autofill profile option. */
-    public static final WritableObjectPropertyKey<FastCheckoutAutofillProfile> SELECTED_PROFILE =
-            new WritableObjectPropertyKey<>("selected_profile");
-
-    /** The models corresponding to all autofill profile options. */
-    public static final ReadableObjectPropertyKey<ListModel<MVCListAdapter.ListItem>>
-            PROFILE_MODEL_LIST = new ReadableObjectPropertyKey("profile_model_list");
-
-    /** The chosen credit card option. */
-    public static final WritableObjectPropertyKey<FastCheckoutCreditCard> SELECTED_CREDIT_CARD =
-            new WritableObjectPropertyKey<>("selected_credit_card");
-
-    public static final WritableObjectPropertyKey<HomeScreenCoordinator.Delegate>
-            HOME_SCREEN_DELEGATE = new WritableObjectPropertyKey<>("home_screen_delegate");
 
     /**
      * Property that indicates which screen (i.e ScreenType) is currently displayed on the bottom
@@ -63,7 +49,47 @@ public class FastCheckoutProperties {
     public static final WritableIntPropertyKey CURRENT_SCREEN =
             new WritableIntPropertyKey("current_screen");
 
-    static PropertyModel createDefaultModel() {
+    /** The chosen autofill profile option. */
+    public static final WritableObjectPropertyKey<FastCheckoutAutofillProfile> SELECTED_PROFILE =
+            new WritableObjectPropertyKey<>("selected_profile");
+
+    /** The models corresponding to all autofill profile options. */
+    public static final ReadableObjectPropertyKey<ListModel<ListItem>> PROFILE_MODEL_LIST =
+            new ReadableObjectPropertyKey("profile_model_list");
+
+    /** The chosen credit card option. */
+    public static final WritableObjectPropertyKey<FastCheckoutCreditCard> SELECTED_CREDIT_CARD =
+            new WritableObjectPropertyKey<>("selected_credit_card");
+
+    /** The delegate that handles actions on the home screen. */
+    public static final WritableObjectPropertyKey<HomeScreenCoordinator.Delegate>
+            HOME_SCREEN_DELEGATE = new WritableObjectPropertyKey<>("home_screen_delegate");
+
+    /** The string id of the title shown on the detail screen. */
+    public static final WritableIntPropertyKey DETAIL_SCREEN_TITLE =
+            new WritableIntPropertyKey("detail_screen_title");
+
+    /** The string id of the title shown on the settings icon. */
+    public static final WritableIntPropertyKey DETAIL_SCREEN_SETTINGS_MENU_TITLE =
+            new WritableIntPropertyKey("detail_screen_settings_menu_title");
+
+    /** The handler for the back icon on the detail screens (autofill profiles, credit cards). */
+    public static final WritableObjectPropertyKey<Runnable> DETAIL_SCREEN_BACK_CLICK_HANDLER =
+            new WritableObjectPropertyKey<>("detail_screen_back_click_handler");
+
+    /** The handler for the settings icon on the autofill profile screen. */
+    public static final WritableObjectPropertyKey<OnMenuItemClickListener>
+            DETAIL_SCREEN_SETTINGS_CLICK_HANDLER =
+                    new WritableObjectPropertyKey<>("detail_screen_settings_click_handler");
+
+    /**
+     * The models that are displayed on the detail screen. This will either point to
+     * PROFILE_MODEL_LIST or CREDIT_CARD_MODEL_LIST.
+     */
+    public static final WritableObjectPropertyKey<ListModel<ListItem>> DETAIL_SCREEN_MODEL_LIST =
+            new WritableObjectPropertyKey<>("detail_screen_model_list");
+
+    public static PropertyModel createDefaultModel() {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(CURRENT_SCREEN, ScreenType.HOME_SCREEN)
@@ -72,6 +98,9 @@ public class FastCheckoutProperties {
     }
 
     /** All keys used for the fast checkout bottom sheet. */
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CURRENT_SCREEN, VISIBLE,
-            SELECTED_PROFILE, PROFILE_MODEL_LIST, SELECTED_CREDIT_CARD, HOME_SCREEN_DELEGATE};
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {VISIBLE, CURRENT_SCREEN, SELECTED_PROFILE, PROFILE_MODEL_LIST,
+                    SELECTED_CREDIT_CARD, HOME_SCREEN_DELEGATE, DETAIL_SCREEN_TITLE,
+                    DETAIL_SCREEN_SETTINGS_MENU_TITLE, DETAIL_SCREEN_BACK_CLICK_HANDLER,
+                    DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, DETAIL_SCREEN_MODEL_LIST};
 }

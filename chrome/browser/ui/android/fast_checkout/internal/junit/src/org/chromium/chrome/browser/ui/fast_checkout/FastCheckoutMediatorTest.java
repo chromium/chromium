@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -15,10 +16,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CURRENT_SCREEN;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.HOME_SCREEN_DELEGATE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.PROFILE_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.SELECTED_PROFILE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.VISIBLE;
 
+import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -30,9 +38,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
-import org.chromium.chrome.browser.ui.fast_checkout.autofill_profile_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
+import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -80,6 +89,41 @@ public class FastCheckoutMediatorTest {
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
         assertThat(mModel.get(PROFILE_MODEL_LIST), instanceOf(ListModel.class));
         assertThat(mModel.get(PROFILE_MODEL_LIST).size(), is(0));
+
+        // On top of that, the initialize method of the Mediator sets up delegates.
+        assertNotNull(mModel.get(HOME_SCREEN_DELEGATE));
+        assertThat(
+                mModel.get(HOME_SCREEN_DELEGATE), instanceOf(HomeScreenCoordinator.Delegate.class));
+
+        assertNotNull(mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER));
+        assertThat(mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER), instanceOf(Runnable.class));
+    }
+
+    @Test
+    public void testSetCurrentScreenUpdatesModel() {
+        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
+
+        // Test that all relevant model entries got updated.
+        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.AUTOFILL_PROFILE_SCREEN));
+        assertThat(mModel.get(DETAIL_SCREEN_TITLE),
+                is(R.string.fast_checkout_autofill_profile_sheet_title));
+        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE),
+                is(R.string.fast_checkout_autofill_profile_settings_button_description));
+        assertThat(mModel.get(DETAIL_SCREEN_MODEL_LIST), is(mModel.get(PROFILE_MODEL_LIST)));
+
+        assertNotNull(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
+        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER),
+                instanceOf(OnMenuItemClickListener.class));
+        // TODO(crbug.com/1355310): Test opening Autofill settings.
+    }
+
+    @Test
+    public void testNavigateBackWorksFromAutofillProfileScreen() {
+        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
+        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.AUTOFILL_PROFILE_SCREEN));
+
+        mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER).run();
+        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
     }
 
     @Test
@@ -102,15 +146,6 @@ public class FastCheckoutMediatorTest {
         mMediator.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
 
         verify(mMockBottomSheetController).hideContent(any(), eq(true));
-    }
-
-    @Test
-    public void testSetCurrentScreenUpdatesModel() {
-        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILES_SCREEN);
-        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.AUTOFILL_PROFILES_SCREEN));
-
-        mMediator.setCurrentScreen(ScreenType.HOME_SCREEN);
-        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
     }
 
     @Test
@@ -153,7 +188,7 @@ public class FastCheckoutMediatorTest {
     public void testAutofillProfileItemOnClickListenerUpdatesSelectedProfile() {
         mMediator.setAutofillProfileItems(DUMMY_PROFILES);
         mMediator.setSelectedAutofillProfile(DUMMY_PROFILES[0]);
-        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILES_SCREEN);
+        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
 
         ListModel<MVCListAdapter.ListItem> models = mModel.get(PROFILE_MODEL_LIST);
         assertThat(models.size(), is(DUMMY_PROFILES.length));
