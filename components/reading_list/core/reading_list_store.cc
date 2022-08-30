@@ -241,7 +241,12 @@ absl::optional<syncer::ModelError> ReadingListStore::MergeSyncData(
       // Send to sync
       std::unique_ptr<sync_pb::ReadingListSpecifics> entry_sync_pb =
           merged_entry->AsReadingListSpecifics();
-      DCHECK(CompareEntriesForSync(specifics, *entry_sync_pb));
+#if !defined(NDEBUG)
+      std::unique_ptr<ReadingListEntry> initial_entry(
+          ReadingListEntry::FromReadingListSpecifics(specifics, clock_->Now()));
+      DCHECK(CompareEntriesForSync(*(initial_entry->AsReadingListSpecifics()),
+                                   *entry_sync_pb));
+#endif
       auto entity_data = std::make_unique<syncer::EntityData>();
       *(entity_data->specifics.mutable_reading_list()) = *entry_sync_pb;
       entity_data->name = entry_sync_pb->entry_id();
