@@ -609,7 +609,9 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   BubbleFrameView* bubble_frame = static_cast<BubbleFrameView*>(
       bubble_widget->non_client_view()->frame_view());
   EXPECT_EQ(title_view, bubble_frame->title());
-  EXPECT_EQ(bubble_frame, title_view->parent());
+
+  View* title_container = title_view->parent();
+  EXPECT_EQ(bubble_frame, title_container->parent());
   // Title takes up the whole bubble width when there's no icon or close button.
   EXPECT_EQ(bubble_delegate->width(), title_view->size().width());
   EXPECT_EQ(kTitleHeight, title_view->size().height());
@@ -622,7 +624,7 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   // Title moves over for the close button.
   EXPECT_EQ(close_button->x() - LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_CLOSE_BUTTON_MARGIN),
-            title_view->bounds().right());
+            title_container->bounds().right());
 
   LayoutProvider* provider = LayoutProvider::Get();
   const gfx::Insets content_margins = provider->GetDialogInsetsForContentType(

@@ -37,6 +37,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/resources/grit/views_resources.h"
@@ -107,11 +108,15 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       footnote_margins_(content_margins_),
       title_icon_(AddChildView(std::make_unique<ImageView>())),
       main_image_(AddChildView(std::make_unique<ImageView>())),
-      default_title_(AddChildView(CreateDefaultTitleLabel(std::u16string()))),
-      subtitle_(AddChildView(
+      title_container_(AddChildView(std::make_unique<views::BoxLayoutView>())),
+      default_title_(title_container_->AddChildView(
+          CreateDefaultTitleLabel(std::u16string()))),
+      subtitle_(title_container_->AddChildView(
           CreateLabelWithContextAndStyle(std::u16string(),
                                          style::CONTEXT_LABEL,
                                          style::STYLE_SECONDARY))) {
+  title_container_->SetOrientation(BoxLayout::Orientation::kVertical);
+
   default_title_->SetVisible(false);
   main_image_->SetVisible(false);
   subtitle_->SetVisible(false);
@@ -263,7 +268,7 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
   if (!round_contents_bounds.Contains(rectf_point))
     return HTTRANSPARENT;
 
-  if (point.y() < title()->bounds().bottom()) {
+  if (point.y() < title_container_->bounds().bottom()) {
     auto* dialog_delegate = GetWidget()->widget_delegate()->AsDialogDelegate();
     if (dialog_delegate && dialog_delegate->draggable()) {
       return HTCAPTION;
@@ -358,8 +363,7 @@ void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   default_title_ = nullptr;
   delete custom_title_;
   custom_title_ = title_view.get();
-  // Keep the title after the icon for focus order.
-  AddChildViewAt(title_view.release(), GetIndexOf(title_icon_).value() + 1);
+  title_container_->AddChildViewAt(title_view.release(), 0);
 }
 
 void BubbleFrameView::UpdateSubtitle() {
@@ -544,29 +548,19 @@ void BubbleFrameView::Layout() {
   const int title_available_width =
       std::max(1, title_label_right - title_label_x);
   const int title_preferred_height =
-      title()->GetHeightForWidth(title_available_width);
+      title_container_->GetHeightForWidth(title_available_width);
   const int title_height =
       std::max(title_icon_pref_size.height(), title_preferred_height);
-  title()->SetBounds(title_label_x,
-                     bounds.y() + (title_height - title_preferred_height) / 2,
-                     title_available_width, title_preferred_height);
+
+  title_container_->SetBounds(
+      title_label_x, bounds.y() + (title_height - title_preferred_height) / 2,
+      title_available_width, title_preferred_height);
 
   title_icon_->SetBounds(bounds.x(), bounds.y(), title_icon_pref_size.width(),
                          title_height);
 
   main_image_->SetBounds(0, 0, main_image_->GetPreferredSize().width(),
                          main_image_->GetPreferredSize().height());
-
-  // Set the Subtitle bounds only if it's visible.
-  // The width of the Subtitle will match the Title so in cases where the Title
-  // is not visible, the Subtitle will also not be visible
-  if (subtitle_->GetVisible()) {
-    const int subtitle_preferred_height =
-        subtitle_->GetHeightForWidth(title_available_width);
-    const int subtitle_label_y = bounds.y() + title_height;
-    subtitle_->SetBounds(title_label_x, subtitle_label_y, title_available_width,
-                         subtitle_preferred_height);
-  }
 }
 
 void BubbleFrameView::OnThemeChanged() {
@@ -1025,21 +1019,14 @@ gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
   }
 
   const int icon_height = title_icon_->GetPreferredSize().height();
-  const int label_height = title()->GetHeightForWidth(
+  const int label_height = title_container_->GetHeightForWidth(
       frame_width - GetTitleLabelInsetsFromFrame().width());
   const int title_height =
       std::max(icon_height, label_height) + title_margins_.height();
-  const int subtitle_height =
-      subtitle_->GetVisible()
-          ? subtitle_->GetHeightForWidth(frame_width -
-                                         GetTitleLabelInsetsFromFrame().width())
-          : 0;
 
   return content_margins_ +
-         gfx::Insets::TLBR(
-             std::max(title_height + header_height + subtitle_height,
-                      close_height),
-             GetMainImageLeftInsets(), 0, 0);
+         gfx::Insets::TLBR(std::max(title_height + header_height, close_height),
+                           GetMainImageLeftInsets(), 0, 0);
 }
 
 int BubbleFrameView::GetHeaderHeightForFrameWidth(int frame_width) const {

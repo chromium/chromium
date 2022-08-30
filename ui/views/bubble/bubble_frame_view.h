@@ -17,6 +17,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -283,12 +284,16 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // The optional main image.
   raw_ptr<ImageView> main_image_ = nullptr;
 
+  raw_ptr<BoxLayoutView> title_container_ = nullptr;
+
   // One of these fields is used as the dialog title. If SetTitleView is called
   // the custom title view is stored in |custom_title_| and this class assumes
   // ownership. Otherwise |default_title_| is used.
   raw_ptr<Label> default_title_ = nullptr;
   raw_ptr<View> custom_title_ = nullptr;
+
   raw_ptr<Label> subtitle_ = nullptr;
+
   // The optional close button (the X).
   raw_ptr<Button> close_ = nullptr;
 

@@ -1238,7 +1238,7 @@ TEST_F(BubbleFrameViewTest, LayoutWithIcon) {
   delegate->ChangeTitle(u"test title");
   BubbleFrameView* frame = delegate->GetBubbleFrameView();
   View* icon = frame->title_icon_;
-  View* title = frame->title();
+  View* title = frame->title_container_;
 
   // There should be equal amounts of space on the left and right of the icon.
   EXPECT_EQ(icon->x() * 2 + icon->width(), title->x());
