@@ -1428,19 +1428,28 @@ TEST_P(PaintPropertyTreeUpdateTest, OverflowClipUpdateForImage) {
 
   auto* target = GetDocument().getElementById("target");
   const auto* properties = PaintPropertiesForElement("target");
-  // Image elements need a clip node to clip the image to its content box.
-  EXPECT_NE(nullptr, properties);
+  // Image elements don't need a clip node if the image is clipped to its
+  // content box.
+  EXPECT_EQ(nullptr, properties);
 
   target->setAttribute(html_names::kStyleAttr, "object-fit: cover");
   UpdateAllLifecyclePhasesForTest();
   properties = PaintPropertiesForElement("target");
-  // Image elements need a clip node to clip the image to its content box.
-  EXPECT_NE(nullptr, properties);
+  // Image elements don't need a clip node if the image is clipped to its
+  // content box.
+  EXPECT_EQ(nullptr, properties);
 
   target->setAttribute(html_names::kStyleAttr, "object-fit: none");
   UpdateAllLifecyclePhasesForTest();
   properties = PaintPropertiesForElement("target");
   // Ditto.
+  EXPECT_EQ(nullptr, properties);
+
+  target->setAttribute(html_names::kStyleAttr,
+                       "overflow-clip-margin: padding-box;");
+  UpdateAllLifecyclePhasesForTest();
+  properties = PaintPropertiesForElement("target");
+  // Changing overflow-clip-margin induces a clip node.
   EXPECT_NE(nullptr, properties);
 
   target->setAttribute(html_names::kStyleAttr,

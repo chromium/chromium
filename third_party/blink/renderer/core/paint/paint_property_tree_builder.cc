@@ -1939,7 +1939,8 @@ static bool NeedsOverflowClipForReplacedContents(
 
 static bool NeedsOverflowClip(const LayoutObject& object) {
   if (const auto* replaced = DynamicTo<LayoutReplaced>(object)) {
-    if (ReplacedElementAlwaysClipsToContentBox(*replaced))
+    if (ReplacedElementAlwaysClipsToContentBox(*replaced) ||
+        replaced->ClipsToContentBox())
       return NeedsOverflowClipForReplacedContents(*replaced);
   }
 
