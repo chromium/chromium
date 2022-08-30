@@ -195,11 +195,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 #endif
   }
 
-  const base::TimeDelta suggested_reclaim_time =
-      FeatureList::IsEnabled(kUseFiveMinutesThreadReclaimTime)
-          ? base::Minutes(5)
-          : init_params.suggested_reclaim_time;
-
 #if HAS_NATIVE_THREAD_POOL()
   if (FeatureList::IsEnabled(kUseNativeThreadPool)) {
     static_cast<ThreadGroupNative*>(foreground_thread_group_.get())
@@ -214,7 +209,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
     // of best-effort tasks.
     static_cast<ThreadGroupImpl*>(foreground_thread_group_.get())
         ->Start(init_params.max_num_foreground_threads, max_best_effort_tasks,
-                suggested_reclaim_time, service_thread_task_runner,
+                init_params.suggested_reclaim_time, service_thread_task_runner,
                 worker_thread_observer, worker_environment,
                 g_synchronous_thread_start_for_testing);
   }
@@ -229,9 +224,9 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
     {
       static_cast<ThreadGroupImpl*>(background_thread_group_.get())
           ->Start(max_best_effort_tasks, max_best_effort_tasks,
-                  suggested_reclaim_time, service_thread_task_runner,
-                  worker_thread_observer, worker_environment,
-                  g_synchronous_thread_start_for_testing);
+                  init_params.suggested_reclaim_time,
+                  service_thread_task_runner, worker_thread_observer,
+                  worker_environment, g_synchronous_thread_start_for_testing);
     }
   }
 

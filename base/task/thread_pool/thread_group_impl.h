@@ -208,6 +208,9 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // or when a new task is added to |priority_queue_|.
   void UpdateMinAllowedPriorityLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  bool IsOnIdleStackLockRequired(WorkerThread* worker) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Increments/decrements the number of tasks of |priority| that are currently
   // running in this thread group. Must be invoked before/after running a task.
   void DecrementTasksRunningLockRequired(TaskPriority priority)
@@ -239,6 +242,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
     // Suggested reclaim time for workers.
     TimeDelta suggested_reclaim_time;
+    bool no_worker_reclaim = false;
 
     // Environment to be initialized per worker.
     WorkerEnvironment worker_environment = WorkerEnvironment::NONE;

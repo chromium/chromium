@@ -28,9 +28,9 @@ extern const BASE_EXPORT Feature kUseNativeThreadPool;
 extern const BASE_EXPORT Feature kUseBackgroundNativeThreadPool;
 #endif
 
-// Whether threads in the ThreadPool should be reclaimed after being idle for 5
-// minutes, instead of 30 seconds.
-extern const BASE_EXPORT Feature kUseFiveMinutesThreadReclaimTime;
+// Under this feature, worker threads are not reclaimed after a timeout. Rather,
+// only excess workers are cleaned up immediately after finishing a task.
+extern const BASE_EXPORT Feature kNoWorkerThreadReclaim;
 
 // This feature controls whether wake ups are possible for canceled tasks.
 extern const BASE_EXPORT Feature kNoWakeUpsForCanceledTasks;

@@ -38,6 +38,7 @@
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -1424,8 +1425,11 @@ TEST_F(ThreadGroupImplBlockingTest, ThreadBusyShutdown) {
   thread_group_.reset();
 }
 
-class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,
-                                        public testing::Test {
+enum class ReclaimType { DELAYED_RECLAIM, NO_RECLAIM };
+
+class ThreadGroupImplOverCapacityTest
+    : public ThreadGroupImplImplTestBase,
+      public testing::TestWithParam<ReclaimType> {
  public:
   ThreadGroupImplOverCapacityTest() = default;
   ThreadGroupImplOverCapacityTest(const ThreadGroupImplOverCapacityTest&) =
@@ -1434,7 +1438,10 @@ class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,
       const ThreadGroupImplOverCapacityTest&) = delete;
 
   void SetUp() override {
-    CreateAndStartThreadGroup(kReclaimTimeForCleanupTests, kLocalMaxTasks);
+    if (GetParam() == ReclaimType::NO_RECLAIM) {
+      feature_list.InitAndEnableFeature(kNoWorkerThreadReclaim);
+    }
+    CreateThreadGroup();
     task_runner_ =
         test::CreatePooledTaskRunner({MayBlock(), WithBaseSyncPrimitives()},
                                      &mock_pooled_task_runner_delegate_);
@@ -1443,6 +1450,7 @@ class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,
   void TearDown() override { ThreadGroupImplImplTestBase::CommonTearDown(); }
 
  protected:
+  base::test::ScopedFeatureList feature_list;
   scoped_refptr<TaskRunner> task_runner_;
   static constexpr size_t kLocalMaxTasks = 3;
 
@@ -1454,12 +1462,15 @@ class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,
         "OverCapacityTestThreadGroup", "A", ThreadType::kDefault,
         task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
     ASSERT_TRUE(thread_group_);
+
+    mock_pooled_task_runner_delegate_.SetThreadGroup(thread_group_.get());
   }
 };
 
 // Verify that workers that become idle due to the thread group being over
 // capacity will eventually cleanup.
-TEST_F(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
+TEST_P(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
+  StartThreadGroup(kReclaimTimeForCleanupTests, kLocalMaxTasks);
   TestWaitableEvent threads_running;
   TestWaitableEvent threads_continue;
   RepeatingClosure threads_running_barrier = BarrierClosure(
@@ -1520,14 +1531,28 @@ TEST_F(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
                                   kReclaimTimeForCleanupTests * i * 0.5);
   }
 
-  // Note: one worker above capacity will not get cleaned up since it's on the
-  // top of the idle stack.
-  thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks - 1);
-  EXPECT_EQ(kLocalMaxTasks + 1, thread_group_->NumberOfWorkersForTesting());
+  if (GetParam() == ReclaimType::DELAYED_RECLAIM) {
+    // Note: one worker above capacity will not get cleaned up since it's on the
+    // top of the idle stack.
+    thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks - 1);
+    EXPECT_EQ(kLocalMaxTasks + 1, thread_group_->NumberOfWorkersForTesting());
+    threads_continue.Signal();
+  } else {
+    // When workers are't automatically reclaimed after a delay, blocking tasks
+    // need to return for extra workers to be cleaned up.
+    threads_continue.Signal();
+    thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks);
+    EXPECT_EQ(kLocalMaxTasks, thread_group_->NumberOfWorkersForTesting());
+  }
 
   threads_continue.Signal();
   task_tracker_.FlushForTesting();
 }
+
+INSTANTIATE_TEST_SUITE_P(ReclaimType,
+                         ThreadGroupImplOverCapacityTest,
+                         ::testing::Values(ReclaimType::DELAYED_RECLAIM,
+                                           ReclaimType::NO_RECLAIM));
 
 // Verify that the maximum number of workers is 256 and that hitting the max
 // leaves the thread group in a valid state with regards to max tasks.
