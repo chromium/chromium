@@ -33,6 +33,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
+#include "ui/color/color_provider.h"
 #endif
 
 ExtensionDialog::InitParams::InitParams(gfx::Size size)
@@ -209,13 +210,15 @@ ExtensionDialog::ExtensionDialog(
 
   if (init_params.title_color) {
     // Frame active color changes the title color when dialog is active.
-    native_view->SetProperty(chromeos::kFrameActiveColorKey,
-                             init_params.title_color.value());
+    native_view->SetProperty(
+        chromeos::kFrameActiveColorKey,
+        window->GetColorProvider()->GetColor(init_params.title_color.value()));
   }
   if (init_params.title_inactive_color) {
     // Frame inactive color changes the title color when dialog is inactive.
     native_view->SetProperty(chromeos::kFrameInactiveColorKey,
-                             init_params.title_inactive_color.value());
+                             window->GetColorProvider()->GetColor(
+                                 init_params.title_inactive_color.value()));
   }
 #endif
 
