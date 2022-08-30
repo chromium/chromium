@@ -303,12 +303,15 @@ class TracingHandler::PerfettoTracingSession {
   PerfettoTracingSession(bool use_proto, perfetto::BackendType backend_type)
       : use_proto_format_(use_proto), backend_type_(backend_type) {}
 
+  ~PerfettoTracingSession() { g_any_agent_tracing = false; }
+
   void EnableTracing(const perfetto::TraceConfig& perfetto_config,
                      base::OnceCallback<void(const std::string& /*error_msg*/)>
                          start_callback) {
     DCHECK(!tracing_session_);
     DCHECK(!tracing_active_);
 
+    g_any_agent_tracing = true;
     tracing_active_ = true;
     start_callback_ = std::move(start_callback);
 
@@ -824,7 +827,6 @@ void TracingHandler::Start(Maybe<std::string> categories,
       trace_config_,
       base::BindOnce(&TracingHandler::OnRecordingEnabled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
-  g_any_agent_tracing = true;
 }
 
 perfetto::TraceConfig TracingHandler::CreatePerfettoConfiguration(
@@ -918,7 +920,6 @@ void TracingHandler::AttemptAdoptStartupSession(
   session_ =
       std::make_unique<PerfettoTracingSession>(proto_format_, tracing_backend);
   session_->AdoptStartupTracingSession(perfetto_config);
-  g_any_agent_tracing = true;
 }
 
 Response TracingHandler::End() {
@@ -1107,7 +1108,6 @@ void TracingHandler::StopTracing(
     session_.reset();
   }
   did_initiate_recording_ = false;
-  g_any_agent_tracing = false;
   video_consumer_->StopCapture();
 }
 
