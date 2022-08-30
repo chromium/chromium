@@ -23,6 +23,7 @@ public class MessageAnimationCoordinator {
      * including situations in which the message is already dismissed and hide animation is running.
      */
     private MessageState mCurrentDisplayedMessage;
+    private List<MessageState> mCurrentDisplayedMessages;
     private MessageState mLastShownMessage;
     private MessageQueueDelegate mMessageQueueDelegate;
 
@@ -69,5 +70,10 @@ public class MessageAnimationCoordinator {
 
     MessageState getCurrentDisplayedMessage() {
         return mCurrentDisplayedMessage;
+    }
+
+    // Return a list of two messages which should be displayed when stacking animation is enabled.
+    List<MessageState> getCurrentDisplayedMessages() {
+        return mCurrentDisplayedMessages;
     }
 }

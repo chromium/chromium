@@ -643,6 +643,36 @@ public class MessageQueueManagerTest {
         verify(m1, times(2)).show();
     }
 
+    /**
+     * Test that {@link MessageQueueManager#getNextMessages()} returns correct list.
+     */
+    @Test
+    @SmallTest
+    public void testGetNextTwoMessages() {
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
+        var messages = queueManager.getNextMessages();
+        Assert.assertArrayEquals(new MessageState[] {null, null}, messages.toArray());
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        messages = queueManager.getNextMessages();
+        Assert.assertEquals(m1, messages.get(0).handler);
+        Assert.assertNull(messages.get(1));
+
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        messages = queueManager.getNextMessages();
+        Assert.assertEquals(m1, messages.get(0).handler);
+        Assert.assertEquals(m2, messages.get(1).handler);
+
+        MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID, true);
+        messages = queueManager.getNextMessages();
+        Assert.assertEquals(m3, messages.get(0).handler);
+        Assert.assertEquals(m1, messages.get(1).handler);
+    }
+
     static int getEnqueuedMessageCountForTesting(@MessageIdentifier int messageIdentifier) {
         return RecordHistogram.getHistogramValueCountForTesting(
                 MessagesMetrics.getEnqueuedHistogramNameForTesting(), messageIdentifier);

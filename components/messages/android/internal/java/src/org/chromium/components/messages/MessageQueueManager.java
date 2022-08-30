@@ -5,6 +5,7 @@
 package org.chromium.components.messages;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -12,9 +13,11 @@ import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A class managing the queue of messages. Its primary role is to decide when to show/hide current
@@ -202,33 +205,56 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     }
 
     /**
-     * Iterate the queues of each scope to get the next messages. If multiple messages meet the
+     * Iterate the queues of each scope to get the next message. If multiple messages meet the
      * requirements, which can show in the given scope, then the message queued earliest will be
      * returned.
      */
     @VisibleForTesting
     MessageState getNextMessage() {
-        if (isQueueSuspended()) return null;
-        MessageState nextMessage = null;
-        for (List<MessageState> queue : mMessageQueues.values()) {
+        var nextMessages = getNextMessages();
+        assert nextMessages.size() == 2;
+        return nextMessages.get(0);
+    }
+
+    /**
+     * Return the next two messages which should be displayed. The first element stands for the
+     * front message while the other one stands for the back message. Null represents no view should
+     * be displayed at that position.
+     */
+    @VisibleForTesting
+    List<MessageState> getNextMessages() {
+        if (isQueueSuspended()) {
+            return Arrays.asList(null, null);
+        }
+        MessageState a = null;
+        MessageState b = null;
+        for (var queue : mMessageQueues.values()) {
             if (queue.isEmpty()) continue;
             Boolean isActive = mScopeStates.get(queue.get(0).scopeKey);
-            if (isActive == null || !isActive) continue;
-            for (MessageState candidate : queue) {
+            if (!Objects.equals(isActive, true)) continue;
+            for (var candidate : queue) {
                 boolean shouldShow = candidate.handler.shouldShow();
                 Log.w(TAG,
                         "MessageStateHandler#shouldShow for message with ID %s and key %s in "
                                 + "MessageQueueManager#getNextMessage returned %s.",
                         candidate.handler.getMessageIdentifier(), candidate.messageKey, shouldShow);
-                if (shouldShow
-                        && (nextMessage == null
-                                || (candidate.highPriority && !nextMessage.highPriority)
-                                || candidate.id < nextMessage.id)) {
-                    nextMessage = candidate;
+                if (!shouldShow) continue;
+                if (isLowerPriority(a, candidate)) {
+                    b = a;
+                    a = candidate;
+                } else if (isLowerPriority(b, candidate)) {
+                    b = candidate;
                 }
             }
         }
-        return nextMessage;
+        return Arrays.asList(a, b);
+    }
+
+    // Return true if |a| is lower priority than |b|.
+    private boolean isLowerPriority(@Nullable MessageState a, @NonNull MessageState b) {
+        if (a == null) return true;
+        if (!a.highPriority && b.highPriority) return true;
+        return a.id > b.id;
     }
 
     static class MessageState {
