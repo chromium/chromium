@@ -11,6 +11,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "third_party/xdg_shared_mime_info/mime_cache.h"
 #else
 #include "base/nix/mime_util_xdg.h"
 #endif
@@ -27,7 +29,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
 bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     const base::FilePath::StringType& ext,
     std::string* result) const {
-  return false;
+  return xdg_shared_mime_info::GetMimeCacheTypeFromExtension(ext, result);
 }
 #else
 bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(

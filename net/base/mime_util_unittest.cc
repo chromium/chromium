@@ -83,11 +83,19 @@ TEST(MimeUtilTest, ExtensionTest) {
     {FILE_PATH_LITERAL("avif"), {"image/avif"}},
     {FILE_PATH_LITERAL("jxl"), {"image/jxl"}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // These are test cases for testing platform mime types on Chrome OS.
+    // These are test cases for testing platform mime types on ChromeOS.
     {FILE_PATH_LITERAL("epub"), {"application/epub+zip"}},
     {FILE_PATH_LITERAL("apk"), {"application/vnd.android.package-archive"}},
-    {FILE_PATH_LITERAL("cer"), {"application/x-x509-ca-cert"}},
-    {FILE_PATH_LITERAL("crt"), {"application/x-x509-ca-cert"}},
+    {FILE_PATH_LITERAL("cer"),
+     {
+         "application/x-x509-ca-cert",
+         "application/pkix-cert",  // System override for ChromeOS.
+     }},
+    {FILE_PATH_LITERAL("crt"),
+     {
+         "application/x-x509-ca-cert",
+         "application/pkix-cert",  // System override for ChromeOS.
+     }},
     {FILE_PATH_LITERAL("zip"), {"application/zip"}},
     {FILE_PATH_LITERAL("ics"), {"text/calendar"}},
 #endif
@@ -96,7 +104,8 @@ TEST(MimeUtilTest, ExtensionTest) {
          "application/x-mpegurl",  // Chrome's secondary mapping.
          "audio/x-mpegurl",  // https://crbug.com/1273061, system override for
                              // android-arm[64]-test and Linux. Possibly more.
-         "audio/mpegurl",    // System override for mac.
+         "application/vnd.apple.mpegurl",  // System override for ChromeOS.
+         "audio/mpegurl",                  // System override for mac.
      }},
     {FILE_PATH_LITERAL("csv"), {"text/csv"}},
     {FILE_PATH_LITERAL("not an extension / for sure"), {}},

@@ -135,7 +135,8 @@ class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
         if (test.mime_type != nullptr) {
           // Sniffing isn't used when GetMimeTypeFromFile() succeeds, so there
           // shouldn't be a hard-coded mime type configured.
-          EXPECT_TRUE(mime_type.empty());
+          EXPECT_TRUE(mime_type.empty())
+              << "Did not expect mime match " << mime_type << " for " << path;
           mime_type = test.mime_type;
         } else {
           EXPECT_FALSE(mime_type.empty()) << "No mime type for " << path;
@@ -187,21 +188,21 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
       {"webp"},
 
       // Raw.
-      {"arw", false},
-      {"cr2", false},
-      {"dng", false},
-      {"nef", false},
-      {"nrw", false},
-      {"orf", false},
-      {"raf", false},
-      {"rw2", false},
+      {"arw"},
+      {"cr2"},
+      {"dng"},
+      {"nef"},
+      {"nrw"},
+      {"orf"},
+      {"raf"},
+      {"rw2"},
 
       // Video.
-      {"3gp", false},
-      {"avi", false},
+      {"3gp"},
+      {"avi"},
       {"m4v"},
-      {"mkv", false},
-      {"mov", false},
+      {"mkv"},
+      {"mov"},
       {"mp4"},
       {"mpeg"},
       {"mpeg4", false},
@@ -209,11 +210,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
       {"mpg4", false},
       {"ogm"},
       {"ogv"},
-      {"ogx", false},
+      {"ogx"},
       {"webm"},
 
       // Audio.
-      {"amr", false},
+      {"amr"},
       {"flac"},
       {"m4a"},
       {"mp3"},
@@ -253,36 +254,28 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ImageHandlerChangeDetector) {
       {"png", kMediaAppId},
       {"webp", kMediaAppId},
       // Raw (handled by MediaApp).
-      {"arw", kMediaAppId, "image/tiff"},
-      {"cr2", kMediaAppId, "image/tiff"},
-      {"dng", kMediaAppId, "image/tiff"},
-      {"nef", kMediaAppId, "image/tiff"},
-      {"nrw", kMediaAppId, "image/tiff"},
-      {"orf", kMediaAppId, "image/tiff"},
-      {"raf", kMediaAppId, "image/tiff"},
-      {"rw2", kMediaAppId, "image/tiff"},
-      {"NRW", kMediaAppId, "image/tiff"},  // Uppercase extension.
-      {"arw", kMediaAppId, ""},  // Missing MIME type (unable to sniff).
+      {"arw", kMediaAppId},
+      {"cr2", kMediaAppId},
+      {"dng", kMediaAppId},
+      {"nef", kMediaAppId},
+      {"nrw", kMediaAppId},
+      {"orf", kMediaAppId},
+      {"raf", kMediaAppId},
+      {"rw2", kMediaAppId},
+      {"NRW", kMediaAppId},  // Uppercase extension.
   };
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, VideoHandlerChangeDetector) {
   std::vector<Expectation> expectations = {
-      {"3gp", kMediaAppId, "application/octet-stream"},
-      {"avi", kMediaAppId, "application/octet-stream"},
-      {"m4v", kMediaAppId},
-      {"mkv", kMediaAppId, "video/webm"},
-      {"mov", kMediaAppId, "application/octet-stream"},
-      {"mp4", kMediaAppId},
-      {"mpeg", kMediaAppId},
-      {"mpeg4", kMediaAppId, "video/mpeg"},
-      {"mpg", kMediaAppId},
-      {"mpg4", kMediaAppId, "video/mpeg"},
-      {"ogm", kMediaAppId},
-      {"ogv", kMediaAppId},
-      {"ogx", kMediaAppId, "video/ogg"},
-      {"webm", kMediaAppId},
+      {"3gp", kMediaAppId},  {"avi", kMediaAppId},
+      {"m4v", kMediaAppId},  {"mkv", kMediaAppId},
+      {"mov", kMediaAppId},  {"mp4", kMediaAppId},
+      {"mpeg", kMediaAppId}, {"mpeg4", kMediaAppId, "video/mpeg"},
+      {"mpg", kMediaAppId},  {"mpg4", kMediaAppId, "video/mpeg"},
+      {"ogm", kMediaAppId},  {"ogv", kMediaAppId},
+      {"ogx", kMediaAppId},  {"webm", kMediaAppId},
   };
   TestExpectationsAgainstDefaultTasks(expectations);
 }
@@ -320,11 +313,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, QuickOffice) {
   std::vector<Expectation> expectations = {
       {"doc", extension_misc::kQuickOfficeComponentExtensionId},
       {"docx", extension_misc::kQuickOfficeComponentExtensionId},
-      {"ppt", extension_misc::kQuickOfficeComponentExtensionId,
-       "application/vnd.ms-powerpoint"},
-      {"pptx", extension_misc::kQuickOfficeComponentExtensionId,
-       "application/"
-       "vnd.openxmlformats-officedocument.presentationml.presentation"},
+      {"ppt", extension_misc::kQuickOfficeComponentExtensionId},
+      {"pptx", extension_misc::kQuickOfficeComponentExtensionId},
       {"xls", extension_misc::kQuickOfficeComponentExtensionId},
       {"xlsx", extension_misc::kQuickOfficeComponentExtensionId},
   };

@@ -1198,6 +1198,10 @@ component("net") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//third_party/xdg_shared_mime_info" ]
+  }
+
   if (is_mac) {
     sources += [
       "base/network_notification_thread_mac.cc",
