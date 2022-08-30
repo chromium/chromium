@@ -1408,7 +1408,7 @@ void VideoCaptureDeviceMFWin::GetPhotoState(GetPhotoStateCallback callback) {
     // support optional shallow focus capability (according to
     // https://docs.microsoft.com/en-us/windows-hardware/drivers/stream/ksproperty-cameracontrol-extended-backgroundsegmentation)
     // but that support is not needed here.
-    HRESULT hr = extended_camera_controller_->GetExtendedCameraControl(
+    hr = extended_camera_controller_->GetExtendedCameraControl(
         MF_CAPTURE_ENGINE_MEDIASOURCE,
         KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION,
         &extended_camera_control);
@@ -1604,7 +1604,7 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
   if (extended_camera_controller_) {
     ComPtr<IMFExtendedCameraControl> extended_camera_control;
     if (settings->has_background_blur_mode) {
-      HRESULT hr = extended_camera_controller_->GetExtendedCameraControl(
+      hr = extended_camera_controller_->GetExtendedCameraControl(
           MF_CAPTURE_ENGINE_MEDIASOURCE,
           KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION,
           &extended_camera_control);

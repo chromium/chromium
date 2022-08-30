@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -956,10 +957,8 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
   EXPECT_TRUE(AreCertsEq(e_by_e_, path.certs[2]));
 
   // Should only be one valid path, the one above.
-  int valid_paths = 0;
-  for (auto&& path : result.paths) {
-    valid_paths += path->IsValid() ? 1 : 0;
-  }
+  int valid_paths =
+      base::ranges::count_if(result.paths, &CertPathBuilderResultPath::IsValid);
   ASSERT_EQ(1, valid_paths);
 }
 

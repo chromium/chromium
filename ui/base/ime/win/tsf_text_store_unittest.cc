@@ -1562,7 +1562,6 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
     SCOPED_TRACE("Verify URL and InputScope support");
     TS_ATTRVAL buffer[2] = {};
     num_copied = 0xfffffff;
-    base::win::ScopedVariant variant;
     const TS_ATTRID inputScopeAndUrlAttributes[] = {GUID_PROP_INPUTSCOPE,
                                                     GUID_PROP_URL};
 

@@ -355,7 +355,7 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
         GetInternetShortcutFileContents(url);
     SetFileContents(base::FilePath(valid_file_name),
                     shortcut_url_file_contents);
-    STGMEDIUM storage = CreateStorageForString(std::string());
+    storage = CreateStorageForString(std::string());
     data_->contents_.push_back(
         DataObjectImpl::StoredDataInfo::TakeStorageMedium(
             GetIgnoreFileContentsFormatType().ToFormatEtc(), storage));

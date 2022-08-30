@@ -373,8 +373,8 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
         aliases_.erase(alias_it);
 
         // Remap pooled session keys.
-        const auto& aliases = available_session->pooled_aliases();
-        for (auto it = aliases.begin(); it != aliases.end();) {
+        const auto& pooled_aliases = available_session->pooled_aliases();
+        for (auto it = pooled_aliases.begin(); it != pooled_aliases.end();) {
           // Ignore aliases this loop is inserting.
           if (it->socket_tag() == key.socket_tag()) {
             ++it;

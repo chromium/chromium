@@ -15522,7 +15522,6 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
   void SetUp() override {
     // The request host scheme and port are only preserved if the SVCB feature
     // is enabled.
-    base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         features::kUseDnsHttpsSvcb,
         {// Disable timeouts.

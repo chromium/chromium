@@ -666,12 +666,14 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   // Create an ephemeral profile.
   base::FilePath path_profile2 =
       profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      path_profile2, base::BindOnce(&EphemeralProfileCreationComplete,
-                                    run_loop.QuitWhenIdleClosure()));
+  {
+    base::RunLoop run_loop;
+    profile_manager->CreateProfileAsync(
+        path_profile2, base::BindOnce(&EphemeralProfileCreationComplete,
+                                      run_loop.QuitWhenIdleClosure()));
 
-  run_loop.Run();
+    run_loop.Run();
+  }
 
   BrowserList* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());

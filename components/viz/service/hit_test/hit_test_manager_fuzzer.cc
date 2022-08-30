@@ -168,12 +168,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t num_bytes) {
 
   viz::SurfaceId aggregate_surface_id = surface_id;
   if (fuzz.ConsumeBool() && fuzz.remaining_bytes() >= sizeof(viz::SurfaceId)) {
-    viz::FrameSinkId frame_sink_id(GetNextUInt32NonZero(&fuzz),
-                                   GetNextUInt32NonZero(&fuzz));
-    viz::LocalSurfaceId local_surface_id(GetNextUInt32NonZero(&fuzz),
-                                         GetNextUInt32NonZero(&fuzz),
-                                         base::UnguessableToken::Create());
-    aggregate_surface_id = viz::SurfaceId(frame_sink_id, local_surface_id);
+    aggregate_surface_id =
+        viz::SurfaceId(viz::FrameSinkId(GetNextUInt32NonZero(&fuzz),
+                                        GetNextUInt32NonZero(&fuzz)),
+                       viz::LocalSurfaceId(GetNextUInt32NonZero(&fuzz),
+                                           GetNextUInt32NonZero(&fuzz),
+                                           base::UnguessableToken::Create()));
   }
   aggregator.Aggregate(aggregate_surface_id);
   viz::Surface* surface = frame_sink_manager.surface_manager()->GetSurfaceForId(

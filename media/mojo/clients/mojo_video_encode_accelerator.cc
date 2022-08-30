@@ -177,7 +177,6 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
       mojo_frame = frame;
       break;
     case VideoFrame::STORAGE_SHMEM: {
-      size_t num_planes = VideoFrame::NumPlanes(frame->format());
       std::vector<uint32_t> offsets(num_planes);
       std::vector<int32_t> strides(num_planes);
       for (size_t i = 0; i < num_planes; ++i) {
