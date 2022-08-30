@@ -1643,6 +1643,7 @@ dictionary ValidityStateFlags {
 
 dictionary FocusOptions {
   boolean preventScroll = false;
+  boolean focusVisible;
 };
 
 interface mixin ElementContentEditable {

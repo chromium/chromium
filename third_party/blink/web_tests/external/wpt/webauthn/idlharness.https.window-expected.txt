@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 78 tests; 75 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 82 tests; 79 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial dictionary CredentialCreationOptions: original dictionary defined
@@ -32,6 +32,10 @@ PASS Partial dictionary AuthenticationExtensionsClientInputs[5]: original dictio
 PASS Partial dictionary AuthenticationExtensionsClientInputs[5]: member names are unique
 PASS Partial dictionary AuthenticationExtensionsClientOutputs[5]: original dictionary defined
 PASS Partial dictionary AuthenticationExtensionsClientOutputs[5]: member names are unique
+PASS Partial dictionary AuthenticationExtensionsClientInputs[6]: original dictionary defined
+PASS Partial dictionary AuthenticationExtensionsClientInputs[6]: member names are unique
+PASS Partial dictionary AuthenticationExtensionsClientOutputs[6]: original dictionary defined
+PASS Partial dictionary AuthenticationExtensionsClientOutputs[6]: member names are unique
 PASS Partial dictionary CredentialRequestOptions[2]: member names are unique
 PASS Partial dictionary CredentialCreationOptions[2]: member names are unique
 PASS Partial dictionary CredentialRequestOptions[3]: member names are unique

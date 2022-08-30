@@ -103,7 +103,8 @@ enum GPUFeatureName {
     "timestamp-query",
     "indirect-first-instance",
     "shader-f16",
-    "bgra8unorm-storage"
+    "bgra8unorm-storage",
+    "rg11b10ufloat-renderable"
 };
 
 [Exposed=(Window, DedicatedWorker), SecureContext]
@@ -139,16 +140,24 @@ GPUDevice includes GPUObjectBase;
 
 [Exposed=(Window, DedicatedWorker), SecureContext]
 interface GPUBuffer {
+    readonly attribute GPUSize64 size;
+    readonly attribute GPUBufferUsageFlags usage;
+
+    readonly attribute GPUBufferMapState mapState;
+
     Promise<undefined> mapAsync(GPUMapModeFlags mode, optional GPUSize64 offset = 0, optional GPUSize64 size);
     ArrayBuffer getMappedRange(optional GPUSize64 offset = 0, optional GPUSize64 size);
     undefined unmap();
 
     undefined destroy();
-
-    readonly attribute GPUSize64 size;
-    readonly attribute GPUBufferUsageFlags usage;
 };
 GPUBuffer includes GPUObjectBase;
+
+enum GPUBufferMapState {
+    "unmapped",
+    "pending",
+    "mapped"
+};
 
 dictionary GPUBufferDescriptor : GPUObjectDescriptorBase {
     required GPUSize64 size;

@@ -5,7 +5,7 @@
 
 [Exposed=(Window,Worker), Serializable]
 interface CropTarget {
-  [SecureContext] static Promise<CropTarget> fromElement(Element element);
+  [Exposed=Window, SecureContext] static Promise<CropTarget> fromElement(Element element);
 };
 
 [Exposed = Window]

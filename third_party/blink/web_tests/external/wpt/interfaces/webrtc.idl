@@ -311,8 +311,6 @@ dictionary RTCRtpCodingParameters {
   DOMString rid;
 };
 
-dictionary RTCRtpDecodingParameters : RTCRtpCodingParameters {};
-
 dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
   boolean active = true;
   unsigned long maxBitrate;

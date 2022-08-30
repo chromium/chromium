@@ -126,6 +126,7 @@ dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
              unsigned long        firCount;
              unsigned long        pliCount;
              DOMString            encoderImplementation;
+             boolean              active;
 };
 
 enum RTCQualityLimitationReason {

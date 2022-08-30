@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 229 tests; 214 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 230 tests; 215 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -86,6 +86,7 @@ PASS outbound-rtp's nackCount
 PASS outbound-rtp's firCount
 PASS outbound-rtp's pliCount
 PASS outbound-rtp's encoderImplementation
+PASS outbound-rtp's active
 PASS outbound-rtp's packetsSent
 PASS outbound-rtp's bytesSent
 PASS outbound-rtp's ssrc

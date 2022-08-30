@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 378 tests; 303 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 406 tests; 331 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -119,6 +119,32 @@ FAIL Stringification of document.caretPositionFromPoint(5, 5) assert_equals: Une
 FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "offsetNode" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
 FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "offset" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
 FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "getClientRect()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
+PASS VisualViewport interface: existence and properties of interface object
+PASS VisualViewport interface object length
+PASS VisualViewport interface object name
+PASS VisualViewport interface: existence and properties of interface prototype object
+PASS VisualViewport interface: existence and properties of interface prototype object's "constructor" property
+PASS VisualViewport interface: existence and properties of interface prototype object's @@unscopables property
+PASS VisualViewport interface: attribute offsetLeft
+PASS VisualViewport interface: attribute offsetTop
+PASS VisualViewport interface: attribute pageLeft
+PASS VisualViewport interface: attribute pageTop
+PASS VisualViewport interface: attribute width
+PASS VisualViewport interface: attribute height
+PASS VisualViewport interface: attribute scale
+PASS VisualViewport interface: attribute onresize
+PASS VisualViewport interface: attribute onscroll
+PASS VisualViewport must be primary interface of self.visualViewport
+PASS Stringification of self.visualViewport
+PASS VisualViewport interface: self.visualViewport must inherit property "offsetLeft" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "offsetTop" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "pageLeft" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "pageTop" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "width" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "height" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "scale" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "onresize" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "onscroll" with the proper type
 FAIL CSSPseudoElement interface: operation getBoxQuads(optional BoxQuadOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
@@ -224,6 +250,7 @@ FAIL Element interface: document.createElement("img") must inherit property "con
 FAIL Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document.createElement("img") with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
 PASS Window interface: operation matchMedia(CSSOMString)
 PASS Window interface: attribute screen
+PASS Window interface: attribute visualViewport
 PASS Window interface: operation moveTo(long, long)
 PASS Window interface: operation moveBy(long, long)
 PASS Window interface: operation resizeTo(long, long)
@@ -250,6 +277,7 @@ PASS Window interface: attribute devicePixelRatio
 PASS Window interface: window must inherit property "matchMedia(CSSOMString)" with the proper type
 PASS Window interface: calling matchMedia(CSSOMString) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "screen" with the proper type
+PASS Window interface: window must inherit property "visualViewport" with the proper type
 PASS Window interface: window must inherit property "moveTo(long, long)" with the proper type
 PASS Window interface: calling moveTo(long, long) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "moveBy(long, long)" with the proper type

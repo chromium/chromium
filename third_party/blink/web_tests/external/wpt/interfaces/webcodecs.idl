@@ -9,6 +9,7 @@ interface AudioDecoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long decodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(AudioDecoderConfig config);
   undefined decode(EncodedAudioChunk chunk);
@@ -32,6 +33,7 @@ interface VideoDecoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long decodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(VideoDecoderConfig config);
   undefined decode(EncodedVideoChunk chunk);
@@ -55,6 +57,7 @@ interface AudioEncoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(AudioEncoderConfig config);
   undefined encode(AudioData data);
@@ -84,6 +87,7 @@ interface VideoEncoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(VideoEncoderConfig config);
   undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
@@ -469,10 +473,9 @@ interface ImageTrackList {
 };
 
 [Exposed=(Window,DedicatedWorker)]
-interface ImageTrack : EventTarget {
+interface ImageTrack {
   readonly attribute boolean animated;
   readonly attribute unsigned long frameCount;
   readonly attribute unrestricted float repetitionCount;
-  attribute EventHandler onchange;
   attribute boolean selected;
 };

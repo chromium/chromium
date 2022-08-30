@@ -22,12 +22,12 @@ dictionary IdentityProvider {
   USVString nonce;
 };
 
-dictionary IdentityCredentialLogoutRpsRequest {
+dictionary IdentityCredentialLogoutRPsRequest {
   required USVString url;
   required USVString accountId;
 };
 
 [Exposed=Window, SecureContext]
 partial interface IdentityCredential {
-  static Promise<undefined> logoutRPs(sequence<IdentityCredentialLogoutRpsRequest> logoutRequests);
+  static Promise<undefined> logoutRPs(sequence<IdentityCredentialLogoutRPsRequest> logoutRequests);
 };

@@ -227,6 +227,7 @@ enum AuthenticatorTransport {
     "usb",
     "nfc",
     "ble",
+    "hybrid",
     "internal"
 };
 
@@ -255,17 +256,6 @@ partial dictionary AuthenticationExtensionsClientOutputs {
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
-  boolean uvm;
-};
-
-typedef sequence<unsigned long> UvmEntry;
-typedef sequence<UvmEntry> UvmEntries;
-
-partial dictionary AuthenticationExtensionsClientOutputs {
-  UvmEntries uvm;
-};
-
-partial dictionary AuthenticationExtensionsClientInputs {
     boolean credProps;
 };
 
@@ -275,6 +265,29 @@ dictionary CredentialPropertiesOutput {
 
 partial dictionary AuthenticationExtensionsClientOutputs {
     CredentialPropertiesOutput credProps;
+};
+
+dictionary AuthenticationExtensionsPRFValues {
+    required ArrayBuffer first;
+    ArrayBuffer second;
+};
+
+dictionary AuthenticationExtensionsPRFInputs {
+    AuthenticationExtensionsPRFValues eval;
+    record<USVString, AuthenticationExtensionsPRFValues> evalByCredential;
+};
+
+partial dictionary AuthenticationExtensionsClientInputs {
+    AuthenticationExtensionsPRFInputs prf;
+};
+
+dictionary AuthenticationExtensionsPRFOutputs {
+    boolean enabled;
+    AuthenticationExtensionsPRFValues results;
+};
+
+partial dictionary AuthenticationExtensionsClientOutputs {
+    AuthenticationExtensionsPRFOutputs prf;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
@@ -300,4 +313,15 @@ dictionary AuthenticationExtensionsLargeBlobOutputs {
     boolean supported;
     ArrayBuffer blob;
     boolean written;
+};
+
+partial dictionary AuthenticationExtensionsClientInputs {
+  boolean uvm;
+};
+
+typedef sequence<unsigned long> UvmEntry;
+typedef sequence<UvmEntry> UvmEntries;
+
+partial dictionary AuthenticationExtensionsClientOutputs {
+  UvmEntries uvm;
 };

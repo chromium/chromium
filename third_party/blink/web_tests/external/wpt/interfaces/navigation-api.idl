@@ -93,7 +93,7 @@ interface NavigateEvent : Event {
   readonly attribute any info;
 
   undefined intercept(optional NavigationInterceptOptions options = {});
-  undefined restoreScroll();
+  undefined scroll();
 };
 
 dictionary NavigateEventInit : EventInit {
@@ -111,7 +111,7 @@ dictionary NavigateEventInit : EventInit {
 dictionary NavigationInterceptOptions {
   NavigationInterceptHandler handler;
   NavigationFocusReset focusReset;
-  NavigationScrollRestoration scrollRestoration;
+  NavigationScrollBehavior scroll;
 };
 
 enum NavigationFocusReset {
@@ -119,7 +119,7 @@ enum NavigationFocusReset {
   "manual"
 };
 
-enum NavigationScrollRestoration {
+enum NavigationScrollBehavior {
   "after-transition",
   "manual"
 };

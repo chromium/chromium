@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "CSSScrollTimelineRule inherits CSSRule, but CSSRule is undefined."
+PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: member names are unique
 PASS Element includes Animatable: member names are unique
@@ -7,5 +7,26 @@ PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
 PASS Element includes Slottable: member names are unique
+PASS ScrollTimeline interface: existence and properties of interface object
+PASS ScrollTimeline interface object length
+PASS ScrollTimeline interface object name
+PASS ScrollTimeline interface: existence and properties of interface prototype object
+PASS ScrollTimeline interface: existence and properties of interface prototype object's "constructor" property
+PASS ScrollTimeline interface: existence and properties of interface prototype object's @@unscopables property
+PASS ScrollTimeline interface: attribute source
+FAIL ScrollTimeline interface: attribute axis assert_true: The prototype object must have a property "axis" expected true got false
+PASS ScrollTimeline must be primary interface of new ScrollTimeline()
+PASS Stringification of new ScrollTimeline()
+PASS ScrollTimeline interface: new ScrollTimeline() must inherit property "source" with the proper type
+FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "axis" with the proper type assert_inherits: property "axis" not found in prototype chain
+PASS ViewTimeline interface: existence and properties of interface object
+PASS ViewTimeline interface object length
+PASS ViewTimeline interface object name
+PASS ViewTimeline interface: existence and properties of interface prototype object
+PASS ViewTimeline interface: existence and properties of interface prototype object's "constructor" property
+PASS ViewTimeline interface: existence and properties of interface prototype object's @@unscopables property
+PASS ViewTimeline interface: attribute subject
+FAIL ViewTimeline interface: attribute startOffset assert_true: The prototype object must have a property "startOffset" expected true got false
+FAIL ViewTimeline interface: attribute endOffset assert_true: The prototype object must have a property "endOffset" expected true got false
 Harness: the test ran to completion.
 
