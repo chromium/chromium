@@ -198,6 +198,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // and the `zero_state_default_desk_button_`.
   void UpdateButtonsForDesksTemplatesGrid();
 
+  // Updates the visibility of the two buttons inside the zero state desks bar
+  // and the ExpandedDesksBarButton on the desk bar's state.
+  void UpdateDeskButtonsVisibility();
+
   // Updates the visibility of the desks templates button based on whether the
   // desks templates feature is enabled, the user has any desks templates and
   // the state of the desks bar.
@@ -232,10 +236,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   // This offset is used to calculate the amount by which the mini_views should
   // be moved when performing the mini_view creation or deletion animations.
   int GetFirstMiniViewXOffset() const;
-
-  // Updates the visibility of the two buttons inside the zero state desks bar
-  // and the ExpandedDesksBarButton on the desk bar's state.
-  void UpdateDeskButtonsVisibility();
 
   // Updates the visibility of |left_scroll_button_| and |right_scroll_button_|.
   // Show |left_scroll_button_| if there are contents outside of the left edge

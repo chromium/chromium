@@ -5363,6 +5363,51 @@ TEST_F(DesksTest, DesksBarZeroState) {
   EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
 }
 
+// Tests that buttons in the desk bar are shown and hidden correctly when
+// transitioning into zero state to ensure ChromeVox navigation works properly.
+// Regression test for https://crbug.com/1351501.
+TEST_F(DesksTest, DesksBarButtonVisibility) {
+  auto* controller = DesksController::Get();
+
+  // Create a new desk so when we enter overview mode the desks bar is in the
+  // expanded state.
+  NewDesk();
+  ASSERT_EQ(2u, controller->desks().size());
+
+  // Enter overview mode and check that the desks bar is in the expanded state.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
+
+  // Verify that the expanded state button is visible, while the zero state
+  // buttons are not visible.
+  auto* expanded_state_new_desk_button =
+      desks_bar_view->expanded_state_new_desk_button();
+  auto* zero_state_new_desk_button =
+      desks_bar_view->zero_state_new_desk_button();
+  auto* zero_state_default_desk_button =
+      desks_bar_view->zero_state_default_desk_button();
+  EXPECT_TRUE(expanded_state_new_desk_button->GetVisible());
+  EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
+  EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
+
+  // Close a desk and check that the desks bar switches into zero state.
+  auto* mini_view = desks_bar_view->mini_views().front();
+  CloseDeskFromMiniView(mini_view, GetEventGenerator());
+  ASSERT_EQ(1u, controller->desks().size());
+  ASSERT_TRUE(desks_bar_view->IsZeroState());
+
+  // Verify that the expanded state button is not visible, while the zero state
+  // buttons are visible.
+  EXPECT_FALSE(expanded_state_new_desk_button->GetVisible());
+  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
+  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+}
+
 TEST_F(DesksTest, NewDeskButton) {
   auto* controller = DesksController::Get();
   EnterOverview();

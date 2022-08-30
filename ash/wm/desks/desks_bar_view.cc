@@ -897,7 +897,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
 
   Layout();
   PerformRemoveDeskMiniViewAnimation(
-      removed_mini_view,
+      this, removed_mini_view,
       std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
       std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
       expanded_state_new_desk_button_, expanded_state_desks_templates_button_,
@@ -1044,6 +1044,17 @@ void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
   expanded_state_desks_templates_button_->UpdateBorderColor();
 }
 
+void DesksBarView::UpdateDeskButtonsVisibility() {
+  const bool is_zero_state = IsZeroState();
+  zero_state_default_desk_button_->SetVisible(is_zero_state);
+  zero_state_new_desk_button_->SetVisible(is_zero_state);
+  expanded_state_new_desk_button_->SetVisible(!is_zero_state);
+  if (vertical_dots_button_)
+    vertical_dots_button_->SetVisible(!is_zero_state);
+
+  UpdateDesksTemplatesButtonVisibility();
+}
+
 void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
   if (!saved_desk_util::IsSavedDesksEnabled())
     return;
@@ -1177,17 +1188,6 @@ int DesksBarView::GetFirstMiniViewXOffset() const {
   // transform is correct while in RTL layout.
   return mini_views_.empty() ? bounds().CenterPoint().x()
                              : mini_views_[0]->GetMirroredX();
-}
-
-void DesksBarView::UpdateDeskButtonsVisibility() {
-  const bool is_zero_state = IsZeroState();
-  zero_state_default_desk_button_->SetVisible(is_zero_state);
-  zero_state_new_desk_button_->SetVisible(is_zero_state);
-  expanded_state_new_desk_button_->SetVisible(!is_zero_state);
-  if (vertical_dots_button_)
-    vertical_dots_button_->SetVisible(!is_zero_state);
-
-  UpdateDesksTemplatesButtonVisibility();
 }
 
 void DesksBarView::UpdateScrollButtonsVisibility() {
