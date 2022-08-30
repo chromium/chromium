@@ -306,6 +306,8 @@ source_set("headless_shared_sources") {
     "app/headless_shell_switches.h",
     "lib/headless_content_client.cc",
     "lib/headless_content_client.h",
+    "lib/headless_content_main_delegate.cc",
+    "lib/headless_content_main_delegate.h",
     "public/headless_browser.cc",
     "public/headless_browser.h",
     "public/headless_export.h",
@@ -505,8 +507,6 @@ component("headless_non_renderer") {
     sources += [
       "lib/browser/headless_content_browser_client.cc",
       "lib/browser/headless_content_browser_client.h",
-      "lib/headless_content_main_delegate.cc",
-      "lib/headless_content_main_delegate.h",
       "lib/renderer/headless_content_renderer_client.cc",
       "lib/renderer/headless_content_renderer_client.h",
       "lib/utility/headless_content_utility_client.cc",
@@ -627,8 +627,6 @@ if (!is_component_build) {
     sources = [
       "lib/browser/headless_web_contents_impl.cc",
       "lib/browser/headless_web_contents_impl.h",
-      "lib/headless_content_main_delegate.cc",
-      "lib/headless_content_main_delegate.h",
       "lib/renderer/headless_content_renderer_client.cc",
       "lib/renderer/headless_content_renderer_client.h",
       "lib/utility/headless_content_utility_client.cc",

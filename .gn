@@ -71,7 +71,6 @@ no_check_targets = [
   # crbug.com/1158989
   "//headless:headless_renderer",  # 12 errors
   "//headless:headless_shared_sources",  # 2 errors
-  "//headless:headless_shell_browser_lib",  # 1 errors
 
   # //v8, https://crbug.com/v8/7330
   "//v8/src/inspector:inspector",  # 20 errors
