@@ -354,13 +354,12 @@ gfx::ImageSkia RemoteAppsManager::GetPlaceholderIcon(const std::string& id,
   return icon;
 }
 
-apps::mojom::MenuItemsPtr RemoteAppsManager::GetMenuModel(
-    const std::string& id) {
+apps::MenuItems RemoteAppsManager::GetMenuModel(const std::string& id) {
   apps::MenuItems menu_items;
   // TODO(b/236785623): Temporary string for menu item.
   apps::AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                        menu_items);
-  return ConvertMenuItemsToMojomMenuItems(menu_items);
+  return menu_items;
 }
 
 void RemoteAppsManager::OnSyncModelUpdated() {

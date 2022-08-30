@@ -144,6 +144,13 @@ void RemoteApps::LaunchAppWithParams(AppLaunchParams&& params,
   std::move(callback).Run(LaunchResult());
 }
 
+void RemoteApps::GetMenuModel(const std::string& app_id,
+                              MenuType menu_type,
+                              int64_t display_id,
+                              base::OnceCallback<void(MenuItems)> callback) {
+  std::move(callback).Run(delegate_->GetMenuModel(app_id));
+}
+
 void RemoteApps::Connect(
     mojo::PendingRemote<mojom::Subscriber> subscriber_remote,
     mojom::ConnectOptionsPtr opts) {
@@ -170,7 +177,8 @@ void RemoteApps::GetMenuModel(const std::string& app_id,
                               mojom::MenuType menu_type,
                               int64_t display_id,
                               GetMenuModelCallback callback) {
-  std::move(callback).Run(delegate_->GetMenuModel(app_id));
+  std::move(callback).Run(
+      ConvertMenuItemsToMojomMenuItems(delegate_->GetMenuModel(app_id)));
 }
 
 }  // namespace apps
