@@ -107,7 +107,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
   }
   if (state_ == State::kUpgraded) {
     DCHECK(!timer_.IsRunning());
-    // |timer_| is deleted when the tab helper is deleted, so it's safe to use
+    // `timer_` is deleted when the tab helper is deleted, so it's safe to use
     // Unretained here.
     timer_.Start(
         FROM_HERE, service_->GetFallbackDelay(),

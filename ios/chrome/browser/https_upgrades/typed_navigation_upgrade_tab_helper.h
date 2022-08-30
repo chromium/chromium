@@ -25,7 +25,7 @@ class TypedNavigationUpgradeTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<TypedNavigationUpgradeTabHelper> {
  public:
-  // Creates TabHelper. |web_state| must not be null.
+  // Creates TabHelper. `web_state` must not be null.
   static void CreateForWebState(web::WebState* web_state);
 
   ~TypedNavigationUpgradeTabHelper() override;
