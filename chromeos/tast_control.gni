@@ -216,6 +216,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/235279574
   "wmp.DragAndDropWindow",
 
+  # http://crbug.com/1339132
+  "crostini.BasicLxdNext.stable",
+
   # http://b/238600197
   "crostini.FilesAppWatch.buster_stable",
 
