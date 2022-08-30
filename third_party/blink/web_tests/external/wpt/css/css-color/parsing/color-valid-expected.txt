@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 403 tests; 52 PASS, 351 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 403 tests; 68 PASS, 335 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['color'] = "currentcolor" should set the property value
 PASS e.style['color'] = "transparent" should set the property value
 PASS e.style['color'] = "red" should set the property value
@@ -332,22 +332,22 @@ FAIL e.style['color'] = "lab(none none none)" should set the property value asse
 FAIL e.style['color'] = "lab(20% none none / none)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['color'] = "lab(none none none / 0.5)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['color'] = "lab(0% 0 0 / none)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(0% 0 0)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(0% 0 0 / 1)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(0% 0 0 / 0.5)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(20% 0 10/0.5)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(20% 0 10/50%)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(400% 0 10/50%)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(50% -160 160)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(50% -200 200)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(0% 0 0 / -10%)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(0% 0 0 / 110%)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(0% 0 0 / 300%)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(-40% 0 0)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(50% -20 0)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(50% 0 -20)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(calc(50% * 3) calc(0.5 - 1) calc(1.5) / calc(-0.5 + 1))" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['color'] = "oklab(calc(-50% * 3) calc(0.5 + 1) calc(-1.5) / calc(-0.5 * 2))" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['color'] = "oklab(0% 0 0)" should set the property value
+PASS e.style['color'] = "oklab(0% 0 0 / 1)" should set the property value
+PASS e.style['color'] = "oklab(0% 0 0 / 0.5)" should set the property value
+PASS e.style['color'] = "oklab(20% 0 10/0.5)" should set the property value
+PASS e.style['color'] = "oklab(20% 0 10/50%)" should set the property value
+PASS e.style['color'] = "oklab(400% 0 10/50%)" should set the property value
+PASS e.style['color'] = "oklab(50% -160 160)" should set the property value
+PASS e.style['color'] = "oklab(50% -200 200)" should set the property value
+PASS e.style['color'] = "oklab(0% 0 0 / -10%)" should set the property value
+PASS e.style['color'] = "oklab(0% 0 0 / 110%)" should set the property value
+PASS e.style['color'] = "oklab(0% 0 0 / 300%)" should set the property value
+PASS e.style['color'] = "oklab(-40% 0 0)" should set the property value
+PASS e.style['color'] = "oklab(50% -20 0)" should set the property value
+PASS e.style['color'] = "oklab(50% 0 -20)" should set the property value
+PASS e.style['color'] = "oklab(calc(50% * 3) calc(0.5 - 1) calc(1.5) / calc(-0.5 + 1))" should set the property value
+PASS e.style['color'] = "oklab(calc(-50% * 3) calc(0.5 + 1) calc(-1.5) / calc(-0.5 * 2))" should set the property value
 FAIL e.style['color'] = "oklab(none none none / none)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['color'] = "oklab(none none none)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['color'] = "oklab(20% none none / none)" should set the property value assert_not_equals: property should be set got disallowed value ""

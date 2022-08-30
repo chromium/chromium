@@ -394,7 +394,9 @@ SkColor4f Color::toSkColor4f() const {
           return SkColor4f{0.f, 0.f, 0.f, 0.f};
       }
     case SerializationType::kLab:
-      // TODO(crbug.com/1354622): Actually calculate the proper lab color.
+    case SerializationType::kOKLab:
+      // TODO(crbug.com/1354622): Implement CSSColor4 types.
+      // https://www.w3.org/TR/css-color-4/
       return SkColor4f{0.0f, 0.0f, 0.0f, 0.0f};
     default:
       NOTIMPLEMENTED();
@@ -496,6 +498,9 @@ String Color::SerializeAsCSSColor() const {
       return result.ToString();
 
     case SerializationType::kLab:
+    case SerializationType::kOKLab:
+      if (serialization_type_ == SerializationType::kOKLab)
+        result.Append("ok");
       result.Append("lab(");
       result.AppendNumber(param0_);
       result.Append("% ");
@@ -512,7 +517,6 @@ String Color::SerializeAsCSSColor() const {
     // TODO(https://crbug.com/1333988): Implement CSS Color level 4
     // serialization.
     case SerializationType::kColor:
-    case SerializationType::kOKLab:
     case SerializationType::kLCH:
     case SerializationType::kOKLCH:
     default:

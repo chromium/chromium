@@ -1554,10 +1554,12 @@ static bool ParseHWBParameters(CSSParserTokenRange& range,
   return args.AtEnd();
 }
 
-static bool ParseLABParameters(CSSParserTokenRange& range,
-                               const CSSParserContext& context,
-                               Color& result) {
-  DCHECK(range.Peek().FunctionId() == CSSValueID::kLab);
+static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
+                                      const CSSParserContext& context,
+                                      Color& result) {
+  bool is_lab = (range.Peek().FunctionId() == CSSValueID::kLab);
+  bool is_ok_lab = (range.Peek().FunctionId() == CSSValueID::kOklab);
+  DCHECK(is_lab || is_ok_lab);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume lightness, either a percentage or a number
   CSSPrimitiveValue* value =
@@ -1592,7 +1594,10 @@ static bool ParseLABParameters(CSSParserTokenRange& range,
     alpha = ClampTo<double>(alpha, 0.0, 1.0);
   }
 
-  result = Color::FromLab(lightness, ab[0], ab[1], alpha);
+  if (is_ok_lab)
+    result = Color::FromOKLab(lightness, ab[0], ab[1], alpha);
+  else
+    result = Color::FromLab(lightness, ab[0], ab[1], alpha);
   return args.AtEnd();
 }
 
@@ -1652,8 +1657,9 @@ static bool ParseColorFunction(CSSParserTokenRange& range,
         return false;
       break;
     case CSSValueID::kLab:
+    case CSSValueID::kOklab:
       if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
-          !ParseLABParameters(color_range, context, result))
+          !ParseLABOrOKLABParameters(color_range, context, result))
         return false;
       break;
     default:

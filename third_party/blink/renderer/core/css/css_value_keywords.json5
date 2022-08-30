@@ -1279,6 +1279,7 @@
     "hsla",
     "hwb",
     "lab",
+    "oklab",
     "-internal-light-dark",
 
     // transform
