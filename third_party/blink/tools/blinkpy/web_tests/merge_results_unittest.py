@@ -517,7 +517,7 @@ class MergeFilesMatchingContentsTests(FileSystemTestCase):
         with self.assertFilesAdded(mock_filesystem, {'/output/out2': '2'}):
             merger('/output/out2', ['/s/file2'])
 
-        with self.assertRaises(merge_results.MergeFailure):
+        with self.assertFilesAdded(mock_filesystem, {'/output/out3': '1'}):
             merger('/output/out3', ['/s/file1', '/s/file2'])
 
         with self.assertFilesAdded(mock_filesystem, {'/output/out4': '1'}):
@@ -610,7 +610,7 @@ class DirMergerTests(FileSystemTestCase):
             '/shard1/file1': '2'
         })
         d = merge_results.DirMerger(mock_filesystem)
-        with self.assertRaises(merge_results.MergeFailure):
+        with self.assertFilesAdded(mock_filesystem, {'/output/file1': '1'}):
             d.merge('/output', ['/shard0', '/shard1'])
 
 

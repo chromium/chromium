@@ -301,9 +301,9 @@ class MergeFilesMatchingContents(MergeFiles):
                 nonmatching.append(filename)
 
         if nonmatching:
-            raise MergeFailure(
-                '\n'.join(['File contents don\'t match:'] + nonmatching),
-                out_filename, to_merge)
+            # TODO: revert this once crbug/1353056 is fixed
+            _log.warning('\n'.join(['File contents don\'t match:'] +
+                                   nonmatching))
 
         self.filesystem.write_binary_file(out_filename, data)
 
