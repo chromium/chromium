@@ -6972,6 +6972,10 @@ test("unit_tests") {
         # across components.
         "../browser/importer/firefox_profile_lock_unittest.cc",
       ]
+
+      # Crashpad dependency is pulled in for non-fuchsia builds by
+      # browser/enterprise/connectors/reporting/browser_crash_event_router.h
+      deps += [ "//third_party/crashpad/crashpad/util" ]
     }
     if (is_posix) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]

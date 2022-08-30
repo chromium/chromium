@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -139,21 +140,29 @@ std::vector<crashpad::CrashReportDatabase::Report> GetNewReports() {
   CopyNewReports(pending_reports, latest_creation_time, reports);
   CopyNewReports(completed_reports, latest_creation_time, reports);
 
-  // Update latest_creation_time and write it back to file
-  if (!reports.empty()) {
-    for (const auto& report : reports) {
-      if (report.creation_time > latest_creation_time) {
-        latest_creation_time = report.creation_time;
-      }
-    }
-    base::ImportantFileWriter::WriteFileAtomically(
-        latest_crash_report, base::NumberToString(latest_creation_time));
-  }
   return reports;
 }
 
+void WriteLatestCrashReportTime(int64_t latest_creation_time) {
+  // Read the latest_creation_time
+  base::FilePath latest_crash_report;
+  int64_t prev_latest_creation_time =
+      GetLatestCreationTime(latest_crash_report);
+
+  if (latest_creation_time < prev_latest_creation_time) {
+    LOG(WARNING) << "Current latest_creation_time ("
+                 << prev_latest_creation_time
+                 << ") is greater than the new value (" << latest_creation_time
+                 << "). Not updating " << latest_crash_report.value();
+    return;
+  }
+  base::ImportantFileWriter::WriteFileAtomically(
+      latest_crash_report, base::NumberToString(latest_creation_time));
+}
+}  // namespace
+
 // TODO(b/238427470): unit testing this function
-void UploadToReportingServer(
+void BrowserCrashEventRouter::UploadToReportingServer(
     RealtimeReportingClient* reporting_client,
     ReportingSettings settings,
     std::vector<crashpad::CrashReportDatabase::Report> reports) {
@@ -167,6 +176,8 @@ void UploadToReportingServer(
       version_info::GetChannelString(chrome::GetChannel());
   const std::string platform = version_info::GetOSType();
 
+  int64_t latest_creation_time = -1;
+
   for (const auto& report : reports) {
     base::Value::Dict event;
     event.Set(kKeyChannel, channel);
@@ -177,9 +188,18 @@ void UploadToReportingServer(
     reporting_client->ReportRealtimeEvent(
         ReportingServiceSettings::kBrowserCrashEvent, settings,
         std::move(event));
+    if (report.creation_time > latest_creation_time) {
+      latest_creation_time = report.creation_time;
+    }
+  }
+
+  // Write the latest_creation_time back to file
+  if (!reports.empty()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&WriteLatestCrashReportTime, latest_creation_time));
   }
 }
-}  // namespace
 
 void BrowserCrashEventRouter::ReportCrashes() {
   DCHECK(reporting_client_);
@@ -193,8 +213,8 @@ void BrowserCrashEventRouter::ReportCrashes() {
   // GetNewReports() may block since it has file I/O operations
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetNewReports),
-      base::BindOnce(&UploadToReportingServer, reporting_client_,
-                     std::move(*settings)));
+      base::BindOnce(&BrowserCrashEventRouter::UploadToReportingServer,
+                     AsWeakPtr(), reporting_client_, std::move(*settings)));
 }
 
 void BrowserCrashEventRouter::OnCloudReportingLaunched(

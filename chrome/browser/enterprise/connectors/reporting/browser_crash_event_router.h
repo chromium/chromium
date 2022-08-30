@@ -5,14 +5,19 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_BROWSER_CRASH_EVENT_ROUTER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_BROWSER_CRASH_EVENT_ROUTER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "third_party/crashpad/crashpad/client/crash_report_database.h"
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 namespace enterprise_connectors {
 // This class collects crash reports from the crashpad database
 // and then sends generated crash events to the reporting server.
 class BrowserCrashEventRouter
-    : public policy::ChromeBrowserCloudManagementController::Observer {
+    : public policy::ChromeBrowserCloudManagementController::Observer,
+      public base::SupportsWeakPtr<BrowserCrashEventRouter> {
  public:
   // BrowserCrashEventRouter adds itself to
   // ChromeBrowserCloudManagementController::observers in the constructor, so
@@ -25,6 +30,10 @@ class BrowserCrashEventRouter
 #if !BUILDFLAG(IS_FUCHSIA)
   void OnCloudReportingLaunched(
       enterprise_reporting::ReportScheduler* report_scheduler) override;
+  void UploadToReportingServer(
+      RealtimeReportingClient* reporting_client,
+      ReportingSettings settings,
+      std::vector<crashpad::CrashReportDatabase::Report> reports);
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
  private:
