@@ -72,10 +72,11 @@ TaskType GetTaskType(apps::AppType app_type) {
       return TASK_TYPE_FILE_HANDLER;
     case apps::AppType::kCrostini:
       return TASK_TYPE_CROSTINI_APP;
+    case apps::AppType::kPluginVm:
+      return TASK_TYPE_PLUGIN_VM_APP;
     case apps::AppType::kUnknown:
     case apps::AppType::kBuiltIn:
     case apps::AppType::kMacOs:
-    case apps::AppType::kPluginVm:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
@@ -190,6 +191,7 @@ void FindAppServiceTasks(Profile* profile,
   if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
     supported_app_types.push_back(apps::AppType::kArc);
     supported_app_types.push_back(apps::AppType::kCrostini);
+    supported_app_types.push_back(apps::AppType::kPluginVm);
   }
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
@@ -227,7 +229,9 @@ void FindAppServiceTasks(Profile* profile,
         continue;
     }
 
-    if (app_type == apps::AppType::kCrostini && !files_shareable_to_vm) {
+    if ((app_type == apps::AppType::kCrostini ||
+         app_type == apps::AppType::kPluginVm) &&
+        !files_shareable_to_vm) {
       continue;
     }
 
