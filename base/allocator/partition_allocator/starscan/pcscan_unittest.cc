@@ -665,6 +665,8 @@ TEST_F(PartitionAllocPCScanTest, StackScanning) {
       // This writes the pointer to the stack.
       [[maybe_unused]] auto* volatile stack_ref = dangling_reference;
       [this]() PA_NOINLINE {
+        // Write 'this' to the stack, lest inlining drops it.
+        [[maybe_unused]] auto* volatile stack_ref = this;
         // Schedule PCScan but don't scan.
         SchedulePCScan();
         // Enter safepoint and scan from mutator. This will scan the stack.
