@@ -490,7 +490,7 @@ as required builders.
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12-x64-rel""))
   * Experiment percentage: 100.0
 
-* [android-12l-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-12l-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12l-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12l-x86-rel""))
+* [android-12l-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/android-12l-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12l-x64-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12l-x64-dbg""))
   * Experiment percentage: 2.0
 
 * [android-marshmallow-x86-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-x86-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel-reclient""))

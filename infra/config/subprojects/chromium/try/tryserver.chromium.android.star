@@ -73,9 +73,10 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "android-12l-x86-rel",
+    name = "android-12l-x64-dbg",
     mirrors = [
-        "ci/android-12l-x86-rel",
+        "ci/Android x64 Builder (dbg)",
+        "ci/android-12l-x64-dbg-tests",
     ],
     tryjob = try_.job(
         experiment_percentage = 2,

@@ -684,7 +684,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-12l-x86-rel",
+    name = "android-12l-x64-dbg-tests",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -699,8 +699,8 @@ ci.builder(
             apply_configs = [
                 "download_vr_test_apks",
             ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 32,
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -716,7 +716,7 @@ ci.builder(
     # TODO: This can be reduced when builder works.
     execution_timeout = 4 * time.hour,
     sheriff_rotations = args.ignore_default(None),
-    triggered_by = ["ci/Android arm Builder (dbg)"],
+    triggered_by = ["ci/Android x64 Builder (dbg)"],
 )
 
 ci.builder(
