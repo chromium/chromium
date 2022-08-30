@@ -54,6 +54,9 @@ BrowserContext* ServiceWorkerProcessManager::browser_context() {
 
 void ServiceWorkerProcessManager::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // `StoragePartitionImpl` might be destroyed before `this` is destroyed. Set
+  // `storage_partition_` to nullptr to avoid holding a dangling ptr.
+  storage_partition_ = nullptr;
   {
     base::AutoLock lock(browser_context_lock_);
     browser_context_ = nullptr;
