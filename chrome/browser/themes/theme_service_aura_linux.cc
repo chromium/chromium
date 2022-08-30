@@ -8,8 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "ui/color/system_theme.h"
 #include "ui/gfx/image/image.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/native_theme/native_theme_aura.h"
@@ -30,6 +32,7 @@ class SystemThemeLinux : public CustomThemeSupplier {
   bool GetDisplayProperty(int id, int* result) const override;
   gfx::Image GetImageNamed(int id) const override;
   bool HasCustomImage(int id) const override;
+  ui::NativeTheme* GetNativeTheme() const override;
 
  private:
   ~SystemThemeLinux() override;
@@ -76,6 +79,14 @@ bool SystemThemeLinux::HasCustomImage(int id) const {
   return false;
 }
 
+ui::NativeTheme* SystemThemeLinux::GetNativeTheme() const {
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    if (auto* native_theme = linux_ui->GetNativeTheme(nullptr))
+      return native_theme;
+  }
+  return CustomThemeSupplier::GetNativeTheme();
+}
+
 SystemThemeLinux::~SystemThemeLinux() = default;
 
 }  // namespace
@@ -83,12 +94,9 @@ SystemThemeLinux::~SystemThemeLinux() = default;
 ThemeServiceAuraLinux::~ThemeServiceAuraLinux() = default;
 
 ui::SystemTheme ThemeServiceAuraLinux::GetDefaultSystemTheme() const {
-#if defined(IS_LINUX)
   // TODO(https://crbug.com/1317782): Add QT theme preference.
   return ShouldUseSystemThemeForProfile(profile()) ? ui::SystemTheme::kGtk
                                                    : ui::SystemTheme::kDefault;
-#endif
-  return ui::SystemTheme::kDefault;
 }
 
 void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
@@ -96,17 +104,20 @@ void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
     UseDefaultTheme();
     return;
   }
-#if BUILDFLAG(IS_LINUX)
-  if (ui::LinuxUi::instance()) {
+  if (ui::LinuxUi::instance())
     SetCustomDefaultTheme(new SystemThemeLinux(profile()->GetPrefs()));
-  }
-#else
-  UseDefaultTheme();
-#endif
 }
 
 void ThemeServiceAuraLinux::UseSystemTheme() {
-  SetCustomDefaultTheme(new SystemThemeLinux(profile()->GetPrefs()));
+  if (UsingSystemTheme())
+    return;
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    if (auto* native_theme = linux_ui->GetNativeTheme(nullptr)) {
+      UseTheme(native_theme->system_theme());
+      return;
+    }
+  }
+  ThemeService::UseSystemTheme();
 }
 
 bool ThemeServiceAuraLinux::IsSystemThemeDistinctFromDefaultTheme() const {

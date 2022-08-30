@@ -44,7 +44,6 @@ class ColorProvider;
 class BrowserThemeProviderDelegate {
  public:
   virtual CustomThemeSupplier* GetThemeSupplier() const = 0;
-  virtual bool ShouldUseSystemTheme() const = 0;
   virtual bool ShouldUseCustomFrame() const = 0;
 };
 
@@ -87,7 +86,6 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
 
   // Overridden from BrowserThemeProviderDelegate:
   CustomThemeSupplier* GetThemeSupplier() const override;
-  bool ShouldUseSystemTheme() const override;
   bool ShouldUseCustomFrame() const override;
 
   // Set the current theme to the theme defined in |extension|.
@@ -116,8 +114,8 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   // Virtual for testing.
   virtual bool UsingDefaultTheme() const;
 
-  // Whether we are using the system theme. On GTK, the system theme is the GTK
-  // theme, not the "Classic" theme.
+  // Whether we are using the system theme. On Linux, the system theme is the
+  // GTK or QT themes, not the "Classic" theme.
   virtual bool UsingSystemTheme() const;
 
   // Forwards to ThemeProviderBase::IsExtensionTheme().

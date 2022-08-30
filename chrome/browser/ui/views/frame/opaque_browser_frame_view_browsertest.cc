@@ -55,13 +55,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
 
   static GURL GetAppURL() { return GURL("https://test.org"); }
 
-  void SetUpOnMainThread() override {
-    SetThemeMode(ThemeMode::kDefault);
-#if BUILDFLAG(IS_LINUX)
-    ui::LinuxUi::instance()->SetUseSystemThemeCallback(
-        base::BindRepeating([](aura::Window* window) { return false; }));
-#endif
-  }
+  void SetUpOnMainThread() override { SetThemeMode(ThemeMode::kDefault); }
 
   bool InstallAndLaunchWebApp(
       absl::optional<SkColor> theme_color = absl::nullopt) {
@@ -110,6 +104,13 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
   };
 
   void SetThemeMode(ThemeMode theme_mode) {
+#if BUILDFLAG(IS_LINUX)
+    ui::LinuxUi::instance()->SetUseSystemThemeCallback(base::BindRepeating(
+        [&](bool use_system_theme, aura::Window* window) {
+          return use_system_theme;
+        },
+        theme_mode == ThemeMode::kSystem));
+#endif
     ThemeService* theme_service =
         ThemeServiceFactory::GetForProfile(browser()->profile());
     if (theme_mode == ThemeMode::kSystem)

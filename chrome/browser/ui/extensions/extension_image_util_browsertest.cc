@@ -12,7 +12,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #endif
 

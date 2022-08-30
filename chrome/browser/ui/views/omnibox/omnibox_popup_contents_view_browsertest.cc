@@ -211,7 +211,7 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
     // be different. But when using the GTK theme on Linux, these colors will be
     // the same. Ensure we're not using the system (GTK) theme, which may be
     // conditionally enabled depending on the environment.
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
     // Normally it would be sufficient to call ThemeService::UseDefaultTheme()
     // which sets the kUsesSystemTheme user pref on the browser's profile.
     // However BrowserThemeProvider::GetColorProviderColor() currently does not
@@ -230,7 +230,7 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
       theme_service->UseDefaultTheme();
     }
     ASSERT_TRUE(theme_service->UsingDefaultTheme());
-#endif  // BUILDFLAG(USE_GTK)
+#endif  // BUILDFLAG(IS_LINUX)
   }
 };
 

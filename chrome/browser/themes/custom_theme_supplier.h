@@ -25,6 +25,7 @@ class Image;
 
 namespace ui {
 class ColorProvider;
+class NativeTheme;
 }
 
 // A representation of a theme. All theme properties can be accessed through the
@@ -80,6 +81,8 @@ class CustomThemeSupplier
     // TODO(pkasting): All classes that override GetColor() should override
     // this.
   }
+
+  virtual ui::NativeTheme* GetNativeTheme() const;
 
  protected:
   ~CustomThemeSupplier() override;
