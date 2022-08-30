@@ -242,6 +242,11 @@ void SlotAssignment::SetNeedsAssignmentRecalc() {
 }
 
 void SlotAssignment::RecalcAssignment() {
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("SlotAssignment::RecalcAssignment %d %d",
+                       recordreplay::PointerId((void*)owner_),
+                       needs_assignment_recalc_);
+
   if (!needs_assignment_recalc_)
     return;
   {
@@ -405,9 +410,16 @@ void SlotAssignment::CollectSlots() {
   DCHECK(needs_collect_slots_);
   slots_.clear();
 
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("SlotAssignment::CollectSlots %d %d",
+                       recordreplay::PointerId((void*)owner_), slot_count_);
+
   slots_.ReserveCapacity(slot_count_);
   for (HTMLSlotElement& slot :
        Traversal<HTMLSlotElement>::DescendantsOf(*owner_)) {
+    // https://linear.app/replay/issue/RUN-493
+    recordreplay::Assert("SlotAssignment::CollectSlots #1 %d",
+                         recordreplay::PointerId(&slot));
     slots_.push_back(&slot);
   }
   needs_collect_slots_ = false;
