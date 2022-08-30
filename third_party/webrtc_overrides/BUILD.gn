@@ -21,6 +21,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:callfactory_api",
   "//third_party/webrtc/api:candidate",
   "//third_party/webrtc/api:dtls_transport_interface",
+  "//third_party/webrtc/api:field_trials_view",
   "//third_party/webrtc/api:frame_transformer_interface",
   "//third_party/webrtc/api:ice_transport_factory",
   "//third_party/webrtc/api:ice_transport_interface",

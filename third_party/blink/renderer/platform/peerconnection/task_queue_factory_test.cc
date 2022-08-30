@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/api/field_trials_view.h"
 #include "third_party/webrtc/api/task_queue/task_queue_test.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/test/metronome_like_task_queue_test.h"
@@ -37,15 +38,16 @@ class TestTaskQueueFactory final : public webrtc::TaskQueueFactory {
   std::unique_ptr<webrtc::TaskQueueFactory> factory_;
 };
 
+std::unique_ptr<webrtc::TaskQueueFactory> CreateTaskQueueFactory(
+    const webrtc::FieldTrialsView*) {
+  return absl::make_unique<TestTaskQueueFactory>();
+}
+
 // Instantiate suite to run all tests defined in
 // third_party/webrtc/api/task_queue/task_queue_test.h.
-//
-// TODO(webrtc:14389): Bring this test back once WebRTC's change to
-// CreateDefaultTaskQueueFactory()'s signature has landed.
-// INSTANTIATE_TEST_SUITE_P(
-//     WebRtcTaskQueue,
-//     TaskQueueTest,
-//     ::testing::Values(std::make_unique<TestTaskQueueFactory>));
+INSTANTIATE_TEST_SUITE_P(WebRtcTaskQueue,
+                         TaskQueueTest,
+                         ::testing::Values(CreateTaskQueueFactory));
 
 // Provider needed for the MetronomeLikeTaskQueueTest suite.
 class TaskQueueProvider : public MetronomeLikeTaskQueueProvider {
