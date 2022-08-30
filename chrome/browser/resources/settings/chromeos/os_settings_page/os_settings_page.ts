@@ -29,32 +29,28 @@ import '../multidevice_page/multidevice_page.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
 import '../os_icons.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {beforeNextRender, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
+import {MainPageBehavior, MainPageBehaviorInterface} from '../main_page_behavior.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {MainPageBehavior, MainPageBehaviorInterface} from './main_page_behavior.js';
 import {getTemplate} from './os_settings_page.html.js';
+import {SettingsIdleLoadElement} from './settings_idle_load.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {MainPageBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const OsSettingsPageElementBase = mixinBehaviors(
-    [MainPageBehavior, RouteObserverBehavior, WebUIListenerBehavior],
-    PolymerElement);
+                                      [MainPageBehavior, RouteObserverBehavior],
+                                      WebUIListenerMixin(PolymerElement)) as {
+  new (): PolymerElement & WebUIListenerMixinInterface &
+      MainPageBehaviorInterface & RouteObserverBehaviorInterface,
+};
 
-/** @polymer */
 class OsSettingsPageElement extends OsSettingsPageElementBase {
   static get is() {
     return 'os-settings-page';
@@ -90,12 +86,10 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       havePlayStoreApp: Boolean,
 
-      /** @type {!AndroidAppsInfo|undefined} */
       androidAppsInfo: Object,
 
       /**
        * Whether the user is in guest mode.
-       * @private {boolean}
        */
       isGuestMode_: {
         type: Boolean,
@@ -104,7 +98,6 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       /**
        * Whether Accessibility OS Settings visibility improvements are enabled.
-       * @private{boolean}
        */
       isAccessibilityOSSettingsVisibilityEnabled_: {
         type: Boolean,
@@ -117,7 +110,6 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       /**
        * Dictionary defining page visibility.
-       * @type {!OSPageVisibility}
        */
       pageVisibility: {
         type: Object,
@@ -136,7 +128,6 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
       /**
        * True if a section is fully expanded to hide other sections beneath it.
        * False otherwise (even while animating a section open/closed).
-       * @private {boolean}
        */
       hasExpandedSection_: {
         type: Boolean,
@@ -146,7 +137,6 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
       /**
        * Whether the user is a secondary user. Computed so that it is calculated
        * correctly after loadTimeData is available.
-       * @private
        */
       showSecondaryUserBanner_: {
         type: Boolean,
@@ -157,17 +147,14 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
        * Whether to show banner indicating the user to return this device as an
        * update is required as per policy but the device has reached end of
        * life.
-       * @private
        */
       showUpdateRequiredEolBanner_: {
         type: Boolean,
         value: !!loadTimeData.getString('updateRequiredEolBannerText'),
       },
 
-      /** @private {!Route|undefined} */
       currentRoute_: Object,
 
-      /** @private */
       isBluetoothRevampEnabled_: {
         type: Boolean,
         value() {
@@ -177,26 +164,33 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
     };
   }
 
+  androidAppsInfo?: AndroidAppsInfo;
+  pageVisibility: OSPageVisibility;
+  advancedToggleExpanded: boolean;
+  private allowCrostini_: boolean;
+  private hasExpandedSection_: boolean;
+  private showSecondaryUserBanner_: boolean;
+  private showUpdateRequiredEolBanner_: boolean;
+  private currentRoute_?: Route;
+  private isBluetoothRevampEnabled_: boolean;
+  /**
+   * Used to avoid handling a new toggle while currently toggling.
+   */
+  private advancedTogglingInProgress_: boolean;
+
   constructor() {
     super();
-
-    /**
-     * Used to avoid handling a new toggle while currently toggling.
-     * @private {boolean}
-     */
     this.advancedTogglingInProgress_ = false;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.setAttribute('role', 'main');
-
     this.addEventListener('subpage-expand', this.onSubpageExpanded_);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
@@ -209,11 +203,7 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
     AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
   }
 
-  /**
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.currentRoute_ = newRoute;
 
     if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
@@ -233,68 +223,53 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
     MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
   }
 
-  // Override MainPageBehavior method.
-  containsRoute(route) {
+  override containsRoute(route: Route) {
     return !route || routes.BASIC.contains(route) ||
         routes.ADVANCED.contains(route);
   }
 
-  /**
-   * @param {boolean|undefined} visibility
-   * @return {boolean}
-   * @private
-   */
-  showPage_(visibility) {
+  private showPage_(visibility?: boolean): boolean {
     return visibility !== false;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowSecondaryUserBanner_() {
+  private computeShowSecondaryUserBanner_(): boolean {
     return !this.hasExpandedSection_ &&
         loadTimeData.getBoolean('isSecondaryUser');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowUpdateRequiredEolBanner_() {
+  private computeShowUpdateRequiredEolBanner_(): boolean {
     return !this.hasExpandedSection_ && this.showUpdateRequiredEolBanner_;
   }
 
-  /**
-   * @param {!AndroidAppsInfo} info
-   * @private
-   */
-  androidAppsInfoUpdate_(info) {
+  private androidAppsInfoUpdate_(info: AndroidAppsInfo) {
     this.androidAppsInfo = info;
   }
 
   /**
    * Hides the update required EOL banner. It is shown again when Settings is
    * re-opened.
-   * @private
    */
-  onCloseEolBannerClicked_() {
+  private onCloseEolBannerClicked_() {
     this.showUpdateRequiredEolBanner_ = false;
   }
 
   /**
    * Hides everything but the newly expanded subpage.
-   * @private
    */
-  onSubpageExpanded_() {
+  private onSubpageExpanded_() {
     this.hasExpandedSection_ = true;
+  }
+
+  private getAdvancedPageTemplate_(): SettingsIdleLoadElement {
+    const el = this.shadowRoot!.getElementById('advancedPageTemplate');
+    assert(el);
+    return el as SettingsIdleLoadElement;
   }
 
   /**
    * Render the advanced page now (don't wait for idle).
-   * @private
    */
-  advancedToggleExpandedChanged_() {
+  private advancedToggleExpandedChanged_() {
     if (!this.advancedToggleExpanded) {
       return;
     }
@@ -302,35 +277,35 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
     // In Polymer2, async() does not wait long enough for layout to complete.
     // beforeNextRender() must be used instead.
     beforeNextRender(this, () => {
-      this.shadowRoot.querySelector('#advancedPageTemplate').get();
+      this.getAdvancedPageTemplate_().get();
     });
   }
 
-  advancedToggleClicked_() {
+  private advancedToggleClicked_() {
     if (this.advancedTogglingInProgress_) {
       return;
     }
 
     this.advancedTogglingInProgress_ = true;
-    const toggle = this.shadowRoot.querySelector('#toggleContainer');
+    const toggle = this.shadowRoot!.getElementById('toggleContainer');
+    assert(toggle);
+
     if (!this.advancedToggleExpanded) {
       this.advancedToggleExpanded = true;
       microTask.run(() => {
-        this.shadowRoot.querySelector('#advancedPageTemplate')
-            .get()
-            .then(() => {
-              const event = new CustomEvent('scroll-to-top', {
-                bubbles: true,
-                composed: true,
-                detail: {
-                  top: toggle.offsetTop,
-                  callback: () => {
-                    this.advancedTogglingInProgress_ = false;
-                  },
-                },
-              });
-              this.dispatchEvent(event);
-            });
+        this.getAdvancedPageTemplate_().get().then(() => {
+          const event = new CustomEvent('scroll-to-top', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              top: toggle.offsetTop,
+              callback: () => {
+                this.advancedTogglingInProgress_ = false;
+              },
+            },
+          });
+          this.dispatchEvent(event);
+        });
       });
     } else {
       const event = new CustomEvent('scroll-to-bottom', {
@@ -349,55 +324,46 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
   }
 
   /**
-   * @param {!Route} currentRoute
-   * @param {boolean} hasExpandedSection
-   * @return {boolean} Whether to show the basic page, taking into account
+   * @return Whether to show the basic page, taking into account
    *     both routing and search state.
-   * @private
    */
-  showBasicPage_(currentRoute, hasExpandedSection) {
+  private showBasicPage_(currentRoute: Route, hasExpandedSection: boolean):
+      boolean {
     return !hasExpandedSection || routes.BASIC.contains(currentRoute);
   }
 
   /**
-   * @param {!Route} currentRoute
-   * @param {boolean} hasExpandedSection
-   * @param {boolean} advancedToggleExpanded
-   * @return {boolean} Whether to show the advanced page, taking into account
+   * @return Whether to show the advanced page, taking into account
    *     both routing and search state.
-   * @private
    */
-  showAdvancedPage_(currentRoute, hasExpandedSection, advancedToggleExpanded) {
+  private showAdvancedPage_(
+      currentRoute: Route, hasExpandedSection: boolean,
+      advancedToggleExpanded: boolean): boolean {
     return hasExpandedSection ?
         (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
         advancedToggleExpanded;
   }
 
-  /**
-   * @param {(boolean|undefined)} visibility
-   * @return {boolean} True unless visibility is false.
-   * @private
-   */
-  showAdvancedSettings_(visibility) {
+  private showAdvancedSettings_(visibility?: boolean): boolean {
     return visibility !== false;
   }
 
   /**
-   * @param {boolean} opened Whether the menu is expanded.
-   * @return {string} Icon name.
-   * @private
+   * @param opened Whether the menu is expanded.
+   * @return Icon name.
    */
-  getArrowIcon_(opened) {
+  private getArrowIcon_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   }
 
-  /**
-   * @param {boolean} bool
-   * @return {string}
-   * @private
-   */
-  boolToString_(bool) {
+  private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-page': OsSettingsPageElement;
   }
 }
 

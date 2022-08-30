@@ -5,8 +5,9 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import { MinimumRoutes,Route, Router} from '../../router.js';
-import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
+import {MinimumRoutes, Route, Router} from '../router.js';
+
+import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 
 /**
  * @enum {string}
@@ -49,12 +50,12 @@ function classifyRoute(route) {
   return RouteState.SECTION;
 }
 
-  /**
-   * Responds to route changes by expanding, collapsing, or scrolling to
-   * sections on the page. Expanded sections take up the full height of the
-   * container. At most one section should be expanded at any given time.
-   * @polymerBehavior
-   */
+/**
+ * Responds to route changes by expanding, collapsing, or scrolling to
+ * sections on the page. Expanded sections take up the full height of the
+ * container. At most one section should be expanded at any given time.
+ * @polymerBehavior
+ */
 export const MainPageBehavior = {
   /** @type {?HTMLElement} */
   scroller: null,

@@ -9,15 +9,14 @@
  * given that holds the elements to be loaded lazily.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 
 import {getTemplate} from './settings_idle_load.html.js';
 
-/** @polymer */
-class SettingsIdleLoadElement extends PolymerElement {
+export class SettingsIdleLoadElement extends PolymerElement {
   static get is() {
     return 'settings-idle-load';
   }
@@ -36,52 +35,51 @@ class SettingsIdleLoadElement extends PolymerElement {
     };
   }
 
+  private child_: Element|null;
+  private instance_: TemplateInstanceBase|null;
+  private loading_: Promise<Element>|null;
+  private idleCallback_: number;
+
   constructor() {
     super();
 
-    /** @private {?Element} */
     this.child_ = null;
-
-    /** @private {?Element|?TemplateInstanceBase} */
     this.instance_ = null;
-
-    /** @private {?Promise<Element>} */
     this.loading_ = null;
-
-    /** @private {number} */
     this.idleCallback_ = 0;
   }
 
-  /** @override */
-  connectedCallback() {
+
+  override connectedCallback() {
     super.connectedCallback();
 
-    this.idleCallback_ = requestIdleCallback(() => {
+    this.idleCallback_ = window.requestIdleCallback(() => {
       this.get();
     });
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     // No-op if callback already fired.
-    cancelIdleCallback(this.idleCallback_);
+    window.cancelIdleCallback(this.idleCallback_);
   }
 
   /**
-   * @param {!function():!Promise} requestFn Requests the lazy module.
-   * @return {!Promise<!Element>} Resolves with the stamped child element after
-   *     the lazy module has been loaded.
+   * @param requestFn Requests the lazy module.
+   * @return Resolves with the stamped child element after the lazy module has
+   *    been loaded.
    */
-  requestLazyModule_(requestFn) {
+  private requestLazyModule_(): Promise<Element> {
     return new Promise((resolve, reject) => {
-      requestFn().then(() => {
+      ensureLazyLoaded().then(() => {
+        const slot = this.shadowRoot!.querySelector('slot');
+        assert(slot);
         const template =
-            /** @type {!HTMLTemplateElement} */ (
-                this.shadowRoot.querySelector('slot')
-                    .assignedNodes({flatten: true})
-                    .filter(n => n.nodeType === Node.ELEMENT_NODE)[0]);
+            slot.assignedNodes({flatten: true})
+                .filter(n => n.nodeType === Node.ELEMENT_NODE)[0] as
+            HTMLTemplateElement;
+
         const TemplateClass = templatize(template, this, {
           mutableData: false,
           forwardHostProp: this._forwardHostPropV2,
@@ -91,8 +89,9 @@ class SettingsIdleLoadElement extends PolymerElement {
 
         assert(!this.child_);
         this.child_ = this.instance_.root.firstElementChild;
+        assert(this.child_);
 
-        this.parentNode.insertBefore(this.instance_.root, this);
+        this.parentNode!.insertBefore(this.instance_.root, this);
         resolve(this.child_);
 
         const event =
@@ -103,28 +102,28 @@ class SettingsIdleLoadElement extends PolymerElement {
   }
 
   /**
-   * @return {!Promise<Element>} Child element which has been stamped into the
-   *     DOM tree.
+   * @return Child element which has been stamped into the DOM tree.
    */
-  get() {
+  override get(): Promise<Element> {
     if (this.loading_) {
       return this.loading_;
     }
 
-    const requestLazyModuleFn = ensureLazyLoaded;
-
-    this.loading_ = this.requestLazyModule_(requestLazyModuleFn);
+    this.loading_ = this.requestLazyModule_();
     return this.loading_;
   }
 
-  /**
-   * @param {string} prop
-   * @param {Object} value
-   */
-  _forwardHostPropV2(prop, value) {
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  private _forwardHostPropV2(prop: string, value: any) {
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-idle-load': SettingsIdleLoadElement;
   }
 }
 

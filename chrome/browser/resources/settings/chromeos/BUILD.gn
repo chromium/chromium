@@ -470,7 +470,6 @@ group("closure_compile_module") {
     "os_privacy_page:closure_compile_module",
     "os_reset_page:closure_compile_module",
     "os_search_page:closure_compile_module",
-    "os_settings_page:closure_compile_module",
     "settings_scheduler_slider:closure_compile_module",
   ]
 }
@@ -484,6 +483,7 @@ js_type_check("closure_compile_local_module") {
     ":deep_linking_behavior",
     ":global_scroll_target_behavior",
     ":lazy_load",
+    ":main_page_behavior",
     ":metrics_recorder",
     ":os_icons",
     ":os_page_visibility",
@@ -520,6 +520,15 @@ js_library("global_scroll_target_behavior") {
     ":route_observer_behavior",
     "..:router",
     "//ui/webui/resources/js:promise_resolver.m",
+  ]
+}
+
+js_library("main_page_behavior") {
+  deps = [
+    "..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 

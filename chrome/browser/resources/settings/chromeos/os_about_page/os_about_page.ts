@@ -37,9 +37,9 @@ import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {MainPageBehavior, MainPageBehaviorInterface} from '../main_page_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {MainPageBehavior, MainPageBehaviorInterface} from '../os_settings_page/main_page_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
