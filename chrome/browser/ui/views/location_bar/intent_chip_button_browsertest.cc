@@ -83,6 +83,11 @@ class IntentChipButtonBrowserTest
         apps::features::kLinkCapturingUiUpdate);
   }
 
+  void SetUpOnMainThread() override {
+    web_app::WebAppNavigationBrowserTest::SetUpOnMainThread();
+    InstallTestWebApp();
+  }
+
   void TearDownOnMainThread() override {
     web_app::test::UninstallWebApp(profile(), test_web_app_id());
     if (!overlapping_app_id_.empty()) {
@@ -150,8 +155,6 @@ class IntentChipButtonBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        NavigationToInScopeLinkShowsIntentChip) {
-  InstallTestWebApp();
-
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
@@ -168,8 +171,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        NavigationToOutOfScopeLinkDoesNotShowsIntentChip) {
-  InstallTestWebApp();
-
   const GURL out_of_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), out_of_scope_url));
@@ -179,8 +180,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        IconVisibilityAfterTabSwitching) {
-  InstallTestWebApp();
-
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   const GURL out_of_scope_url =
@@ -204,7 +203,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 // Using the Intent Chip for an app which is set as preferred should launch
 // directly into the app. Preferred apps are only available on ChromeOS.
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
-  InstallTestWebApp();
   SetSupportedLinksPreference();
 
   const GURL in_scope_url =
@@ -220,7 +218,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        ShowsIntentChipExpandedForPreferredApp) {
-  InstallTestWebApp();
   SetSupportedLinksPreference();
 
   const GURL in_scope_url =
@@ -256,8 +253,6 @@ class IntentChipButtonSkipIntentPickerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
                        ClickingChipOpensApp) {
-  InstallTestWebApp();
-
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
@@ -279,7 +274,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
                        MAYBE_ShowsIntentPickerWhenMultipleApps) {
-  InstallTestWebApp();
   InstallOverlappingApp();
 
   const GURL in_scope_url =
@@ -302,8 +296,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
                        ShowsIntentChipCollapsed) {
-  InstallTestWebApp();
-
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   const GURL out_of_scope_url =
@@ -384,8 +376,6 @@ class IntentChipButtonIPHBubbleBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
-  InstallTestWebApp();
-
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
@@ -453,7 +443,6 @@ class IntentChipButtonAppIconBrowserTest : public IntentChipButtonBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonAppIconBrowserTest, ShowsAppIconInChip) {
-  InstallTestWebApp();
   InstallOverlappingApp();
 
   const GURL root_url = https_server().GetURL(GetAppUrlHost(), "/");
@@ -509,8 +498,6 @@ class IntentChipWithInfoBarBrowserTest : public IntentChipButtonBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
                        ShowsInfoBarOnAppOpen) {
-  InstallTestWebApp();
-
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
@@ -541,8 +528,6 @@ class IntentChipWithAutoDisplayBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IntentChipWithAutoDisplayBrowserTest,
                        ShowsIntentPickerOnNavigation) {
-  InstallTestWebApp();
-
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
