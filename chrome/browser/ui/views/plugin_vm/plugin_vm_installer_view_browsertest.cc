@@ -172,8 +172,8 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   void SetUserWithAffiliation() {
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        browser()->profile()->GetProfileUserName(), "id"));
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId("test@test", "id"));
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager->AddUserWithAffiliation(account_id, true);
     user_manager->LoginUser(account_id);

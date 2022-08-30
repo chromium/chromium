@@ -122,9 +122,9 @@ class AccountAppsAvailabilityTest : public testing::Test {
   void LoginUserSession() {
     auto account_id = AccountId::FromUserEmailGaiaId(primary_account_.email,
                                                      primary_account_.gaia);
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(
-        account_id, account_id.GetUserEmail() + "-hash", false, false);
+    auto* user = fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(), false,
+                                     false);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

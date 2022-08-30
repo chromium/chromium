@@ -141,14 +141,9 @@ class ProfileHelper
       const Profile* profile) const = 0;
   virtual user_manager::User* GetUserByProfile(Profile* profile) const = 0;
 
-  static std::string GetUserIdHashByUserIdForTesting(
-      const std::string& user_id);
-
   // Enables/disables testing GetUserByProfile() by always returning
   // primary user.
   static void SetAlwaysReturnPrimaryUserForTesting(bool value);
-
-  virtual void SetActiveUserIdForTesting(const std::string& user_id) = 0;
 
   // Flushes all files of |profile|.
   virtual void FlushProfile(Profile* profile) = 0;

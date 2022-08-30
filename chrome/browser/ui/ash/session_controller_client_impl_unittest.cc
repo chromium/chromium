@@ -150,11 +150,7 @@ class SessionControllerClientImplTest : public testing::Test {
     const user_manager::User* user =
         is_child ? user_manager()->AddChildUser(account_id)
                  : user_manager()->AddUser(account_id);
-    session_manager_.CreateSession(
-        account_id,
-        ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
-            account_id.GetUserEmail()),
-        is_child);
+    session_manager_.CreateSession(account_id, user->username_hash(), is_child);
 
     // Simulate that user profile is loaded.
     CreateTestingProfile(user);
@@ -457,11 +453,7 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
       AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
   const user_manager::User* user = user_manager()->AddUser(account_id);
   CreateTestingProfile(user);
-  session_manager_.CreateSession(
-      account_id,
-      ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
-          account_id.GetUserEmail()),
-      false);
+  session_manager_.CreateSession(account_id, user->username_hash(), false);
   session_manager_.SetSessionState(SessionState::ACTIVE);
 
   // User session was sent.
@@ -512,11 +504,7 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
   const AccountId account_id(
       AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
   const user_manager::User* user = user_manager()->AddUser(account_id);
-  session_manager_.CreateSession(
-      account_id,
-      ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
-          account_id.GetUserEmail()),
-      false);
+  session_manager_.CreateSession(account_id, user->username_hash(), false);
 
   // Simulate the notification that the profile is ready.
   TestingProfile* const user_profile = CreateTestingProfile(user);

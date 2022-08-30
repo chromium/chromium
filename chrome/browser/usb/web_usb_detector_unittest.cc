@@ -75,10 +75,10 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
 
-    GetFakeUserManager()->AddUser(user_manager::StubAccountId());
-    GetFakeUserManager()->LoginUser(user_manager::StubAccountId());
-
-    ash::ProfileHelper::Get()->SetActiveUserIdForTesting(kProfileName);
+    auto* user =
+        GetFakeUserManager()->AddUser(AccountId::FromUserEmail(kProfileName));
+    GetFakeUserManager()->LoginUser(user->GetAccountId());
+    ash::ProfileHelper::Get()->ActiveUserHashChanged(user->username_hash());
 #endif
     BrowserList::SetLastActive(browser());
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(

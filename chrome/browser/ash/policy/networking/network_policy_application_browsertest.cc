@@ -16,7 +16,6 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -33,6 +32,8 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/scoped_nss_types.h"
 #include "dbus/object_path.h"
@@ -483,9 +484,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // updates (regression test for https://crbug.com/936677).
   shill_service_client_test_->SetHoldBackServicePropertyUpdates(true);
 
-  std::string user_hash = ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
-      test_account_id_.GetUserEmail());
   LoginUser(test_account_id_);
+  const std::string user_hash = user_manager::UserManager::Get()
+                                    ->FindUser(test_account_id_)
+                                    ->username_hash();
   shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
 
   // When AutoConnectHandler triggers ScanAndConnectToBestServices, shill should
@@ -925,9 +927,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi1, shill::kSecurityClassProperty,
       base::Value(shill::kSecurityClass8021x));
 
-  std::string user_hash = ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
-      test_account_id_.GetUserEmail());
   LoginUser(test_account_id_);
+  const std::string user_hash = user_manager::UserManager::Get()
+                                    ->FindUser(test_account_id_)
+                                    ->username_hash();
   shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
 
   const char kUserONC1[] = R"(

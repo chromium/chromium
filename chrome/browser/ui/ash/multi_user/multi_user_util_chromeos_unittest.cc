@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -62,11 +61,10 @@ class MultiUserUtilTest : public ChromeAshTestBase {
   CoreAccountId AddUserAndSignIn(const std::string& email) {
     AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
         email, signin::ConsentLevel::kSync);
-    fake_user_manager_->AddUser(
+    auto* user = fake_user_manager_->AddUser(
         multi_user_util::GetAccountIdFromEmail(account_info.email));
     fake_user_manager_->UserLoggedIn(
-        multi_user_util::GetAccountIdFromEmail(account_info.email),
-        ProfileHelper::GetUserIdHashByUserIdForTesting(account_info.email),
+        user->GetAccountId(), user->username_hash(),
         false /* browser_restart */, false /* is_child */);
 
     return account_info.account_id;

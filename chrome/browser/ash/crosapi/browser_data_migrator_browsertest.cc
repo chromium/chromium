@@ -24,6 +24,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 
@@ -32,9 +33,6 @@ namespace ash {
 namespace {
 
 constexpr char kUserIdHash[] = "abcdefg";
-
-// As defined in /ash/components/login/auth/stub_authenticator.cc
-static const char kUserIdHashSuffix[] = "-hash";
 
 }  // namespace
 
@@ -220,7 +218,7 @@ class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,
     const auto& user = login_manager_mixin_.users()[0];
 
     const std::string user_id_hash =
-        user.account_id.GetUserEmail() + kUserIdHashSuffix;
+        user_manager::FakeUserManager::GetFakeUsernameHash(user.account_id);
 
     // Setting this pref triggers a restart to resume move migration. Check
     // `BrowserDataMigratorImpl::MaybeForceResumeMoveMigration()`.

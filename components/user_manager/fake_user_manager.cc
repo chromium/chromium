@@ -48,6 +48,17 @@ FakeUserManager::FakeUserManager()
 FakeUserManager::~FakeUserManager() {
 }
 
+std::string FakeUserManager::GetFakeUsernameHash(const AccountId& account_id) {
+  // Consistent with the
+  // kUserDataDirNameSuffix in fake_userdataauth_client.cc and
+  // UserDataAuthClient::GetStubSanitizedUsername.
+  // TODO(crbug.com/1347837): After resolving the dependent code,
+  // consolidate the all implementation to cryptohome utilities,
+  // and remove this.
+  DCHECK(account_id.is_valid());
+  return account_id.GetUserEmail() + "-hash";
+}
+
 const User* FakeUserManager::AddUser(const AccountId& account_id) {
   return AddUserWithAffiliation(account_id, false);
 }
@@ -66,8 +77,7 @@ const User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
 
 const User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   User* user = User::CreateKioskAppUser(account_id);
-  // TODO: Merge with ProfileHelper::GetUserIdHashByUserIdForTesting.
-  user->set_username_hash(account_id.GetUserEmail() + "-hash");
+  user->set_username_hash(GetFakeUsernameHash(account_id));
   users_.push_back(user);
   return user;
 }
@@ -76,8 +86,7 @@ const User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
                                                     bool is_affiliated) {
   User* user = User::CreateRegularUser(account_id, USER_TYPE_REGULAR);
   user->SetAffiliation(is_affiliated);
-  // TODO: Merge with ProfileHelper::GetUserIdHashByUserIdForTesting.
-  user->set_username_hash(account_id.GetUserEmail() + "-hash");
+  user->set_username_hash(GetFakeUsernameHash(account_id));
   users_.push_back(user);
   return user;
 }

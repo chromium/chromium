@@ -84,11 +84,10 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         profile_->GetProfileUserName(), "12345"));
     const user_manager::User* user =
         mock_user_manager->AddPublicAccountUser(account_id);
-    ash::ProfileHelper::Get()->SetActiveUserIdForTesting(
-        profile_->GetProfileUserName());
     mock_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
+    ash::ProfileHelper::Get()->ActiveUserHashChanged(user->username_hash());
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(mock_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

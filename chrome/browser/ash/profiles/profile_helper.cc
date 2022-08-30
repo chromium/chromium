@@ -35,9 +35,6 @@
 namespace ash {
 namespace {
 
-// As defined in /chromeos/ash/components/dbus/cryptohome/cryptohome_client.cc.
-static const char kUserIdHashSuffix[] = "-hash";
-
 class UsernameHashMatcher {
  public:
   explicit UsernameHashMatcher(const std::string& h) : username_hash(h) {}
@@ -96,8 +93,6 @@ class ProfileHelperImpl : public ProfileHelper {
   const user_manager::User* GetUserByProfile(
       const Profile* profile) const override;
   user_manager::User* GetUserByProfile(Profile* profile) const override;
-
-  void SetActiveUserIdForTesting(const std::string& user_id) override;
 
   void FlushProfile(Profile* profile) override;
 
@@ -302,12 +297,6 @@ void ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(bool value) {
   ProfileHelper::SetProfileToUserForTestingEnabled(value);
 }
 
-// static
-std::string ProfileHelper::GetUserIdHashByUserIdForTesting(
-    const std::string& user_id) {
-  return user_id + kUserIdHashSuffix;
-}
-
 ProfileHelperImpl::ProfileHelperImpl(
     std::unique_ptr<BrowserContextHelper::Delegate> delegate)
     : browser_context_helper_(
@@ -485,10 +474,6 @@ void ProfileHelperImpl::RemoveUserFromListForTesting(
                    });
   if (it != user_list_for_testing_.end())
     user_list_for_testing_.erase(it);
-}
-
-void ProfileHelperImpl::SetActiveUserIdForTesting(const std::string& user_id) {
-  active_user_id_hash_ = GetUserIdHashByUserIdForTesting(user_id);
 }
 
 void ProfileHelperImpl::FlushProfile(Profile* profile) {

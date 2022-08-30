@@ -74,6 +74,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -255,8 +256,7 @@ class ProfileManagerTest : public testing::Test {
   void RegisterUser(const AccountId& account_id) {
     ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
     const std::string user_id_hash =
-        profile_helper->GetUserIdHashByUserIdForTesting(
-            account_id.GetUserEmail());
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
     user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash,
                                                    false /* browser_restart */,
                                                    false /* is_child */);
@@ -278,7 +278,7 @@ class ProfileManagerTest : public testing::Test {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(user_email, "1");
     const std::string user_id_hash =
-        profile_helper->GetUserIdHashByUserIdForTesting(user_email);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
     const base::FilePath dest_path =
         profile_helper->GetProfilePathByUserIdHash(user_id_hash);
 
@@ -409,13 +409,13 @@ TEST_F(ProfileManagerTest, UserProfileLoading) {
       ProfileManager::GetLastUsedProfile()->IsSameOrParent(signin_profile));
 
   // User signs in but user profile loading has not started.
-  const std::string user_id = "test-user@example.com";
-  const std::string gaia_id = "0123456789";
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("test-user@example.com", "0123456789");
   const std::string user_id_hash =
-      ProfileHelper::Get()->GetUserIdHashByUserIdForTesting(user_id);
-  user_manager::UserManager::Get()->UserLoggedIn(
-      AccountId::FromUserEmailGaiaId(user_id, gaia_id), user_id_hash,
-      false /* browser_restart */, false /* is_child */);
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+  user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash,
+                                                 false /* browser_restart */,
+                                                 false /* is_child */);
 
   // Sign-in profile should be returned at this stage. Otherwise, login code
   // ends up in an invalid state. Strange things as in http://crbug.com/728683

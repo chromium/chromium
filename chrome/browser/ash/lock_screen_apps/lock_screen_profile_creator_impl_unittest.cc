@@ -39,6 +39,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
@@ -359,7 +360,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
 
     base::FilePath user_profile_path =
         user_data_dir_.GetPath().Append(ProfileHelper::Get()->GetUserProfileDir(
-            ProfileHelper::GetUserIdHashByUserIdForTesting(kPrimaryUser)));
+            user_manager::FakeUserManager::GetFakeUsernameHash(account_id)));
     auto profile = std::make_unique<TestingProfile>(user_profile_path);
     primary_profile_ = profile.get();
     profile_manager_->RegisterTestingProfile(std::move(profile),

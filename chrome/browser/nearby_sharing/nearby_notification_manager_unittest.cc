@@ -1660,10 +1660,13 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
 
     holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>();
     profile_manager_ = CreateTestingProfileManager();
-    const AccountId account_id(AccountId::FromUserEmail(""));
+    constexpr char kEmail[] = "test@test";
+    const AccountId account_id(AccountId::FromUserEmail(kEmail));
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
-    profile_ = profile_manager_->CreateTestingProfile("");
+    profile_ = profile_manager_->CreateTestingProfile(kEmail);
+    static_cast<ash::SessionObserver*>(holding_space_controller_.get())
+        ->OnActiveUserSessionChanged(account_id);
   }
 
   ~NearbyFilesHoldingSpaceTest() override = default;

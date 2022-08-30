@@ -14,8 +14,9 @@ namespace ash {
 
 namespace {
 
-// As defined in /chromeos/ash/components/dbus/cryptohome/cryptohome_client.cc.
-static const char kUserIdHashSuffix[] = "-hash";
+// As defined in
+// //chromeos/ash/components/dbus/cryptohome/fake_userdataauth_client.cc
+static constexpr char kUserIdHashSuffix[] = "-hash";
 
 }  // anonymous namespace
 

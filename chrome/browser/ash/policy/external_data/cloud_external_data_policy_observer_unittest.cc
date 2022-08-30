@@ -346,8 +346,7 @@ void CloudExternalDataPolicyObserverTest::LogInAsDeviceLocalAccount(
       std::make_unique<PolicyServiceImpl>(std::move(providers));
   builder.SetPolicyService(std::move(policy_service));
   builder.SetPath(ash::ProfileHelper::Get()->GetProfilePathByUserIdHash(
-      ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
-          account_id.GetUserEmail())));
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id)));
 
   profile_ = builder.Build();
   profile_->set_profile_name(account_id.GetUserEmail());
@@ -386,7 +385,7 @@ void CloudExternalDataPolicyObserverTest::LogInAsRegularUser() {
       std::make_unique<PolicyServiceImpl>(std::move(providers));
   builder.SetPolicyService(std::move(policy_service));
   builder.SetPath(ash::ProfileHelper::Get()->GetProfilePathByUserIdHash(
-      ash::ProfileHelper::GetUserIdHashByUserIdForTesting(kRegularUserID)));
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id)));
 
   profile_ = builder.Build();
   profile_->set_profile_name(kRegularUserID);

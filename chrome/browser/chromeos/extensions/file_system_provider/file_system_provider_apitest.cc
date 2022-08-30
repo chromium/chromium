@@ -147,8 +147,7 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         browser()->profile());
 
-    user_manager_.AddUser(AccountId::FromUserEmailGaiaId(
-        browser()->profile()->GetProfileUserName(), "12345"));
+    user_manager_.AddUser(AccountId::FromUserEmailGaiaId("test@test", "12345"));
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;

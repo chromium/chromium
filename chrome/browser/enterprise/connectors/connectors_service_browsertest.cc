@@ -94,6 +94,7 @@ constexpr char kTestUrl[] = "https://foo.com";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kTestGaiaId[] = "123";
+constexpr char kTestEmail[] = "test@test";
 #endif
 
 std::string ExpectedOsPlatform() {
@@ -176,8 +177,7 @@ class ConnectorsServiceProfileBrowserTest
     // Remove cached user from ProfileHelper so it does not interfere with other
     // workflows
     ash::ProfileHelper::Get()->RemoveUserFromListForTesting(
-        AccountId::FromUserEmailGaiaId(
-            browser()->profile()->GetProfileUserName(), kTestGaiaId));
+        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
     user_manager_enabler_.reset();
 #endif
   }
@@ -228,8 +228,8 @@ class ConnectorsServiceProfileBrowserTest
     auto* fake_user_manager = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager));
-    AccountId account_id = AccountId::FromUserEmailGaiaId(
-        browser()->profile()->GetProfileUserName(), kTestGaiaId);
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, management_status() == ManagementStatus::AFFILIATED,
         user_manager::USER_TYPE_REGULAR,

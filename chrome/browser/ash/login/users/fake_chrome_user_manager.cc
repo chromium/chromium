@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
@@ -109,8 +110,8 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
   user_manager::User* user =
       user_manager::User::CreateRegularUser(account_id, user_type);
   user->SetAffiliation(is_affiliated);
-  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
-      account_id.GetUserEmail()));
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   user->SetStubImage(
       std::make_unique<user_manager::UserImage>(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -128,8 +129,8 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
 user_manager::User* FakeChromeUserManager::AddKioskAppUser(
     const AccountId& account_id) {
   user_manager::User* user = user_manager::User::CreateKioskAppUser(account_id);
-  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
-      account_id.GetUserEmail()));
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   users_.push_back(user);
   return user;
 }
@@ -138,8 +139,8 @@ user_manager::User* FakeChromeUserManager::AddArcKioskAppUser(
     const AccountId& account_id) {
   user_manager::User* user =
       user_manager::User::CreateArcKioskAppUser(account_id);
-  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
-      account_id.GetUserEmail()));
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   users_.push_back(user);
   return user;
 }
@@ -148,8 +149,8 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
     const AccountId& account_id) {
   user_manager::User* user =
       user_manager::User::CreateWebKioskAppUser(account_id);
-  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
-      account_id.GetUserEmail()));
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   users_.push_back(user);
   return user;
 }
@@ -157,8 +158,8 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
 user_manager::User* FakeChromeUserManager::AddGuestUser() {
   user_manager::User* user =
       user_manager::User::CreateGuestUser(GetGuestAccountId());
-  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
-      GetGuestAccountId().GetUserEmail()));
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(user->GetAccountId()));
   users_.push_back(user);
   return user;
 }
@@ -167,8 +168,8 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
     const AccountId& account_id) {
   user_manager::User* user =
       user_manager::User::CreatePublicAccountUser(account_id);
-  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
-      account_id.GetUserEmail()));
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   user->SetStubImage(
       std::make_unique<user_manager::UserImage>(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -194,10 +195,9 @@ bool FakeChromeUserManager::AreEphemeralUsersEnabled() const {
 
 void FakeChromeUserManager::LoginUser(const AccountId& account_id,
                                       bool set_profile_created_flag) {
-  UserLoggedIn(
-      account_id,
-      ProfileHelper::GetUserIdHashByUserIdForTesting(account_id.GetUserEmail()),
-      false /* browser_restart */, false /* is_child */);
+  UserLoggedIn(account_id,
+               user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+               false /* browser_restart */, false /* is_child */);
 
   if (!set_profile_created_flag)
     return;
@@ -265,8 +265,7 @@ void FakeChromeUserManager::ResetUserFlow(const AccountId& account_id) {
 void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
   active_account_id_ = account_id;
   ProfileHelper::Get()->ActiveUserHashChanged(
-      ProfileHelper::GetUserIdHashByUserIdForTesting(
-          account_id.GetUserEmail()));
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   active_user_ = nullptr;
   if (!users_.empty() && active_account_id_.is_valid()) {
     for (user_manager::User* const user : users_) {

@@ -22,6 +22,7 @@
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,9 +107,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
     session_manager_.CreateSession(
         account_id(),
-        ProfileHelper::GetUserIdHashByUserIdForTesting(
-            account_id().GetUserEmail()),
-        true);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()), true);
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 

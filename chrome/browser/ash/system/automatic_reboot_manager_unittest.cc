@@ -25,7 +25,6 @@
 #include "base/timer/wall_clock_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -36,6 +35,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -572,8 +572,8 @@ void AutomaticRebootManagerBasicTest::LogIn() {
   const AccountId account_id =
       AccountId::FromUserEmailGaiaId("email", "123456");
   session_manager_.CreateSession(
-      account_id, ProfileHelper::GetUserIdHashByUserIdForTesting("email"),
-      true);
+      account_id,
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id), true);
   session_manager_.SessionStarted();
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
 }

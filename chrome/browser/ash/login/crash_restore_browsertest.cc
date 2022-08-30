@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -208,10 +209,9 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
     base::FilePath user_data_dir;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
 
-    const char* kTestUserIds[] = {kUserId1, kUserId2, kUserId3};
-    for (auto* user_id : kTestUserIds) {
+    for (const auto& account_id : {account_id1_, account_id2_, account_id3_}) {
       const std::string user_id_hash =
-          ProfileHelper::GetUserIdHashByUserIdForTesting(user_id);
+          user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
       const base::FilePath user_profile_path =
           user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
       ASSERT_TRUE(base::CreateDirectory(user_profile_path));

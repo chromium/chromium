@@ -45,10 +45,10 @@ class SnapshotRebootControllerTest : public testing::Test {
 
   void LoginUserSession() {
     auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
-    user_manager()->AddUser(account_id);
+    auto* user = user_manager()->AddUser(account_id);
 
-    user_manager()->UserLoggedIn(
-        account_id, account_id.GetUserEmail() + "-hash", false, false);
+    user_manager()->UserLoggedIn(account_id, user->username_hash(), false,
+                                 false);
   }
 
   void FastForwardAttempt() {
