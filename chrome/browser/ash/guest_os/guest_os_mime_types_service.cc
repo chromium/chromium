@@ -17,6 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/xdg_shared_mime_info/mime_cache.h"
 
 namespace guest_os {
 
@@ -117,7 +118,13 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
 
   base::Value exts(base::Value::Type::DICTIONARY);
   for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
-    exts.SetStringKey(mapping.first, mapping.second);
+    // Only store mappings from container that are different to host.
+    std::string type;
+    if (!xdg_shared_mime_info::GetMimeCacheTypeFromExtension(mapping.first,
+                                                             &type) ||
+        mapping.second != type) {
+      exts.SetStringKey(mapping.first, mapping.second);
+    }
   }
   VLOG(1) << "UpdateMimeTypes(" << mime_type_mappings.vm_name() << ", "
           << mime_type_mappings.container_name() << ")=" << exts;

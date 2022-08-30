@@ -77,11 +77,12 @@ class GuestOsMimeTypesServiceTest : public testing::Test {
 };
 
 TEST_F(GuestOsMimeTypesServiceTest, SetAndGetMimeTypes) {
+  // 'text/plain' is already mapped by system, so we will not store it.
   std::vector<std::string> file_extensions = {
-      "foo", "bar", "gz", "xz", "tar.gz", "c", "C", "z", "🦈x"};
-  std::vector<std::string> mime_types = {"x/foo", "x/bar",    "x/gz",
-                                         "x/xz",  "x/tar.gz", "x/c",
-                                         "x/C",   "x/z",      "x/shark"};
+      "foo", "bar", "gz", "xz", "tar.gz", "c", "C", "z", "🦈x", "txt"};
+  std::vector<std::string> mime_types = {
+      "x/foo", "x/bar", "x/gz", "x/xz",    "x/tar.gz",
+      "x/c",   "x/C",   "x/z",  "x/shark", "text/plain"};
 
   // Mime types not registered yet.
   EXPECT_EQ("", GetMimeType("test.foo"));
@@ -103,6 +104,8 @@ TEST_F(GuestOsMimeTypesServiceTest, SetAndGetMimeTypes) {
   EXPECT_EQ("x/tar.gz", GetMimeType("test.tar.GZ"));
   // Support unicode.
   EXPECT_EQ("x/shark", GetMimeType("test.🦈X"));
+  // We only store items different to platform.
+  EXPECT_EQ("", GetMimeType("test.txt"));
 }
 
 // Test that UpdateMimeTypes doesn't clobber MIME types from different VMs or
