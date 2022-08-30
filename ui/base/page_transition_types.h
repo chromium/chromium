@@ -22,9 +22,11 @@ namespace ui {
 // A type is made of a core value and a set of qualifiers. A type has one
 // core value and 0 or or more qualifiers.
 //
-// A Java counterpart will be generated for this enum.
+// A Java counterpart will be generated for this enum.  This is why the enum
+// uses int32_t and not uint32_t as the underlying type (jint cannot
+// represent uint32_t).
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
-enum PageTransition {
+enum PageTransition : int32_t {
   PAGE_TRANSITION_FIRST = 0,
 
   // User got to this page by clicking a link on another page.
@@ -150,13 +152,13 @@ enum PageTransition {
   // can get that information from WebKit.
   // TODO(https://crbug.com/1291237): Remove this as it's inaccurate.
   // NavigationHandle::WasServerRedirect() should be used instead.
-  PAGE_TRANSITION_SERVER_REDIRECT = 0x80000000,
+  PAGE_TRANSITION_SERVER_REDIRECT = -2147483648,  // 0x80000000
 
   // Used to test whether a transition involves a redirect.
-  PAGE_TRANSITION_IS_REDIRECT_MASK = 0xC0000000,
+  PAGE_TRANSITION_IS_REDIRECT_MASK = -1073741824,  // 0xC0000000
 
   // General mask defining the bits used for the qualifiers.
-  PAGE_TRANSITION_QUALIFIER_MASK = 0xFFFFFF00,
+  PAGE_TRANSITION_QUALIFIER_MASK = -256,  // 0xFFFFFF00
 };
 
 // Compares two PageTransition types ignoring qualifiers. |rhs| is taken to
@@ -210,11 +212,11 @@ class DontUseOperatorEquals;
 // qualifiers. Use PageTransitionCoreTypeIs() instead or, in rare cases,
 // PageTransitionTypeIncludingQualifiersIs().
 DontUseOperatorEquals operator==(PageTransition, PageTransition);
-DontUseOperatorEquals operator==(PageTransition, int);
-DontUseOperatorEquals operator==(int, PageTransition);
+DontUseOperatorEquals operator==(PageTransition, int32_t);
+DontUseOperatorEquals operator==(int32_t, PageTransition);
 DontUseOperatorEquals operator!=(PageTransition, PageTransition);
-DontUseOperatorEquals operator!=(PageTransition, int);
-DontUseOperatorEquals operator!=(int, PageTransition);
+DontUseOperatorEquals operator!=(PageTransition, int32_t);
+DontUseOperatorEquals operator!=(int32_t, PageTransition);
 
 }  // namespace ui
 
