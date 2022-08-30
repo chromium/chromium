@@ -209,7 +209,7 @@ def ReadFile(filename, encoding):
     mode = 'rb'
     encoding = None
   else:
-    mode = 'rU'
+    mode = 'r'
 
   with io.open(filename, mode, encoding=encoding) as f:
     return f.read()
