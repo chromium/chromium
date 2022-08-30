@@ -60,11 +60,7 @@ bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
           features::kApplyNativeOcclusionToCompositor)) {
     return false;
   }
-  const std::string type = base::GetFieldTrialParamValueByFeature(
-      features::kApplyNativeOcclusionToCompositor,
-      features::kApplyNativeOcclusionToCompositorType);
-  return type == features::kApplyNativeOcclusionToCompositorTypeRelease ||
-         type == features::kApplyNativeOcclusionToCompositorTypeThrottle;
+  return true;
 #else
   return false;
 #endif

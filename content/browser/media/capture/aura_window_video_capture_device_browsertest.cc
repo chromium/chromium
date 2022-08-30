@@ -291,51 +291,6 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-#if BUILDFLAG(IS_WIN)
-class AuraWindowVideoCaptureDeviceBrowserTestWin
-    : public AuraWindowVideoCaptureDeviceBrowserTest {
- public:
-  // AuraWindowVideoCaptureDeviceBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kApplyNativeOcclusionToCompositor,
-        {{features::kApplyNativeOcclusionToCompositorType,
-          features::kApplyNativeOcclusionToCompositorTypeRelease}});
-
-    AuraWindowVideoCaptureDeviceBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// TODO(https://crbug.com/1096946): enable.
-IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
-                       DISABLED_CapturesOccludedWindow) {
-  aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
-  aura::test::DisableNativeWindowOcclusionTracking(window_tree_host);
-  NavigateToInitialDocument();
-  AllocateAndStartAndWaitForFirstFrame();
-
-  // Simulate the WindowTreeHost being occluded.
-  window_tree_host->SetNativeWindowOcclusionState(
-      aura::Window::OcclusionState::OCCLUDED, {});
-
-  // Even though the WindowTreeHost is occluded, the compositor should still be
-  // visible and content captured.
-  static constexpr SkColor kColorsToCycleThrough[] = {
-      SK_ColorRED,  SK_ColorGREEN,   SK_ColorBLUE,  SK_ColorYELLOW,
-      SK_ColorCYAN, SK_ColorMAGENTA, SK_ColorWHITE,
-  };
-  for (SkColor color : kColorsToCycleThrough) {
-    ChangePageContentColor(color);
-    WaitForFrameWithColor(color);
-  }
-
-  StopAndDeAllocate();
-}
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Disabled (https://crbug.com/1096946)
 // On ChromeOS, another window may occlude a window that is being captured.

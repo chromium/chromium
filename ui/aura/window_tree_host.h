@@ -408,9 +408,9 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   bool CalculateCompositorVisibilityFromOcclusionState() const;
 
   // See `kApplyNativeOcclusionToCompositorTypeRelease` for details.
+  // TODO(https://crbug.com/1248235): remove this.
   bool ShouldReleaseResourcesWhenHidden() const;
 
-  // See `kApplyNativeOcclusionToCompositorTypeThrottle` for details.
   bool ShouldThrottleWhenOccluded() const;
 
   // Starts the steps necessary to release viz resources and hide.

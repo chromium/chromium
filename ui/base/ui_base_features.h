@@ -63,12 +63,6 @@ extern const base::Feature kApplyNativeOccludedRegionToWindowTracker;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kApplyNativeOcclusionToCompositor;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorType[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeRelease[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeThrottle[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kCalculateNativeWinOcclusion;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kInputPaneOnScreenKeyboard;
