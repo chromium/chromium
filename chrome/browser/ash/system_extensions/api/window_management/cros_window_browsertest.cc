@@ -412,16 +412,10 @@ async function cros_test() {
   let window_to_close = windows.find(window => window.id === "%1$s");
   assert_not_equals(undefined, window_to_close,
       `Could not find window with id: (%1$s);`);
+  window_to_close.close();
 
-  // TODO(b/242264794): Events are only dispatched to system extensions. Since
-  // this test doesn't use an actual System Extension, the commented out code
-  // below hangs. Uncomment once this test moves to running in a System
-  // Extension.
-  // let promise = eventPromise(chromeos.windowManagement, 'windowclosed');
-  // window_to_close.close();
-  // let e = await promise;
-  // assert_equals(e.window.id, "%1$s");
-
+  // TODO(b/221123297): Currently test will flake on close under stress.
+  // Defer testing until on close event implemented
   // windows = await chromeos.windowManagement.getWindows();
   // assert_equals(windows.length, 1);
 }
@@ -545,42 +539,6 @@ IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, AcceleratorEvent) {
   EXPECT_EQ("acceleratordown", *dict.FindString("type"));
   EXPECT_EQ("Control Alt a", *dict.FindString("name"));
   EXPECT_FALSE(*dict.FindBool("repeat"));
-}
-
-IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, CloseEvent) {
-  InstallAndStartExtension();
-
-  // Open browser instance to close outside of service worker.
-  chrome::NewWindow(browser());
-
-  // Keep track of the new browser window so we can close it.
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
-  ASSERT_NE(browser(), new_browser);
-
-  // Set target id to crosWindow id of newly opened window as per instance
-  // registry.
-  std::string target_id;
-
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->InstanceRegistry().ForEachInstance(
-      [&target_id, &new_browser](const apps::InstanceUpdate& update) {
-        if (update.Window()->GetToplevelWindow() ==
-            new_browser->window()->GetNativeWindow()) {
-          CHECK(target_id.empty());
-          target_id = update.InstanceId().ToString();
-        }
-      });
-
-  auto observer = GetConsoleObserver();
-
-  chrome::CloseWindow(new_browser);
-
-  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
-
-  // Our event should be dispatched with our system extension logging the id of
-  // the window firing the event.
-  EXPECT_EQ(result, target_id);
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,

@@ -4,11 +4,9 @@
 
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.h"
 
-#include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_accelerator_event_init.h"
-#include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -17,7 +15,6 @@
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_accelerator_event.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_screen.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.h"
-#include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_event.h"
 
 namespace blink {
 
@@ -156,30 +153,6 @@ void CrosWindowManagement::DispatchAcceleratorEvent(
           ? event_type_names::kAcceleratordown
           : event_type_names::kAcceleratorup;
   DispatchEvent(*CrosAcceleratorEvent::Create(type, event_init));
-}
-
-void CrosWindowManagement::DispatchWindowClosedEvent(
-    const base::UnguessableToken& window_id) {
-  WTF::String closed_window_id_string = WTF::String(window_id.ToString());
-  auto* info_ptr =
-      std::find_if(windows_.begin(), windows_.end(),
-                   [&closed_window_id_string](Member<CrosWindow> info) {
-                     return info.Get()->id() == closed_window_id_string;
-                   });
-
-  auto* event_init = CrosWindowEventInit::Create();
-
-  // If we don't find the closed window by id (i.e. the cache is unpopulated),
-  // manually create the cros window.
-  if (info_ptr == windows_.end()) {
-    event_init->setWindow(
-        MakeGarbageCollected<CrosWindow>(this, std::move(window_id)));
-  } else {
-    event_init->setWindow(*info_ptr);
-  }
-
-  DispatchEvent(
-      *CrosWindowEvent::Create(event_type_names::kWindowclosed, event_init));
 }
 
 }  // namespace blink

@@ -24,7 +24,3 @@ chromeos.windowManagement.addEventListener('acceleratorup', e => {
   };
   console.log(JSON.stringify(event));
 });
-
-chromeos.windowManagement.addEventListener('windowclosed', e => {
-  console.log(JSON.stringify(e.window.id));
-});

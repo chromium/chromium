@@ -18,7 +18,6 @@ class CrosWindow : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CrosWindow(CrosWindowManagement* manager, base::UnguessableToken id);
   CrosWindow(CrosWindowManagement* manager,
              mojom::blink::CrosWindowInfoPtr window);
 

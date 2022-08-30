@@ -22,10 +22,11 @@ class CrosWindow;
 class CrosScreen;
 class ScriptPromiseResolver;
 
-class CrosWindowManagement : public EventTargetWithInlineData,
-                             public mojom::blink::CrosWindowManagementObserver,
-                             public Supplement<ExecutionContext>,
-                             public ExecutionContextClient {
+class CrosWindowManagement
+    : public EventTargetWithInlineData,
+      public mojom::blink::CrosWindowManagementStartObserver,
+      public Supplement<ExecutionContext>,
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -60,15 +61,13 @@ class CrosWindowManagement : public EventTargetWithInlineData,
   void DispatchStartEvent() override;
   void DispatchAcceleratorEvent(
       mojom::blink::AcceleratorEventPtr event) override;
-  void DispatchWindowClosedEvent(
-      const base::UnguessableToken& window_id) override;
 
  private:
   HeapMojoRemote<mojom::blink::CrosWindowManagementFactory>
       cros_window_management_factory_{GetExecutionContext()};
   HeapMojoAssociatedRemote<mojom::blink::CrosWindowManagement>
       cros_window_management_{GetExecutionContext()};
-  HeapMojoAssociatedReceiver<mojom::blink::CrosWindowManagementObserver,
+  HeapMojoAssociatedReceiver<mojom::blink::CrosWindowManagementStartObserver,
                              CrosWindowManagement>
       observer_receiver_{this, GetExecutionContext()};
 
