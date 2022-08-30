@@ -91,20 +91,8 @@ class MacKeyRotationCommandTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-// Tests a failed key rotation due to the mac keychain being locked.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_KeychainLocked) {
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(false));
-
-  base::test::TestFuture<KeyRotationCommand::Status> future;
-  rotation_command_->Trigger(params, future.GetCallback());
-  EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
-}
-
 // Tests a failed key rotation due to the secure enclave not being supported.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(false));
 
@@ -117,8 +105,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
 // Tests a failed key rotation due to an invalid command to rotate.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidCommand) {
   InSequence s;
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
 
@@ -132,8 +118,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidCommand) {
 // Tests a failed key rotation due to failure creating a new signing key pair.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
   InSequence s;
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -150,8 +134,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
 // Tests a failed key rotation due to a store key failure.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
   InSequence s;
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -170,8 +152,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
 // due to a signature failure.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidSignatureFailure) {
   InSequence s;
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -200,8 +180,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidSignatureFailure) {
 // server.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
   InSequence s;
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -229,8 +207,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
 // Tests when the key rotation is successful.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_Success) {
   InSequence s;
-  EXPECT_CALL(*mock_secure_enclave_client_, VerifyKeychainUnlocked())
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())

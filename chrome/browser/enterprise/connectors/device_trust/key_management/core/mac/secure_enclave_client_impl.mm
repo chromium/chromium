@@ -39,51 +39,22 @@ base::StringPiece GetLabelFromKeyType(SecureEnclaveClient::KeyType type) {
   return base::StringPiece();
 }
 
-// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
-// warnings are disabled in the meanwhile.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-// TODO(http://b/241261382): Look for alternatives in ACL creation and validate
-// the new key is stored in the data protection keychain.
-
-// Issues the SecAccessCreate API to create the ACL for the secure key.
-// This ACL allows all Chrome applications access to modify this key
-// so all Chrome applications can perform the mac key rotation process.
-// Trusted applications are made up of code-signing designated requirements on
-// macOS. By allowing the current calling chrome application to have
-// default access, we allow all applications with the same code-signing
-// designated requirement access to this key. Because Chrome builds (stable,
-// canary, dev, beta) have the same code signing requirement, they therefore all
-// have access to this key. This method will return the newly created ACL or a
-// nullptr on failure.
-base::ScopedCFTypeRef<SecAccessRef> CreateACL() {
-  base::ScopedCFTypeRef<SecAccessRef> access_ref;
-  SecAccessCreate(base::SysUTF8ToCFStringRef(
-                      constants::kTemporaryDeviceTrustSigningKeyLabel),
-                  nullptr, access_ref.InitializeInto());
-  return access_ref;
-}
-
-#pragma clang diagnostic pop
-
 // Creates and returns the secure enclave private key attributes used
 // for key creation. These key attributes represent the key created in
 // the permanent key location.
 base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
-  auto access_ref = CreateACL();
-  if (!access_ref)
-    return base::ScopedCFTypeRef<CFMutableDictionaryRef>();
-
   base::ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
 
-  CFDictionarySetValue(attributes, kSecAttrAccess, access_ref);
+  CFDictionarySetValue(
+      attributes, kSecAttrAccessGroup,
+      base::SysUTF8ToNSString(constants::kKeychainAccessGroup));
   CFDictionarySetValue(attributes, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
+  CFDictionarySetValue(attributes, kSecAttrTokenID,
+                       kSecAttrTokenIDSecureEnclave);
   CFDictionarySetValue(attributes, kSecAttrKeySizeInBits, @256);
   CFDictionarySetValue(
       attributes, kSecAttrLabel,
@@ -95,8 +66,15 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(attributes, kSecPrivateKeyAttrs, private_key_params);
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
-  CFDictionarySetValue(private_key_params, kSecAttrTokenID,
-                       kSecAttrTokenIDSecureEnclave);
+  CFDictionarySetValue(
+      private_key_params, kSecAttrAccessControl,
+      base::ScopedCFTypeRef<SecAccessControlRef>(
+          SecAccessControlCreateWithFlags(
+              kCFAllocatorDefault,
+              // Private key can only be used when the device is unlocked.
+              kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+              // Private key is available for signing.
+              kSecAccessControlPrivateKeyUsage, nullptr)));
   return attributes;
 }
 
@@ -108,10 +86,20 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
       kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
+  CFDictionarySetValue(
+      query, kSecAttrAccessGroup,
+      base::SysUTF8ToNSString(constants::kKeychainAccessGroup));
   CFDictionarySetValue(query, kSecAttrKeyType, kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(query, kSecAttrLabel,
                        base::SysUTF8ToCFStringRef(GetLabelFromKeyType(type)));
   CFDictionarySetValue(query, kSecReturnRef, @YES);
+
+  // Specifying to query the data protection keychain is only available on
+  // macOS 10.15 or newer. This forces a query to the correct keychain since
+  // Secure Enclave keys are stored in the data protection keychain.
+  if (@available(macOS 10.15, *)) {
+    CFDictionarySetValue(query, kSecUseDataProtectionKeychain, @YES);
+  }
   return query;
 }
 
@@ -232,10 +220,6 @@ bool SecureEnclaveClientImpl::SignDataWithKey(SecKeyRef key,
   output.assign(CFDataGetBytePtr(signature),
                 CFDataGetBytePtr(signature) + CFDataGetLength(signature));
   return true;
-}
-
-bool SecureEnclaveClientImpl::VerifyKeychainUnlocked() {
-  return helper_->CheckKeychainUnlocked();
 }
 
 bool SecureEnclaveClientImpl::VerifySecureEnclaveSupported() {

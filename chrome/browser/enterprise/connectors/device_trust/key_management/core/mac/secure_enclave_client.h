@@ -74,10 +74,6 @@ class SecureEnclaveClient {
                                base::span<const uint8_t> data,
                                std::vector<uint8_t>& output) = 0;
 
-  // Verifies whether the keychain is currently unlocked. Returns true
-  // if it is unlocked and false otherwise.
-  virtual bool VerifyKeychainUnlocked() = 0;
-
   // Verifies whether the Secure Enclave is supported for the device.
   // Returns true if the Secure Enclave is supported and false otherwise.
   virtual bool VerifySecureEnclaveSupported() = 0;

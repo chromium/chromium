@@ -37,7 +37,6 @@ class SecureEnclaveClientImpl : public SecureEnclaveClient {
   bool SignDataWithKey(SecKeyRef key,
                        base::span<const uint8_t> data,
                        std::vector<uint8_t>& output) override;
-  bool VerifyKeychainUnlocked() override;
   bool VerifySecureEnclaveSupported() override;
 
  private:

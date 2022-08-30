@@ -47,7 +47,6 @@ class MockSecureEnclaveClient : public SecureEnclaveClient {
               (SecKeyRef, base::span<const uint8_t>, std::vector<uint8_t>&),
               (override));
   MOCK_METHOD(bool, VerifySecureEnclaveSupported, (), (override));
-  MOCK_METHOD(bool, VerifyKeychainUnlocked, (), (override));
 };
 
 }  // namespace enterprise_connectors::test

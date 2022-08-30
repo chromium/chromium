@@ -24,6 +24,7 @@ source_set("core") {
 source_set("constants") {
   public = [ "shared_command_constants.h" ]
   sources = [ "shared_command_constants.cc" ]
+  deps = [ "//chrome/common:version_header" ]
 }
 
 source_set("util") {

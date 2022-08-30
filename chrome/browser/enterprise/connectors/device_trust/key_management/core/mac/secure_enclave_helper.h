@@ -45,10 +45,6 @@ class SecureEnclaveHelper {
   // Returns true if the key was deleted and false otherwise.
   virtual bool Delete(CFDictionaryRef query) = 0;
 
-  // Uses the SecKeychainCopyDefault API to check if the keychain is unlocked.
-  // Returns true when the keychain is unlocked and false otherwise.
-  virtual bool CheckKeychainUnlocked() = 0;
-
   // Uses the crypto library to check whether the Secure Enclave is supported on
   // the device. Returns true if it is supported and false otherwise.
   virtual bool IsSecureEnclaveSupported() = 0;

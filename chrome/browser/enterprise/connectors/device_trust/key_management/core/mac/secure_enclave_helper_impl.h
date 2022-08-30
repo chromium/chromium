@@ -26,7 +26,6 @@ class SecureEnclaveHelperImpl : public SecureEnclaveHelper {
   bool Update(CFDictionaryRef query,
               CFDictionaryRef attributes_to_update) override;
   bool Delete(CFDictionaryRef query) override;
-  bool CheckKeychainUnlocked() override;
   bool IsSecureEnclaveSupported() override;
 };
 

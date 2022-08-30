@@ -35,6 +35,10 @@ extern const char kTemporaryDeviceTrustSigningKeyLabel[];
 
 // Permanent label for the secure enclave device trust signing key.
 extern const char kDeviceTrustSigningKeyLabel[];
+
+// The keychain-access-group for the secure enclave device trust signing key
+// This allows all Chrome applications access to modify this key.
+extern const char kKeychainAccessGroup[];
 #endif
 
 }  // namespace constants

@@ -93,6 +93,9 @@ TEST_F(SecureEnclaveClientTest, CreateKey) {
         EXPECT_TRUE(CFEqual(kSecAttrKeyTypeECSECPrimeRandom,
                             base::mac::GetValueFromDictionary<CFStringRef>(
                                 attributes, kSecAttrKeyType)));
+        EXPECT_TRUE(CFEqual(kSecAttrTokenIDSecureEnclave,
+                            base::mac::GetValueFromDictionary<CFStringRef>(
+                                attributes, kSecAttrTokenID)));
         EXPECT_TRUE(
             CFEqual(@256, base::mac::GetValueFromDictionary<CFNumberRef>(
                               attributes, kSecAttrKeySizeInBits)));
@@ -102,9 +105,6 @@ TEST_F(SecureEnclaveClientTest, CreateKey) {
         EXPECT_TRUE(
             CFEqual(@YES, base::mac::GetValueFromDictionary<CFBooleanRef>(
                               private_key_attributes, kSecAttrIsPermanent)));
-        EXPECT_TRUE(CFEqual(kSecAttrTokenIDSecureEnclave,
-                            base::mac::GetValueFromDictionary<CFStringRef>(
-                                private_key_attributes, kSecAttrTokenID)));
         return test_key_;
       });
   EXPECT_EQ(secure_enclave_client_->CreatePermanentKey(), test_key_);
@@ -279,15 +279,6 @@ TEST_F(SecureEnclaveClientTest, SignDataWithKey) {
   EXPECT_TRUE(secure_enclave_client_->SignDataWithKey(
       test_key_, base::as_bytes(base::make_span(data)), output));
   EXPECT_TRUE(output.size() > 0);
-}
-
-// Tests that the VerifyKeychainUnlocked method invokes the SE helper's
-// CheckKeychainUnlocked method.
-TEST_F(SecureEnclaveClientTest, VerifyKeychainUnlocked) {
-  EXPECT_CALL(*mock_secure_enclave_helper_, CheckKeychainUnlocked())
-      .Times(1)
-      .WillOnce([]() { return true; });
-  EXPECT_TRUE(secure_enclave_client_->VerifyKeychainUnlocked());
 }
 
 // Tests that the VerifySecureEnclaveSupported method invokes the SE helper's

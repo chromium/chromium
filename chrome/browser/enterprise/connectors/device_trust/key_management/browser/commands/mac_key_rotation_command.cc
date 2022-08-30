@@ -84,13 +84,6 @@ MacKeyRotationCommand::~MacKeyRotationCommand() = default;
 
 void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                                     Callback callback) {
-  if (!client_->VerifyKeychainUnlocked()) {
-    SYSLOG(ERROR)
-        << "Device trust key rotation failed. The keychain is not unlocked.";
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
-    return;
-  }
-
   if (!client_->VerifySecureEnclaveSupported()) {
     SYSLOG(ERROR) << "Device trust key rotation failed. The secure enclave is "
                      "not supported.";

@@ -31,7 +31,6 @@ class MockSecureEnclaveHelper : public SecureEnclaveHelper {
               (override));
   MOCK_METHOD(bool, Update, (CFDictionaryRef, CFDictionaryRef), (override));
   MOCK_METHOD(bool, Delete, (CFDictionaryRef), (override));
-  MOCK_METHOD(bool, CheckKeychainUnlocked, (), (override));
   MOCK_METHOD(bool, IsSecureEnclaveSupported, (), (override));
 };
 
