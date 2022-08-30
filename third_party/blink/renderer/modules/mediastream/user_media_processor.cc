@@ -997,7 +997,7 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
     GetMediaStreamDispatcherHost()->GetOpenDevice(
         current_request_info_->request_id(),
         *current_request_info_->request()->GetSessionId(),
-        /*transfer_id=*/base::UnguessableToken::Create(), &result, &response);
+        *current_request_info_->request()->GetTransferId(), &result, &response);
     GotOpenDevice(current_request_info_->request_id(), result,
                   std::move(response));
   } else {
