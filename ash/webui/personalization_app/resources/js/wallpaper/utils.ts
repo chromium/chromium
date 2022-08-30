@@ -92,7 +92,10 @@ export function getWallpaperLayoutEnum(layout: string): WallpaperLayout {
 
 /** Returns a css variable to control the animation delay. */
 export function getLoadingPlaceholderAnimationDelay(index: number): string {
-  return `--animation-delay: ${index * 83}ms;`;
+  // 48 is chosen because 4 and 3 are both factors, and it's large enough
+  // that 48 grid items don't fit on one screen.
+  const wrapped = index % 48;
+  return `--animation-delay: ${wrapped * 83}ms;`;
 }
 
 /**
