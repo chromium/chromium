@@ -1,20 +1,13 @@
 <!DOCTYPE html>
-<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
-<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#descdef-scroll-timeline-orientation">
+<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-axis">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
 <style>
-  #scroller_horizontal_tb, #scroller_vertical_lr{
+  .scroller {
     overflow: hidden;
     width: 100px;
     height: 100px;
-  }
-  #scroller_horizontal_tb {
-    writing-mode: horizontal-tb;
-  }
-  #scroller_vertical_lr {
-    writing-mode: vertical-lr;
   }
   .contents {
     height: 200px;
@@ -24,33 +17,28 @@
     from { width: 100px; }
     to { width: 200px; }
   }
-  @scroll-timeline timeline_auto {
-    source: selector(#scroller_horizontal_tb);
-    orientation: auto;
+  #timeline_initial_axis {
+    scroll-timeline: timeline_initial_axis;
   }
-  @scroll-timeline timeline_vertical {
-    source: selector(#scroller_horizontal_tb);
-    orientation: vertical;
+  #timeline_vertical {
+    scroll-timeline: vertical timeline_vertical;
   }
-  @scroll-timeline timeline_horizontal {
-    source: selector(#scroller_horizontal_tb);
-    orientation: horizontal;
+  #timeline_horizontal {
+    scroll-timeline: horizontal timeline_horizontal;
   }
-  @scroll-timeline timeline_block_in_horizontal {
-    source: selector(#scroller_horizontal_tb);
-    orientation: block;
+  #timeline_block_in_horizontal {
+    scroll-timeline: block timeline_block_in_horizontal;
   }
-  @scroll-timeline timeline_inline_in_horizontal {
-    source: selector(#scroller_horizontal_tb);
-    orientation: inline;
+  #timeline_inline_in_horizontal {
+    scroll-timeline: inline timeline_inline_in_horizontal;
   }
-  @scroll-timeline timeline_block_in_vertical {
-    source: selector(#scroller_vertical_lr);
-    orientation: block;
+  #timeline_block_in_vertical {
+    scroll-timeline: block timeline_block_in_vertical;
+    writing-mode: vertical-lr;
   }
-  @scroll-timeline timeline_inline_in_vertical {
-    source: selector(#scroller_vertical_lr);
-    orientation: inline;
+  #timeline_inline_in_vertical {
+    scroll-timeline: inline timeline_inline_in_vertical;
+    writing-mode: vertical-lr;
   }
   #container > div {
     width: 0px;
@@ -62,7 +50,7 @@
   @supports not (animation-timeline:foo) {
     #container > div { animation-play-state: paused; }
   }
-  #element_auto { animation-timeline: timeline_auto; }
+  #element_initial_axis { animation-timeline: timeline_initial_axis; }
   #element_vertical { animation-timeline: timeline_vertical; }
   #element_horizontal { animation-timeline: timeline_horizontal; }
   #element_block_in_horizontal { animation-timeline: timeline_block_in_horizontal; }
@@ -70,14 +58,15 @@
   #element_block_in_vertical { animation-timeline: timeline_block_in_vertical; }
   #element_inline_in_vertical { animation-timeline: timeline_inline_in_vertical; }
 </style>
-<div id=scroller_horizontal_tb>
-  <div class=contents></div>
-</div>
-<div id=scroller_vertical_lr>
-  <div class=contents></div>
-</div>
+<div class=scroller id=timeline_initial_axis><div class=contents></div></div>
+<div class=scroller id=timeline_vertical><div class=contents></div></div>
+<div class=scroller id=timeline_horizontal><div class=contents></div></div>
+<div class=scroller id=timeline_block_in_horizontal><div class=contents></div></div>
+<div class=scroller id=timeline_inline_in_horizontal><div class=contents></div></div>
+<div class=scroller id=timeline_block_in_vertical><div class=contents></div></div>
+<div class=scroller id=timeline_inline_in_vertical><div class=contents></div></div>
 <div id=container>
-  <div id=element_auto></div>
+  <div id=element_initial_axis></div>
   <div id=element_vertical></div>
   <div id=element_horizontal></div>
   <div id=element_block_in_horizontal></div>
@@ -87,47 +76,50 @@
 </div>
 <script>
   // Animations linked to vertical scroll-timelines are at 75% progress.
-  scroller_horizontal_tb.scrollTop = 75;
-  scroller_vertical_lr.scrollTop = 75;
+  timeline_initial_axis.scrollTop = 75;
+  timeline_vertical.scrollTop = 75;
+  timeline_block_in_horizontal.scrollTop = 75;
+  timeline_inline_in_vertical.scrollTop = 75;
   // Animations linked to horizontal scroll-timelines are at 25% progress.
-  scroller_horizontal_tb.scrollLeft = 25;
-  scroller_vertical_lr.scrollLeft = 25;
+  timeline_horizontal.scrollLeft = 25;
+  timeline_block_in_vertical.scrollLeft = 25;
+  timeline_inline_in_horizontal.scrollLeft = 25;
 
   promise_test(async (t) => {
     await waitForNextFrame();
-    assert_equals(getComputedStyle(element_auto).width, '175px');
-  }, 'Orientation auto behaves as expected');
+    assert_equals(getComputedStyle(element_initial_axis).width, '175px');
+  }, 'Initial axis');
 
   promise_test(async (t) => {
     await waitForNextFrame();
     assert_equals(getComputedStyle(element_vertical).width, '175px');
-  }, 'Orientation vertical behaves as expected');
+  }, 'Vertical axis');
 
   promise_test(async (t) => {
     await waitForNextFrame();
     assert_equals(getComputedStyle(element_horizontal).width, '125px');
-  }, 'Orientation horizontal behaves as expected');
+  }, 'Horizontal axis');
 
   promise_test(async (t) => {
     await waitForNextFrame();
     assert_equals(getComputedStyle(element_block_in_horizontal).width, '175px');
-  }, 'Orientation block behaves as expected in horizontal writing-mode');
+  }, 'Block axis in horizontal writing-mode');
 
   promise_test(async (t) => {
     await waitForNextFrame();
     assert_equals(getComputedStyle(element_inline_in_horizontal).width, '125px');
-  }, 'Orientation inline behaves as expected in horizontal writing-mode');
+  }, 'Inline axis in horizontal writing-mode');
 
   promise_test(async (t) => {
     await waitForNextFrame();
-    assert_equals(getComputedStyle(scroller_vertical_lr).writingMode, 'vertical-lr');
+    assert_equals(getComputedStyle(timeline_block_in_vertical).writingMode, 'vertical-lr');
     assert_equals(getComputedStyle(element_block_in_vertical).width, '125px');
-  }, 'Orientation block behaves as expected in vertical writing-mode');
+  }, 'Block axis in vertical writing-mode');
 
   promise_test(async (t) => {
     await waitForNextFrame();
-    assert_equals(getComputedStyle(scroller_vertical_lr).writingMode, 'vertical-lr');
+    assert_equals(getComputedStyle(timeline_inline_in_vertical).writingMode, 'vertical-lr');
     assert_equals(getComputedStyle(element_inline_in_vertical).width, '175px');
-  }, 'Orientation inline behaves as expected in vertical writing-mode');
+  }, 'Inline axis in vertical writing-mode');
 
 </script>
