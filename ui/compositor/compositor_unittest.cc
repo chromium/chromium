@@ -553,9 +553,6 @@ TEST_F(CompositorTestWithMessageLoop, PriorityCutoffWhenVisible) {
 }
 
 TEST_F(CompositorTestWithMessageLoop, ReleaseTileResourcesForHiddenLayers) {
-  EXPECT_FALSE(compositor()
-                   ->GetLayerTreeSettings()
-                   .release_tile_resources_for_hidden_layers);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kUiCompositorReleaseTileResourcesForHiddenLayers);

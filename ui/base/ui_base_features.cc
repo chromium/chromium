@@ -383,7 +383,7 @@ bool IsRawDrawUsingMSAA() {
 
 const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers{
     "UiCompositorReleaseTileResourcesForHiddenLayers",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kUiCompositorRequiredTilesOnly{
     "UiCompositorRequiredTilesOnly", base::FEATURE_DISABLED_BY_DEFAULT};
