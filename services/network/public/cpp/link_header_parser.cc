@@ -35,6 +35,8 @@ absl::optional<mojom::LinkRelAttribute> ParseRelAttribute(
     return absl::nullopt;
 
   std::string value = base::ToLowerASCII(attr.value());
+  if (value == "dns-prefetch")
+    return mojom::LinkRelAttribute::kDnsPrefetch;
   if (value == "preconnect")
     return mojom::LinkRelAttribute::kPreconnect;
   if (value == "preload")

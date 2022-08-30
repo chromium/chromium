@@ -8,6 +8,8 @@ import "url/mojom/url.mojom";
 
 // Represents subset of possible values for `rel` attribute of the Link header.
 enum LinkRelAttribute {
+  // https://w3c.github.io/resource-hints/#dns-prefetch
+  kDnsPrefetch,
   // https://w3c.github.io/resource-hints/#dfn-preconnect
   kPreconnect,
   // https://w3c.github.io/preload/
