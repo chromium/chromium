@@ -46,7 +46,7 @@ export class MetadataModel {
     this.rawProvider_ = rawProvider;
 
     /** @private @const {!MetadataCacheSet} */
-    this.cache_ = new MetadataCacheSet(new Map());
+    this.cache_ = new MetadataCacheSet();
 
     /** @private @const {!Array<!MetadataProviderCallbackRequest>} */
     this.callbackRequests_ = [];
@@ -233,7 +233,7 @@ class MetadataProviderCallbackRequest {
    * @param {!Array<!Entry>} entries
    * @param {!Array<string>} names
    * @param {!MetadataCacheSet} cache
-   * @param {function(!MetadataItem):undefined} fulfill
+   * @param {function(!Array<MetadataItem>):undefined} fulfill
    */
   constructor(entries, names, cache, fulfill) {
     /**
@@ -255,7 +255,7 @@ class MetadataProviderCallbackRequest {
     this.cache_ = cache;
 
     /**
-     * @private {function(!MetadataItem):undefined}
+     * @private {function(!Array<MetadataItem>):undefined}
      * @const
      */
     this.fulfill_ = fulfill;

@@ -11,20 +11,21 @@ import {MetadataItem} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 /**
- * Set of MetadataCacheItem.
+ * A collection of MetadataCacheItem objects. This class acts as a map from file
+ * entry URLs to metadata items. You can store metadata for entries, you can
+ * retrieve metadata for entries, clear the entire cache, or just selected
+ * entries. In addition, you can generate MetadataRequests and start them (i.e.,
+ * put them in the LOADING state).
  */
 export class MetadataCacheSet extends EventTarget {
-  /**
-   * @param {!Map<string, !MetadataCacheItem>} items
-   */
-  constructor(items) {
+  constructor() {
     super();
 
     /**
      * @private <!Map<string, !MetadataCacheItem>>
      * @const
      */
-    this.items_ = items;
+    this.items_ = new Map();
 
     /**
      * @private {number}
@@ -110,6 +111,7 @@ export class MetadataCacheSet extends EventTarget {
    * Note that it returns invalidated properties also.
    * @param {!Array<!Entry>} entries Entries.
    * @param {!Array<string>} names Property names.
+   * @return {!Array<!MetadataItem>} metadata for the given entries.
    */
   get(entries, names) {
     const results = [];
@@ -125,7 +127,7 @@ export class MetadataCacheSet extends EventTarget {
    * Marks the caches of entries as invalidates and forces to reload at the next
    * time of startRequests.
    * @param {number} requestId Request ID of the invalidation request. This must
-   *     be larger than other requets ID passed to the set before.
+   *     be larger than other request ID passed to the set before.
    * @param {!Array<!Entry>} entries
    */
   invalidate(requestId, entries) {
@@ -158,9 +160,11 @@ export class MetadataCacheSet extends EventTarget {
   /**
    * Creates snapshot of the cache for entries.
    * @param {!Array<!Entry>} entries
+   * @return {!MetadataCacheSet} a cache with metadata for the given entries.
    */
   createSnapshot(entries) {
-    const items = new Map();
+    const snapshot = new MetadataCacheSet();
+    const items = snapshot.items_;
     const urls = util.entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
       const url = urls[i];
@@ -169,7 +173,7 @@ export class MetadataCacheSet extends EventTarget {
         items.set(url, item.clone());
       }
     }
-    return new MetadataCacheSet(items);
+    return snapshot;
   }
 
   /**
