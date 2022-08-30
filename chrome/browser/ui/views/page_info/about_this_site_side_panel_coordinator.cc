@@ -55,7 +55,7 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
     return;
 
   auto* registry = SidePanelRegistry::Get(web_contents());
-  last_url_params_ = params;
+  last_url_info_ = {web_contents()->GetLastCommittedURL(), params};
   registered_but_not_shown_ = true;
 
   // Check if the view is already registered.
@@ -103,17 +103,37 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
       !navigation_handle->HasCommitted()) {
     return;
   }
-  // Remove SidePanel entry when user navigates to a different page.
-  SidePanelRegistry::Get(web_contents())
-      ->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
-  about_this_site_side_panel_view_ = nullptr;
-  last_url_params_.reset();
+
+  // If the side panel is open and shows the AboutThisSide panel, close it.
+  auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
+  if (side_panel_coordinator->GetCurrentEntryId() ==
+      SidePanelEntry::Id::kAboutThisSite) {
+    side_panel_coordinator->Close();
+  }
+
+  // If the user navigates to a different page than the one we have data for
+  // we need to remove the SidePanel registration. We might already have data
+  // from cacao for the current pageload if it was locally cached.
+  auto* registry = SidePanelRegistry::Get(web_contents());
+  if (web_contents()->GetLastCommittedURL() != last_url_info_->context_url) {
+    registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+    last_url_info_.reset();
+  }
+
+  // If the view is cached, we will remove it since it shows the wrong page.
+  if (about_this_site_side_panel_view_) {
+    auto* entry = registry->GetEntryForKey(
+        SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+    DCHECK(entry);
+    entry->ClearCachedView();
+  }
 }
 
 std::unique_ptr<views::View>
 AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
   DCHECK(GetBrowserView());
-  DCHECK(last_url_params_);
+  DCHECK(last_url_info_);
   if (registered_but_not_shown_) {
     page_info::AboutThisSiteService::OnOpenedDirectlyFromSidePanel();
     registered_but_not_shown_ = false;
@@ -121,7 +141,7 @@ AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
 
   auto side_panel_view_ =
       std::make_unique<AboutThisSiteSidePanelView>(GetBrowserView());
-  side_panel_view_->OpenUrl(*last_url_params_);
+  side_panel_view_->OpenUrl(last_url_info_->url_params);
   about_this_site_side_panel_view_ = side_panel_view_->AsWeakPtr();
   return side_panel_view_;
 }

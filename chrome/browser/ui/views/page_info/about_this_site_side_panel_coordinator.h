@@ -49,13 +49,23 @@ class AboutThisSideSidePanelCoordinator
   std::unique_ptr<views::View> CreateAboutThisSiteWebView();
 
   // content::WebContentsObserver:
+  // Override DidFinishNavigation to ensure that the AboutThisSide side panel
+  // is closed when the user navigates to a different site and that cached
+  // data is cleaned up.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // Stores the URL open params that were last requested. Used to
-  // open a SidePanel to the right URL in case it got destroyed and needs to
-  // be recreated.
-  absl::optional<content::OpenURLParams> last_url_params_;
+  // Stores the |url_params| for the AbouThisSide SidePanel and the
+  // |context_url| that they are associated with.
+  struct URLInfo {
+    GURL context_url;
+    content::OpenURLParams url_params;
+  };
+
+  // Stores the OpenURLParams that were last registered and the URL of the
+  // site that these params belong to.
+  absl::optional<URLInfo> last_url_info_;
+
   // Stores whether a SidePanel entry has been shown yet or is just registered
   // at pageload. Used to differentiate SidePanels previously opened or opened
   // from PageInfo from panels opened directly through the SidePanel dropdown.
