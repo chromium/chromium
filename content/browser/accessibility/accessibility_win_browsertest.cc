@@ -926,6 +926,8 @@ class WebContentsUIAParentNavigationInDestroyedWatcher
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestAlwaysFireFocusEventAfterNavigationComplete) {
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.mode());
+
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   // Users of Jaws or NVDA screen readers might not realize that the virtual
@@ -960,6 +962,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestLoadingAccessibilityTree) {
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.mode());
+
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   // The initial accessible returned should have state STATE_SYSTEM_BUSY while
@@ -5309,6 +5313,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
                   ->GetAccessibilityMode()
                   .is_mode_off());
 
+  // Start with AXMode::kWebContents. Later, a UIA call will cause kNativeAPIs
+  // to be added to the AXMode.
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::AXMode::kWebContents);
+
   // Request an automation element for the top-level window.
   Microsoft::WRL::ComPtr<IUIAutomation> uia;
   ASSERT_HRESULT_SUCCEEDED(CoCreateInstance(CLSID_CUIAutomation, nullptr,
@@ -5321,8 +5329,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
   uia->ElementFromHandle(hwnd, &root);
   ASSERT_NE(nullptr, root.Get());
 
-  // Native API support should now be enabled.
-  ui::AXMode expected_mode = ui::AXMode::kNativeAPIs;
+  // AXMode::kNativeAPIs should now be enabled in addition to kWebContents.
+  // (kAXModeBasic includes both kNativeAPIs and kWebContents). Importantly,
+  // this combination of AXModes allows RenderFrameHostImpl to create
+  // BrowserAccessibilityManagers.
+  ui::AXMode expected_mode = ui::kAXModeBasic.mode();
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
 

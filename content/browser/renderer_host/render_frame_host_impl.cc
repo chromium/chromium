@@ -6222,15 +6222,12 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
   if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
-  ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
-    BrowserAccessibilityManager* manager =
-        GetOrCreateBrowserAccessibilityManager();
-    if (manager) {
-      manager->OnFindInPageResult(params->request_id, params->match_index,
-                                  params->start_id, params->start_offset,
-                                  params->end_id, params->end_offset);
-    }
+  BrowserAccessibilityManager* manager =
+      GetOrCreateBrowserAccessibilityManager();
+  if (manager) {
+    manager->OnFindInPageResult(params->request_id, params->match_index,
+                                params->start_id, params->start_offset,
+                                params->end_id, params->end_offset);
   }
 }
 
@@ -6241,13 +6238,10 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
   if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
-  ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
-    BrowserAccessibilityManager* manager =
-        GetOrCreateBrowserAccessibilityManager();
-    if (manager)
-      manager->OnFindInPageTermination();
-  }
+  BrowserAccessibilityManager* manager =
+      GetOrCreateBrowserAccessibilityManager();
+  if (manager)
+    manager->OnFindInPageTermination();
 }
 
 // TODO(crbug.com/1213863): Move this method to content::PageImpl.
@@ -6313,9 +6307,12 @@ bool RenderFrameHostImpl::Reload() {
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(
     const AXEventNotificationDetails& details) {
-  if (browser_accessibility_manager_ &&
-      !browser_accessibility_manager_->OnAccessibilityEvents(details)) {
-    // OnAccessibilityEvents returns false in IPC error conditions
+  if (!browser_accessibility_manager_)
+    return;
+
+  DCHECK(delegate_->GetAccessibilityMode().has_mode(ui::kAXModeBasic.mode()));
+  if (!browser_accessibility_manager_->OnAccessibilityEvents(details)) {
+    // OnAccessibilityEvents returns false in IPC error conditions.
     AccessibilityFatalError();
   }
 }
@@ -8019,8 +8016,7 @@ void RenderFrameHostImpl::HandleAXEvents(
     }
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs))
-    GetOrCreateBrowserAccessibilityManager();
+  GetOrCreateBrowserAccessibilityManager();
 
   AXEventNotificationDetails details;
   details.ax_tree_id = tree_id;
@@ -8059,8 +8055,7 @@ void RenderFrameHostImpl::HandleAXEvents(
     needs_ax_root_id_ = false;
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs))
-    SendAccessibilityEventsToManager(details);
+  SendAccessibilityEventsToManager(details);
 
   delegate_->AccessibilityEventReceived(details);
 
@@ -8096,13 +8091,10 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
           DisallowActivationReasonId::kAXLocationChange))
     return;
 
-  ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
-    BrowserAccessibilityManager* manager =
-        GetOrCreateBrowserAccessibilityManager();
-    if (manager)
-      manager->OnLocationChanges(changes);
-  }
+  BrowserAccessibilityManager* manager =
+      GetOrCreateBrowserAccessibilityManager();
+  if (manager)
+    manager->OnLocationChanges(changes);
 
   // Send the updates to the automation extension API.
   std::vector<AXLocationChangeNotificationDetails> details;
@@ -9713,24 +9705,26 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
                   BackForwardCacheDisable::DisabledReasonId::kScreenReader));
   }
 
-  if (!ax_mode.has_mode(ui::AXMode::kWebContents)) {
+  if (ax_mode.has_mode(ui::AXMode::kWebContents)) {
+    if (!render_accessibility_) {
+      // Render accessibility is not enabled yet, so bind the interface first.
+      GetRemoteAssociatedInterfaces()->GetInterface(&render_accessibility_);
+      DCHECK(render_accessibility_);
+    }
+    render_accessibility_->SetMode(ax_mode.mode());
+  } else {
     // Resetting the Remote signals the renderer to shutdown accessibility
     // in the renderer.
     render_accessibility_.reset();
-
-    if (browser_accessibility_manager_) {
-      browser_accessibility_manager_->DetachFromParentManager();
-      browser_accessibility_manager_.reset();
-    }
-    return;
   }
 
-  if (!render_accessibility_) {
-    // Render accessibility is not enabled yet, so bind the interface first.
-    GetRemoteAssociatedInterfaces()->GetInterface(&render_accessibility_);
+  if (!ax_mode.has_mode(ui::kAXModeBasic.mode()) &&
+      browser_accessibility_manager_) {
+    // Missing either kWebContents and kNativeAPIs, so
+    // BrowserAccessibilityManager is no longer necessary.
+    browser_accessibility_manager_->DetachFromParentManager();
+    browser_accessibility_manager_.reset();
   }
-
-  render_accessibility_->SetMode(ax_mode.mode());
 }
 
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
@@ -9831,6 +9825,14 @@ RenderFrameHostImpl::UpdateAXFocusDeferScope::~UpdateAXFocusDeferScope() {
 
 BrowserAccessibilityManager*
 RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
+  // Never create a BrowserAccessibilityManager unless needed for the AXMode.
+  // At least basic mode is required; it contains kWebContents and KNativeAPIs.
+  ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
+  if (!accessibility_mode.has_mode(ui::kAXModeBasic.mode())) {
+    DCHECK(!browser_accessibility_manager_);
+    return nullptr;
+  }
+
   if (browser_accessibility_manager_ ||
       no_create_browser_accessibility_manager_for_testing_)
     return browser_accessibility_manager_.get();
@@ -9842,13 +9844,10 @@ RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
 
 void RenderFrameHostImpl::ActivateFindInPageResultForAccessibility(
     int request_id) {
-  ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
-    BrowserAccessibilityManager* manager =
-        GetOrCreateBrowserAccessibilityManager();
-    if (manager)
-      manager->ActivateFindInPageResult(request_id);
-  }
+  BrowserAccessibilityManager* manager =
+      GetOrCreateBrowserAccessibilityManager();
+  if (manager)
+    manager->ActivateFindInPageResult(request_id);
 }
 
 void RenderFrameHostImpl::InsertVisualStateCallback(
