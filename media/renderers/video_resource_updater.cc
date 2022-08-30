@@ -877,10 +877,9 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
                 << VideoPixelFormatToString(video_frame->format());
     return external_resources;
   }
-  if ((external_resources.type == VideoFrameResourceType::RGB ||
-       external_resources.type == VideoFrameResourceType::RGBA ||
-       external_resources.type == VideoFrameResourceType::RGBA_PREMULTIPLIED) &&
-      IsRGB(video_frame->format())) {
+  if (external_resources.type == VideoFrameResourceType::RGB ||
+      external_resources.type == VideoFrameResourceType::RGBA ||
+      external_resources.type == VideoFrameResourceType::RGBA_PREMULTIPLIED) {
     resource_color_space = resource_color_space.GetAsFullRangeRGB();
   }
 
