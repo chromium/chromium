@@ -8,6 +8,7 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-shell-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
+#include <content-type-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fullscreen-shell-unstable-v1-client-protocol.h>
@@ -101,6 +102,8 @@ DEFAULT_DELETER_FDECL(zwp_linux_surface_synchronization_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_feedback_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)
 DEFAULT_DELETER_FDECL(wl_data_device_manager)
+DEFAULT_DELETER_FDECL(wp_content_type_manager_v1)
+DEFAULT_DELETER_FDECL(wp_content_type_v1)
 DEFAULT_DELETER_FDECL(wp_viewporter)
 DEFAULT_DELETER_FDECL(zxdg_shell_v6)
 DEFAULT_DELETER_FDECL(xdg_wm_base)

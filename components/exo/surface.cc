@@ -700,6 +700,23 @@ std::string Surface::GetClientSurfaceId() const {
   return value ? *value : std::string();
 }
 
+void Surface::SetContainsVideo(bool contains_video) {
+  TRACE_EVENT1("exo", "Surface::SetContainsVideo", "contains_video",
+               contains_video ? "true" : "false");
+  pending_state_.basic_state.contains_video = contains_video;
+}
+
+bool Surface::ContainsVideo() {
+  if (state_.basic_state.contains_video)
+    return true;
+
+  for (auto& subsurface : sub_surfaces_) {
+    if (subsurface.first->ContainsVideo())
+      return true;
+  }
+  return false;
+}
+
 void Surface::SetWindowSessionId(int32_t window_session_id) {
   if (window_session_id > 0)
     window_->SetProperty(kWindowSessionId, window_session_id);
