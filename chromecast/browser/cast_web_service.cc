@@ -4,11 +4,11 @@
 
 #include "chromecast/browser/cast_web_service.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -152,12 +152,8 @@ void CastWebService::OwnerDestroyed(CastWebView* web_view) {
     content::MediaSession::Get(web_contents)
         ->Suspend(content::MediaSession::SuspendType::kSystem);
   }
-  if (std::none_of(web_views_.begin(), web_views_.end(),
-                   [web_view](const std::unique_ptr<CastWebView>& ptr) {
-                     return ptr.get() == web_view;
-                   })) {
+  if (!base::Contains(web_views_, web_view, &std::unique_ptr<CastWebView>::get))
     web_views_.emplace(web_view);
-  }
   auto delay = web_view->shutdown_delay();
   if (delay <= base::TimeDelta() || immediately_delete_webviews_) {
     LOG(INFO) << "Immediately deleting CastWebView for " << url;
