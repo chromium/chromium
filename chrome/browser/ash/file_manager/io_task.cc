@@ -36,7 +36,9 @@ bool ProgressStatus::IsCompleted() const {
 
 DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
                          storage::FileSystemURL destination_folder,
-                         OperationType type) {
+                         OperationType type,
+                         bool show_notifications)
+    : IOTask(show_notifications) {
   progress_.state = State::kQueued;
   progress_.type = type;
   progress_.destination_folder = std::move(destination_folder);

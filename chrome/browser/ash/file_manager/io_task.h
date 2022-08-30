@@ -110,12 +110,18 @@ struct ProgressStatus {
 
   // The estimate time to finish the operation.
   double remaining_seconds = 0;
+
+  // Whether notifications should be shown on progress status.
+  bool show_notification = true;
 };
 
 // An IOTask represents an I/O operation over multiple files, and is responsible
 // for executing the operation and providing progress/completion reports.
 class IOTask {
  public:
+  IOTask() = delete;
+  IOTask(const IOTask& other) = delete;
+  IOTask& operator=(const IOTask& other) = delete;
   virtual ~IOTask() = default;
 
   using ProgressCallback = base::RepeatingCallback<void(const ProgressStatus&)>;
@@ -137,9 +143,9 @@ class IOTask {
   const ProgressStatus& progress() { return progress_; }
 
  protected:
-  IOTask() = default;
-  IOTask(const IOTask& other) = delete;
-  IOTask& operator=(const IOTask& other) = delete;
+  explicit IOTask(bool show_notification) {
+    progress_.show_notification = show_notification;
+  }
 
   ProgressStatus progress_;
 
@@ -154,7 +160,8 @@ class DummyIOTask : public IOTask {
  public:
   DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
               storage::FileSystemURL destination_folder,
-              OperationType type);
+              OperationType type,
+              bool show_notification = true);
   ~DummyIOTask() override;
 
   void Execute(ProgressCallback progress_callback,

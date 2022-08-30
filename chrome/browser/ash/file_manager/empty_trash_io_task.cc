@@ -31,8 +31,10 @@ EmptyTrashIOTask::EmptyTrashIOTask(
     blink::StorageKey storage_key,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
-    base::FilePath base_path)
-    : file_system_context_(file_system_context),
+    base::FilePath base_path,
+    bool show_notification)
+    : IOTask(show_notification),
+      file_system_context_(file_system_context),
       storage_key_(storage_key),
       profile_(profile),
       base_path_(base_path) {

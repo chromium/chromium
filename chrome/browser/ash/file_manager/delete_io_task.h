@@ -28,7 +28,8 @@ namespace io_task {
 class DeleteIOTask : public IOTask {
  public:
   DeleteIOTask(std::vector<storage::FileSystemURL> file_urls,
-               scoped_refptr<storage::FileSystemContext> file_system_context);
+               scoped_refptr<storage::FileSystemContext> file_system_context,
+               bool show_notification = true);
   ~DeleteIOTask() override;
 
   // Starts the delete.

@@ -48,7 +48,8 @@ class ExtractIOTask : public IOTask {
                 std::string password,
                 storage::FileSystemURL parent_folder,
                 Profile* profile,
-                scoped_refptr<storage::FileSystemContext> file_system_context);
+                scoped_refptr<storage::FileSystemContext> file_system_context,
+                bool show_notification = true);
   ~ExtractIOTask() override;
 
   void Execute(ProgressCallback progress_callback,

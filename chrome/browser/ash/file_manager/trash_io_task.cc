@@ -84,8 +84,10 @@ TrashIOTask::TrashIOTask(
     std::vector<storage::FileSystemURL> file_urls,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
-    const base::FilePath base_path)
-    : profile_(profile),
+    const base::FilePath base_path,
+    bool show_notification)
+    : IOTask(show_notification),
+      profile_(profile),
       file_system_context_(file_system_context),
       base_path_(base_path) {
   progress_.state = State::kQueued;

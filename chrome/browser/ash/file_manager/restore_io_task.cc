@@ -38,8 +38,10 @@ RestoreIOTask::RestoreIOTask(
     std::vector<storage::FileSystemURL> file_urls,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
-    const base::FilePath base_path)
-    : file_system_context_(file_system_context),
+    const base::FilePath base_path,
+    bool show_notification)
+    : IOTask(show_notification),
+      file_system_context_(file_system_context),
       profile_(profile),
       base_path_(base_path) {
   progress_.state = State::kQueued;

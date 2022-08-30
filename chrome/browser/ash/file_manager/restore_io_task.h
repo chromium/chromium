@@ -33,7 +33,8 @@ class RestoreIOTask : public IOTask {
   RestoreIOTask(std::vector<storage::FileSystemURL> file_urls,
                 Profile* profile,
                 scoped_refptr<storage::FileSystemContext> file_system_context,
-                const base::FilePath base_path);
+                const base::FilePath base_path,
+                bool show_notification = true);
   ~RestoreIOTask() override;
 
   // Starts restore trask.

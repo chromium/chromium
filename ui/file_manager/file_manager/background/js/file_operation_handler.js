@@ -146,6 +146,10 @@ export class FileOperationHandler {
       default:
         console.error(`Invalid IOTaskState: ${event.state}`);
     }
+    if (!event.showNotification) {
+      // Set state to canceled so notification doesn't display.
+      item.state = ProgressItemState.CANCELED;
+    }
     this.progressCenter_.updateItem(item);
   }
 

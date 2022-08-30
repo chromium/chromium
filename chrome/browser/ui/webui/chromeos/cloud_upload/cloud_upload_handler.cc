@@ -145,7 +145,8 @@ void CloudUploadHandler::Run(UploadCallback callback) {
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
           file_manager::io_task::OperationType::kCopy, std::move(source_urls),
-          std::move(destination_folder_url), profile_, file_system_context);
+          std::move(destination_folder_url), profile_, file_system_context,
+          /*show_notifications=*/false);
 
   observed_task_id_ = io_task_controller_->Add(std::move(task));
 }

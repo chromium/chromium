@@ -35,8 +35,10 @@ ExtractIOTask::ExtractIOTask(
     std::string password,
     storage::FileSystemURL parent_folder,
     Profile* profile,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
-    : source_urls_(std::move(source_urls)),
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    bool show_notification)
+    : IOTask(show_notification),
+      source_urls_(std::move(source_urls)),
       password_(std::move(password)),
       parent_folder_(std::move(parent_folder)),
       profile_(profile),

@@ -29,7 +29,8 @@ class ZipIOTask : public IOTask {
   // used as the filename of the archive. Otherwise 'Archive.zip' will be used.
   ZipIOTask(std::vector<storage::FileSystemURL> source_urls,
             storage::FileSystemURL parent_folder,
-            scoped_refptr<storage::FileSystemContext> file_system_context);
+            scoped_refptr<storage::FileSystemContext> file_system_context,
+            bool show_notification = true);
   ~ZipIOTask() override;
 
   void Execute(ProgressCallback progress_callback,

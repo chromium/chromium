@@ -66,8 +66,9 @@ int64_t ComputeSize(base::FilePath src_dir,
 ZipIOTask::ZipIOTask(
     std::vector<storage::FileSystemURL> source_urls,
     storage::FileSystemURL parent_folder,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
-    : file_system_context_(file_system_context) {
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    bool show_notification)
+    : IOTask(show_notification), file_system_context_(file_system_context) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kZip;
   progress_.destination_folder = std::move(parent_folder);

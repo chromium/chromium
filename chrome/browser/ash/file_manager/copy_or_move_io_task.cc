@@ -85,8 +85,11 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
     std::vector<storage::FileSystemURL> source_urls,
     storage::FileSystemURL destination_folder,
     Profile* profile,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
-    : profile_(profile), file_system_context_(file_system_context) {
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    bool show_notification)
+    : IOTask(show_notification),
+      profile_(profile),
+      file_system_context_(file_system_context) {
   DCHECK(type == OperationType::kCopy || type == OperationType::kMove);
   progress_.state = State::kQueued;
   progress_.type = type;
@@ -107,12 +110,14 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
     std::vector<base::FilePath> destination_file_names,
     storage::FileSystemURL destination_folder,
     Profile* profile,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    bool show_notification)
     : CopyOrMoveIOTask(type,
                        source_urls,
                        std::move(destination_folder),
                        profile,
-                       file_system_context) {
+                       file_system_context,
+                       show_notification) {
   DCHECK_EQ(source_urls.size(), destination_file_names.size());
   destination_file_names_ = std::move(destination_file_names);
 }

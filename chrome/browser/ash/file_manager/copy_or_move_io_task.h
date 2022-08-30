@@ -35,7 +35,8 @@ class CopyOrMoveIOTask : public IOTask {
       std::vector<storage::FileSystemURL> source_urls,
       storage::FileSystemURL destination_folder,
       Profile* profile,
-      scoped_refptr<storage::FileSystemContext> file_system_context);
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      bool show_notification = true);
   // Use this constructor if you require the destination entries to have
   // different file names to the source entries. The size of `source_urls` and
   // `destination_file_names` must be the same.
@@ -45,7 +46,8 @@ class CopyOrMoveIOTask : public IOTask {
       std::vector<base::FilePath> destination_file_names,
       storage::FileSystemURL destination_folder,
       Profile* profile,
-      scoped_refptr<storage::FileSystemContext> file_system_context);
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      bool show_notification = true);
   ~CopyOrMoveIOTask() override;
 
   // Starts the copy or move.

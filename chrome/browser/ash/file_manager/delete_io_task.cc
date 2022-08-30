@@ -21,8 +21,9 @@ namespace io_task {
 
 DeleteIOTask::DeleteIOTask(
     std::vector<storage::FileSystemURL> file_urls,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
-    : file_system_context_(file_system_context) {
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    bool show_notification)
+    : IOTask(show_notification), file_system_context_(file_system_context) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kDelete;
   progress_.bytes_transferred = 0;

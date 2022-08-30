@@ -663,7 +663,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
 
   // If there are any SWA windows open, we remove the progress in system
   // notification.
-  if (DoFilesSwaWindowsExist()) {
+  if (!status.show_notification || DoFilesSwaWindowsExist()) {
     GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                            id);
     return;

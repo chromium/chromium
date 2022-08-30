@@ -1032,6 +1032,9 @@ dictionary ProgressStatus {
   // The estimate time to finish the operation.
   double remainingSeconds;
 
+  // Whether notifications should be shown on progress status.
+  boolean showNotification;
+
   // The name of the last error that happened.
   DOMString errorName;
 

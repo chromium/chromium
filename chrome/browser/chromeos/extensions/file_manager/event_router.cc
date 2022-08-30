@@ -1328,6 +1328,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.task_id = status.task_id;
   event_status.type = GetIOTaskType(status.type);
   event_status.state = GetIOTaskState(status.state);
+  event_status.show_notification = status.show_notification;
 
   // Speedometer can produce infinite result which can't be serialized to JSON
   // when sending the status via private API.

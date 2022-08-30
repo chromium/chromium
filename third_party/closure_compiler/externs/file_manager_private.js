@@ -742,6 +742,7 @@ chrome.fileManagerPrivate.IOTaskParams;
  *   totalBytes: number,
  *   taskId: number,
  *   remainingSeconds: number,
+ *   showNotification: boolean,
  *   errorName: string,
  *   outputs: (Array<Entry>|undefined),
  * }}
