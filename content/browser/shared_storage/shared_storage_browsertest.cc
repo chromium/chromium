@@ -68,6 +68,9 @@ const char kTimingKeepAliveDurationHistogram[] =
 
 const char kErrorTypeHistogram[] = "Storage.SharedStorage.Worklet.Error.Type";
 
+const char kTimingUsefulResourceHistogram[] =
+    "Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration";
+
 const double kBudgetAllowed = 5.0;
 
 const char kSelectFrom8URLsScript[] = R"(
@@ -503,11 +506,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {
 
   // Navigate again to record histograms.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kDestroyedStatusHistogram});
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
@@ -623,11 +628,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
   // Navigate again to record histograms.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kDestroyedStatusHistogram});
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
@@ -711,15 +718,16 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
   // Navigate again to record histograms.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kDestroyedStatusHistogram, kErrorTypeHistogram});
+  WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
+                     kErrorTypeHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
-
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -814,11 +822,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, WorkletDestroyed) {
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  WaitForHistograms({kDestroyedStatusHistogram});
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
@@ -870,11 +880,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
 
   // Navigate again to record histograms.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kDestroyedStatusHistogram});
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 2);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -927,8 +939,8 @@ IN_PROC_BROWSER_TEST_F(
   // dropped.
   EXPECT_EQ(0u, console_observer.messages().size());
 
-  WaitForHistograms(
-      {kDestroyedStatusHistogram, kTimingKeepAliveDurationHistogram});
+  WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
+                     kTimingKeepAliveDurationHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
@@ -936,6 +948,7 @@ IN_PROC_BROWSER_TEST_F(
           kKeepAliveEndedDueToOperationsFinished,
       1);
   histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -983,13 +996,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  WaitForHistograms({kDestroyedStatusHistogram});
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kKeepAliveEndedDueToTimeout,
       1);
   histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(kTimingUsefulResourceHistogram, 100, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1051,8 +1066,8 @@ IN_PROC_BROWSER_TEST_F(
   // dropped.
   EXPECT_EQ(2u, console_observer.messages().size());
 
-  WaitForHistograms(
-      {kDestroyedStatusHistogram, kTimingKeepAliveDurationHistogram});
+  WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
+                     kTimingKeepAliveDurationHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
@@ -1060,6 +1075,7 @@ IN_PROC_BROWSER_TEST_F(
           kKeepAliveEndedDueToOperationsFinished,
       1);
   histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
@@ -1136,8 +1152,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
 
   // Navigate again to record histograms.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms(
-      {kDestroyedStatusHistogram, kTimingKeepAliveDurationHistogram});
+  WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
+                     kTimingKeepAliveDurationHistogram});
 
   histogram_tester_.ExpectBucketCount(
       kDestroyedStatusHistogram,
@@ -1148,6 +1164,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
   histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,

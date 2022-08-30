@@ -89,11 +89,26 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
           document_service.render_frame_host().GetBrowserContext()),
       shared_storage_origin_(
           document_service.render_frame_host().GetLastCommittedOrigin()),
-      main_frame_origin_(document_service.main_frame_origin()) {}
+      main_frame_origin_(document_service.main_frame_origin()),
+      creation_time_(base::TimeTicks::Now()) {}
 
 SharedStorageWorkletHost::~SharedStorageWorkletHost() {
   base::UmaHistogramEnumeration("Storage.SharedStorage.Worklet.DestroyedStatus",
                                 destroyed_status_);
+
+  base::TimeDelta elapsed_time_since_creation =
+      base::TimeTicks::Now() - creation_time_;
+  if (pending_operations_count_ > 0 ||
+      last_operation_finished_time_.is_null() ||
+      elapsed_time_since_creation.is_zero()) {
+    base::UmaHistogramCounts100(
+        "Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration", 100);
+  } else {
+    base::UmaHistogramCounts100(
+        "Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration",
+        100 * (last_operation_finished_time_ - creation_time_) /
+            elapsed_time_since_creation);
+  }
 
   if (!page_)
     return;
@@ -658,7 +673,14 @@ void SharedStorageWorkletHost::DecrementPendingOperationsCount() {
   base::CheckedNumeric<uint32_t> count = pending_operations_count_;
   pending_operations_count_ = (--count).ValueOrDie();
 
-  if (!IsInKeepAlivePhase() || pending_operations_count_)
+  if (pending_operations_count_)
+    return;
+
+  // This time will be overridden if another operation is subsequently queued
+  // and completed.
+  last_operation_finished_time_ = base::TimeTicks::Now();
+
+  if (!IsInKeepAlivePhase())
     return;
 
   FinishKeepAlive(/*timeout_reached=*/false);

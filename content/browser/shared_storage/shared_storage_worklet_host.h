@@ -225,6 +225,13 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Timer for starting and ending the keep-alive phase.
   base::OneShotTimer keep_alive_timer_;
 
+  // Time when worklet host is constructed.
+  base::TimeTicks creation_time_;
+
+  // Last time when `pending_operations_count_` reaches 0u after being positive.
+  base::TimeTicks last_operation_finished_time_;
+
+  // Time when worklet host entered keep-alive, if applicable.
   base::TimeTicks enter_keep_alive_time_;
 
   // Tracks whether the worklet has ever been kept-alive (in order to be
