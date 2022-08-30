@@ -21,7 +21,7 @@ namespace features {
 // feature flag allows Chrome developers to restrict the access to the first
 // fully supported version.
 const base::Feature kAnonymousIframeOriginTrial{
-    "AnonymousIframeOriginTrial", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AnonymousIframeOriginTrial", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Apply lazy-loading to ad frames which have embeds likely impacting Core Web
 // Vitals.
