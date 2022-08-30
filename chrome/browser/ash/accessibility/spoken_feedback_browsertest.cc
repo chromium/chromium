@@ -1738,7 +1738,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   // templates grid, which triggers an accessibility alert. This should nudge
   // the template name view but not say anything extra.
   sm_.Call([this]() { SendKeyPress(ui::VKEY_RETURN); });
-  sm_.ExpectSpeech("Viewing templates. Press tab to navigate.");
+  sm_.ExpectSpeech("Viewing saved desks and templates. Press tab to navigate.");
 
   // The first item in the tab order is the template card, which is a button. It
   // has the same name as the desk it was created from, in this case the default

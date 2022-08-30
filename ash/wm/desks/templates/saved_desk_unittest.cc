@@ -669,7 +669,7 @@ TEST_F(SavedDeskTest, InvokeAccessibilityAlertOnEnterDeskTemplates) {
   ShowDesksTemplatesGrids();
 
   // Alert for entering templates should be sent.
-  EXPECT_EQ(AccessibilityAlert::DESK_TEMPLATES_MODE_ENTERED,
+  EXPECT_EQ(AccessibilityAlert::SAVED_DESKS_MODE_ENTERED,
             client.last_a11y_alert());
 }
 

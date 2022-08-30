@@ -11811,8 +11811,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_A11Y_ALERT_WINDOW_OVERVIEW_MODE_ENTERED" desc="The accessible text read when the user enters window overview mode in Ash.">
           Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.
         </message>
-        <message name="IDS_A11Y_ALERT_DESK_TEMPLATES_MODE_ENTERED" desc="The accessible text read when the user enters desk templates mode in Ash.">
-          Viewing templates. Press tab to navigate.
+        <message name="IDS_A11Y_ALERT_SAVED_DESKS_LIBRARY_MODE_ENTERED" desc="The accessible text read when the user enters saved desks mode in Ash when both Save &amp; Recall and Desk Templates are enabled.">
+          Viewing saved desks and templates. Press tab to navigate.
+        </message>
+        <message name="IDS_A11Y_ALERT_SAVED_DESKS_SAVED_FOR_LATER_MODE_ENTERED" desc="The accessible text read when the user enters saved desks mode in Ash when only Save &amp; Recall is enabled.">
+          Viewing saved desks. Press tab to navigate.
         </message>
         <message name="IDS_A11Y_ALERT_WORKSPACE_FULLSCREEN_STATE_ENTERED" desc="The accessible text read when the current workspace state changes to fullscreen, which means the window in current workspace is fullcreen.">
           Entered full screen

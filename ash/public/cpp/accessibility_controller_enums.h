@@ -41,8 +41,8 @@ enum class AccessibilityAlert {
   // to others.
   WORKSPACE_FULLSCREEN_STATE_EXITED,
 
-  // When the user enters desk templates mode.
-  DESK_TEMPLATES_MODE_ENTERED
+  // When the user enters saved desks mode.
+  SAVED_DESKS_MODE_ENTERED
 
 };
 

@@ -1032,7 +1032,7 @@ void OverviewSession::ShowDesksTemplatesGrids(
 
   // Send an a11y alert.
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
-      AccessibilityAlert::DESK_TEMPLATES_MODE_ENTERED);
+      AccessibilityAlert::SAVED_DESKS_MODE_ENTERED);
 
   for (auto& grid : grid_list_)
     grid->ShowDesksTemplatesGrid(was_zero_state);
