@@ -32,12 +32,23 @@ namespace network {
 
 namespace {
 
-using TrustTokenRequestRedemptionHelperTest = TrustTokenRequestHelperTest;
-
 using ::testing::_;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Return;
+
+class TrustTokenRequestRedemptionHelperTest
+    : public TrustTokenRequestHelperTest {
+ public:
+  explicit TrustTokenRequestRedemptionHelperTest()
+      : TrustTokenRequestHelperTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~TrustTokenRequestRedemptionHelperTest() override = default;
+  TrustTokenRequestRedemptionHelperTest(
+      const TrustTokenRequestRedemptionHelperTest&) = delete;
+  TrustTokenRequestRedemptionHelperTest& operator=(
+      const TrustTokenRequestRedemptionHelperTest&) = delete;
+};
 
 // FixedKeyCommitmentGetter returns the provided commitment result when
 // |Get| is called by the tested code.
@@ -1309,6 +1320,176 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, CustomIssuerSuccess) {
   // Processing the response should have stripped the header.
   EXPECT_FALSE(
       response_head->headers->HasHeader(kTrustTokensSecTrustTokenHeader));
+}
+
+TEST_F(TrustTokenRequestRedemptionHelperTest, LimitThirdRedemptionAllowFourth) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  // we need at least three tokens
+  store->AddTokens(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      std::vector<std::string>{"a token", "b token", "c token"},
+      /*issuing_key=*/"");
+
+  auto key_commitment_result = mojom::TrustTokenKeyCommitmentResult::New();
+  key_commitment_result->keys.push_back(
+      mojom::TrustTokenVerificationKey::New());
+  key_commitment_result->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+  key_commitment_result->id = 1;
+  key_commitment_result->batch_size =
+      static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
+  auto getter = std::make_unique<FixedKeyCommitmentGetter>(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com")),
+      std::move(key_commitment_result));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillRepeatedly(Return(true));
+  EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
+      .WillRepeatedly(Return("well-formed redemption request"));
+  EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
+      .WillRepeatedly(Return("a successfully-extracted RR"));
+
+  TrustTokenRequestRedemptionHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      mojom::TrustTokenRefreshPolicy::kRefresh, store.get(), &*getter,
+      absl::nullopt, absl::nullopt,
+      std::make_unique<MockKeyPairGenerator>("signing key", "verification key"),
+      std::move(cryptographer));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
+
+  const int some_arbitrary_time = 12345;
+  env_.AdvanceClock(base::Seconds(some_arbitrary_time));
+
+  // first redemption
+  mojom::TrustTokenOperationStatus result =
+      ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+  auto response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // second redemption
+  result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+  response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // third redemption request, almost enough time passed,
+  env_.AdvanceClock(base::Seconds(
+      kTrustTokenPerIssuerToplevelRedemptionFrequencyLimitInSeconds));
+  result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceExhausted);
+
+  // after another second, redemption is allowed.
+  env_.AdvanceClock(base::Seconds(1));
+
+  // fourth redemption after enough time passed
+  result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+  response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+}
+
+TEST_F(TrustTokenRequestRedemptionHelperTest,
+       AllowFirstThreeRedemptionsLimitFourth) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  // we need at least three tokens
+  store->AddTokens(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      std::vector<std::string>{"a token", "b token", "c token"},
+      /*issuing_key=*/"");
+
+  auto key_commitment_result = mojom::TrustTokenKeyCommitmentResult::New();
+  key_commitment_result->keys.push_back(
+      mojom::TrustTokenVerificationKey::New());
+  key_commitment_result->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+  key_commitment_result->id = 1;
+  key_commitment_result->batch_size =
+      static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
+  auto getter = std::make_unique<FixedKeyCommitmentGetter>(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com")),
+      std::move(key_commitment_result));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillRepeatedly(Return(true));
+  EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
+      .WillRepeatedly(Return("well-formed redemption request"));
+  EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
+      .WillRepeatedly(Return("a successfully-extracted RR"));
+
+  TrustTokenRequestRedemptionHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      mojom::TrustTokenRefreshPolicy::kRefresh, store.get(), &*getter,
+      absl::nullopt, absl::nullopt,
+      std::make_unique<MockKeyPairGenerator>("signing key", "verification key"),
+      std::move(cryptographer));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
+
+  const int some_arbitrary_time = 12345;
+  env_.AdvanceClock(base::Seconds(some_arbitrary_time));
+
+  // first redemption
+  mojom::TrustTokenOperationStatus result =
+      ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+  auto response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // second redemption after 100 seconds
+  const int second_redemption_delta = 100;
+  env_.AdvanceClock(base::Seconds(second_redemption_delta));
+  result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+  response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // pass enough time since first redemption
+  const int more_than_limit =
+      kTrustTokenPerIssuerToplevelRedemptionFrequencyLimitInSeconds + 1 -
+      second_redemption_delta;
+  ASSERT_GT(more_than_limit, 0);
+  env_.AdvanceClock(base::Seconds(more_than_limit));
+
+  // third redemption after enough time passed
+  result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+  response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // pass some time, but not enough, fourth redemption fails
+  env_.AdvanceClock(base::Seconds(second_redemption_delta - 1));
+  result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceExhausted);
 }
 
 }  // namespace network

@@ -96,8 +96,33 @@ void TrustTokenStore::RecordRedemption(
       persister_->GetIssuerToplevelPairConfig(issuer, top_level);
   if (!config)
     config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
+  config->set_penultimate_redemption(config->last_redemption());
   config->set_last_redemption(internal::TimeToString(base::Time::Now()));
   persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
+}
+
+bool TrustTokenStore::IsRedemptionLimitHit(
+    const SuitableTrustTokenOrigin& issuer,
+    const SuitableTrustTokenOrigin& top_level) const {
+  auto config = persister_->GetIssuerToplevelPairConfig(issuer, top_level);
+  if (!config)
+    return false;
+  if (!config->has_last_redemption())
+    return false;
+  if (!config->has_penultimate_redemption())
+    return false;
+  absl::optional<base::Time> maybe_penultimate_redemption =
+      internal::StringToTime(config->penultimate_redemption());
+  if (!maybe_penultimate_redemption)
+    return false;
+
+  base::TimeDelta ret = base::Time::Now() - *maybe_penultimate_redemption;
+  if (ret.is_negative())
+    return false;
+  if (ret > base::Seconds(
+                kTrustTokenPerIssuerToplevelRedemptionFrequencyLimitInSeconds))
+    return false;
+  return true;
 }
 
 absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastRedemption(
@@ -251,6 +276,9 @@ void TrustTokenStore::SetRedemptionRecord(
   if (!config)
     config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
   *config->mutable_redemption_record() = record;
+  *config->mutable_redemption_record() = record;
+  config->set_penultimate_redemption(config->last_redemption());
+  config->set_last_redemption(internal::TimeToString(base::Time::Now()));
   persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
 }
 

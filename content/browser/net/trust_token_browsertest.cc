@@ -1718,6 +1718,48 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndWithServiceWorker) {
               request_handler_.hashes_of_redemption_bound_public_keys())))));
 }
 
+// Test redemption limit. Make three refreshing redemption calls back to back
+// and test whether the third one fails. This test does not mock time. It
+// assumes time (in network process) elapsed between the first and the last
+// redemption call is less than the hard coded limit (currently 48 hours).
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionLimit) {
+  // set request handler options batch size to more than 3
+  TrustTokenRequestHandler::Options options;
+  options.batch_size = 10;
+  request_handler_.UpdateOptions(std::move(options));
+
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
+
+  // issue options.batch_size many tokens
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-request' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/issue"))));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-redemption' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-redemption',
+                        refreshPolicy: 'refresh' } })
+        .then(()=>'Success'); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+  // third redemption should fail
+  EXPECT_EQ("Error",
+            EvalJs(shell(), JsReplace(R"(fetch($1,
+        { trustToken: { type: 'token-redemption',
+                        refreshPolicy: 'refresh' } })
+        .then(()=>'Success')
+        .catch(()=>'Error'); )",
+                                      server_.GetURL("a.test", "/redeem"))));
+}
+
 class TrustTokenBrowsertestWithPlatformIssuance : public TrustTokenBrowsertest {
  public:
   TrustTokenBrowsertestWithPlatformIssuance() {

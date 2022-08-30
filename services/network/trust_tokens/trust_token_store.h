@@ -211,6 +211,10 @@ class TrustTokenStore {
   [[nodiscard]] virtual bool DeleteStoredTrustTokens(
       const SuitableTrustTokenOrigin& issuer);
 
+  [[nodiscard]] bool IsRedemptionLimitHit(
+      const SuitableTrustTokenOrigin& issuer,
+      const SuitableTrustTokenOrigin& top_level) const;
+
  private:
   std::unique_ptr<TrustTokenPersister> persister_;
   std::unique_ptr<RecordExpiryDelegate> record_expiry_delegate_;

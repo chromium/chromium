@@ -120,6 +120,12 @@ void TrustTokenRequestRedemptionHelper::Begin(
     return;
   }
 
+  if (token_store_->IsRedemptionLimitHit(*issuer_, top_level_origin_)) {
+    LogOutcome(net_log_, kBegin, "Redemption limit hit.");
+    std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);
+    return;
+  }
+
   key_commitment_getter_->Get(
       *issuer_,
       base::BindOnce(&TrustTokenRequestRedemptionHelper::OnGotKeyCommitment,
