@@ -752,12 +752,11 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_AdvanceFocus) {
     listener.set_failure_message("TEST_FAILED");
 
     // In oopif-webview, the click it directly routed to the guest.
-    content::WebContents* guest =
-        GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+    content::RenderFrameHost* guest_rfh =
+        GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
 
-    SimulateRWHMouseClick(
-        guest->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget(),
-        blink::WebMouseEvent::Button::kLeft, 200, 20);
+    SimulateRWHMouseClick(guest_rfh->GetRenderWidgetHost(),
+                          blink::WebMouseEvent::Button::kLeft, 200, 20);
     content::SimulateKeyPress(embedder_web_contents, ui::DomKey::TAB,
                               ui::DomCode::TAB, ui::VKEY_TAB, false, false,
                               false, false);
