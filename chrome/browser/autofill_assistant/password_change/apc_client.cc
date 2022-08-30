@@ -10,7 +10,11 @@
 
 // static
 void ApcClient::RegisterPrefs(PrefRegistrySimple* registry) {
+  // TODO(crbug.com/1358131): Set default value to true once the pref keys
+  // been adjusted in Settings.
   registry->RegisterBooleanPref(prefs::kAutofillAssistantOnDesktopEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAutofillAssistantOnDesktopConsent,
                                 false);
 }
 

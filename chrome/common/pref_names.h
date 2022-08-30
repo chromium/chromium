@@ -577,6 +577,7 @@ extern const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kAutofillAssistantOnDesktopEnabled[];
+extern const char kAutofillAssistantOnDesktopConsent[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kProfileLastUsed[];

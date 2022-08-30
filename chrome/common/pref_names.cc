@@ -1784,10 +1784,16 @@ const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Boolean indicating whether the user has given consent to use Autofill
-// Assistant. Prefs are not synced across devices or platforms and pref
+// Boolean indicating whether the user has enabled Autofill Assistant.
+// Prefs are not synced across devices or platforms and pref
 // keys differ.
 const char kAutofillAssistantOnDesktopEnabled[] = "autofill_assistant.enabled";
+
+// Boolean indicating whether the user has given consent for Autofill
+// Assistant to communicate with Assistant servers.
+// Prefs are not synced across devices or platforms and pref
+// keys differ.
+const char kAutofillAssistantOnDesktopConsent[] = "autofill_assistant.consent";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Directory of the last profile used.
