@@ -4515,10 +4515,10 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewInaccessibleResource) {
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 
   content::WebContents* embedder_contents = GetEmbedderWebContents();
-  content::WebContents* web_view_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+  content::RenderFrameHost* web_view_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   ASSERT_TRUE(embedder_contents);
-  ASSERT_TRUE(web_view_contents);
+  ASSERT_TRUE(web_view_frame);
 
   // Check that the webview stays at the first page that it loaded (foo.html),
   // and does not commit inaccessible.html.
@@ -4526,7 +4526,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewInaccessibleResource) {
   GURL foo_url(embedder_url.DeprecatedGetOriginAsURL().spec() +
                "assets/foo.html");
 
-  EXPECT_EQ(foo_url, web_view_contents->GetLastCommittedURL());
+  EXPECT_EQ(foo_url, web_view_frame->GetLastCommittedURL());
 }
 
 // Ensure that only app resources accessible to the webview can be loaded in a
