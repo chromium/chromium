@@ -280,7 +280,7 @@ void ToolbarView::Init() {
   }
 
   std::unique_ptr<SidePanelToolbarButton> side_panel_button;
-  if (browser_view_->right_aligned_side_panel()) {
+  if (browser_view_->unified_side_panel()) {
     side_panel_button = std::make_unique<SidePanelToolbarButton>(browser_);
   }
 

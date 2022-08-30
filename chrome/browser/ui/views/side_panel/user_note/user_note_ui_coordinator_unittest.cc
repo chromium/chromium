@@ -166,7 +166,7 @@ class UserNoteUICoordinatorTest : public TestWithBrowserView {
 
 TEST_F(UserNoteUICoordinatorTest, ShowEmptyUserNoteSidePanel) {
   coordinator_->Toggle();
-  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
 
@@ -180,7 +180,7 @@ TEST_F(UserNoteUICoordinatorTest, ShowEmptyUserNoteSidePanel) {
 
 TEST_F(UserNoteUICoordinatorTest, PopulateUserNoteSidePanel) {
   coordinator_->Toggle();
-  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   user_notes::UserNoteManager* manager =
       user_notes::UserNoteManager::GetForPage(
@@ -214,7 +214,7 @@ TEST_F(UserNoteUICoordinatorTest, PopulateUserNoteSidePanel) {
 
 TEST_F(UserNoteUICoordinatorTest, AddNoteMiddleUserSidePanel) {
   coordinator_->Toggle();
-  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   user_notes::UserNoteManager* manager =
       user_notes::UserNoteManager::GetForPage(
@@ -253,7 +253,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteMiddleUserSidePanel) {
 
 TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
   coordinator_->Toggle();
-  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   user_notes::UserNoteManager* manager =
       user_notes::UserNoteManager::GetForPage(
@@ -299,7 +299,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
 #endif
 TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
   coordinator_->Toggle();
-  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   user_notes::UserNoteManager* manager =
       user_notes::UserNoteManager::GetForPage(
@@ -342,7 +342,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
 #endif
 TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
   coordinator_->Toggle();
-  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   user_notes::UserNoteManager* manager =
       user_notes::UserNoteManager::GetForPage(
@@ -385,7 +385,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
 #endif
 TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveAllNoteUserSidePanel) {
   coordinator_->Toggle();
-  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   user_notes::UserNoteManager* manager =
       user_notes::UserNoteManager::GetForPage(

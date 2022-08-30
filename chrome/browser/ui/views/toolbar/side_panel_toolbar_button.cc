@@ -102,7 +102,7 @@ void SidePanelToolbarButton::ReadingListDidApplyChanges(
 void SidePanelToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
-  DCHECK(browser_view->right_aligned_side_panel());
+  DCHECK(browser_view->unified_side_panel());
 
   if (browser_view->side_panel_coordinator()) {
     browser_view->side_panel_coordinator()->Toggle();
@@ -123,8 +123,7 @@ void SidePanelToolbarButton::ButtonPressed() {
         browser_, base::BindRepeating(&SidePanelToolbarButton::ButtonPressed,
                                       base::Unretained(this)));
     side_panel_webview_ =
-        browser_view->right_aligned_side_panel()->AddChildView(
-            std::move(webview));
+        browser_view->unified_side_panel()->AddChildView(std::move(webview));
     if (reading_list_model_->loaded())
       reading_list_model_->MarkAllSeen();
     dot_indicator_->Hide();
@@ -134,9 +133,9 @@ void SidePanelToolbarButton::ButtonPressed() {
 void SidePanelToolbarButton::HideSidePanel() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
-  DCHECK(browser_view->right_aligned_side_panel());
+  DCHECK(browser_view->unified_side_panel());
   if (side_panel_webview_) {
-    browser_view->right_aligned_side_panel()->RemoveChildViewT(
+    browser_view->unified_side_panel()->RemoveChildViewT(
         side_panel_webview_.get());
     side_panel_webview_ = nullptr;
     browser_view->RightAlignedSidePanelWasClosed();

@@ -913,14 +913,14 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
     const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
         prefs::kSidePanelHorizontalAlignment);
-    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(
+    unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(
         this,
         is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
     left_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
     side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
   } else {
-    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
+    unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1744,7 +1744,7 @@ void BrowserView::EnterFullscreen(const GURL& url,
     return;
   }
 
-  if (right_aligned_side_panel_ && right_aligned_side_panel_->GetVisible() &&
+  if (unified_side_panel_ && unified_side_panel_->GetVisible() &&
       GetExclusiveAccessManager()
           ->fullscreen_controller()
           ->IsWindowFullscreenForTabOrPending()) {
@@ -2211,7 +2211,7 @@ bool BrowserView::AppUsesBorderlessMode() const {
 void BrowserView::UpdateSidePanelHorizontalAlignment() {
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
-  right_aligned_side_panel_->SetHorizontalAlignment(
+  unified_side_panel_->SetHorizontalAlignment(
       is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
   GetBrowserViewLayout()->Layout(this);
 }
@@ -3640,8 +3640,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     panes->push_back(infobar_container_);
   if (download_shelf_)
     panes->push_back(download_shelf_->GetView());
-  if (right_aligned_side_panel_)
-    panes->push_back(right_aligned_side_panel_);
+  if (unified_side_panel_)
+    panes->push_back(unified_side_panel_);
   if (lens_side_panel_)
     panes->push_back(lens_side_panel_);
   if (side_search_side_panel_)
@@ -3809,12 +3809,12 @@ void BrowserView::AddedToWidget() {
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
   if (toolbar_->side_panel_button() &&
-      (lens_side_panel_ || right_aligned_side_panel_)) {
+      (lens_side_panel_ || unified_side_panel_)) {
     std::vector<View*> panels;
     if (lens_side_panel_)
       panels.push_back(lens_side_panel_);
-    if (right_aligned_side_panel_)
-      panels.push_back(right_aligned_side_panel_);
+    if (unified_side_panel_)
+      panels.push_back(unified_side_panel_);
     if (base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
         side_search_side_panel_) {
       panels.push_back(side_search_side_panel_);
@@ -3825,8 +3825,7 @@ void BrowserView::AddedToWidget() {
 
     side_panel_visibility_controller_ =
         std::make_unique<SidePanelVisibilityController>(
-            side_search_side_panel_, lens_side_panel_,
-            right_aligned_side_panel_);
+            side_search_side_panel_, lens_side_panel_, unified_side_panel_);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3856,7 +3855,7 @@ void BrowserView::AddedToWidget() {
       GetWidget()->GetNativeView(), this, top_container_,
       tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
       contents_container_, side_search_side_panel_,
-      left_aligned_side_panel_separator_, right_aligned_side_panel_,
+      left_aligned_side_panel_separator_, unified_side_panel_,
       right_aligned_side_panel_separator_, lens_side_panel_,
       immersive_mode_controller_.get(), contents_separator_));
 

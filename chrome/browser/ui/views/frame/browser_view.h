@@ -195,7 +195,7 @@ class BrowserView : public BrowserWindow,
   // Container for the web contents.
   views::View* contents_container() { return contents_container_; }
 
-  SidePanel* right_aligned_side_panel() { return right_aligned_side_panel_; }
+  SidePanel* unified_side_panel() { return unified_side_panel_; }
 
   SidePanel* lens_side_panel() { return lens_side_panel_; }
 
@@ -758,7 +758,7 @@ class BrowserView : public BrowserWindow,
     return accessibility_focus_highlight_.get();
   }
 
-  // Closes an open right aligned side panel, returns true if there is an open
+  // Closes an opened right aligned side panel, returns true if there is an open
   // side panel being closed.
   bool CloseOpenRightAlignedSidePanel(bool exclude_lens = false,
                                       bool exclude_side_search = false);
@@ -768,8 +768,8 @@ class BrowserView : public BrowserWindow,
   void MaybeClobberAllSideSearchSidePanels();
 
   // Called by right aligned side panels when they are explicitly closed by
-  // users. This is used to implement improved clobbering logic for the right
-  // aligned side panels.
+  // users. This is used to implement improved clobbering logic for the
+  // right aligned side panels.
   void RightAlignedSidePanelWasClosed();
 
   bool should_show_window_controls_overlay_toggle() const {
@@ -1048,8 +1048,9 @@ class BrowserView : public BrowserWindow,
   // Handled by ContentsLayoutManager.
   raw_ptr<views::View> contents_container_ = nullptr;
 
-  // The side panel aligned to the right side of the browser window.
-  raw_ptr<SidePanel> right_aligned_side_panel_ = nullptr;
+  // The side panel aligned to the left or the right side of the browser window
+  // depending on the kSidePanelHorizontalAlignment pref's value.
+  raw_ptr<SidePanel> unified_side_panel_ = nullptr;
   raw_ptr<views::View> right_aligned_side_panel_separator_ = nullptr;
 
   // The side search side panel.

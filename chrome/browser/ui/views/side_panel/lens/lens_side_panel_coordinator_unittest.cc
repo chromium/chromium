@@ -65,8 +65,8 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
     return browser_view()->side_panel_coordinator();
   }
 
-  SidePanel* GetRightAlignedSidePanel() {
-    return browser_view()->right_aligned_side_panel();
+  SidePanel* GetUnifiedSidePanel() {
+    return browser_view()->unified_side_panel();
   }
 
  protected:
@@ -83,7 +83,7 @@ TEST_F(LensSidePanelCoordinatorTest,
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_LINK, false));
 
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
   EXPECT_EQ(GetSidePanelCoordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()
@@ -105,7 +105,7 @@ TEST_F(LensSidePanelCoordinatorTest, OpenWithUrlWhenSidePanelOpenShowsLens) {
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_LINK, false));
 
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
   EXPECT_EQ(GetSidePanelCoordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()
@@ -129,7 +129,7 @@ TEST_F(LensSidePanelCoordinatorTest,
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_LINK, false));
 
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
   EXPECT_EQ(GetSidePanelCoordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()
@@ -152,7 +152,7 @@ TEST_F(LensSidePanelCoordinatorTest, SwitchToDifferentItemTriggersHideEvent) {
 
   GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kBookmarks);
 
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
   EXPECT_EQ(GetSidePanelCoordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()
@@ -174,7 +174,7 @@ TEST_F(LensSidePanelCoordinatorTest, SwitchBackToLensTriggersShowEvent) {
   GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kBookmarks);
   GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kLens);
 
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
   EXPECT_EQ(GetSidePanelCoordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->key()

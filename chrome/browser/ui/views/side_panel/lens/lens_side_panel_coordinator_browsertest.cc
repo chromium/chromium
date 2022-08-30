@@ -163,9 +163,9 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
     return LensSidePanelCoordinator::GetOrCreateForBrowser(browser());
   }
 
-  SidePanel* GetRightAlignedSidePanel() {
+  SidePanel* GetUnifiedSidePanel() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->right_aligned_side_panel();
+    return browser_view->unified_side_panel();
   }
 
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
@@ -175,7 +175,7 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
                        ImageSearchWithValidImageOpensUnifiedSidePanel) {
   SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
   content::WebContents* contents =
       lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
                        DisableOpenInNewTabForBadUrl) {
   SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
   auto url = content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -217,11 +217,11 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
                        ClosingSidePanelDeregistersLensViewAndLogsCloseMetric) {
   SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
   GetSidePanelCoordinator()->Close();
 
-  EXPECT_FALSE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_FALSE(GetUnifiedSidePanel()->GetVisible());
   auto* last_active_entry =
       GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting();
   EXPECT_EQ(last_active_entry, nullptr);
@@ -235,13 +235,13 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
                        OpenInNewTabOpensInNewTabAndClosesSidePanel) {
   SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
   auto did_open_results =
       GetLensSidePanelCoordinator()->OpenResultsInNewTabForTesting();
 
   EXPECT_TRUE(did_open_results);
-  EXPECT_FALSE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_FALSE(GetUnifiedSidePanel()->GetVisible());
 }
 
 class SearchImageWithUnifiedSidePanelFooterDisabled
@@ -261,7 +261,7 @@ class SearchImageWithUnifiedSidePanelFooterDisabled
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
                        ImageSearchWithValidImageOpensUnifiedSidePanel) {
   SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
   content::WebContents* contents =
       lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());

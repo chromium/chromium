@@ -276,7 +276,7 @@ void SidePanelCoordinator::Close() {
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may already
   // have deleted the content view, so check that it still exists.
   if (views::View* content_view = GetContentView())
-    browser_view_->right_aligned_side_panel()->RemoveChildViewT(content_view);
+    browser_view_->unified_side_panel()->RemoveChildViewT(content_view);
   header_combobox_ = nullptr;
   SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
 
@@ -329,7 +329,7 @@ bool SidePanelCoordinator::IsSidePanelShowing() {
 }
 
 views::View* SidePanelCoordinator::GetContentView() const {
-  return browser_view_->right_aligned_side_panel()->GetViewByID(
+  return browser_view_->unified_side_panel()->GetViewByID(
       kSidePanelContentViewId);
 }
 
@@ -370,7 +370,7 @@ void SidePanelCoordinator::InitializeSidePanel() {
   // ready to be shown.
   container->SetVisible(false);
 
-  browser_view_->right_aligned_side_panel()->AddChildView(std::move(container));
+  browser_view_->unified_side_panel()->AddChildView(std::move(container));
 }
 
 void SidePanelCoordinator::PopulateSidePanel(

@@ -39,7 +39,7 @@ class SideSearchV2Test : public SideSearchBrowserTest {
   }
 
   SidePanel* GetSidePanelFor(Browser* browser) override {
-    return BrowserViewFor(browser)->right_aligned_side_panel();
+    return BrowserViewFor(browser)->unified_side_panel();
   }
 
  private:
@@ -596,7 +596,7 @@ class SideSearchV2TestAutoTriggeringBrowserTest : public SideSearchBrowserTest {
   }
 
   SidePanel* GetSidePanelFor(Browser* browser) override {
-    return BrowserViewFor(browser)->right_aligned_side_panel();
+    return BrowserViewFor(browser)->unified_side_panel();
   }
 
   // Navigates one page backwards in navigation history and waits for the

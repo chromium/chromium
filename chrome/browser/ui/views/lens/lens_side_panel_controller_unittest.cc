@@ -77,7 +77,7 @@ TEST_F(LensSidePanelControllerTest, OpenWithURLRecordsMultipleLensQueries) {
 
 TEST_F(LensSidePanelControllerTest, OpenWithURLHidesChromeSidePanel) {
   base::UserActionTester user_action_tester;
-  browser_view()->right_aligned_side_panel()->SetVisible(true);
+  browser_view()->unified_side_panel()->SetVisible(true);
 
   controller_->OpenWithURL(
       content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),

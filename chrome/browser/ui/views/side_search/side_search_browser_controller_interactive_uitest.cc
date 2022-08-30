@@ -603,7 +603,7 @@ class SideSearchDSEClobberingTest : public SideSearchBrowserTest {
   }
 
   SidePanel* GetGlobalSidePanelFor(Browser* browser) {
-    return BrowserViewFor(browser)->right_aligned_side_panel();
+    return BrowserViewFor(browser)->unified_side_panel();
   }
 
  private:

@@ -217,7 +217,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         tab_strip_, toolbar_, infobar_container_, contents_container_,
         /*left_aligned_side_panel=*/nullptr,
         /*left_aligned_side_panel_separator=*/nullptr,
-        /*right_aligned_side_panel=*/nullptr,
+        /*unified_side_panel=*/nullptr,
         /*right_aligned_side_panel_separator=*/nullptr,
         /*lens_side_panel=*/nullptr, immersive_mode_controller_.get(),
         separator_);
