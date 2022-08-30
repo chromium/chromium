@@ -91,6 +91,7 @@ namespace raster {
 namespace {
 
 const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
+const size_t kMaxImmediateDeletedPaintCachePaths = 1024;
 
 class ScopedSharedMemoryPtr {
  public:
@@ -1884,7 +1885,23 @@ void RasterImplementation::FlushPaintCachePurgedEntries() {
 
     switch (static_cast<cc::PaintCacheDataType>(i)) {
       case cc::PaintCacheDataType::kPath:
-        helper_->DeletePaintCachePathsINTERNALImmediate(ids.size(), ids.data());
+        if (ids.size() <= kMaxImmediateDeletedPaintCachePaths) {
+          helper_->DeletePaintCachePathsINTERNALImmediate(ids.size(),
+                                                          ids.data());
+        } else {
+          size_t data_size = ids.size() * sizeof(GLuint);
+          ScopedSharedMemoryPtr dest(data_size, transfer_buffer_,
+                                     mapped_memory_.get(), helper());
+          if (dest.valid()) {
+            memcpy(dest.address(), ids.data(), data_size);
+            helper_->DeletePaintCachePathsINTERNAL(ids.size(), dest.shm_id(),
+                                                   dest.offset());
+          } else {
+            SetGLError(GL_INVALID_OPERATION, "glDeletePaintCachePathsINTERNAL",
+                       "couldn't allocate shared memory");
+            // Continue with the loop in order to clean up the ids.
+          }
+        }
         break;
     }
     ids.clear();
