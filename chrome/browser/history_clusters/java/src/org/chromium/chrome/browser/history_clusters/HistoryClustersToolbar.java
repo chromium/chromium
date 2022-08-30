@@ -44,10 +44,17 @@ class HistoryClustersToolbar extends SelectableListToolbar<PropertyModel> {
         }
     }
 
+    boolean isSearchTextFocused() {
+        return mSearchText.isFocused();
+    }
+
     void setSearchText(String text, boolean wantFocus) {
-        mSearchText.setText(text);
+        if (!text.equals(mSearchText.getText().toString())) {
+            mSearchText.setText(text);
+            mSearchText.setSelection(text.length());
+        }
+
         if (wantFocus) return;
-        mSearchText.setSelection(text.length());
         mSearchText.clearFocus();
     }
 }
