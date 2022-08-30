@@ -82,6 +82,7 @@ class GnubbyNotification;
 class IdleActionWarningObserver;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
+class MultiCaptureNotification;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
 class PSIMemoryMetrics;
@@ -211,6 +212,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
+  std::unique_ptr<MultiCaptureNotification> multi_capture_notification_;
 
   std::unique_ptr<ash::ShortcutMappingPrefService>
       shortcut_mapping_pref_service_;

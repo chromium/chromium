@@ -125,6 +125,7 @@
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
+#include "chrome/browser/ash/notifications/multi_capture_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -1389,6 +1390,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
     zram_writeback_controller_->Start();
   }
 
+  multi_capture_notification_ = std::make_unique<MultiCaptureNotification>();
+
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
 
@@ -1573,6 +1576,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // so it needs to be destroyed before ProfileManager destruction,
   // which happens inside PostMainMessageLoop below.
   lacros_availability_policy_observer_.reset();
+
+  multi_capture_notification_.reset();
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();

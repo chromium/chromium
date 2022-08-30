@@ -1475,6 +1475,8 @@ source_set("ash") {
     "notifications/kiosk_external_update_notification.h",
     "notifications/low_disk_notification.cc",
     "notifications/low_disk_notification.h",
+    "notifications/multi_capture_notification.cc",
+    "notifications/multi_capture_notification.h",
     "notifications/request_system_proxy_credentials_view.cc",
     "notifications/request_system_proxy_credentials_view.h",
     "notifications/screen_capture_notification_ui_ash.cc",
