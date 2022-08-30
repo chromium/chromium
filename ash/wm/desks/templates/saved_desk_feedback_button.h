@@ -25,6 +25,8 @@ class ASH_EXPORT FeedbackButton : public PillButton,
 
   // PillButton:
   const char* GetClassName() const override;
+  void OnFocus() override;
+  void OnBlur() override;
 
   // OverviewHighlightableView:
   views::View* GetView() override;

@@ -6,6 +6,7 @@
 
 #include "ash/style/style_util.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "base/check.h"
 #include "ui/views/controls/focus_ring.h"
 
@@ -31,6 +32,17 @@ FeedbackButton::~FeedbackButton() = default;
 
 const char* FeedbackButton::GetClassName() const {
   return kViewClassName;
+}
+
+void FeedbackButton::OnFocus() {
+  UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  OnViewHighlighted();
+  PillButton::OnFocus();
+}
+
+void FeedbackButton::OnBlur() {
+  OnViewUnhighlighted();
+  PillButton::OnBlur();
 }
 
 views::View* FeedbackButton::GetView() {
