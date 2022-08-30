@@ -7,11 +7,13 @@
 
 #include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/cast_streaming/browser/test/cast_message_port_sender_impl.h"
 #include "components/cast_streaming/public/config_conversions.h"
-#include "third_party/openscreen/src/cast/streaming/capture_recommendations.h"
 
 namespace cast_streaming {
 
@@ -20,21 +22,18 @@ namespace {
 const char kSenderId[] = "testSenderId";
 const char kReceiverId[] = "testReceiverId";
 
-// Converts |data_buffer| into an Open Screen EncodedFrame. The caller must keep
-// a reference to |data_buffer| while using the returned EncodedFrame since they
-// point to the same data.
-openscreen::cast::EncodedFrame DataBufferToEncodedFrame(
-    const scoped_refptr<media::DataBuffer>& data_buffer,
-    bool is_key_frame,
+// Converts |decoder_buffer| into an Open Screen EncodedFrame.
+openscreen::cast::EncodedFrame DecoderBufferToEncodedFrame(
+    const media::DecoderBuffer* decoder_buffer,
     openscreen::cast::FrameId frame_id,
     openscreen::cast::FrameId* last_referenced_frame_id,
     int rtp_timebase) {
-  CHECK(data_buffer);
-  CHECK(!data_buffer->end_of_stream());
+  CHECK(decoder_buffer);
+  CHECK(!decoder_buffer->end_of_stream());
 
   openscreen::cast::EncodedFrame encoded_frame;
   encoded_frame.frame_id = frame_id;
-  if (is_key_frame) {
+  if (decoder_buffer->is_key_frame()) {
     encoded_frame.dependency =
         openscreen::cast::EncodedFrame::Dependency::KEY_FRAME;
     *last_referenced_frame_id = encoded_frame.frame_id;
@@ -45,19 +44,63 @@ openscreen::cast::EncodedFrame DataBufferToEncodedFrame(
   encoded_frame.referenced_frame_id = *last_referenced_frame_id;
 
   std::chrono::milliseconds timestamp(
-      data_buffer->timestamp().InMilliseconds());
+      decoder_buffer->timestamp().InMilliseconds());
   encoded_frame.rtp_timestamp =
       openscreen::cast::RtpTimeTicks::FromTimeSinceOrigin<
           std::chrono::milliseconds>(timestamp, rtp_timebase);
   encoded_frame.reference_time = openscreen::Clock::time_point(timestamp);
 
-  encoded_frame.data = absl::Span<uint8_t>(data_buffer->writable_data(),
-                                           data_buffer->data_size());
+  encoded_frame.data = absl::Span<uint8_t>(decoder_buffer->writable_data(),
+                                           decoder_buffer->data_size());
 
   return encoded_frame;
 }
 
 }  // namespace
+
+class CastStreamingTestSender::SenderObserver final
+    : public openscreen::cast::Sender::Observer {
+ public:
+  explicit SenderObserver(raw_ptr<openscreen::cast::Sender> sender)
+      : sender_(sender) {
+    CHECK(sender_);
+    sender_->SetObserver(this);
+  }
+  ~SenderObserver() override { sender_->SetObserver(nullptr); };
+
+  SenderObserver(const SenderObserver&) = delete;
+  SenderObserver& operator=(const SenderObserver&) = delete;
+
+  bool EnqueueBuffer(scoped_refptr<media::DecoderBuffer> buffer) {
+    VLOG(3) << __func__;
+    openscreen::cast::FrameId frame_id = sender_->GetNextFrameId();
+    openscreen::cast::Sender::EnqueueFrameResult result =
+        sender_->EnqueueFrame(DecoderBufferToEncodedFrame(
+            buffer.get(), frame_id, &last_reference_frame_id_,
+            sender_->rtp_timebase()));
+
+    if (result != openscreen::cast::Sender::EnqueueFrameResult::OK) {
+      LOG(ERROR) << "Failed to enqueue buffer " << result;
+      return false;
+    }
+
+    buffer_map_.emplace(frame_id, std::move(buffer));
+    return true;
+  }
+
+ private:
+  // openscreen::cast::Sender::Observer implementation.
+  void OnFrameCanceled(openscreen::cast::FrameId frame_id) final {
+    VLOG(3) << __func__ << ". frame_id: " << frame_id;
+    buffer_map_.erase(frame_id);
+  }
+  void OnPictureLost() final {}
+
+  openscreen::cast::FrameId last_reference_frame_id_;
+  raw_ptr<openscreen::cast::Sender> sender_ = nullptr;
+  base::flat_map<openscreen::cast::FrameId, scoped_refptr<media::DecoderBuffer>>
+      buffer_map_;
+};
 
 CastStreamingTestSender::CastStreamingTestSender()
     : task_runner_(base::SequencedTaskRunnerHandle::Get()),
@@ -102,8 +145,8 @@ void CastStreamingTestSender::Stop() {
 
   sender_session_.reset();
   message_port_.reset();
-  audio_sender_ = nullptr;
-  video_sender_ = nullptr;
+  audio_sender_observer_.reset();
+  video_sender_observer_.reset();
   audio_decoder_config_.reset();
   video_decoder_config_.reset();
   has_startup_completed_ = false;
@@ -114,35 +157,23 @@ void CastStreamingTestSender::Stop() {
 }
 
 void CastStreamingTestSender::SendAudioBuffer(
-    scoped_refptr<media::DataBuffer> audio_buffer) {
+    scoped_refptr<media::DecoderBuffer> audio_buffer) {
   VLOG(3) << __func__;
-  CHECK(audio_sender_);
+  CHECK(audio_sender_observer_);
 
-  openscreen::cast::Sender::EnqueueFrameResult result =
-      audio_sender_->EnqueueFrame(DataBufferToEncodedFrame(
-          audio_buffer, true /* is_key_frame */,
-          audio_sender_->GetNextFrameId(), &last_audio_reference_frame_id_,
-          audio_sender_->rtp_timebase()));
-
-  if (result != openscreen::cast::Sender::EnqueueFrameResult::OK) {
-    LOG(ERROR) << "Failed to enqueue audio buffer " << result;
+  if (!audio_sender_observer_->EnqueueBuffer(audio_buffer)) {
+    // The error has already been logged in EnqueueBuffer().
     Stop();
   }
 }
 
 void CastStreamingTestSender::SendVideoBuffer(
-    scoped_refptr<media::DataBuffer> video_buffer,
-    bool is_key_frame) {
+    scoped_refptr<media::DecoderBuffer> video_buffer) {
   VLOG(3) << __func__;
-  CHECK(video_sender_);
+  CHECK(video_sender_observer_);
 
-  openscreen::cast::Sender::EnqueueFrameResult result =
-      video_sender_->EnqueueFrame(DataBufferToEncodedFrame(
-          video_buffer, is_key_frame, video_sender_->GetNextFrameId(),
-          &last_video_reference_frame_id_, video_sender_->rtp_timebase()));
-
-  if (result != openscreen::cast::Sender::EnqueueFrameResult::OK) {
-    LOG(ERROR) << "Failed to enqueue video buffer " << result;
+  if (!video_sender_observer_->EnqueueBuffer(video_buffer)) {
+    // The error has already been logged in EnqueueBuffer().
     Stop();
   }
 }
@@ -200,12 +231,14 @@ void CastStreamingTestSender::OnNegotiated(
   CHECK(senders.audio_sender || senders.video_sender);
 
   if (senders.audio_sender) {
-    audio_sender_ = senders.audio_sender;
+    audio_sender_observer_ =
+        std::make_unique<SenderObserver>(senders.audio_sender);
     audio_decoder_config_ = ToAudioDecoderConfig(senders.audio_config);
   }
 
   if (senders.video_sender) {
-    video_sender_ = senders.video_sender;
+    video_sender_observer_ =
+        std::make_unique<SenderObserver>(senders.video_sender);
     video_decoder_config_ = ToVideoDecoderConfig(senders.video_config);
   }
 

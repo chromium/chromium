@@ -7,6 +7,7 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
@@ -243,10 +244,12 @@ int main(int argc, char** argv) {
       pkg_path.AppendASCII("media/test/data/vp8-I-frame-640x240"));
   std::string video_buffer_string;
   CHECK(base::ReadFileToString(video_file, &video_buffer_string));
-  scoped_refptr<media::DataBuffer> video_buffer = media::DataBuffer::CopyFrom(
-      (const unsigned char*)video_buffer_string.data(),
-      video_buffer_string.size());
-  sender.SendVideoBuffer(video_buffer, true);
+  scoped_refptr<media::DecoderBuffer> video_buffer =
+      media::DecoderBuffer::CopyFrom(
+          base::as_bytes(base::make_span(video_buffer_string)).data(),
+          video_buffer_string.size());
+  video_buffer->set_is_key_frame(true);
+  sender.SendVideoBuffer(video_buffer);
 
   run_loop.Run();
 

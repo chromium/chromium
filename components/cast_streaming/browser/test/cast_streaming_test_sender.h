@@ -5,14 +5,10 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
 
-#include "base/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/message_port.h"
-#include "components/cast_streaming/browser/test/cast_message_port_sender_impl.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "media/base/audio_decoder_config.h"
-#include "media/base/data_buffer.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/video_decoder_config.h"
 #include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,28 +16,30 @@
 
 namespace cast_streaming {
 
+class CastMessagePortSenderImpl;
+
 // Cast Streaming Sender implementation for testing. This class provides basic
 // functionality for starting a Cast Streaming Sender and sending audio and
 // video frames to a Cast Streaming Receiver. Example usage:
 //
-// std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
-// std::unique_ptr<cast_api_bindings::MessagePort> receiver_message_port;
-// cast_api_bindings::CreatePlatformMessagePortPair(&sender_message_port,
-//                                                  &receiver_message_port);
+//   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
+//   std::unique_ptr<cast_api_bindings::MessagePort> receiver_message_port;
+//   cast_api_bindings::CreatePlatformMessagePortPair(&sender_message_port,
+//                                                    &receiver_message_port);
 //
-// // Send |receiver_message_port| to a Receiver and start it.
+//   CastStreamingTestSender sender;
+//   sender.Start(
+//       std::move(sender_message_port), net::IPAddress::IPv6Localhost(),
+//       audio_config, video_config);
+//   if(!sender.RunUntilActive()) {
+//     return;
+//   }
+//   sender.SendAudioBuffer(audio_buffer);
+//   sender.SendVideoBuffer(video_buffer);
+//   sender.Stop();
+//   sender.RunUntilStopped();
 //
-// CastStreamingTestSender sender;
-// if !(sender.Start(
-//     std::move(sender_message_port), net::IPAddress::IPv6Localhost(),
-//     audio_config, video_config)) {
-//   return;
-// }
-// sender.RunUntilStarted();
-// sender.SendAudioBuffer(audio_buffer);
-// sender.SendVideoBuffer(video_buffer);
-// sender.Stop();
-// sender.RunUntilStopped();
+//   // Send |receiver_message_port| to a Receiver and start it.
 class CastStreamingTestSender final
     : public openscreen::cast::SenderSession::Client {
  public:
@@ -65,16 +63,14 @@ class CastStreamingTestSender final
 
   // Sends |audio_buffer| or |video_buffer| to the Receiver. These can only be
   // called when |has_startup_completed_| is true.
-  void SendAudioBuffer(scoped_refptr<media::DataBuffer> audio_buffer);
-  void SendVideoBuffer(scoped_refptr<media::DataBuffer> video_buffer,
-                       bool is_key_frame);
+  void SendAudioBuffer(scoped_refptr<media::DecoderBuffer> audio_buffer);
+  void SendVideoBuffer(scoped_refptr<media::DecoderBuffer> video_buffer);
 
   // After a call to Start(), will run until the Cast Streaming
   // Sender Session is active or has failed. After this call,
-  // |has_startup_completed_| will return true. If the session started
-  // successfully, at least one of audio_decoder_config() or
-  // video_decoder_config() will be set, and method will return true. Otherwise
-  // returns false.
+  // |has_startup_completed_| will be true. If the session started successfully,
+  // at least one of audio_decoder_config() or video_decoder_config() will be
+  // set, and method will return true. Otherwise returns false.
   [[nodiscard]] bool RunUntilActive();
 
   // Runs until |has_startup_completed_| is false.
@@ -90,6 +86,8 @@ class CastStreamingTestSender final
   }
 
  private:
+  class SenderObserver;
+
   void OnCastChannelClosed();
 
   // After a system sender message is received, negotiates Cast Streaming Sender
@@ -100,20 +98,15 @@ class CastStreamingTestSender final
   void OnNegotiated(const openscreen::cast::SenderSession* session,
                     openscreen::cast::SenderSession::ConfiguredSenders senders,
                     openscreen::cast::capture_recommendations::Recommendations
-                        capture_recommendations) override;
+                        capture_recommendations) final;
   void OnError(const openscreen::cast::SenderSession* session,
-               openscreen::Error error) override;
+               openscreen::Error error) final;
 
   openscreen_platform::TaskRunner task_runner_;
   openscreen::cast::Environment environment_;
 
   std::unique_ptr<CastMessagePortSenderImpl> message_port_;
   std::unique_ptr<openscreen::cast::SenderSession> sender_session_;
-
-  raw_ptr<openscreen::cast::Sender> audio_sender_ = nullptr;
-  raw_ptr<openscreen::cast::Sender> video_sender_ = nullptr;
-  openscreen::cast::FrameId last_audio_reference_frame_id_;
-  openscreen::cast::FrameId last_video_reference_frame_id_;
 
   bool has_startup_completed_ = false;
   absl::optional<media::AudioDecoderConfig> audio_decoder_config_;
@@ -125,6 +118,9 @@ class CastStreamingTestSender final
 
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs_;
   std::vector<openscreen::cast::VideoCaptureConfig> video_configs_;
+
+  std::unique_ptr<SenderObserver> audio_sender_observer_;
+  std::unique_ptr<SenderObserver> video_sender_observer_;
 };
 
 }  // namespace cast_streaming
