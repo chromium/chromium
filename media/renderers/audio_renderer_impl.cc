@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <stddef.h>
-#include <algorithm>
+
 #include <memory>
 #include <utility>
 
@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -1439,8 +1440,8 @@ void AudioRendererImpl::ConfigureChannelMask() {
   // All channels with a zero mix are muted and can be ignored.
   std::vector<bool> channel_mask(audio_parameters_.channels(), false);
   for (size_t ch = 0; ch < matrix.size(); ++ch) {
-    channel_mask[ch] = std::any_of(matrix[ch].begin(), matrix[ch].end(),
-                                   [](float mix) { return !!mix; });
+    channel_mask[ch] =
+        base::ranges::any_of(matrix[ch], [](float mix) { return !!mix; });
   }
   algorithm_->SetChannelMask(std::move(channel_mask));
 }

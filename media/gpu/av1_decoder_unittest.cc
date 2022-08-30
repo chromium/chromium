@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
@@ -715,11 +716,11 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
     // And to be consistent, all the reference frames tracked by the AV1Decoder
     // should also be valid and they should be pointing to the only AV1Picture
     // so far.
-    EXPECT_TRUE(
-        std::all_of(internal_ref_frames.begin(), internal_ref_frames.end(),
-                    [&av1_picture](const scoped_refptr<AV1Picture>& ref_frame) {
-                      return ref_frame.get() == av1_picture.get();
-                    }));
+    EXPECT_TRUE(base::ranges::all_of(
+        internal_ref_frames,
+        [&av1_picture](const scoped_refptr<AV1Picture>& ref_frame) {
+          return ref_frame.get() == av1_picture.get();
+        }));
     testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
   }
 

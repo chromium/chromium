@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <sys/uio.h>
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -83,7 +83,7 @@ bool IsVividLoaded() {
   std::vector<base::StringPiece> lines = base::SplitStringPieceUsingSubstr(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  return std::any_of(lines.begin(), lines.end(), [](const auto& line) {
+  return base::ranges::any_of(lines, [](const auto& line) {
     return base::StartsWith(line, "vivid", base::CompareCase::SENSITIVE);
   });
 }
