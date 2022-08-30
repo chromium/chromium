@@ -82,8 +82,8 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         document.title = this.getDocumentTitle_('mainView');
         this.$.viewManager.switchView('mainView', 'fade-in', 'no-animation');
       }
-      // TODO(https://crbug.com/1237418): Add support for ForceSignin on Lacros.
-      this.manageProfilesBrowserProxy_.selectAccountLacros(null, '');
+      this.manageProfilesBrowserProxy_.selectNewAccount(null);
+
       return;
     }
 

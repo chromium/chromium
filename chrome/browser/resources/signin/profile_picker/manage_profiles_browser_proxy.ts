@@ -114,9 +114,11 @@ export interface ManageProfilesBrowserProxy {
   removeProfile(profilePath: string): void;
 
   /**
-   * Select an account to be added in Chrome.
+   * Starts a signin flow to get a new account that will be added to a profile.
+   * On Dice platforms, this is only for new profiles, but on Lacros it may also
+   * be used with an existing profile.
    */
-  selectAccountLacros(profileColor: number|null, gaiaId: string): void;
+  selectNewAccount(profileColor: number|null): void;
 
   /**
    * Retrieves custom avatar list for the select avatar dialog.
@@ -162,6 +164,11 @@ export interface ManageProfilesBrowserProxy {
    * Opens Ash Account settings page in a new window.
    */
   openAshAccountSettingsPage(): void;
+
+  /**
+   * Select an existing account to be added in Chrome on Lacros.
+   */
+  selectExistingAccountLacros(profileColor: number|null, gaiaId: string): void;
   // </if>
 }
 
@@ -203,8 +210,8 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send('getProfileStatistics', [profilePath]);
   }
 
-  selectAccountLacros(profileColor: number|null, gaiaId: string) {
-    chrome.send('selectAccountLacros', [profileColor, gaiaId]);
+  selectNewAccount(profileColor: number|null) {
+    chrome.send('selectNewAccount', [profileColor]);
   }
 
   getAvailableIcons() {
@@ -246,6 +253,10 @@ export class ManageProfilesBrowserProxyImpl {
 
   openAshAccountSettingsPage() {
     chrome.send('openAshAccountSettingsPage');
+  }
+
+  selectExistingAccountLacros(profileColor: number|null, gaiaId: string) {
+    chrome.send('selectExistingAccountLacros', [profileColor, gaiaId]);
   }
   // </if>
 

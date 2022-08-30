@@ -82,8 +82,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetProfileStatistics(const base::Value::List& args);
   void HandleSetProfileName(const base::Value::List& args);
 
-  // TODO(crbug.com/1115056): Move to new handler for profile creation.
-  void HandleSelectAccountLacros(const base::Value::List& args);
+  void HandleSelectNewAccount(const base::Value::List& args);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Add an existing account to a Profile.
+  void HandleSelectExistingAccountLacros(const base::Value::List& args);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   void HandleGetNewProfileSuggestedThemeInfo(const base::Value::List& args);
   void HandleGetProfileThemeInfo(const base::Value::List& args);
   void HandleGetAvailableIcons(const base::Value::List& args);
@@ -166,6 +169,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                          const account_manager::Account& account) override;
   void OnAccountRemoved(const base::FilePath& profile_path,
                         const account_manager::Account& account) override;
+
+  // Adds an existing account (if gaia_id has a value) or initiates the
+  // signin flow to add a new account in a new/existing profile.
+  void SelectAccountLacrosInternal(const std::string& gaia_id,
+                                   absl::optional<SkColor> profile_color);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Returns the list of profiles in the same order as when the picker

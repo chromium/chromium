@@ -31,10 +31,15 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
                                      }));
     }
 
-    async function verifySelectAccountLacrosCalled(gaiaId: string) {
-      const args = await browserProxy.whenCalled('selectAccountLacros');
+    async function verifySelectNewAccountCalled() {
+      await browserProxy.whenCalled('selectNewAccount');
+      browserProxy.resetResolver('selectNewAccount');
+    }
+
+    async function verifySelectExistingAccountLacrosCalled(gaiaId: string) {
+      const args = await browserProxy.whenCalled('selectExistingAccountLacros');
       assertEquals(args[1], gaiaId);
-      browserProxy.resetResolver('selectAccountLacros');
+      browserProxy.resetResolver('selectExistingAccountLacros');
     }
 
     setup(async function() {
@@ -93,10 +98,10 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       assertEquals(buttons.length, 3);
       // Click "Use another account".
       buttons[0]!.click();
-      await verifySelectAccountLacrosCalled('');
+      await verifySelectNewAccountCalled();
       // Click account buttons.
       buttons[1]!.click();
-      await verifySelectAccountLacrosCalled('gaia-id-0');
+      await verifySelectExistingAccountLacrosCalled('gaia-id-0');
     });
 
     test('accountButtonsDisabledAfterClick', async function() {

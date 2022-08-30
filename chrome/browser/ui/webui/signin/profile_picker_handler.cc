@@ -226,10 +226,10 @@ base::FilePath GetCurrentProfilePath(content::WebUI* web_ui) {
   return web_ui->GetWebContents()->GetBrowserContext()->GetPath();
 }
 
-bool IsSelectingSecondaryAccount(content::WebUI* web_ui) {
-  // If this WebUI page is rendered in a user profile (and not the default
-  // picker profile), this means the page should show accounts that are
-  // available as secondary for this specific profile.
+// Returns whether this WebUI page is rendered in a user profile (and not the
+// default picker profile). The profile picker is loaded in a user profile
+// only in the flow of adding an account to an existing profile.
+bool IsUsingExistingProfile(content::WebUI* web_ui) {
   return GetCurrentProfilePath(web_ui) != ProfilePicker::GetPickerProfilePath();
 }
 
@@ -408,8 +408,8 @@ void ProfilePickerHandler::RegisterMessages() {
       base::BindRepeating(&ProfilePickerHandler::HandleGetProfileStatistics,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "selectAccountLacros",
-      base::BindRepeating(&ProfilePickerHandler::HandleSelectAccountLacros,
+      "selectNewAccount",
+      base::BindRepeating(&ProfilePickerHandler::HandleSelectNewAccount,
                           base::Unretained(this)));
   // TODO(crbug.com/1115056): Consider renaming this message to
   // 'createLocalProfile' as this is only used for local profiles.
@@ -451,6 +451,11 @@ void ProfilePickerHandler::RegisterMessages() {
       "openAshAccountSettingsPage",
       base::BindRepeating(
           &ProfilePickerHandler::HandleOpenAshAccountSettingsPage,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "selectExistingAccountLacros",
+      base::BindRepeating(
+          &ProfilePickerHandler::HandleSelectExistingAccountLacros,
           base::Unretained(this)));
 #endif
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -590,7 +595,7 @@ void ProfilePickerHandler::HandleGetNewProfileSuggestedThemeInfo(
   const base::Value& callback_id = args[0];
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsSelectingSecondaryAccount(web_ui())) {
+  if (IsUsingExistingProfile(web_ui())) {
     // The picker offers secondary accounts for a given existing profile.
     // Extract the color from the current profile (where this is rendered).
     ThemeService* theme_service =
@@ -868,48 +873,14 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
   FireWebUIListener("profile-statistics-received", dict);
 }
 
-void ProfilePickerHandler::HandleSelectAccountLacros(
+void ProfilePickerHandler::HandleSelectNewAccount(
     const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(2U, args.size());
+  CHECK_EQ(1U, args.size());
   absl::optional<SkColor> profile_color = args[0].GetIfInt();
-  const std::string& gaia_id = args[1].GetString();
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsSelectingSecondaryAccount(web_ui())) {
-    AccountProfileMapper* mapper =
-        g_browser_process->profile_manager()->GetAccountProfileMapper();
-    AccountProfileMapper::AddAccountCallback add_account_callback =
-        base::BindOnce(&RunAccountSelectionCallback);
-    if (gaia_id.empty()) {
-      mapper->ShowAddAccountDialog(GetCurrentProfilePath(web_ui()),
-                                   account_manager::AccountManagerFacade::
-                                       AccountAdditionSource::kOgbAddAccount,
-                                   std::move(add_account_callback));
-    } else {
-      mapper->AddAccount(GetCurrentProfilePath(web_ui()),
-                         account_manager::AccountKey(
-                             gaia_id, account_manager::AccountType::kGaia),
-                         std::move(add_account_callback));
-    }
-    return;
-  }
-
-  DCHECK(!lacros_sign_in_provider_);
-  lacros_sign_in_provider_ =
-      std::make_unique<ProfilePickerLacrosSignInProvider>();
-  ProfilePickerLacrosSignInProvider::SignedInCallback callback =
-      base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
-                     weak_factory_.GetWeakPtr(), profile_color);
-  if (gaia_id.empty()) {
-    lacros_sign_in_provider_->ShowAddAccountDialogAndCreateSignedInProfile(
-        std::move(callback));
-  } else {
-    lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
-        gaia_id, std::move(callback));
-  }
+  SelectAccountLacrosInternal("", profile_color);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK(gaia_id.empty()) << "gaiaId is only supported on Lacros.";
   if (signin_util::IsForceSigninEnabled()) {
     // Force sign-in policy uses a separate flow that doesn't initialize the
     // profile color. Generate a new profile color here.
@@ -919,9 +890,21 @@ void ProfilePickerHandler::HandleSelectAccountLacros(
       profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
                                     weak_factory_.GetWeakPtr()));
 #else
-  NOTREACHED();
+  NOTERACHED();
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ProfilePickerHandler::HandleSelectExistingAccountLacros(
+    const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(2U, args.size());
+  absl::optional<SkColor> profile_color = args[0].GetIfInt();
+  const std::string& gaia_id = args[1].GetString();
+  DCHECK(!gaia_id.empty());
+  SelectAccountLacrosInternal(gaia_id, profile_color);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
   FireWebUIListener("load-signin-finished", base::Value(success));
@@ -1170,7 +1153,7 @@ void ProfilePickerHandler::UpdateAvailableAccounts() {
 
   // For the profile creation flow, show all accounts available.
   // For in profile Sign in/ Turn sync on flows, filter accounts already added.
-  base::FilePath profile_path = IsSelectingSecondaryAccount(web_ui())
+  base::FilePath profile_path = IsUsingExistingProfile(web_ui())
                                     ? GetCurrentProfilePath(web_ui())
                                     : base::FilePath();
 
@@ -1241,6 +1224,44 @@ void ProfilePickerHandler::OnAccountRemoved(
     const base::FilePath& profile_path,
     const account_manager::Account& account) {
   UpdateAvailableAccounts();
+}
+
+void ProfilePickerHandler::SelectAccountLacrosInternal(
+    const std::string& gaia_id,
+    absl::optional<SkColor> profile_color) {
+  AllowJavascript();
+  if (IsUsingExistingProfile(web_ui())) {
+    AccountProfileMapper* mapper =
+        g_browser_process->profile_manager()->GetAccountProfileMapper();
+    AccountProfileMapper::AddAccountCallback add_account_callback =
+        base::BindOnce(&RunAccountSelectionCallback);
+    if (gaia_id.empty()) {
+      mapper->ShowAddAccountDialog(GetCurrentProfilePath(web_ui()),
+                                   account_manager::AccountManagerFacade::
+                                       AccountAdditionSource::kOgbAddAccount,
+                                   std::move(add_account_callback));
+    } else {
+      mapper->AddAccount(GetCurrentProfilePath(web_ui()),
+                         account_manager::AccountKey(
+                             gaia_id, account_manager::AccountType::kGaia),
+                         std::move(add_account_callback));
+    }
+    return;
+  }
+
+  DCHECK(!lacros_sign_in_provider_);
+  lacros_sign_in_provider_ =
+      std::make_unique<ProfilePickerLacrosSignInProvider>();
+  ProfilePickerLacrosSignInProvider::SignedInCallback callback =
+      base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
+                     weak_factory_.GetWeakPtr(), profile_color);
+  if (gaia_id.empty()) {
+    lacros_sign_in_provider_->ShowAddAccountDialogAndCreateSignedInProfile(
+        std::move(callback));
+  } else {
+    lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
+        gaia_id, std::move(callback));
+  }
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
