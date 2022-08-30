@@ -108,6 +108,7 @@ try_.builder(
     ),
     builderless = False,
     goma_jobs = goma.jobs.J150,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         experiment_percentage = 5,
     ),

@@ -235,7 +235,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-annotator-rel": {
@@ -768,7 +768,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_optional_gpu_tests_rel": {
@@ -780,7 +780,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_upload_clang": {
