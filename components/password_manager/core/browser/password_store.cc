@@ -249,36 +249,28 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords", "PasswordStore::GetLogins",
                                     consumer.get());
 
+  // Combines the credentials retrieved for `form` with credentials
+  // retrieved for the form's realm's affiliations and passes them on to
+  // the `consumer`.
   scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler =
       new GetLoginsWithAffiliationsRequestHandler(form, consumer,
                                                   /*store=*/this);
 
   if (affiliated_match_helper_) {
-    auto branding_injection_for_affiliations_callback =
-        base::BindOnce(&GetLoginsOrEmptyListOnFailure)
-            .Then(base::BindOnce(
-                &PasswordStore::InjectAffiliationAndBrandingInformation, this,
-                request_handler->AffiliatedLoginsClosure()));
-    // `Shutdown` resets the affiliated_match_helper_ before shutting down the
-    // backend_. Therefore, base::Unretained is safe here.
-    affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
-        form, request_handler->AffiliationsClosure().Then(base::BindOnce(
-                  &PasswordStoreBackend::FillMatchingLoginsAsync,
-                  base::Unretained(backend_.get()),
-                  std::move(branding_injection_for_affiliations_callback),
-                  /*include_psl=*/false)));
-  } else {
-    request_handler->AffiliatedLoginsClosure().Run({});
+    // If there is an affiliation helper, both logins for `form` as well
+    // as for the realm's affiliations should be retrieved.
+    GetLoginsForFormAndForAffiliatedRealms(form, request_handler);
+    return;
   }
+  // If there is no helper to retrieve affiliations with, inform the
+  // `request_handler` that there are no affiliated logins.
+  request_handler->AffiliatedLoginsClosure().Run({});
 
-  auto branding_injection_callback =
+  // And request the regular logins for `form`.
+  backend_->FillMatchingLoginsAsync(
       base::BindOnce(&GetLoginsOrEmptyListOnFailure)
-          .Then(base::BindOnce(
-              &PasswordStore::InjectAffiliationAndBrandingInformation, this,
-              request_handler->LoginsForFormClosure()));
-
-  backend_->FillMatchingLoginsAsync(std::move(branding_injection_callback),
-                                    FormSupportsPSL(form), {form});
+          .Then(request_handler->LoginsForFormClosure()),
+      FormSupportsPSL(form), {form});
 }
 
 void PasswordStore::GetAutofillableLogins(
@@ -501,6 +493,43 @@ void PasswordStore::UnblocklistInternal(
   for (const auto& form : forms_to_remove) {
     backend_->RemoveLoginAsync(form, barrier_callback);
   }
+}
+
+void PasswordStore::GetLoginsForFormAndForAffiliatedRealms(
+    const PasswordFormDigest& form,
+    scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler) {
+  DCHECK(affiliated_match_helper_);
+
+  auto branding_injection_for_affiliations_callback =
+      base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+          .Then(base::BindOnce(
+              &PasswordStore::InjectAffiliationAndBrandingInformation, this,
+              request_handler->AffiliatedLoginsClosure()));
+
+  // This callback is to be owned and executed from `affiliated_match_helper_`.
+  // Since `Shutdown` resets the `affiliated_match_helper_` before shutting down
+  // the `backend_`, base::Unretained is safe here.
+  auto get_logins_for_affiliations_callback =
+      base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
+                     base::Unretained(backend_.get()),
+                     std::move(branding_injection_for_affiliations_callback),
+                     /*include_psl=*/false);
+
+  // Retrieve affiliations, then retrieve logins for those affiliations.
+  affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
+      form, request_handler->AffiliationsClosure().Then(
+                std::move(get_logins_for_affiliations_callback)));
+
+  // Retrieve logins for `form`. The request will be handled by the
+  // `request_handler`.
+  auto branding_injection_for_regular_logins_callback =
+      base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+          .Then(base::BindOnce(
+              &PasswordStore::InjectAffiliationAndBrandingInformation, this,
+              request_handler->LoginsForFormClosure()));
+  backend_->FillMatchingLoginsAsync(
+      std::move(branding_injection_for_regular_logins_callback),
+      FormSupportsPSL(form), {form});
 }
 
 void PasswordStore::InjectAffiliationAndBrandingInformation(
