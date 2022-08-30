@@ -147,7 +147,17 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   DCHECK(ri);
   unsigned query_id = 0;
   ri->GenQueriesEXT(1, &query_id);
-  ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // On Windows and Mac, GMB data read will do synchronization on its own.
+  // No need for GL_COMMANDS_COMPLETED_CHROMIUM QueryEXT.
+  GLenum queryTarget = GL_COMMANDS_ISSUED_CHROMIUM;
+#else
+  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
+  // texture copy is complete before we access GMB data.
+  GLenum queryTarget = GL_COMMANDS_COMPLETED_CHROMIUM;
+#endif
+  ri->BeginQueryEXT(queryTarget, query_id);
 
   const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
       raster_context_provider, src_format, src_size, src_color_space,
@@ -157,9 +167,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     return false;
   }
 
-  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
-  // texture copy before we access GMB data.
-  ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+  ri->EndQueryEXT(queryTarget);
 
   auto on_query_done_cb =
       [](scoped_refptr<media::VideoFrame> frame,
