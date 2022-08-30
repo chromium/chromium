@@ -156,6 +156,14 @@ class FamilyInfoFetcherTest
 #endif
   }
 
+  void ClearPrimaryAccount() {
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
+    return identity_test_env_.ClearPrimaryAccount();
+#else
+#error Unsupported platform.
+#endif
+  }
+
   void IssueRefreshToken() {
 #if BUILDFLAG(IS_CHROMEOS)
     identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
@@ -182,26 +190,33 @@ class FamilyInfoFetcherTest
         "access_token", base::Time::Now() + base::Hours(1));
   }
 
-  void SendResponse(net::Error error, const std::string& response) {
-    fetcher_->OnSimpleLoaderCompleteInternal(error, net::HTTP_OK, response);
+  void SendResponse(int net_error,
+                    int response_code,
+                    const std::string& response) {
+    fetcher_->OnSimpleLoaderCompleteInternal(net_error, response_code,
+                                             response);
   }
 
   void SendValidGetFamilyProfileResponse(
       const FamilyInfoFetcher::FamilyProfile& family) {
-    SendResponse(net::OK, BuildGetFamilyProfileResponse(family));
+    SendResponse(net::OK, net::HTTP_OK, BuildGetFamilyProfileResponse(family));
   }
 
   void SendValidGetFamilyMembersResponse(
       const std::vector<FamilyInfoFetcher::FamilyMember>& members) {
-    SendResponse(net::OK, BuildGetFamilyMembersResponse(members));
+    SendResponse(net::OK, net::HTTP_OK, BuildGetFamilyMembersResponse(members));
   }
 
   void SendInvalidGetFamilyProfileResponse() {
-    SendResponse(net::OK, BuildEmptyGetFamilyProfileResponse());
+    SendResponse(net::OK, net::HTTP_OK, BuildEmptyGetFamilyProfileResponse());
   }
 
   void SendFailedResponse() {
-    SendResponse(net::ERR_ABORTED, std::string());
+    SendResponse(net::ERR_ABORTED, -1, std::string());
+  }
+
+  void SendUnauthorizedResponse() {
+    SendResponse(net::OK, net::HTTP_UNAUTHORIZED, std::string());
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -354,3 +369,62 @@ TEST_F(FamilyInfoFetcherTest, FailedResponse) {
   EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::ErrorCode::kNetworkError));
   SendFailedResponse();
 }
+
+TEST_F(FamilyInfoFetcherTest, UnauthorizedResponseThenSuccess) {
+  IssueRefreshToken();
+
+  StartGetFamilyProfile();
+
+  WaitForAccessTokenRequestAndIssueToken();
+
+  // The first fetch returns an Unauthorized response.
+  // The fetcher attempts to retry by requesting a fresh token.
+  SendUnauthorizedResponse();
+  WaitForAccessTokenRequestAndIssueToken();
+
+  // The above should trigger a second request with a fresh token.
+  // Succeed the request and check that the client gets a success callback.
+  FamilyInfoFetcher::FamilyProfile family("test", "My Test Family");
+  EXPECT_CALL(*this, OnGetFamilyProfileSuccess(family));
+  SendValidGetFamilyProfileResponse(family);
+}
+
+TEST_F(FamilyInfoFetcherTest, UnauthorizedResponseTwice) {
+  IssueRefreshToken();
+
+  StartGetFamilyProfile();
+
+  WaitForAccessTokenRequestAndIssueToken();
+
+  // The first fetch returns an Unauthorized response.
+  // The fetcher attempts to retry by requesting a fresh token.
+  SendUnauthorizedResponse();
+  WaitForAccessTokenRequestAndIssueToken();
+
+  // The second fetch also returns an Unauthorized response.
+  // This time the fetcher gives up and passes the unsuccessful response to the
+  // client.
+  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::ErrorCode::kNetworkError));
+  SendUnauthorizedResponse();
+}
+
+// Disabled on ChromeOS as clearing the primary account isn't supported.
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(FamilyInfoFetcherTest, PrimaryAccountClearedThenUnauthorizedResponse) {
+  IssueRefreshToken();
+
+  StartGetFamilyProfile();
+
+  WaitForAccessTokenRequestAndIssueToken();
+
+  // Clear the primary account (simulating signout happening during an ongoing
+  // fetch).
+  ClearPrimaryAccount();
+
+  // The fetch returns an Unauthorized response.
+  // Rather than triggering a fresh fetch, the client is immediately given a
+  // failed return code.
+  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::ErrorCode::kTokenError));
+  SendUnauthorizedResponse();
+}
+#endif
