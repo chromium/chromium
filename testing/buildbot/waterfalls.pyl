@@ -5979,7 +5979,7 @@
       },
       'win10-32-on-64-updater-tester-dbg': {
         'mixins': [
-          'win10',
+          'win10-any',
           'x86-64',
         ],
         'test_suites': {
@@ -5989,13 +5989,14 @@
           'dimension_sets': [
             {
               'integrity': 'high',
+              'pool': 'chromium.tests',
             }
           ]
         },
       },
       'win10-updater-tester-dbg': {
         'mixins': [
-          'win10',
+          'win10-any',
           'x86-64',
         ],
         'test_suites': {
@@ -6005,13 +6006,14 @@
           'dimension_sets': [
             {
               'integrity': 'high',
+              'pool': 'chromium.tests',
             }
           ]
         },
       },
       'win10-updater-tester-dbg-uac': {
         'mixins': [
-          'win10-1909',
+          'win10-any',
           'x86-64',
         ],
         'test_suites': {
@@ -6027,7 +6029,7 @@
       },
       'win10-updater-tester-rel': {
         'mixins': [
-          'win10',
+          'win10-any',
           'x86-64',
         ],
         'test_suites': {
@@ -6037,6 +6039,7 @@
           'dimension_sets': [
             {
               'integrity': 'high',
+              'pool': 'chromium.tests',
             }
           ]
         },

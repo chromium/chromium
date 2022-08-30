@@ -539,7 +539,8 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042"
+              "os": "Windows-10",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -563,7 +564,8 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042"
+              "os": "Windows-10",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -591,7 +593,8 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042"
+              "os": "Windows-10",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -615,7 +618,8 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042"
+              "os": "Windows-10",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -643,7 +647,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-18363",
+              "os": "Windows-10",
               "pool": "chromium.win.uac"
             }
           ],
@@ -667,7 +671,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-18363",
+              "os": "Windows-10",
               "pool": "chromium.win.uac"
             }
           ],
@@ -696,7 +700,8 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042"
+              "os": "Windows-10",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -720,7 +725,8 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042"
+              "os": "Windows-10",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

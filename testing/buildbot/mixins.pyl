@@ -1208,10 +1208,10 @@
       },
     },
   },
-  'win10-1909': {
+  'win10-any': {
     'swarming': {
       'dimensions': {
-        'os': 'Windows-10-18363',
+        'os': 'Windows-10',
       },
     },
   },
