@@ -17,14 +17,13 @@ declare_args() {
   # Set the variable to false to not use the internal file, even for
   # Chrome-branded builds or when it exists in your checkout.
   #
-  # Leave it unset or set to "" to have the variable
-  # implicitly set to true if you have
-  # src/google_apis/internal/google_chrome_api_keys.h in your
-  # checkout, and implicitly set to false if not.
-  #
-  # Note that Chrome-branded builds always behave as if the variable
-  # was explicitly set to true, i.e. they always use official keys,
-  # and will fail to build if the internal file is missing.
+  # Leave it set to "" to have the variable implicitly set to true for
+  # Chrome-branded builds or if
+  # //src/google_apis/internal/google_chrome_api_keys.h is present and false
+  # otherwise.
+  # This does not apply to iOS builds, which use different mechanisms and always
+  # evaluate to use_official_google_api_keys=false.
+  # See https://crbug.com/1183709.
   use_official_google_api_keys = ""
 
   # Set these to bake the specified API keys and OAuth client
@@ -36,9 +35,8 @@ declare_args() {
   # require server-side APIs may fail to work if no keys are
   # provided.
   #
-  # Note that when building a Chrome-branded build or if
-  # `use_official_google_api_keys` has been set to `true` (explicitly or
-  # implicitly), these values will be ignored and the official
+  # Note that if `use_official_google_api_keys` has been set to true
+  # (explicitly or implicitly), these values will be ignored and the official
   # keys will be used instead.
   google_api_key = ""
 
@@ -50,21 +48,42 @@ declare_args() {
 }
 
 if (use_official_google_api_keys == "") {
-  # Default behavior, check if the key file exists.
-  check_internal_result =
-      exec_script("build/check_internal.py",
-                  [ rebase_path("internal/google_chrome_api_keys.h",
-                                root_build_dir) ],
-                  "value")
-  use_official_google_api_keys = check_internal_result == 1
+  # No override set. Determine the default behavior.
+  if (is_chrome_branded) {
+    # Chrome-branded builds default to behaving as if
+    #`use_official_google_api_keys` was explicitly set to true and will fail to
+    # build if the file is missing.
+    use_official_google_api_keys = true
+
+    # TODO(crbug.com/1294931): Remove this override when fixing the issue.
+    if (is_fuchsia) {
+      use_official_google_api_keys = false
+    }
+  } else {
+    # Check if the key file exists.
+    check_internal_result =
+        exec_script("build/check_internal.py",
+                    [ rebase_path("internal/google_chrome_api_keys.h",
+                                  root_build_dir) ],
+                    "value")
+    use_official_google_api_keys = check_internal_result == 1
+  }
 }
+
+# Official API keys should always be used for Chrome-branded builds except on
+# iOS (see https://crbug.com/1183709) and Fuchsia (see the description of
+# https://crbug.com/1171510 for background).
+assert(
+    use_official_google_api_keys || !is_chrome_branded || is_ios || is_fuchsia)
+
+# This arg should always be false on iOS. See https://crbug.com/1183709.
+assert(!use_official_google_api_keys || !is_ios)
 
 config("key_defines") {
   defines = []
 
-  # TODO(crbug.com/1294915): Refactor so use_official_google_api_keys can be
-  # used for Fuchsia.
-  if (!is_fuchsia && (is_chrome_branded || use_official_google_api_keys)) {
+  # On iOS, Chrome branding controls this define. See https://crbug.com/1183709.
+  if (use_official_google_api_keys || (is_ios && is_chrome_branded)) {
     defines += [ "USE_OFFICIAL_GOOGLE_API_KEYS=1" ]
   }
   if (google_api_key != "") {
@@ -143,7 +162,8 @@ template("google_apis_tmpl") {
       "//services/network/public/cpp",
     ]
 
-    if (is_chrome_branded || use_official_google_api_keys) {
+    # On iOS, Chrome branding controls this deps. See https://crbug.com/1183709.
+    if (use_official_google_api_keys || (is_ios && is_chrome_branded)) {
       deps += [ "internal:generate_metrics_key_header" ]
     }
 
