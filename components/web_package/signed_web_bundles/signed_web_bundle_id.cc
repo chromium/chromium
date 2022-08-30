@@ -14,18 +14,7 @@
 
 namespace web_package {
 
-namespace {
-
-constexpr uint8_t kTypeSuffixLength = 3;
-
-constexpr uint8_t kTypeDevelopment[] = {0x00, 0x00, 0x02};
-constexpr uint8_t kTypeEd25519PublicKey[] = {0x00, 0x01, 0x02};
-
-static_assert(std::size(kTypeDevelopment) == kTypeSuffixLength);
-static_assert(std::size(kTypeEd25519PublicKey) == kTypeSuffixLength);
-
-}  // namespace
-
+// static
 base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
     base::StringPiece encoded_id) {
   if (encoded_id.size() != kEncodedIdLength) {
@@ -64,6 +53,35 @@ base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
                              std::move(decoded_id));
   }
   return base::unexpected("The signed web bundle ID has an unknown type.");
+}
+
+// static
+SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
+    Ed25519PublicKey public_key) {
+  std::array<uint8_t, kDecodedIdLength> decoded_id;
+  base::ranges::copy(public_key.bytes(), decoded_id.begin());
+  base::ranges::copy(kTypeEd25519PublicKey,
+                     decoded_id.end() - kTypeSuffixLength);
+
+  auto encoded_id_uppercase =
+      base32::Base32Encode(std::string(decoded_id.begin(), decoded_id.end()),
+                           base32::Base32EncodePolicy::OMIT_PADDING);
+  auto encoded_id = base::ToLowerASCII(encoded_id_uppercase);
+  return SignedWebBundleId(Type::kEd25519PublicKey, encoded_id, decoded_id);
+}
+
+// static
+SignedWebBundleId SignedWebBundleId::CreateForDevelopment(
+    base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data) {
+  std::array<uint8_t, kDecodedIdLength> decoded_id;
+  base::ranges::copy(data, decoded_id.begin());
+  base::ranges::copy(kTypeDevelopment, decoded_id.end() - kTypeSuffixLength);
+
+  auto encoded_id_uppercase =
+      base32::Base32Encode(std::string(decoded_id.begin(), decoded_id.end()),
+                           base32::Base32EncodePolicy::OMIT_PADDING);
+  auto encoded_id = base::ToLowerASCII(encoded_id_uppercase);
+  return SignedWebBundleId(Type::kDevelopment, encoded_id, decoded_id);
 }
 
 SignedWebBundleId::SignedWebBundleId(
