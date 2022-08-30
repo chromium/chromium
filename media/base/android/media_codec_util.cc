@@ -72,17 +72,6 @@ static bool IsSupportedAndroidMimeType(const std::string& mime_type) {
          supported.end();
 }
 
-static std::string GetDefaultCodecName(const std::string& mime_type,
-                                       MediaCodecDirection direction,
-                                       bool requires_software_codec) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime_type);
-  ScopedJavaLocalRef<jstring> j_codec_name =
-      Java_MediaCodecUtil_getDefaultCodecName(
-          env, j_mime, static_cast<int>(direction), requires_software_codec);
-  return ConvertJavaStringToUTF8(env, j_codec_name.obj());
-}
-
 static bool IsDecoderSupportedByDevice(const std::string& android_mime_type) {
   DCHECK(IsSupportedAndroidMimeType(android_mime_type));
   JNIEnv* env = AttachCurrentThread();
@@ -330,33 +319,28 @@ void MediaCodecUtil::AddSupportedCodecProfileLevels(
 // static
 bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
                                           MediaCodecDirection direction) {
-  std::string codec_name =
-      GetDefaultCodecName(CodecToAndroidMimeType(codec), direction, false);
-  DVLOG(1) << __func__ << "Default codec for " << GetCodecName(codec) << " : "
-           << codec_name << ", direction: " << static_cast<int>(direction);
+  auto* env = AttachCurrentThread();
+  auto j_mime = ConvertUTF8ToJavaString(env, CodecToAndroidMimeType(codec));
+  auto j_codec_name = Java_MediaCodecUtil_getDefaultCodecName(
+      env, j_mime, static_cast<int>(direction), /*requireSoftwareCodec=*/false,
+      /*requireHardwareCodec=*/true);
+
+  auto codec_name = ConvertJavaStringToUTF8(env, j_codec_name.obj());
+  DVLOG(1) << __func__ << "Default hardware codec for " << GetCodecName(codec)
+           << " : " << codec_name
+           << ", direction: " << static_cast<int>(direction);
   if (codec_name.empty())
     return true;
 
   // MediaTek hardware vp8 is known slower than the software implementation.
-  if (base::StartsWith(codec_name, "OMX.MTK.", base::CompareCase::SENSITIVE)) {
-    if (codec == VideoCodec::kVP8) {
-      // We may still reject VP8 hardware decoding later on certain chipsets,
-      // see isDecoderSupportedForDevice(). We don't have the the chipset ID
-      // here to check now though.
-      return base::android::BuildInfo::GetInstance()->sdk_int() < SDK_VERSION_P;
-    }
-
-    return false;
+  if (base::StartsWith(codec_name, "OMX.MTK.") && codec == VideoCodec::kVP8) {
+    // We may still reject VP8 hardware decoding later on certain chipsets,
+    // see isDecoderSupportedForDevice(). We don't have the the chipset ID
+    // here to check now though.
+    return base::android::BuildInfo::GetInstance()->sdk_int() < SDK_VERSION_P;
   }
 
-  // It would be nice if MediaCodecInfo externalized some notion of
-  // HW-acceleration but it doesn't. Android Media guidance is that the
-  // "OMX.google" prefix is always used for SW decoders, so that's what we
-  // use. "OMX.SEC.*" codec is Samsung software implementation - report it
-  // as unaccelerated as well.
-  return base::StartsWith(codec_name, "OMX.google.",
-                          base::CompareCase::SENSITIVE) ||
-         base::StartsWith(codec_name, "OMX.SEC.", base::CompareCase::SENSITIVE);
+  return false;
 }
 
 }  // namespace media

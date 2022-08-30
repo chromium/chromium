@@ -141,17 +141,25 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
   }
 
   if (device_info->IsAv1DecoderAvailable()) {
-    // Technically we should check which profiles are supported, but since we
-    // don't have an AV1 SW decoder, just allow them all. See notes below for
-    // H264 profiles on the reasons why.
-    supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                   gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                   true,    // allow_encrypted
-                                   false);  // require_encrypted
-    supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                   gfx::Size(0, 0), gfx::Size(2160, 3840),
-                                   true,    // allow_encrypted
-                                   false);  // require_encrypted
+    if (device_info->IsDecoderKnownUnaccelerated(VideoCodec::kAV1)) {
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(3840, 2160),
+                                     true,   // allow_encrypted
+                                     true);  // require_encrypted
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(2160, 3840),
+                                     true,   // allow_encrypted
+                                     true);  // require_encrypted
+    } else {
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(3840, 2160),
+                                     true,    // allow_encrypted
+                                     false);  // require_encrypted
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(2160, 3840),
+                                     true,    // allow_encrypted
+                                     false);  // require_encrypted
+    }
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
