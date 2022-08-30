@@ -267631,7 +267631,7 @@
      ],
      "parsing": {
       "color-computed-expected.txt": [
-       "0df72a78d111dfd0ebeb210d1195da5b96379654",
+       "93d1203d1b8280b9be45be04b2242771a60bdf05",
        []
       ],
       "color-contrast-computed-expected.txt": [
@@ -267655,7 +267655,7 @@
        []
       ],
       "color-valid-expected.txt": [
-       "b420c6e5d638a1842d878b8d7442be00b609e344",
+       "c49de7e65720a9f9a0f87dd16c71a67a28ab41ed",
        []
       ],
       "relative-color-computed-expected.txt": [
@@ -309367,7 +309367,7 @@
        []
       ],
       "preflight.py": [
-       "5c1ea9db160a89a8a4b3b6ba5f0a98340158783e",
+       "925b120033d9d0789594e65e896dd392f34697ee",
        []
       ],
       "service-worker-bridge.html": [
@@ -309391,7 +309391,7 @@
        []
       ],
       "support.sub.js": [
-       "a8fef0d754154afea5f5b5c048529b82f4d6e71c",
+       "3bf9ed009d5232e577eaa9bbb43e640a4b789c98",
        []
       ],
       "worker-fetcher.html": [
@@ -309413,10 +309413,6 @@
      ],
      "service-worker-update.https.window-expected.txt": [
       "2884c271eecfd46ee3fee89707cbd5c81c624939",
-      []
-     ],
-     "service-worker.https.window-expected.txt": [
-      "6c834a89c8d481231d211249ff5451aaa9164f5b",
       []
      ],
      "websocket.window-expected.txt": [
@@ -316760,15 +316756,15 @@
       []
      ],
      "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
-      "7cee8f337b41bf37f811267cd7fd633b7366e5e6",
+      "e312e1b82313318ebf7306b6ae6f86bf19887c56",
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
-      "af268e206b35bc08464bccb0b254b6821ef9b15f",
+      "293a16c65e52a6163bf2d6c34a95a2305b4a0b7a",
       []
      ],
      "idlharness.https_include=HTML._-expected.txt": [
-      "bc20b8a9b9dbe210db4505592c9314adcdc54e4c",
+      "0f0723104254acc9f61c6e84c9581784c4f02579",
       []
      ],
      "idlharness.worker-expected.txt": [
@@ -327306,11 +327302,7 @@
         []
        ],
        "event-handler-attributes-frameset-window-expected.txt": [
-        "6da4300bdb623ffccfa69bfd94c594ab26a76cde",
-        []
-       ],
-       "event-handler-attributes-windowless-body-expected.txt": [
-        "97c57550d05c83421d54f27dc78b063dc8a7e196",
+        "789b686d4f0def7e646b021cfaf934c6cf5c53d9",
         []
        ],
        "event-handler-processing-algorithm-error": {
@@ -387846,7 +387838,7 @@
        ]
       ],
       "color-invalid.html": [
-       "e9ca41041da70b8e96d0948d2ca56de4ba778531",
+       "9fe81bb4c3d2638899215a0ea8c96cbd2db7ad53",
        [
         null,
         {}
@@ -448399,7 +448391,7 @@
       ]
      ],
      "service-worker.https.window.js": [
-      "91338462fa378f3fd253f67a5de514a5a6d4e0fb",
+      "8dc631f65a85d65a29e891482310f74c942da6b1",
       [
        "fetch/private-network-access/service-worker.https.window.html",
        {
@@ -480621,6 +480613,27 @@
        }
       ]
      ],
+     "idlharness.https.html": [
+      "56b4a0c04967e269bb82eb7e938dda09a56542fc",
+      [
+       "html/dom/idlharness.https.html?exclude=(Document|Window|HTML.*)",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/dom/idlharness.https.html?include=(Document|Window)",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/dom/idlharness.https.html?include=HTML.*",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "idlharness.worker.js": [
       "16f6e85ce7c619e454d5657ca2978067785b0cff",
       [
@@ -500441,6 +500454,20 @@
        ],
        "event-handler-attributes-body-window.html": [
         "e8055d99f357da2baf1f9034d121055338e238e8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "event-handler-attributes-frameset-window.html": [
+        "b583eca52da2b9b5e58fb25e73b3766452b7c472",
+        [
+         null,
+         {}
+        ]
+       ],
+       "event-handler-attributes-windowless-body.html": [
+        "9b81d42ff729399d57e182abc8b8950cef503e12",
         [
          null,
          {}
