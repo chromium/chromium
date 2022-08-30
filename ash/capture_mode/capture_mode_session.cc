@@ -978,7 +978,8 @@ void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
   capture_mode_settings_view_->OnDefaultCaptureFolderSelectionChanged();
 }
 
-aura::Window* CaptureModeSession::GetCameraPreviewParentWindow() const {
+aura::Window* CaptureModeSession::GetOnCaptureSurfaceWidgetParentWindow()
+    const {
   auto* controller = CaptureModeController::Get();
   DCHECK(!controller->is_recording_in_progress());
   auto* menu_container =
@@ -998,12 +999,12 @@ aura::Window* CaptureModeSession::GetCameraPreviewParentWindow() const {
   }
 }
 
-gfx::Rect CaptureModeSession::GetCameraPreviewConfineBounds() const {
+gfx::Rect CaptureModeSession::GetCaptureSurfaceConfineBounds() const {
   auto* controller = CaptureModeController::Get();
   DCHECK(!controller->is_recording_in_progress());
   switch (controller->source()) {
     case CaptureModeSource::kFullscreen: {
-      auto* parent = GetCameraPreviewParentWindow();
+      auto* parent = GetOnCaptureSurfaceWidgetParentWindow();
       DCHECK(parent);
       return display::Screen::GetScreen()
           ->GetDisplayNearestWindow(parent)

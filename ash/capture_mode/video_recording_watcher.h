@@ -33,6 +33,7 @@ class CursorManager;
 namespace ash {
 
 class CaptureModeController;
+class CaptureModeDemoToolsController;
 class RecordingOverlayController;
 class RecordedWindowRootObserver;
 
@@ -78,14 +79,16 @@ class ASH_EXPORT VideoRecordingWatcher
   // Clean up prior to deletion.
   void ShutDown();
 
-  // Returns the current parent window for
-  // `CaptureModeCameraController::camera_preview_widget_` when recording is in
+  // Returns the current parent window for the on-capture-surface widgets such
+  // as `CaptureModeCameraController::camera_preview_widget_` and
+  // `CaptureModeDemoToolsController::demo_tools_widget_` when recording is in
   // progress.
-  aura::Window* GetCameraPreviewParentWindow() const;
+  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
 
-  // Returns the confine bounds for the camera preview when recording is in
-  // progress.
-  gfx::Rect GetCameraPreviewConfineBounds() const;
+  // Returns the bounds within which the on-capture-surface widgets such as
+  // capture mode preview and capture mode demo tools will be confined when
+  // recording is in progress.
+  gfx::Rect GetCaptureSurfaceConfineBounds() const;
 
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
@@ -145,6 +148,10 @@ class ASH_EXPORT VideoRecordingWatcher
   void FlushCursorOverlayForTesting();
 
   void SendThrottledWindowSizeChangedNowForTesting();
+
+  CaptureModeDemoToolsController* demo_tools_controller_for_testing() {
+    return demo_tools_controller_.get();
+  }
 
  protected:
   // ui::LayerOwner:
@@ -291,7 +298,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // make it capturable by the |FrameSinkVideoCapturer|.
   aura::ScopedWindowCaptureRequest non_root_window_capture_request_;
 
-  // True if the shutting down process has been triggered.
+  std::unique_ptr<CaptureModeDemoToolsController> demo_tools_controller_;
+
+  // True if the shutting down process has been triggered. We want to keep
+  // `is_shutting_down_` as the last member variable in this class.
   bool is_shutting_down_ = false;
 };
 

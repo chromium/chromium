@@ -718,31 +718,32 @@ bool CaptureModeController::IsLinuxFilesPath(const base::FilePath& path) const {
   return path == delegate_->GetLinuxFilesPath();
 }
 
-aura::Window* CaptureModeController::GetCameraPreviewParentWindow() const {
+aura::Window* CaptureModeController::GetOnCaptureSurfaceWidgetParentWindow()
+    const {
   // Trying to get camera preview's parent from `video_recording_watcher_` first
   // if a video recording is in progress. As a capture session can be started
   // with `kImage` type while recording, and we should get the parent of the
   // camera preview with the settings inside VideoRecordingWatcher in this case,
   // e.g, CaptureModeSource for taking the video.
   if (is_recording_in_progress())
-    return video_recording_watcher_->GetCameraPreviewParentWindow();
+    return video_recording_watcher_->GetOnCaptureSurfaceWidgetParentWindow();
 
   if (IsActive())
-    return capture_mode_session_->GetCameraPreviewParentWindow();
+    return capture_mode_session_->GetOnCaptureSurfaceWidgetParentWindow();
 
   return nullptr;
 }
 
-gfx::Rect CaptureModeController::GetCameraPreviewConfineBounds() const {
+gfx::Rect CaptureModeController::GetCaptureSurfaceConfineBounds() const {
   // Getting the bounds from `video_recording_watcher_` first if a video
   // recording is in progress. As a capture session can be started with `kImage`
   // type while recording, and we should get the bounds with the settings inside
   // VideoRecordingWatcher in this case, e.g, user-selected region.
   if (is_recording_in_progress())
-    return video_recording_watcher_->GetCameraPreviewConfineBounds();
+    return video_recording_watcher_->GetCaptureSurfaceConfineBounds();
 
   if (IsActive())
-    return capture_mode_session_->GetCameraPreviewConfineBounds();
+    return capture_mode_session_->GetCaptureSurfaceConfineBounds();
 
   return gfx::Rect();
 }

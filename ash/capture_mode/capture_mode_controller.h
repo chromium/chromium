@@ -213,15 +213,16 @@ class ASH_EXPORT CaptureModeController
   // otherwise.
   bool IsLinuxFilesPath(const base::FilePath& path) const;
 
-  // Returns the current parent window for
-  // `CaptureModeCameraController::camera_preview_widget_`.
-  aura::Window* GetCameraPreviewParentWindow() const;
+  // Returns the current parent window for the on-capture-surface widgets such
+  // as `CaptureModeCameraController::camera_preview_widget_` and
+  // `CaptureModeDemoToolsController::demo_tools_widget_`.
+  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
 
-  // Returns the camera preview's confine bounds, which actually indicates the
-  // bounds of the surface that will be recorded. The bounds is in screen
-  // coordinate when capture source is `kFullscreen` or 'kRegion', but in
-  // window's coordinate when it is 'kWindow' type.
-  gfx::Rect GetCameraPreviewConfineBounds() const;
+  // Returns the bounds, within which the on-capture-surface widgets (such as
+  // the camera preview and the demo tools widget) will be confined. The bounds
+  // is in screen coordinate when capture source is `kFullscreen` or 'kRegion',
+  // but in window's coordinate when it is 'kWindow' type.
+  gfx::Rect GetCaptureSurfaceConfineBounds() const;
 
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,

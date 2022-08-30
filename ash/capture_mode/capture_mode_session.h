@@ -162,14 +162,15 @@ class ASH_EXPORT CaptureModeSession
   // as the save folder.
   void OnDefaultCaptureFolderSelectionChanged();
 
-  // Returns the current parent window for
-  // `CaptureModeCameraController::camera_preview_widget_` when capture mode
+  // Returns the current parent window for the on-capture-surface widgets such
+  // as `CaptureModeCameraController::camera_preview_widget_` and
+  // `CaptureModeDemoToolsController::demo_tools_widget_` when capture mode
   // session is active.
-  aura::Window* GetCameraPreviewParentWindow() const;
+  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
 
-  // Returns the confine bounds for the camera preview when capture session is
-  // active.
-  gfx::Rect GetCameraPreviewConfineBounds() const;
+  // Returns the confine bounds for the on-capture-surface widgets (such as the
+  // camera preview and demo tools widgets) when capture session is active.
+  gfx::Rect GetCaptureSurfaceConfineBounds() const;
 
   // Returns the in-session target value that should be used for the visibility
   // of the camera preview (if any). During the session, things like dragging

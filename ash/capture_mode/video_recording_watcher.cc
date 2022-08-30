@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/constants/ash_features.h"
@@ -240,6 +241,10 @@ VideoRecordingWatcher::VideoRecordingWatcher(
         std::make_unique<RecordingOverlayController>(window_being_recorded_,
                                                      GetOverlayWidgetBounds());
   }
+
+  if (features::AreCaptureModeDemoToolsEnabled())
+    demo_tools_controller_ = std::make_unique<CaptureModeDemoToolsController>();
+
   if (features::IsProjectorEnabled()) {
     ProjectorControllerImpl::Get()->OnRecordingStarted(current_root_,
                                                        is_in_projector_mode_);
@@ -267,6 +272,7 @@ void VideoRecordingWatcher::ShutDown() {
   cursor_capture_overlay_remote_.reset();
   root_observer_.reset();
   recording_overlay_controller_.reset();
+  demo_tools_controller_.reset();
   dimmers_.clear();
 
   if (features::IsProjectorEnabled())
@@ -290,7 +296,8 @@ void VideoRecordingWatcher::ShutDown() {
   controller_->camera_controller()->OnRecordingEnded();
 }
 
-aura::Window* VideoRecordingWatcher::GetCameraPreviewParentWindow() const {
+aura::Window* VideoRecordingWatcher::GetOnCaptureSurfaceWidgetParentWindow()
+    const {
   DCHECK(window_being_recorded_);
   return window_being_recorded_->IsRootWindow()
              ? window_being_recorded_->GetChildById(
@@ -298,7 +305,7 @@ aura::Window* VideoRecordingWatcher::GetCameraPreviewParentWindow() const {
              : window_being_recorded_;
 }
 
-gfx::Rect VideoRecordingWatcher::GetCameraPreviewConfineBounds() const {
+gfx::Rect VideoRecordingWatcher::GetCaptureSurfaceConfineBounds() const {
   DCHECK(window_being_recorded_);
   switch (recording_source_) {
     case CaptureModeSource::kFullscreen:
@@ -499,6 +506,9 @@ void VideoRecordingWatcher::OnDimmedWindowParentChanged(
 }
 
 void VideoRecordingWatcher::OnKeyEvent(ui::KeyEvent* event) {
+  if (demo_tools_controller_)
+    demo_tools_controller_->OnKeyEvent(event);
+
   if (event->type() != ui::ET_KEY_PRESSED)
     return;
 
