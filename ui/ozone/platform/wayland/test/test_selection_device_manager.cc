@@ -90,7 +90,9 @@ TestSelectionSource::TestSelectionSource(wl_resource* resource,
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
-TestSelectionSource::~TestSelectionSource() = default;
+TestSelectionSource::~TestSelectionSource() {
+  delegate_->OnDestroying();
+}
 
 void TestSelectionSource::ReadData(const std::string& mime_type,
                                    ReadDataCallback callback) {
