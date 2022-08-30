@@ -14,6 +14,7 @@ class VideoChannelStateObserver {
  public:
   virtual void OnKeyFrameRequested() = 0;
   virtual void OnTargetBitrateChanged(int bitrate_kbps) = 0;
+  virtual void OnTargetFramerateChanged(int framerate) = 0;
 
   // Called when the encoder has finished encoding a frame, and before it is
   // passed to WebRTC's registered callback. |frame| may be null if encoding

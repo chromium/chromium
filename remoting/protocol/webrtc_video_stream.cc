@@ -311,15 +311,36 @@ void WebrtcVideoStream::OnTargetBitrateChanged(int bitrate_kbps) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
+void WebrtcVideoStream::OnTargetFramerateChanged(int framerate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_GT(framerate, 0);
+  DCHECK_LE(framerate, 1000);
+
+  if (!transceiver_) {
+    LOG(WARNING) << "No transceiver, can't set updated framerate.";
+  }
+
+  auto sender = transceiver_->sender();
+  webrtc::RtpParameters parameters = sender->GetParameters();
+  if (parameters.encodings.empty()) {
+    LOG(ERROR) << "No encodings found for sender " << sender->id();
+    return;
+  }
+
+  for (auto& encoding : parameters.encodings) {
+    encoding.max_framerate = framerate;
+  }
+
+  webrtc::RTCError result = transceiver_->sender()->SetParameters(parameters);
+  DCHECK(result.ok()) << "SetParameters() failed: " << result.message();
+}
+
 void WebrtcVideoStream::OnFrameEncoded(
     WebrtcVideoEncoder::EncodeResult encode_result,
     const WebrtcVideoEncoder::EncodedFrame* frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Setting this field here allows us to skip a PostTask roundtrip to the
-  // scheduler. This is what WebrtcFrameSchedulerConstantRate::OnFrameEncoded()
-  // does internally so the time savings and complexity reduction seems like a
-  // reasonable trade-off.
+  // Setting this here allows us to skip a PostTask roundtrip to the scheduler.
   if (frame && frame->stats) {
     // WebrtcFrameSchedulerConstantRate cannot estimate this delay. Set it to 0
     // so the client can still calculate the derived stats.

@@ -14,6 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -71,6 +72,9 @@ const int kEstimatedBytesPerMegapixel = 100000;
 // processing and rendering lots of identical frames.
 constexpr base::TimeDelta kKeepAliveInterval = base::Seconds(2);
 
+// SDP format parameter name used to set the maximum framerate for an encoder.
+constexpr char kMaxFramerateKey[] = "max-fr";
+
 std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
   using EncodeResult = WebrtcVideoEncoder::EncodeResult;
 
@@ -86,6 +90,25 @@ std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
   return "";
 }
 
+int GetFrameRateFromSdpFormatParam(const std::string& param_value) {
+  int conversion_result;
+  if (!base::StringToInt(param_value, &conversion_result)) {
+    LOG(ERROR) << "Failed to convert max-fr value to an int: " << param_value;
+    return kTargetFrameRate;
+  }
+
+  // Clamp the range to prevent a bad experience in case of a client bug.
+  // 1000 is the maximum allowable frame rate as capturing at a higher rate will
+  // cause problems in several components which expect at least 1 millisecond
+  // between frames. In reality, very few applications update their window
+  // faster than the current monitor refresh rate which is likely 60Hz - 144Hz
+  // so value > ~150 won't provide much value.
+  // A lower bound of 1 millisecond is needed because the framerate is used as
+  // the denominator when determining the period between frames so 0 will lead
+  // to divide by 0 bugs.
+  return base::clamp<int>(conversion_result, 1, 1000);
+}
+
 }  // namespace
 
 WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
@@ -97,15 +120,6 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
     : main_task_runner_(main_task_runner),
       encode_task_runner_(encode_task_runner),
       video_channel_state_observer_(video_channel_state_observer) {
-  // Set the target frame rate based on the session options.
-  absl::optional<int> frame_rate = session_options.GetInt("Video-Frame-Rate");
-  if (frame_rate) {
-    // Clamp the range to prevent a bad experience in case of a client bug.
-    frame_rate = base::clamp<int>(frame_rate.value(), kTargetFrameRate, 1000);
-    target_frame_rate_ = frame_rate.value();
-  }
-  target_frame_interval_ = base::Milliseconds(1000 / target_frame_rate_);
-
   codec_type_ = webrtc::PayloadStringToCodecType(format.name);
   switch (codec_type_) {
     case webrtc::kVideoCodecVP8:
@@ -144,6 +158,12 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
     default:
       LOG(FATAL) << "Unknown codec type: " << codec_type_;
   }
+
+  auto iter = format.parameters.find(kMaxFramerateKey);
+  if (iter != format.parameters.end()) {
+    target_frame_rate_ = GetFrameRateFromSdpFormatParam(iter->second);
+  }
+  target_frame_interval_ = base::Hertz(target_frame_rate_);
 }
 
 WebrtcVideoEncoderWrapper::~WebrtcVideoEncoderWrapper() {
@@ -175,6 +195,15 @@ int32_t WebrtcVideoEncoderWrapper::InitEncode(
   if (codec_type_ == webrtc::kVideoCodecVP9) {
     // SVC is not supported.
     DCHECK_EQ(1, codec_settings->VP9().numberOfSpatialLayers);
+  }
+
+  // If the client has requested a specific framerate for this encoder then
+  // update the target framerate on the RtpSender for this video streams.
+  if (target_frame_rate_ != kTargetFrameRate) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VideoChannelStateObserver::OnTargetFramerateChanged,
+                       video_channel_state_observer_, target_frame_rate_));
   }
 
   return WEBRTC_VIDEO_CODEC_OK;

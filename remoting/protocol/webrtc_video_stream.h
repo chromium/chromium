@@ -68,6 +68,7 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   // VideoChannelStateObserver interface.
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
+  void OnTargetFramerateChanged(int framerate) override;
   void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
                       const WebrtcVideoEncoder::EncodedFrame* frame) override;
   void OnEncodedFrameSent(

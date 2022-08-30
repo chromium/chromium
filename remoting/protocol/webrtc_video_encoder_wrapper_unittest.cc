@@ -115,6 +115,7 @@ class MockVideoChannelStateObserver : public VideoChannelStateObserver {
 
   MOCK_METHOD(void, OnKeyFrameRequested, (), (override));
   MOCK_METHOD(void, OnTargetBitrateChanged, (int bitrate_kbps), (override));
+  MOCK_METHOD(void, OnTargetFramerateChanged, (int framerate), (override));
   MOCK_METHOD(void,
               OnFrameEncoded,
               (WebrtcVideoEncoder::EncodeResult encode_result,
@@ -240,6 +241,36 @@ TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnBitrateChanged) {
   EXPECT_CALL(observer_, OnTargetBitrateChanged(kBitrateBps / 1000));
 
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+
+  PostQuitAndRun();
+}
+
+TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnFramerateChanged) {
+  EXPECT_CALL(observer_, OnTargetFramerateChanged(42));
+
+  auto sdp_format = GetVp9Format();
+  sdp_format.parameters.emplace("max-fr", "42");
+  auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
+
+  PostQuitAndRun();
+}
+
+TEST_F(WebrtcVideoEncoderWrapperTest, FramerateClampedToLowerBound) {
+  EXPECT_CALL(observer_, OnTargetFramerateChanged(1));
+
+  auto sdp_format = GetVp9Format();
+  sdp_format.parameters.emplace("max-fr", "0");
+  auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
+
+  PostQuitAndRun();
+}
+
+TEST_F(WebrtcVideoEncoderWrapperTest, FramerateClampedToUpperBound) {
+  EXPECT_CALL(observer_, OnTargetFramerateChanged(1000));
+
+  auto sdp_format = GetVp9Format();
+  sdp_format.parameters.emplace("max-fr", "1001");
+  auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
 
   PostQuitAndRun();
 }
