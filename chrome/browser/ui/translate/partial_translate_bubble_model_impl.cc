@@ -83,6 +83,14 @@ void PartialTranslateBubbleModelImpl::UpdateTargetLanguageIndex(int index) {
   ui_delegate_->UpdateTargetLanguageIndex(index + 1);
 }
 
+std::string PartialTranslateBubbleModelImpl::GetSourceLanguageCode() const {
+  return ui_delegate_->GetSourceLanguageCode();
+}
+
+std::string PartialTranslateBubbleModelImpl::GetTargetLanguageCode() const {
+  return ui_delegate_->GetTargetLanguageCode();
+}
+
 void PartialTranslateBubbleModelImpl::Translate() {
   // TODO(crbug/1314825): Update implementation when PartialTranslateManager is
   // complete.

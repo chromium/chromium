@@ -31,7 +31,7 @@ const base::Feature kTranslateSubFrames{"TranslateSubFrames",
 // Weblayer.
 // TODO(crbug.com/1292622): Enable the feature on Webview.
 // TODO(crbug.com/1247836): Enable the feature on WebLayer.
-const base::Feature kTFLiteLanguageDetectionEnabled{
+const base::Feature kTFLiteLanguageDetectionEnabled {
   "TFLiteLanguageDetectionEnabled",
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
@@ -43,6 +43,10 @@ const base::Feature kTFLiteLanguageDetectionEnabled{
 
 const base::Feature kDesktopPartialTranslate{"DesktopPartialTranslate",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int>
+    kDesktopPartialTranslateTextSelectionMaxCharacters{
+        &kDesktopPartialTranslate,
+        "kDesktopPartialTranslateTextSelectionMaxCharacters", 150};
 
 GURL GetTranslateSecurityOrigin() {
   std::string security_origin(kSecurityOrigin);

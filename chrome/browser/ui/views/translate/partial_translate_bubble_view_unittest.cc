@@ -57,6 +57,10 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
 
   void UpdateTargetLanguageIndex(int index) override {}
 
+  std::string GetSourceLanguageCode() const override { return "en"; }
+
+  std::string GetTargetLanguageCode() const override { return "en"; }
+
   void Translate() override { translate_called_ = true; }
 
   void RevertTranslation() override {}

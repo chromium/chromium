@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
@@ -53,6 +54,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -404,6 +406,8 @@ views::View* PartialTranslateBubbleView::GetCurrentView() const {
 void PartialTranslateBubbleView::Translate() {
   model_->Translate();
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_TRANSLATING);
+  // Update text direction, if necesssary.
+  SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
   translate::ReportPartialTranslateBubbleUiAction(
       translate::PartialTranslateBubbleUiEvent::TARGET_LANGUAGE_TAB_SELECTED);
 }
@@ -412,6 +416,8 @@ void PartialTranslateBubbleView::ShowOriginal() {
   // TODO(crbug/1314825): Update implementation when PartialTranslateManager is
   // complete.
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
+  // Update text direction, if necesssary.
+  SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
   translate::ReportPartialTranslateBubbleUiAction(
       translate::PartialTranslateBubbleUiEvent::SOURCE_LANGUAGE_TAB_SELECTED);
 }
@@ -445,6 +451,7 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
 
     // Update max width of text selection label to match width of bubble, which
     // changes with the lengths of the languages displayed in the tabbed pane.
+    SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
     partial_text_label_->SizeToFit(
         tab_view_top_row_->GetPreferredSize().width());
     SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
@@ -564,17 +571,17 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
       gfx::Insets::VH(0, provider->GetDistanceMetric(
                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
+  const int vertical_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int horizontal_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+
   // Text selection.
   auto partial_text_label = std::make_unique<views::Label>(
       text_selection_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY);
   partial_text_label->SetMultiLine(true);
   partial_text_label->SizeToFit(tab_view_top_row_->GetPreferredSize().width());
-
-  const int vertical_spacing =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  const int horizontal_spacing =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
   partial_text_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
   partial_text_label->SetProperty(
@@ -582,6 +589,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
       gfx::Insets::TLBR(vertical_spacing, 0, vertical_spacing,
                         horizontal_spacing));
   partial_text_label_ = view->AddChildView(std::move(partial_text_label));
+  SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
 
   // Button to trigger full page translation.
   auto button_row = std::make_unique<views::BoxLayoutView>();
@@ -1096,4 +1104,17 @@ void PartialTranslateBubbleView::TranslateFullPage() {
       translate::PartialTranslateBubbleUiEvent::
           TRANSLATE_FULL_PAGE_BUTTON_CLICKED);
   model_.get()->TranslateFullPage(web_contents_);
+}
+
+void PartialTranslateBubbleView::SetTextAlignmentForLocaleTextDirection(
+    std::string locale) {
+  base::i18n::TextDirection direction =
+      base::i18n::GetTextDirectionForLocale(locale.c_str());
+  if (direction == base::i18n::TextDirection::LEFT_TO_RIGHT) {
+    partial_text_label_->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+  } else {
+    partial_text_label_->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_RIGHT);
+  }
 }

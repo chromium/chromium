@@ -32,6 +32,8 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   void UpdateSourceLanguageIndex(int index) override;
   int GetTargetLanguageIndex() const override;
   void UpdateTargetLanguageIndex(int index) override;
+  std::string GetSourceLanguageCode() const override;
+  std::string GetTargetLanguageCode() const override;
   void Translate() override;
   void RevertTranslation() override;
   bool IsCurrentSelectionTranslated() const override;

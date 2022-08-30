@@ -14,7 +14,10 @@
 #include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_util.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/text_elider.h"
 
 TranslateBubbleController::~TranslateBubbleController() = default;
 
@@ -189,10 +192,19 @@ views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
         view_state, std::move(ui_delegate));
   }
 
+  // Truncate text selection, if needed.
+  std::u16string truncated_selection = gfx::TruncateString(
+      text_selection,
+      translate::kDesktopPartialTranslateTextSelectionMaxCharacters.Get(),
+      gfx::WORD_BREAK);
+
+  // TODO: When the PartialTranslateManager is integrated, this constructor will
+  // take both the truncated original selection and the translation of the
+  // selection.
   auto partial_translate_bubble_view =
       std::make_unique<PartialTranslateBubbleView>(
           anchor_view, std::move(model), error_type, web_contents,
-          text_selection, GetOnPartialTranslateBubbleClosedCallback());
+          truncated_selection, GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
   if (highlighted_button)
     partial_translate_bubble_view_->SetHighlightedButton(highlighted_button);

@@ -220,6 +220,10 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   // Function bound to the "Translate full page" button.
   void TranslateFullPage();
 
+  // Update the alignment of |partial_text_label_| to match the direction of
+  // the locale being used.
+  void SetTextAlignmentForLocaleTextDirection(std::string locale);
+
   static PartialTranslateBubbleView* partial_translate_bubble_view_;
 
   raw_ptr<views::View> translate_view_waiting_ = nullptr;

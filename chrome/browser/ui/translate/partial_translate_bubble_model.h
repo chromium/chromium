@@ -67,6 +67,10 @@ class PartialTranslateBubbleModel : public TranslateLanguageListModel {
   int GetTargetLanguageIndex() const override = 0;
   void UpdateTargetLanguageIndex(int index) override = 0;
 
+  // Returns the source and target language codes.
+  virtual std::string GetSourceLanguageCode() const = 0;
+  virtual std::string GetTargetLanguageCode() const = 0;
+
   // Starts translating the selected text.
   virtual void Translate() = 0;
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_UTIL_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "url/gurl.h"
 
 namespace translate {
@@ -19,6 +20,11 @@ extern const base::Feature kTFLiteLanguageDetectionEnabled;
 
 // Controls whether the Partial Translate function is available.
 extern const base::Feature kDesktopPartialTranslate;
+// The maximum number of characters allowed for a text selection in Partial
+// Translate. Longer selections will be truncated down to the first valid word
+// break respecting the threshold.
+extern const base::FeatureParam<int>
+    kDesktopPartialTranslateTextSelectionMaxCharacters;
 
 // Isolated world sets following security-origin by default.
 extern const char kSecurityOrigin[];
