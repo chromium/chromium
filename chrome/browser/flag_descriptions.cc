@@ -1941,6 +1941,12 @@ const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frequently visited pages from history as a single row "
     "with a carousel instead of one URL per line.";
 
+const char kOmniboxMostVisitedTilesDynamicSpacingName[] =
+    "Omnibox Most Visited Tiles Dynamic Spacing";
+const char kOmniboxMostVisitedTilesDynamicSpacingDescription[] =
+    "Exposes ~4.5 MV tiles in a carousel on a small form factor "
+    "devices, aligning the visual spacing with the NTP.";
+
 const char kOmniboxMostVisitedTilesTitleWrapAroundName[] =
     "Omnibox Most Visited Tiles Title wrap around";
 const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[] =

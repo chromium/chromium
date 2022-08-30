@@ -1100,6 +1100,9 @@ extern const char kOmniboxModernizeVisualUpdateDescription[];
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
 
+extern const char kOmniboxMostVisitedTilesDynamicSpacingName[];
+extern const char kOmniboxMostVisitedTilesDynamicSpacingDescription[];
+
 extern const char kOmniboxMostVisitedTilesTitleWrapAroundName[];
 extern const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[];
 
