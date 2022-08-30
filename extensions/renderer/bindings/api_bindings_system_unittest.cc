@@ -135,9 +135,7 @@ void APIBindingsSystemTest::SetUp() {
 
   // Create the fake API schemas.
   for (const auto& api : GetAPIs()) {
-    std::unique_ptr<base::DictionaryValue> api_schema =
-        DeprecatedDictionaryValueFromString(api.spec);
-    ASSERT_TRUE(api_schema);
+    base::Value::Dict api_schema = DictValueFromString(api.spec);
     api_schemas_[api.name] = std::move(api_schema);
   }
 
@@ -194,10 +192,10 @@ void APIBindingsSystemTest::AddConsoleError(v8::Local<v8::Context> context,
   console_errors_.push_back(error);
 }
 
-const base::DictionaryValue& APIBindingsSystemTest::GetAPISchema(
+const base::Value::Dict& APIBindingsSystemTest::GetAPISchema(
     const std::string& api_name) {
   EXPECT_TRUE(base::Contains(api_schemas_, api_name));
-  return *api_schemas_[api_name];
+  return api_schemas_[api_name];
 }
 
 void APIBindingsSystemTest::OnAPIRequest(

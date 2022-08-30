@@ -34,9 +34,8 @@ namespace {
 
 const char* const kChildKinds[] = {"functions", "events"};
 
-std::unique_ptr<base::DictionaryValue> LoadSchemaDictionary(
-    const std::string& name,
-    const base::StringPiece& schema) {
+base::Value::Dict LoadSchemaDictionary(const std::string& name,
+                                       const base::StringPiece& schema) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(schema);
 
   // Tracking down http://crbug.com/121424
@@ -48,34 +47,31 @@ std::unique_ptr<base::DictionaryValue> LoadSchemaDictionary(
   CHECK(result.has_value())
       << result.error().message << " for schema " << schema;
   CHECK(result->is_dict()) << " for schema " << schema;
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(*result)));
+  return std::move(result->GetDict());
 }
 
-const base::DictionaryValue* FindListItem(const base::ListValue* list,
-                                          const std::string& property_name,
-                                          const std::string& property_value) {
-  for (const base::Value& item_value : list->GetList()) {
-    CHECK(item_value.is_dict()) << property_value << "/" << property_name;
-    const base::DictionaryValue* item =
-        static_cast<const base::DictionaryValue*>(&item_value);
-    std::string value;
-    if (item->GetString(property_name, &value) && value == property_value)
+const base::Value::Dict* FindListItem(const base::Value::List& list,
+                                      const std::string& property_name,
+                                      const std::string& property_value) {
+  for (const base::Value& item_value : list) {
+    const base::Value::Dict* item = item_value.GetIfDict();
+    CHECK(item) << property_value << "/" << property_name;
+    const std::string* value = item->FindStringByDottedPath(property_name);
+    if (value && *value == property_value)
       return item;
   }
 
   return NULL;
 }
 
-const base::DictionaryValue* GetSchemaChild(
-    const base::DictionaryValue* schema_node,
-    const std::string& child_name) {
-  const base::DictionaryValue* child_node = NULL;
-  for (size_t i = 0; i < std::size(kChildKinds); ++i) {
-    const base::ListValue* list_node = NULL;
-    if (!schema_node->GetList(kChildKinds[i], &list_node))
+const base::Value::Dict* GetSchemaChild(const base::Value::Dict& schema_node,
+                                        const std::string& child_name) {
+  for (const char* kind : kChildKinds) {
+    const base::Value::List* list_node = schema_node.FindList(kind);
+    if (!list_node)
       continue;
-    child_node = FindListItem(list_node, "name", child_name);
+    const base::Value::Dict* child_node =
+        FindListItem(*list_node, "name", child_name);
     if (child_node)
       return child_node;
   }
@@ -138,11 +134,10 @@ ExtensionAPI::OverrideSharedInstanceForTest::~OverrideSharedInstanceForTest() {
 void ExtensionAPI::LoadSchema(const std::string& name,
                               const base::StringPiece& schema) {
   lock_.AssertAcquired();
-  std::unique_ptr<base::DictionaryValue> schema_dict(
-      LoadSchemaDictionary(name, schema));
-  std::string schema_namespace;
-  CHECK(schema_dict->GetString("namespace", &schema_namespace));
-  schemas_[schema_namespace] = std::move(schema_dict);
+  base::Value::Dict schema_dict(LoadSchemaDictionary(name, schema));
+  const std::string* schema_namespace = schema_dict.FindString("namespace");
+  CHECK(schema_namespace);
+  schemas_[*schema_namespace] = std::move(schema_dict);
 }
 
 ExtensionAPI::ExtensionAPI() = default;
@@ -229,16 +224,15 @@ base::StringPiece ExtensionAPI::GetSchemaStringPiece(
   return GetSchemaStringPieceUnsafe(api_name);
 }
 
-const base::DictionaryValue* ExtensionAPI::GetSchema(
-    const std::string& full_name) {
+const base::Value::Dict* ExtensionAPI::GetSchema(const std::string& full_name) {
   base::AutoLock lock(lock_);
   std::string child_name;
   std::string api_name = GetAPINameFromFullNameUnsafe(full_name, &child_name);
 
-  const base::DictionaryValue* result = NULL;
+  const base::Value::Dict* result = nullptr;
   auto maybe_schema = schemas_.find(api_name);
   if (maybe_schema != schemas_.end()) {
-    result = maybe_schema->second.get();
+    result = &maybe_schema->second;
   } else {
     base::StringPiece schema_string = GetSchemaStringPieceUnsafe(api_name);
     if (schema_string.empty())
@@ -247,11 +241,11 @@ const base::DictionaryValue* ExtensionAPI::GetSchema(
 
     maybe_schema = schemas_.find(api_name);
     CHECK(schemas_.end() != maybe_schema);
-    result = maybe_schema->second.get();
+    result = &maybe_schema->second;
   }
 
   if (!child_name.empty())
-    result = GetSchemaChild(result, child_name);
+    result = GetSchemaChild(*result, child_name);
 
   return result;
 }

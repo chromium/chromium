@@ -66,7 +66,7 @@ v8::Local<v8::Object> APIBindingsSystem::CreateAPIInstance(
 
 std::unique_ptr<APIBinding> APIBindingsSystem::CreateNewAPIBinding(
     const std::string& api_name) {
-  const base::Value::Dict& api_schema = get_api_schema_.Run(api_name).GetDict();
+  const base::Value::Dict& api_schema = get_api_schema_.Run(api_name);
 
   const base::Value::List* function_definitions =
       api_schema.FindList("functions");

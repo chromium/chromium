@@ -31,7 +31,7 @@ class InteractionProvider;
 class APIBindingsSystem {
  public:
   using GetAPISchemaMethod =
-      base::RepeatingCallback<const base::DictionaryValue&(const std::string&)>;
+      base::RepeatingCallback<const base::Value::Dict&(const std::string&)>;
   using CustomTypeHandler = base::RepeatingCallback<v8::Local<v8::Object>(
       v8::Isolate* isolate,
       const std::string& property_name,

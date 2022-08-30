@@ -20,10 +20,6 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/url_pattern_set.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 class GURL;
 
 namespace extensions {
@@ -134,7 +130,7 @@ class ExtensionAPI {
   // Ownership remains with this object.
   // TODO(devlin): Now that we use GetSchemaStringPiece() in the renderer, we
   // may not really need this anymore.
-  const base::DictionaryValue* GetSchema(const std::string& full_name);
+  const base::Value::Dict* GetSchema(const std::string& full_name);
 
   // Splits a full name from the extension API into its API and child name
   // parts. Some examples:
@@ -186,8 +182,7 @@ class ExtensionAPI {
   base::Lock lock_;
 
   // Schemas for each namespace.
-  using SchemaMap =
-      std::map<std::string, std::unique_ptr<const base::DictionaryValue>>;
+  using SchemaMap = std::map<std::string, base::Value::Dict>;
   SchemaMap schemas_ GUARDED_BY(lock_);
 
   // FeatureProviders used for resolving dependencies.

@@ -840,17 +840,16 @@ TEST(ExtensionAPITest, DefaultConfigurationFeatures) {
   }
 }
 
-static const base::DictionaryValue* GetDictChecked(
-    const base::DictionaryValue* dict,
-    const std::string& key) {
-  const base::DictionaryValue* out = nullptr;
-  CHECK(dict->GetDictionary(key, &out)) << key;
+static const base::Value::Dict* GetDictChecked(const base::Value::Dict* dict,
+                                               const std::string& key) {
+  const base::Value::Dict* out = dict->FindDict(key);
+  CHECK(out) << key;
   return out;
 }
 
-static std::string GetStringChecked(const base::DictionaryValue* dict,
+static std::string GetStringChecked(const base::Value::Dict* dict,
                                     const std::string& key) {
-  const std::string* out = dict->FindStringKey(key);
+  const std::string* out = dict->FindString(key);
   CHECK(out) << key;
   return *out;
 }
@@ -860,59 +859,55 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
       ExtensionAPI::CreateWithDefaultConfiguration());
 
   // Returns the dictionary that has |key|: |value|.
-  auto get_dict_from_list = [](
-      const base::ListValue* list, const std::string& key,
-      const std::string& value) -> const base::DictionaryValue* {
-    const base::DictionaryValue* ret = nullptr;
-    for (const auto& val : list->GetListDeprecated()) {
-      const base::DictionaryValue* dict = nullptr;
-      if (!val.GetAsDictionary(&dict))
+  auto get_dict_from_list =
+      [](const base::Value::List* list, const std::string& key,
+         const std::string& value) -> const base::Value::Dict* {
+    for (const auto& val : *list) {
+      const base::Value::Dict* dict = val.GetIfDict();
+      if (!dict)
         continue;
-      if (const std::string* str = dict->FindStringKey(key)) {
-        if (*str == value) {
-          ret = dict;
-          break;
-        }
+      if (const std::string* str = dict->FindString(key)) {
+        if (*str == value)
+          return dict;
       }
     }
-    return ret;
+    return nullptr;
   };
 
-  const base::DictionaryValue* schema = api->GetSchema("sessions");
+  const base::Value::Dict* schema = api->GetSchema("sessions");
   ASSERT_TRUE(schema);
 
-  const base::ListValue* types = nullptr;
-  ASSERT_TRUE(schema->GetList("types", &types));
+  const base::Value::List* types = schema->FindList("types");
+  ASSERT_TRUE(types);
   {
-    const base::DictionaryValue* session_type =
+    const base::Value::Dict* session_type =
         get_dict_from_list(types, "id", "sessions.Session");
     ASSERT_TRUE(session_type);
-    const base::DictionaryValue* props =
-        GetDictChecked(session_type, "properties");
-    const base::DictionaryValue* tab = GetDictChecked(props, "tab");
+    const base::Value::Dict* props = GetDictChecked(session_type, "properties");
+    const base::Value::Dict* tab = GetDictChecked(props, "tab");
     EXPECT_EQ("tabs.Tab", GetStringChecked(tab, "$ref"));
-    const base::DictionaryValue* window = GetDictChecked(props, "window");
+    const base::Value::Dict* window = GetDictChecked(props, "window");
     EXPECT_EQ("windows.Window", GetStringChecked(window, "$ref"));
   }
   {
-    const base::DictionaryValue* device_type =
+    const base::Value::Dict* device_type =
         get_dict_from_list(types, "id", "sessions.Device");
     ASSERT_TRUE(device_type);
-    const base::DictionaryValue* props =
-        GetDictChecked(device_type, "properties");
-    const base::DictionaryValue* sessions = GetDictChecked(props, "sessions");
-    const base::DictionaryValue* items = GetDictChecked(sessions, "items");
+    const base::Value::Dict* props = GetDictChecked(device_type, "properties");
+    const base::Value::Dict* sessions = GetDictChecked(props, "sessions");
+    const base::Value::Dict* items = GetDictChecked(sessions, "items");
     EXPECT_EQ("sessions.Session", GetStringChecked(items, "$ref"));
   }
-  const base::ListValue* functions = nullptr;
-  ASSERT_TRUE(schema->GetList("functions", &functions));
+  const base::Value::List* functions = schema->FindList("functions");
+  ASSERT_TRUE(functions);
   {
-    const base::DictionaryValue* get_recently_closed =
+    const base::Value::Dict* get_recently_closed =
         get_dict_from_list(functions, "name", "getRecentlyClosed");
     ASSERT_TRUE(get_recently_closed);
-    const base::ListValue* parameters = nullptr;
-    ASSERT_TRUE(get_recently_closed->GetList("parameters", &parameters));
-    const base::DictionaryValue* filter =
+    const base::Value::List* parameters =
+        get_recently_closed->FindList("parameters");
+    ASSERT_TRUE(parameters);
+    const base::Value::Dict* filter =
         get_dict_from_list(parameters, "name", "filter");
     ASSERT_TRUE(filter);
     EXPECT_EQ("sessions.Filter", GetStringChecked(filter, "$ref"));
@@ -920,9 +915,10 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
 
   schema = api->GetSchema("types");
   ASSERT_TRUE(schema);
-  ASSERT_TRUE(schema->GetList("types", &types));
+  types = schema->FindList("types");
+  ASSERT_TRUE(types);
   {
-    const base::DictionaryValue* chrome_setting =
+    const base::Value::Dict* chrome_setting =
         get_dict_from_list(types, "id", "types.ChromeSetting");
     ASSERT_TRUE(chrome_setting);
     EXPECT_EQ("types.ChromeSetting",
@@ -1026,10 +1022,10 @@ TEST(ExtensionAPITest, GetSchemaFromDifferentThreads) {
   ASSERT_TRUE(t.Start());
 
   base::RunLoop run_loop;
-  const base::DictionaryValue* another_thread_schema = nullptr;
+  const base::Value::Dict* another_thread_schema = nullptr;
 
   auto result_cb =
-      base::BindLambdaForTesting([&](const base::DictionaryValue* res) {
+      base::BindLambdaForTesting([&](const base::Value::Dict* res) {
         another_thread_schema = res;
         run_loop.Quit();
       });
