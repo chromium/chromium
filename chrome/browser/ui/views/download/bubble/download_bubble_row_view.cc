@@ -72,34 +72,45 @@ constexpr int kDownloadSubpageIconMargin = 8;
 // Main Button, Subpage Icon.
 constexpr int kNumColumns = 6;
 
-// A stub subclass of HoverButton that has no visuals.
-class TransparentButton : public HoverButton {
+// A stub subclass of Button that has no visuals.
+class TransparentButton : public views::Button {
  public:
   METADATA_HEADER(TransparentButton);
 
   explicit TransparentButton(PressedCallback callback,
-                             const std::u16string& text,
                              DownloadBubbleRowView* row_view)
-      : HoverButton(callback, text), row_view_(row_view) {}
+      : Button(callback), row_view_(row_view) {
+    views::InstallRectHighlightPathGenerator(this);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                                 /*highlight_on_hover=*/true,
+                                                 /*highlight_on_focus=*/true);
+    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+        [](views::View* host) {
+          return views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
+                                        views::style::STYLE_SECONDARY);
+        },
+        this));
+  }
   ~TransparentButton() override = default;
 
   // Forward dragging and capture loss events, since this class doesn't have
   // enough context to handle them. Let the `DownloadBubbleRowView` manage
   // visual transitions.
   bool OnMouseDragged(const ui::MouseEvent& event) override {
-    HoverButton::OnMouseDragged(event);
+    Button::OnMouseDragged(event);
     return parent()->OnMouseDragged(event);
   }
 
   void OnMouseCaptureLost() override {
     parent()->OnMouseCaptureLost();
-    HoverButton::OnMouseCaptureLost();
+    Button::OnMouseCaptureLost();
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
     if (reverse) {
-      row_view_->UpdateQuickActionsVisibilityAndFocus(
-          /*visible=*/true, /*request_focus_on_last=*/true);
+      row_view_->UpdateRowForFocus(
+          /*visible=*/true, /*request_focus_on_last_quick_action=*/true);
     }
   }
 
@@ -107,7 +118,7 @@ class TransparentButton : public HoverButton {
   raw_ptr<DownloadBubbleRowView> row_view_;
 };
 
-BEGIN_METADATA(TransparentButton, HoverButton)
+BEGIN_METADATA(TransparentButton, Button)
 END_METADATA
 }  // namespace
 
@@ -293,13 +304,13 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // Three rows, one for name, one for status, and one for the progress bar.
   layout->AddRows(3, 1.0f);
 
-  hover_button_ = AddChildView(std::make_unique<TransparentButton>(
+  transparent_button_ = AddChildView(std::make_unique<TransparentButton>(
       base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
                           base::Unretained(this)),
-      std::u16string(), this));
-  hover_button_->set_context_menu_controller(this);
-  hover_button_->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
-  layout->SetChildViewIgnoredByLayout(hover_button_, true);
+      this));
+  transparent_button_->set_context_menu_controller(this);
+  transparent_button_->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
+  layout->SetChildViewIgnoredByLayout(transparent_button_, true);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetCanProcessEventsWithinSubtree(false);
@@ -343,8 +354,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
 
   // Note that the addition order of these quick actions matches the visible
   // order, i.e. buttons added first will appear first (left in LTR)
-  quick_action_holder_ = main_button_holder_->AddChildView(
-      std::make_unique<views::FlexLayoutView>());
+  quick_action_holder_ =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
   resume_action_ = AddQuickAction(DownloadCommands::RESUME);
   pause_action_ = AddQuickAction(DownloadCommands::PAUSE);
   open_when_complete_action_ =
@@ -352,6 +363,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   cancel_action_ = AddQuickAction(DownloadCommands::CANCEL);
   show_in_folder_action_ = AddQuickAction(DownloadCommands::SHOW_IN_FOLDER);
   quick_action_holder_->SetVisible(false);
+  layout->SetChildViewIgnoredByLayout(quick_action_holder_, true);
 
   subpage_icon_holder_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -399,6 +411,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // Expect to start not visible, will be updated later.
   progress_bar_->SetVisible(false);
 
+  SetNotifyEnterExitOnChild(true);
+
   // Set up initial state.
   UpdateRow(/*initial_setup=*/true);
 }
@@ -410,7 +424,8 @@ views::View::Views DownloadBubbleRowView::GetChildrenInZOrder() {
     DCHECK(it != children.end());
     std::rotate(it, it + 1, children.end());
   };
-  move_child_to_top(hover_button_);
+  move_child_to_top(transparent_button_);
+  move_child_to_top(quick_action_holder_);
   move_child_to_top(main_button_holder_);
   return children;
 }
@@ -436,6 +451,16 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
     RecordDownloadBubbleDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
   return true;
+}
+
+void DownloadBubbleRowView::OnMouseEntered(const ui::MouseEvent& event) {
+  View::OnMouseEntered(event);
+  UpdateRowForHover(/*hovered=*/true);
+}
+
+void DownloadBubbleRowView::OnMouseExited(const ui::MouseEvent& event) {
+  View::OnMouseExited(event);
+  UpdateRowForHover(/*hovered=*/false);
 }
 
 void DownloadBubbleRowView::OnMouseCaptureLost() {
@@ -464,30 +489,39 @@ gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
 void DownloadBubbleRowView::OnWillChangeFocus(views::View* before,
                                               views::View* now) {
   if (now) {
-    UpdateQuickActionsVisibilityAndFocus(/*visible=*/Contains(now),
-                                         /*request_focus_on_last=*/false);
+    UpdateRowForFocus(/*visible=*/Contains(now),
+                      /*request_focus_on_last_quick_action=*/false);
   }
 }
 
-void DownloadBubbleRowView::UpdateQuickActionsVisibilityAndFocus(
+void DownloadBubbleRowView::UpdateRowForHover(bool hovered) {
+  quick_action_holder_->SetVisible(hovered);
+}
+
+void DownloadBubbleRowView::UpdateRowForFocus(
     bool visible,
-    bool request_focus_on_last) {
+    bool request_focus_on_last_quick_action) {
   quick_action_holder_->SetVisible(visible);
   // Update focus only if focus received from a different row.
-  bool should_set_focus = request_focus_on_last && GetFocusManager() &&
+  bool should_set_focus = request_focus_on_last_quick_action &&
+                          GetFocusManager() &&
                           !Contains(GetFocusManager()->GetFocusedView());
   if (should_set_focus && ui_info_.quick_actions.size() != 0) {
     GetActionButtonForCommand(ui_info_.quick_actions.back().command)
         ->RequestFocus();
   }
-  // Resize is needed because the height of the primary_label_ can change when
-  // the quick actions are shown.
-  navigation_handler_->ResizeDialog();
 }
 
 void DownloadBubbleRowView::Layout() {
   views::View::Layout();
-  hover_button_->SetBoundsRect(GetLocalBounds());
+  transparent_button_->SetBoundsRect(GetLocalBounds());
+  gfx::Size quick_actions_size = quick_action_holder_->GetPreferredSize();
+  gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ROW);
+  quick_action_holder_->SetBoundsRect(
+      gfx::Rect(gfx::Point(GetLocalBounds().width() -
+                               quick_actions_size.width() - insets.right(),
+                           insets.top()),
+                quick_actions_size));
 }
 
 void DownloadBubbleRowView::OnMainButtonPressed() {
@@ -564,7 +598,7 @@ void DownloadBubbleRowView::UpdateLabels() {
   primary_label_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
   secondary_label_->SetText(model_->GetStatusText());
 
-  hover_button_->SetAccessibleName(base::JoinString(
+  transparent_button_->SetAccessibleName(base::JoinString(
       {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
 
   if (GetWidget()) {
