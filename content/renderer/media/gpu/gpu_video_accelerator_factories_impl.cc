@@ -318,7 +318,10 @@ media::GpuVideoAcceleratorFactories::Supported
 GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
     const media::VideoDecoderConfig& config) {
   // There is no support for alpha channel hardware decoding yet.
-  if (config.alpha_mode() == media::VideoDecoderConfig::AlphaMode::kHasAlpha) {
+  // HEVC is the codec that only has platform hardware decoder support, and
+  // macOS currently support HEVC with alpha, so don't block HEVC here.
+  if (config.alpha_mode() == media::VideoDecoderConfig::AlphaMode::kHasAlpha &&
+      config.codec() != media::VideoCodec::kHEVC) {
     DVLOG(1) << "Alpha transparency formats are not supported.";
     return Supported::kFalse;
   }

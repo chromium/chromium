@@ -335,6 +335,10 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   bool waiting_for_idr_ = true;
   bool missing_idr_logged_ = false;
 
+  // currently only HEVC is supported, VideoToolbox doesn't
+  // support VP9 with alpha for now.
+  bool has_alpha_ = false;
+
   // Used to accumulate the output picture count as a workaround to solve
   // the VT CRA/RASL bug
   uint64_t output_count_for_cra_rasl_workaround_ = 0;

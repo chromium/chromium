@@ -148,7 +148,8 @@ constexpr int kMinOutputsBeforeRASL = 5;
 // Build an |image_config| dictionary for VideoToolbox initialization.
 base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
     CMVideoDimensions coded_dimensions,
-    bool is_hbd) {
+    bool is_hbd,
+    bool has_alpha) {
   base::ScopedCFTypeRef<CFMutableDictionaryRef> image_config;
 
   // Note that 4:2:0 textures cannot be used directly as RGBA in OpenGL, but are
@@ -156,6 +157,11 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
   int32_t pixel_format = is_hbd
                              ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
                              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+  // macOS support 8 bit (they actually only recommand main profile)
+  // HEVC with alpha layer well.
+  if (has_alpha)
+    pixel_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
+
 #define CFINT(i) CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &i)
   base::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(CFINT(pixel_format));
   base::ScopedCFTypeRef<CFNumberRef> cf_width(CFINT(coded_dimensions.width));
@@ -281,6 +287,7 @@ bool CreateVideoToolboxSession(
     const CMFormatDescriptionRef format,
     bool require_hardware,
     bool is_hbd,
+    bool has_alpha,
     const VTDecompressionOutputCallbackRecord* callback,
     base::ScopedCFTypeRef<VTDecompressionSessionRef>* session,
     gfx::Size* configured_size) {
@@ -312,7 +319,7 @@ bool CreateVideoToolboxSession(
       base::ClampFloor(visible_rect.size.width),
       base::ClampFloor(visible_rect.size.height)};
   base::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
-      BuildImageConfig(visible_dimensions, is_hbd));
+      BuildImageConfig(visible_dimensions, is_hbd, has_alpha));
   if (!image_config) {
     DLOG(ERROR) << "Failed to create decoder image configuration";
     return false;
@@ -356,8 +363,8 @@ bool InitializeVideoToolboxInternal() {
   if (!CreateVideoToolboxSession(
           CreateVideoFormatH264(sps_h264_normal, std::vector<uint8_t>(),
                                 pps_h264_normal),
-          /*require_hardware=*/true, /*is_hbd=*/false, &callback, &session,
-          &configured_size)) {
+          /*require_hardware=*/true, /*is_hbd=*/false, /*has_alpha=*/false,
+          &callback, &session, &configured_size)) {
     DVLOG(1) << "Hardware H264 decoding with VideoToolbox is not supported";
     return false;
   }
@@ -373,8 +380,8 @@ bool InitializeVideoToolboxInternal() {
   if (!CreateVideoToolboxSession(
           CreateVideoFormatH264(sps_h264_small, std::vector<uint8_t>(),
                                 pps_h264_small),
-          /*require_hardware=*/false, /*is_hbd=*/false, &callback, &session,
-          &configured_size)) {
+          /*require_hardware=*/false, /*is_hbd=*/false, /*has_alpha=*/false,
+          &callback, &session, &configured_size)) {
     DVLOG(1) << "Software H264 decoding with VideoToolbox is not supported";
     return false;
   }
@@ -388,8 +395,8 @@ bool InitializeVideoToolboxInternal() {
     if (!CreateVideoToolboxSession(
             CreateVideoFormatVP9(VideoColorSpace::REC709(), VP9PROFILE_PROFILE0,
                                  absl::nullopt, gfx::Size(720, 480)),
-            /*require_hardware=*/true, /*is_hbd=*/false, &callback, &session,
-            &configured_size)) {
+            /*require_hardware=*/true, /*is_hbd=*/false, /*has_alpha=*/false,
+            &callback, &session, &configured_size)) {
       DVLOG(1) << "Hardware VP9 decoding with VideoToolbox is not supported";
 
       // We don't return false here since VP9 support is optional.
@@ -424,8 +431,8 @@ bool InitializeVideoToolboxInternal() {
       if (!CreateVideoToolboxSession(
               CreateVideoFormatHEVC(ParameterSets(
                   {vps_hevc_normal, sps_hevc_normal, pps_hevc_normal})),
-              /*require_hardware=*/true, /*is_hbd=*/false, &callback, &session,
-              &configured_size)) {
+              /*require_hardware=*/true, /*is_hbd=*/false, /*has_alpha=*/false,
+              &callback, &session, &configured_size)) {
         DVLOG(1) << "Hardware HEVC decoding with VideoToolbox is not supported";
 
         // We don't return false here since HEVC support is optional.
@@ -453,8 +460,8 @@ bool InitializeVideoToolboxInternal() {
       if (!CreateVideoToolboxSession(
               CreateVideoFormatHEVC(ParameterSets(
                   {vps_hevc_small, sps_hevc_small, pps_hevc_small})),
-              /*require_hardware=*/false, /*is_hbd=*/false, &callback, &session,
-              &configured_size)) {
+              /*require_hardware=*/false, /*is_hbd=*/false, /*has_alpha=*/false,
+              &callback, &session, &configured_size)) {
         DVLOG(1) << "Software HEVC decoding with VideoToolbox is not supported";
 
         // We don't return false here since HEVC support is optional.
@@ -854,8 +861,8 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   const bool is_hbd = config_.profile == VP9PROFILE_PROFILE2 ||
                       config_.profile == HEVCPROFILE_MAIN10 ||
                       config_.profile == HEVCPROFILE_REXT;
-  if (!CreateVideoToolboxSession(format_, require_hardware, is_hbd, &callback_,
-                                 &session_, &configured_size_)) {
+  if (!CreateVideoToolboxSession(format_, require_hardware, is_hbd, has_alpha_,
+                                 &callback_, &session_, &configured_size_)) {
     NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
     return false;
   }
@@ -1420,6 +1427,20 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
         seen_vps_[vps_id].assign(nalu.data, nalu.data + nalu.size);
         break;
       }
+
+      case H265NALU::PREFIX_SEI_NUT: {
+        H265SEIMessage sei_msg;
+        result = hevc_parser_.ParseSEI(&sei_msg);
+        if (result == H265Parser::kOk &&
+            sei_msg.type == H265SEIMessage::kSEIAlphaChannelInfo &&
+            sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0) {
+          has_alpha_ = true;
+        }
+        nalus.push_back(nalu);
+        data_size += kNALUHeaderLength + nalu.size;
+        break;
+      }
+
       case H265NALU::EOS_NUT:
         hevc_poc_.Reset();
         nalus.push_back(nalu);

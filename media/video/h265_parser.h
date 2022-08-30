@@ -401,6 +401,33 @@ struct MEDIA_EXPORT H265SliceHeader {
   }
 };
 
+struct MEDIA_EXPORT H265SEIAlphaChannelInfo {
+  bool alpha_channel_cancel_flag;
+  int alpha_channel_use_idc;
+  int alpha_channel_bit_depth_minus8;
+  int alpha_transparent_value;
+  int alpha_opaque_value;
+  bool alpha_channel_incr_flag;
+  bool alpha_channel_clip_flag;
+  bool alpha_channel_clip_type_flag;
+};
+
+struct MEDIA_EXPORT H265SEIMessage {
+  H265SEIMessage();
+
+  enum Type {
+    kSEIAlphaChannelInfo = 165,
+  };
+
+  int type;
+  int payload_size;
+  union {
+    // Placeholder; in future more supported types will contribute to more
+    // union members here.
+    H265SEIAlphaChannelInfo alpha_channel_info;
+  };
+};
+
 // Class to parse an Annex-B H.265 stream.
 class MEDIA_EXPORT H265Parser : public H265NaluParser {
  public:
@@ -444,6 +471,10 @@ class MEDIA_EXPORT H265Parser : public H265NaluParser {
   Result ParseSliceHeader(const H265NALU& nalu,
                           H265SliceHeader* shdr,
                           H265SliceHeader* prior_shdr);
+
+  // Parse a SEI message, returning it in |*sei_msg|, provided and managed
+  // by the caller.
+  Result ParseSEI(H265SEIMessage* sei_msg);
 
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 

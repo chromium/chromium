@@ -262,7 +262,10 @@ void VdaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // TODO(sandersd): Change this to a capability if any VDA starts supporting
   // alpha channels. This is believed to be impossible right now because VPx
   // alpha channel data is passed in side data, which isn't sent to VDAs.
-  if (config.alpha_mode() != VideoDecoderConfig::AlphaMode::kIsOpaque) {
+  // HEVC is the codec that only has platform hardware decoder support, and
+  // macOS currently support HEVC with alpha, so don't block HEVC here.
+  if (config.alpha_mode() != VideoDecoderConfig::AlphaMode::kIsOpaque &&
+      config.codec() != VideoCodec::kHEVC) {
     MEDIA_LOG(INFO, media_log_) << "Alpha formats are not supported";
     EnterErrorState();
     return;

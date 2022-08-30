@@ -202,6 +202,10 @@ H265SliceHeader::H265SliceHeader() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265SEIMessage::H265SEIMessage() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
 H265Parser::H265Parser() : H265NaluParser() {}
 
 H265Parser::~H265Parser() {}
@@ -1870,6 +1874,61 @@ H265Parser::Result H265Parser::ParsePredWeightTable(
       }
     }
     TRUE_OR_RETURN(sum_weight_l0_flags + sum_weight_l1_flags <= 24);
+  }
+
+  return kOk;
+}
+
+H265Parser::Result H265Parser::ParseSEI(H265SEIMessage* sei_msg) {
+  int byte;
+
+  memset(sei_msg, 0, sizeof(*sei_msg));
+
+  READ_BITS_OR_RETURN(8, &byte);
+  while (byte == 0xff) {
+    sei_msg->type += 255;
+    READ_BITS_OR_RETURN(8, &byte);
+  }
+  sei_msg->type += byte;
+
+  READ_BITS_OR_RETURN(8, &byte);
+  while (byte == 0xff) {
+    sei_msg->payload_size += 255;
+    READ_BITS_OR_RETURN(8, &byte);
+  }
+  sei_msg->payload_size += byte;
+
+  DVLOG(4) << "Found SEI message type: " << sei_msg->type
+           << " payload size: " << sei_msg->payload_size;
+
+  switch (sei_msg->type) {
+    case H265SEIMessage::kSEIAlphaChannelInfo:
+      READ_BOOL_OR_RETURN(
+          &sei_msg->alpha_channel_info.alpha_channel_cancel_flag);
+      if (!sei_msg->alpha_channel_info.alpha_channel_cancel_flag) {
+        READ_BITS_OR_RETURN(3,
+                            &sei_msg->alpha_channel_info.alpha_channel_use_idc);
+        READ_BITS_OR_RETURN(
+            3, &sei_msg->alpha_channel_info.alpha_channel_bit_depth_minus8);
+        READ_BITS_OR_RETURN(
+            sei_msg->alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
+            &sei_msg->alpha_channel_info.alpha_transparent_value);
+        READ_BITS_OR_RETURN(
+            sei_msg->alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
+            &sei_msg->alpha_channel_info.alpha_opaque_value);
+        READ_BOOL_OR_RETURN(
+            &sei_msg->alpha_channel_info.alpha_channel_incr_flag);
+        READ_BOOL_OR_RETURN(
+            &sei_msg->alpha_channel_info.alpha_channel_clip_flag);
+        if (sei_msg->alpha_channel_info.alpha_channel_clip_flag) {
+          READ_BOOL_OR_RETURN(
+              &sei_msg->alpha_channel_info.alpha_channel_clip_type_flag);
+        }
+      }
+      break;
+    default:
+      DVLOG(4) << "Unsupported SEI message";
+      break;
   }
 
   return kOk;

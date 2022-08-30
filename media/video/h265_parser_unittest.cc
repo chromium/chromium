@@ -66,6 +66,7 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
     int num_parsed_nalus = 0;
     while (true) {
       H265NALU nalu;
+      H265SEIMessage sei_msg;
       H265Parser::Result res = parser_.AdvanceToNextNALU(&nalu);
       if (res == H265Parser::kEOStream) {
         DVLOG(1) << "Number of successfully parsed NALUs before EOS: "
@@ -94,6 +95,10 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
           int pps_id;
           res = parser_.ParsePPS(nalu, &pps_id);
           EXPECT_TRUE(!!parser_.GetPPS(pps_id));
+          break;
+        case H265NALU::PREFIX_SEI_NUT:
+          res = parser_.ParseSEI(&sei_msg);
+          EXPECT_EQ(res, H265Parser::kOk);
           break;
         case H265NALU::TRAIL_N:
         case H265NALU::TRAIL_R:
