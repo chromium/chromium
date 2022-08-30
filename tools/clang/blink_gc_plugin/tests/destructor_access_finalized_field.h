@@ -10,8 +10,10 @@
 namespace blink {
 
 class Other : public RefCounted<Other> {
-public:
-    bool foo() { return true; }
+  USING_FAST_MALLOC();
+
+ public:
+  bool foo() { return true; }
 };
 
 class HeapObject;

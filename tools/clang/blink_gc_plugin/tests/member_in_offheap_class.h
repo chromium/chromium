@@ -12,13 +12,15 @@ namespace blink {
 class HeapObject : public GarbageCollected<HeapObject> { };
 
 class OffHeapObject {
-public:
- void Trace(Visitor*) const;
+  USING_FAST_MALLOC();
 
-private:
-    Member<HeapObject> m_obj; // Must not contain Member.
-    WeakMember<HeapObject> m_weak;  // Must not contain WeakMember.
-    Persistent<HeapVector<Member<HeapObject> > > m_objs; // OK
+ public:
+  void Trace(Visitor*) const;
+
+ private:
+  Member<HeapObject> m_obj;       // Must not contain Member.
+  WeakMember<HeapObject> m_weak;  // Must not contain WeakMember.
+  Persistent<HeapVector<Member<HeapObject>>> m_objs;  // OK
 };
 
 class StackObject {

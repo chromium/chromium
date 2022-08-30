@@ -51,9 +51,19 @@ struct BlinkGCPluginOptions {
 
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
-  std::vector<std::string> ignored_directories;
-  // |allowed_directories| overrides |ignored_directories|.
-  std::vector<std::string> allowed_directories;
+  std::vector<std::string> ignored_paths;
+  // |allowed_paths| overrides |ignored_paths|.
+  std::vector<std::string> allowed_paths;
+
+  // For the default malloc, the following conditions are checked in addition
+  // to the conditions above.
+  std::set<std::string> checked_namespaces_for_default_malloc;
+  std::vector<std::string> ignored_paths_for_default_malloc;
+  std::vector<std::string> always_ignored_paths_for_default_malloc;
+  // |allowed_paths_for_default_malloc| overrides
+  // |ignore_paths_for_default_malloc|, but doesn't override
+  // |always_ignored_paths_for_default_malloc|.
+  std::vector<std::string> allowed_paths_for_default_malloc;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_BLINK_GC_PLUGIN_OPTIONS_H_

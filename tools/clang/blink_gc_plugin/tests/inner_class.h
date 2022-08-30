@@ -10,14 +10,16 @@
 namespace blink {
 
 class SomeObject {
-private:
-    class InnerObject : public GarbageCollected<InnerObject> {
-    public:
-     void Trace(Visitor*) const;
+  DISALLOW_NEW();
 
-    private:
-        Member<InnerObject> m_obj;
-    };
+ private:
+  class InnerObject : public GarbageCollected<InnerObject> {
+   public:
+    void Trace(Visitor*) const;
+
+   private:
+    Member<InnerObject> m_obj;
+  };
 };
 
 }
