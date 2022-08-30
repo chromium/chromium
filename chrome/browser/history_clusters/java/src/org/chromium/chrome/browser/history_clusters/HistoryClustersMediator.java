@@ -62,6 +62,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     // The number of items past the last visible one we want to have loaded at any give point.
     static final int REMAINING_ITEM_BUFFER_SIZE = 25;
+    static final int MIN_EXPANDED_CLUSTER_SIZE = 2;
 
     interface Clock {
         long currentTimeMillis();
@@ -395,7 +396,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             if (existingModel == null) {
                 Drawable journeysDrawable =
                         AppCompatResources.getDrawable(mContext, R.drawable.ic_journeys);
-                mLabelToModelMap.put(rawLabel, existingModel);
                 existingModel =
                         new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
                                 .with(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable)
@@ -413,6 +413,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                                 -> setQueryState(QueryState.forQuery(rawLabel,
                                                         mDelegate.getSearchEmptyString())))
                                 .build();
+                mLabelToModelMap.put(rawLabel, existingModel);
                 ListItem clusterItem = new ListItem(ItemType.CLUSTER, existingModel);
                 mModelList.add(clusterItem);
             }
@@ -430,6 +431,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         List<HistoryCluster> clusters = result.getClusters();
         for (int clusterIdx = 0; clusterIdx < clusters.size(); clusterIdx++) {
             HistoryCluster cluster = clusters.get(clusterIdx);
+            if (cluster.getVisits().size() < MIN_EXPANDED_CLUSTER_SIZE) {
+                continue;
+            }
+
             PropertyModel clusterModel =
                     new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
                             .with(HistoryClustersItemProperties.TITLE,
