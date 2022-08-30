@@ -8,11 +8,14 @@
 
 #include "base/ios/ios_util.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/error_page_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -54,6 +57,14 @@ void AssertActivityServiceNotVisible() {
 
 @implementation ActivityServiceControllerTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if (@available(iOS 15.0, *)) {
+    config.features_enabled.push_back(kNewOverflowMenuShareChromeAction);
+  }
+  return config;
+}
+
 - (void)testOpenActivityServiceControllerAndCopy {
   // Set up mock http server.
   std::map<GURL, std::string> responses;
@@ -73,6 +84,16 @@ void AssertActivityServiceNotVisible() {
   // Start the Copy action and verify that the share menu gets dismissed.
   [[EarlGrey selectElementWithMatcher:CopyButton()] performAction:grey_tap()];
   AssertActivityServiceNotVisible();
+}
+
+// Verifies that Tools Menu > Share Chrome brings up the "share sheet".
+- (void)testShareChromeApp {
+  if (@available(iOS 15.0, *)) {
+    [ChromeEarlGreyUI openToolsMenu];
+    [ChromeEarlGreyUI
+        tapToolsMenuAction:grey_accessibilityID(kToolsMenuShareChromeId)];
+    AssertActivityServiceVisible();
+  }
 }
 
 @end
