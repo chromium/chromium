@@ -161,7 +161,11 @@ class CourierRenderer final : public Renderer {
   // though the playback might be delayed or paused.
   bool IsWaitingForDataFromDemuxers() const;
 
-  // Helper to deregister the renderer from the RPC messenger.
+  // Helpers to register/deregister the renderer with the RPC messenger. These
+  // must be called on the media thread to dereference the weak pointer to
+  // this, which if contains a valid RPC messenger pointer will result in a
+  // jump to the main thread.
+  void RegisterForRpcMessaging();
   void DeregisterFromRpcMessaging();
 
   State state_;

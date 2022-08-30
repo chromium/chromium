@@ -24,6 +24,27 @@ using openscreen::cast::RpcMessenger;
 namespace media {
 namespace remoting {
 
+namespace {
+// base::Bind* doesn't understand openscreen::WeakPtr, so we must manually
+// check the RpcMessenger pointer before calling into it.
+void RegisterForRpcTask(
+    openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
+    int rpc_handle,
+    openscreen::cast::RpcMessenger::ReceiveMessageCallback message_cb) {
+  if (rpc_messenger) {
+    rpc_messenger->RegisterMessageReceiverCallback(rpc_handle,
+                                                   std::move(message_cb));
+  }
+}
+void DeregisterFromRpcTask(
+    openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
+    int rpc_handle) {
+  if (rpc_messenger) {
+    rpc_messenger->UnregisterMessageReceiverCallback(rpc_handle);
+  }
+}
+}  // namespace
+
 DemuxerStreamAdapter::DemuxerStreamAdapter(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
@@ -56,17 +77,8 @@ DemuxerStreamAdapter::DemuxerStreamAdapter(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(demuxer_stream);
   DCHECK(!error_callback_.is_null());
-  auto receive_callback = BindToCurrentLoop(base::BindRepeating(
-      &DemuxerStreamAdapter::OnReceivedRpc, weak_factory_.GetWeakPtr()));
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &RpcMessenger::RegisterMessageReceiverCallback, rpc_messenger_,
-          rpc_handle_,
-          [cb = std::move(receive_callback)](
-              std::unique_ptr<openscreen::cast::RpcMessage> message) {
-            cb.Run(std::move(message));
-          }));
+
+  RegisterForRpcMessaging();
 
   stream_sender_.Bind(std::move(stream_sender_remote));
   stream_sender_.set_disconnect_handler(
@@ -76,10 +88,7 @@ DemuxerStreamAdapter::DemuxerStreamAdapter(
 
 DemuxerStreamAdapter::~DemuxerStreamAdapter() {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DemuxerStreamAdapter::DeregisterFromRpcMessaging,
-                     weak_factory_.GetWeakPtr()));
+  DeregisterFromRpcMessaging();
 }
 
 int64_t DemuxerStreamAdapter::GetBytesWrittenAndReset() {
@@ -429,10 +438,26 @@ void DemuxerStreamAdapter::OnFatalError(StopTrigger stop_trigger) {
   std::move(error_callback_).Run(stop_trigger);
 }
 
+void DemuxerStreamAdapter::RegisterForRpcMessaging() {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  auto receive_callback = BindToCurrentLoop(base::BindRepeating(
+      &DemuxerStreamAdapter::OnReceivedRpc, weak_factory_.GetWeakPtr()));
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &RegisterForRpcTask, rpc_messenger_, rpc_handle_,
+          [cb = std::move(receive_callback)](
+              std::unique_ptr<openscreen::cast::RpcMessage> message) {
+            cb.Run(std::move(message));
+          }));
+}
+
 void DemuxerStreamAdapter::DeregisterFromRpcMessaging() {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   if (rpc_messenger_) {
-    rpc_messenger_->UnregisterMessageReceiverCallback(rpc_handle_);
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DeregisterFromRpcTask, rpc_messenger_, rpc_handle_));
   }
 }
 

@@ -131,7 +131,11 @@ class DemuxerStreamAdapter {
   // Callback function when a fatal runtime error occurs.
   void OnFatalError(StopTrigger stop_trigger);
 
-  // Helper to deregister the renderer from the RPC messenger.
+  // Helpers to register/deregister the adapter with the RPC messenger. These
+  // must be called on the media thread to dereference the weak pointer to
+  // this, which if contains a valid RPC messenger pointer will result in a
+  // jump to the main thread.
+  void RegisterForRpcMessaging();
   void DeregisterFromRpcMessaging();
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
