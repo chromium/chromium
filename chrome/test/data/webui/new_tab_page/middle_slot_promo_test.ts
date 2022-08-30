@@ -7,13 +7,13 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {MiddleSlotPromoElement, PromoDismissAction} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, BrowserCommandProxy, CrAutoImgElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, PageRemote, Promo} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {fakeMetricsPrivate, MetricsTracker} from './metrics_test_support.js';
 import {installMock} from './test_support.js';
@@ -21,57 +21,65 @@ import {installMock} from './test_support.js';
 suite('NewTabPageMiddleSlotPromoTest', () => {
   let newTabPageHandler: TestBrowserProxy;
   let promoBrowserCommandHandler: TestBrowserProxy;
+  let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = '';
-    metrics = fakeMetricsPrivate();
     newTabPageHandler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+    callbackRouterRemote = NewTabPageProxy.getInstance()
+                               .callbackRouter.$.bindNewPipeAndPassRemote();
+    metrics = fakeMetricsPrivate();
     promoBrowserCommandHandler = installMock(
         CommandHandlerRemote,
         mock => BrowserCommandProxy.setInstance({handler: mock}));
   });
 
+  // TODO(crbug.com/1357816): Cast returned data as |Promo|.
+  function createPromo() {
+    return {
+      id: '7',
+      logUrl: {
+        url:
+            'https://www.google.com/gen_204?ei=AsDMYoL9DtzVkPIP19ScaA&cad=i&id=19030295&ogprm=up&ct=16&prid=243',
+      },
+      middleSlotParts: [
+        {image: {imageUrl: {url: 'https://image'}, target: {url: ''}}},
+        {
+          image: {
+            imageUrl: {url: 'https://image'},
+            target: {url: 'https://link'},
+          },
+        },
+        {
+          image: {
+            imageUrl: {url: 'https://image'},
+            target: {url: 'command:123'},
+          },
+        },
+        {text: {text: 'text', color: 'red'}},
+        {
+          link: {
+            url: {url: 'https://link'},
+            text: 'link',
+            color: 'green',
+          },
+        },
+        {
+          link: {
+            url: {url: 'command:123'},
+            text: 'command',
+            color: 'blue',
+          },
+        },
+      ],
+    };
+  }
+
   async function createMiddleSlotPromo(canShowPromo: boolean):
       Promise<MiddleSlotPromoElement> {
-    newTabPageHandler.setResultFor('getPromo', Promise.resolve({
-      promo: {
-        middleSlotParts: [
-          {image: {imageUrl: {url: 'https://image'}}},
-          {
-            image: {
-              imageUrl: {url: 'https://image'},
-              target: {url: 'https://link'},
-            },
-          },
-          {
-            image: {
-              imageUrl: {url: 'https://image'},
-              target: {url: 'command:123'},
-            },
-          },
-          {text: {text: 'text', color: 'red'}},
-          {
-            link: {
-              url: {url: 'https://link'},
-              text: 'link',
-              color: 'green',
-            },
-          },
-          {
-            link: {
-              url: {url: 'command:123'},
-              text: 'command',
-              color: 'blue',
-            },
-          },
-        ],
-        id: 19030295,
-      },
-    }));
-
     promoBrowserCommandHandler.setResultFor(
         'canExecuteCommand', Promise.resolve({canExecute: canShowPromo}));
 
@@ -79,10 +87,15 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     document.body.appendChild(middleSlotPromo);
     const loaded =
         eventToPromise('ntp-middle-slot-promo-loaded', document.body);
-    await promoBrowserCommandHandler.whenCalled('canExecuteCommand');
-    assertEquals(
-        2, promoBrowserCommandHandler.getCallCount('canExecuteCommand'));
+
+    // TODO(crbug.com/1357816): Move casting to createPromo() declaration.
+    callbackRouterRemote.setPromo(createPromo() as Promo);
+    await callbackRouterRemote.$.flushForTesting();
+
     if (canShowPromo) {
+      await promoBrowserCommandHandler.whenCalled('canExecuteCommand');
+      assertEquals(
+          2, promoBrowserCommandHandler.getCallCount('canExecuteCommand'));
       await newTabPageHandler.whenCalled('onPromoRendered');
     } else {
       assertEquals(0, newTabPageHandler.getCallCount('onPromoRendered'));
@@ -177,22 +190,6 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     await testClick(command);
   });
 
-  [null,
-   {middleSlotParts: []},
-   {middleSlotParts: [{break: {}}]},
-  ].forEach((promo, i) => {
-    test(`promo remains hidden if there is no data ${i}`, async () => {
-      newTabPageHandler.setResultFor('getPromo', Promise.resolve({promo}));
-      const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
-      document.body.appendChild(middleSlotPromo);
-      await flushTasks();
-      assertEquals(
-          0, promoBrowserCommandHandler.getCallCount('canExecuteCommand'));
-      assertEquals(0, newTabPageHandler.getCallCount('onPromoRendered'));
-      assertHasContent(false, middleSlotPromo);
-    });
-  });
-
   suite('middle slot promo dismissal', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
@@ -237,6 +234,24 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
           1,
           metrics.count(
               'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
+    });
+
+    test(`setting promo data resurfaces promo after dismissal`, async () => {
+      const canShowPromo = true;
+      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      assertHasContent(canShowPromo, middleSlotPromo);
+      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
+      assertEquals(3, parts.length);
+
+      callbackRouterRemote.setPromo(null);
+      await callbackRouterRemote.$.flushForTesting();
+      assertEquals(true, middleSlotPromo.$.promoAndDismissContainer.hidden);
+
+      const promo = createPromo();
+      // TODO(crbug.com/1357816): Move casting to createPromo() declaration.
+      callbackRouterRemote.setPromo(promo as Promo);
+      await callbackRouterRemote.$.flushForTesting();
+      assertEquals(false, middleSlotPromo.$.promoAndDismissContainer.hidden);
     });
   });
 });

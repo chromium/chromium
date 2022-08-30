@@ -47,7 +47,6 @@ suite('NewTabPageAppTest', () => {
     handler.setResultFor('getDoodle', Promise.resolve({
       doodle: null,
     }));
-    handler.setResultFor('getPromo', Promise.resolve({promo: null}));
     windowProxy.setResultMapperFor('matchMedia', () => ({
                                                    addListener() {},
                                                    removeListener() {},

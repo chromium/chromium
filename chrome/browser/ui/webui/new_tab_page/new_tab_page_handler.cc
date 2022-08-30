@@ -627,8 +627,7 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
       nullptr);
 }
 
-void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
-  promo_callbacks_.push_back(std::move(callback));
+void NewTabPageHandler::UpdatePromoData() {
   if (promo_service_->promo_data().has_value()) {
     OnPromoDataUpdated();
   }
@@ -827,14 +826,12 @@ void NewTabPageHandler::OnPromoDataUpdated() {
   }
 
   const auto& data = promo_service_->promo_data();
-  for (auto& callback : promo_callbacks_) {
-    if (data.has_value()) {
-      std::move(callback).Run(MakePromo(data.value()));
-    } else {
-      std::move(callback).Run(nullptr);
-    }
+  if (data.has_value() &&
+      promo_service_->promo_status() != PromoService::Status::OK_BUT_BLOCKED) {
+    page_->SetPromo(MakePromo(data.value()));
+  } else {
+    page_->SetPromo(nullptr);
   }
-  promo_callbacks_.clear();
 }
 
 void NewTabPageHandler::OnPromoServiceShuttingDown() {

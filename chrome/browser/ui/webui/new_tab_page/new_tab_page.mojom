@@ -247,8 +247,8 @@ interface PageHandler {
   GetDoodle() => (Doodle? doodle);
   // Choose custom background from local file system.
   ChooseLocalCustomBackground() => (bool success);
-  // Get the middle slot promo if it exists.
-  GetPromo() => (Promo? promo);
+  // Updates middle slot promo data. Triggers a call to |SetPromo|.
+  UpdatePromoData();
   // Marks a promo as blocked.
   BlocklistPromo(string promo_id);
   // Unmarks a promo as blocked.
@@ -325,4 +325,6 @@ interface Page {
   SetDisabledModules(bool all, array<string> ids);
   // Sets Modular NTP Desktop v1 First Run Experience's visibility to |visible|.
   SetModulesFreVisibility(bool visible);
+  // Sets NTP homepage promo.
+  SetPromo(Promo? promo);
 };

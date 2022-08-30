@@ -15,6 +15,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './middle_slot_promo.html.js';
+import {Promo} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -39,11 +40,10 @@ export function recordPromoDismissAction(action: PromoDismissAction) {
  * the rendered promo is returned with an id #promoContainer. Otherwise, null is
  * returned.
  */
-export async function renderPromo():
+export async function renderPromo(promo: Promo):
     Promise<{container: Element, id: string | undefined}|null> {
   const browserHandler = NewTabPageProxy.getInstance().handler;
   const promoBrowserCommandHandler = BrowserCommandProxy.getInstance().handler;
-  const {promo} = await browserHandler.getPromo();
   if (!promo) {
     return null;
   }
@@ -162,38 +162,57 @@ export class MiddleSlotPromoElement extends PolymerElement {
         type: String,
         reflectToAttribute: true,
       },
+
+      promo_: {
+        type: Object,
+        observer: 'onPromoChange_',
+      },
     };
   }
 
   private eventTracker_: EventTracker = new EventTracker();
   private middleSlotPromoId_: string;
+  private promo_: Promo;
+
+  private setPromoListenerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
+    this.setPromoListenerId_ =
+        NewTabPageProxy.getInstance().callbackRouter.setPromo.addListener(
+            (promo: Promo) => {
+              this.promo_ = promo;
+            });
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
+    NewTabPageProxy.getInstance().handler.updatePromoData();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    NewTabPageProxy.getInstance().callbackRouter.removeListener(
+        this.setPromoListenerId_!);
   }
 
-  override ready() {
-    super.ready();
-
-    renderPromo().then(promo => {
-      if (promo) {
+  private onPromoChange_() {
+    renderPromo(this.promo_).then(promo => {
+      if (!promo) {
+        this.$.promoAndDismissContainer.hidden = true;
+      } else {
+        const promoContainer =
+            this.shadowRoot!.getElementById('promoContainer');
+        if (promoContainer) {
+          promoContainer.remove();
+        }
         const promoId = promo.id;
         if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled') &&
             promoId) {
           this.middleSlotPromoId_ = promoId;
         }
-
-        const promoContainer = promo.container;
-        if (promoContainer) {
-          this.$.promoAndDismissContainer.prepend(promoContainer);
-          this.$.promoAndDismissContainer.hidden = false;
-        }
+        const renderedPromoContainer = promo.container;
+        assert(renderedPromoContainer);
+        this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
+        this.$.promoAndDismissContainer.hidden = false;
       }
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
