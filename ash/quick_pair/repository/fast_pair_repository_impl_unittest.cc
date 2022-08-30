@@ -14,6 +14,7 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/fake_footprints_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/mock_fast_pair_image_decoder.h"
+#include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
 #include "ash/quick_pair/repository/fast_pair/proto_conversions.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/services/quick_pair/public/cpp/account_key_filter.h"
@@ -27,6 +28,10 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -46,6 +51,7 @@ constexpr char kInvalidModelId[] = "666";
 constexpr char kTestModelId[] = "test_model_id";
 constexpr char kTestDeviceId[] = "test_ble_device_id";
 constexpr char kTestBLEAddress[] = "00:11:22:33:45:11";
+constexpr char kTestBLEAddress2[] = "00:11:22:33:45:77";
 constexpr char kTestClassicAddress1[] = "00:11:22:33:44:55";
 constexpr char kTestClassicAddress2[] = "00:11:22:33:44:66";
 constexpr char kTestClassicAddress3[] = "04:CB:88:1E:56:19";
@@ -99,7 +105,8 @@ using ::testing::Return;
 class FastPairRepositoryImplTest : public AshTestBase {
  public:
   FastPairRepositoryImplTest()
-      : adapter_(new testing::NiceMock<device::MockBluetoothAdapter>),
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        adapter_(new testing::NiceMock<device::MockBluetoothAdapter>),
         ble_bluetooth_device_(adapter_.get(),
                               0,
                               "Test ble name",
@@ -129,6 +136,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+    chromeos::NetworkHandler::Initialize();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     device_ = base::MakeRefCounted<Device>(kTestModelId, kTestBLEAddress,
                                            Protocol::kFastPairInitial);
@@ -157,6 +165,9 @@ class FastPairRepositoryImplTest : public AshTestBase {
         std::make_unique<DeviceImageStore>(image_decoder_);
     device_image_store_ = device_image_store.get();
 
+    auto pending_write_store = std::make_unique<PendingWriteStore>();
+    pending_write_store_ = pending_write_store.get();
+
     auto saved_device_registry =
         std::make_unique<SavedDeviceRegistry>(adapter_.get());
     saved_device_registry_ = saved_device_registry.get();
@@ -165,13 +176,20 @@ class FastPairRepositoryImplTest : public AshTestBase {
         adapter_, std::move(device_metadata_fetcher),
         std::move(footprints_fetcher), std::move(image_decoder),
         std::move(device_id_map), std::move(device_image_store),
-        std::move(saved_device_registry));
+        std::move(saved_device_registry), std::move(pending_write_store));
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     ON_CALL(browser_delegate_, GetActivePrefService())
         .WillByDefault(testing::Return(pref_service_.get()));
+    PendingWriteStore::RegisterProfilePrefs(pref_service_->registry());
     SavedDeviceRegistry::RegisterProfilePrefs(pref_service_->registry());
     DeviceIdMap::RegisterLocalStatePrefs(pref_service_->registry());
+  }
+
+  void TearDown() override {
+    fast_pair_repository_.reset();
+    chromeos::NetworkHandler::Shutdown();
+    AshTestBase::TearDown();
   }
 
   void VerifyMetadata(base::OnceClosure on_complete,
@@ -211,6 +229,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   std::unique_ptr<FastPairRepositoryImpl> fast_pair_repository_;
   nearby::fastpair::OptInStatus status_;
   std::vector<nearby::fastpair::FastPairDevice> devices_;
@@ -231,6 +250,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
   MockFastPairImageDecoder* image_decoder_;
   DeviceIdMap* device_id_map_;
   DeviceImageStore* device_image_store_;
+  PendingWriteStore* pending_write_store_;
   SavedDeviceRegistry* saved_device_registry_;
 
   base::WeakPtrFactory<FastPairRepositoryImplTest> weak_ptr_factory_{this};
@@ -376,6 +396,7 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Valid) {
   ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
   ASSERT_FALSE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
 TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Invalid) {
@@ -383,6 +404,8 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Invalid) {
   EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
   fast_pair_repository_->DeleteAssociatedDevice(
       classic_bluetooth_device_.GetAddress(), callback.Get());
+
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
 TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
@@ -408,6 +431,190 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
   ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
   ASSERT_FALSE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
+}
+
+TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_AfterNetworkAvailable) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
+  // Mock an error due to Network failure.
+  footprints_fetcher_->SetDeleteUserDeviceResult(false);
+  fast_pair_repository_->DeleteAssociatedDevice(
+      classic_bluetooth_device_.GetAddress(), callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+
+  // The failed delete should be saved as a pending delete.
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(1u, pending_write_store_->GetPendingDeletes().size());
+
+  // Reconnect to the Network, but fail again.
+  fast_pair_repository_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+
+  // The delete, after another failed retry, should still be pending.
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(1u, pending_write_store_->GetPendingDeletes().size());
+
+  // Reconnect to the Network, but within the 1 minute timeout.
+  footprints_fetcher_->SetDeleteUserDeviceResult(true);
+  fast_pair_repository_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+
+  // Since we don't retry within 1 minute, the delete should still be pending.
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(1u, pending_write_store_->GetPendingDeletes().size());
+
+  // Mock waiting out the 1 minute timeout.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  base::RunLoop().RunUntilIdle();
+
+  // Reconnect to the Network, but after the 1 minute timeout.
+  footprints_fetcher_->SetDeleteUserDeviceResult(true);
+  fast_pair_repository_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+
+  // The delete, after a successful retry, should no longer be pending.
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
+}
+
+TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_AlreadyDeleted) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
+  // Mock an error due to Network failure.
+  footprints_fetcher_->SetDeleteUserDeviceResult(false);
+  fast_pair_repository_->DeleteAssociatedDevice(
+      classic_bluetooth_device_.GetAddress(), callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(1u, pending_write_store_->GetPendingDeletes().size());
+
+  // Mock Footprints getting updated by another CB/Android such that the
+  // saved device is successfully deleted.
+  footprints_fetcher_->SetDeleteUserDeviceResult(true);
+  footprints_fetcher_->DeleteUserDevice(
+      base::HexEncode(
+          std::vector<uint8_t>(kAccountKey1.begin(), kAccountKey1.end())),
+      base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(1u, pending_write_store_->GetPendingDeletes().size());
+
+  // Reconnect to the Network.
+  fast_pair_repository_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+
+  // The delete, after a successful retry, should no longer be pending.
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
+}
+
+TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_MultipleDevices) {
+  auto device1 = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                              Protocol::kFastPairInitial);
+  device1->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device1, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+
+  auto device2 = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress2,
+                                              Protocol::kFastPairInitial);
+  device2->set_classic_address(kTestClassicAddress2);
+  fast_pair_repository_->AssociateAccountKey(device2, kAccountKey2);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey2));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback1;
+  EXPECT_CALL(callback1, Run(testing::Eq(false))).Times(1);
+  // Mock an error due to Network failure for device1.
+  footprints_fetcher_->SetDeleteUserDeviceResult(false);
+  fast_pair_repository_->DeleteAssociatedDevice(kTestClassicAddress1,
+                                                callback1.Get());
+  base::RunLoop().RunUntilIdle();
+
+  // The failed delete should be saved as a pending delete.
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(1u, pending_write_store_->GetPendingDeletes().size());
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback2;
+  EXPECT_CALL(callback2, Run(testing::Eq(false))).Times(1);
+  // Mock an error due to Network failure for device2.
+  footprints_fetcher_->SetDeleteUserDeviceResult(false);
+  fast_pair_repository_->DeleteAssociatedDevice(kTestClassicAddress2,
+                                                callback2.Get());
+  base::RunLoop().RunUntilIdle();
+
+  // The failed deletes should be saved as pending deletes.
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey2));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+  ASSERT_EQ(2u, pending_write_store_->GetPendingDeletes().size());
+
+  // Reconnect to the Network.
+  footprints_fetcher_->SetDeleteUserDeviceResult(true);
+  fast_pair_repository_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+
+  // Both deletes should be retried and removed from pending write store.
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey2));
+  ASSERT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
 TEST_F(FastPairRepositoryImplTest, FetchDeviceImages) {

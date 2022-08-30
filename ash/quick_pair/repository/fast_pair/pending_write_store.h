@@ -39,6 +39,15 @@ class PendingWriteStore {
     const std::string hex_model_id;
   };
 
+  struct PendingDelete {
+    PendingDelete(const std::string& mac_address,
+                  const std::string& hex_account_key);
+    ~PendingDelete();
+
+    const std::string mac_address;
+    const std::string hex_account_key;
+  };
+
   // Saves details about a pending request to add a new paired device to
   // Footprints.
   void AddPairedDevice(const std::string& mac_address,
@@ -53,14 +62,22 @@ class PendingWriteStore {
   void OnPairedDeviceSaved(const std::string& mac_address);
 
   // Saves required details about a pending delete request to disk.
-  void DeletePairedDevice(const std::string& hex_account_key);
+  void DeletePairedDevice(const std::string& mac_address,
+                          const std::string& hex_account_key);
 
-  // Gets a list of the stable MAC address of devices which have been unpaired
-  // but not yet removed from the server.
-  std::vector<const std::string> GetPendingDeletes();
+  // Gets a list of all devices which have been unpaired but not yet removed
+  // from the server.
+  std::vector<PendingWriteStore::PendingDelete> GetPendingDeletes();
 
-  // To be called after a paired device is successfully deleted from Footprints.
-  void OnPairedDeviceDeleted(const std::string& hex_account_key);
+  // To be called after a paired device is successfully deleted from Footprints,
+  // this overloaded method removes the pending delete from storage by
+  // |mac_address|.
+  void OnPairedDeviceDeleted(const std::string& mac_address);
+
+  // To be called after a paired device is successfully deleted from Footprints,
+  // this overloaded method removes the pending delete from storage by
+  // |account_key|.
+  void OnPairedDeviceDeleted(const std::vector<uint8_t>& account_key);
 };
 
 }  // namespace quick_pair

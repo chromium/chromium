@@ -14,6 +14,7 @@
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 #include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/footprints_fetcher_impl.h"
+#include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
 #include "ash/quick_pair/repository/fast_pair/proto_conversions.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/services/quick_pair/public/cpp/account_key_filter.h"
@@ -21,6 +22,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -29,6 +32,8 @@
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 namespace {
+
+constexpr base::TimeDelta kOfflineRetryTimeout = base::Minutes(1);
 
 // Checks if the mac address of a FastPairDevice is the same as the given
 // |mac_address| by checking if the SHA256 from the given |device| equals to
@@ -60,6 +65,8 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
       footprints_last_updated_(base::Time::UnixEpoch()) {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &FastPairRepositoryImpl::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));
+  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
+      this, FROM_HERE);
 }
 
 void FastPairRepositoryImpl::OnGetAdapter(
@@ -76,7 +83,8 @@ FastPairRepositoryImpl::FastPairRepositoryImpl(
     std::unique_ptr<FastPairImageDecoder> image_decoder,
     std::unique_ptr<DeviceIdMap> device_id_map,
     std::unique_ptr<DeviceImageStore> device_image_store,
-    std::unique_ptr<SavedDeviceRegistry> saved_device_registry)
+    std::unique_ptr<SavedDeviceRegistry> saved_device_registry,
+    std::unique_ptr<PendingWriteStore> pending_write_store)
     : adapter_(adapter),
       device_metadata_fetcher_(std::move(device_metadata_fetcher)),
       footprints_fetcher_(std::move(footprints_fetcher)),
@@ -84,9 +92,14 @@ FastPairRepositoryImpl::FastPairRepositoryImpl(
       device_id_map_(std::move(device_id_map)),
       device_image_store_(std::move(device_image_store)),
       saved_device_registry_(std::move(saved_device_registry)),
-      footprints_last_updated_(base::Time::UnixEpoch()) {}
+      pending_write_store_(std::move(pending_write_store)),
+      footprints_last_updated_(base::Time::UnixEpoch()),
+      retry_write_last_attempted_(base::Time::UnixEpoch()) {}
 
-FastPairRepositoryImpl::~FastPairRepositoryImpl() = default;
+FastPairRepositoryImpl::~FastPairRepositoryImpl() {
+  chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+      this, FROM_HERE);
+}
 
 void FastPairRepositoryImpl::GetDeviceMetadata(
     const std::string& hex_model_id,
@@ -392,8 +405,6 @@ void FastPairRepositoryImpl::GetSavedDevices(GetSavedDevicesCallback callback) {
 void FastPairRepositoryImpl::OnGetSavedDevices(
     GetSavedDevicesCallback callback,
     absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
-  QP_LOG(INFO) << __func__;
-
   RecordGetSavedDevicesResult(/*success=*/user_devices.has_value());
 
   // |user_devices| will be null if we either didn't get a response from the
@@ -439,12 +450,14 @@ void FastPairRepositoryImpl::DeleteAssociatedDevice(
     std::move(callback).Run(/*success=*/false);
     return;
   }
+  std::string hex_account_key = base::HexEncode(*account_key);
 
   QP_LOG(VERBOSE) << __func__
                   << ": Removing device from Footprints with address: "
                   << mac_address;
+  pending_write_store_->DeletePairedDevice(mac_address, hex_account_key);
   footprints_fetcher_->DeleteUserDevice(
-      base::HexEncode(*account_key),
+      hex_account_key,
       base::BindOnce(&FastPairRepositoryImpl::OnDeleteAssociatedDevice,
                      weak_ptr_factory_.GetWeakPtr(), mac_address,
                      std::move(callback)));
@@ -455,23 +468,117 @@ void FastPairRepositoryImpl::OnDeleteAssociatedDevice(
     DeleteAssociatedDeviceCallback callback,
     bool success) {
   if (!success) {
-    // TODO(b/221126805): Handle saving pending update to disk + retries.
-    QP_LOG(WARNING) << __func__ << ": Failed to remove device from Footprints.";
+    QP_LOG(WARNING)
+        << __func__
+        << ": Failed to remove device from Footprints--"
+           "deferring removal from SavedDeviceRegistry until we succeed.";
+    std::move(callback).Run(/*success=*/false);
+    return;
   }
   QP_LOG(INFO) << __func__ << ": Successfully removed device from Footprints.";
 
-  // TODO(b/221126805): Check for successful Footprints delete before deleting
-  // from the Saved Device registry once Footprints retries are implemented.
+  // Remove pending delete on successful Footprints delete.
+  pending_write_store_->OnPairedDeviceDeleted(mac_address);
+
+  if (!saved_device_registry_->GetAccountKey(mac_address).has_value()) {
+    QP_LOG(INFO) << __func__
+                 << ": Device was already removed from Saved Device Registry.";
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
+
   if (saved_device_registry_->DeleteAccountKey(mac_address)) {
     QP_LOG(INFO) << __func__
                  << ": Successfully removed device from Saved Device Registry.";
-    std::move(callback).Run(/*success=*/success);
+    std::move(callback).Run(/*success=*/true);
     return;
   }
 
   QP_LOG(WARNING) << __func__
                   << ": Failed to remove device from Saved Device Registry.";
   std::move(callback).Run(/*success=*/false);
+}
+
+void FastPairRepositoryImpl::DefaultNetworkChanged(
+    const NetworkState* network) {
+  // Only retry when we have an active connected network.
+  if (!network || !network->IsConnectedState()) {
+    return;
+  }
+
+  if (pending_write_store_->GetPendingDeletes().empty())
+    return;
+
+  // To prevent API call spam, only try to retry once per timeout.
+  if ((base::Time::Now() - retry_write_last_attempted_) <
+      kOfflineRetryTimeout) {
+    return;
+  }
+
+  retry_write_last_attempted_ = base::Time::Now();
+
+  GetSavedDevices(base::BindOnce(&FastPairRepositoryImpl::RetryPendingDeletes,
+                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+// Parameter |status| is passed but not used.
+void FastPairRepositoryImpl::RetryPendingDeletes(
+    nearby::fastpair::OptInStatus status,
+    std::vector<nearby::fastpair::FastPairDevice> devices) {
+  // For each pending delete, check to see if the account key is stored in
+  // Footprints. While the device failed to delete on this Chromebook, it could
+  // have been successfully deleted on a different device.
+  for (const PendingWriteStore::PendingDelete& pending_delete :
+       pending_write_store_->GetPendingDeletes()) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": Checking if failed delete should be retried "
+                       "for account key: "
+                    << pending_delete.hex_account_key;
+
+    // Check if this pending delete is for a device that is in Footprints.
+    bool found_in_saved_devices = false;
+    for (const auto& device : devices) {
+      // Account key may be null for a device removed from Android Saved
+      // Devices.
+      if (!device.has_account_key())
+        continue;
+
+      const std::string saved_account_key =
+          base::HexEncode(std::vector<uint8_t>(device.account_key().begin(),
+                                               device.account_key().end()));
+      found_in_saved_devices =
+          saved_account_key == pending_delete.hex_account_key;
+      if (found_in_saved_devices)
+        break;
+    }
+
+    // If our failed-to-delete account key is still found in Footprints, then
+    // proceed with retrying the delete.
+    if (found_in_saved_devices) {
+      QP_LOG(VERBOSE) << __func__
+                      << ": Retrying delete for device with account key "
+                      << pending_delete.hex_account_key;
+      footprints_fetcher_->DeleteUserDevice(
+          pending_delete.hex_account_key,
+          base::BindOnce(&FastPairRepositoryImpl::OnDeleteAssociatedDevice,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         pending_delete.mac_address, base::DoNothing()));
+    } else if (saved_device_registry_->GetAccountKey(pending_delete.mac_address)
+                   .has_value()) {
+      // If the device was already removed from Footprints, but hasn't been
+      // removed from the registry, ensure that we remove it from the registry.
+      bool result =
+          saved_device_registry_->DeleteAccountKey(pending_delete.mac_address);
+      QP_LOG(INFO) << __func__
+                   << ": Device removed from Footprints, removing from "
+                      "SavedDeviceRegistry was "
+                   << (result ? "sucessful." : "unsuccessful.");
+
+      // Remove from our list of pending deletes since the device isn't in
+      // Footprints.
+      pending_write_store_->OnPairedDeviceDeleted(pending_delete.mac_address);
+    }
+  }
 }
 
 void FastPairRepositoryImpl::DeleteAssociatedDeviceByAccountKey(
@@ -489,6 +596,9 @@ void FastPairRepositoryImpl::OnDeleteAssociatedDeviceByAccountKey(
     const std::vector<uint8_t>& account_key,
     DeleteAssociatedDeviceByAccountKeyCallback callback,
     bool footprints_removal_success) {
+  // Remove pending delete on successful Footprints delete.
+  pending_write_store_->OnPairedDeviceDeleted(account_key);
+
   bool saved_device_registry_removal_success =
       saved_device_registry_->DeleteAccountKey(account_key);
 

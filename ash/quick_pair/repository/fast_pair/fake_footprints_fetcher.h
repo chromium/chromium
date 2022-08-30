@@ -35,8 +35,11 @@ class FakeFootprintsFetcher : public FootprintsFetcher {
 
   void SetAddUserFastPairInfoResult(bool add_user_result);
 
+  void SetDeleteUserDeviceResult(bool delete_device_result);
+
  private:
   bool add_user_result_ = true;
+  bool delete_device_result_ = true;
   bool response_set_ = false;
   absl::optional<nearby::fastpair::UserReadDevicesResponse> response_;
   nearby::fastpair::FastPairInfo opt_in_status_info_;

@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -39,11 +40,13 @@ class DeviceImageStore;
 class DeviceMetadataFetcher;
 class FastPairImageDecoder;
 class FootprintsFetcher;
+class PendingWriteStore;
 class SavedDeviceRegistry;
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
-class FastPairRepositoryImpl : public FastPairRepository {
+class FastPairRepositoryImpl : public FastPairRepository,
+                               public NetworkStateHandlerObserver {
  public:
   FastPairRepositoryImpl();
   FastPairRepositoryImpl(
@@ -53,7 +56,8 @@ class FastPairRepositoryImpl : public FastPairRepository {
       std::unique_ptr<FastPairImageDecoder> image_decoder,
       std::unique_ptr<DeviceIdMap> device_id_map,
       std::unique_ptr<DeviceImageStore> device_image_store,
-      std::unique_ptr<SavedDeviceRegistry> saved_device_registry);
+      std::unique_ptr<SavedDeviceRegistry> saved_device_registry,
+      std::unique_ptr<PendingWriteStore> pending_write_store);
   FastPairRepositoryImpl(const FastPairRepositoryImpl&) = delete;
   FastPairRepositoryImpl& operator=(const FastPairRepositoryImpl&) = delete;
   ~FastPairRepositoryImpl() override;
@@ -84,6 +88,9 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void GetSavedDevices(GetSavedDevicesCallback callback) override;
   void IsDeviceSavedToAccount(const std::string& mac_address,
                               IsDeviceSavedToAccountCallback callback) override;
+
+  // NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(const NetworkState* network) override;
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
@@ -133,6 +140,9 @@ class FastPairRepositoryImpl : public FastPairRepository {
       const std::vector<uint8_t>& account_key,
       DeleteAssociatedDeviceByAccountKeyCallback callback,
       bool footprints_removal_success);
+  void RetryPendingDeletes(
+      nearby::fastpair::OptInStatus status,
+      std::vector<nearby::fastpair::FastPairDevice> devices);
   void OnGetSavedDevices(
       GetSavedDevicesCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
@@ -157,10 +167,12 @@ class FastPairRepositoryImpl : public FastPairRepository {
   std::unique_ptr<DeviceIdMap> device_id_map_;
   std::unique_ptr<DeviceImageStore> device_image_store_;
   std::unique_ptr<SavedDeviceRegistry> saved_device_registry_;
+  std::unique_ptr<PendingWriteStore> pending_write_store_;
 
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> metadata_cache_;
   nearby::fastpair::UserReadDevicesResponse user_devices_cache_;
   base::Time footprints_last_updated_;
+  base::Time retry_write_last_attempted_;
 
   base::WeakPtrFactory<FastPairRepositoryImpl> weak_ptr_factory_{this};
 };

@@ -60,8 +60,18 @@ void FakeFootprintsFetcher::AddUserFastPairInfo(
   std::move(callback).Run(add_user_result_);
 }
 
+void FakeFootprintsFetcher::SetDeleteUserDeviceResult(
+    bool delete_device_result) {
+  delete_device_result_ = delete_device_result;
+}
+
 void FakeFootprintsFetcher::DeleteUserDevice(const std::string& hex_account_key,
                                              DeleteDeviceCallback callback) {
+  if (!delete_device_result_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   account_key_to_info_map_.erase(hex_account_key);
   std::move(callback).Run(true);
 }
