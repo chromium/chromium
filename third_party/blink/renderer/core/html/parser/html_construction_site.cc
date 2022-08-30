@@ -71,14 +71,19 @@ namespace blink {
 
 static const unsigned kMaximumHTMLParserDOMTreeDepth = 512;
 
-static inline void SetAttributes(Element* element,
-                                 AtomicHTMLToken* token,
-                                 ParserContentPolicy parser_content_policy) {
-  if (!ScriptingContentIsAllowed(parser_content_policy))
+void HTMLConstructionSite::SetAttributes(Element* element,
+                                         AtomicHTMLToken* token) {
+  if (!is_scripting_content_allowed_)
     element->StripScriptingAttributes(token->Attributes());
   element->ParserSetAttributes(token->Attributes());
   if (token->HasDuplicateAttribute()) {
-    UseCounter::Count(element->GetDocument(), WebFeature::kDuplicatedAttribute);
+    // UseCounter is not free, and only the first call matters. Only call to it
+    // if necessary.
+    if (!reported_duplicate_attribute_) {
+      reported_duplicate_attribute_ = true;
+      UseCounter::Count(element->GetDocument(),
+                        WebFeature::kDuplicatedAttribute);
+    }
     element->SetHasDuplicateAttributes();
   }
 }
@@ -312,7 +317,7 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
                                        Node* child,
                                        bool self_closing) {
   auto* element = DynamicTo<Element>(child);
-  DCHECK(ScriptingContentIsAllowed(parser_content_policy_) || !element ||
+  DCHECK(is_scripting_content_allowed_ || !element ||
          !element->IsScriptElement());
   DCHECK(PluginContentIsAllowed(parser_content_policy_) ||
          !IsA<HTMLPlugInElement>(child));
@@ -371,6 +376,8 @@ HTMLConstructionSite::HTMLConstructionSite(
       document_(&document),
       attachment_root_(document),
       parser_content_policy_(parser_content_policy),
+      is_scripting_content_allowed_(
+          ScriptingContentIsAllowed(parser_content_policy)),
       is_parsing_fragment_(false),
       redirect_attach_to_foster_parent_(false),
       in_quirks_mode_(document.InQuirksMode()) {
@@ -436,7 +443,7 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
   } else {
     element = MakeGarbageCollected<HTMLHtmlElement>(*document_);
   }
-  SetAttributes(element, token, parser_content_policy_);
+  SetAttributes(element, token);
   AttachLater(attachment_root_, element);
   open_elements_.PushHTMLHtmlElement(HTMLStackItem::Create(element, token));
 
@@ -775,8 +782,8 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
     element = MakeGarbageCollected<HTMLScriptElement>(
         OwnerDocumentForCurrentNode(), flags);
   }
-  SetAttributes(element, token, parser_content_policy_);
-  if (ScriptingContentIsAllowed(parser_content_policy_))
+  SetAttributes(element, token);
+  if (is_scripting_content_allowed_)
     AttachLater(CurrentNode(), element);
   open_elements_.Push(HTMLStackItem::Create(element, token));
 }
@@ -789,8 +796,7 @@ void HTMLConstructionSite::InsertForeignElement(
   DVLOG(1) << "Not implemented.";
 
   Element* element = CreateElement(token, namespace_uri);
-  if (ScriptingContentIsAllowed(parser_content_policy_) ||
-      !element->IsScriptElement()) {
+  if (is_scripting_content_allowed_ || !element->IsScriptElement()) {
     AttachLater(CurrentNode(), element, token->SelfClosing());
   }
   if (!token->SelfClosing()) {
@@ -1051,7 +1057,7 @@ Element* HTMLConstructionSite::CreateElement(
       form_associated_element->AssociateWith(form_.Get());
     }
     // "8. Append each attribute in the given token to element."
-    SetAttributes(element, token, parser_content_policy_);
+    SetAttributes(element, token);
   }
 
   return element;

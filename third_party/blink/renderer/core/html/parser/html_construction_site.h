@@ -274,6 +274,8 @@ class HTMLConstructionSite final {
       const QualifiedName&,
       const AtomicString& is);
 
+  void SetAttributes(Element* element, AtomicHTMLToken* token);
+
   Member<HTMLParserReentryPermit> reentry_permit_;
   Member<Document> document_;
 
@@ -341,7 +343,8 @@ class HTMLConstructionSite final {
 
   PendingText pending_text_;
 
-  ParserContentPolicy parser_content_policy_;
+  const ParserContentPolicy parser_content_policy_;
+  const bool is_scripting_content_allowed_;
   bool is_parsing_fragment_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html#parsing-main-intable
@@ -351,6 +354,9 @@ class HTMLConstructionSite final {
   bool redirect_attach_to_foster_parent_;
 
   bool in_quirks_mode_;
+
+  // Whether duplicate attribute was reported.
+  bool reported_duplicate_attribute_ = false;
 };
 
 }  // namespace blink
