@@ -120,6 +120,9 @@
       'filepath': 'chrome/browser/resources/settings/chromeos/os_apps_page'\
                   '|chrome/browser/ui/webui/app_management',
     },
+    'app_preload_service': {
+      'filepath': 'chrome/browser/apps/app_preload_service'
+    },
     'app_service': {
       'filepath': 'chrome/browser/apps/app_service/'\
                   '|chrome/browser/ui/app_list/app_service/'\
@@ -2221,6 +2224,7 @@
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': [],
     'app_management': ['jshikaram+watch-app_management@chromium.org'],
+    'app_preload_service': ['jshikaram+watch-app_preload_service@chromium.org'],
     'app_service': ['dominickn+watch-app_service@chromium.org',
                     'nancylingwang@chromium.org'],
     'app_shortcuts': ['dominickn+watch-app_shortcuts@chromium.org',
