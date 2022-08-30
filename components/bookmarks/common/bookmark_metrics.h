@@ -33,6 +33,10 @@ void RecordFileSizeAtStartup(int64_t total_bytes);
 // Records the metrics derived from `stats`. Recording happens on profile load.
 void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats);
 
+// Records when a bookmark node is cloned. `num_cloned` is the number of
+// bookmarks that were selected.
+void RecordCloneBookmarkNode(int num_cloned);
+
 }  // namespace metrics
 
 }  // namespace bookmarks

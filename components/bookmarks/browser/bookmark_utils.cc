@@ -25,6 +25,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -225,6 +226,8 @@ void CloneBookmarkNode(BookmarkModel* model,
     CloneBookmarkNodeImpl(model, elements[i], parent, index_to_add_at + i,
                           reset_node_times);
   }
+
+  metrics::RecordCloneBookmarkNode(elements.size());
 }
 
 void CopyToClipboard(BookmarkModel* model,

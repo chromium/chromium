@@ -140,6 +140,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Clone.NumCloned" units="bookmarks"
+    expires_after="2023-06-08">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the number of bookmarks that were selected when a clone operation
+    starts. It doesn't include the children included in folder copies.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.Count.OnProfileLoad" units="bookmarks"
     expires_after="2023-02-26">
   <owner>supertri@chromium.org</owner>

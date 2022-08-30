@@ -11,12 +11,14 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -32,9 +34,7 @@ class BookmarkUtilsTest : public testing::Test,
                           public BaseBookmarkModelObserver {
  public:
   BookmarkUtilsTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        grouped_changes_beginning_count_(0),
-        grouped_changes_ended_count_(0) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   BookmarkUtilsTest(const BookmarkUtilsTest&) = delete;
   BookmarkUtilsTest& operator=(const BookmarkUtilsTest&) = delete;
@@ -63,6 +63,8 @@ class BookmarkUtilsTest : public testing::Test,
 #endif
   }
 
+  base::HistogramTester* histogram() { return &histogram_; }
+
  private:
   // BaseBookmarkModelObserver:
   void BookmarkModelChanged() override {}
@@ -78,8 +80,9 @@ class BookmarkUtilsTest : public testing::Test,
   // Clipboard requires a full TaskEnvironment.
   base::test::TaskEnvironment task_environment_;
 
-  int grouped_changes_beginning_count_;
-  int grouped_changes_ended_count_;
+  int grouped_changes_beginning_count_{0};
+  int grouped_changes_ended_count_{0};
+  base::HistogramTester histogram_;
 };
 
 TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesWordPhraseQuery) {
@@ -501,6 +504,8 @@ TEST_F(BookmarkUtilsTest, CloneMetaInfo) {
   EXPECT_EQ("somevalue", value);
   EXPECT_TRUE(clone->GetMetaInfo("someotherkey", &value));
   EXPECT_EQ("someothervalue", value);
+  histogram()->ExpectTotalCount("Bookmarks.Clone.NumCloned", 1);
+  histogram()->ExpectBucketCount("Bookmarks.Clone.NumCloned", 1, 1);
 }
 
 // Verifies that meta info fields in the non cloned set are not copied when

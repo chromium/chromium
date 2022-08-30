@@ -86,4 +86,8 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
       base::saturated_cast<int>(stats.avg_num_days_since_added));
 }
 
+void RecordCloneBookmarkNode(int num_cloned) {
+  base::UmaHistogramCounts100("Bookmarks.Clone.NumCloned", num_cloned);
+}
+
 }  // namespace bookmarks::metrics
