@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 
 namespace system_logs {
 
@@ -48,16 +49,18 @@ void VirtualKeyboardLogSource::Fetch(SysLogsSourceCallback callback) {
         base::NumberToString(touchscreen_count);
     log_data += base::StrCat({"Touchscreen ", touchscreen_count_converted,
                               " Product ID"}) +
-                ": " + base::NumberToString(device.product_id) + "\n";
+                ": " + base::StringPrintf("%#06x", device.product_id) + "\n";
     log_data += base::StrCat({"Touchscreen ", touchscreen_count_converted,
                               " Vendor ID"}) +
-                ": " + base::NumberToString(device.vendor_id) + "\n";
+                ": " + base::StringPrintf("%#06x", device.vendor_id) + "\n";
     ++touchscreen_count;
   }
 
   log_data +=
-      "Has Internal Keyboard: " +
-      base::NumberToString(virtual_keyboard_controller->HasInternalKeyboard()) +
+      "Internal Keyboard Name: " +
+      (virtual_keyboard_controller->GetInternalKeyboardName()
+           ? virtual_keyboard_controller->GetInternalKeyboardName().value()
+           : "No Internal Keyboard Detected") +
       "\n";
   log_data += "Is Internal Keyboard Ignored: " +
               base::NumberToString(
@@ -72,11 +75,11 @@ void VirtualKeyboardLogSource::Fetch(SysLogsSourceCallback callback) {
     log_data +=
         base::StrCat({"External Keyboard ", external_keyboard_count_converted,
                       " Product ID"}) +
-        ": " + base::NumberToString(device.product_id) + "\n";
+        ": " + base::StringPrintf("%#06x", device.product_id) + "\n";
     log_data +=
         base::StrCat({"External Keyboard ", external_keyboard_count_converted,
                       " Vendor ID"}) +
-        ": " + base::NumberToString(device.vendor_id) + "\n";
+        ": " + base::StringPrintf("%#06x", device.vendor_id) + "\n";
     ++external_keyboard_count;
   }
 

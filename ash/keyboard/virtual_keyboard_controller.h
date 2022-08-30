@@ -59,7 +59,7 @@ class ASH_EXPORT VirtualKeyboardController
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
-  bool HasInternalKeyboard() const;
+  const absl::optional<std::string>& GetInternalKeyboardName() const;
 
   const std::vector<ui::InputDevice>& GetExternalKeyboards() const;
 
@@ -86,7 +86,7 @@ class ASH_EXPORT VirtualKeyboardController
   void OnBluetoothAdapterOrDeviceChanged(device::BluetoothDevice* device);
 
   // True if an internal keyboard is connected.
-  bool has_internal_keyboard_;
+  absl::optional<std::string> internal_keyboard_name_;
   // Contains any potential external keyboards (May contain imposter keyboards).
   std::vector<ui::InputDevice> external_keyboards_;
   // Contains all touch screens devices (both internal and external).

@@ -46,9 +46,7 @@ void ResetVirtualKeyboard() {
 }  // namespace
 
 VirtualKeyboardController::VirtualKeyboardController()
-    : has_internal_keyboard_(false),
-      ignore_external_keyboard_(false),
-      ignore_internal_keyboard_(false) {
+    : ignore_external_keyboard_(false), ignore_internal_keyboard_(false) {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
@@ -110,12 +108,12 @@ void VirtualKeyboardController::UpdateDevices() {
   touchscreens_ = device_data_manager->GetTouchscreenDevices();
   // Checks for keyboards.
   external_keyboards_.clear();
-  has_internal_keyboard_ = false;
+  internal_keyboard_name_.reset();
   for (const ui::InputDevice& device :
        device_data_manager->GetKeyboardDevices()) {
     ui::InputDeviceType type = device.type;
     if (type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
-      has_internal_keyboard_ = true;
+      internal_keyboard_name_ = device.name;
     if ((type == ui::InputDeviceType::INPUT_DEVICE_USB ||
          (type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
           bluetooth_devices_observer_->IsConnectedBluetoothDevice(device))) &&
@@ -132,7 +130,7 @@ void VirtualKeyboardController::UpdateKeyboardEnabled() {
                                        ->tablet_mode_controller()
                                        ->AreInternalInputDeviceEventsBlocked();
   bool is_internal_keyboard_active =
-      has_internal_keyboard_ && !ignore_internal_keyboard_;
+      internal_keyboard_name_ && !ignore_internal_keyboard_;
   keyboard::SetTouchKeyboardEnabled(
       !is_internal_keyboard_active && !touchscreens_.empty() &&
       (external_keyboards_.empty() || ignore_external_keyboard_));
@@ -192,8 +190,9 @@ void VirtualKeyboardController::OnBluetoothAdapterOrDeviceChanged(
   }
 }
 
-bool VirtualKeyboardController::HasInternalKeyboard() const {
-  return has_internal_keyboard_;
+const absl::optional<std::string>&
+VirtualKeyboardController::GetInternalKeyboardName() const {
+  return internal_keyboard_name_;
 }
 
 const std::vector<ui::InputDevice>&
