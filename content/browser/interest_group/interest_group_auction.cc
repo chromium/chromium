@@ -224,7 +224,7 @@ class InterestGroupAuction::BuyerHelper
       if (bidder.interest_group.priority_vector &&
           !bidder.interest_group.priority_vector->empty()) {
         priority = CalculateInterestGroupPriority(
-            *auction_->config_, bidder.interest_group,
+            *auction_->config_, bidder, auction_->auction_start_time_,
             *bidder.interest_group.priority_vector);
         // Only filter interest groups with priority < 0 if the negative
         // priority is the result of a `priority_vector` multiplication.
@@ -305,7 +305,8 @@ class InterestGroupAuction::BuyerHelper
     if (!priority_vector.empty()) {
       const auto& interest_group = state->bidder.interest_group;
       new_priority = CalculateInterestGroupPriority(
-          *auction_->config_, interest_group, priority_vector,
+          *auction_->config_, state->bidder, auction_->auction_start_time_,
+          priority_vector,
           (interest_group.priority_vector &&
            !interest_group.priority_vector->empty())
               ? state->calculated_priority

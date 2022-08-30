@@ -8,18 +8,24 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 struct AuctionConfig;
-struct InterestGroup;
 }  // namespace blink
 
 namespace content {
 
-// Calculates the priority of `interest_group` given `auction_config` using the
-// provided priority vector.
+struct StorageInterestGroup;
+
+// Calculates the priority of `storage_interest_group` given `auction_config`
+// using the provided priority vector.
+//
+// `auction_start_time` is the time the auction started. The same value should
+// be used for all calls within a single auction, to ensure consistency between
+// information passed to different bidders.
 //
 // `priority_vector` is either the field of that name from `interest_group`, or
 // the priority vector received as part of the trusted bidding signals fetch. It
@@ -31,7 +37,8 @@ namespace content {
 // priority vector received from a trusted bidding server.
 CONTENT_EXPORT double CalculateInterestGroupPriority(
     const blink::AuctionConfig& auction_config,
-    const blink::InterestGroup& interest_group,
+    const StorageInterestGroup& storage_interest_group,
+    const base::Time auction_start_time,
     const base::flat_map<std::string, double>& priority_vector,
     absl::optional<double> first_dot_product_priority = absl::nullopt);
 

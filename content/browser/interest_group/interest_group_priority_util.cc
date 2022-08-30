@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
+#include "content/browser/interest_group/storage_interest_group.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -16,12 +18,24 @@ namespace content {
 
 double CalculateInterestGroupPriority(
     const blink::AuctionConfig& auction_config,
-    const blink::InterestGroup& interest_group,
+    const StorageInterestGroup& storage_interest_group,
+    const base::Time auction_start_time,
     const base::flat_map<std::string, double>& priority_vector,
     absl::optional<double> first_dot_product_priority) {
   // Empty priority vectors should be ignored, so updating an interest group can
   // set an empty priority vector to disable it.
   DCHECK(!priority_vector.empty());
+
+  const blink::InterestGroup& interest_group =
+      storage_interest_group.interest_group;
+
+  // Calculate the time since the interest group was joined. Force it to be
+  // between 0 and 30 days. Less than 0 could happen due to clock changes. The
+  // expiration time is 30 days, but could exceed it due to races or clock
+  // changes in the middle of an auction, though seems unlikely.
+  base::TimeDelta age = auction_start_time - storage_interest_group.join_time;
+  age = std::max(age, base::TimeDelta());
+  age = std::min(age, base::Days(30));
 
   // TODO(https://crbug.com/1343389): Add browserSignals.age.
   base::flat_map<std::string, double> browser_signals{
@@ -29,6 +43,10 @@ double CalculateInterestGroupPriority(
       {"browserSignals.basePriority", interest_group.priority},
       {"browserSignals.firstDotProductPriority",
        first_dot_product_priority.value_or(0)},
+      {"browserSignals.ageInMinutes", age.InMinutes()},
+      {"browserSignals.ageInMinutesMax60", std::min(age.InMinutes(), 60)},
+      {"browserSignals.ageInHoursMax24", std::min(age.InHours(), 24)},
+      {"browserSignals.ageInDaysMax30", std::min(age.InDays(), 30)},
   };
 
   // Ordered list of priority signals map. Order is
