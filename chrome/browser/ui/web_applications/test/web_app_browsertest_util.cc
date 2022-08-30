@@ -64,6 +64,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
+
+#include "base/mac/foundation_util.h"
 #import "skia/ext/skia_utils_mac.h"
 #endif
 
@@ -105,12 +107,10 @@ SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
   base::FilePath icon_path =
       shortcut_path.AppendASCII("Contents/Resources/app.icns");
   base::ScopedCFTypeRef<CFDictionaryRef> empty_dict(
-      CFDictionaryCreate(NULL, NULL, NULL, 0, NULL, NULL));
-  base::ScopedCFTypeRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(
-      NULL, (const UInt8*)icon_path.value().c_str(), icon_path.value().length(),
-      false));
+      CFDictionaryCreate(nullptr, nullptr, nullptr, 0, nullptr, nullptr));
+  base::ScopedCFTypeRef<CFURLRef> url = base::mac::FilePathToCFURL(icon_path);
   base::ScopedCFTypeRef<CGImageSourceRef> source(
-      CGImageSourceCreateWithURL(url, NULL));
+      CGImageSourceCreateWithURL(url, nullptr));
   if (!source)
     return 0;
   // Get the first icon in the .icns file (index 0)

@@ -46,6 +46,7 @@
 #include "base/version.h"
 #import "chrome/browser/mac/dock.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/web_applications/os_integration/icns_encoder.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -57,10 +58,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
-#import "skia/ext/skia_utils_mac.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/utils/mac/SkCGUtils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
@@ -196,54 +193,6 @@ void RecordCreateShortcut(CreateShortcutResult result) {
 // The maximum number to append to to an app name before giving up and using the
 // extension id.
 constexpr int kMaxConflictNumber = 999;
-
-// Writes |icons| to |path| in .icns format.
-bool WriteIconsToFile(const std::vector<gfx::Image>& icons,
-                      const base::FilePath& path) {
-  base::scoped_nsobject<NSMutableData> data(
-      [[NSMutableData alloc] initWithCapacity:0]);
-  base::ScopedCFTypeRef<CGImageDestinationRef> image_destination(
-      CGImageDestinationCreateWithData(base::mac::NSToCFCast(data),
-                                       kUTTypeAppleICNS, icons.size(),
-                                       nullptr));
-  DCHECK(image_destination);
-  for (const gfx::Image& image : icons) {
-    base::ScopedCFTypeRef<CGImageRef> cg_image(SkCreateCGImageRefWithColorspace(
-        image.AsBitmap(), base::mac::GetSRGBColorSpace()));
-    CGImageDestinationAddImage(image_destination, cg_image, nullptr);
-  }
-  if (!CGImageDestinationFinalize(image_destination)) {
-    NOTREACHED() << "CGImageDestinationFinalize failed.";
-    return false;
-  }
-  return [data writeToFile:base::mac::FilePathToNSString(path) atomically:NO];
-}
-
-// Returns true if |image| can be used for an icon resource.
-bool IsImageValidForIcon(const gfx::Image& image) {
-  if (image.IsEmpty())
-    return false;
-
-  // When called via ShowCreateChromeAppShortcutsDialog the ImageFamily will
-  // have all the representations desired here for mac, from the kDesiredSizes
-  // array in web_app.cc.
-  SkBitmap bitmap = image.AsBitmap();
-  if (bitmap.colorType() != kN32_SkColorType ||
-      bitmap.width() != bitmap.height()) {
-    return false;
-  }
-
-  switch (bitmap.width()) {
-    case 512:
-    case 256:
-    case 128:
-    case 48:
-    case 32:
-    case 16:
-      return true;
-  }
-  return false;
-}
 
 // Remove the leading . from the entries of |extensions|. Any items that do not
 // have a leading . are removed.
@@ -1292,20 +1241,21 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
   if (info_->favicon.empty())
     return true;
 
-  std::vector<gfx::Image> valid_icons;
+  IcnsEncoder icns_encoder;
+  bool has_valid_icons = false;
   for (gfx::ImageFamily::const_iterator it = info_->favicon.begin();
        it != info_->favicon.end(); ++it) {
-    if (IsImageValidForIcon(*it))
-      valid_icons.push_back(*it);
+    if (icns_encoder.AddImage(*it))
+      has_valid_icons = true;
   }
-  if (valid_icons.empty())
+  if (!has_valid_icons)
     return false;
 
   base::FilePath resources_path = GetResourcesPath(app_path);
   if (!base::CreateDirectory(resources_path))
     return false;
 
-  return WriteIconsToFile(valid_icons, resources_path.Append("app.icns"));
+  return icns_encoder.WriteToFile(resources_path.Append("app.icns"));
 }
 
 std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesByIdUnsorted()
