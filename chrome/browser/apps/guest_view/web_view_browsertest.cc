@@ -4464,16 +4464,16 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadWebviewAccessibleResource) {
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 
   content::WebContents* embedder_contents = GetEmbedderWebContents();
-  content::WebContents* web_view_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+  content::RenderFrameHost* web_view_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   ASSERT_TRUE(embedder_contents);
-  ASSERT_TRUE(web_view_contents);
+  ASSERT_TRUE(web_view_frame);
 
   GURL embedder_url(embedder_contents->GetLastCommittedURL());
   GURL webview_url(embedder_url.DeprecatedGetOriginAsURL().spec() +
                    "assets/foo.html");
 
-  EXPECT_EQ(webview_url, web_view_contents->GetLastCommittedURL());
+  EXPECT_EQ(webview_url, web_view_frame->GetLastCommittedURL());
 }
 
 // Tests that a WebView can navigate an iframe to a blob URL that it creates
