@@ -29,7 +29,7 @@ _IMPORT_REGEX = '#import='
 _INCLUDE_REGEX = '#include='
 _TYPE_REGEX = '#type='
 
-_STYLE_TEMPLATE = """import \'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_STYLE_TEMPLATE = """import \'//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
 const styleMod = document.createElement(\'dom-module\');
@@ -42,7 +42,7 @@ styleMod.innerHTML = `
 `;
 styleMod.register(\'%(id)s\');"""
 
-_VARS_TEMPLATE = """import \'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_VARS_TEMPLATE = """import \'//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
 const $_documentContainer = document.createElement('template');
