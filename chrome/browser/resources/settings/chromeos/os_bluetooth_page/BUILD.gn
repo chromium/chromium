@@ -162,22 +162,25 @@ js_library("os_bluetooth_pairing_dialog") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_metrics_utils",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_ui",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("os_remove_saved_device_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("os_bluetooth_forget_device_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("settings_fast_pair_constants") {

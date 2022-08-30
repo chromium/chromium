@@ -50,10 +50,12 @@ js_library("firmware_update_dialog_test") {
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_utils",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  externs_list = [
+    "$externs_path/mocha-2.5.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("firmware_update_test") {
@@ -70,10 +72,12 @@ js_library("firmware_update_test") {
     "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ash/webui/firmware_update_ui/resources:update_card",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  externs_list = [
+    "$externs_path/mocha-2.5.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("peripheral_updates_list_test") {

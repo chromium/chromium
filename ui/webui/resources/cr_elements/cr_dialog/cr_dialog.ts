@@ -24,33 +24,31 @@ import '../cr_icons_css.m.js';
 import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../js/assert.m.js';
+import {assert} from '../../js/assert_ts.js';
 import {CrContainerShadowMixin} from '../cr_container_shadow_mixin.js';
+import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
+import {CrInputElement} from '../cr_input/cr_input.js';
 
-class CrContainerShadowMixinInterface {
-  /** @param {boolean} enable */
-  enableShadowBehavior(enable) {}
+import {getTemplate} from './cr_dialog.html.js';
 
-  showDropShadows() {}
-}
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrContainerShadowMixinInterface}
- */
 const CrDialogElementBase = CrContainerShadowMixin(PolymerElement);
 
-/** @polymer */
+export interface CrDialogElement {
+  $: {
+    close: CrIconButtonElement,
+    dialog: HTMLDialogElement,
+  };
+}
+
 export class CrDialogElement extends CrDialogElementBase {
   static get is() {
     return 'cr-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -115,43 +113,39 @@ export class CrDialogElement extends CrDialogElementBase {
     };
   }
 
-  constructor() {
-    super();
+  closeText: string;
+  consumeKeydownEvent: boolean;
+  ignoreEnterKey: boolean;
+  ignorePopstate: boolean;
+  noCancel: boolean;
+  open: boolean;
+  showCloseButton: boolean;
+  showOnAttach: boolean;
 
-    /** @private {?IntersectionObserver} */
-    this.intersectionObserver_ = null;
+  private intersectionObserver_: IntersectionObserver|null = null;
+  private mutationObserver_: MutationObserver|null = null;
+  private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
 
-    /** @private {?MutationObserver} */
-    this.mutationObserver_ = null;
-
-    /** @private {?Function} */
-    this.boundKeydown_ = null;
-  }
-
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     // If the active history entry changes (i.e. user clicks back button),
     // all open dialogs should be cancelled.
-    window.addEventListener('popstate', function() {
+    window.addEventListener('popstate', () => {
       if (!this.ignorePopstate && this.$.dialog.open) {
         this.cancel();
       }
-    }.bind(this));
+    });
 
     if (!this.ignoreEnterKey) {
       this.addEventListener('keypress', this.onKeypress_.bind(this));
     }
-    this.addEventListener(
-        'pointerdown',
-        e => this.onPointerdown_(/** @type {!PointerEvent} */ (e)));
+    this.addEventListener('pointerdown', e => this.onPointerdown_(e));
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
-    const mutationObserverCallback = function() {
+    const mutationObserverCallback = () => {
       if (this.$.dialog.open) {
         this.enableShadowBehavior(true);
         this.addKeydownListener_();
@@ -159,7 +153,7 @@ export class CrDialogElement extends CrDialogElementBase {
         this.enableShadowBehavior(false);
         this.removeKeydownListener_();
       }
-    }.bind(this);
+    };
 
     this.mutationObserver_ = new MutationObserver(mutationObserverCallback);
 
@@ -175,8 +169,7 @@ export class CrDialogElement extends CrDialogElementBase {
     }
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeKeydownListener_();
     if (this.mutationObserver_) {
@@ -185,8 +178,7 @@ export class CrDialogElement extends CrDialogElementBase {
     }
   }
 
-  /** @private */
-  addKeydownListener_() {
+  private addKeydownListener_() {
     if (!this.consumeKeydownEvent) {
       return;
     }
@@ -201,8 +193,7 @@ export class CrDialogElement extends CrDialogElementBase {
     document.body.addEventListener('keydown', this.boundKeydown_);
   }
 
-  /** @private */
-  removeKeydownListener_() {
+  private removeKeydownListener_() {
     if (!this.boundKeydown_) {
       return;
     }
@@ -236,28 +227,20 @@ export class CrDialogElement extends CrDialogElementBase {
 
   /**
    * Set the title of the dialog for a11y reader.
-   * @param {string} title Title of the dialog.
+   * @param title Title of the dialog.
    */
-  setTitleAriaLabel(title) {
+  setTitleAriaLabel(title: string) {
     this.$.dialog.removeAttribute('aria-labelledby');
     this.$.dialog.setAttribute('aria-label', title);
   }
 
-  /**
-   * @private
-   * @param {Event} e
-   */
-  onCloseKeypress_(e) {
+  private onCloseKeypress_(e: Event) {
     // Because the dialog may have a default Enter key handler, prevent
     // keypress events from bubbling up from this element.
     e.stopPropagation();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onNativeDialogClose_(e) {
+  private onNativeDialogClose_(e: Event) {
     // Ignore any 'close' events not fired directly by the <dialog> element.
     if (e.target !== this.getNative()) {
       return;
@@ -269,11 +252,7 @@ export class CrDialogElement extends CrDialogElementBase {
         new CustomEvent('close', {bubbles: true, composed: true}));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onNativeDialogCancel_(e) {
+  private onNativeDialogCancel_(e: Event) {
     // Ignore any 'cancel' events not fired directly by the <dialog> element.
     if (e.target !== this.getNative()) {
       return;
@@ -298,17 +277,12 @@ export class CrDialogElement extends CrDialogElementBase {
    * Expose the inner native <dialog> for some rare cases where it needs to be
    * directly accessed (for example to programmatically setheight/width, which
    * would not work on the wrapper).
-   * @return {!HTMLDialogElement}
    */
-  getNative() {
-    return /** @type {!HTMLDialogElement} */ (this.$.dialog);
+  getNative(): HTMLDialogElement {
+    return this.$.dialog;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeypress_(e) {
+  private onKeypress_(e: KeyboardEvent) {
     if (e.key !== 'Enter') {
       return;
     }
@@ -320,23 +294,20 @@ export class CrDialogElement extends CrDialogElementBase {
     // trigger searching.
     const accept = e.target === this ||
         e.composedPath().some(
-            el => el.tagName === 'CR-INPUT' && el.type !== 'search');
+            el => (el as HTMLElement).tagName === 'CR-INPUT' &&
+                (el as CrInputElement).type !== 'search');
     if (!accept) {
       return;
     }
-    const actionButton =
-        this.querySelector('.action-button:not([disabled]):not([hidden])');
+    const actionButton = this.querySelector<HTMLElement>(
+        '.action-button:not([disabled]):not([hidden])');
     if (actionButton) {
       actionButton.click();
       e.preventDefault();
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     assert(this.consumeKeydownEvent);
 
     if (!this.getNative().open) {
@@ -351,11 +322,11 @@ export class CrDialogElement extends CrDialogElementBase {
     e.stopPropagation();
   }
 
-  /** @param {!PointerEvent} e */
-  onPointerdown_(e) {
+  private onPointerdown_(e: PointerEvent) {
     // Only show pulse animation if user left-clicked outside of the dialog
     // contents.
-    if (e.button !== 0 || e.composedPath()[0].tagName !== 'DIALOG') {
+    if (e.button !== 0 ||
+        (e.composedPath()[0]! as HTMLElement).tagName !== 'DIALOG') {
       return;
     }
 
@@ -366,19 +337,28 @@ export class CrDialogElement extends CrDialogElementBase {
           {transform: 'scale(1.02)', offset: 0.6},
           {transform: 'scale(1)', offset: 1},
         ],
-        /** @type {!KeyframeAnimationOptions} */ ({
+        {
           duration: 180,
           easing: 'ease-in-out',
           iterations: 1,
-        }));
+        });
 
     // Prevent any text from being selected within the dialog when clicking in
     // the backdrop area.
     e.preventDefault();
   }
 
-  focus() {
-    this.shadowRoot.querySelector('.title-container').focus();
+  override focus() {
+    const titleContainer =
+        this.shadowRoot!.querySelector<HTMLElement>('.title-container');
+    assert(titleContainer);
+    titleContainer.focus();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-dialog': CrDialogElement;
   }
 }
 

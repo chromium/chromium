@@ -299,11 +299,12 @@ js_library("onboarding_network_page") {
     "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:util.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("onboarding_update_page") {
@@ -438,9 +439,10 @@ js_library("wrapup_repair_complete_page") {
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("wrapup_restock_page") {
@@ -449,8 +451,9 @@ js_library("wrapup_restock_page") {
     ":mojo_interface_provider",
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("wrapup_finalize_page") {
@@ -460,8 +463,9 @@ js_library("wrapup_finalize_page") {
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("wrapup_wait_for_manual_wp_enable_page") {
@@ -470,8 +474,9 @@ js_library("wrapup_wait_for_manual_wp_enable_page") {
     ":mojo_interface_provider",
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("shimless_rma_types") {

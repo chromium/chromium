@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+
 import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateController} from 'chrome://accessory-update/fake_update_controller.js';
 import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
@@ -11,7 +13,6 @@ import {getUpdateProvider, setUpdateControllerForTesting, setUpdateProviderForTe
 import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

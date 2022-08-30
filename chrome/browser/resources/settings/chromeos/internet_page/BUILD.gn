@@ -40,9 +40,10 @@ js_library("cellular_setup_dialog") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup.m",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_setup_delegate.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("internet_config") {
@@ -56,10 +57,11 @@ js_library("internet_config") {
     "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:util.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("internet_detail_menu") {
@@ -242,10 +244,12 @@ js_library("network_proxy_section") {
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_indicator_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_proxy.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list = [ "../settings_controls_types.js" ]
+  externs_list = [
+    "../settings_controls_types.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("network_summary") {
@@ -286,9 +290,10 @@ js_library("tether_connection_dialog") {
     "//ui/webui/resources/cr_components/chromeos/network:network_icon.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("cellular_networks_list") {
@@ -333,21 +338,23 @@ js_library("esim_install_error_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
 }
 
 js_library("esim_rename_dialog") {
   deps = [
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
 }
 
 js_library("esim_remove_profile_dialog") {
@@ -357,11 +364,12 @@ js_library("esim_remove_profile_dialog") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
 }
 
 js_library("settings_traffic_counters") {

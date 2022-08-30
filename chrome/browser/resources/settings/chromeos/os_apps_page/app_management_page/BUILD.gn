@@ -227,11 +227,13 @@ js_library("store_client") {
 js_library("supported_links_overlapping_apps_dialog") {
   deps = [
     ":store_client",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list = [ "./types.js" ]
+  externs_list = [
+    "./types.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("supported_links_dialog") {
@@ -239,8 +241,9 @@ js_library("supported_links_dialog") {
     ":browser_proxy",
     ":store_client",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("supported_links_item") {

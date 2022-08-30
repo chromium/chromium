@@ -89,9 +89,11 @@ js_library("add_items_dialog") {
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
     "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js",
+  ]
 }
 
 js_library("add_spellcheck_languages_dialog") {

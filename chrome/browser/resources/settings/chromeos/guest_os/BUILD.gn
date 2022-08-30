@@ -52,11 +52,12 @@ js_library("guest_os_shared_usb_devices_add_dialog") {
     ":guest_os_container_select",
     "..:metrics_recorder",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("guest_os_shared_paths") {

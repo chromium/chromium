@@ -122,13 +122,14 @@ js_library("network_config.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
+  ]
   extra_deps = [ ":network_config_module" ]
 }
 
@@ -414,11 +415,12 @@ js_library("sim_lock_dialogs.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
+  ]
   extra_deps = [ ":sim_lock_dialogs_module" ]
 }
 
