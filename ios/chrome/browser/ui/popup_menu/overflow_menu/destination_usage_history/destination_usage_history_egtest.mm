@@ -23,9 +23,9 @@
 
 namespace {
 // Unexpectedly, the first and last destinations in the carousel overlap their
-// neighbors. This makes |RightConstraint()| an insufficient layout constraint
+// neighbors. This makes `RightConstraint()` an insufficient layout constraint
 // for comparing destinations at the carousel's ends. A constraint with
-// negative minimum separation, |RightConstraintWithOverlap()|, must be
+// negative minimum separation, `RightConstraintWithOverlap()`, must be
 // introduced to account for this.
 GREYLayoutConstraint* RightConstraintWithOverlap() {
   return [GREYLayoutConstraint
@@ -72,7 +72,7 @@ GREYLayoutConstraint* RightConstraint() {
 // 7. Site Information
 // 8. Settings
 //
-// When |isNTP| is true, this method excludes the Site Information (#7)
+// When `isNTP` is true, this method excludes the Site Information (#7)
 // destination from the layout check, because Site Information is excluded from
 // the destinations carousel on the NTP.
 + (void)verifyCarouselHasDefaultSortOrderOnNTP:(BOOL)isNTP {
@@ -148,7 +148,7 @@ GREYLayoutConstraint* RightConstraint() {
 // 5. Site Information
 // 6. Settings
 //
-// When |isNTP| is true, this method excludes the Site Information (#5)
+// When `isNTP` is true, this method excludes the Site Information (#5)
 // destination from the layout check, because Site Information is excluded from
 // the destinations carousel on the NTP.
 + (void)verifyCarouselHasDefaultSortOrderOnNTPForIncognito:(BOOL)isNTP {
