@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
@@ -171,7 +172,7 @@ class SubscriptionsManagerTest : public testing::Test {
   void CreateManagerAndVerify(bool init_succeeded) {
     subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
         identity_test_env_.identity_manager(), std::move(mock_server_proxy_),
-        std::move(mock_storage_));
+        std::move(mock_storage_), &account_checker_);
     ASSERT_EQ(init_succeeded,
               subscriptions_manager_->GetInitSucceededForTesting());
   }
@@ -185,16 +186,23 @@ class SubscriptionsManagerTest : public testing::Test {
               subscriptions_manager_->HasPendingRequestsForTesting());
   }
 
+  void SetAccountStatus(bool signed_in, bool msbb_enabled) {
+    account_checker_.SetSignedIn(signed_in);
+    account_checker_.SetAnonymizedUrlDataCollectionEnabled(msbb_enabled);
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList test_features_;
+  MockAccountChecker account_checker_;
   std::unique_ptr<MockSubscriptionsServerProxy> mock_server_proxy_;
   std::unique_ptr<MockSubscriptionsStorage> mock_storage_;
   std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
 };
 
 TEST_F(SubscriptionsManagerTest, TestInitSucceeded) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(true);
   EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
@@ -207,6 +215,7 @@ TEST_F(SubscriptionsManagerTest, TestInitSucceeded) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestInitFailed) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(false);
   EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
@@ -218,7 +227,19 @@ TEST_F(SubscriptionsManagerTest, TestInitFailed) {
   CreateManagerAndVerify(false);
 }
 
+TEST_F(SubscriptionsManagerTest, TestNotSignedIn) {
+  SetAccountStatus(false, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+  EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
+  EXPECT_CALL(*mock_server_proxy_, Get).Times(0);
+  EXPECT_CALL(*mock_storage_, UpdateStorage).Times(0);
+
+  CreateManagerAndVerify(false);
+}
+
 TEST_F(SubscriptionsManagerTest, TestSubscribe) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
   mock_storage_->MockGetResponses("222");
@@ -254,6 +275,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(false);
   mock_storage_->MockGetResponses("222");
@@ -288,6 +310,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_InitFailed) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
   mock_storage_->MockGetResponses("222");
@@ -317,6 +340,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_InitFailed) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_HasRequestRunning) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
   mock_storage_->MockGetResponses("222");
@@ -345,6 +369,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasRequestRunning) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_HasPendingUnsubscribeRequest) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
   mock_storage_->MockGetResponses("222");
@@ -416,6 +441,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasPendingUnsubscribeRequest) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
   mock_storage_->MockGetResponses("222");
@@ -450,6 +476,7 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
   mock_storage_->MockGetResponses("222");
@@ -478,6 +505,7 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestIdentityChange) {
+  SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(true);
 

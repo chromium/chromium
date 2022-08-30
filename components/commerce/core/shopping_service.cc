@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -87,9 +88,15 @@ ShoppingService::ShoppingService(
     opt_guide_->RegisterOptimizationTypes(types);
   }
 
-  if (identity_manager && subscription_proto_db) {
+  if (identity_manager) {
+    account_checker_ = base::WrapUnique(
+        new AccountChecker(pref_service, identity_manager, url_loader_factory));
+  }
+
+  if (identity_manager && account_checker_ && subscription_proto_db) {
     subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
-        identity_manager, std::move(url_loader_factory), subscription_proto_db);
+        identity_manager, url_loader_factory, subscription_proto_db,
+        account_checker_.get());
   }
 
   if (bookmark_model) {

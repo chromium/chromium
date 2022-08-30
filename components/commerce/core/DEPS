@@ -7,6 +7,7 @@ include_rules = [
   "+components/power_bookmarks/core",
   "+components/prefs",
   "+components/session_proto_db/session_proto_storage.h",
+  "+components/unified_consent",
   "+third_party/re2",
   "+components/endpoint_fetcher/endpoint_fetcher.h",
   "+components/search",

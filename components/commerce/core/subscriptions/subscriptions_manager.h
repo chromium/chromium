@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -36,12 +37,14 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       SessionProtoStorage<
           commerce_subscription_db::CommerceSubscriptionContentProto>*
-          subscription_proto_db);
+          subscription_proto_db,
+      AccountChecker* account_checker);
   // Used for tests. The passed in objects are ordinarily created with
   // parameters from the non-test constructor.
   SubscriptionsManager(signin::IdentityManager* identity_manager,
                        std::unique_ptr<SubscriptionsServerProxy> server_proxy,
-                       std::unique_ptr<SubscriptionsStorage> storage);
+                       std::unique_ptr<SubscriptionsStorage> storage,
+                       AccountChecker* account_checker);
   SubscriptionsManager(const SubscriptionsManager&) = delete;
   SubscriptionsManager& operator=(const SubscriptionsManager&) = delete;
   ~SubscriptionsManager() override;
@@ -138,6 +141,8 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   std::unique_ptr<SubscriptionsServerProxy> server_proxy_;
 
   std::unique_ptr<SubscriptionsStorage> storage_;
+
+  raw_ptr<AccountChecker> account_checker_;
 
   base::WeakPtrFactory<SubscriptionsManager> weak_ptr_factory_;
 };

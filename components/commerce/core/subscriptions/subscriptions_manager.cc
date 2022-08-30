@@ -20,20 +20,24 @@ SubscriptionsManager::SubscriptionsManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     SessionProtoStorage<
         commerce_subscription_db::CommerceSubscriptionContentProto>*
-        subscription_proto_db)
+        subscription_proto_db,
+    AccountChecker* account_checker)
     : SubscriptionsManager(
           identity_manager,
           std::make_unique<SubscriptionsServerProxy>(
               identity_manager,
               std::move(url_loader_factory)),
-          std::make_unique<SubscriptionsStorage>(subscription_proto_db)) {}
+          std::make_unique<SubscriptionsStorage>(subscription_proto_db),
+          account_checker) {}
 
 SubscriptionsManager::SubscriptionsManager(
     signin::IdentityManager* identity_manager,
     std::unique_ptr<SubscriptionsServerProxy> server_proxy,
-    std::unique_ptr<SubscriptionsStorage> storage)
+    std::unique_ptr<SubscriptionsStorage> storage,
+    AccountChecker* account_checker)
     : server_proxy_(std::move(server_proxy)),
       storage_(std::move(storage)),
+      account_checker_(account_checker),
       weak_ptr_factory_(this) {
 // Avoid duplicate server calls on android. Remove this after we integrate
 // android implementation to shopping service.
@@ -101,7 +105,9 @@ void SubscriptionsManager::Unsubscribe(
 void SubscriptionsManager::InitSubscriptions() {
   init_succeeded_ = false;
   storage_->DeleteAll();
-  if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+  if (base::FeatureList::IsEnabled(commerce::kShoppingList) &&
+      account_checker_ && account_checker_->IsSignedIn() &&
+      account_checker_->IsAnonymizedUrlDataCollectionEnabled()) {
     pending_requests_.push(Request(
         SubscriptionType::kPriceTrack, AsyncOperation::kInit,
         base::BindOnce(

@@ -16,6 +16,7 @@ source_set("subscriptions") {
 
   deps = [
     "//base",
+    "//components/commerce/core:account_checker",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/endpoint_fetcher:endpoint_fetcher",
@@ -40,6 +41,7 @@ source_set("subscriptions_unit_tests") {
   deps = [
     ":subscriptions",
     "//base/test:test_support",
+    "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/endpoint_fetcher:endpoint_fetcher",

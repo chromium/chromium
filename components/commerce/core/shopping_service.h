@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -325,6 +326,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   raw_ptr<PrefService> pref_service_;
 
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+
+  std::unique_ptr<AccountChecker> account_checker_;
 
   // The service's means of observing the bookmark model which is automatically
   // removed from the model when destroyed. This will be null if no
