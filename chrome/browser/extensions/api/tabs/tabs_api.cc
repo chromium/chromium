@@ -152,7 +152,7 @@ class ApiParameterExtractor {
   ~ApiParameterExtractor() {}
 
   bool populate_tabs() {
-    if (params_->query_options.get() && params_->query_options->populate.get())
+    if (params_->query_options.get() && params_->query_options->populate)
       return *params_->query_options->populate;
     return false;
   }
@@ -238,10 +238,10 @@ content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
   return web_contents;
 }
 
-// Returns true if either |boolean| is a null pointer, or if |*boolean| and
+// Returns true if either |boolean| is disengaged, or if |boolean| and
 // |value| are equal. This function is used to check if a tab's parameters match
 // those of the browser.
-bool MatchesBool(bool* boolean, bool value) {
+bool MatchesBool(const absl::optional<bool>& boolean, bool value) {
   return !boolean || *boolean == value;
 }
 
@@ -1154,12 +1154,12 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       continue;
     }
 
-    if (!MatchesBool(params->query_info.current_window.get(),
+    if (!MatchesBool(params->query_info.current_window,
                      browser == current_browser)) {
       continue;
     }
 
-    if (!MatchesBool(params->query_info.last_focused_window.get(),
+    if (!MatchesBool(params->query_info.last_focused_window,
                      browser == last_active_browser)) {
       continue;
     }
@@ -1181,18 +1181,17 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       if (!web_contents)
         continue;
 
-      if (!MatchesBool(params->query_info.highlighted.get(),
+      if (!MatchesBool(params->query_info.highlighted,
                        tab_strip->IsTabSelected(i))) {
         continue;
       }
 
-      if (!MatchesBool(params->query_info.active.get(),
+      if (!MatchesBool(params->query_info.active,
                        i == tab_strip->active_index())) {
         continue;
       }
 
-      if (!MatchesBool(params->query_info.pinned.get(),
-                       tab_strip->IsTabPinned(i))) {
+      if (!MatchesBool(params->query_info.pinned, tab_strip->IsTabPinned(i))) {
         continue;
       }
 
@@ -1212,7 +1211,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
 
       auto* audible_helper =
           RecentlyAudibleHelper::FromWebContents(web_contents);
-      if (!MatchesBool(params->query_info.audible.get(),
+      if (!MatchesBool(params->query_info.audible,
                        audible_helper->WasRecentlyAudible())) {
         continue;
       }
@@ -1221,17 +1220,17 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
           resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
               web_contents);
 
-      if (!MatchesBool(params->query_info.discarded.get(),
+      if (!MatchesBool(params->query_info.discarded,
                        tab_lifecycle_unit_external->IsDiscarded())) {
         continue;
       }
 
-      if (!MatchesBool(params->query_info.auto_discardable.get(),
+      if (!MatchesBool(params->query_info.auto_discardable,
                        tab_lifecycle_unit_external->IsAutoDiscardable())) {
         continue;
       }
 
-      if (!MatchesBool(params->query_info.muted.get(),
+      if (!MatchesBool(params->query_info.muted,
                        web_contents->IsAudioMuted())) {
         continue;
       }
@@ -1516,11 +1515,11 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   bool active = false;
   // TODO(rafaelw): Setting |active| from js doesn't make much sense.
   // Move tab selection management up to window.
-  if (params->update_properties.selected.get())
+  if (params->update_properties.selected)
     active = *params->update_properties.selected;
 
   // The 'active' property has replaced 'selected'.
-  if (params->update_properties.active.get())
+  if (params->update_properties.active)
     active = *params->update_properties.active;
 
   if (active) {
@@ -1535,7 +1534,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     }
   }
 
-  if (params->update_properties.highlighted.get()) {
+  if (params->update_properties.highlighted) {
     // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
     // the user is dragging tabs.
     if (!ExtensionTabUtil::IsTabStripEditable())
@@ -1547,7 +1546,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     }
   }
 
-  if (params->update_properties.pinned.get()) {
+  if (params->update_properties.pinned) {
     // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
     // the user is dragging tabs.
     if (!ExtensionTabUtil::IsTabStripEditable())
@@ -1560,7 +1559,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     tab_index = tab_strip->GetIndexOfWebContents(contents);
   }
 
-  if (params->update_properties.muted.get() &&
+  if (params->update_properties.muted &&
       !chrome::SetTabAudioMuted(contents, *params->update_properties.muted,
                                 TabMutedReason::EXTENSION, extension()->id())) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
@@ -1593,7 +1592,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     tab_strip->SetOpenerOfWebContentsAt(tab_index, opener_contents);
   }
 
-  if (params->update_properties.auto_discardable.get()) {
+  if (params->update_properties.auto_discardable) {
     bool state = *params->update_properties.auto_discardable;
     resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
         web_contents_)
@@ -1800,7 +1799,7 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
 
   bool bypass_cache = false;
   if (params->reload_properties.get() &&
-      params->reload_properties->bypass_cache.get()) {
+      params->reload_properties->bypass_cache) {
     bypass_cache = *params->reload_properties->bypass_cache;
   }
 

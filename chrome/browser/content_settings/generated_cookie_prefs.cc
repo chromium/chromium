@@ -322,8 +322,8 @@ GeneratedCookieSessionOnlyPref::GetPrefObject() const {
   auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
 
-  pref_object->user_control_disabled = std::make_unique<bool>(
-      content_setting == ContentSetting::CONTENT_SETTING_BLOCK);
+  pref_object->user_control_disabled =
+      content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
   pref_object->value = std::make_unique<base::Value>(
       content_setting == ContentSetting::CONTENT_SETTING_SESSION_ONLY);
 

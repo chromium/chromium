@@ -88,9 +88,9 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
       default:
         menu_item.style = input_method_private::ParseMenuItemStyle("");
     }
-    menu_item.visible = std::make_unique<bool>(item.visible);
-    menu_item.checked = std::make_unique<bool>(item.checked);
-    menu_item.enabled = std::make_unique<bool>(item.enabled);
+    menu_item.visible = item.visible;
+    menu_item.checked = item.checked;
+    menu_item.enabled = item.enabled;
     menu_items.push_back(std::move(menu_item));
   }
 

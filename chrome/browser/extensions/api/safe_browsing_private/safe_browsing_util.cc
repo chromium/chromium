@@ -66,7 +66,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
         std::make_unique<std::string>(referrer.referrer_main_frame_url());
   }
   if (referrer.has_is_retargeting())
-    entry.is_retargeting = std::make_unique<bool>(referrer.is_retargeting());
+    entry.is_retargeting = referrer.is_retargeting();
   if (referrer.has_navigation_time_msec()) {
     entry.navigation_time_ms =
         std::make_unique<double>(referrer.navigation_time_msec());
@@ -105,16 +105,15 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     }
   }
   if (referrer.has_maybe_launched_by_external_application()) {
-    entry.maybe_launched_by_external_app = std::make_unique<bool>(
-        referrer.maybe_launched_by_external_application());
+    entry.maybe_launched_by_external_app =
+        referrer.maybe_launched_by_external_application();
   }
   if (referrer.has_is_subframe_url_removed()) {
-    entry.is_subframe_url_removed =
-        std::make_unique<bool>(referrer.is_subframe_url_removed());
+    entry.is_subframe_url_removed = referrer.is_subframe_url_removed();
   }
   if (referrer.has_is_subframe_referrer_url_removed()) {
     entry.is_subframe_referrer_url_removed =
-        std::make_unique<bool>(referrer.is_subframe_referrer_url_removed());
+        referrer.is_subframe_referrer_url_removed();
   }
   entry.is_url_removed_by_policy = referrer.is_url_removed_by_policy();
 

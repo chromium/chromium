@@ -226,9 +226,9 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   info->page_url = std::make_unique<std::string>(page_url.spec());
   info->system_information = std::make_unique<SystemInformationList>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  info->from_assistant = std::make_unique<bool>(from_assistant);
-  info->include_bluetooth_logs = std::make_unique<bool>(include_bluetooth_logs);
-  info->show_questionnaire = std::make_unique<bool>(show_questionnaire);
+  info->from_assistant = from_assistant;
+  info->include_bluetooth_logs = include_bluetooth_logs;
+  info->show_questionnaire = show_questionnaire;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Any extra diagnostics information should be added to the sys info.
@@ -249,8 +249,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
 #else
   const bool use_system_window_frame = false;
 #endif
-  info->use_system_window_frame =
-      std::make_unique<bool>(use_system_window_frame);
+  info->use_system_window_frame = use_system_window_frame;
 
   // If the feedback is from Chrome Labs or Kaleidoscope then this should use
   // a custom product ID.

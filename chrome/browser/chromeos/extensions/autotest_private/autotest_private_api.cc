@@ -1802,10 +1802,9 @@ AutotestPrivateGetPlayStoreStateFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (arc::IsArcAllowedForProfile(profile)) {
     play_store_state.allowed = true;
-    play_store_state.enabled =
-        std::make_unique<bool>(arc::IsArcPlayStoreEnabledForProfile(profile));
-    play_store_state.managed = std::make_unique<bool>(
-        arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile));
+    play_store_state.enabled = arc::IsArcPlayStoreEnabledForProfile(profile);
+    play_store_state.managed =
+        arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile);
   }
   return RespondNow(WithArguments(
       base::Value::FromUniquePtrValue(play_store_state.ToValue())));
@@ -3788,8 +3787,8 @@ AutotestPrivateGetAllInstalledAppsFunction::Run() {
     app.type = GetAppType(update.AppType());
     app.install_source = GetAppInstallSource(update.InstallReason());
     app.readiness = GetAppReadiness(update.Readiness());
-    app.show_in_launcher = ConvertOptionalBool(update.ShowInLauncher());
-    app.show_in_search = ConvertOptionalBool(update.ShowInSearch());
+    app.show_in_launcher = update.ShowInLauncher();
+    app.show_in_search = update.ShowInSearch();
     installed_apps.emplace_back(std::move(app));
   });
 

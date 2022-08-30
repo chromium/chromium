@@ -86,16 +86,10 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.on_security_event_providers =
       std::move(signals.on_security_event_providers);
   info.site_isolation_enabled = signals.site_isolation_enabled;
-  info.chrome_cleanup_enabled =
-      signals.chrome_cleanup_enabled.has_value()
-          ? std::make_unique<bool>(signals.chrome_cleanup_enabled.value())
-          : nullptr;
+  info.chrome_cleanup_enabled = signals.chrome_cleanup_enabled;
   info.chrome_remote_desktop_app_blocked =
       signals.chrome_remote_desktop_app_blocked;
-  info.third_party_blocking_enabled =
-      signals.third_party_blocking_enabled.has_value()
-          ? std::make_unique<bool>(signals.third_party_blocking_enabled.value())
-          : nullptr;
+  info.third_party_blocking_enabled = signals.third_party_blocking_enabled;
   info.os_firewall = ToInfoSettingValue(signals.os_firewall);
   info.system_dns_servers = std::move(signals.system_dns_servers);
   switch (signals.realtime_url_check_mode) {

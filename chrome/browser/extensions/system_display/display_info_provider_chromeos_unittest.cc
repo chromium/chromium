@@ -806,7 +806,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
 
   // Test that setting is_unified to true fails unless EnableUnifiedDesktop is
   // called first.
-  info.is_unified = std::make_unique<bool>(true);
+  info.is_unified = true;
   EXPECT_FALSE(CallSetDisplayUnitInfo(
       base::NumberToString(
           display::Screen::GetScreen()->GetPrimaryDisplay().id()),
@@ -823,7 +823,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
 
   // Test that setting is_unified to false turns off unified mode but leaves it
   // enabled.
-  info.is_unified = std::make_unique<bool>(false);
+  info.is_unified = false;
   EXPECT_TRUE(CallSetDisplayUnitInfo(
       base::NumberToString(
           display::Screen::GetScreen()->GetPrimaryDisplay().id()),
@@ -832,7 +832,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
 
   // Test that setting is_unified to true succeeds without an additional call to
   // EnableUnifiedDesktop.
-  info.is_unified = std::make_unique<bool>(true);
+  info.is_unified = true;
   EXPECT_TRUE(CallSetDisplayUnitInfo(
       base::NumberToString(
           display::Screen::GetScreen()->GetPrimaryDisplay().id()),
@@ -1157,7 +1157,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginOnPrimary) {
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
   info.bounds_origin_x = 300;
-  info.is_primary = std::make_unique<bool>(true);
+  info.is_primary = true;
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1211,7 +1211,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetRotation) {
 
   info.rotation = 180;
   // Switch primary display.
-  info.is_primary = std::make_unique<bool>(true);
+  info.is_primary = true;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 

@@ -223,10 +223,10 @@ bool MatchFilter::MatchesCookie(
   if (details_->path.get() && *details_->path != cookie.Path())
     return false;
 
-  if (details_->secure.get() && *details_->secure != cookie.IsSecure())
+  if (details_->secure && *details_->secure != cookie.IsSecure())
     return false;
 
-  if (details_->session.get() && *details_->session != !cookie.IsPersistent())
+  if (details_->session && *details_->session != !cookie.IsPersistent())
     return false;
 
   return true;

@@ -70,9 +70,9 @@ AcceptOption BuildAcceptOption(const std::string& description,
 TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   // AcceptsAllTypes is ignored when no other extensions are available.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
-  bool acceptsAllTypes = false;
-  FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
-      base::FilePath::StringType(), NULL, &acceptsAllTypes);
+  FileSystemChooseEntryFunction::BuildFileTypeInfo(
+      &file_type_info, base::FilePath::StringType(), nullptr,
+      /*acceptsAllTypes=*/false);
   EXPECT_TRUE(file_type_info.include_all_files);
   EXPECT_TRUE(file_type_info.extensions.empty());
 
@@ -81,9 +81,9 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   std::vector<AcceptOption> options;
   options.push_back(BuildAcceptOption(std::string(),
                                       "application/x-chrome-extension", "jso"));
-  acceptsAllTypes = false;
-  FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
-      base::FilePath::StringType(), &options, &acceptsAllTypes);
+  FileSystemChooseEntryFunction::BuildFileTypeInfo(
+      &file_type_info, base::FilePath::StringType(), &options,
+      /*acceptsAllTypes=*/false);
   EXPECT_FALSE(file_type_info.include_all_files);
   ASSERT_EQ(file_type_info.extensions.size(), (size_t) 1);
   EXPECT_TRUE(file_type_info.extension_description_overrides[0].empty()) <<
@@ -100,9 +100,9 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.clear();
   options.push_back(
       BuildAcceptOption(std::string(), std::string(), "unrelated"));
-  acceptsAllTypes = false;
-  FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
-      ToStringType(".jso"), &options, &acceptsAllTypes);
+  FileSystemChooseEntryFunction::BuildFileTypeInfo(
+      &file_type_info, ToStringType(".jso"), &options,
+      /*acceptsAllTypes=*/false);
   EXPECT_TRUE(file_type_info.include_all_files);
 
   // Test multiple list entries, all containing their own types.
@@ -110,9 +110,9 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.clear();
   options.push_back(BuildAcceptOption(std::string(), std::string(), "jso,js"));
   options.push_back(BuildAcceptOption(std::string(), std::string(), "cpp,cc"));
-  acceptsAllTypes = false;
-  FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
-      base::FilePath::StringType(), &options, &acceptsAllTypes);
+  FileSystemChooseEntryFunction::BuildFileTypeInfo(
+      &file_type_info, base::FilePath::StringType(), &options,
+      /*acceptsAllTypes=*/false);
   ASSERT_EQ(file_type_info.extensions.size(), options.size());
 
   expectedTypes.clear();
@@ -129,9 +129,9 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   file_type_info = ui::SelectFileDialog::FileTypeInfo();
   options.clear();
   options.push_back(BuildAcceptOption(std::string(), "image/*", "html"));
-  acceptsAllTypes = false;
-  FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
-      base::FilePath::StringType(), &options, &acceptsAllTypes);
+  FileSystemChooseEntryFunction::BuildFileTypeInfo(
+      &file_type_info, base::FilePath::StringType(), &options,
+      /*acceptsAllTypes=*/false);
   ASSERT_EQ(file_type_info.extension_description_overrides.size(), (size_t) 1);
   EXPECT_FALSE(file_type_info.extension_description_overrides[0].empty()) <<
       "Accept type \"image/*\" must generate description override";
@@ -142,9 +142,9 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.clear();
   options.push_back(BuildAcceptOption(std::string(), "image/*,audio/*,video/*",
                                       std::string()));
-  acceptsAllTypes = false;
-  FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
-      base::FilePath::StringType(), &options, &acceptsAllTypes);
+  FileSystemChooseEntryFunction::BuildFileTypeInfo(
+      &file_type_info, base::FilePath::StringType(), &options,
+      /*acceptsAllTypes=*/false);
   ASSERT_EQ(file_type_info.extension_description_overrides.size(), (size_t) 1);
   EXPECT_TRUE(file_type_info.extension_description_overrides[0].empty());
 
@@ -153,9 +153,9 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.clear();
   options.push_back(
       BuildAcceptOption("File Types 101", "image/jpeg", std::string()));
-  acceptsAllTypes = false;
-  FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
-      base::FilePath::StringType(), &options, &acceptsAllTypes);
+  FileSystemChooseEntryFunction::BuildFileTypeInfo(
+      &file_type_info, base::FilePath::StringType(), &options,
+      /*acceptsAllTypes=*/false);
   EXPECT_EQ(file_type_info.extension_description_overrides[0],
             u"File Types 101");
 }

@@ -690,10 +690,8 @@ void FileSystemChooseEntryFunction::BuildFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info,
     const base::FilePath::StringType& suggested_extension,
     const AcceptOptions* accepts,
-    const bool* accepts_all_types) {
-  file_type_info->include_all_files = true;
-  if (accepts_all_types)
-    file_type_info->include_all_files = *accepts_all_types;
+    const absl::optional<bool>& accepts_all_types) {
+  file_type_info->include_all_files = accepts_all_types.value_or(true);
 
   bool need_suggestion =
       !file_type_info->include_all_files && !suggested_extension.empty();
@@ -826,7 +824,7 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
                     &suggested_extension);
 
     BuildFileTypeInfo(&file_type_info, suggested_extension,
-                      options->accepts.get(), options->accepts_all_types.get());
+                      options->accepts.get(), options->accepts_all_types);
   }
 
   file_type_info.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
@@ -1073,8 +1071,7 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
 
   delegate->RequestFileSystem(
       browser_context(), this, consent_provider_.get(), *extension(),
-      params->options.volume_id,
-      params->options.writable.get() && *params->options.writable.get(),
+      params->options.volume_id, params->options.writable.value_or(false),
       base::BindOnce(&FileSystemRequestFileSystemFunction::OnGotFileSystem,
                      this),
       base::BindOnce(&FileSystemRequestFileSystemFunction::OnError, this));

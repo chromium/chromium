@@ -135,7 +135,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       const tab_groups::TabGroupVisualData* visual_data =
           tab_strip->group_model()->GetTabGroup(id)->visual_data();
 
-      if (params->query_info.collapsed.get() &&
+      if (params->query_info.collapsed &&
           *params->query_info.collapsed != visual_data->is_collapsed()) {
         continue;
       }
@@ -179,7 +179,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   DCHECK(!id.is_empty());
 
   bool collapsed = visual_data->is_collapsed();
-  if (params->update_properties.collapsed.get())
+  if (params->update_properties.collapsed)
     collapsed = *params->update_properties.collapsed;
 
   tab_groups::TabGroupColorId color = visual_data->color();

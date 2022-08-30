@@ -75,7 +75,7 @@ void SetSocketProperties(ResumableTCPSocket* socket,
   if (properties->name.get()) {
     socket->set_name(*properties->name);
   }
-  if (properties->persistent.get()) {
+  if (properties->persistent) {
     socket->set_persistent(*properties->persistent);
   }
   if (properties->buffer_size) {

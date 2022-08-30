@@ -188,7 +188,7 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
         new ExtensionActivity::Other);
     if (absl::optional<bool> prerender =
             other()->FindBool(constants::kActionPrerender)) {
-      other_field->prerender = std::make_unique<bool>(*prerender);
+      other_field->prerender = *prerender;
     }
     if (const base::Value::Dict* web_request =
             other()->FindDict(constants::kActionWebRequest)) {

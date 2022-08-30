@@ -254,8 +254,7 @@ std::unique_ptr<BoundingBox> BoundingBoxProtoToIdl(
   std::unique_ptr<BoundingBox> bounding_box_result =
       std::make_unique<BoundingBox>();
   if (bounding_box.has_normalized()) {
-    bounding_box_result->normalized =
-        std::make_unique<bool>(bounding_box.normalized());
+    bounding_box_result->normalized = bounding_box.normalized();
   }
 
   if (bounding_box.has_top_left())

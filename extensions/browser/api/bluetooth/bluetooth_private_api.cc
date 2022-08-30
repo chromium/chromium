@@ -248,8 +248,8 @@ void BluetoothPrivateSetAdapterStateFunction::DoWork(
 
   // These properties are not owned.
   std::string* name = new_state.name.get();
-  bool* powered = new_state.powered.get();
-  bool* discoverable = new_state.discoverable.get();
+  const auto& powered = new_state.powered;
+  const auto& discoverable = new_state.discoverable;
 
   if (name && adapter->GetName() != *name) {
     BLUETOOTH_LOG(USER) << "SetAdapterState: name=" << *name;

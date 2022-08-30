@@ -438,7 +438,7 @@ std::unique_ptr<api::tabs::Tab> ExtensionTabUtil::CreateTabObject(
     // Otherwise use the instantaneous notion of audibility.
     audible = contents->IsCurrentlyAudible();
   }
-  tab_object->audible = std::make_unique<bool>(audible);
+  tab_object->audible = audible;
   auto* tab_lifecycle_unit_external =
       resource_coordinator::TabLifecycleUnitExternal::FromWebContents(contents);
 

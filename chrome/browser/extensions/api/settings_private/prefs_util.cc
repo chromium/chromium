@@ -1080,8 +1080,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     bool can_be_disabled =
         !ExtensionSystem::Get(profile_)->management_policy()->MustRemainEnabled(
             extension, nullptr);
-    pref_object->extension_can_be_disabled =
-        std::make_unique<bool>(can_be_disabled);
+    pref_object->extension_can_be_disabled = can_be_disabled;
     return pref_object;
   }
 

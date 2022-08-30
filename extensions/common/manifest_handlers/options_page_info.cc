@@ -135,7 +135,7 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
         install_warnings->push_back(
             InstallWarning(base::UTF16ToASCII(options_parse_error)));
       }
-      if (options_ui->chrome_style.get()) {
+      if (options_ui->chrome_style) {
         if (extension->manifest_version() < 3)
           chrome_style = *options_ui->chrome_style;
         else {
@@ -143,9 +143,7 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
           return nullptr;
         }
       }
-      open_in_tab = false;
-      if (options_ui->open_in_tab.get())
-        open_in_tab = *options_ui->open_in_tab;
+      open_in_tab = options_ui->open_in_tab.value_or(false);
     }
   }
 

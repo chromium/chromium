@@ -85,15 +85,14 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
   DCHECK(!(ShouldInsertCSS() && ShouldRemoveCSS()));
 
   ScriptExecutor::FrameScope frame_scope =
-      details_->all_frames.get() && *details_->all_frames
-          ? ScriptExecutor::INCLUDE_SUB_FRAMES
-          : ScriptExecutor::SPECIFIED_FRAMES;
+      details_->all_frames.value_or(false) ? ScriptExecutor::INCLUDE_SUB_FRAMES
+                                           : ScriptExecutor::SPECIFIED_FRAMES;
 
   root_frame_id_ =
       details_->frame_id.value_or(ExtensionApiFrameIdMap::kTopFrameId);
 
   ScriptExecutor::MatchAboutBlank match_about_blank =
-      details_->match_about_blank.get() && *details_->match_about_blank
+      details_->match_about_blank.value_or(false)
           ? ScriptExecutor::MATCH_ABOUT_BLANK
           : ScriptExecutor::DONT_MATCH_ABOUT_BLANK;
 

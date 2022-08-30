@@ -163,7 +163,7 @@ system_display::DisplayMode GetDisplayModeFromMojo(
   result.device_scale_factor = mode.device_scale_factor;
   result.refresh_rate = mode.refresh_rate;
   result.is_native = mode.is_native;
-  result.is_interlaced = std::make_unique<bool>(mode.is_interlaced);
+  result.is_interlaced = mode.is_interlaced;
   return result;
 }
 
@@ -181,8 +181,7 @@ system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
   info.is_primary = mojo_info.is_primary;
   info.is_internal = mojo_info.is_internal;
   info.is_enabled = mojo_info.is_enabled;
-  info.is_auto_rotation_allowed =
-      std::make_unique<bool>(mojo_info.is_auto_rotation_allowed);
+  info.is_auto_rotation_allowed = mojo_info.is_auto_rotation_allowed;
   info.dpi_x = mojo_info.dpi_x;
   info.dpi_y = mojo_info.dpi_y;
   info.rotation =

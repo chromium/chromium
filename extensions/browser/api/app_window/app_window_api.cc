@@ -196,8 +196,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
             frame_id = existing_frame->GetRoutingID();
           }
 
-          if (!options->hidden.get() || !*options->hidden) {
-            if (options->focused.get() && !*options->focused)
+          if (!options->hidden || !*options->hidden) {
+            if (options->focused && !*options->focused)
               existing_window->Show(AppWindow::SHOW_INACTIVE);
             else
               existing_window->Show(AppWindow::SHOW_ACTIVE);
@@ -250,7 +250,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 #else
       // IME extensions must create ime window (with "ime: true" and
       // "frame: none").
-      if (options->ime.get() && *options->ime.get() &&
+      if (options->ime.value_or(false) &&
           create_params.frame == AppWindow::FRAME_NONE) {
         create_params.is_ime_window = true;
       } else {
@@ -259,13 +259,13 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       }
 #endif  // IS_CHROMEOS_ASH
     } else {
-      if (options->ime.get()) {
+      if (options->ime) {
         return RespondNow(
             Error(app_window_constants::kImeOptionIsNotSupported));
       }
     }
 
-    if (options->alpha_enabled.get()) {
+    if (options->alpha_enabled) {
       const char* const kAllowlist[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
@@ -306,13 +306,13 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 #endif
     }
 
-    if (options->hidden.get())
+    if (options->hidden)
       create_params.hidden = *options->hidden;
 
-    if (options->resizable.get())
+    if (options->resizable)
       create_params.resizable = *options->resizable;
 
-    if (options->always_on_top.get()) {
+    if (options->always_on_top) {
       create_params.always_on_top = *options->always_on_top;
 
       if (create_params.always_on_top &&
@@ -322,16 +322,16 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       }
     }
 
-    if (options->focused.get())
+    if (options->focused)
       create_params.focused = *options->focused;
 
-    if (options->visible_on_all_workspaces.get()) {
+    if (options->visible_on_all_workspaces) {
       create_params.visible_on_all_workspaces =
           *options->visible_on_all_workspaces;
     }
 
-    if (options->show_in_shelf.get()) {
-      create_params.show_in_shelf = *options->show_in_shelf.get();
+    if (options->show_in_shelf) {
+      create_params.show_in_shelf = *options->show_in_shelf;
 
       if (create_params.show_in_shelf && create_params.window_key.empty()) {
         return RespondNow(

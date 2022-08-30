@@ -232,7 +232,7 @@ void SerialConnection::Open(api::SerialPortManager* port_manager,
   DCHECK(!send_pipe_);
   DCHECK(!receive_pipe_);
 
-  if (options.persistent.get())
+  if (options.persistent)
     set_persistent(*options.persistent);
   if (options.name.get())
     set_name(*options.name);
@@ -435,7 +435,7 @@ void SerialConnection::Send(const std::vector<uint8_t>& data,
 void SerialConnection::Configure(const api::serial::ConnectionOptions& options,
                                  ConfigureCompleteCallback callback) {
   DCHECK(serial_port_);
-  if (options.persistent.get())
+  if (options.persistent)
     set_persistent(*options.persistent);
   if (options.name.get())
     set_name(*options.name);
@@ -475,8 +475,7 @@ void SerialConnection::GetInfo(GetInfoCompleteCallback callback) const {
         info->data_bits = ConvertDataBitsFromMojo(port_info->data_bits);
         info->parity_bit = ConvertParityBitFromMojo(port_info->parity_bit);
         info->stop_bits = ConvertStopBitsFromMojo(port_info->stop_bits);
-        info->cts_flow_control =
-            std::make_unique<bool>(port_info->cts_flow_control);
+        info->cts_flow_control = port_info->cts_flow_control;
         std::move(callback).Run(true, std::move(info));
       },
       std::move(callback), std::move(info));
@@ -631,11 +630,11 @@ TypeConverter<device::mojom::SerialHostControlSignalsPtr,
     Convert(const extensions::api::serial::HostControlSignals& input) {
   device::mojom::SerialHostControlSignalsPtr output(
       device::mojom::SerialHostControlSignals::New());
-  if (input.dtr.get()) {
+  if (input.dtr) {
     output->has_dtr = true;
     output->dtr = *input.dtr;
   }
-  if (input.rts.get()) {
+  if (input.rts) {
     output->has_rts = true;
     output->rts = *input.rts;
   }
@@ -654,7 +653,7 @@ TypeConverter<device::mojom::SerialConnectionOptionsPtr,
   output->data_bits = extensions::ConvertDataBitsToMojo(input.data_bits);
   output->parity_bit = extensions::ConvertParityBitToMojo(input.parity_bit);
   output->stop_bits = extensions::ConvertStopBitsToMojo(input.stop_bits);
-  if (input.cts_flow_control.get()) {
+  if (input.cts_flow_control) {
     output->has_cts_flow_control = true;
     output->cts_flow_control = *input.cts_flow_control;
   }

@@ -295,13 +295,13 @@ std::unique_ptr<Automation> AutomationInfo::AsManifestType(
     const AutomationInfo& info) {
   std::unique_ptr<Automation> automation(new Automation);
   if (!info.desktop && !info.interact && info.matches.size() == 0) {
-    automation->as_boolean = std::make_unique<bool>(true);
+    automation->as_boolean = true;
     return automation;
   }
 
   Automation::Object* as_object = new Automation::Object;
-  as_object->desktop = std::make_unique<bool>(info.desktop);
-  as_object->interact = std::make_unique<bool>(info.interact);
+  as_object->desktop = info.desktop;
+  as_object->interact = info.interact;
   if (info.matches.size() > 0)
     as_object->matches = info.matches.ToStringVector();
   automation->as_object.reset(as_object);

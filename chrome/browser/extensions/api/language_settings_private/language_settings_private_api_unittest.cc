@@ -71,8 +71,8 @@ MockLanguageSettingsPrivateDelegate::GetHunspellDictionaryStatuses() {
   DictionaryStatus status;
   status.language_code = "fr";
   status.is_ready = false;
-  status.is_downloading = std::make_unique<bool>(true);
-  status.download_failed = std::make_unique<bool>(false);
+  status.is_downloading = true;
+  status.download_failed = false;
   statuses.push_back(std::move(status));
   return statuses;
 }

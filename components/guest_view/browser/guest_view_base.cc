@@ -248,8 +248,7 @@ gfx::Size GuestViewBase::GetDefaultSize() const {
 }
 
 void GuestViewBase::SetSize(const SetSizeParams& params) {
-  bool enable_auto_size =
-      params.enable_auto_size ? *params.enable_auto_size : auto_size_enabled_;
+  bool enable_auto_size = params.enable_auto_size.value_or(auto_size_enabled_);
   gfx::Size min_size = params.min_size ? *params.min_size : min_auto_size_;
   gfx::Size max_size = params.max_size ? *params.max_size : max_auto_size_;
 
@@ -802,7 +801,7 @@ void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
   }
 
   SetSizeParams set_size_params;
-  set_size_params.enable_auto_size = std::make_unique<bool>(auto_size_enabled);
+  set_size_params.enable_auto_size = auto_size_enabled;
   set_size_params.min_size = std::make_unique<gfx::Size>(min_width, min_height);
   set_size_params.max_size = std::make_unique<gfx::Size>(max_width, max_height);
   set_size_params.normal_size =

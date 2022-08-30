@@ -129,13 +129,13 @@ std::unique_ptr<api::audio::DeviceFilter> ConvertDeviceFilterFromMojom(
   auto result = std::make_unique<api::audio::DeviceFilter>();
   switch (filter->includedActiveState) {
     case crosapi::mojom::DeviceFilter::ActiveState::kUnset:
-      result->is_active = nullptr;
+      result->is_active = absl::nullopt;
       break;
     case crosapi::mojom::DeviceFilter::ActiveState::kInactive:
-      result->is_active = std::make_unique<bool>(false);
+      result->is_active = false;
       break;
     case crosapi::mojom::DeviceFilter::ActiveState::kActive:
-      result->is_active = std::make_unique<bool>(true);
+      result->is_active = true;
       break;
   }
 

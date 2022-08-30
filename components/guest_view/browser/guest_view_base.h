@@ -35,11 +35,13 @@ class GuestViewManager;
 // that when |enable_auto_size| is true, providing |normal_size| is not
 // meaningful. This is because the normal size of the guestview is overridden
 // whenever autosizing occurs.
+// TODO(crbug.com/1354063): This remaining members of this structure should be
+// converted to absl::optional<T>.
 struct SetSizeParams {
   SetSizeParams();
   ~SetSizeParams();
 
-  std::unique_ptr<bool> enable_auto_size;
+  absl::optional<bool> enable_auto_size;
   std::unique_ptr<gfx::Size> min_size;
   std::unique_ptr<gfx::Size> max_size;
   std::unique_ptr<gfx::Size> normal_size;

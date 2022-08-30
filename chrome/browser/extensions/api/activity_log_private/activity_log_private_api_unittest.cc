@@ -69,8 +69,8 @@ TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
   std::unique_ptr<ExtensionActivity::Other> other(std::move(result.other));
   ASSERT_EQ(api::activity_log_private::EXTENSION_ACTIVITY_DOM_VERB_INSERTED,
             other->dom_verb);
-  ASSERT_TRUE(other->prerender.get());
-  ASSERT_EQ("12345", *(result.activity_id.get()));
+  ASSERT_TRUE(other->prerender);
+  ASSERT_EQ("12345", *result.activity_id);
 }
 
 }  // namespace extensions

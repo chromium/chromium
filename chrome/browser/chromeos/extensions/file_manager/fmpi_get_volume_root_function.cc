@@ -43,7 +43,7 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   const auto process_id = source_process_id();
   // Read-only permisisons.
   policy->GrantReadFile(process_id, volume->mount_path());
-  if (params->options.writable.get() && *params->options.writable.get()) {
+  if (params->options.writable.value_or(false)) {
     // Additional write permissions.
     policy->GrantCreateReadWriteFile(process_id, volume->mount_path());
     policy->GrantCopyInto(process_id, volume->mount_path());

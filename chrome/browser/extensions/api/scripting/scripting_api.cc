@@ -545,10 +545,9 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
       script_info.css->push_back(css_script->relative_path().AsUTF8Unsafe());
   }
 
-  script_info.all_frames = std::make_unique<bool>(script.match_all_frames());
-  script_info.match_origin_as_fallback =
-      std::make_unique<bool>(script.match_origin_as_fallback() ==
-                             MatchOriginAsFallbackBehavior::kAlways);
+  script_info.all_frames = script.match_all_frames();
+  script_info.match_origin_as_fallback = script.match_origin_as_fallback() ==
+                                         MatchOriginAsFallbackBehavior::kAlways;
   script_info.run_at = ConvertRunLocationForAPI(script.run_location());
   script_info.world = ConvertExecutionWorldForAPI(script.execution_world());
 
@@ -1064,8 +1063,8 @@ ScriptingGetRegisteredContentScriptsFunction::Run() {
   for (const std::unique_ptr<UserScript>& script : dynamic_scripts) {
     if (id_filter.empty() || base::Contains(id_filter, script->id())) {
       auto registered_script = CreateRegisteredContentScriptInfo(*script);
-      registered_script.persist_across_sessions = std::make_unique<bool>(
-          base::Contains(persistent_script_ids, script->id()));
+      registered_script.persist_across_sessions =
+          base::Contains(persistent_script_ids, script->id());
       script_infos.push_back(std::move(registered_script));
     }
   }

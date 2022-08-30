@@ -141,10 +141,10 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
 
   ConvertDeviceTypeToApi(device.GetDeviceType(), &(out->type));
 
-  out->paired = std::make_unique<bool>(device.IsPaired());
-  out->connected = std::make_unique<bool>(device.IsConnected());
-  out->connecting = std::make_unique<bool>(device.IsConnecting());
-  out->connectable = std::make_unique<bool>(device.IsConnectable());
+  out->paired = device.IsPaired();
+  out->connected = device.IsConnected();
+  out->connecting = device.IsConnecting();
+  out->connectable = device.IsConnectable();
 
   std::vector<std::string>* string_uuids = new std::vector<std::string>();
   const device::BluetoothDevice::UUIDSet& uuids = device.GetUUIDs();

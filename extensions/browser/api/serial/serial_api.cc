@@ -44,12 +44,6 @@ const char kErrorConnectFailed[] = "Failed to connect to the port.";
 const char kErrorSerialConnectionNotFound[] = "Serial connection not found.";
 const char kErrorGetControlSignalsFailed[] = "Failed to get control signals.";
 
-template <class T>
-void SetDefaultScopedPtrValue(std::unique_ptr<T>& ptr, const T& value) {
-  if (!ptr.get())
-    ptr.reset(new T(value));
-}
-
 template <typename T>
 void SetDefaultOptionalValue(absl::optional<T>& field, const T& value) {
   if (!field)
@@ -130,10 +124,10 @@ ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
     params->options = std::make_unique<serial::ConnectionOptions>();
   serial::ConnectionOptions* options = params->options.get();
 
-  SetDefaultScopedPtrValue(options->persistent, false);
+  SetDefaultOptionalValue(options->persistent, false);
   SetDefaultOptionalValue(options->buffer_size, kDefaultBufferSize);
   SetDefaultOptionalValue(options->bitrate, kDefaultBitrate);
-  SetDefaultScopedPtrValue(options->cts_flow_control, false);
+  SetDefaultOptionalValue(options->cts_flow_control, false);
   SetDefaultOptionalValue(options->receive_timeout, kDefaultReceiveTimeout);
   SetDefaultOptionalValue(options->send_timeout, kDefaultSendTimeout);
 

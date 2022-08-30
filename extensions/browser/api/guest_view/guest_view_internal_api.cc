@@ -93,8 +93,7 @@ ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
 
   guest_view::SetSizeParams set_size_params;
   if (params->params.enable_auto_size) {
-    set_size_params.enable_auto_size.reset(
-        params->params.enable_auto_size.release());
+    set_size_params.enable_auto_size = params->params.enable_auto_size;
   }
   if (params->params.min) {
     set_size_params.min_size = std::make_unique<gfx::Size>(

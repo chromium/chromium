@@ -166,9 +166,9 @@ void ViscaWebcam::Open(const std::string& extension_id,
 
   // Set the receive buffer size to receive the response data 1 by 1.
   options.buffer_size = 1;
-  options.persistent = std::make_unique<bool>(false);
+  options.persistent = false;
   options.bitrate = 9600;
-  options.cts_flow_control = std::make_unique<bool>(false);
+  options.cts_flow_control = false;
   // Enable send and receive timeout error.
   options.receive_timeout = 3000;
   options.send_timeout = 3000;

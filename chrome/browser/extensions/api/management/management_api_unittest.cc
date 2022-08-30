@@ -564,7 +564,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     // |may_enable| is only returned for extensions which are not enabled.
-    EXPECT_FALSE(info->may_enable.get());
+    EXPECT_FALSE(info->may_enable);
   }
 
   // Simulate blocklisting the extension and verify that the extension shows as
@@ -586,7 +586,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
     std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
-    ASSERT_TRUE(info->may_enable.get());
+    ASSERT_TRUE(info->may_enable);
     EXPECT_FALSE(*(info->may_enable));
   }
 
@@ -609,7 +609,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
     std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
-    ASSERT_TRUE(info->may_enable.get());
+    ASSERT_TRUE(info->may_enable);
     EXPECT_TRUE(*(info->may_enable));
   }
 }

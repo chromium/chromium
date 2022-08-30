@@ -368,11 +368,11 @@ class ImeObserverChromeOS
     keyboard_event.code = event.code() == ui::DomCode::NONE
                               ? ui::KeyboardCodeToDomKeycode(event.key_code())
                               : event.GetCodeString();
-    keyboard_event.alt_key = std::make_unique<bool>(event.IsAltDown());
-    keyboard_event.altgr_key = std::make_unique<bool>(event.IsAltGrDown());
-    keyboard_event.ctrl_key = std::make_unique<bool>(event.IsControlDown());
-    keyboard_event.shift_key = std::make_unique<bool>(event.IsShiftDown());
-    keyboard_event.caps_lock = std::make_unique<bool>(event.IsCapsLockOn());
+    keyboard_event.alt_key = event.IsAltDown();
+    keyboard_event.altgr_key = event.IsAltGrDown();
+    keyboard_event.ctrl_key = event.IsControlDown();
+    keyboard_event.shift_key = event.IsShiftDown();
+    keyboard_event.caps_lock = event.IsCapsLockOn();
 
     auto args(input_ime::OnKeyEvent::Create(component_id, keyboard_event,
                                             request_id));

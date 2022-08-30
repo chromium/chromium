@@ -181,8 +181,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
   }
 
   bool accepts_tls_channel_id =
-      externally_connectable->accepts_tls_channel_id.get() &&
-      *externally_connectable->accepts_tls_channel_id;
+      externally_connectable->accepts_tls_channel_id.value_or(false);
   return base::WrapUnique(new ExternallyConnectableInfo(
       std::move(matches), ids, all_ids, accepts_tls_channel_id));
 }

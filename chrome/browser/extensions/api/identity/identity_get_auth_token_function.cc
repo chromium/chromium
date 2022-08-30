@@ -97,8 +97,8 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   std::unique_ptr<api::identity::GetAuthToken::Params> params(
       api::identity::GetAuthToken::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  interactive_ = params->details.get() && params->details->interactive.get() &&
-                 *params->details->interactive;
+  interactive_ =
+      params->details.get() && params->details->interactive.value_or(false);
 
   should_prompt_for_scopes_ = interactive_;
   should_prompt_for_signin_ =
@@ -106,8 +106,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
 
   enable_granular_permissions_ =
       params->details.get() &&
-      params->details->enable_granular_permissions.get() &&
-      *params->details->enable_granular_permissions;
+      params->details->enable_granular_permissions.value_or(false);
 
   DCHECK(extension());
   const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());

@@ -126,18 +126,17 @@ TEST_F(IndexedRuleTest, OptionsParsing) {
   struct {
     const dnr_api::DomainType domain_type;
     const dnr_api::RuleActionType action_type;
-    std::unique_ptr<bool> is_url_filter_case_sensitive;
+    absl::optional<bool> is_url_filter_case_sensitive;
     const uint8_t expected_options;
   } cases[] = {
-      {dnr_api::DOMAIN_TYPE_NONE, dnr_api::RULE_ACTION_TYPE_BLOCK, nullptr,
+      {dnr_api::DOMAIN_TYPE_NONE, dnr_api::RULE_ACTION_TYPE_BLOCK,
+       absl::nullopt,
        flat_rule::OptionFlag_APPLIES_TO_THIRD_PARTY |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
-      {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW,
-       std::make_unique<bool>(true),
+      {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW, true,
        flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
-      {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW,
-       std::make_unique<bool>(false),
+      {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW, false,
        flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
            flat_rule::OptionFlag_IS_CASE_INSENSITIVE},
@@ -308,12 +307,12 @@ TEST_F(IndexedRuleTest, UrlFilterParsing) {
 TEST_F(IndexedRuleTest, CaseInsensitiveLowerCased) {
   const std::string kPattern = "/QUERY";
   struct {
-    std::unique_ptr<bool> is_url_filter_case_sensitive;
+    absl::optional<bool> is_url_filter_case_sensitive;
     std::string expected_pattern;
   } test_cases[] = {
-      {std::make_unique<bool>(false), "/query"},
-      {std::make_unique<bool>(true), "/QUERY"},
-      {nullptr, "/QUERY"}  // By default patterns are case sensitive.
+      {false, "/query"},
+      {true, "/QUERY"},
+      {absl::nullopt, "/QUERY"}  // By default patterns are case sensitive.
   };
 
   for (auto& test_case : test_cases) {

@@ -291,10 +291,9 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
       CompleteGetEntryProperties(error);
       return;
     }
-    properties_->can_delete = std::make_unique<bool>(metadata.supports_delete);
-    properties_->can_rename = std::make_unique<bool>(metadata.supports_rename);
-    properties_->can_add_children =
-        std::make_unique<bool>(metadata.dir_supports_create);
+    properties_->can_delete = metadata.supports_delete;
+    properties_->can_rename = metadata.supports_rename;
+    properties_->can_add_children = metadata.dir_supports_create;
     if (!metadata.last_modified.is_null()) {
       properties_->modification_time = std::make_unique<double>(
           metadata.last_modified.ToJsTimeIgnoringNull());

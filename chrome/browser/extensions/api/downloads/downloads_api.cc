@@ -1055,7 +1055,7 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
     }
   }
 
-  if (options.save_as.get())
+  if (options.save_as)
     download_params->set_prompt(*options.save_as);
 
   if (options.headers.get()) {

@@ -163,24 +163,24 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   metadata->summary_label = base::UTF16ToUTF8(label_pieces.first);
   metadata->summary_sublabel =
       std::make_unique<std::string>(base::UTF16ToUTF8(label_pieces.second));
-  metadata->is_local = std::make_unique<bool>(credit_card.record_type() ==
-                                              autofill::CreditCard::LOCAL_CARD);
-  metadata->is_cached = std::make_unique<bool>(
-      credit_card.record_type() == autofill::CreditCard::FULL_SERVER_CARD);
+  metadata->is_local =
+      credit_card.record_type() == autofill::CreditCard::LOCAL_CARD;
+  metadata->is_cached =
+      credit_card.record_type() == autofill::CreditCard::FULL_SERVER_CARD;
   // IsValid() checks if both card number and expiration date are valid.
   // IsServerCard() checks whether there is a duplicated server card in
   // |personal_data|.
-  metadata->is_migratable = std::make_unique<bool>(
-      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card));
-  metadata->is_virtual_card_enrollment_eligible = std::make_unique<bool>(
+  metadata->is_migratable =
+      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card);
+  metadata->is_virtual_card_enrollment_eligible =
       credit_card.virtual_card_enrollment_state() ==
           autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED ||
       credit_card.virtual_card_enrollment_state() ==
           autofill::CreditCard::VirtualCardEnrollmentState::
-              UNENROLLED_AND_ELIGIBLE);
-  metadata->is_virtual_card_enrolled = std::make_unique<bool>(
+              UNENROLLED_AND_ELIGIBLE;
+  metadata->is_virtual_card_enrolled =
       credit_card.virtual_card_enrollment_state() ==
-      autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED;
 
   card.metadata = std::move(metadata);
 

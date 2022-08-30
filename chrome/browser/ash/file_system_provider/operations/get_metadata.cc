@@ -88,7 +88,7 @@ bool ValidateIDLEntryMetadata(
   using extensions::api::file_system_provider::EntryMetadata;
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_IS_DIRECTORY &&
-      !metadata.is_directory.get()) {
+      !metadata.is_directory) {
     return false;
   }
 

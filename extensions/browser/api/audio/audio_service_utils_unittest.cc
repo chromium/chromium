@@ -114,17 +114,16 @@ TEST(AudioServiceUtilsTest, ConvertDeviceFilterToMojomActiveState) {
   crosapi::mojom::DeviceFilterPtr result;
   auto input = std::make_unique<api::audio::DeviceFilter>();
 
-  input->is_active = nullptr;
   result = ConvertDeviceFilterToMojom(input.get());
   EXPECT_TRUE(result && (result->includedActiveState ==
                          crosapi::mojom::DeviceFilter::ActiveState::kUnset));
 
-  input->is_active = std::make_unique<bool>(false);
+  input->is_active = false;
   result = ConvertDeviceFilterToMojom(input.get());
   EXPECT_TRUE(result && (result->includedActiveState ==
                          crosapi::mojom::DeviceFilter::ActiveState::kInactive));
 
-  input->is_active = std::make_unique<bool>(true);
+  input->is_active = true;
   result = ConvertDeviceFilterToMojom(input.get());
   EXPECT_TRUE(result && (result->includedActiveState ==
                          crosapi::mojom::DeviceFilter::ActiveState::kActive));

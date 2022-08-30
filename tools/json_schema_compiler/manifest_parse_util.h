@@ -75,11 +75,19 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed);
 
-// This overload is used for optional values.
+// This overload is used for optional types wrapped as unique_ptr<T>.
 template <typename T>
 bool ParseFromDictionary(const base::DictionaryValue& dict,
                          base::StringPiece key,
                          std::unique_ptr<T>* out_ptr,
+                         std::u16string* error,
+                         std::vector<base::StringPiece>* error_path_reversed);
+
+// This overload is used for optional types wrapped as absl::optional<T>.
+template <typename T>
+bool ParseFromDictionary(const base::DictionaryValue& dict,
+                         base::StringPiece key,
+                         absl::optional<T>* out_opt,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed);
 
@@ -134,6 +142,28 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
     return false;
 
   *out_ptr = std::move(result);
+  return true;
+}
+
+template <typename T>
+bool ParseFromDictionary(const base::DictionaryValue& dict,
+                         base::StringPiece key,
+                         absl::optional<T>* out_opt,
+                         std::u16string* error,
+                         std::vector<base::StringPiece>* error_path_reversed) {
+  DCHECK(out_opt);
+
+  // Ignore optional keys if they are not present without raising an error.
+  if (!dict.FindKey(key))
+    return true;
+
+  // Parse errors for optional keys which are specified should still cause a
+  // failure.
+  T result{};
+  if (!ParseFromDictionary(dict, key, &result, error, error_path_reversed))
+    return false;
+
+  *out_opt = std::move(result);
   return true;
 }
 

@@ -424,8 +424,8 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
           base::Time(),                                            //
           expiration_time,                                         //
           base::Time(),                                            //
-          OrDefault(parsed_args_->details.secure, false),          //
-          OrDefault(parsed_args_->details.http_only, false),       //
+          parsed_args_->details.secure.value_or(false),            //
+          parsed_args_->details.http_only.value_or(false),         //
           same_site,                                               //
           net::COOKIE_PRIORITY_DEFAULT,                            //
           /*same_party=*/false,                                    //

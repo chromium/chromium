@@ -35,11 +35,11 @@ const brlapi_keyCode_t kMaxFunctionKey = BRLAPI_KEY_SYM_FUNCTION + 23;
 // |KeyEvent|.
 void MapModifierFlags(brlapi_keyCode_t code, KeyEvent* event) {
   if (code & BRLAPI_KEY_FLG_CONTROL)
-    event->ctrl_key = std::make_unique<bool>(true);
+    event->ctrl_key = true;
   if (code & BRLAPI_KEY_FLG_META)
-    event->alt_key = std::make_unique<bool>(true);
+    event->alt_key = true;
   if (code & BRLAPI_KEY_FLG_SHIFT)
-    event->shift_key = std::make_unique<bool>(true);
+    event->shift_key = true;
 }
 
 // Maps a brlapi keysym, which is similar to an X keysym into the

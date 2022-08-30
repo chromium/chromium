@@ -27,19 +27,19 @@ void PopulateFeatureRestrictions(
   for (auto feature : features) {
     switch (feature) {
       case crosapi::mojom::VirtualKeyboardFeature::AUTOCOMPLETE:
-        update->auto_complete_enabled = std::make_unique<bool>(enabled);
+        update->auto_complete_enabled = enabled;
         break;
       case crosapi::mojom::VirtualKeyboardFeature::AUTOCORRECT:
-        update->auto_correct_enabled = std::make_unique<bool>(enabled);
+        update->auto_correct_enabled = enabled;
         break;
       case crosapi::mojom::VirtualKeyboardFeature::HANDWRITING:
-        update->handwriting_enabled = std::make_unique<bool>(enabled);
+        update->handwriting_enabled = enabled;
         break;
       case crosapi::mojom::VirtualKeyboardFeature::SPELL_CHECK:
-        update->spell_check_enabled = std::make_unique<bool>(enabled);
+        update->spell_check_enabled = enabled;
         break;
       case crosapi::mojom::VirtualKeyboardFeature::VOICE_INPUT:
-        update->voice_input_enabled = std::make_unique<bool>(enabled);
+        update->voice_input_enabled = enabled;
         break;
       case crosapi::mojom::VirtualKeyboardFeature::NONE:
         NOTREACHED();

@@ -312,17 +312,16 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   }
 
   properties_->size = std::make_unique<double>(metadata->size);
-  properties_->present = std::make_unique<bool>(metadata->available_offline);
-  properties_->dirty = std::make_unique<bool>(metadata->dirty);
-  properties_->hosted =
-      std::make_unique<bool>(drivefs::IsHosted(metadata->type));
-  properties_->available_offline = std::make_unique<bool>(
-      metadata->available_offline || *properties_->hosted);
-  properties_->available_when_metered = std::make_unique<bool>(
-      metadata->available_offline || *properties_->hosted);
-  properties_->pinned = std::make_unique<bool>(metadata->pinned);
-  properties_->shared = std::make_unique<bool>(metadata->shared);
-  properties_->starred = std::make_unique<bool>(metadata->starred);
+  properties_->present = metadata->available_offline;
+  properties_->dirty = metadata->dirty;
+  properties_->hosted = drivefs::IsHosted(metadata->type);
+  properties_->available_offline =
+      metadata->available_offline || *properties_->hosted;
+  properties_->available_when_metered =
+      metadata->available_offline || *properties_->hosted;
+  properties_->pinned = metadata->pinned;
+  properties_->shared = metadata->shared;
+  properties_->starred = metadata->starred;
 
   if (metadata->modification_time != base::Time()) {
     properties_->modification_time =
@@ -352,22 +351,18 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
     properties_->image_rotation = metadata->image_metadata->rotation;
   }
 
-  properties_->can_delete =
-      std::make_unique<bool>(metadata->capabilities->can_delete);
-  properties_->can_rename =
-      std::make_unique<bool>(metadata->capabilities->can_rename);
-  properties_->can_add_children =
-      std::make_unique<bool>(metadata->capabilities->can_add_children);
+  properties_->can_delete = metadata->capabilities->can_delete;
+  properties_->can_rename = metadata->capabilities->can_rename;
+  properties_->can_add_children = metadata->capabilities->can_add_children;
 
   // Only set the |can_copy| capability for hosted documents; for other files,
   // we must have read access, so |can_copy| is implicitly true.
-  properties_->can_copy = std::make_unique<bool>(
-      !*properties_->hosted || metadata->capabilities->can_copy);
-  properties_->can_share =
-      std::make_unique<bool>(metadata->capabilities->can_share);
+  properties_->can_copy =
+      !*properties_->hosted || metadata->capabilities->can_copy;
+  properties_->can_share = metadata->capabilities->can_share;
 
-  properties_->can_pin = std::make_unique<bool>(
-      metadata->can_pin == drivefs::mojom::FileMetadata::CanPinStatus::kOk);
+  properties_->can_pin =
+      metadata->can_pin == drivefs::mojom::FileMetadata::CanPinStatus::kOk;
 
   if (drivefs::IsAFile(metadata->type)) {
     properties_->thumbnail_url = std::make_unique<std::string>(
@@ -377,12 +372,11 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   }
 
   if (metadata->folder_feature) {
-    properties_->is_machine_root =
-        std::make_unique<bool>(metadata->folder_feature->is_machine_root);
+    properties_->is_machine_root = metadata->folder_feature->is_machine_root;
     properties_->is_external_media =
-        std::make_unique<bool>(metadata->folder_feature->is_external_media);
-    properties_->is_arbitrary_sync_folder = std::make_unique<bool>(
-        metadata->folder_feature->is_arbitrary_sync_folder);
+        metadata->folder_feature->is_external_media;
+    properties_->is_arbitrary_sync_folder =
+        metadata->folder_feature->is_arbitrary_sync_folder;
   }
 
   CompleteGetEntryProperties(drive::FILE_ERROR_OK);
@@ -552,8 +546,7 @@ void VolumeToVolumeMetadata(
     }
     volume_metadata->device_path = std::make_unique<std::string>(
         volume.storage_device_path().AsUTF8Unsafe());
-    volume_metadata->is_parent_device =
-        std::make_unique<bool>(volume.is_parent());
+    volume_metadata->is_parent_device = volume.is_parent();
   } else {
     volume_metadata->device_type =
         file_manager_private::DEVICE_TYPE_NONE;

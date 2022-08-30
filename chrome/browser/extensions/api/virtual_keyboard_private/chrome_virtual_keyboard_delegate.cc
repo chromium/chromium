@@ -638,32 +638,27 @@ void ChromeVirtualKeyboardDelegate::RestrictFeatures(
   keyboard::KeyboardConfig config(current_config);
   if (restrictions.spell_check_enabled &&
       config.spell_check != *restrictions.spell_check_enabled) {
-    update.spell_check_enabled =
-        std::make_unique<bool>(*restrictions.spell_check_enabled);
+    update.spell_check_enabled = *restrictions.spell_check_enabled;
     config.spell_check = *restrictions.spell_check_enabled;
   }
   if (restrictions.auto_complete_enabled &&
       config.auto_complete != *restrictions.auto_complete_enabled) {
-    update.auto_complete_enabled =
-        std::make_unique<bool>(*restrictions.auto_complete_enabled);
+    update.auto_complete_enabled = *restrictions.auto_complete_enabled;
     config.auto_complete = *restrictions.auto_complete_enabled;
   }
   if (restrictions.auto_correct_enabled &&
       config.auto_correct != *restrictions.auto_correct_enabled) {
-    update.auto_correct_enabled =
-        std::make_unique<bool>(*restrictions.auto_correct_enabled);
+    update.auto_correct_enabled = *restrictions.auto_correct_enabled;
     config.auto_correct = *restrictions.auto_correct_enabled;
   }
   if (restrictions.voice_input_enabled &&
       config.voice_input != *restrictions.voice_input_enabled) {
-    update.voice_input_enabled =
-        std::make_unique<bool>(*restrictions.voice_input_enabled);
+    update.voice_input_enabled = *restrictions.voice_input_enabled;
     config.voice_input = *restrictions.voice_input_enabled;
   }
   if (restrictions.handwriting_enabled &&
       config.handwriting != *restrictions.handwriting_enabled) {
-    update.handwriting_enabled =
-        std::make_unique<bool>(*restrictions.handwriting_enabled);
+    update.handwriting_enabled = *restrictions.handwriting_enabled;
     config.handwriting = *restrictions.handwriting_enabled;
   }
 

@@ -142,11 +142,10 @@ management::ExtensionInfo CreateExtensionInfo(
       info.disabled_reason = management::EXTENSION_DISABLED_REASON_UNKNOWN;
     }
 
-    info.may_enable = std::make_unique<bool>(
-        system->management_policy()->ExtensionMayModifySettings(
-            source_extension, &extension, nullptr) &&
-        !system->management_policy()->MustRemainDisabled(&extension, nullptr,
-                                                         nullptr));
+    info.may_enable = system->management_policy()->ExtensionMayModifySettings(
+                          source_extension, &extension, nullptr) &&
+                      !system->management_policy()->MustRemainDisabled(
+                          &extension, nullptr, nullptr);
   }
   const GURL update_url = delegate->GetEffectiveUpdateURL(extension, context);
   if (!update_url.is_empty())
@@ -692,9 +691,9 @@ ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
       management::Uninstall::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  bool show_confirm_dialog = params->options.get() &&
-                             params->options->show_confirm_dialog.get() &&
-                             *params->options->show_confirm_dialog;
+  bool show_confirm_dialog =
+      params->options.get() &&
+      params->options->show_confirm_dialog.value_or(false);
   return Uninstall(params->id, show_confirm_dialog);
 }
 
@@ -710,9 +709,9 @@ ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   EXTENSION_FUNCTION_VALIDATE(extension_.get());
 
-  bool show_confirm_dialog = params->options.get() &&
-                             params->options->show_confirm_dialog.get() &&
-                             *params->options->show_confirm_dialog;
+  bool show_confirm_dialog =
+      params->options.get() &&
+      params->options->show_confirm_dialog.value_or(false);
   return Uninstall(extension_->id(), show_confirm_dialog);
 }
 

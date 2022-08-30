@@ -121,19 +121,13 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
   }
 
   // Visibility state.
-  bool visible = true;
-  if (create_properties.visible)
-    visible = *create_properties.visible;
+  bool visible = create_properties.visible.value_or(true);
 
   // Checked state.
-  bool checked = false;
-  if (create_properties.checked.get())
-    checked = *create_properties.checked;
+  bool checked = create_properties.checked.value_or(false);
 
   // Enabled.
-  bool enabled = true;
-  if (create_properties.enabled.get())
-    enabled = *create_properties.enabled;
+  bool enabled = create_properties.enabled.value_or(true);
 
   std::unique_ptr<MenuItem> item(
       new MenuItem(item_id, title, checked, visible, enabled, type, contexts));
@@ -205,7 +199,7 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   }
 
   // Checked state.
-  if (update_properties.checked.get()) {
+  if (update_properties.checked) {
     bool checked = *update_properties.checked;
     if (checked &&
         item->type() != MenuItem::CHECKBOX &&
@@ -236,7 +230,7 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
     item->set_visible(*update_properties.visible);
 
   // Enabled.
-  if (update_properties.enabled.get())
+  if (update_properties.enabled)
     item->set_enabled(*update_properties.enabled);
 
   // Contexts.

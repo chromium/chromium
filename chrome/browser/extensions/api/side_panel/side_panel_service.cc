@@ -23,7 +23,7 @@ api::side_panel::PanelOptions GetPanelOptionsFromManifest(
   api::side_panel::PanelOptions options;
   if (!path.empty()) {
     options.path = std::make_unique<std::string>(std::string(path));
-    options.enabled = std::make_unique<bool>(true);
+    options.enabled = true;
   }
   return options;
 }

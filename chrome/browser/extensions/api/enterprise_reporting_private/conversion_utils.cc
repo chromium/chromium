@@ -121,8 +121,7 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
       const auto& executable_metadata =
           file_system_item.executable_metadata.value();
 
-      response.is_running =
-          std::make_unique<bool>(executable_metadata.is_running);
+      response.is_running = executable_metadata.is_running;
 
       if (executable_metadata.public_key_sha256) {
         response.public_key_sha256 = std::make_unique<std::string>(

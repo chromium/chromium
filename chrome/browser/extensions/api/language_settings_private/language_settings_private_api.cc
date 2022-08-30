@@ -241,19 +241,19 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
 
     // Set optional fields only if they differ from the default.
     if (base::Contains(spellcheck_language_set, entry.code)) {
-      language.supports_spellcheck = std::make_unique<bool>(true);
+      language.supports_spellcheck = true;
     }
     if (entry.supports_translate) {
-      language.supports_translate = std::make_unique<bool>(true);
+      language.supports_translate = true;
     }
 
     if (l10n_util::IsUserFacingUILocale(entry.code)) {
-      language.supports_ui = std::make_unique<bool>(true);
+      language.supports_ui = true;
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!allowed_ui_locales.empty() &&
         !base::Contains(allowed_ui_locales, language.code)) {
-      language.is_prohibited_language = std::make_unique<bool>(true);
+      language.is_prohibited_language = true;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -725,11 +725,11 @@ void PopulateInputMethodListFromDescriptors(
     input_method.language_codes = descriptor.language_codes();
     input_method.tags = GetInputMethodTags(&input_method);
     if (base::Contains(enabled_ids, input_method.id))
-      input_method.enabled = std::make_unique<bool>(true);
+      input_method.enabled = true;
     if (descriptor.options_page_url().is_valid())
-      input_method.has_options_page = std::make_unique<bool>(true);
+      input_method.has_options_page = true;
     if (!allowed_ids.empty() && !base::Contains(allowed_ids, input_method.id)) {
-      input_method.is_prohibited_by_policy = std::make_unique<bool>(true);
+      input_method.is_prohibited_by_policy = true;
     }
     input_map[base::UTF8ToUTF16(util->GetLocalizedDisplayName(descriptor))] =
         std::move(input_method);

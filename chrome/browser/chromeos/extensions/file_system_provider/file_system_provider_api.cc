@@ -51,8 +51,7 @@ api::file_system_provider::FileSystemInfo ConvertFileSystemInfoMojomToExtension(
   item.display_name = info->metadata->display_name;
   item.writable = info->metadata->writable;
   item.opened_files_limit = info->metadata->opened_files_limit;
-  item.supports_notify_tag =
-      std::make_unique<bool>(info->metadata->supports_notify);
+  item.supports_notify_tag = info->metadata->supports_notify;
 
   for (const auto& watcher : info->watchers) {
     Watcher watcher_item;

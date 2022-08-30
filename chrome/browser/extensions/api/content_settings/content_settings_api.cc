@@ -139,7 +139,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   }
 
   bool incognito = false;
-  if (params->details.incognito.get())
+  if (params->details.incognito)
     incognito = *params->details.incognito;
   if (incognito && !include_incognito_information())
     return RespondNow(Error(pref_keys::kIncognitoErrorMessage));

@@ -278,7 +278,7 @@ class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
 #if BUILDFLAG(IS_WIN)
     EXPECT_TRUE(*info.chrome_cleanup_enabled);
 #else
-    EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
+    EXPECT_FALSE(info.chrome_cleanup_enabled.has_value());
 #endif
   }
 
@@ -287,7 +287,7 @@ class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     EXPECT_TRUE(*info.third_party_blocking_enabled);
 #else
-    EXPECT_EQ(info.third_party_blocking_enabled, nullptr);
+    EXPECT_FALSE(info.third_party_blocking_enabled.has_value());
 #endif
   }
 };
@@ -395,13 +395,13 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(*info.chrome_cleanup_enabled);
 #else
-  EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
+  EXPECT_FALSE(info.chrome_cleanup_enabled.has_value());
 #endif
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(*info.third_party_blocking_enabled);
 #else
-  EXPECT_EQ(info.third_party_blocking_enabled, nullptr);
+  EXPECT_FALSE(info.third_party_blocking_enabled.has_value());
 #endif
 }
 

@@ -360,10 +360,10 @@ api::content_scripts::ContentScript CreateContentScriptObject(
       content_script.css->push_back(css_script->relative_path().AsUTF8Unsafe());
   }
 
-  content_script.all_frames = std::make_unique<bool>(script.match_all_frames());
+  content_script.all_frames = script.match_all_frames();
   content_script.match_origin_as_fallback =
-      std::make_unique<bool>(script.match_origin_as_fallback() ==
-                             MatchOriginAsFallbackBehavior::kAlways);
+      script.match_origin_as_fallback() ==
+      MatchOriginAsFallbackBehavior::kAlways;
 
   content_script.run_at =
       script_parsing::ConvertRunLocationToManifestType(script.run_location());
