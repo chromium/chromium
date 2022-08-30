@@ -23,6 +23,10 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -33,6 +37,19 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url.GetWithoutFilename();
+  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app_info->title = u"A Web App";
+  return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+}
+
+}  // namespace
 
 class BrowserLauncherTest : public InProcessBrowserTest {
  public:
@@ -258,6 +275,161 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, FullRestoreWithTwoProfiles) {
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/form.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
+                       PRE_FullRestoreWillRestoreWebAppsIfPreviouslyOpen) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* profile =
+      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+
+  // Don't delete the profile too early.
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Set the startup pref to restore the last session.
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile, pref);
+  profile->GetPrefs()->CommitPendingWrite();
+
+  // Install and launch a PWA.
+  web_app::AppId app_id = InstallPWA(profile, GURL("http://www.example.com"));
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Launch a browser.
+  Browser* browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  chrome::NewTab(browser);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, embedded_test_server()->GetURL("/empty.html")));
+
+  // Verify the state of the browser's tab strip.
+  TabStripModel* tab_strip = browser->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());
+  EXPECT_EQ("/empty.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+
+  // Ensure the session ends with the profile in last profiles.
+  auto last_opened_profiles =
+      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  EXPECT_EQ(1u, last_opened_profiles.size());
+  EXPECT_TRUE(base::Contains(last_opened_profiles, profile));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
+                       FullRestoreWillRestoreWebAppsIfPreviouslyOpen) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* profile =
+      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+
+  // The profile should match the one set up in the PRE_ test.
+  auto last_opened_profiles =
+      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  EXPECT_EQ(1u, last_opened_profiles.size());
+  EXPECT_TRUE(base::Contains(last_opened_profiles, profile));
+
+  // Trigger Lacros full restore.
+  EXPECT_FALSE(profile->restored_last_session());
+  base::RunLoop run_loop;
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  browser_service()->OpenForFullRestore(/*skip_crash_restore=*/true);
+  run_loop.Run();
+
+  // The last session should be logged as restored.
+  EXPECT_TRUE(profile->restored_last_session());
+
+  // A tabbed browser and app browser should have been restored.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(profile));
+  Browser* tabbed_browser =
+      chrome::FindAllTabbedBrowsersWithProfile(profile)[0];
+  TabStripModel* tab_strip = tabbed_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ("/empty.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+
+  Browser* app_browser = nullptr;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (browser->type() != Browser::Type::TYPE_APP)
+      continue;
+    EXPECT_FALSE(app_browser);
+    app_browser = browser;
+  }
+  ASSERT_TRUE(app_browser);
+}
+
+// Lacros Apps should only be restored when launching for full restore. Ensure
+// Apps are not restored when performing a non-full-restore session restore for
+// the browser (i.e. if all lacros windows are closed and a browser window is
+// later re-opened we should trigger a session restore, but not restore any
+// previously open app windows).
+IN_PROC_BROWSER_TEST_F(
+    BrowserLauncherTest,
+    SessionRestoreDoesNotTriggerAppRestoreWhenOpeningNewWindows) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* profile =
+      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+
+  // Keep the browser process running while the browsers are closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Install and launch a PWA.
+  web_app::AppId app_id = InstallPWA(profile, GURL("http://www.example.com"));
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Launch a browser.
+  Browser* browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  chrome::NewTab(browser);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, embedded_test_server()->GetURL("/empty.html")));
+
+  // Verify the state of the browser's tab strip.
+  TabStripModel* tab_strip = browser->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());
+  EXPECT_EQ("/empty.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+
+  // Close all browser windows and wait for the operation to complete.
+  size_t browser_count = chrome::GetTotalBrowserCount();
+  chrome::CloseAllBrowsers();
+  for (size_t i = 0; i < browser_count; ++i)
+    ui_test_utils::WaitForBrowserToClose();
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Trigger a new window with session restore.
+  base::RunLoop run_loop;
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/true);
+  run_loop.Run();
+
+  // The browser window should be restored but app browser should not.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(profile));
+  browser = chrome::FindAllTabbedBrowsersWithProfile(profile)[0];
+  tab_strip = browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ("/empty.html",
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
