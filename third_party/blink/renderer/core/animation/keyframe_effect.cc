@@ -129,10 +129,10 @@ KeyframeEffect* KeyframeEffect::Create(
     if (element) {
       element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
       PseudoId pseudo_id =
-          CSSSelectorParser::ParsePseudoElement(pseudo, element);
+          CSSSelectorParser<>::ParsePseudoElement(pseudo, element);
       AtomicString pseudo_argument =
           PseudoElementHasArguments(pseudo_id)
-              ? CSSSelectorParser::ParsePseudoElementArgument(pseudo)
+              ? CSSSelectorParser<>::ParsePseudoElementArgument(pseudo)
               : WTF::g_null_atom;
       effect->effect_target_ =
           element->GetNestedPseudoElement(pseudo_id, pseudo_argument);
@@ -225,8 +225,8 @@ void KeyframeEffect::RefreshTarget() {
   } else {
     target_element_->GetDocument().UpdateStyleAndLayoutTreeForNode(
         target_element_);
-    PseudoId pseudoId =
-        CSSSelectorParser::ParsePseudoElement(target_pseudo_, target_element_);
+    PseudoId pseudoId = CSSSelectorParser<>::ParsePseudoElement(
+        target_pseudo_, target_element_);
     new_target = target_element_->GetPseudoElement(pseudoId);
   }
 

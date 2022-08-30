@@ -27,7 +27,8 @@ class CORE_EXPORT ComputedStylePropertyMap
     : public StylePropertyMapReadOnlyMainThread {
  public:
   ComputedStylePropertyMap(Node* node, const String& pseudo_element = String())
-      : pseudo_id_(CSSSelectorParser::ParsePseudoElement(pseudo_element, node)),
+      : pseudo_id_(
+            CSSSelectorParser<>::ParsePseudoElement(pseudo_element, node)),
         node_(node) {}
   ComputedStylePropertyMap(const ComputedStylePropertyMap&) = delete;
   ComputedStylePropertyMap& operator=(const ComputedStylePropertyMap&) = delete;

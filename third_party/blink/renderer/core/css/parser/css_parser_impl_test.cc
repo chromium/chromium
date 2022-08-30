@@ -554,7 +554,8 @@ TEST(CSSParserImplTest, CorrectAtRuleOrderingWithLayers) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet,
+                                 /*use_arena=*/true);
 
   // All rules should parse successfully.
   EXPECT_EQ(1u, sheet->PreImportLayerStatementRules().size());
@@ -575,7 +576,8 @@ TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
     auto* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-    CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+    CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet,
+                                   /*use_arena=*/true);
 
     EXPECT_EQ(1u, sheet->PreImportLayerStatementRules().size());
     EXPECT_EQ(1u, sheet->ChildRules().size());
@@ -597,7 +599,8 @@ TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
     auto* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-    CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+    CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet,
+                                   /*use_arena=*/true);
 
     EXPECT_EQ(1u, sheet->PreImportLayerStatementRules().size());
     EXPECT_EQ(1u, sheet->ImportRules().size());
@@ -618,7 +621,8 @@ TEST(CSSParserImplTest, EmptyLayerStatementAfterRegularRule) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet,
+                                 /*use_arena=*/true);
 
   EXPECT_EQ(0u, sheet->PreImportLayerStatementRules().size());
   EXPECT_EQ(2u, sheet->ChildRules().size());

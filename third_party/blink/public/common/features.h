@@ -812,6 +812,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebRtcExposeNonStandardStats;
 BLINK_COMMON_EXPORT extern const base::Feature
     kSubstringSetTreeForAttributeBuckets;
 
+// If enabled, CSS parsing will attempt to use an arena for temporary
+// allocations of certain structures when parsing selectors.
+BLINK_COMMON_EXPORT extern const base::Feature kCSSParserSelectorArena;
+
 // Whether the pending beacon API is enabled or not.
 // https://github.com/WICG/unload-beacon/blob/main/README.md
 BLINK_COMMON_EXPORT extern const base::Feature kPendingBeaconAPI;

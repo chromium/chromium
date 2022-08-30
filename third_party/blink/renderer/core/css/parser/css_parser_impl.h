@@ -111,6 +111,7 @@ class CORE_EXPORT CSSParserImpl {
   static bool ParseDeclarationList(MutableCSSPropertyValueSet*,
                                    const String&,
                                    const CSSParserContext*);
+  template <bool UseArena>
   static StyleRuleBase* ParseRule(const String&,
                                   const CSSParserContext*,
                                   StyleSheetContents*,
@@ -119,6 +120,7 @@ class CORE_EXPORT CSSParserImpl {
       const String&,
       const CSSParserContext*,
       StyleSheetContents*,
+      bool use_arena,
       CSSDeferPropertyParsing = CSSDeferPropertyParsing::kNo,
       bool allow_import_rules = true,
       std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
@@ -162,31 +164,39 @@ class CORE_EXPORT CSSParserImpl {
   };
 
   // Returns whether the first encountered rule was valid
-  template <typename T>
+  template <bool UseArena, typename T>
   bool ConsumeRuleList(CSSParserTokenStream&, RuleListType, T callback);
 
   // These functions update the range/stream they're given
+  template <bool UseArena>
   StyleRuleBase* ConsumeAtRule(CSSParserTokenStream&, AllowedRulesType);
+  template <bool UseArena>
   StyleRuleBase* ConsumeQualifiedRule(CSSParserTokenStream&, AllowedRulesType);
 
   static StyleRuleCharset* ConsumeCharsetRule(CSSParserTokenStream&);
   StyleRuleImport* ConsumeImportRule(const AtomicString& prelude_uri,
                                      CSSParserTokenStream&);
   StyleRuleNamespace* ConsumeNamespaceRule(CSSParserTokenStream&);
+  template <bool UseArena>
   StyleRuleMedia* ConsumeMediaRule(CSSParserTokenStream&);
+  template <bool UseArena>
   StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream&);
   StyleRuleViewport* ConsumeViewportRule(CSSParserTokenStream&);
   StyleRuleFontFace* ConsumeFontFaceRule(CSSParserTokenStream&);
   StyleRuleFontPaletteValues* ConsumeFontPaletteValuesRule(
       CSSParserTokenStream&);
+  template <bool UseArena>
   StyleRuleKeyframes* ConsumeKeyframesRule(bool webkit_prefixed,
                                            CSSParserTokenStream&);
   StyleRulePage* ConsumePageRule(CSSParserTokenStream&);
   StyleRuleProperty* ConsumePropertyRule(CSSParserTokenStream&);
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
   StyleRuleScrollTimeline* ConsumeScrollTimelineRule(CSSParserTokenStream&);
+  template <bool UseArena>
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&);
+  template <bool UseArena>
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream&);
+  template <bool UseArena>
   StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&);
   StyleRulePositionFallback* ConsumePositionFallbackRule(CSSParserTokenStream&);
   StyleRuleTry* ConsumeTryRule(CSSParserTokenStream&);
@@ -194,6 +204,8 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
                                               const RangeOffset& prelude_offset,
                                               CSSParserTokenStream& block);
+
+  template <bool UseArena>
   StyleRule* ConsumeStyleRule(CSSParserTokenStream&);
 
   void ConsumeDeclarationList(CSSParserTokenStream&, StyleRule::RuleType);
@@ -229,6 +241,11 @@ class CORE_EXPORT CSSParserImpl {
 
   // Used for temporary allocations of CSSParserSelector (we send it down
   // to CSSSelectorParser, which temporarily holds on to a reference to it).
+  // Generally only used if UseArena is true (it might be used for some smaller
+  // allocations if UseArena is false, but not for the main stylesheet parsing).
+  //
+  // We template on UseArena only to be able to run a Finch experiment.
+  // Longer-term, we expect the parameter to disappear and be always true.
   Arena arena_;
 
   HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;

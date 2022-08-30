@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
-#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
@@ -262,6 +261,7 @@ bool CSSParserImpl::ParseDeclarationList(
   return declaration->AddParsedProperties(results);
 }
 
+template <bool UseArena>
 StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
                                         const CSSParserContext* context,
                                         StyleSheetContents* style_sheet,
@@ -274,9 +274,9 @@ StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
     return nullptr;  // Parse error, empty rule
   StyleRuleBase* rule;
   if (stream.UncheckedPeek().GetType() == kAtKeywordToken)
-    rule = parser.ConsumeAtRule(stream, allowed_rules);
+    rule = parser.ConsumeAtRule<UseArena>(stream, allowed_rules);
   else
-    rule = parser.ConsumeQualifiedRule(stream, allowed_rules);
+    rule = parser.ConsumeQualifiedRule<UseArena>(stream, allowed_rules);
   if (!rule)
     return nullptr;  // Parse error, failed to consume rule
   stream.ConsumeWhitespace();
@@ -289,6 +289,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
     const String& string,
     const CSSParserContext* context,
     StyleSheetContents* style_sheet,
+    bool use_arena,
     CSSDeferPropertyParsing defer_property_parsing,
     bool allow_import_rules,
     std::unique_ptr<CachedCSSTokenizer> cached_tokenizer) {
@@ -319,20 +320,30 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
         context, string, parser.style_sheet_);
   }
   ParseSheetResult result = ParseSheetResult::kSucceeded;
-  bool first_rule_valid = parser.ConsumeRuleList(
-      stream, kTopLevelRuleList,
-      [&style_sheet, &result, allow_import_rules,
-       context](StyleRuleBase* rule) {
-        if (rule->IsCharsetRule())
-          return;
-        if (rule->IsImportRule()) {
-          if (!allow_import_rules || context->IsForMarkupSanitization()) {
-            result = ParseSheetResult::kHasUnallowedImportRule;
-            return;
-          }
-        }
-        style_sheet->ParserAppendRule(rule);
-      });
+
+  // Parse the entire list of rules; this is the main loop to parse
+  // all rules in the stylesheet, despite the “first_rule_valid”
+  // return value.
+  auto callback = [&style_sheet, &result, allow_import_rules,
+                   context](StyleRuleBase* rule) {
+    if (rule->IsCharsetRule())
+      return;
+    if (rule->IsImportRule()) {
+      if (!allow_import_rules || context->IsForMarkupSanitization()) {
+        result = ParseSheetResult::kHasUnallowedImportRule;
+        return;
+      }
+    }
+    style_sheet->ParserAppendRule(rule);
+  };
+  bool first_rule_valid;
+  if (use_arena) {
+    first_rule_valid =
+        parser.ConsumeRuleList<true>(stream, kTopLevelRuleList, callback);
+  } else {
+    first_rule_valid =
+        parser.ConsumeRuleList<false>(stream, kTopLevelRuleList, callback);
+  }
   style_sheet->SetHasSyntacticallyValidCSSHeader(first_rule_valid);
   TRACE_EVENT_END0("blink,blink_style", "CSSParserImpl::parseStyleSheet.parse");
 
@@ -366,12 +377,12 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
     return CSSSelectorList();  // Parse error; extra tokens in @page selector
 
   Arena arena;
-  ArenaUniquePtr<CSSParserSelector> selector;
+  ArenaUniquePtr<CSSParserSelector</*UseArena=*/true>> selector;
   if (!type_selector.IsNull() && pseudo.IsNull()) {
-    selector.reset(arena.New<CSSParserSelector>(
+    selector.reset(arena.New<CSSParserSelector</*UseArena=*/true>>(
         arena, QualifiedName(g_null_atom, type_selector, g_star_atom)));
   } else {
-    selector.reset(arena.New<CSSParserSelector>(arena));
+    selector.reset(arena.New<CSSParserSelector</*UseArena=*/true>>(arena));
     if (!pseudo.IsNull()) {
       selector->SetMatch(CSSSelector::kPagePseudoClass);
       selector->UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
@@ -385,10 +396,10 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
   }
 
   selector->SetForPage();
-  Vector<ArenaUniquePtr<CSSParserSelector>> selector_vector;
+  CSSSelectorVector</*UseArena=*/true> selector_vector;
   selector_vector.push_back(std::move(selector));
   CSSSelectorList selector_list =
-      CSSSelectorList::AdoptSelectorVector(selector_vector);
+      CSSSelectorList::AdoptSelectorVector</*UseArena=*/true>(selector_vector);
   return selector_list;
 }
 
@@ -434,7 +445,7 @@ void CSSParserImpl::ParseStyleSheetForInspector(const String& string,
   parser.observer_ = &observer;
   CSSTokenizer tokenizer(string);
   CSSParserTokenStream stream(tokenizer);
-  bool first_rule_valid = parser.ConsumeRuleList(
+  bool first_rule_valid = parser.ConsumeRuleList<true>(
       stream, kTopLevelRuleList, [&style_sheet](StyleRuleBase* rule) {
         if (rule->IsCharsetRule())
           return;
@@ -479,7 +490,7 @@ static CSSParserImpl::AllowedRulesType ComputeNewAllowedRules(
   return CSSParserImpl::kRegularRules;
 }
 
-template <typename T>
+template <bool UseArena, typename T>
 bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
                                     RuleListType rule_list_type,
                                     const T callback) {
@@ -513,7 +524,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
         stream.UncheckedConsume();
         continue;
       case kAtKeywordToken:
-        rule = ConsumeAtRule(stream, allowed_rules);
+        rule = ConsumeAtRule<UseArena>(stream, allowed_rules);
         break;
       case kCDOToken:
       case kCDCToken:
@@ -523,7 +534,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
         }
         [[fallthrough]];
       default:
-        rule = ConsumeQualifiedRule(stream, allowed_rules);
+        rule = ConsumeQualifiedRule<UseArena>(stream, allowed_rules);
         break;
     }
     if (!seen_rule) {
@@ -576,6 +587,7 @@ void ConsumeErroneousAtRule(CSSParserTokenStream& stream) {
   }
 }
 
+template <bool UseArena>
 StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
                                             AllowedRulesType allowed_rules) {
   DCHECK_EQ(stream.Peek().GetType(), kAtKeywordToken);
@@ -617,11 +629,11 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
 
     switch (id) {
       case kCSSAtRuleContainer:
-        return ConsumeContainerRule(stream);
+        return ConsumeContainerRule<UseArena>(stream);
       case kCSSAtRuleMedia:
-        return ConsumeMediaRule(stream);
+        return ConsumeMediaRule<UseArena>(stream);
       case kCSSAtRuleSupports:
-        return ConsumeSupportsRule(stream);
+        return ConsumeSupportsRule<UseArena>(stream);
       case kCSSAtRuleViewport:
         return ConsumeViewportRule(stream);
       case kCSSAtRuleFontFace:
@@ -629,11 +641,11 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
       case kCSSAtRuleFontPaletteValues:
         return ConsumeFontPaletteValuesRule(stream);
       case kCSSAtRuleWebkitKeyframes:
-        return ConsumeKeyframesRule(true, stream);
+        return ConsumeKeyframesRule<UseArena>(true, stream);
       case kCSSAtRuleKeyframes:
-        return ConsumeKeyframesRule(false, stream);
+        return ConsumeKeyframesRule<UseArena>(false, stream);
       case kCSSAtRuleLayer:
-        return ConsumeLayerRule(stream);
+        return ConsumeLayerRule<UseArena>(stream);
       case kCSSAtRulePage:
         return ConsumePageRule(stream);
       case kCSSAtRuleProperty:
@@ -641,7 +653,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
       case kCSSAtRuleScrollTimeline:
         return ConsumeScrollTimelineRule(stream);
       case kCSSAtRuleScope:
-        return ConsumeScopeRule(stream);
+        return ConsumeScopeRule<UseArena>(stream);
       case kCSSAtRuleCounterStyle:
         return ConsumeCounterStyleRule(stream);
       case kCSSAtRulePositionFallback:
@@ -653,11 +665,12 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
   }
 }
 
+template <bool UseArena>
 StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     CSSParserTokenStream& stream,
     AllowedRulesType allowed_rules) {
   if (allowed_rules <= kRegularRules) {
-    return ConsumeStyleRule(stream);
+    return ConsumeStyleRule<UseArena>(stream);
   }
 
   if (allowed_rules == kKeyframeRules) {
@@ -811,6 +824,7 @@ StyleRuleNamespace* CSSParserImpl::ConsumeNamespaceRule(
   return MakeGarbageCollected<StyleRuleNamespace>(namespace_prefix, uri);
 }
 
+template <bool UseArena>
 StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
@@ -838,8 +852,9 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(CSSParserTokenStream& stream) {
   const MediaQuerySet* media = CachedMediaQuerySet(prelude_string, prelude);
   DCHECK(media);
 
-  ConsumeRuleList(stream, kRegularRuleList,
-                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  ConsumeRuleList<UseArena>(
+      stream, kRegularRuleList,
+      [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
 
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
@@ -847,6 +862,7 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(CSSParserTokenStream& stream) {
   return MakeGarbageCollected<StyleRuleMedia>(media, rules);
 }
 
+template <bool UseArena>
 StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
@@ -880,8 +896,9 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
           .SimplifyWhiteSpace();
 
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList,
-                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  ConsumeRuleList<UseArena>(
+      stream, kRegularRuleList,
+      [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
 
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
@@ -949,6 +966,7 @@ StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(
       CreateCSSPropertyValueSet(parsed_properties_, kCSSFontFaceRuleMode));
 }
 
+template <bool UseArena>
 StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
     bool webkit_prefixed,
     CSSParserTokenStream& stream) {
@@ -981,7 +999,7 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
   }
 
   auto* keyframe_rule = MakeGarbageCollected<StyleRuleKeyframes>();
-  ConsumeRuleList(
+  ConsumeRuleList<UseArena>(
       stream, kKeyframesRuleList, [keyframe_rule](StyleRuleBase* keyframe) {
         keyframe_rule->ParserAppendKeyframe(To<StyleRuleKeyframe>(keyframe));
       });
@@ -1131,6 +1149,7 @@ StyleRuleScrollTimeline* CSSParserImpl::ConsumeScrollTimelineRule(
       name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
+template <bool UseArena>
 StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
   DCHECK(RuntimeEnabledFeatures::CSSScopeEnabled());
 
@@ -1154,8 +1173,9 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
     observer_->StartRuleBody(stream.Offset());
 
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList,
-                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  ConsumeRuleList<UseArena>(
+      stream, kRegularRuleList,
+      [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
 
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
@@ -1163,6 +1183,7 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
   return MakeGarbageCollected<StyleRuleScope>(*style_scope, rules);
 }
 
+template <bool UseArena>
 StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
@@ -1198,8 +1219,9 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     observer_->StartRuleBody(stream.Offset());
 
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList,
-                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  ConsumeRuleList<UseArena>(
+      stream, kRegularRuleList,
+      [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
 
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
@@ -1207,6 +1229,7 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   return MakeGarbageCollected<StyleRuleContainer>(*container_query, rules);
 }
 
+template <bool UseArena>
 StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
@@ -1264,8 +1287,9 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
   }
 
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList,
-                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  ConsumeRuleList<UseArena>(
+      stream, kRegularRuleList,
+      [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
 
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
@@ -1304,7 +1328,7 @@ StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
 
   auto* position_fallback_rule =
       MakeGarbageCollected<StyleRulePositionFallback>(AtomicString(name));
-  ConsumeRuleList(
+  ConsumeRuleList</*UseArena=*/true>(
       stream, kPositionFallbackRuleList,
       [position_fallback_rule](StyleRuleBase* try_rule) {
         position_fallback_rule->ParserAppendTryRule(To<StyleRuleTry>(try_rule));
@@ -1358,13 +1382,15 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
       CreateCSSPropertyValueSet(parsed_properties_, kCSSKeyframeRuleMode));
 }
 
+template <bool UseArena>
 StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
   if (observer_)
     observer_->StartRuleHeader(StyleRule::kStyle, stream.LookAheadOffset());
 
   // Parse the prelude of the style rule
-  CSSSelectorVector selector_vector = CSSSelectorParser::ConsumeSelector(
-      stream, context_, style_sheet_, observer_, arena_);
+  CSSSelectorVector<UseArena> selector_vector =
+      CSSSelectorParser<UseArena>::ConsumeSelector(
+          stream, context_, style_sheet_, observer_, arena_);
 
   if (selector_vector.IsEmpty()) {
     // Read the rest of the prelude if there was an error
@@ -1389,13 +1415,13 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
   // TODO(csharrison): How should we lazily parse css that needs the observer?
   if (!observer_ && lazy_state_) {
     DCHECK(style_sheet_);
-    return StyleRule::Create(selector_vector,
-                             MakeGarbageCollected<CSSLazyPropertyParserImpl>(
-                                 stream.Offset() - 1, lazy_state_));
+    return StyleRule::Create<UseArena>(
+        selector_vector, MakeGarbageCollected<CSSLazyPropertyParserImpl>(
+                             stream.Offset() - 1, lazy_state_));
   }
   ConsumeDeclarationList(stream, StyleRule::kStyle);
 
-  return StyleRule::Create(
+  return StyleRule::Create<UseArena>(
       selector_vector,
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
@@ -1632,5 +1658,18 @@ const MediaQuerySet* CSSParserImpl::CachedMediaQuerySet(
   DCHECK(media);
   return media.Get();
 }
+
+// Explicit instantiation of member function visible from other compilation
+// units.
+template CORE_EXPORT StyleRuleBase* CSSParserImpl::ParseRule<false>(
+    const String&,
+    const CSSParserContext*,
+    StyleSheetContents*,
+    AllowedRulesType);
+template CORE_EXPORT StyleRuleBase* CSSParserImpl::ParseRule<true>(
+    const String&,
+    const CSSParserContext*,
+    StyleSheetContents*,
+    AllowedRulesType);
 
 }  // namespace blink

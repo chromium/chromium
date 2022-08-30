@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
@@ -43,15 +44,16 @@ void CSSParser::ParseDeclarationListForInspector(
                                                   observer);
 }
 
-CSSSelectorVector CSSParser::ParseSelector(
+template <bool UseArena>
+CSSSelectorVector<UseArena> CSSParser::ParseSelector(
     const CSSParserContext* context,
     StyleSheetContents* style_sheet_contents,
     const String& selector,
     Arena& arena) {
   CSSTokenizer tokenizer(selector);
   const auto tokens = tokenizer.TokenizeToEOF();
-  return CSSSelectorParser::ParseSelector(CSSParserTokenRange(tokens), context,
-                                          style_sheet_contents, arena);
+  return CSSSelectorParser<UseArena>::ParseSelector(
+      CSSParserTokenRange(tokens), context, style_sheet_contents, arena);
 }
 
 CSSSelectorList CSSParser::ParsePageSelector(
@@ -67,8 +69,8 @@ CSSSelectorList CSSParser::ParsePageSelector(
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     StyleSheetContents* style_sheet,
                                     const String& rule) {
-  return CSSParserImpl::ParseRule(rule, context, style_sheet,
-                                  CSSParserImpl::kAllowImportRules);
+  return CSSParserImpl::ParseRule</*UseArena=*/true>(
+      rule, context, style_sheet, CSSParserImpl::kAllowImportRules);
 }
 
 ParseSheetResult CSSParser::ParseSheet(
@@ -78,9 +80,11 @@ ParseSheetResult CSSParser::ParseSheet(
     CSSDeferPropertyParsing defer_property_parsing,
     bool allow_import_rules,
     std::unique_ptr<CachedCSSTokenizer> tokenizer) {
+  const bool use_arena =
+      base::FeatureList::IsEnabled(blink::features::kCSSParserSelectorArena);
   return CSSParserImpl::ParseStyleSheet(
-      text, context, style_sheet, defer_property_parsing, allow_import_rules,
-      std::move(tokenizer));
+      text, context, style_sheet, use_arena, defer_property_parsing,
+      allow_import_rules, std::move(tokenizer));
 }
 
 void CSSParser::ParseSheetForInspector(const CSSParserContext* context,
@@ -219,7 +223,7 @@ std::unique_ptr<Vector<double>> CSSParser::ParseKeyframeKeyList(
 
 StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,
                                                 const String& rule) {
-  StyleRuleBase* keyframe = CSSParserImpl::ParseRule(
+  StyleRuleBase* keyframe = CSSParserImpl::ParseRule</*UseArena=*/true>(
       rule, context, nullptr, CSSParserImpl::kKeyframeRules);
   return To<StyleRuleKeyframe>(keyframe);
 }
@@ -335,5 +339,19 @@ MutableCSSPropertyValueSet* CSSParser::ParseFont(
     return nullptr;
   return set;
 }
+
+// Explicit instantiation of member function visible from other compilation
+// units.
+template CORE_EXPORT CSSSelectorVector<false> CSSParser::ParseSelector<false>(
+    const CSSParserContext*,
+    StyleSheetContents*,
+    const String&,
+    Arena&);
+
+template CORE_EXPORT CSSSelectorVector<true> CSSParser::ParseSelector<true>(
+    const CSSParserContext*,
+    StyleSheetContents*,
+    const String&,
+    Arena&);
 
 }  // namespace blink

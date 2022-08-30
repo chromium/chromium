@@ -85,13 +85,14 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   StyleSheetContents* parent_contents =
       parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
   Arena arena;
-  CSSSelectorVector selector_vector =
-      CSSParser::ParseSelector(context, parent_contents, selector_text, arena);
+  CSSSelectorVector</*UseArena=*/true> selector_vector =
+      CSSParser::ParseSelector</*UseArena=*/true>(context, parent_contents,
+                                                  selector_text, arena);
   if (selector_vector.IsEmpty())
     return;
 
-  Member<StyleRule> new_style_rule =
-      StyleRule::Create(selector_vector, std::move(*style_rule_));
+  Member<StyleRule> new_style_rule = StyleRule::Create</*UseArena=*/true>(
+      selector_vector, std::move(*style_rule_));
   if (parent_contents) {
     position_hint_ = parent_contents->ReplaceRuleIfExists(
         style_rule_, new_style_rule, position_hint_);

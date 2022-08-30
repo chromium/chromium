@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
@@ -81,6 +82,18 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 }
 
 static void MeasureStyleForDumpedPage(const char* filename, const char* label) {
+  base::test::ScopedFeatureList feature_list;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "disable-parser-selector-arena")) {
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{blink::features::kCSSParserSelectorArena});
+  } else {
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kCSSParserSelectorArena},
+        /*disabled_features=*/{});
+  }
+
   // Running more than once is useful for profiling. (If this flag does not
   // exist, it will return the empty string.)
   const std::string recalc_iterations_str =

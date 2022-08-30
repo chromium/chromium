@@ -75,13 +75,15 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
       unsigned expected_fast_reject_filter_cache_count,
       unsigned expected_bloom_filter_allocation_count) const {
     Arena arena;
-    CSSSelectorVector selector_vector = CSSParser::ParseSelector(
-        MakeGarbageCollected<CSSParserContext>(
-            *document, NullURL(), true /* origin_clean */, Referrer(),
-            WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-        nullptr, selector_text, arena);
+    CSSSelectorVector</*UseArena=*/true> selector_vector =
+        CSSParser::ParseSelector</*UseArena=*/true>(
+            MakeGarbageCollected<CSSParserContext>(
+                *document, NullURL(), true /* origin_clean */, Referrer(),
+                WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+            nullptr, selector_text, arena);
     CSSSelectorList selector_list =
-        CSSSelectorList::AdoptSelectorVector(selector_vector);
+        CSSSelectorList::AdoptSelectorVector</*UseArena=*/true>(
+            selector_vector);
     const CSSSelector* selector = nullptr;
     for (selector = selector_list.First();
          selector && selector->GetPseudoType() != CSSSelector::kPseudoHas;

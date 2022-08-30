@@ -642,7 +642,8 @@ void CSSSelector::UpdatePseudoPage(const AtomicString& value,
                                    const Document* document) {
   DCHECK_EQ(Match(), kPagePseudoClass);
   SetValue(value);
-  PseudoType type = CSSSelectorParser::ParsePseudoType(value, false, document);
+  PseudoType type = CSSSelectorParser</*UseArena=*/true>::ParsePseudoType(
+      value, false, document);
   if (type != kPseudoFirstPage && type != kPseudoLeftPage &&
       type != kPseudoRightPage) {
     type = kPseudoUnknown;
@@ -656,8 +657,9 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
                                    CSSParserMode mode) {
   DCHECK(match_ == kPseudoClass || match_ == kPseudoElement);
   AtomicString lower_value = value.LowerASCII();
-  PseudoType pseudo_type = CSSSelectorParser::ParsePseudoType(
-      lower_value, has_arguments, context.GetDocument());
+  PseudoType pseudo_type =
+      CSSSelectorParser</*UseArena=*/true>::ParsePseudoType(
+          lower_value, has_arguments, context.GetDocument());
   SetPseudoType(pseudo_type);
   SetValue(pseudo_type == kPseudoState ? value : lower_value);
 

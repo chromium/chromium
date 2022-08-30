@@ -33,10 +33,13 @@
 
 namespace blink {
 
+template <bool UseArena>
 class CSSParserSelector;
 
 // See css_selector_parser.h.
-using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
+template <bool UseArena>
+using CSSSelectorVector =
+    Vector<MaybeArenaUniquePtr<CSSParserSelector<UseArena>, UseArena>>;
 
 // This class represents a CSS selector, i.e. a pattern of one or more
 // simple selectors. https://www.w3.org/TR/css3-selectors/
@@ -90,10 +93,14 @@ class CORE_EXPORT CSSSelectorList {
   // Finds out how many elements one would need to allocate for
   // AdoptSelectorVector(), ie., storing the selector tree as a flattened list.
   // The returned count is in CSSSelector elements, not bytes.
-  static size_t FlattenedSize(const CSSSelectorVector& selector_vector);
+  template <bool UseArena>
+  static size_t FlattenedSize(
+      const CSSSelectorVector<UseArena>& selector_vector);
+  template <bool UseArena>
   static CSSSelectorList AdoptSelectorVector(
-      CSSSelectorVector& selector_vector);
-  static void AdoptSelectorVector(CSSSelectorVector& selector_vector,
+      CSSSelectorVector<UseArena>& selector_vector);
+  template <bool UseArena>
+  static void AdoptSelectorVector(CSSSelectorVector<UseArena>& selector_vector,
                                   CSSSelector* selector_array,
                                   size_t flattened_size);
 

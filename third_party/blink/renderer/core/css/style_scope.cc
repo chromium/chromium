@@ -43,7 +43,7 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   // <scope-start>
   {
     auto block = prelude.ConsumeBlock();
-    from = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
+    from = CSSSelectorParser<>::ParseScopeBoundary(block, context, style_sheet);
     if (!from)
       return nullptr;
   }
@@ -56,7 +56,7 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
       return nullptr;
 
     auto block = prelude.ConsumeBlock();
-    to = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
+    to = CSSSelectorParser<>::ParseScopeBoundary(block, context, style_sheet);
     if (!to)
       return nullptr;
   }
