@@ -74,6 +74,10 @@ std::string GetSite(const GURL& url) {
 RedirectCategory ClassifyRedirect(CookieAccessType access,
                                   EngagementLevel engagement) {
   switch (access) {
+    case CookieAccessType::kUnknown:
+      return engagement > EngagementLevel::NONE
+                 ? RedirectCategory::kUnknownCookies_HasEngagement
+                 : RedirectCategory::kUnknownCookies_NoEngagement;
     case CookieAccessType::kNone:
       return engagement > EngagementLevel::NONE
                  ? RedirectCategory::kNoCookies_HasEngagement
@@ -247,8 +251,7 @@ void DIPSBounceDetector::DidStartNavigation(
          base::TimeDelta(base::Seconds(kBounceThresholdSeconds)))) {
       // Time between page load and client-side redirect starting is only
       // tracked for stateful bounces.
-      if (client_detection_state_->cookie_access_type !=
-          CookieAccessType::kNone)
+      if (client_detection_state_->cookie_access_type > CookieAccessType::kNone)
         UmaHistogramTimeToBounce(bounce_time);
 
       DIPSRedirectChainInfo chain(
@@ -332,23 +335,18 @@ void DIPSBounceDetector::DidFinishNavigation(
     bool filter_success = server_state->filter.Filter(
         navigation_handle->GetRedirectChain(), &access_types);
     UmaHistogramCookieAccessFilterResult(filter_success, GetCookieMode());
-    if (filter_success) {
-      // Only collect metrics on server redirects if
-      // CookieAccessFilter::Filter() succeeded, because otherwise the results
-      // might be incorrect.
-      DIPSRedirectChainInfo chain(/*initial_url=*/server_state->initial_url,
-                                  /*final_url=*/navigation_handle->GetURL(),
-                                  /*length=*/access_types.size() - 1);
+    DIPSRedirectChainInfo chain(/*initial_url=*/server_state->initial_url,
+                                /*final_url=*/navigation_handle->GetURL(),
+                                /*length=*/access_types.size() - 1);
 
-      for (size_t i = 0; i < access_types.size() - 1; i++) {
-        DIPSRedirectInfo redirect(
-            /*url=*/navigation_handle->GetRedirectChain()[i],
-            /*redirect_type=*/DIPSRedirectType::kServer,
-            /*access_type=*/access_types[i],
-            /*index=*/i,
-            /*source_id=*/GetRedirectSourceId(navigation_handle, i));
-        redirect_handler_.Run(redirect, chain);
-      }
+    for (size_t i = 0; i < access_types.size() - 1; i++) {
+      DIPSRedirectInfo redirect(
+          /*url=*/navigation_handle->GetRedirectChain()[i],
+          /*redirect_type=*/DIPSRedirectType::kServer,
+          /*access_type=*/access_types[i],
+          /*index=*/i,
+          /*source_id=*/GetRedirectSourceId(navigation_handle, i));
+      redirect_handler_.Run(redirect, chain);
     }
 
     if (navigation_handle->HasCommitted()) {

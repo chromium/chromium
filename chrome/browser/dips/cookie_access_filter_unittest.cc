@@ -16,6 +16,15 @@ TEST(CookieAccessType, BitwiseOrOperator) {
 
   ASSERT_EQ(CookieAccessType::kReadWrite,
             CookieAccessType::kRead | CookieAccessType::kWrite);
+
+  ASSERT_EQ(CookieAccessType::kUnknown,
+            CookieAccessType::kUnknown | CookieAccessType::kNone);
+
+  ASSERT_EQ(CookieAccessType::kUnknown,
+            CookieAccessType::kUnknown | CookieAccessType::kRead);
+
+  ASSERT_EQ(CookieAccessType::kUnknown,
+            CookieAccessType::kUnknown | CookieAccessType::kWrite);
 }
 
 TEST(CookieAccessFilter, NoAccesses) {
@@ -72,8 +81,9 @@ TEST(CookieAccessFilter, UnexpectedURL) {
   filter.AddAccess(GURL("http://other.com"), CookieAccessFilter::Type::kRead);
 
   std::vector<CookieAccessType> result;
-  EXPECT_FALSE(filter.Filter({url1, url2}, &result));
-  EXPECT_EQ(2u, result.size());
+  ASSERT_FALSE(filter.Filter({url1, url2}, &result));
+  EXPECT_THAT(result, testing::ElementsAre(CookieAccessType::kUnknown,
+                                           CookieAccessType::kUnknown));
 }
 
 TEST(CookieAccessFilter, TwoReads) {

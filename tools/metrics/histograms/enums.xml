@@ -19213,6 +19213,7 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="CookieAccessType">
+  <int value="-1" label="Unknown cookie access"/>
   <int value="0" label="Did not read or write any cookies"/>
   <int value="1" label="Only read cookie(s)"/>
   <int value="2" label="Only wrote cookie(s)"/>
@@ -26052,6 +26053,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="6" label="Cookies only written; site has previous engagement"/>
   <int value="7"
       label="Cookies read and written; site has previous engagement"/>
+  <int value="8" label="Unknown cookie access; no previous site engagement"/>
+  <int value="9" label="Unknown cookie access; site has previous engagement"/>
 </enum>
 
 <enum name="DIPSRedirectType">

@@ -77,6 +77,12 @@ bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
 
   // Return true iff we consumed all the cookie accesses recorded by calls to
   // AddAccess().
-  return access_idx == accesses_.size() ||
-         (access_idx == accesses_.size() - 1 && matched);
+  if (access_idx == accesses_.size() ||
+      (access_idx == accesses_.size() - 1 && matched)) {
+    return true;
+  }
+
+  // Otherwise, fill the entire result vector with kUnknown and return false.
+  std::fill(result->begin(), result->end(), CookieAccessType::kUnknown);
+  return false;
 }

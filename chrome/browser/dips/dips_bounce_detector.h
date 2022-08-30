@@ -44,7 +44,7 @@ class ClientBounceDetectionState {
   std::string current_site;
   base::TimeTicks page_load_time;
   bool received_user_activation = false;
-  CookieAccessType cookie_access_type = CookieAccessType::kNone;
+  CookieAccessType cookie_access_type = CookieAccessType::kUnknown;
 };
 
 // Properties of a redirect chain common to all the URLs within the chain.
@@ -176,7 +176,9 @@ enum class RedirectCategory {
   kReadCookies_HasEngagement = 5,
   kWriteCookies_HasEngagement = 6,
   kReadWriteCookies_HasEngagement = 7,
-  kMaxValue = kReadWriteCookies_HasEngagement,
+  kUnknownCookies_NoEngagement = 8,
+  kUnknownCookies_HasEngagement = 9,
+  kMaxValue = kUnknownCookies_HasEngagement,
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_

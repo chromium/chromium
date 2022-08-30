@@ -5,13 +5,14 @@
 #include "chrome/browser/dips/dips_utils.h"
 
 #include "base/cxx17_backports.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 // CookieAccessType:
 base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
   switch (type) {
+    case CookieAccessType::kUnknown:
+      return "Unknown";
     case CookieAccessType::kNone:
       return "None";
     case CookieAccessType::kRead:

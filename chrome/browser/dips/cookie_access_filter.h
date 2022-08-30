@@ -38,7 +38,7 @@ class CookieAccessFilter {
  private:
   struct CookieAccess {
     GURL url;
-    CookieAccessType type = CookieAccessType::kNone;
+    CookieAccessType type = CookieAccessType::kUnknown;
   };
 
   // We use a vector rather than a set of URLs because order can matter. If the

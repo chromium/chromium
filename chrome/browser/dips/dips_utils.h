@@ -18,6 +18,7 @@ class TimeDelta;
 // NOTE: We use this type as a bitfield, and will soon be logging it. Don't
 // change the values or add additional members.
 enum class CookieAccessType {
+  kUnknown = -1,
   kNone = 0,
   kRead = 1,
   kWrite = 2,
