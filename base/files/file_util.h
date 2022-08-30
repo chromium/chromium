@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -191,6 +192,12 @@ BASE_EXPORT bool ContentsEqual(const FilePath& filename1,
 // otherwise.  This routine treats "\r\n" and "\n" as equivalent.
 BASE_EXPORT bool TextContentsEqual(const FilePath& filename1,
                                    const FilePath& filename2);
+
+// Reads the file at |path| and returns a vector of bytes on success, and
+// nullopt on error. For security reasons, a |path| containing path traversal
+// components ('..') is treated as a read error, returning nullopt.
+BASE_EXPORT absl::optional<std::vector<uint8_t>> ReadFileToBytes(
+    const FilePath& path);
 
 // Reads the file at |path| into |contents| and returns true on success and
 // false on error.  For security reasons, a |path| containing path traversal

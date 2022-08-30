@@ -3110,6 +3110,33 @@ TEST_F(FileUtilTest, ReadFile) {
                      static_cast<int>(exact_buffer.size())));
 }
 
+TEST_F(FileUtilTest, ReadFileToBytes) {
+  const std::vector<uint8_t> kTestData = {'0', '1', '2', '3'};
+
+  FilePath file_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ReadFileToStringTest"));
+  FilePath file_path_dangerous =
+      temp_dir_.GetPath()
+          .Append(FILE_PATH_LITERAL(".."))
+          .Append(temp_dir_.GetPath().BaseName())
+          .Append(FILE_PATH_LITERAL("ReadFileToStringTest"));
+
+  // Create test file.
+  ASSERT_TRUE(WriteFile(file_path, kTestData));
+
+  absl::optional<std::vector<uint8_t>> bytes = ReadFileToBytes(file_path);
+  ASSERT_TRUE(bytes.has_value());
+  EXPECT_EQ(kTestData, bytes);
+
+  // Write empty file.
+  ASSERT_TRUE(WriteFile(file_path, ""));
+  bytes = ReadFileToBytes(file_path);
+  ASSERT_TRUE(bytes.has_value());
+  EXPECT_TRUE(bytes->empty());
+
+  ASSERT_FALSE(ReadFileToBytes(file_path_dangerous));
+}
+
 TEST_F(FileUtilTest, ReadFileToString) {
   const char kTestData[] = "0123";
   std::string data;
