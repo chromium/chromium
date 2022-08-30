@@ -651,8 +651,8 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
     len &= 7;
 
     /* Do three interleaved CRCs to realize the throughput of one crc32x
-       instruction per cycle. Each CRC is calcuated on Z_BATCH words. The three
-       CRCs are combined into a single CRC after each set of batches. */
+       instruction per cycle. Each CRC is calculated on Z_BATCH words. The
+       three CRCs are combined into a single CRC after each set of batches. */
     while (num >= 3 * Z_BATCH) {
         crc1 = 0;
         crc2 = 0;
@@ -1138,7 +1138,7 @@ uLong ZEXPORT crc32_combine(crc1, crc2, len2)
     uLong crc2;
     z_off_t len2;
 {
-    return crc32_combine64(crc1, crc2, len2);
+    return crc32_combine64(crc1, crc2, (z_off64_t)len2);
 }
 /* ========================================================================= */
 uLong ZEXPORT crc32_combine_gen64(len2)
@@ -1154,7 +1154,7 @@ uLong ZEXPORT crc32_combine_gen64(len2)
 uLong ZEXPORT crc32_combine_gen(len2)
     z_off_t len2;
 {
-    return crc32_combine_gen64(len2);
+    return crc32_combine_gen64((z_off64_t)len2);
 }
 
 /* ========================================================================= */
