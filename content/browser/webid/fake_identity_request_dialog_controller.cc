@@ -21,7 +21,7 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     DismissCallback dismiss_callback) {
   // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
   // support multiple IDPs.
-  base::span<const IdentityRequestAccount> accounts =
+  std::vector<IdentityRequestAccount> accounts =
       identity_provider_data[0].accounts;
   DCHECK_GT(accounts.size(), 0ul);
   // Use the provided account, if any. Otherwise use the first one.
