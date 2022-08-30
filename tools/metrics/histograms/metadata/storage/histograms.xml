@@ -775,6 +775,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from when the mojo callback runs in
+    `SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet()` to the end
+    of
+    `SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished()`.
+    Only measured for calls where the mojo callback has run with a parameter
+    `success` equal to true. Recorded in
+    `SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Document.Timing.Set" units="ms"
     expires_after="2023-07-31">
   <owner>cammie@chromium.org</owner>

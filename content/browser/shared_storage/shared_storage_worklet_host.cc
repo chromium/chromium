@@ -235,7 +235,7 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
-          weak_ptr_factory_.GetWeakPtr(), urn_uuid));
+          weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now()));
 }
 
 bool SharedStorageWorkletHost::HasPendingOperations() {
@@ -563,6 +563,7 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
 void SharedStorageWorkletHost::
     OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
         const GURL& urn_uuid,
+        base::TimeTicks start_time,
         bool success,
         const std::string& error_message,
         uint32_t index) {
@@ -586,12 +587,13 @@ void SharedStorageWorkletHost::
       shared_storage_origin_,
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, success,
-                     error_message, index));
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
+                     success, error_message, index));
 }
 
 void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     const GURL& urn_uuid,
+    base::TimeTicks start_time,
     bool script_execution_succeeded,
     const std::string& script_execution_error_message,
     uint32_t index,
@@ -637,6 +639,9 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
         urn_uuid, std::move(mapping_result));
   }
 
+  base::UmaHistogramLongTimes(
+      "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
+      base::TimeTicks::Now() - start_time);
   DecrementPendingOperationsCount();
 }
 

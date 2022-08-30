@@ -127,6 +127,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   virtual void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
+      base::TimeTicks start_time,
       bool script_execution_succeeded,
       const std::string& script_execution_error_message,
       uint32_t index,
@@ -139,6 +140,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
  private:
   void OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
       const GURL& urn_uuid,
+      base::TimeTicks start_time,
       bool success,
       const std::string& error_message,
       uint32_t index);

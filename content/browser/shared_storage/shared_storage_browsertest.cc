@@ -71,6 +71,9 @@ const char kErrorTypeHistogram[] = "Storage.SharedStorage.Worklet.Error.Type";
 const char kTimingUsefulResourceHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration";
 
+const char kTimingSelectUrlExecutedInWorkletHistogram[] =
+    "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet";
+
 const double kBudgetAllowed = 5.0;
 
 const char kSelectFrom8URLsScript[] = R"(
@@ -219,18 +222,20 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
 
   void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
+      base::TimeTicks start_time,
       bool script_execution_success,
       const std::string& script_execution_error_message,
       uint32_t index,
       BudgetResult budget_result) override {
     OnRunURLSelectionOperationOnWorkletFinishedHelper(
-        urn_uuid, script_execution_success, script_execution_error_message,
-        index, std::move(budget_result),
+        urn_uuid, start_time, script_execution_success,
+        script_execution_error_message, index, std::move(budget_result),
         /*initial_message=*/true);
   }
 
   void OnRunURLSelectionOperationOnWorkletFinishedHelper(
       const GURL& urn_uuid,
+      base::TimeTicks start_time,
       bool script_execution_success,
       const std::string& script_execution_error_message,
       uint32_t index,
@@ -240,13 +245,14 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       pending_worklet_messages_.push_back(base::BindOnce(
           &TestSharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletFinishedHelper,
-          weak_ptr_factory_.GetWeakPtr(), urn_uuid, script_execution_success,
-          script_execution_error_message, index, std::move(budget_result),
+          weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
+          script_execution_success, script_execution_error_message, index,
+          std::move(budget_result),
           /*initial_message=*/false));
     } else {
       SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
-          urn_uuid, script_execution_success, script_execution_error_message,
-          index, std::move(budget_result));
+          urn_uuid, start_time, script_execution_success,
+          script_execution_error_message, index, std::move(budget_result));
     }
 
     if (initial_message)
@@ -1246,6 +1252,10 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 // Test that there's no need to charge budget if the input urls' size is 1.
@@ -1292,6 +1302,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       "Promise resolved to a number outside the length of the input urls.",
       base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1346,6 +1360,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_EQ("click", reporting_map.begin()->first);
   EXPECT_EQ(https_server()->GetURL("b.test", "/fenced_frames/report1.html"),
             reporting_map.begin()->second);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1388,6 +1406,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInDocument) {
@@ -1905,6 +1927,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 // Currently, Shared Storage is not allowed in Fenced Frames as Fenced Frames
@@ -2030,6 +2056,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 // Tests that the URN from SelectURL() is valid in different
@@ -2069,6 +2099,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_NE(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 // Tests that if the URN mapping is not finished before the keep-alive timeout,
@@ -2178,6 +2212,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title0.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+
+  // The worklet execution sequence for `selectURL()` doesn't complete, so the
+  // `kTimingSelectUrlExecutedInWorkletHistogram` histogram isn't recorded.
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     0);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2249,6 +2288,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title0.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2323,6 +2366,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2346,6 +2393,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   // No budget withdrawal as the fenced frame did not initiate a top navigation.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2374,6 +2425,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   // original shared storage origin.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2422,6 +2477,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(GetRemainingBudget(url::Origin::Create(new_frame_url)),
                    kBudgetAllowed);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2464,6 +2523,10 @@ IN_PROC_BROWSER_TEST_P(
   // original shared storage origin.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2496,6 +2559,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   // original shared storage origin.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2528,6 +2595,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   // original shared storage origin.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2558,6 +2629,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   // The budget can only be withdrawn once for each urn_uuid.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2605,6 +2680,10 @@ IN_PROC_BROWSER_TEST_P(
   // twice.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3 - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     2);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2636,6 +2715,10 @@ IN_PROC_BROWSER_TEST_P(
   // The budget can only be withdrawn once for each urn_uuid.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2681,6 +2764,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin),
                    kBudgetAllowed - 3);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     2);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2758,6 +2845,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventBrowserTest,
 
   response2.WaitForRequest();
   EXPECT_EQ(response2.http_request()->content, event_data2);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
