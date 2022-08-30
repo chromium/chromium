@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "net/url_request/url_request.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
