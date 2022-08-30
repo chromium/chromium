@@ -20,6 +20,7 @@
 #include "content/common/content_export.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 
 namespace blink {
 enum class WebFullscreenVideoStatus;
@@ -33,6 +34,7 @@ enum class MediaContentType;
 // the MediaPlayerDelegateHost.
 class CONTENT_EXPORT RendererWebMediaPlayerDelegate
     : public content::RenderFrameObserver,
+      public blink::WebViewObserver,
       public blink::WebMediaPlayerDelegate,
       public base::SupportsWeakPtr<RendererWebMediaPlayerDelegate> {
  public:
@@ -65,9 +67,11 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   bool IsStale(int player_id) override;
 
   // content::RenderFrameObserver overrides.
-  void WasHidden() override;
-  void WasShown() override;
   void OnDestruct() override;
+
+  // blink::WebViewObserver overrides.
+  void OnPageVisibilityChanged(
+      blink::mojom::PageVisibilityState visibility_state) override;
 
   // Returns the number of WebMediaPlayers that are associated with this
   // delegate.
