@@ -209,9 +209,11 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
                                                     : GrMipMapped::kNo;
   auto sk_color = viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, format());
+  const std::string label =
+      "RawDrawImageBacking" + CreateLabelForSharedImageUsage(usage());
   backend_texture_ = context_state_->gr_context()->createBackendTexture(
       size().width(), size().height(), sk_color, mipmap, GrRenderable::kYes,
-      GrProtected::kNo);
+      GrProtected::kNo, label);
   if (!backend_texture_.isValid()) {
     DLOG(ERROR) << "createBackendTexture() failed with SkColorType:"
                 << sk_color;

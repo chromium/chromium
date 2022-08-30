@@ -242,6 +242,8 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     DCHECK_NE(format(), viz::ResourceFormat::ETC1);
     auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
                                                       : GrMipMapped::kNo;
+    const std::string label = "WrappedSkImageBackingFactory_Initialize" +
+                              CreateLabelForSharedImageUsage(usage());
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_LINUX)
     // Initializing to bright green makes it obvious if the pixels are not
     // properly set before they are displayed (e.g. https://crbug.com/956555).
@@ -252,11 +254,11 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     // TODO(crbug.com/1330278): add it back.
     backend_texture_ = context_state_->gr_context()->createBackendTexture(
         size().width(), size().height(), GetSkColorType(), SkColors::kBlue,
-        mipmap, GrRenderable::kYes, GrProtected::kNo);
+        mipmap, GrRenderable::kYes, GrProtected::kNo, nullptr, nullptr, label);
 #else
     backend_texture_ = context_state_->gr_context()->createBackendTexture(
         size().width(), size().height(), GetSkColorType(), mipmap,
-        GrRenderable::kYes, GrProtected::kNo);
+        GrRenderable::kYes, GrProtected::kNo, label);
 #endif
 
     if (!backend_texture_.isValid()) {
@@ -295,8 +297,12 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       if (!stride)
         stride = info.minRowBytes();
       SkPixmap pixmap(info, pixels.data(), stride);
+      const std::string label =
+          "WrappedSkImageBackingFactory_InitializeWithData" +
+          CreateLabelForSharedImageUsage(usage());
       backend_texture_ = context_state_->gr_context()->createBackendTexture(
-          pixmap, GrRenderable::kYes, GrProtected::kNo);
+          pixmap, GrRenderable::kYes, GrProtected::kNo, nullptr, nullptr,
+          label);
     }
 
     if (!backend_texture_.isValid())
