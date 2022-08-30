@@ -149,7 +149,8 @@ void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
     DragOperationsMask allowed_operations,
     const gfx::ImageSkia& image,
-    const gfx::Vector2d& image_offset,
+    const gfx::Vector2d& cursor_offset,
+    const gfx::Rect& drag_obj_rect,
     const blink::mojom::DragEventSourceInfo& event_info,
     RenderWidgetHostImpl* source_rwh) {
   // By allowing nested tasks, the code below also allows Close(),
@@ -166,12 +167,16 @@ void WebContentsViewMac::StartDragging(
   [drag_dest_ setDragStartTrackersForProcess:source_rwh->GetProcess()->GetID()];
   drag_source_start_rwh_ = source_rwh->GetWeakPtr();
 
+  // TODO(crbug.com/1302094): The param `drag_obj_rect` is unused.
+
   if (remote_ns_view_) {
     // TODO(https://crbug.com/898608): Non-trivial gfx::ImageSkias fail to
     // serialize.
-    remote_ns_view_->StartDrag(drop_data, mask, gfx::ImageSkia(), image_offset);
+    remote_ns_view_->StartDrag(drop_data, mask, gfx::ImageSkia(),
+                               cursor_offset);
   } else {
-    in_process_ns_view_bridge_->StartDrag(drop_data, mask, image, image_offset);
+    in_process_ns_view_bridge_->StartDrag(drop_data, mask, image,
+                                          cursor_offset);
   }
 }
 

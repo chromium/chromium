@@ -193,7 +193,8 @@ interface FrameWidgetHost {
   StartDragging(DragData drag_data,
                 AllowedDragOperations operations_allowed,
                 skia.mojom.BitmapN32? image,
-                gfx.mojom.Vector2d bitmap_offset_in_dip,
+                gfx.mojom.Vector2d cursor_offset_in_dip,
+                gfx.mojom.Rect drag_obj_rect_in_dip,
                 DragEventSourceInfo event_info);
 };
 

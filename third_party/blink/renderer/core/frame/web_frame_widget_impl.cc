@@ -1137,19 +1137,23 @@ void WebFrameWidgetImpl::CancelDrag() {
 void WebFrameWidgetImpl::StartDragging(const WebDragData& drag_data,
                                        DragOperationsMask operations_allowed,
                                        const SkBitmap& drag_image,
-                                       const gfx::Point& drag_image_offset) {
+                                       const gfx::Vector2d& cursor_offset,
+                                       const gfx::Rect& drag_obj_rect) {
   doing_drag_and_drop_ = true;
   if (drag_and_drop_disabled_) {
     DragSourceSystemDragEnded();
     return;
   }
 
-  gfx::Point offset_in_dips =
-      widget_base_->BlinkSpaceToFlooredDIPs(drag_image_offset);
+  gfx::Vector2d offset_in_dips =
+      widget_base_->BlinkSpaceToFlooredDIPs(gfx::Point() + cursor_offset)
+          .OffsetFromOrigin();
+  gfx::Rect drag_obj_rect_in_dips =
+      gfx::Rect(widget_base_->BlinkSpaceToFlooredDIPs(drag_obj_rect.origin()),
+                widget_base_->BlinkSpaceToFlooredDIPs(drag_obj_rect.size()));
   GetAssociatedFrameWidgetHost()->StartDragging(
-      drag_data, operations_allowed, drag_image,
-      gfx::Vector2d(offset_in_dips.x(), offset_in_dips.y()),
-      possible_drag_event_info_.Clone());
+      drag_data, operations_allowed, drag_image, offset_in_dips,
+      drag_obj_rect_in_dips, possible_drag_event_info_.Clone());
 }
 
 DragOperation WebFrameWidgetImpl::DragTargetDragEnterOrOver(

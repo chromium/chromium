@@ -468,7 +468,7 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data,
           GetProcess()->GetID(),
           ChromeBlobStorageContext::GetFor(GetProcess()->GetBrowserContext())),
       blink::kDragOperationEvery, std::move(bitmap), gfx::Vector2d(),
-      blink::mojom::DragEventSourceInfo::New());
+      gfx::Rect(), blink::mojom::DragEventSourceInfo::New());
 }
 
 void TestRenderViewHost::TestOnUpdateStateWithFile(

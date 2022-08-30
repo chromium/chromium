@@ -1006,7 +1006,8 @@ void TestWebFrameWidgetHost::StartDragging(
     const blink::WebDragData& drag_data,
     blink::DragOperationsMask operations_allowed,
     const SkBitmap& bitmap,
-    const gfx::Vector2d& bitmap_offset_in_dip,
+    const gfx::Vector2d& cursor_offset_in_dip,
+    const gfx::Rect& drag_obj_rect_in_dip,
     mojom::blink::DragEventSourceInfoPtr event_info) {}
 
 void TestWebFrameWidgetHost::BindWidgetHost(

@@ -68,7 +68,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   void StartDragging(const WebDragData& drag_data,
                      DragOperationsMask operations_allowed,
                      const SkBitmap& drag_image,
-                     const gfx::Point& drag_image_offset) override;
+                     const gfx::Vector2d& cursor_offset,
+                     const gfx::Rect& drag_obj_rect) override;
   void DidAutoResize(const gfx::Size& size) override;
 
   // WidgetBaseClient overrides:

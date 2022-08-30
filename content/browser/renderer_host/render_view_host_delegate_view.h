@@ -57,11 +57,33 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
   // supplied by DropData. If the delegate's view cannot start the drag for
   // /any/ reason, it must inform the renderer that the drag has ended;
   // otherwise, this results in bugs like http://crbug.com/157134.
+  //
+  // The `cursor_offset` parameter is the offset of the cursor (mouse/touch
+  // pointer) w.r.t. to top-left corner of the drag-image `image` (in viewport
+  // coordinates).  The browser remembers this offset to keep drawing the
+  // `image` in a position relative to _current_ drag position (till the end of
+  // this drag operation).
+  //
+  // The `drag_obj_rect` parameter is the extent of the drag-object as rendered
+  // on the page (in viewport coordinates).  While this rectangle and the
+  // `image` has the same size (width and height), they do not necessaily
+  // coincide; below are two example cases when they don't:
+  //
+  // - For a dragged link, Blink assumes the `image` is horizontally centered
+  //   w.r.t. the cursor position.
+  //
+  // - For a mouse-drag, the top-left corner of `image` is `cursor_offset` away
+  //   from the `mousemove` event that started the drag, but the top-left of
+  //   `drag_rect_obj` is the same amount away from the `mousedown` event
+  //   (except for the dragged link case above when even these two  offsets are
+  //   different).  See the function header comment for:
+  //   `blink::DragController::StartDrag()`.
   virtual void StartDragging(
       const DropData& drop_data,
       blink::DragOperationsMask allowed_ops,
       const gfx::ImageSkia& image,
-      const gfx::Vector2d& image_offset,
+      const gfx::Vector2d& cursor_offset,
+      const gfx::Rect& drag_obj_rect,
       const blink::mojom::DragEventSourceInfo& event_info,
       RenderWidgetHostImpl* source_rwh) {}
 

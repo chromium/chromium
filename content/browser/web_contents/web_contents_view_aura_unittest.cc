@@ -752,7 +752,7 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   DropData drop_data;
   drop_data.text.emplace(u"Hello World!");
   view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
-                      gfx::ImageSkia(), gfx::Vector2d(),
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
                       blink::mojom::DragEventSourceInfo(),
                       RenderWidgetHostImpl::From(rvh()->GetWidget()));
 
@@ -823,7 +823,7 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
 
   DropData drop_data;
   view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
-                      gfx::ImageSkia(), gfx::Vector2d(),
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
                       blink::mojom::DragEventSourceInfo(),
                       RenderWidgetHostImpl::From(rvh()->GetWidget()));
 

@@ -220,11 +220,17 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                     cc::PaintHoldingCommitTrigger) = 0;
 
   // Start a system drag and drop operation.
+  //
+  // The `cursor_offset` is the offset of the drag-point from the top-left of
+  // `drag_image`, which may not be the same as the top-left of
+  // `drag_obj_rect`.  For details, see the function header comment for:
+  // `blink::DragController::StartDrag()`.
   virtual void StartDragging(LocalFrame*,
                              const WebDragData&,
                              DragOperationsMask,
                              const SkBitmap& drag_image,
-                             const gfx::Point& drag_image_offset) = 0;
+                             const gfx::Vector2d& cursor_offset,
+                             const gfx::Rect& drag_obj_rect) = 0;
   virtual bool AcceptsLoadDrops() const = 0;
 
   // The LocalFrame pointer provides the ChromeClient with context about which

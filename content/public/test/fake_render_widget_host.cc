@@ -127,7 +127,8 @@ void FakeRenderWidgetHost::StartDragging(
     blink::mojom::DragDataPtr drag_data,
     blink::DragOperationsMask operations_allowed,
     const SkBitmap& bitmap,
-    const gfx::Vector2d& bitmap_offset_in_dip,
+    const gfx::Vector2d& cursor_offset_in_dip,
+    const gfx::Rect& drag_obj_rect_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {}
 
 blink::mojom::WidgetInputHandler*

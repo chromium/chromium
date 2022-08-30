@@ -154,10 +154,12 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   }
 }
 
-void WebTestWebFrameWidgetImpl::StartDragging(const WebDragData& data,
-                                              DragOperationsMask mask,
-                                              const SkBitmap& drag_image,
-                                              const gfx::Point& image_offset) {
+void WebTestWebFrameWidgetImpl::StartDragging(
+    const WebDragData& data,
+    DragOperationsMask mask,
+    const SkBitmap& drag_image,
+    const gfx::Vector2d& cursor_offset,
+    const gfx::Rect& drag_obj_rect) {
   doing_drag_and_drop_ = true;
   GetTestRunner()->SetDragImage(drag_image);
 

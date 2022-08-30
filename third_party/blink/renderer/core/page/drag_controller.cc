@@ -1370,16 +1370,15 @@ void DragController::DoSystemDrag(DragImage* image,
       frame->View()->FrameToViewport(drag_obj_rect.origin());
   gfx::Point adjusted_event_pos =
       frame->View()->FrameToViewport(drag_initiation_location);
-  gfx::Point offset_point =
-      adjusted_event_pos - adjusted_drag_obj_location.OffsetFromOrigin();
+  gfx::Vector2d cursor_offset = adjusted_event_pos - adjusted_drag_obj_location;
   WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
   drag_data.SetReferrerPolicy(drag_initiator_->GetReferrerPolicy());
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
 
   SkBitmap drag_image = image ? image->Bitmap() : SkBitmap();
-  // TODO(mustaq): Pass |drag_obj_rect.size()| to browser.
   page_->GetChromeClient().StartDragging(frame, drag_data, drag_operation_mask,
-                                         std::move(drag_image), offset_point);
+                                         std::move(drag_image), cursor_offset,
+                                         drag_obj_rect);
 }
 
 DragOperation DragController::GetDragOperation(DragData* drag_data) {
