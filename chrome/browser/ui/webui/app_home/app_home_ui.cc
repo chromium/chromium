@@ -7,15 +7,19 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/app_home_resources.h"
+#include "chrome/grit/app_home_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
-
 namespace webapps {
 
 AppHomeUI::AppHomeUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIAppLauncherPageHost);
-
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kAppHomeResources, kAppHomeResourcesSize),
+      IDR_APP_HOME_APP_HOME_HTML);
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source);
 }

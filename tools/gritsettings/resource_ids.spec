@@ -380,9 +380,13 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2330],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/app_home/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2340],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/gaia_auth_host/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
-    "includes": [2340],
+    "includes": [2350],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/invalidations/resources.grd": {
     "META": {"sizes": {"includes": [10],}},

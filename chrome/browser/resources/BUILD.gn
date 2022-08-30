@@ -83,6 +83,7 @@ group("resources") {
 
   if (is_win || is_mac || is_linux || is_fuchsia) {
     public_deps += [
+      "app_home:resources",
       "app_settings:resources",
       "ntp4:apps_resources",
     ]
