@@ -31,7 +31,12 @@ declare_args() {
   #
   # TODO(crbug.com/1293520): Remove this buildflag.
   enable_cast_audio_renderer = false
+
+  # Set this to true to build for Nest hardware running Linux (aka "CastOS").
+  # Set this to false to use the defaults for Linux.
+  is_castos = false
 }
+is_castos = is_castos && current_toolchain == default_toolchain
 
 declare_args() {
   # Set this true for a Chromecast build. Chromecast builds are supported on
@@ -40,17 +45,6 @@ declare_args() {
   # During the migration from is_chromecast, this must be set to the same value
   # as is_chromecast.
   enable_cast_receiver = is_chromecast
-
-  # Set this to true to build for Nest hardware running Linux (aka "CastOS").
-  # Set this to false to use the defaults for the target OS/platform.
-  #
-  # Prevent it from being true for the building of host tools when the target
-  # is Fuchsia. is_a_target_toolchain could be checked instead, but this would
-  # be a change in behavior.
-  # TODO(crbug.com/1340117): Migrate to NOT setting is_castos to true in the
-  # host toolchain even after the following TODO is addressed.
-  # TODO(crbug.com/1314528): Change default to false.
-  is_castos = is_chromecast && is_linux && target_os != "fuchsia"
 
   # Set this to true to build for Android-based Cast devices.
   # Set this to false to use the defaults for the target OS/platform.
