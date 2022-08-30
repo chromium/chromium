@@ -8421,8 +8421,10 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
 
       // Run beforeunload in this frame and its cross-process descendant
       // frames, in parallel.
-      CheckOrDispatchBeforeUnloadForSubtree(check_subframes_only,
-                                            /*send_ipc=*/true, is_reload);
+      CheckOrDispatchBeforeUnloadForSubtree(
+          check_subframes_only,
+          /*send_ipc=*/true, is_reload,
+          /*no_dispatch_because_avoid_unnecessary_sync=*/nullptr);
     }
   }
 }
@@ -8430,7 +8432,8 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
 bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     bool subframes_only,
     bool send_ipc,
-    bool is_reload) {
+    bool is_reload,
+    bool* no_dispatch_because_avoid_unnecessary_sync) {
   // Beforeunload is not supported inside fenced frame trees.
   if (IsFencedFrameRoot())
     return false;
@@ -8451,6 +8454,10 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     DCHECK(send_ipc);
     beforeunload_pending_replies_.insert(this);
     SendBeforeUnload(is_reload, GetWeakPtr(), /*for_legacy=*/true);
+  } else if (no_dispatch_because_avoid_unnecessary_sync &&
+             !found_beforeunload && !subframes_only && IsRenderFrameLive() &&
+             IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled()) {
+    *no_dispatch_because_avoid_unnecessary_sync = true;
   }
 
   return found_beforeunload;
@@ -8563,9 +8570,11 @@ void RenderFrameHostImpl::SimulateBeforeUnloadCompleted(bool proceed) {
 }
 
 bool RenderFrameHostImpl::ShouldDispatchBeforeUnload(
-    bool check_subframes_only) {
+    bool check_subframes_only,
+    bool* no_dispatch_because_avoid_unnecessary_sync) {
   return CheckOrDispatchBeforeUnloadForSubtree(
-      check_subframes_only, /*send_ipc=*/false, /*is_reload=*/false);
+      check_subframes_only, /*send_ipc=*/false, /*is_reload=*/false,
+      no_dispatch_because_avoid_unnecessary_sync);
 }
 
 void RenderFrameHostImpl::SetBeforeUnloadTimeoutDelayForTesting(
@@ -12529,6 +12538,13 @@ void RenderFrameHostImpl::SendBeforeUnload(
       },
       rfh, for_legacy);
   if (for_legacy) {
+    if (frame_tree_node_->navigation_request()) {
+      base::UmaHistogramTimes(
+          "Navigation.NavigationStartToBeforeUnloadForLegacy",
+          base::TimeTicks::Now() - frame_tree_node_->navigation_request()
+                                       ->common_params()
+                                       .navigation_start);
+    }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
