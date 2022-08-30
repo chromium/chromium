@@ -28,16 +28,28 @@ class DataChannelManager final {
 
   // Registers a factory function to handle a new incoming data channel with a
   // name matching |prefix|. Both |constructor| and |prefix| cannot be empty.
+  // Must be called before OnRegistrationComplete() is called.
   void RegisterCreateHandlerCallback(const std::string& prefix,
                                      CreateHandlerCallback constructor);
 
+  // Handles all pending data channels and drops those without a matching
+  // handler. After this method is called, future incoming data channels without
+  // a matching handler will be silently dropped.
+  // Must be called exactly once.
+  void OnRegistrationComplete();
+
   // Executes the registered callback to handle the new incoming data channel.
-  // Returns true if a handler of the new data channel has been executed.
-  bool OnIncomingDataChannel(const std::string& name,
+  // If no matching handler is found, and OnRegistrationComplete() has not been
+  // called, the data channel will be held and handled later, otherwise the data
+  // channel will be silently dropped.
+  void OnIncomingDataChannel(const std::string& name,
                              std::unique_ptr<MessagePipe> pipe);
 
  private:
   std::vector<std::pair<std::string, CreateHandlerCallback>> constructors_;
+  std::vector<std::pair<std::string, std::unique_ptr<MessagePipe>>>
+      pending_data_channels_;
+  bool is_registration_complete_ = false;
 };
 
 }  // namespace remoting::protocol

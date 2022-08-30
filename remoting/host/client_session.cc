@@ -297,6 +297,8 @@ void ClientSession::SetCapabilities(
     }
   }
 
+  data_channel_manager_.OnRegistrationComplete();
+
   VLOG(1) << "Client capabilities: " << *client_capabilities_;
 
   desktop_environment_->SetCapabilities(capabilities_);

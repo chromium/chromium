@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/protocol/message_pipe.h"
 
 namespace google {
@@ -36,8 +37,11 @@ class FakeMessagePipeWrapper final : public MessagePipe {
   void OpenPipe();
   void ClosePipe();
 
+  base::WeakPtr<FakeMessagePipeWrapper> GetWeakPtr();
+
  private:
   const raw_ptr<FakeMessagePipe> pipe_;
+  base::WeakPtrFactory<FakeMessagePipeWrapper> weak_factory_{this};
 };
 
 }  // namespace remoting::protocol

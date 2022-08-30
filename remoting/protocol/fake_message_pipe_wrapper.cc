@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/fake_message_pipe.h"
 
@@ -39,6 +40,10 @@ void FakeMessagePipeWrapper::OpenPipe() {
 
 void FakeMessagePipeWrapper::ClosePipe() {
   pipe_->ClosePipe();
+}
+
+base::WeakPtr<FakeMessagePipeWrapper> FakeMessagePipeWrapper::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace remoting::protocol
