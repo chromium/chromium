@@ -164,7 +164,6 @@ public final class ReadingListUtils {
      * @param isIncognito Whether the bookmark manager should open in incognito mode.
      */
     public static void showReadingList(boolean isIncognito) {
-        if (!ReadingListFeatures.isReadingListEnabled()) return;
         BookmarkUtils.showBookmarkManager(
                 null, new BookmarkId(0, BookmarkType.READING_LIST), /*isIncognito=*/isIncognito);
     }

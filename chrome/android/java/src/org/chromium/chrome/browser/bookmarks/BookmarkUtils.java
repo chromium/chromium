@@ -152,8 +152,7 @@ public class BookmarkUtils {
     private static BookmarkId addBookmarkAndShowSnackbar(BookmarkModel bookmarkModel, Tab tab,
             SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab,
             @BookmarkType int bookmarkType) {
-        if (ReadingListFeatures.isReadingListEnabled()
-                && bookmarkType == BookmarkType.READING_LIST) {
+        if (bookmarkType == BookmarkType.READING_LIST) {
             return addToReadingList(
                     tab.getOriginalUrl(), tab.getTitle(), snackbarManager, bookmarkModel, activity);
         }
@@ -259,9 +258,8 @@ public class BookmarkUtils {
         // Reading list items will be added when either one of the 2 conditions is met:
         // 1. The bookmark type explicitly specifies READING_LIST.
         // 2. The last used parent implicitly specifies READING_LIST.
-        if (ReadingListFeatures.isReadingListEnabled()
-                && (bookmarkType == BookmarkType.READING_LIST
-                        || parent.getType() == BookmarkType.READING_LIST)) {
+        if (bookmarkType == BookmarkType.READING_LIST
+                || parent.getType() == BookmarkType.READING_LIST) {
             return bookmarkModel.addToReadingList(title, url);
         }
 

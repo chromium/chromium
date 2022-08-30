@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -41,7 +40,7 @@ import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
-@EnableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.ENABLE_IPH})
+@EnableFeatures({ChromeFeatureList.ENABLE_IPH})
 public class ReadLaterIPHControllerUnitTest {
     @Rule
     public TestRule mFeaturesProcessor = new JUnitProcessor();
@@ -82,14 +81,6 @@ public class ReadLaterIPHControllerUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.READ_LATER)
-    public void onCopyContextMenuItemClicked_FeatureDisabled() {
-        mController.onCopyContextMenuItemClicked();
-        verify(mUserEducationHelper, Mockito.times(0)).requestShowIPH(any());
-    }
-
-    @Test
-    @SmallTest
     public void showColdStartIPH() {
         mController.showColdStartIPH();
         verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
@@ -100,13 +91,5 @@ public class ReadLaterIPHControllerUnitTest {
 
         command.onDismissCallback.run();
         verify(mAppMenuHandler).clearMenuHighlight();
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.READ_LATER)
-    public void showColdStartIPH_FeatureDisabled() {
-        mController.showColdStartIPH();
-        verify(mUserEducationHelper, Mockito.times(0)).requestShowIPH(any());
     }
 }

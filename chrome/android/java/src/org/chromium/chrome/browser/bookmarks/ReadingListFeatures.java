@@ -33,14 +33,6 @@ public class ReadingListFeatures {
 
     private ReadingListFeatures() {}
 
-    public static boolean isReadingListEnabled() {
-        return FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                           ChromeFeatureList.READ_LATER, "read_later_min_version", 0)
-                <= VERSION;
-    }
-
     /** Returns whether Reading list items should open in a custom tab. */
     public static boolean shouldUseCustomTab() {
         // Default value is `true`.
@@ -76,5 +68,13 @@ public class ReadingListFeatures {
         return isReadingListEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.READ_LATER, "allow_bookmark_type_swapping", false);
+    }
+
+    private static boolean isReadingListEnabled() {
+        return FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                           ChromeFeatureList.READ_LATER, "read_later_min_version", 0)
+                <= VERSION;
     }
 }

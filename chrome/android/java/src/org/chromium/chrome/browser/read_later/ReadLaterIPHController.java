@@ -10,7 +10,6 @@ import android.os.Looper;
 import android.view.View;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -47,7 +46,6 @@ public class ReadLaterIPHController {
      * Attempts to show an IPH text bubble about the read later option in app menu.
      */
     public void onCopyContextMenuItemClicked() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) return;
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(),
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
@@ -68,7 +66,6 @@ public class ReadLaterIPHController {
     }
 
     private void showReadLaterAppMenuBookmarksIPH() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) return;
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(),
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,
