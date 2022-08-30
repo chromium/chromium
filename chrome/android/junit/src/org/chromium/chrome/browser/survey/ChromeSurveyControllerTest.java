@@ -72,6 +72,7 @@ public class ChromeSurveyControllerTest {
 
     @Before
     public void before() {
+        ChromeSurveyController.forceIsUMAEnabledForTesting(true);
         mTestController = new TestChromeSurveyController(TEST_SURVEY_TRIGGER_ID,
                 mActivityLifecycleDispatcher, mActivity, mMessageDispatcher);
         mTestController.setTabModelSelector(mSelector);
@@ -81,6 +82,7 @@ public class ChromeSurveyControllerTest {
 
     @After
     public void after() {
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         FirstRunStatus.setFirstRunTriggered(false);
     }
 
@@ -180,6 +182,17 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
+    public void testShowInfoBarUmaUploadNotEnabled() {
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(true).when(mTab).isLoading();
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+
+        mTestController.showInfoBarIfApplicable(mTab, null, null);
+        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        verify(mTab, atLeastOnce()).isUserInteractable();
+    }
+
+    @Test
     @Features.DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY})
     public void testSurveyAvailableWebContentsLoaded() {
         doReturn(mTab).when(mSelector).getCurrentTab();
@@ -204,6 +217,14 @@ public class ChromeSurveyControllerTest {
         mTestController.onSurveyAvailable(null);
         Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
         verify(mSelector).addObserver(any());
+    }
+
+    @Test
+    public void testSurveyAvailableUmaDisabled() {
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+        mTestController.onSurveyAvailable(null);
+        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        verify(mSelector, never()).addObserver(any());
     }
 
     @Test

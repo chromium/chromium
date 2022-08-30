@@ -434,6 +434,31 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     @Test
+    public void testPresentSurvey_UmaDisabledBeforeTabReady() {
+        setupTabMocks();
+        initializeChromeSurveyController();
+        assertCallbackAssignedInSurveyController();
+
+        // Verify the survey should be attempted to present on a valid tab.
+        Mockito.when(mMockModelSelector.getCurrentTab()).thenReturn(null);
+        mTestSurveyController.onDownloadSuccessRunnable.run();
+
+        assertSurveyInfoBarShown(false);
+        Assert.assertNotNull(
+                "TabModelSelectorObserver should be registered.", mTabModelSelectorObserver);
+
+        // Assume user turn off UMA upload before survey is shown.
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+
+        mockTabReady();
+        Mockito.when(mMockModelSelector.getCurrentTab()).thenReturn(mMockTab);
+        mTabModelSelectorObserver.onChange();
+        assertSurveyInfoBarShown(false);
+        Assert.assertNull("TabModelSelectorObserver is unregistered since UMA upload is disabled.",
+                mTabModelSelectorObserver);
+    }
+
+    @Test
     public void testSurveyInfoBarDelegate_getLifecycleDispatcher() {
         presentSurveyInfoBarInValidTab();
         SurveyInfoBarDelegate surveyInfoBarDelegate =
@@ -598,6 +623,20 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     @Test
+    public void testMessages_NotShownWhenUmaDisabled() {
+        presentMessages();
+
+        // Assume user turn off UMA upload before survey is shown.
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+        boolean shouldShow =
+                messageModel.get(MessageBannerProperties.ON_STARTED_SHOWING).getAsBoolean();
+        Assert.assertFalse(
+                "The enqueued message should not be shown if UMA upload is disabled.", shouldShow);
+        verify(mMessageDispatcher).dismissMessage(messageModel, DismissReason.DISMISSED_BY_FEATURE);
+    }
+
+    @Test
     public void testMessages_EnqueuedMessageDismissedOnExpiredSurvey() throws Exception {
         presentMessages();
 
@@ -759,6 +798,14 @@ public class ChromeSurveyControllerFlowTest {
                })
                 .when(mMockModelSelector)
                 .addObserver(any());
+        Mockito.doAnswer(invocation -> {
+                   if (mTabModelSelectorObserver == invocation.getArgument(0)) {
+                       mTabModelSelectorObserver = null;
+                   }
+                   return null;
+               })
+                .when(mMockModelSelector)
+                .removeObserver(any());
 
         // Make the mock tab always valid. The cases with invalid tab are tested in
         // ChromeSurveyControllerTest.
