@@ -6,16 +6,22 @@
 #define COMPONENTS_REPORTING_STORAGE_STORAGE_CONFIGURATION_H_
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/disk_resource_impl.h"
 #include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/resources/resource_interface.h"
 
 namespace reporting {
+
+// Forward declaration.
+class QueueOptions;
 
 // Storage options class allowing to set parameters individually, e.g.:
 // Storage::Create(Options()
@@ -26,14 +32,22 @@ namespace reporting {
 //                 callback);
 class StorageOptions {
  public:
+  using QueuesOptionsList = std::vector<std::pair<Priority, QueueOptions>>;
+
   StorageOptions();
   StorageOptions(const StorageOptions& options);
   StorageOptions& operator=(const StorageOptions& options) = delete;
-  ~StorageOptions();
+  virtual ~StorageOptions();
   StorageOptions& set_directory(const base::FilePath& directory) {
     directory_ = directory;
     return *this;
   }
+
+  // Generates list of queues with their priorities, ordered from logically
+  // lowest to the highest (not the order of `Priority` enumerator!)
+  // Can be overridden by tests to modify queues options.
+  virtual QueuesOptionsList ProduceQueuesOptions() const;
+
   StorageOptions& set_signature_verification_public_key(
       base::StringPiece signature_verification_public_key) {
     signature_verification_public_key_ =
@@ -142,7 +156,7 @@ class QueueOptions {
 
  private:
   // Whole storage options, which this queue options are based on.
-  const StorageOptions& storage_options_;
+  const StorageOptions storage_options_;
 
   // Subdirectory of the Storage location assigned for this StorageQueue.
   base::FilePath directory_;

@@ -12,6 +12,7 @@ static_library("storage_configuration") {
 
   deps = [
     "//base",
+    "//components/reporting/proto:record_constants",
     "//components/reporting/resources:resource_interface",
   ]
 }

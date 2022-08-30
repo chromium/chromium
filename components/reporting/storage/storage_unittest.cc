@@ -63,6 +63,33 @@ namespace {
 // Test uploader counter - for generation of unique ids.
 std::atomic<int64_t> next_uploader_id{0};
 
+// Storage options to be used in tests.
+class TestStorageOptions : public StorageOptions {
+ public:
+  TestStorageOptions() = default;
+
+  QueuesOptionsList ProduceQueuesOptions() const override {
+    // Call base class method.
+    auto queues_options = StorageOptions::ProduceQueuesOptions();
+    for (auto& queue_options : queues_options) {
+      // Disable upload retry.
+      queue_options.second.set_upload_retry_delay(upload_retry_delay_);
+    }
+    // Make adjustments.
+    return queues_options;
+  }
+
+  // Prepare options adjustment.
+  // Must be called before the options are used by Storage::Create().
+  void set_upload_retry_delay(base::TimeDelta upload_retry_delay) {
+    upload_retry_delay_ = upload_retry_delay;
+  }
+
+ private:
+  base::TimeDelta upload_retry_delay_{
+      base::TimeDelta()};  // no retry by default
+};
+
 // Context of single decryption. Self-destructs upon completion or failure.
 class SingleDecryptionContext {
  public:
@@ -187,6 +214,7 @@ class StorageTest
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
+    options_.set_directory(location_.GetPath());
 
     // Disallow uploads unless other expectation is set (any later EXPECT_CALL
     // will take precedence over this one).
@@ -203,6 +231,9 @@ class StorageTest
       // Generate signing key pair.
       test::GenerateSigningKeyPair(signing_private_key_,
                                    signature_verification_public_key_);
+      options_.set_signature_verification_public_key(std::string(
+          reinterpret_cast<const char*>(signature_verification_public_key_),
+          kKeySize));
       // Create decryption module.
       auto decryptor_result = test::Decryptor::Create();
       ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
@@ -731,20 +762,17 @@ class StorageTest
     // Let asynchronous activity finish.
     task_environment_.RunUntilIdle();
     if (storage_) {
-      const auto memory_resource = storage_->options().memory_resource();
-      const auto disk_space_resource =
-          storage_->options().disk_space_resource();
       storage_.reset();
       // StorageQueue is destructed on a thread,
       // so we need to wait for all queues to destruct.
       task_environment_.RunUntilIdle();
-      // Make sure all memory is deallocated.
-      ASSERT_THAT(memory_resource->GetUsed(), Eq(0u));
-      // Make sure all disk is not reserved (files remain, but Storage is not
-      // responsible for them anymore).
-      ASSERT_THAT(disk_space_resource->GetUsed(), Eq(0u));
     }
     expect_to_need_key_ = false;
+    // Make sure all memory is deallocated.
+    ASSERT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
+    // Make sure all disk is not reserved (files remain, but Storage is not
+    // responsible for them anymore).
+    ASSERT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
   }
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorageWithFailedKeyDelivery(
@@ -765,17 +793,7 @@ class StorageTest
     return storage;
   }
 
-  StorageOptions BuildTestStorageOptions() const {
-    StorageOptions options;
-    options.set_directory(location_.GetPath());
-    if (is_encryption_enabled()) {
-      // Encryption enabled.
-      options.set_signature_verification_public_key(std::string(
-          reinterpret_cast<const char*>(signature_verification_public_key_),
-          kKeySize));
-    }
-    return options;
-  }
+  const StorageOptions& BuildTestStorageOptions() const { return options_; }
 
   void AsyncStartMockUploader(
       UploaderInterface::UploadReason reason,
@@ -909,6 +927,7 @@ class StorageTest
   uint8_t signing_private_key_[kSignKeySize];
 
   base::ScopedTempDir location_;
+  TestStorageOptions options_;
   scoped_refptr<test::Decryptor> decryptor_;
   scoped_refptr<Storage> storage_;
   SignedEncryptionInfo signed_encryption_key_;
@@ -1549,6 +1568,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
 }
 
 TEST_P(StorageTest, WriteAndImmediateUploadWithFailure) {
+  // Reset options to enable failure retry.
+  options_.set_upload_retry_delay(base::Seconds(1));
+
   CreateTestStorageOrDie(BuildTestStorageOptions());
 
   // Write a record as Immediate, initiating an upload which fails
