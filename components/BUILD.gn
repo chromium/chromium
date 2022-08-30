@@ -953,6 +953,7 @@ if (!is_ios) {
         "//base/test:test_support",
         "//components/feedback",
         "//components/feedback/content",
+        "//services/network:test_support",
         "//testing/gmock",
         "//testing/gtest",
       ]

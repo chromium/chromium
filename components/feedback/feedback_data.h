@@ -124,7 +124,7 @@ class FeedbackData : public FeedbackCommon {
   std::string attached_file_uuid_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string screenshot_uuid_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const raw_ptr<TracingManager> tracing_manager_ = nullptr;  // Not owned.
+  base::WeakPtr<TracingManager> tracing_manager_;
   int trace_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   int pending_op_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
