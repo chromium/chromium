@@ -3894,23 +3894,24 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadDataAPI) {
   // locked after the loadDataWithBaseURL navigation and is allowed to access
   // resources belonging to the base URL's origin.
   if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
-    content::WebContents* guest =
-        GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-    ASSERT_TRUE(guest);
-    content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
-    EXPECT_TRUE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
-    EXPECT_TRUE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
+    content::RenderFrameHost* guest_main_frame =
+        GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+    ASSERT_TRUE(guest_main_frame);
+    EXPECT_TRUE(
+        guest_main_frame->GetSiteInstance()->RequiresDedicatedProcess());
+    EXPECT_TRUE(
+        guest_main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
 
     auto* security_policy = content::ChildProcessSecurityPolicy::GetInstance();
     url::Origin base_origin = url::Origin::Create(GURL("http://localhost"));
     EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
-        main_frame->GetProcess()->GetID(), base_origin));
+        guest_main_frame->GetProcess()->GetID(), base_origin));
 
     // Ensure the process doesn't have access to some other origin. This
     // verifies that site isolation is enforced.
     url::Origin another_origin = url::Origin::Create(GURL("http://foo.com"));
     EXPECT_FALSE(security_policy->CanAccessDataForOrigin(
-        main_frame->GetProcess()->GetID(), another_origin));
+        guest_main_frame->GetProcess()->GetID(), another_origin));
   }
 }
 
