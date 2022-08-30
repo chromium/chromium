@@ -82,7 +82,10 @@ class TestRendererServiceImpl : public mojom::TestService {
   }
 
   void DoCrashImmediately(DoCrashImmediatelyCallback callback) override {
-    NOTREACHED();
+    // This intentionally crashes the process and needs to be fatal regardless
+    // of DCHECK level. It's intended to get called. This is unlike the other
+    // NOTREACHED()s which are not expected to get called at all.
+    CHECK(false);
   }
 
   void CreateFolder(CreateFolderCallback callback) override { NOTREACHED(); }
