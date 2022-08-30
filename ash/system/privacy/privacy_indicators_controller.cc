@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -72,19 +73,23 @@ void ModifyPrivacyIndicatorsNotification(
 
   std::u16string title;
   std::u16string message;
+  const gfx::VectorIcon* app_icon;
   if (camera_is_used && microphone_is_used) {
     title = l10n_util::GetStringUTF16(
         IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
     message = l10n_util::GetStringFUTF16(
         IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA_AND_MIC, app_name_str);
+    app_icon = &kPrivacyIndicatorsIcon;
   } else if (camera_is_used) {
     title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
     message = l10n_util::GetStringFUTF16(
         IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA, app_name_str);
+    app_icon = &kPrivacyIndicatorsCameraIcon;
   } else {
     title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
     message = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_MESSAGE_MIC,
                                          app_name_str);
+    app_icon = &kPrivacyIndicatorsMicrophoneIcon;
   }
 
   message_center::RichNotificationData optional_fields;
@@ -108,7 +113,7 @@ void ModifyPrivacyIndicatorsNotification(
                                  kPrivacyIndicatorsNotifierId,
                                  NotificationCatalogName::kPrivacyIndicators),
       optional_fields,
-      /*delegate=*/delegate, kImeMenuMicrophoneIcon,
+      /*delegate=*/delegate, *app_icon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   notification->set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);

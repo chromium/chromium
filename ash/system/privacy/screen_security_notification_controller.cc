@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy/screen_security_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -13,6 +14,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -82,6 +84,11 @@ void ScreenSecurityNotificationController::CreateNotification(
               },
               weak_ptr_factory_.GetWeakPtr(), is_capture));
 
+  // If the feature is enabled, the screen share notification should have the
+  // style of privacy indicators notification.
+  bool have_privacy_indicators_style =
+      features::IsPrivacyIndicatorsEnabled() && !is_capture;
+
   std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       is_capture ? kScreenCaptureNotificationId : kScreenShareNotificationId,
@@ -91,9 +98,16 @@ void ScreenSecurityNotificationController::CreateNotification(
           message_center::NotifierType::SYSTEM_COMPONENT,
           is_capture ? kNotifierScreenCapture : kNotifierScreenShare,
           NotificationCatalogName::kScreenSecurity),
-      data, std::move(delegate), kNotificationScreenshareIcon,
+      data, std::move(delegate),
+      have_privacy_indicators_style ? kPrivacyIndicatorsScreenShareIcon
+                                    : kNotificationScreenshareIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
+
   notification->set_pinned(true);
+
+  if (have_privacy_indicators_style)
+    notification->set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
+
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
 }
