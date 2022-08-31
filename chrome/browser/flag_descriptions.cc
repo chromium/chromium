@@ -3524,6 +3524,11 @@ const char kFeedVideoInlinePlaybackName[] = "Feed video inline playback";
 const char kFeedVideoInlinePlaybackDescription[] =
     "Enable playing feed video in inline playback mode.";
 
+const char kFeedDiscoFeedEndpointName[] =
+    "Feed using the DiscoFeed backend endpoint";
+const char kFeedDiscoFeedEndpointDescription[] =
+    "Uses the DiscoFeed endpoint for serving the feed instead of GWS.";
+
 const char kGridTabSwitcherForTabletsName[] = "Grid tab switcher for tablets";
 const char kGridTabSwitcherForTabletsDescription[] =
     "Enable grid tab switcher for tablets, replacing the tab strip.";

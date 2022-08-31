@@ -58074,6 +58074,7 @@ from previous Chrome versions.
   <int value="-907481658" label="ArcMouseWheelSmoothScroll:enabled"/>
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
   <int value="-905538983" label="SimplifyHttpsIndicator:disabled"/>
+  <int value="-903524547" label="DiscoFeedEndpoint:disabled"/>
   <int value="-903359589" label="CrOSEnforceSystemAec:enabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
@@ -61421,6 +61422,7 @@ from previous Chrome versions.
   <int value="1181056275" label="enable-cloud-backup"/>
   <int value="1181825084" label="NewDragSpecInLauncher:enabled"/>
   <int value="1182356056" label="MacV2GPUSandbox:enabled"/>
+  <int value="1183125644" label="DiscoFeedEndpoint:enabled"/>
   <int value="1183260592" label="WebAssemblyBaseline:enabled"/>
   <int value="1183431946" label="v8-cache-options"/>
   <int value="1184093076" label="WebRtcUseMinMaxVEADimensions:enabled"/>

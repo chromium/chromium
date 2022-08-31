@@ -4787,6 +4787,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kFeedCloseRefresh,
                                     kFeedCloseRefreshVariations,
                                     "FeedCloseRefresh")},
+    {"feed-discofeed-endpoint", flag_descriptions::kFeedDiscoFeedEndpointName,
+     flag_descriptions::kFeedDiscoFeedEndpointDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kDiscoFeedEndpoint)},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
