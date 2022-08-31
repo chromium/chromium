@@ -487,9 +487,8 @@ const NGLayoutResult* NGBlockNode::Layout(
 
   PrepareForLayout();
   DeferredShapingDisallowScope disallow_deferred(
-      *box_->GetFrameView(),
-      Style().HasTransform() ||
-          !IsHorizontalWritingMode(Style().GetWritingMode()));
+      *box_->View(), Style().HasTransform() ||
+                         !IsHorizontalWritingMode(Style().GetWritingMode()));
 
   NGLayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
                                  break_token, early_break);
@@ -945,9 +944,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   }
 
   DeferredShapingDisallowScope disallow_deferred(
-      *box_->GetFrameView(),
-      Style().HasTransform() ||
-          !IsHorizontalWritingMode(Style().GetWritingMode()));
+      *box_->View(), Style().HasTransform() ||
+                         !IsHorizontalWritingMode(Style().GetWritingMode()));
   bool is_orthogonal_flow_root =
       !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());
 

@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEFERRED_SHAPING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEFERRED_SHAPING_H_
 
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
 namespace blink {
@@ -17,8 +17,7 @@ class DeferredShapingViewportScope {
   using PassKey = base::PassKey<DeferredShapingViewportScope>;
 
  public:
-  DeferredShapingViewportScope(LocalFrameView& view,
-                               const LayoutView& layout_view);
+  explicit DeferredShapingViewportScope(const LayoutView& layout_view);
   ~DeferredShapingViewportScope() {
     ds_controller_.SetCurrentViewportBottom(PassKey(), previous_value_);
   }
@@ -42,29 +41,26 @@ class DeferredShapingMinimumTopScope {
   using PassKey = base::PassKey<DeferredShapingMinimumTopScope>;
 
  public:
-  // |input_node| - Source of LocalFrameView. It's ok to specify any layout
-  //                input node if it is associated to the same LocalFrameView.
+  // |input_node| - Source of LayoutView. It's ok to specify any layout
+  //                input node if it is associated to the same LayoutView.
   // |minimum_top| - The value to be set to CurrentMinimumTop().
   DeferredShapingMinimumTopScope(const NGLayoutInputNode input_node,
                                  LayoutUnit minimum_top)
-      : controller_(&input_node.GetLayoutBox()
-                         ->GetFrameView()
-                         ->GetDeferredShapingController()),
+      : controller_(&DeferredShapingController::From(input_node)),
         previous_value_(controller_->CurrentMinimumTop()) {
     controller_->SetCurrentMinimumTop(PassKey(), minimum_top);
   }
 
-  // |input_node| - Source of LocalFrameView. It's ok to specify any layout
-  //                input node if it is associated to the same LocalFrameView.
+  // |input_node| - Source of LayoutView. It's ok to specify any layout
+  //                input node if it is associated to the same LayoutView.
   // |delta| - The value to be added to CurrentMinimumTop().
   [[nodiscard]] static DeferredShapingMinimumTopScope CreateDelta(
       const NGLayoutInputNode input_node,
       LayoutUnit delta) {
-    auto& ds_controller = input_node.GetLayoutBox()
-                              ->GetFrameView()
-                              ->GetDeferredShapingController();
     return DeferredShapingMinimumTopScope(
-        input_node, ds_controller.CurrentMinimumTop() + delta);
+        input_node,
+        DeferredShapingController::From(input_node).CurrentMinimumTop() +
+            delta);
   }
 
   DeferredShapingMinimumTopScope(DeferredShapingMinimumTopScope&& other)
@@ -95,7 +91,7 @@ class DeferredShapingDisallowScope {
   using PassKey = base::PassKey<DeferredShapingDisallowScope>;
 
  public:
-  explicit DeferredShapingDisallowScope(LocalFrameView& view,
+  explicit DeferredShapingDisallowScope(const LayoutView& view,
                                         bool disable = true)
       : controller_(view.GetDeferredShapingController()),
         previous_value_(controller_.AllowDeferredShaping()) {

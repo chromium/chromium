@@ -21,8 +21,8 @@ class DeferredShapingViewportScope;
 class Document;
 class Element;
 class LayoutObject;
-class LocalFrame;
 class LocalFrameView;
+class NGLayoutInputNode;
 class Node;
 
 enum class ReshapeReason {
@@ -40,14 +40,15 @@ enum class ReshapeReason {
 // DeferredShapingController class manages states of the Deferred Shaping
 // feature.
 //
-// A LocalFrameView owns a DeferredShapingController instance. A LocalFrameView
-// and its DeferredShapingController are created and destroyed together.
+// A LayoutView owns a DeferredShapingController instance. A LayoutView and
+// its DeferredShapingController are created and destroyed together.
 class CORE_EXPORT DeferredShapingController
     : public GarbageCollected<DeferredShapingController> {
  public:
   // This returns nullptr if the |document| is not active.
   static DeferredShapingController* From(const Document& document);
-  explicit DeferredShapingController(LocalFrame& frame);
+  static DeferredShapingController& From(const NGLayoutInputNode input_node);
+  explicit DeferredShapingController(Document& document);
   void Trace(Visitor* visitor) const;
 
   // Disable deferred shaping on the frame persistently.
@@ -107,7 +108,7 @@ class CORE_EXPORT DeferredShapingController
   void OnFirstContentfulPaint();
 
  private:
-  Member<LocalFrame> frame_;
+  Member<Document> document_;
   TaskHandle reshaping_task_handle_;
   HeapHashSet<Member<Element>> deferred_elements_;
   LayoutUnit current_viewport_bottom_ = kIndefiniteSize;

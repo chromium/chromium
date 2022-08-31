@@ -204,7 +204,7 @@ double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
 void LayoutSVGRoot::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  DeferredShapingDisallowScope disallow_deferred(*GetFrameView());
+  DeferredShapingDisallowScope disallow_deferred(*View());
 
   LayoutSize old_size = Size();
   UpdateLogicalWidth();

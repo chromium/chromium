@@ -257,8 +257,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, const gfx::Size& initial_size)
 LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
     : FrameView(frame_rect),
       frame_(frame),
-      deferred_shaping_controller_(
-          MakeGarbageCollected<DeferredShapingController>(frame)),
       can_have_scrollbars_(true),
       has_pending_layout_(false),
       layout_scheduling_enabled_(true),
@@ -315,7 +313,6 @@ LocalFrameView::~LocalFrameView() {
 void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(part_update_set_);
   visitor->Trace(frame_);
-  visitor->Trace(deferred_shaping_controller_);
   visitor->Trace(update_plugins_timer_);
   visitor->Trace(layout_subtree_root_list_);
   visitor->Trace(orthogonal_writing_mode_root_list_);
@@ -833,7 +830,8 @@ void LocalFrameView::PerformLayout() {
       if (HasOrthogonalWritingModeRoots())
         LayoutOrthogonalWritingModeRoots();
 
-      DeferredShapingController& ds_controller = GetDeferredShapingController();
+      DeferredShapingController& ds_controller =
+          GetLayoutView()->GetDeferredShapingController();
       bool default_allow_deferred_shaping =
           ds_controller.DefaultAllowDeferredShaping() &&
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
@@ -844,7 +842,7 @@ void LocalFrameView::PerformLayout() {
       using PassKey = base::PassKey<LocalFrameView>;
       ds_controller.SetAllowDeferredShaping(
           PassKey(), default_allow_deferred_shaping && !document->Printing());
-      DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
+      DeferredShapingViewportScope viewport_scope(*GetLayoutView());
       GetLayoutView()->UpdateLayout();
       ds_controller.SetAllowDeferredShaping(PassKey(), false);
     }
@@ -1370,8 +1368,10 @@ void LocalFrameView::ProcessUrlFragment(const KURL& url,
     // part of the lifecycle.
     if (same_document_navigation)
       ScheduleAnimation();
-    GetDeferredShapingController().ReshapeAllDeferred(
-        ReshapeReason::kFragmentAnchor);
+    if (const auto* layout_view = GetLayoutView()) {
+      layout_view->GetDeferredShapingController().ReshapeAllDeferred(
+          ReshapeReason::kFragmentAnchor);
+    }
   }
 }
 
@@ -1869,7 +1869,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   if (visual_viewport_size_changed && !document->Printing())
     frame_->GetDocument()->EnqueueVisualViewportResizeEvent();
 
-  GetDeferredShapingController().PerformPostLayoutTask();
+  GetLayoutView()->GetDeferredShapingController().PerformPostLayoutTask();
 }
 
 float LocalFrameView::InputEventsScaleFactor() const {
@@ -4732,7 +4732,7 @@ void LocalFrameView::OnFirstContentfulPaint() {
   if (frame_->IsLocalRoot())
     EnsureUkmAggregator().DidReachFirstContentfulPaint();
 
-  GetDeferredShapingController().OnFirstContentfulPaint();
+  GetLayoutView()->GetDeferredShapingController().OnFirstContentfulPaint();
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(

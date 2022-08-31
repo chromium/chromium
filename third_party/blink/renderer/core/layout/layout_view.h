@@ -40,6 +40,7 @@
 
 namespace blink {
 
+class DeferredShapingController;
 class LayoutQuote;
 class LocalFrameView;
 class NamedPagesMapper;
@@ -353,6 +354,11 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   TrackedDescendantsMap& SvgTextDescendantsMap();
 
+  DeferredShapingController& GetDeferredShapingController() const {
+    NOT_DESTROYED();
+    return *deferred_shaping_controller_;
+  }
+
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
@@ -379,6 +385,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   bool UpdateLogicalWidthAndColumnWidth() override;
 
   Member<LocalFrameView> frame_view_;
+  Member<DeferredShapingController> deferred_shaping_controller_;
 
   // The page logical height.
   // This is only used during printing to split the content into pages.

@@ -14,16 +14,22 @@ namespace blink {
 // static
 DeferredShapingController* DeferredShapingController::From(
     const Document& document) {
-  if (const auto* view = document.View())
+  if (const auto* view = document.GetLayoutView())
     return &view->GetDeferredShapingController();
   return nullptr;
 }
 
-DeferredShapingController::DeferredShapingController(LocalFrame& frame)
-    : frame_(frame) {}
+// static
+DeferredShapingController& DeferredShapingController::From(
+    const NGLayoutInputNode input_node) {
+  return input_node.GetLayoutBox()->View()->GetDeferredShapingController();
+}
+
+DeferredShapingController::DeferredShapingController(Document& document)
+    : document_(document) {}
 
 void DeferredShapingController::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_);
+  visitor->Trace(document_);
   visitor->Trace(deferred_elements_);
 }
 
@@ -51,19 +57,19 @@ void DeferredShapingController::PerformPostLayoutTask() {
   DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
   DEFERRED_SHAPING_VLOG(1) << "Deferred " << deferred_elements_.size()
                            << " elements";
-  UseCounter::Count(frame_->GetDocument(), WebFeature::kDeferredShapingWorked);
+  UseCounter::Count(*document_, WebFeature::kDeferredShapingWorked);
 }
 
 void DeferredShapingController::OnFirstContentfulPaint() {
   if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
     return;
-  if (!frame_->GetDocument()->HasFinishedParsing())
+  if (!document_->HasFinishedParsing())
     return;
   if (!default_allow_deferred_shaping_ && deferred_elements_.IsEmpty())
     return;
   default_allow_deferred_shaping_ = false;
   reshaping_task_handle_ = PostCancellableTask(
-      *frame_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
+      *document_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
       WTF::Bind(&DeferredShapingController::ReshapeAllDeferred,
                 WrapWeakPersistent(this), ReshapeReason::kFcp));
 }
@@ -132,7 +138,7 @@ void DeferredShapingController::ReshapeAllDeferred(ReshapeReason reason) {
       break;
   }
   if (feature != WebFeature::kMaxValue) {
-    UseCounter::Count(frame_->GetDocument(), feature);
+    UseCounter::Count(*document_, feature);
   }
   DEFERRED_SHAPING_VLOG(1) << "Reshaped all " << count << " elements by "
                            << reason_string;

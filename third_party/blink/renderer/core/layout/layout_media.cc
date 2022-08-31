@@ -55,7 +55,7 @@ HTMLMediaElement* LayoutMedia::MediaElement() const {
 
 void LayoutMedia::UpdateLayout() {
   NOT_DESTROYED();
-  DeferredShapingDisallowScope disallow_deferred(*GetFrameView());
+  DeferredShapingDisallowScope disallow_deferred(*View());
   LayoutSize old_size(ContentWidth(), ContentHeight());
 
   LayoutImage::UpdateLayout();

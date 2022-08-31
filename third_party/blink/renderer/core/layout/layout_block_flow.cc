@@ -3319,7 +3319,7 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   NOT_DESTROYED();
 
   if (IsShapingDeferred()) {
-    GetFrameView()->GetDeferredShapingController().UnregisterDeferred(
+    View()->GetDeferredShapingController().UnregisterDeferred(
         *To<Element>(GetNode()));
   }
 

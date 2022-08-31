@@ -539,8 +539,7 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   }
 
   NGInlineNodeData* data = MutableData();
-  auto& ds_controller =
-      GetLayoutBox()->GetFrameView()->GetDeferredShapingController();
+  auto& ds_controller = DeferredShapingController::From(*this);
   NGInlineNodeData::ShapingState new_state = NGInlineNodeData::kShapingDone;
   if (ds_controller.AllowDeferredShaping() &&
       !GetLayoutBox()->IsInsideFlowThread() &&
@@ -2033,10 +2032,8 @@ bool NGInlineNode::ShouldBeReshaped() const {
 }
 
 bool NGInlineNode::IsDisplayLocked() const {
-  return GetLayoutBox()
-      ->GetFrameView()
-      ->GetDeferredShapingController()
-      .IsRegisteredDeferred(*To<Element>(GetDOMNode()));
+  return DeferredShapingController::From(*this).IsRegisteredDeferred(
+      *To<Element>(GetDOMNode()));
 }
 
 void NGInlineNode::CheckConsistency() const {

@@ -85,7 +85,6 @@ class Cursor;
 namespace blink {
 class AXObjectCache;
 class ChromeClient;
-class DeferredShapingController;
 class DarkModeFilter;
 class DocumentLifecycle;
 class FragmentAnchor;
@@ -481,10 +480,6 @@ class CORE_EXPORT LocalFrameView final
   // passed around the LocalFrameView layout methods can be true while this
   // returns false.
   bool IsSubtreeLayout() const { return !layout_subtree_root_list_.IsEmpty(); }
-
-  DeferredShapingController& GetDeferredShapingController() const {
-    return *deferred_shaping_controller_;
-  }
 
   // The window that hosts the LocalFrameView. The LocalFrameView will
   // communicate scrolls and repaints to the host window in the window's
@@ -1029,7 +1024,6 @@ class CORE_EXPORT LocalFrameView final
 
   Member<LocalFrame> frame_;
 
-  Member<DeferredShapingController> deferred_shaping_controller_;
   bool can_have_scrollbars_;
   bool in_post_lifecycle_steps_ = false;
 

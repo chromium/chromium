@@ -2723,11 +2723,8 @@ DeferredShapingMinimumTopScope
 NGBlockLayoutAlgorithm::CreateMinimumTopScopeForChild(
     const NGLayoutInputNode child,
     const NGInflowChildData& child_data) const {
-  LayoutUnit minimum_top = Node()
-                               .GetLayoutBox()
-                               ->GetFrameView()
-                               ->GetDeferredShapingController()
-                               .CurrentMinimumTop();
+  LayoutUnit minimum_top =
+      DeferredShapingController::From(Node()).CurrentMinimumTop();
   if (Node().CreatesNewFormattingContext()) {
     minimum_top += child_data.bfc_offset_estimate.block_offset;
   } else {
