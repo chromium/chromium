@@ -35,6 +35,15 @@ ReservedFreeSlotBitmapSize() {
 }
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+CommittedFreeSlotBitmapSize() {
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+  return base::bits::AlignUp(kFreeSlotBitmapSize, SystemPageSize());
+#else
+  return 0;
+#endif
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 NumPartitionPagesPerFreeSlotBitmap() {
   return ReservedFreeSlotBitmapSize() / PartitionPageSize();
 }

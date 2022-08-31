@@ -819,6 +819,19 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
     PCScan::RegisterNewSuperPage(root, super_page);
   }
 
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+  // Commit the pages for freeslot bitmap.
+  if (!is_direct_mapped()) {
+    uintptr_t freeslot_bitmap_addr =
+        super_page + PartitionPageSize() + ReservedTagBitmapSize();
+    PA_DCHECK(SuperPageFreeSlotBitmapAddr(super_page) == freeslot_bitmap_addr);
+    ScopedSyscallTimer timer{root};
+    RecommitSystemPages(freeslot_bitmap_addr, CommittedFreeSlotBitmapSize(),
+                        PageAccessibilityConfiguration::kReadWrite,
+                        PageAccessibilityDisposition::kRequireUpdate);
+  }
+#endif
+
   return payload;
 }
 
