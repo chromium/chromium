@@ -161,6 +161,7 @@
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
+#include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -847,6 +848,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ChromeOSFamilyLinkUserMetricsProvider>());
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<UpdateEngineMetricsProvider>());
 
   if (base::FeatureList::IsEnabled(
           ::features::kUserTypeByDeviceTypeMetricsProvider)) {

@@ -4870,6 +4870,8 @@ static_library("browser") {
       "metrics/perf/windowed_incognito_observer.h",
       "metrics/profile_pref_names.cc",
       "metrics/profile_pref_names.h",
+      "metrics/update_engine_metrics_provider.cc",
+      "metrics/update_engine_metrics_provider.h",
       "metrics/usertype_by_devicetype_metrics_provider.cc",
       "metrics/usertype_by_devicetype_metrics_provider.h",
       "nearby_sharing/attachment_info.cc",

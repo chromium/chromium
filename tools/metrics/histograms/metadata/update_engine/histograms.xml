@@ -390,6 +390,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UpdateEngine.ConsumerAutoUpdate" enum="BooleanOptedOut"
+    expires_after="2023-06-01">
+  <owner>yuanpengni@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    This records if the eligible user has opted out the consumer auto update.
+    Ineligible user will be skipped.
+
+    This is reported each time Chrome metrics logs are created.
+  </summary>
+</histogram>
+
 <histogram name="UpdateEngine.Daily.OSAgeDays" units="days"
     expires_after="2023-01-01">
   <owner>kimjae@chromium.org</owner>
