@@ -472,32 +472,46 @@ void FinalizeGetMediaDeviceIDForHMAC(
                         base::BindOnce(std::move(callback), absl::nullopt));
 }
 
-bool ChangeSourceEnabledForDevice(const MediaStreamDevice& device) {
-  DesktopMediaID media_id = DesktopMediaID::Parse(device.id);
-  // Show "Change source" button on notification bar only for tab sharing by
-  // desktopCapture API or getDisplayMedia.
-  return media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS &&
-         (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
-          (device.type == MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
-           base::FeatureList::IsEnabled(
-               media::kShareThisTabInsteadButtonGetDisplayMedia)));
-}
+bool ChangeSourceSupported(const MediaStreamDevices& devices) {
+  for (const MediaStreamDevice& device : devices) {
+    DesktopMediaID media_id = DesktopMediaID::Parse(device.id);
+    if (media_id.type != DesktopMediaID::TYPE_WEB_CONTENTS) {
+      return false;  // Change of source only supported between tabs.
+    }
+  }
 
-bool ChangeSourceBlocklistedForDevice(const MediaStreamDevice& device) {
-  // Block display of "Change source" button for getDisplayMedia with audio
-  // if ShareThisTabInsteadButtonGetDisplayMediaAudio is disabled.
-  return device.type == MediaStreamType::DISPLAY_AUDIO_CAPTURE &&
-         !base::FeatureList::IsEnabled(
-             media::kShareThisTabInsteadButtonGetDisplayMediaAudio);
-}
+  for (const MediaStreamDevice& device : devices) {
+    if (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
+      return true;  // Established API supporting share-this-tab-instead.
+    }
+  }
 
-bool EnableChangeSource(const MediaStreamDevices& devices) {
-  bool has_change_source_enabled_device = std::any_of(
-      devices.cbegin(), devices.cend(), &ChangeSourceEnabledForDevice);
-  bool has_change_source_blocklisted_device = std::any_of(
-      devices.cbegin(), devices.cend(), &ChangeSourceBlocklistedForDevice);
-  return has_change_source_enabled_device &&
-         !has_change_source_blocklisted_device;
+  if (!base::FeatureList::IsEnabled(
+          media::kShareThisTabInsteadButtonGetDisplayMedia)) {
+    return false;  // Killswitch engaged.
+  }
+
+  if (!std::any_of(devices.cbegin(), devices.cend(),
+                   [](const MediaStreamDevice& device) {
+                     return device.type ==
+                            MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+                   })) {
+    return false;  // Not an API call that supports share-this-tab-instead.
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          media::kShareThisTabInsteadButtonGetDisplayMediaAudio) &&
+      std::any_of(devices.cbegin(), devices.cend(),
+                  [](const MediaStreamDevice& device) {
+                    return device.type ==
+                           MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+                  })) {
+    // The user chose to capture audio, but the killswitch against
+    // share-this-tab-instead with audio is engaged.
+    return false;
+  }
+
+  return true;  // getDisplayMedia() and killswitches did not trigger.
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -3649,7 +3663,8 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
       RequestTypeToString(request->request_type())));
 
   MediaStreamUI::SourceCallback device_changed_cb;
-  if (EnableChangeSource(
+  if (request->controls.dynamic_surface_switching_requested &&
+      ChangeSourceSupported(
           blink::ToMediaStreamDevicesList(request->stream_devices_set)) &&
       base::FeatureList::IsEnabled(features::kDesktopCaptureChangeSource)) {
     device_changed_cb = base::BindRepeating(

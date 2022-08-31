@@ -7,6 +7,8 @@
 -All/CastV2PerformanceTest.Performance/1
 -All/CastV2PerformanceTest.Performance/2
 -All/CastV2PerformanceTest.Performance/5
+-All/GetDisplayMediaChangeSourceBrowserTest.ChangeSource/0
+-All/GetDisplayMediaChangeSourceBrowserTest.ChangeSource/1
 -All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/0
 -All/PageLoadMetricsBackForwardCacheBrowserTest.LogsBasicPageForegroundDuration/BFCacheEnabled
 -All/PageLoadMetricsBackForwardCacheBrowserTest.LogsPageEndReasons/BFCacheEnabled
@@ -68,7 +70,6 @@
 -FirstRunMasterPrefsWithTrackedPreferencesInstance/FirstRunMasterPrefsWithTrackedPreferences.TrackedPreferencesSurviveFirstRun/2
 -FirstRunMasterPrefsWithTrackedPreferencesInstance/FirstRunMasterPrefsWithTrackedPreferences.TrackedPreferencesSurviveFirstRun/3
 -FirstRunMasterPrefsVariationsSeedTests/FirstRunMasterPrefsVariationsSeedTest.Test/1
--GetDisplayMediaChangeSourceBrowserTest.ChangeSource
 -HttpsOnlyModeBrowserTest.BadHttpsFollowedByGoodHttps
 -IdleServiceTest.Basic
 -InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel

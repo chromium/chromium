@@ -894,11 +894,20 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
 
 // TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-class GetDisplayMediaChangeSourceBrowserTest : public WebRtcTestBase {
+class GetDisplayMediaChangeSourceBrowserTest
+    : public WebRtcTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
+  GetDisplayMediaChangeSourceBrowserTest()
+      : dynamic_surface_switching_requested_(std::get<0>(GetParam())),
+        feature_enabled_(std::get<1>(GetParam())) {}
+  ~GetDisplayMediaChangeSourceBrowserTest() override = default;
+
   void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitWithFeatures(
-        {media::kShareThisTabInsteadButtonGetDisplayMedia}, {});
+    if (feature_enabled_) {
+      feature_list_.InitWithFeatures(
+          {media::kShareThisTabInsteadButtonGetDisplayMedia}, {});
+    }
 
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
 
@@ -915,17 +924,33 @@ class GetDisplayMediaChangeSourceBrowserTest : public WebRtcTestBase {
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
   }
 
+  std::string GetConstraints() const {
+    return base::StringPrintf(
+        "{video: true, surfaceSwitching: \"%s\"}",
+        dynamic_surface_switching_requested_ ? "include" : "exclude");
+  }
+
+  bool ShouldShowShareThisTabInsteadButton() const {
+    return dynamic_surface_switching_requested_ && feature_enabled_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  const bool dynamic_surface_switching_requested_;
+  const bool feature_enabled_;
 };
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         GetDisplayMediaChangeSourceBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
   content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
   content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
 
-  RunGetDisplayMedia(capturing_tab, "{video: true}", /*is_fake_ui=*/false,
+  RunGetDisplayMedia(capturing_tab, GetConstraints(), /*is_fake_ui=*/false,
                      /*expect_success=*/true,
                      /*is_tab_capture=*/true);
 
@@ -939,7 +964,6 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
   EXPECT_EQ(
       GetSecondaryButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
@@ -947,6 +971,11 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  if (!ShouldShowShareThisTabInsteadButton()) {
+    EXPECT_FALSE(HasSecondaryButton(other_tab));
+    return;
+  }
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
 
   // Click the secondary button, i.e., the "Share this tab instead" button
   GetDelegate(other_tab)->Cancel();
@@ -975,19 +1004,16 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        ChangeSourceReject) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
   content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
   content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
 
-  RunGetDisplayMedia(capturing_tab, "{video: true}", /*is_fake_ui=*/false,
+  RunGetDisplayMedia(capturing_tab, GetConstraints(), /*is_fake_ui=*/false,
                      /*expect_success=*/true,
                      /*is_tab_capture=*/true);
-  while (browser()->tab_strip_model()->GetActiveWebContents() != captured_tab) {
-    base::RunLoop().RunUntilIdle();
-  }
 
   EXPECT_TRUE(captured_tab->IsBeingCaptured());
   EXPECT_FALSE(other_tab->IsBeingCaptured());
@@ -999,7 +1025,6 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
   EXPECT_EQ(
       GetSecondaryButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
@@ -1007,6 +1032,11 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  if (!ShouldShowShareThisTabInsteadButton()) {
+    EXPECT_FALSE(HasSecondaryButton(other_tab));
+    return;
+  }
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
 
   browser()->tab_strip_model()->ActivateTabAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(other_tab));

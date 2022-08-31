@@ -2192,6 +2192,15 @@
       status: "experimental"
     },
     {
+      // When a Web application calls getDisplayMedia() and asks for video,
+      // allow a hint to be provided to offer the user an option to
+      // dynamically switch the source display surface during the capture.
+      //
+      // https://github.com/w3c/mediacapture-screen-share/pull/225/files
+      name: "SurfaceSwitchingConstraint",
+      status: "stable",
+    },
+    {
       name: "SVGTextNG",
       depends_on: ["LayoutNG"],
       status: "stable"

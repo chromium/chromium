@@ -60,6 +60,9 @@ struct BLINK_COMMON_EXPORT StreamControls {
   bool request_all_screens = false;
   mojom::PreferredDisplaySurface preferred_display_surface =
       mojom::PreferredDisplaySurface::NO_PREFERENCE;
+  // Flag to request that a "Share this tab instead" button is shown to change
+  // the target of the tab-capture to the other tab.
+  bool dynamic_surface_switching_requested = true;
 };
 
 }  // namespace blink

@@ -127,6 +127,11 @@ struct BLINK_COMMON_EXPORT
     return controls.preferred_display_surface;
   }
 
+  static bool dynamic_surface_switching_requested(
+      const blink::StreamControls& controls) {
+    return controls.dynamic_surface_switching_requested;
+  }
+
   static bool Read(blink::mojom::StreamControlsDataView input,
                    blink::StreamControls* out);
 };

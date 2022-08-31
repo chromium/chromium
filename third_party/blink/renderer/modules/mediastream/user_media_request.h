@@ -164,6 +164,13 @@ class MODULES_EXPORT UserMediaRequest final
   mojom::blink::PreferredDisplaySurface preferred_display_surface() const {
     return preferred_display_surface_;
   }
+  void set_dynamic_surface_switching_requested(bool value) {
+    dynamic_surface_switching_requested_ = value;
+  }
+  bool dynamic_surface_switching_requested() const {
+    return dynamic_surface_switching_requested_;
+  }
+
   bool auto_select_all_screens() const { return auto_select_all_screens_; }
 
   // Mark this request as an GetOpenDevice request for initializing a
@@ -197,6 +204,7 @@ class MODULES_EXPORT UserMediaRequest final
   bool exclude_self_browser_surface_ = false;
   mojom::blink::PreferredDisplaySurface preferred_display_surface_ =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
+  bool dynamic_surface_switching_requested_ = true;
   const bool auto_select_all_screens_ = false;
   bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;

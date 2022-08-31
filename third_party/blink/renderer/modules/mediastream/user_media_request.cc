@@ -443,6 +443,12 @@ UserMediaRequest* UserMediaRequest::Create(
   }
   result->set_preferred_display_surface(preferred_display_surface);
 
+  // The default is to request dynamic surface switching.
+  result->set_dynamic_surface_switching_requested(
+      !options->hasSurfaceSwitching() ||
+      options->surfaceSwitching().AsEnum() ==
+          V8SurfaceSwitchingPreferenceEnum::Enum::kInclude);
+
   return result;
 }
 

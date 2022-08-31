@@ -136,6 +136,7 @@ struct StreamControls {
   bool request_pan_tilt_zoom_permission;
   bool request_all_screens;
   PreferredDisplaySurface preferred_display_surface;
+  bool dynamic_surface_switching_requested;
 };
 
 // Results returned by a successful GetOpenDevice call.
