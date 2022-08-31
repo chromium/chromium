@@ -111,8 +111,9 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
     // exclusive_access_context can be null in tests.
     if (exclusive_access_context) {
       exclusive_access_context->UpdateExclusiveAccessExitBubbleContent(
-          GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED,
+          GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
           ExclusiveAccessBubbleHideCallback(),
+          /*notify_download=*/true,
           /*force_update=*/true);
     }
   } else if (download::ShouldShowDetailsAutomatically(browser_->profile())) {

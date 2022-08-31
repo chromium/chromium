@@ -48,11 +48,15 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   ~ExclusiveAccessBubbleViews() override;
 
   // |force_update| indicates the caller wishes to show the bubble contents
-  // regardless of whether the contents have changed.
+  // regardless of whether the contents have changed. |notify_download|
+  // indicates if the notification should be about a new download. Note that
+  // bubble_type may be an invalid one for notify_download, as we want to
+  // preserve the current type.
   void UpdateContent(
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+      bool notify_download,
       bool force_update);
 
   // Repositions |popup_| if it is visible.
