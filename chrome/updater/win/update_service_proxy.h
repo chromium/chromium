@@ -47,6 +47,7 @@ class UpdateServiceProxy : public UpdateService {
   // Overrides for updater::UpdateService.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
+  void FetchPolicies(base::OnceClosure callback) override;
   void RegisterApp(const RegistrationRequest& request,
                    RegisterAppCallback callback) override;
   void GetAppStates(
@@ -83,6 +84,7 @@ class UpdateServiceProxy : public UpdateService {
   void UninitializeOnSTA();
   void GetVersionOnSTA(base::OnceCallback<void(const base::Version&)> callback,
                        HRESULT prev_hr);
+  void FetchPoliciesOnSTA(base::OnceClosure callback, HRESULT prev_hr);
   void RegisterAppOnSTA(const RegistrationRequest& request,
                         RegisterAppCallback callback,
                         HRESULT prev_hr);

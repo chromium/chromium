@@ -237,6 +237,18 @@ void UpdateServiceImpl::GetVersion(
       base::BindOnce(std::move(callback), base::Version(kUpdaterVersion)));
 }
 
+void UpdateServiceImpl::FetchPolicies(base::OnceClosure callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_)
+      ->RunRegisterDevice(
+          base::BindOnce(&DeviceManagementTask::RunFetchPolicy,
+                         base::MakeRefCounted<DeviceManagementTask>(
+                             config_, main_task_runner_),
+                         std::move(callback)));
+}
+
 void UpdateServiceImpl::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
@@ -395,29 +407,8 @@ void UpdateServiceImpl::ForceInstall(StateChangeCallback state_update,
           priority, UpdateService::PolicySameVersionUpdate::kNotAllowed));
 }
 
-void UpdateServiceImpl::GetDMPolicies(base::OnceClosure callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_)
-      ->RunRegisterDevice(
-          base::BindOnce(&DeviceManagementTask::RunFetchPolicy,
-                         base::MakeRefCounted<DeviceManagementTask>(
-                             config_, main_task_runner_),
-                         std::move(callback)));
-}
-
 void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
                                   Callback callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  GetDMPolicies(base::BindOnce(&UpdateServiceImpl::UpdateAllInternal, this,
-                               state_update, std::move(callback)));
-}
-
-void UpdateServiceImpl::UpdateAllInternal(StateChangeCallback state_update,
-                                          Callback callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -457,21 +448,6 @@ void UpdateServiceImpl::Update(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GetDMPolicies(base::BindOnce(
-      &UpdateServiceImpl::UpdateInternal, this, app_id, install_data_index,
-      priority, policy_same_version_update, state_update, std::move(callback)));
-}
-
-void UpdateServiceImpl::UpdateInternal(
-    const std::string& app_id,
-    const std::string& install_data_index,
-    Priority priority,
-    PolicySameVersionUpdate policy_same_version_update,
-    StateChangeCallback state_update,
-    Callback callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(app_id, priority, false, policy)) {
     HandleUpdateDisabledByPolicy(app_id, policy, false, state_update,
@@ -496,18 +472,6 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GetDMPolicies(base::BindOnce(&UpdateServiceImpl::InstallInternal, this,
-                               registration, install_data_index, priority,
-                               state_update, std::move(callback)));
-}
-
-void UpdateServiceImpl::InstallInternal(const RegistrationRequest& registration,
-                                        const std::string& install_data_index,
-                                        Priority priority,
-                                        StateChangeCallback state_update,
-                                        Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(registration.app_id, priority, true, policy)) {
     HandleUpdateDisabledByPolicy(registration.app_id, policy, true,
@@ -556,23 +520,6 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                                      const std::string& install_settings,
                                      StateChangeCallback state_update,
                                      Callback callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  GetDMPolicies(base::BindOnce(&UpdateServiceImpl::RunInstallerInternal, this,
-                               app_id, installer_path, install_args,
-                               install_data, install_settings, state_update,
-                               std::move(callback)));
-}
-
-void UpdateServiceImpl::RunInstallerInternal(
-    const std::string& app_id,
-    const base::FilePath& installer_path,
-    const std::string& install_args,
-    const std::string& install_data,
-    const std::string& install_settings,
-    StateChangeCallback state_update,
-    Callback callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

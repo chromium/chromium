@@ -31,6 +31,9 @@
 - (void)getVersionWithReply:
     (void (^_Nonnull)(NSString* _Nullable version))reply;
 
+// Fetches policies from device management.
+- (void)fetchPoliciesWithReply:(void (^_Nullable)(void))reply;
+
 // Checks for updates and returns the result in the reply block.
 - (void)checkForUpdatesWithUpdateState:
             (CRUUpdateStateObserver* _Nonnull)updateState

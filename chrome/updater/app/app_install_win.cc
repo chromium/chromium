@@ -7,7 +7,7 @@
 namespace updater {
 
 void AppInstall::WakeCandidateDone() {
-  RegisterUpdater();
+  FetchPolicies();
 }
 
 }  // namespace updater

@@ -85,6 +85,7 @@ HRESULT Run([in] LONG result);
 ]
 interface IUpdater : IUnknown {
   HRESULT GetVersion([out, retval] BSTR* version);
+  HRESULT FetchPolicies([in] IUpdaterCallback* callback);
   HRESULT CheckForUpdate([in, string] const WCHAR* app_id);
   HRESULT RegisterApp([in, string] const WCHAR* app_id,
                       [in, string] const WCHAR* brand_code,

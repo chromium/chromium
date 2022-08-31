@@ -155,6 +155,26 @@ HRESULT UpdaterImpl::GetVersion(BSTR* version) {
   return S_OK;
 }
 
+HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+  com_server->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<UpdateService> update_service,
+             base::OnceClosure callback_closure) {
+            update_service->FetchPolicies(std::move(callback_closure));
+          },
+          com_server->update_service(),
+          base::BindPostTask(
+              base::ThreadPool::CreateSequencedTaskRunner(
+                  {base::MayBlock(),
+                   base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+              base::BindOnce(base::IgnoreResult(&IUpdaterCallback::Run),
+                             Microsoft::WRL::ComPtr<IUpdaterCallback>(callback),
+                             0))));
+  return S_OK;
+}
+
 HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id) {
   return E_NOTIMPL;
 }

@@ -85,6 +85,21 @@
                                 std::move(cb)));
 }
 
+- (void)fetchPoliciesWithReply:(void (^)(void))reply {
+  auto cb = base::BindOnce(base::RetainBlock(^(void) {
+    VLOG(0) << "FetchPolicies complete.";
+    if (reply)
+      reply();
+
+    _appServer->TaskCompleted();
+  }));
+
+  _appServer->TaskStarted();
+  _callbackRunner->PostTask(
+      FROM_HERE, base::BindOnce(&updater::UpdateService::FetchPolicies,
+                                _service, std::move(cb)));
+}
+
 - (void)runPeriodicTasksWithReply:(void (^)(void))reply {
   auto cb = base::BindOnce(base::RetainBlock(^(void) {
     VLOG(0) << "RunPeriodicTasks complete.";
@@ -408,6 +423,13 @@
 - (void)getVersionWithReply:(void (^_Nonnull)(NSString* version))reply {
   // This function may be called by any user.
   [_service getVersionWithReply:reply];
+}
+
+- (void)fetchPoliciesWithReply:(void (^)(void))reply {
+  // This function may only be called by the same user.
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
+  if (reply)
+    reply();
 }
 
 - (void)runPeriodicTasksWithReply:(void (^)(void))reply {

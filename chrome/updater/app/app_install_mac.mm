@@ -19,7 +19,7 @@ void AppInstall::WakeCandidateDone() {
       updater_scope(), GetUpdateServiceLaunchdName(updater_scope()),
       LaunchctlPresence::kPresent, base::Seconds(kWaitForLaunchctlUpdateSec),
       base::BindOnce([](scoped_refptr<AppInstall> installer,
-                        bool unused) { installer->RegisterUpdater(); },
+                        bool unused) { installer->FetchPolicies(); },
                      base::WrapRefCounted(this)));
 }
 

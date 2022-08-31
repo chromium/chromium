@@ -389,6 +389,17 @@ void UpdateServiceProxy::GetVersion(
               base::BindPostTask(main_task_runner_, std::move(callback)))));
 }
 
+void UpdateServiceProxy::FetchPolicies(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
+  com_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
+          .Then(base::BindOnce(
+              &UpdateServiceProxy::FetchPoliciesOnSTA, this,
+              base::BindPostTask(main_task_runner_, std::move(callback)))));
+}
+
 void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
                                      RegisterAppCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
@@ -542,6 +553,31 @@ void UpdateServiceProxy::GetVersionOnSTA(
   }
 
   std::move(callback).Run(base::Version(base::WideToUTF8(version.Get())));
+}
+
+void UpdateServiceProxy::FetchPoliciesOnSTA(base::OnceClosure callback,
+                                            HRESULT prev_hr) {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+
+  if (FAILED(prev_hr)) {
+    std::move(callback).Run();
+    return;
+  }
+  Microsoft::WRL::ComPtr<IUpdater> updater;
+  if (HRESULT hr = CreateUpdater(scope_, updater); FAILED(hr)) {
+    std::move(callback).Run();
+    return;
+  }
+  auto callback_wrapper = Microsoft::WRL::Make<UpdaterCallback>(
+      updater,
+      base::BindOnce([](base::OnceClosure callback,
+                        LONG /*status_code*/) { std::move(callback).Run(); },
+                     std::move(callback)));
+  if (HRESULT hr = updater->FetchPolicies(callback_wrapper.Get()); FAILED(hr)) {
+    VLOG(2) << "Failed to call IUpdater::FetchPolicies" << std::hex << hr;
+    callback_wrapper->Disconnect().Run(hr);
+    return;
+  }
 }
 
 void UpdateServiceProxy::RegisterAppOnSTA(

@@ -726,6 +726,9 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE GetVersion( 
             /* [retval][out] */ BSTR *version) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE FetchPolicies( 
+            /* [in] */ IUpdaterCallback *callback) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
             /* [string][in] */ const WCHAR *app_id) = 0;
         
@@ -801,6 +804,11 @@ EXTERN_C const IID IID_IUpdater;
         HRESULT ( STDMETHODCALLTYPE *GetVersion )( 
             IUpdater * This,
             /* [retval][out] */ BSTR *version);
+        
+        DECLSPEC_XFGVIRT(IUpdater, FetchPolicies)
+        HRESULT ( STDMETHODCALLTYPE *FetchPolicies )( 
+            IUpdater * This,
+            /* [in] */ IUpdaterCallback *callback);
         
         DECLSPEC_XFGVIRT(IUpdater, CheckForUpdate)
         HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
@@ -890,6 +898,9 @@ EXTERN_C const IID IID_IUpdater;
 
 #define IUpdater_GetVersion(This,version)	\
     ( (This)->lpVtbl -> GetVersion(This,version) ) 
+
+#define IUpdater_FetchPolicies(This,callback)	\
+    ( (This)->lpVtbl -> FetchPolicies(This,callback) ) 
 
 #define IUpdater_CheckForUpdate(This,app_id)	\
     ( (This)->lpVtbl -> CheckForUpdate(This,app_id) ) 

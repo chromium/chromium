@@ -74,6 +74,8 @@ class AppInstall : public App {
 
   void WakeCandidateDone();
 
+  void FetchPolicies();
+
   void RegisterUpdater();
 
   // Handles the --tag and --app-id command line arguments, and triggers

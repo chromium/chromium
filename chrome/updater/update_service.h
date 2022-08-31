@@ -211,6 +211,9 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   // if an error (including timeout) occurs.
   virtual void GetVersion(base::OnceCallback<void(const base::Version&)>) = 0;
 
+  // Fetches policies from device management.
+  virtual void FetchPolicies(base::OnceClosure callback) = 0;
+
   // Registers given request to the updater.
   virtual void RegisterApp(const RegistrationRequest& request,
                            RegisterAppCallback callback) = 0;

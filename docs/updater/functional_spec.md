@@ -370,6 +370,12 @@ or revoked, the updater will start in an unmanaged state. Instead, if you want
 to prevent the updater from starting if enrollment fails, set
 `EnrollmentMandatory` to `1`.
 
+After the updater sets itself up, the `FetchPolicies` RPC is invoked on the
+updater server to register with device management and fetch policies.
+
+The updater also checks for policy updates when the `RunPeriodicTasks` RPC is
+invoked at periodic intervals.
+
 #### Windows
 The `EnrollmentToken` REG_SZ value is read from
 `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.

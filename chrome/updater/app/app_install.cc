@@ -222,7 +222,7 @@ void AppInstall::WakeCandidateDone() {
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
-void AppInstall::RegisterUpdater() {
+void AppInstall::FetchPolicies() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_MAC)
@@ -231,6 +231,13 @@ void AppInstall::RegisterUpdater() {
   update_service_ = CreateUpdateServiceProxy(
       updater_scope(), external_constants_->OverinstallTimeout());
 #endif
+
+  update_service_->FetchPolicies(
+      base::BindOnce(&AppInstall::RegisterUpdater, this));
+}
+
+void AppInstall::RegisterUpdater() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RegistrationRequest request;
   request.app_id = kUpdaterAppId;
