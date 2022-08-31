@@ -26,12 +26,6 @@ message AutofillWalletUsageSpecifics {
     VirtualCardUsageData virtual_card_usage_data = 2;
   }
 
-  // A list of timestamps that correspond to the latest retrieval requests of a
-  // specific Autofill wallet data model. These timestamps are collected when a
-  // user selects an option in a Autofill suggestion dropdown and the client
-  // records the time.
-  repeated int64 retrieval_time_unix_epoch_micros = 3 [packed = true];
-
   message VirtualCardUsageData {
     // The instrument id of the actual card that the virtual card is related to.
     optional int64 instrument_id = 1;
