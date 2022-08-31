@@ -72,6 +72,13 @@ void MetadataWriter::AddDiscreteMappingEntries(
   }
 }
 
+void MetadataWriter::AddBooleanSegmentDiscreteMapping(const std::string& key,
+                                                      float threshold) {
+  DCHECK_GT(threshold, 0);
+  const std::pair<float, int> mappings[]{{threshold, 1}};
+  AddDiscreteMappingEntries(key, mappings, 1);
+}
+
 void MetadataWriter::SetSegmentationMetadataConfig(
     proto::TimeUnit time_unit,
     uint64_t bucket_duration,
@@ -83,6 +90,15 @@ void MetadataWriter::SetSegmentationMetadataConfig(
   metadata_->set_signal_storage_length(signal_storage_length);
   metadata_->set_min_signal_collection_length(min_signal_collection_length);
   metadata_->set_result_time_to_live(result_time_to_live);
+}
+
+void MetadataWriter::SetDefaultSegmentationMetadataConfig(
+    int min_signal_collection_length_days,
+    int signal_storage_length_days) {
+  SetSegmentationMetadataConfig(proto::TimeUnit::DAY, /*bucket_duration=*/1,
+                                signal_storage_length_days,
+                                min_signal_collection_length_days,
+                                /*result_time_to_live=*/1);
 }
 
 }  // namespace segmentation_platform

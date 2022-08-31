@@ -109,12 +109,24 @@ class MetadataWriter {
                                  const std::pair<float, int>* mappings,
                                  size_t mappings_size);
 
+  // Appends a boolean segmentation mapping. If the model records subsegments,
+  // then set the threshold to the cutoff segment value, and for any value
+  // strictly less than `threshold`, then the selection will return no.
+  void AddBooleanSegmentDiscreteMapping(const std::string& key,
+                                        float threshold = 1);
+
   // Writes the model metadata with the given parameters.
   void SetSegmentationMetadataConfig(proto::TimeUnit time_unit,
                                      uint64_t bucket_duration,
                                      int64_t signal_storage_length,
                                      int64_t min_signal_collection_length,
                                      int64_t result_time_to_live);
+
+  // Uses default setting for model metadata using DAY time unit and 1 day
+  // buckets.
+  void SetDefaultSegmentationMetadataConfig(
+      int min_signal_collection_length_days = 7,
+      int signal_storage_length_days = 28);
 
  private:
   const raw_ptr<proto::SegmentationModelMetadata> metadata_;
