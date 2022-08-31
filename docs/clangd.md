@@ -62,6 +62,12 @@ Once you have an appropriate clangd binary, you must configure your editor to
 use it, either by placing it first on your `PATH`, or through editor-specific
 configuration.
 
+*** note
+Note: The clangd provided by Chromium does not support optional features like
+remote indexing (see https://crbug.com/1358258). If you want those features,
+you'll need to use a different build of clangd.
+***
+
 ## Setting Up
 
 1. Make sure generated ninja files are up-to-date.
