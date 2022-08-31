@@ -11,7 +11,7 @@ import {AcceleratorSource, AcceleratorState, AcceleratorType, Modifier} from 'ch
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
-import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
+import {createUserAccelerator} from './shortcut_customization_test_util.js';
 
 suite('acceleratorRowTest', function() {
   /** @type {?AcceleratorRowElement} */
@@ -29,16 +29,16 @@ suite('acceleratorRowTest', function() {
   });
 
   test('LoadsBasicRow', async () => {
-    const acceleratorInfo1 = CreateUserAccelerator(
+    const acceleratorInfo1 = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
-        /*key_display=*/ 'g');
+        /*keyDisplay=*/ 'g');
 
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo2 = CreateUserAccelerator(
+    const acceleratorInfo2 = createUserAccelerator(
         Modifier.CONTROL,
         /*key=*/ 67,
-        /*key_display=*/ 'c');
+        /*keyDisplay=*/ 'c');
 
     const accelerators = [acceleratorInfo1, acceleratorInfo2];
     const description = 'test shortcut';
@@ -76,10 +76,10 @@ suite('acceleratorRowTest', function() {
   });
 
   test('LockIcon', async () => {
-    const acceleratorInfo1 = CreateUserAccelerator(
+    const acceleratorInfo1 = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
-        /*key_display=*/ 'g');
+        /*keyDisplay=*/ 'g');
 
     const accelerators = [acceleratorInfo1];
     const description = 'test shortcut';

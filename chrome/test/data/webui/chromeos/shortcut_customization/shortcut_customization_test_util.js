@@ -7,17 +7,17 @@ import {AcceleratorState, AcceleratorType} from 'chrome://shortcut-customization
 /**
  * @param {number} modifier
  * @param {number} keycode
- * @param {string} key_display
+ * @param {string} keyDisplay
  * @param {?boolean} locked
  * @return {!AcceleratorInfo}
  */
-export function CreateDefaultAccelerator(
-    modifier, keycode, key_display, locked = false) {
+export function createDefaultAccelerator(
+    modifier, keycode, keyDisplay, locked = false) {
   return /** @type {!AcceleratorInfo} */ ({
     accelerator: /** @type {!AcceleratorKeys} */ ({
       modifiers: modifier,
       key: keycode,
-      key_display: key_display,
+      keyDisplay: keyDisplay,
     }),
     type: AcceleratorType.DEFAULT,
     state: AcceleratorState.ENABLED,
@@ -28,17 +28,17 @@ export function CreateDefaultAccelerator(
 /**
  * @param {number} modifier
  * @param {number} keycode
- * @param {string} key_display
+ * @param {string} keyDisplay
  * @param {?boolean} locked
  * @return {!AcceleratorInfo}
  */
-export function CreateUserAccelerator(
-    modifier, keycode, key_display, locked = false) {
+export function createUserAccelerator(
+    modifier, keycode, keyDisplay, locked = false) {
   return /** @type {!AcceleratorInfo} */ ({
     accelerator: /** @type {!AcceleratorKeys} */ ({
       modifiers: modifier,
       key: keycode,
-      key_display: key_display,
+      keyDisplay: keyDisplay,
     }),
     type: AcceleratorType.USER_DEFINED,
     state: AcceleratorState.ENABLED,

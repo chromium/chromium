@@ -13,7 +13,7 @@ import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/short
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
-import {CreateDefaultAccelerator, CreateUserAccelerator} from './shortcut_customization_test_util.js';
+import {createDefaultAccelerator, createUserAccelerator} from './shortcut_customization_test_util.js';
 
 suite('acceleratorEditViewTest', function() {
   /** @type {?AcceleratorEditViewElement} */
@@ -40,10 +40,10 @@ suite('acceleratorEditViewTest', function() {
 
   test('LoadsBasicEditView', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = CreateUserAccelerator(
+    const acceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
-        /*key_display=*/ 'g');
+        /*keyDisplay=*/ 'g');
 
     editViewElement.acceleratorInfo = acceleratorInfo;
     await flush();
@@ -78,10 +78,10 @@ suite('acceleratorEditViewTest', function() {
 
   test('LockedAccelerator', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = CreateUserAccelerator(
+    const acceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
-        /*key_display=*/ 'g',
+        /*keyDisplay=*/ 'g',
         /*locked=*/ true);
 
     editViewElement.acceleratorInfo = acceleratorInfo;
@@ -99,10 +99,10 @@ suite('acceleratorEditViewTest', function() {
 
   test('DetectShortcutConflict', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = CreateDefaultAccelerator(
+    const acceleratorInfo = createDefaultAccelerator(
         Modifier.ALT,
         /*key=*/ 221,
-        /*key_display=*/ ']');
+        /*keyDisplay=*/ ']');
 
     editViewElement.acceleratorInfo = acceleratorInfo;
     editViewElement.source = AcceleratorSource.ASH;

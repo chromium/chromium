@@ -37,7 +37,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = new Map([
           accelerator: {
             modifiers: Modifier.ALT,
             key: 219,
-            key_display: '[',
+            keyDisplay: '[',
           },
         }],
       ],
@@ -51,7 +51,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = new Map([
           accelerator: {
             modifiers: Modifier.ALT,
             key: 221,
-            key_display: ']',
+            keyDisplay: ']',
           },
         }],
       ],
@@ -65,7 +65,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = new Map([
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             key: 187,
-            key_display: '+',
+            keyDisplay: '+',
           },
         }],
       ],
@@ -79,7 +79,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = new Map([
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             key: 189,
-            key_display: '-',
+            keyDisplay: '-',
           },
         }],
       ],
@@ -98,7 +98,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = new Map([
           accelerator: {
             modifiers: Modifier.CONTROL,
             key: 84,
-            key_display: 't',
+            keyDisplay: 't',
           },
         }],
       ],

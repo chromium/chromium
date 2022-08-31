@@ -109,7 +109,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
         modifiers: Modifier.CONTROL,
         key: 79,
-        key_display: 'o',
+        keyDisplay: 'o',
       });
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -134,7 +134,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewDefaultAccel = /** @type {!AcceleratorKeys} */ ({
         modifiers: Modifier.ALT,
         key: 221,
-        key_display: ']',
+        keyDisplay: ']',
       });
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -210,7 +210,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
         modifiers: Modifier.CONTROL,
         key: 79,
-        key_display: 'o',
+        keyDisplay: 'o',
       });
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -316,7 +316,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
         modifiers: Modifier.CONTROL,
         key: 79,
-        key_display: 'o',
+        keyDisplay: 'o',
       });
 
       // Sanity check that new accel is not in the reverse lookup.

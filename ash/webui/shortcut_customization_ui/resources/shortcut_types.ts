@@ -61,7 +61,7 @@ export enum AcceleratorConfigResult {
 export interface AcceleratorKeys {
   modifiers: number;
   key: number;
-  key_display: string;
+  keyDisplay: string;
 }
 
 export interface AcceleratorInfo {

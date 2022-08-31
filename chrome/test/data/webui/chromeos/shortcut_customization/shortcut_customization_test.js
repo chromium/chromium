@@ -14,7 +14,7 @@ import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
-import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
+import {createUserAccelerator} from './shortcut_customization_test_util.js';
 
 suite('shortcutCustomizationAppTest', function() {
   /** @type {?ShortcutCustomizationAppElement} */
@@ -41,7 +41,7 @@ suite('shortcutCustomizationAppTest', function() {
    * @param {string} subpageId
    * @return {!Array<!AcceleratorSubsectionElement>}
    */
-  function getSubsections_(subpageId) {
+  function getSubsections(subpageId) {
     const navPanel = page.shadowRoot.querySelector('navigation-view-panel');
     const navBody = navPanel.shadowRoot.querySelector('#navigationBody');
     const subPage = navBody.querySelector(`#${subpageId}`);
@@ -51,12 +51,12 @@ suite('shortcutCustomizationAppTest', function() {
   /**
    * @param {number} subsectionIndex
    */
-  async function openDialogForAcceleratorInSubsection_(subsectionIndex) {
+  async function openDialogForAcceleratorInSubsection(subsectionIndex) {
     // The edit dialog should not be stamped and visible.
     const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertFalse(!!editDialog);
 
-    const subSections = getSubsections_('chromeos-page-id');
+    const subSections = getSubsections('chromeos-page-id');
     const accelerators =
         subSections[subsectionIndex].shadowRoot.querySelectorAll(
             'accelerator-row');
@@ -69,7 +69,7 @@ suite('shortcutCustomizationAppTest', function() {
   test('LoadFakeChromeOSPage', async () => {
     await flushTasks();
 
-    const subSections = getSubsections_('chromeos-page-id');
+    const subSections = getSubsections('chromeos-page-id');
     const expectedLayouts = manager.getSubcategories(/**ChromeOS*/ 0);
     // Two subsections for ChromeOS (Window Management + Virtual Desks).
     assertEquals(expectedLayouts.size, subSections.length);
@@ -110,7 +110,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     await flushTasks();
 
-    const subSections = getSubsections_('browser-page-id');
+    const subSections = getSubsections('browser-page-id');
     const expectedLayouts = manager.getSubcategories(/**Browser*/ 1);
     // One subsection for the Browser (Tabs).
     assertEquals(expectedLayouts.size, subSections.length);
@@ -132,7 +132,7 @@ suite('shortcutCustomizationAppTest', function() {
     let editDialog = page.shadowRoot.querySelector('#editDialog');
     assertFalse(!!editDialog);
 
-    const subSections = getSubsections_('chromeos-page-id');
+    const subSections = getSubsections('chromeos-page-id');
     const accelerators =
         subSections[0].shadowRoot.querySelectorAll('accelerator-row');
     // Only two accelerators rows for "Window Management".
@@ -154,10 +154,10 @@ suite('shortcutCustomizationAppTest', function() {
     const nav = page.shadowRoot.querySelector('navigation-view-panel');
 
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = CreateUserAccelerator(
+    const acceleratorInfo = createUserAccelerator(
         Modifier.SHIFT,
         /*key=*/ 67,
-        /*key_display=*/ 'c');
+        /*keyDisplay=*/ 'c');
 
     // Simulate the trigger event to display the dialog.
     nav.dispatchEvent(new CustomEvent('show-edit-dialog', {
@@ -184,7 +184,7 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     // Open dialog for first accelerator in View Desk subsection.
-    await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
+    await openDialogForAcceleratorInSubsection(/*View Desk*/ 1);
     const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertTrue(!!editDialog);
 
@@ -241,14 +241,14 @@ suite('shortcutCustomizationAppTest', function() {
     const actualAccelerator = accelViewElement.acceleratorInfo.accelerator;
     assertEquals(Modifier.ALT, actualAccelerator.modifiers);
     assertEquals(221, actualAccelerator.key);
-    assertEquals(']', actualAccelerator.key_display);
+    assertEquals(']', actualAccelerator.keyDisplay);
   });
 
   test('AddAccelerator', async () => {
     await flushTasks();
 
     // Open dialog for first accelerator in View Desk subsection.
-    await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
+    await openDialogForAcceleratorInSubsection(/*View Desk*/ 1);
     const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertTrue(!!editDialog);
 
@@ -313,14 +313,14 @@ suite('shortcutCustomizationAppTest', function() {
             .acceleratorInfo.accelerator;
     assertEquals(Modifier.ALT, actualAccelerator.modifiers);
     assertEquals(221, actualAccelerator.key);
-    assertEquals(']', actualAccelerator.key_display);
+    assertEquals(']', actualAccelerator.keyDisplay);
   });
 
   test('RemoveAccelerator', async () => {
     await flushTasks();
 
     // Open dialog for first accelerator in View Desk subsection.
-    await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
+    await openDialogForAcceleratorInSubsection(/*View Desk*/ 1);
     const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertTrue(!!editDialog);
 

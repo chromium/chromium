@@ -73,7 +73,7 @@ suite('fakeShortcutProviderTest', function() {
     const acceleratorKeys = /** @type {!AcceleratorKeys} */ ({
       modifiers: Modifier.SHIFT,
       key: 79,
-      key_display: 'o',
+      keyDisplay: 'o',
     });
     return provider
         .addUserAccelerator(
@@ -88,13 +88,13 @@ suite('fakeShortcutProviderTest', function() {
     const oldAcceleratorKeys = /** @type {!AcceleratorKeys} */ ({
       modifiers: Modifier.SHIFT,
       key: 79,
-      key_display: 'o',
+      keyDisplay: 'o',
     });
 
     const newAcceleratorKeys = /** @type {!AcceleratorKeys} */ ({
       modifiers: Modifier.SHIFT,
       key: 80,
-      key_display: 'p',
+      keyDisplay: 'p',
     });
 
     return provider
@@ -111,7 +111,7 @@ suite('fakeShortcutProviderTest', function() {
     const accel = /** @type {!AcceleratorKeys} */ ({
       modifiers: Modifier.SHIFT,
       key: 79,
-      key_display: 'o',
+      keyDisplay: 'o',
     });
 
     return provider

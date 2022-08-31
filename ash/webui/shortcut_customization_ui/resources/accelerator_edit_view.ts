@@ -29,7 +29,7 @@ declare global {
 const accelerator: AcceleratorKeys = {
   modifiers: 0,
   key: 0,
-  key_display: '',
+  keyDisplay: '',
 };
 
 const defaultAcceleratorInfoState: AcceleratorInfo = {

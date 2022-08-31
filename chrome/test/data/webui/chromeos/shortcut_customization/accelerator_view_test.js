@@ -12,7 +12,7 @@ import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customiza
 import {AcceleratorSource, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {CreateDefaultAccelerator, CreateUserAccelerator} from './shortcut_customization_test_util.js';
+import {createDefaultAccelerator, createUserAccelerator} from './shortcut_customization_test_util.js';
 
 suite('acceleratorViewTest', function() {
   /** @type {?AcceleratorViewElement} */
@@ -40,10 +40,10 @@ suite('acceleratorViewTest', function() {
 
   test('LoadsBasicAccelerator', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = CreateUserAccelerator(
+    const acceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
-        /*key_display=*/ 'g');
+        /*keyDisplay=*/ 'g');
 
 
     viewElement.acceleratorInfo = acceleratorInfo;
@@ -62,10 +62,10 @@ suite('acceleratorViewTest', function() {
 
   test('EditableAccelerator', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = CreateDefaultAccelerator(
+    const acceleratorInfo = createDefaultAccelerator(
         Modifier.ALT,
         /*key=*/ 221,
-        /*key_display=*/ ']');
+        /*keyDisplay=*/ ']');
 
     viewElement.acceleratorInfo = acceleratorInfo;
     viewElement.source = AcceleratorSource.ASH;
