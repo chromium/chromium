@@ -6,6 +6,7 @@
 #define IPCZ_SRC_UTIL_SAFE_MATH_
 
 #include <limits>
+#include <type_traits>
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/base/optimization.h"
@@ -20,6 +21,18 @@ constexpr Dst checked_cast(Src value) {
   ABSL_HARDENING_ASSERT(
       ABSL_PREDICT_TRUE(value <= std::numeric_limits<Dst>::max()));
   return static_cast<Dst>(value);
+}
+
+template <typename Dst, typename Src>
+constexpr Dst saturated_cast(Src value) {
+  static_assert(std::is_unsigned_v<Src> && std::is_unsigned_v<Dst>,
+                "saturated_cast only supports unsigned types");
+  constexpr Dst kMaxDst = std::numeric_limits<Dst>::max();
+  constexpr Src kMaxSrc = std::numeric_limits<Src>::max();
+  if (ABSL_PREDICT_TRUE(kMaxDst >= kMaxSrc || value <= kMaxDst)) {
+    return static_cast<Dst>(value);
+  }
+  return kMaxDst;
 }
 
 template <typename T>

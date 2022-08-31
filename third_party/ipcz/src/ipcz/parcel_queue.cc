@@ -16,7 +16,7 @@ bool ParcelQueue::Consume(size_t num_bytes_consumed,
   ABSL_ASSERT(p.data_size() >= num_bytes_consumed);
   ABSL_ASSERT(p.num_objects() >= handles.size());
   p.Consume(num_bytes_consumed, handles);
-  ReduceNextElementSize(num_bytes_consumed);
+  PartiallyConsumeNextElement(num_bytes_consumed);
   if (p.empty()) {
     Parcel discarded;
     const bool ok = Pop(discarded);

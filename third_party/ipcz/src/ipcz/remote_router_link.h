@@ -6,6 +6,8 @@
 #define IPCZ_SRC_IPCZ_REMOTE_ROUTER_LINK_H_
 
 #include <atomic>
+#include <functional>
+#include <vector>
 
 #include "ipcz/fragment_ref.h"
 #include "ipcz/link_side.h"
@@ -13,6 +15,7 @@
 #include "ipcz/router_link.h"
 #include "ipcz/router_link_state.h"
 #include "ipcz/sublink_id.h"
+#include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -51,6 +54,7 @@ class RemoteRouterLink : public RouterLink {
   // RouterLink:
   LinkType GetType() const override;
   RouterLinkState* GetLinkState() const override;
+  void WaitForLinkStateAsync(std::function<void()> callback) override;
   Ref<Router> GetLocalPeer() override;
   RemoteRouterLink* AsRemoteRouterLink() override;
   void AllocateParcelData(size_t num_bytes,
@@ -59,11 +63,9 @@ class RemoteRouterLink : public RouterLink {
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
   void AcceptRouteDisconnected() override;
-  size_t GetParcelCapacityInBytes(const IpczPutLimits& limits) override;
-  RouterLinkState::QueueState GetPeerQueueState() override;
-  bool UpdateInboundQueueState(size_t num_parcels, size_t num_bytes) override;
-  void NotifyDataConsumed() override;
-  bool EnablePeerMonitoring(bool enable) override;
+  AtomicQueueState* GetPeerQueueState() override;
+  AtomicQueueState* GetLocalQueueState() override;
+  void SnapshotPeerQueueState() override;
   void MarkSideStable() override;
   bool TryLockForBypass(const NodeName& bypass_request_source) override;
   bool TryLockForClosure() override;
@@ -118,6 +120,11 @@ class RemoteRouterLink : public RouterLink {
   // that value indefinitely, so any non-null value loaded from this field is
   // safe to dereference for the duration of the RemoteRouterLink's lifetime.
   std::atomic<RouterLinkState*> link_state_{nullptr};
+
+  // Set of callbacks to be invoked as soon as this link has a RouterLinkState.
+  absl::Mutex mutex_;
+  std::vector<std::function<void()>> link_state_callbacks_
+      ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

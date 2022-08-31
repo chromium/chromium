@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
+#include <string>
+
 #include "ipcz/ipcz.h"
 #include "test/multinode_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -183,6 +186,81 @@ MULTINODE_TEST(QueueingTest, TwoPhaseFeedback) {
   EXPECT_EQ(IPCZ_RESULT_OK,
             WaitForConditions(c, {.flags = IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS,
                                   .max_remote_parcels = 1}));
+  Close(c);
+}
+
+constexpr size_t kStressTestPortalCapacity = 256;
+constexpr size_t kStressTestPayloadSize = 4 * 1024 * 1024;
+
+MULTINODE_TEST_NODE(QueueingTestNode, RemoteQueueFeedbackStressTestClient) {
+  IpczHandle b = ConnectToBroker();
+
+  size_t bytes_received = 0;
+  while (bytes_received < kStressTestPayloadSize) {
+    // Consistency check: ensure that the portal never has more than
+    // kStressTestPortalCapacity bytes available to retrieve. Otherwise limits
+    // were not properly enforced by the sender.
+    IpczPortalStatus status = {.size = sizeof(status)};
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              ipcz().QueryPortalStatus(b, IPCZ_NO_FLAGS, nullptr, &status));
+    EXPECT_LE(status.num_local_bytes, kStressTestPortalCapacity);
+
+    const void* data;
+    size_t num_bytes;
+    const IpczResult begin_result =
+        ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &data, &num_bytes, nullptr);
+    if (begin_result == IPCZ_RESULT_OK) {
+      bytes_received += num_bytes;
+      EXPECT_EQ(std::string_view(static_cast<const char*>(data), num_bytes),
+                std::string(num_bytes, '!'));
+      EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS,
+                                              nullptr, nullptr));
+      continue;
+    }
+
+    ASSERT_EQ(IPCZ_RESULT_UNAVAILABLE, begin_result);
+    WaitForConditions(
+        b, {.flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES, .min_local_bytes = 0});
+  }
+
+  Close(b);
+}
+
+MULTINODE_TEST(QueueingTest, RemoteQueueFeedbackStressTest) {
+  IpczHandle c = SpawnTestNode<RemoteQueueFeedbackStressTestClient>();
+
+  size_t bytes_remaining = kStressTestPayloadSize;
+  while (bytes_remaining) {
+    void* data;
+    size_t capacity = bytes_remaining;
+    const IpczPutLimits limits = {
+        .size = sizeof(limits),
+        .max_queued_parcels = std::numeric_limits<size_t>::max(),
+        .max_queued_bytes = kStressTestPortalCapacity,
+    };
+    const IpczBeginPutOptions options = {
+        .size = sizeof(options),
+        .limits = &limits,
+    };
+    const IpczResult begin_result = ipcz().BeginPut(
+        c, IPCZ_BEGIN_PUT_ALLOW_PARTIAL, &options, &capacity, &data);
+    if (begin_result == IPCZ_RESULT_OK) {
+      size_t num_bytes = std::min(bytes_remaining, capacity);
+      bytes_remaining -= num_bytes;
+      memset(data, '!', num_bytes);
+      EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(c, num_bytes, nullptr, 0,
+                                              IPCZ_NO_FLAGS, nullptr));
+      continue;
+    }
+    ASSERT_EQ(IPCZ_RESULT_RESOURCE_EXHAUSTED, begin_result);
+
+    EXPECT_EQ(
+        IPCZ_RESULT_OK,
+        WaitForConditions(c, {.flags = IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES,
+                              .max_remote_bytes = kStressTestPortalCapacity}));
+  }
+
+  WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED);
   Close(c);
 }
 

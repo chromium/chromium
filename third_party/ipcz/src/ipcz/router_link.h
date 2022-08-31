@@ -5,6 +5,12 @@
 #ifndef IPCZ_SRC_IPCZ_ROUTER_LINK_H_
 #define IPCZ_SRC_IPCZ_ROUTER_LINK_H_
 
+#include <cstddef>
+#include <functional>
+#include <string>
+#include <utility>
+
+#include "ipcz/atomic_queue_state.h"
 #include "ipcz/fragment_ref.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_name.h"
@@ -39,6 +45,10 @@ class RouterLink : public RefCounted {
   // returns null.
   virtual RouterLinkState* GetLinkState() const = 0;
 
+  // Runs `callback` as soon as this RouterLink has a RouterLinkState. If the
+  // link already has a RouterLinkState then `callback` is invoked immediately.
+  virtual void WaitForLinkStateAsync(std::function<void()> callback) = 0;
+
   // Returns the Router on the other end of this link, if this is a
   // LocalRouterLink. Otherwise returns null.
   virtual Ref<Router> GetLocalPeer() = 0;
@@ -72,30 +82,18 @@ class RouterLink : public RefCounted {
   // delivery of any further parcels.
   virtual void AcceptRouteDisconnected() = 0;
 
-  // Returns a best-effort estimation of how much new parcel data can be
-  // transmitted across the link before one or more limits described by `limits`
-  // would be exceeded on the receiving portal.
-  virtual size_t GetParcelCapacityInBytes(const IpczPutLimits& limits) = 0;
+  // Returns the AtomicQueueState for the other side of this link if available.
+  // Otherwise returns null.
+  virtual AtomicQueueState* GetPeerQueueState() = 0;
 
-  // Returns a best-effort snapshot of the last known state of the inbound
-  // parcel queue on the other side of this link. This is only meaningful for
-  // central links.
-  virtual RouterLinkState::QueueState GetPeerQueueState() = 0;
+  // Returns the AtomicQueueState for this side of the link if available.
+  // Otherwise returns null.
+  virtual AtomicQueueState* GetLocalQueueState() = 0;
 
-  // Updates the QueueState for this side of the link, returning true if and
-  // only if the other side wants to be notified about the update.
-  virtual bool UpdateInboundQueueState(size_t num_parcels,
-                                       size_t num_bytes) = 0;
-
-  // Notifies the other side that this side has consumed some parcels or parcel
-  // data from its inbound queue. Should only be called on central links when
-  // the other side has expressed interest in such notifications.
-  virtual void NotifyDataConsumed() = 0;
-
-  // Controls whether the caller's side of the link is interested in being
-  // notified about data consumption on the opposite side of the link. Returns
-  // the previous value of this bit.
-  virtual bool EnablePeerMonitoring(bool enable) = 0;
+  // Notifies the other side that this side has updated its visible queue state
+  // in some way which may be interesting to them. This should be called
+  // sparingly to avoid redundant IPC traffic and redundant idle wakes.
+  virtual void SnapshotPeerQueueState() = 0;
 
   // Signals that this side of the link is in a stable state suitable for one
   // side or the other to lock the link, either for bypass or closure

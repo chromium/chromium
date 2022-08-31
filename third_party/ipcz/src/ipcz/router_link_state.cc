@@ -125,38 +125,8 @@ bool RouterLinkState::ResetWaitingBit(LinkSide side) {
   return true;
 }
 
-RouterLinkState::QueueState RouterLinkState::GetQueueState(
-    LinkSide side) const {
-  return {
-      .num_parcels = SelectBySide(side, num_parcels_on_a, num_parcels_on_b)
-                         .load(std::memory_order_relaxed),
-      .num_bytes = SelectBySide(side, num_bytes_on_a, num_bytes_on_b)
-                       .load(std::memory_order_relaxed),
-  };
-}
-
-bool RouterLinkState::UpdateQueueState(LinkSide side,
-                                       size_t num_parcels,
-                                       size_t num_bytes) {
-  StoreSaturated(SelectBySide(side, num_parcels_on_a, num_parcels_on_b),
-                 num_parcels);
-  StoreSaturated(SelectBySide(side, num_bytes_on_a, num_bytes_on_b), num_bytes);
-  const uint32_t other_side_monitoring_this_side =
-      SelectBySide(side, kSideBMonitoringSideA, kSideAMonitoringSideB);
-  return (status.load(std::memory_order_relaxed) &
-          other_side_monitoring_this_side) != 0;
-}
-
-bool RouterLinkState::SetSideIsMonitoringPeer(LinkSide side,
-                                              bool is_monitoring) {
-  const uint32_t monitoring_bit =
-      SelectBySide(side, kSideAMonitoringSideB, kSideBMonitoringSideA);
-  uint32_t expected = kStable;
-  while (!status.compare_exchange_weak(expected, expected | monitoring_bit,
-                                       std::memory_order_relaxed,
-                                       std::memory_order_relaxed)) {
-  }
-  return (expected & monitoring_bit) != 0;
+AtomicQueueState& RouterLinkState::GetQueueState(LinkSide side) {
+  return SelectBySide(side, side_a_queue_state, side_b_queue_state);
 }
 
 }  // namespace ipcz

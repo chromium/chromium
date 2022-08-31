@@ -626,9 +626,9 @@ bool NodeLink::OnRouteDisconnected(msg::RouteDisconnected& route_closed) {
       sublink->router_link->GetType());
 }
 
-bool NodeLink::OnNotifyDataConsumed(msg::NotifyDataConsumed& notify) {
-  if (Ref<Router> router = GetRouter(notify.params().sublink)) {
-    router->NotifyPeerConsumedData();
+bool NodeLink::OnSnapshotPeerQueueState(msg::SnapshotPeerQueueState& snapshot) {
+  if (Ref<Router> router = GetRouter(snapshot.params().sublink)) {
+    router->SnapshotPeerQueueState();
   }
   return true;
 }

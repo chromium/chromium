@@ -244,6 +244,8 @@ ipcz_source_set("impl") {
   ]
   sources = [
     "ipcz/api_object.cc",
+    "ipcz/atomic_queue_state.cc",
+    "ipcz/atomic_queue_state.h",
     "ipcz/block_allocator.cc",
     "ipcz/block_allocator_pool.cc",
     "ipcz/block_allocator_pool.h",
@@ -270,6 +272,7 @@ ipcz_source_set("impl") {
     "ipcz/message_macros/message_params_declaration_macros.h",
     "ipcz/message_macros/message_params_declaration_macros.h",
     "ipcz/message_macros/undef_message_macros.h",
+    "ipcz/monitored_atomic.h",
     "ipcz/node.cc",
     "ipcz/node_connector.cc",
     "ipcz/node_link.cc",
@@ -385,6 +388,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "remote_portal_test.cc",
     "trap_test.cc",
     "util/ref_counted_test.cc",
+    "util/safe_math_test.cc",
     "util/stack_trace_test.cc",
   ]
 

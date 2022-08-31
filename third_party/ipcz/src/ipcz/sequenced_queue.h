@@ -6,11 +6,13 @@
 #define IPCZ_SRC_IPCZ_SEQUENCED_QUEUE_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "ipcz/sequence_number.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -90,6 +92,11 @@ class SequencedQueue {
     return base_sequence_number_;
   }
 
+  // The total size of all element from this queue so far.
+  uint64_t total_consumed_element_size() const {
+    return total_consumed_element_size_;
+  }
+
   // The final length of the sequence that can be popped from this queue. Null
   // if a final length has not yet been set. If the final length is N, then the
   // last ordered element that can be pushed to or popped from the queue has a
@@ -122,6 +129,13 @@ class SequencedQueue {
     }
 
     return entries_[0]->total_span_size;
+  }
+
+  // Returns the total size of all elements previously popped from this queue,
+  // plus the total size of all elemenets currently ready for popping.
+  uint64_t GetTotalElementSizeQueuedSoFar() const {
+    return CheckAdd(total_consumed_element_size_,
+                    static_cast<uint64_t>(GetTotalAvailableElementSize()));
   }
 
   // Returns the total length of the contiguous sequence already pushed and/or
@@ -213,24 +227,29 @@ class SequencedQueue {
     return !HasNextElement() && !ExpectsMoreElements();
   }
 
-  // Resets this queue to start at the initial SequenceNumber `n`. Must be
-  // called only on an empty queue and only when the caller can be sure they
-  // won't want to push any elements with a SequenceNumber below `n`.
-  void ResetInitialSequenceNumber(SequenceNumber n) {
+  // Resets this queue to a state which behaves as if a sequence of parcels of
+  // length `n` has already been pushed and popped from the queue, with a total
+  // cumulative element size of `total_consumed_element_size`. Must be called
+  // only on an empty queue and only when the caller can be sure they won't want
+  // to push any elements with a SequenceNumber below `n`.
+  void ResetSequence(SequenceNumber n, uint64_t total_consumed_element_size) {
     ABSL_ASSERT(num_entries_ == 0);
     base_sequence_number_ = n;
+    total_consumed_element_size_ = total_consumed_element_size;
   }
 
   // Attempts to skip SequenceNumber `n` in the sequence by advancing the
   // current SequenceNumber by one. Returns true on success and false on
-  // failure.
+  // failure. `element_size` is the size of the skipped element as it would have
+  // been reported by ElementTraits::GetElementSize() if the element in question
+  // were actually pushed into the queue.
   //
   // This can only succeed when `current_sequence_number()` is equal to `n`, no
-  // entry for SequenceNumber `n` is already in the queue, and the `n` is less
+  // entry for SequenceNumber `n` is already in the queue, and n` is less than
   // the final sequence length if applicable. Success is equivalent to pushing
   // and immediately popping element `n` except that it does not grow, shrink,
   // or otherwise modify the queue's underlying storage.
-  bool MaybeSkipSequenceNumber(SequenceNumber n) {
+  bool SkipElement(SequenceNumber n, size_t element_size) {
     if (base_sequence_number_ != n || HasNextElement() ||
         (final_sequence_length_ && *final_sequence_length_ <= n)) {
       return false;
@@ -240,6 +259,8 @@ class SequencedQueue {
     if (num_entries_ != 0) {
       entries_.remove_prefix(1);
     }
+    total_consumed_element_size_ = CheckAdd(
+        total_consumed_element_size_, static_cast<uint64_t>(element_size));
     return true;
   }
 
@@ -307,13 +328,13 @@ class SequencedQueue {
     base_sequence_number_ = SequenceNumber{base_sequence_number_.value() + 1};
 
     // Make sure the next queued entry has up-to-date accounting, if present.
+    const size_t element_size = ElementTraits::GetElementSize(element);
     if (entries_.size() > 1 && entries_[1]) {
       Entry& next = *entries_[1];
       next.span_start = head.span_start;
       next.span_end = head.span_end;
       next.num_entries_in_span = head.num_entries_in_span - 1;
-      next.total_span_size =
-          head.total_span_size - ElementTraits::GetElementSize(element);
+      next.total_span_size = head.total_span_size - element_size;
 
       size_t tail_index = next.span_end.value() - sequence_number.value();
       if (tail_index > 1) {
@@ -333,6 +354,8 @@ class SequencedQueue {
       entries_ = EntryView(storage_.data(), entries_.size());
     }
 
+    total_consumed_element_size_ = CheckAdd(
+        total_consumed_element_size_, static_cast<uint64_t>(element_size));
     return true;
   }
 
@@ -344,10 +367,16 @@ class SequencedQueue {
   }
 
  protected:
-  void ReduceNextElementSize(size_t amount) {
+  // Adjusts the recorded size of the element at the head of this queue, as if
+  // the element were partially consumed. After this call, the value returned by
+  // GetTotalAvailableElementSize() will be decreased by `amount`, and the value
+  // returned by total_consumed_element_size() will increase by the same.
+  void PartiallyConsumeNextElement(size_t amount) {
     ABSL_ASSERT(HasNextElement());
     ABSL_ASSERT(entries_[0]->total_span_size >= amount);
     entries_[0]->total_span_size -= amount;
+    total_consumed_element_size_ =
+        CheckAdd(total_consumed_element_size_, static_cast<uint64_t>(amount));
   }
 
  private:
@@ -555,6 +584,10 @@ class SequencedQueue {
 
   // The number of slots in `entries_` which are actually occupied.
   size_t num_entries_ = 0;
+
+  // Tracks the sum of the element sizes of every element fully or partially
+  // consumed from the queue so far.
+  uint64_t total_consumed_element_size_ = 0;
 
   // The final length of the sequence to be enqueued, if known.
   absl::optional<SequenceNumber> final_sequence_length_;
