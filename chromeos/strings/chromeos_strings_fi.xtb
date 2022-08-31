@@ -380,7 +380,7 @@
 <translation id="4454245904991689773">Skannauskohde</translation>
 <translation id="4472575034687746823">Aloita</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
+<translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="4500213108254186382">Kannen akselerometri</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
 <translation id="4511264077854731334">Portaali</translation>
@@ -791,7 +791,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8217675307824400706">Muodosta yhteys</translation>
 <translation id="8221728673725659466">Kalibrointi valmis</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
-<translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
+<translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8281886186245836920">Ohita</translation>
