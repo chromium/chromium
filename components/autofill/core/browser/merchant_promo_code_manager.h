@@ -91,9 +91,15 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   };
 
   // Sends suggestions for |promo_code_offers| to the |query_handler|'s handler
-  // for display in the associated Autofill popup.
+  // for display in the associated Autofill popup. If suggestions were
+  // displayed, this function also logs metrics for promo code suggestions
+  // shown. |field_name| is used for this metrics logging, as it checks whether
+  // the field where promo code suggestions are being shown has just had
+  // suggestions shown. This ensures we to log to the correct histogram, as we
+  // have separate histograms for unique shows and repetitive shows.
   void SendPromoCodeSuggestions(
       const std::vector<const AutofillOfferData*>& promo_code_offers,
+      const std::u16string& field_name,
       const QueryHandler& query_handler);
 
   raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;

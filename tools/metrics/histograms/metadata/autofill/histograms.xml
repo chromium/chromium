@@ -2308,7 +2308,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.Suggestion.{OfferType}"
-    enum="OffersSuggestionsEvent" expires_after="2023-08-01">
+    enum="OffersSuggestionsEvent" expires_after="M118">
+  <obsolete>
+    Deprecated August 2022. Subsumed by Autofill.Offer.Suggestion2.{OfferType}.
+  </obsolete>
   <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2320,8 +2323,32 @@ chromium-metrics-reviews@google.com.
   <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
+<histogram name="Autofill.Offer.Suggestion2.{OfferType}"
+    enum="OffersSuggestionsEvent" expires_after="2023-08-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <summary>
+    This metric is recorded every time an event related to an individual offer
+    suggestion in the offers suggestions popup gets triggered. The offers
+    suggestions popup gets displayed when a form's field that can be autofilled
+    with an offer is selected, and there is no promo code already filled into
+    the field.
+
+    This histogram is different from Autofill.Offer.Suggestion.{OfferType}
+    because Autofill.Offer.Suggestion.{OfferType} logged that suggestions were
+    shown when a promo code was already filled into the field and the field was
+    clicked again, but in this case suggestions would not have been shown due to
+    the field already having a full value. Since we updated the logic for when
+    this histogram is logged to, we also needed to create a new histogram.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
 <histogram name="Autofill.Offer.SuggestionsPopupShown"
-    enum="OffersSuggestionsPopupEvent" expires_after="2023-08-01">
+    enum="OffersSuggestionsPopupEvent" expires_after="M118">
+  <obsolete>
+    Deprecated August 2022. Subsumed by Autofill.Offer.SuggestionsPopupShown2.
+  </obsolete>
   <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2329,6 +2356,26 @@ chromium-metrics-reviews@google.com.
     popup is shown, and another for that same event, but only one per unique
     field. The offers suggestions popup is shown when a form's field that can be
     autofilled with an offer is selected.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.SuggestionsPopupShown2"
+    enum="OffersSuggestionsPopupEvent" expires_after="2023-08-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <summary>
+    This metric records two enums, one for every time the offers suggestions
+    popup is shown, and another for that same event, but only one per unique
+    field. The offers suggestions popup is shown when a form's field that can be
+    autofilled with an offer is selected, and there is no promo code already
+    filled into the field.
+
+    This histogram is different from Autofill.Offer.SuggestionsPopupShown
+    because Autofill.Offer.SuggestionsPopupShown logged that suggestions were
+    shown when a promo code was already filled into the field and the field was
+    clicked again, but in this case suggestions would not have been shown due to
+    the field already having a full value. Since we updated the logic for when
+    this histogram is logged to, we also needed to create a new histogram.
   </summary>
 </histogram>
 

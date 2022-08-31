@@ -46,11 +46,9 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(
-          promo_code_offers, QueryHandler(query_id, autoselect_first_suggestion,
-                                          field.value, handler));
-      // TODO(crbug.com/1190334): Fix the metrics logging to not log if we will
-      // not show promo code autofill suggestions.
-      uma_recorder_.OnOffersSuggestionsShown(field.name, promo_code_offers);
+          promo_code_offers, field.name,
+          QueryHandler(query_id, autoselect_first_suggestion, field.value,
+                       handler));
       return true;
     }
   }
@@ -159,6 +157,7 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
 
 void MerchantPromoCodeManager::SendPromoCodeSuggestions(
     const std::vector<const AutofillOfferData*>& promo_code_offers,
+    const std::u16string& field_name,
     const QueryHandler& query_handler) {
   if (!query_handler.handler_) {
     // Either the handler has been destroyed, or it is invalid.
@@ -185,6 +184,9 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
       query_handler.autoselect_first_suggestion_,
       AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
           promo_code_offers));
+
+  // Log that promo code autofill suggestions were shown.
+  uma_recorder_.OnOffersSuggestionsShown(field_name, promo_code_offers);
 }
 
 }  // namespace autofill
