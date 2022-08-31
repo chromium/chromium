@@ -132,7 +132,11 @@ public class FullscreenVideoPictureInPictureController {
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
 
-        mListenForAutoEnterability = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+        // TODO(crbug.com/1345586): This should be >= rather than > .  However, it looks like
+        // auto-enter might be causing a very bad display issue on S, which local ToT builds don't
+        // replicate even though canary does.  Turning off temporarily to see if canary builds start
+        // working, or if auto-enter isn't actually the problem.
+        mListenForAutoEnterability = Build.VERSION.SDK_INT > Build.VERSION_CODES.S;
         if (mListenForAutoEnterability) addObserversIfNeeded();
     }
 
