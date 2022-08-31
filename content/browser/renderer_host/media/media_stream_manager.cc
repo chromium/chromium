@@ -3153,9 +3153,9 @@ void MediaStreamManager::HandleAccessRequestResponse(
         if (sample_rate <= 0 || sample_rate > 96000)
           sample_rate = 44100;
 
-        media::AudioParameters params(device.input.format(),
-                                      media::CHANNEL_LAYOUT_STEREO, sample_rate,
-                                      device.input.frames_per_buffer());
+        media::AudioParameters params(
+            device.input.format(), media::ChannelLayoutConfig::Stereo(),
+            sample_rate, device.input.frames_per_buffer());
         params.set_effects(device.input.effects());
         params.set_mic_positions(device.input.mic_positions());
         DCHECK(params.IsValid());
