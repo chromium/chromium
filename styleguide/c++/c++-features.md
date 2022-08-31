@@ -39,6 +39,7 @@ The current status of existing standards and Abseil features is:
     *   absl::StatusOr: Initially supported September 3, 2020
     *   absl::Cleanup: Initially supported February 4, 2021
     *   absl::AnyInvocable: Initially supported June 20, 2022
+    *   Log library: Initially supported Aug 31, 2022
 
 [TOC]
 
@@ -1948,6 +1949,25 @@ standard library.
 **Notes:**
 *** promo
 Overlaps with `base/ranges/algorithm.h`.
+***
+
+### Log macros are related classes <sup>[tbd]</sup>
+
+```c++
+LOG(INFO) << message;
+CHECK(condition);
+absl::AddLogSink(&custom_sink_to_capture_absl_logs);
+```
+
+**Description:** Macros and related classes to perform debug loggings
+
+**Documentation:**
+[log.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/log.h)
+[check.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/check.h)
+
+**Notes:**
+*** promo
+Overlaps and uses same macros names as `base/logging.h`.
 ***
 
 ### Random <sup>[tbd]</sup>
