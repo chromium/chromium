@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.components.browser_ui.site_settings.WebsitePreference.PARAM_SUBDOMAIN_SETTINGS;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.content.Context;
@@ -31,6 +32,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /**
@@ -129,9 +131,14 @@ public class AddExceptionPreference
             checkBox.setVisibility(View.VISIBLE);
             checkBox.setText(R.string.website_settings_third_party_cookies_exception_label);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
-            checkBox.setVisibility(View.VISIBLE);
-            checkBox.setText(R.string.website_settings_domain_desktop_site_exception_checkbox);
+            // Default to domain level setting for Request Desktop Site.
             checkBox.setChecked(true);
+            if (ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
+                        PARAM_SUBDOMAIN_SETTINGS, false)) {
+                checkBox.setVisibility(View.VISIBLE);
+                checkBox.setText(R.string.website_settings_domain_desktop_site_exception_checkbox);
+            }
         }
 
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {

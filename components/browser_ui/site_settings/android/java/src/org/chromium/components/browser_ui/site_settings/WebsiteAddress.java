@@ -96,6 +96,10 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
         return mHost;
     }
 
+    public boolean getIsAnySubdomainPattern() {
+        return mOriginOrHostPattern.startsWith(ANY_SUBDOMAIN_PATTERN);
+    }
+
     public String getTitle() {
         if (mOrigin == null) return mHost;
         return UrlFormatter.formatUrlForSecurityDisplay(mOrigin,
