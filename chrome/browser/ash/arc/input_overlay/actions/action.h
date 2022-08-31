@@ -91,12 +91,11 @@ class Action {
   void PrepareToBindInput(std::unique_ptr<InputElement> input_element);
   // Save |pending_input_| as |current_input_|.
   void BindPending();
-  // Cancel |pending_input_| and |pending_position_|.
+  // Cancel |pending_input_|.
   void CancelPendingBind();
   void ResetPendingBind();
 
   void PrepareToBindPosition(const gfx::Point& new_touch_center);
-  void PrepareToBindPosition(std::unique_ptr<Position> position);
 
   // Restore the input binding back to the original binding.
   void RestoreToDefault();
