@@ -693,12 +693,12 @@
       name: "CSSScrollbars",
       status: "test",
     },
-    // Support for declarative parts of scroll-animations-1.
+    // Support for scroll-timeline.
     //
-    // https://drafts.csswg.org/scroll-animations-1/
+    // https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-shorthand
     {
       name: "CSSScrollTimeline",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CSSSelectorFragmentAnchor",
