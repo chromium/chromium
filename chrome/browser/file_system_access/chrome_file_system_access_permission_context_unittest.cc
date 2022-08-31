@@ -432,6 +432,12 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 permission_context(), PathType::kLocal,
                 temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
                 ui::SelectFileDialog::SELECT_OPEN_FILE));
+  // Opening files with a dangerous compound extension should show a prompt.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                temp_dir_.GetPath().AppendASCII("test.txt.swf"),
+                HandleType::kFile, ui::SelectFileDialog::SELECT_SAVEAS_FILE));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
