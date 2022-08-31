@@ -270,9 +270,6 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // The name of the histogram that records each window's width, in DIPs.
   static const char kWindowWidthHistogramName[];
 
-  // The name of the histogram that records the number of collapsed tabs.
-  static const char kCollapsedTabHistogramName[];
-
   // The names of the histograms that record daily discard/reload counts caused
   // by external/urgent event.
   static const char kDailyDiscardsExternalHistogramName[];

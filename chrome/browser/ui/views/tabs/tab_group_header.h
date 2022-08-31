@@ -78,17 +78,10 @@ class TabGroupHeader : public TabSlotView,
   // Calculate the width for this View.
   int GetDesiredWidth() const;
 
-  // Helper method used to log the time since the group was last expanded or
-  // collapsed.
-  void LogCollapseTime();
-
   const raw_ref<TabSlotController> tab_slot_controller_;
 
   raw_ptr<views::View> title_chip_;
   raw_ptr<views::Label> title_;
-
-  // Time used for logging the last time the group was collapsed or expanded.
-  base::TimeTicks last_modified_expansion_;
 
   // Saved collapsed state for usage with activation of element tracker system.
   bool is_collapsed_;

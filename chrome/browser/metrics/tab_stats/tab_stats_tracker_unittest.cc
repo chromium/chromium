@@ -626,13 +626,9 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
   size_t expected_tab_count =
       tab_stats_tracker_->AddTabs(12, this, tab_strip_model_);
   size_t expected_window_count = tab_stats_tracker_->AddWindows(5);
-  int collapsed_tab_count = 0;
 
   tab_stats_tracker_->OnHeartbeatEvent();
 
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::kCollapsedTabHistogramName,
-      collapsed_tab_count, 1);
   histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kTabCountHistogramName, expected_tab_count, 1);
   histogram_tester_.ExpectBucketCount(
@@ -653,14 +649,9 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
   group2->SetVisualData(visual_data);
   ASSERT_TRUE(tab_strip_model_->IsGroupCollapsed(group_id1));
   ASSERT_TRUE(tab_strip_model_->IsGroupCollapsed(group_id2));
-  collapsed_tab_count += group1->ListTabs().length();
-  collapsed_tab_count += group2->ListTabs().length();
 
   tab_stats_tracker_->OnHeartbeatEvent();
 
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::kCollapsedTabHistogramName,
-      collapsed_tab_count, 1);
   histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kWindowCountHistogramName,
       expected_window_count, 1);

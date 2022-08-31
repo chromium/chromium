@@ -122,13 +122,9 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   is_collapsed_ = tab_slot_controller_->IsGroupCollapsed(group);
-
-  last_modified_expansion_ = base::TimeTicks::Now();
 }
 
-TabGroupHeader::~TabGroupHeader() {
-  LogCollapseTime();
-}
+TabGroupHeader::~TabGroupHeader() = default;
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||
@@ -140,9 +136,8 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
 #if BUILDFLAG(IS_WIN)
       NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 #else
-        NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 #endif
-        LogCollapseTime();
     }
     return true;
   }
@@ -199,11 +194,8 @@ bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
 void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
   if (!dragging()) {
     if (event.IsLeftMouseButton()) {
-      bool successful_toggle =
-          tab_slot_controller_->ToggleTabGroupCollapsedState(
-              group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
-      if (successful_toggle)
-        LogCollapseTime();
+      tab_slot_controller_->ToggleTabGroupCollapsedState(
+          group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
     } else if (event.IsRightMouseButton() &&
                !editor_bubble_tracker_.is_open()) {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
@@ -230,15 +222,10 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
   tab_slot_controller_->UpdateHoverCard(
       nullptr, TabSlotController::HoverCardUpdateType::kEvent);
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP: {
-      bool successful_toggle =
-          tab_slot_controller_->ToggleTabGroupCollapsedState(
-              group().value(), ToggleTabGroupCollapsedStateOrigin::kGesture);
-      if (successful_toggle)
-        LogCollapseTime();
+    case ui::ET_GESTURE_TAP:
+      tab_slot_controller_->ToggleTabGroupCollapsedState(
+          group().value(), ToggleTabGroupCollapsedStateOrigin::kGesture);
       break;
-    }
-
     case ui::ET_GESTURE_LONG_TAP: {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
           tab_slot_controller_->GetBrowser(), group().value(), this));
@@ -249,7 +236,6 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
           this, *event, tab_slot_controller_->GetSelectionModel());
       break;
     }
-
     default:
       break;
   }
@@ -411,24 +397,6 @@ int TabGroupHeader::GetDesiredWidth() const {
   const int right_adjust = title.empty() ? 2 : -2;
 
   return overlap_margin + title_chip_->width() + right_adjust;
-}
-
-void TabGroupHeader::LogCollapseTime() {
-  base::TimeTicks current_time = base::TimeTicks::Now();
-  const int kMinSample = 1;
-  const int kMaxSample = 86400;
-  const int kBucketCount = 50;
-  base::TimeDelta time_delta = current_time - last_modified_expansion_;
-  if (tab_slot_controller_->IsGroupCollapsed(group().value())) {
-    base::UmaHistogramCustomCounts("TabGroups.TimeSpentExpanded2",
-                                   time_delta.InSeconds(), kMinSample,
-                                   kMaxSample, kBucketCount);
-  } else {
-    base::UmaHistogramCustomCounts("TabGroups.TimeSpentCollapsed2",
-                                   time_delta.InSeconds(), kMinSample,
-                                   kMaxSample, kBucketCount);
-  }
-  last_modified_expansion_ = current_time;
 }
 
 void TabGroupHeader::VisualsChanged() {
