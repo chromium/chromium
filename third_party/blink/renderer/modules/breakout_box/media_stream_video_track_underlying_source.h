@@ -59,8 +59,9 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
   bool StartFrameDelivery() override;
   void StopFrameDelivery() override;
 
-  void OnSourceTransferStarted(scoped_refptr<base::SequencedTaskRunner>,
-                               TransferredVideoFrameQueueUnderlyingSource*);
+  void OnSourceTransferStarted(
+      scoped_refptr<base::SequencedTaskRunner>,
+      CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>);
 
   void OnFrameFromTrack(
       scoped_refptr<media::VideoFrame> media_frame,

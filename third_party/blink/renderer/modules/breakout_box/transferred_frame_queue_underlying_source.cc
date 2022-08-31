@@ -15,11 +15,14 @@ template <typename NativeFrameType>
 TransferredFrameQueueUnderlyingSource<NativeFrameType>::
     TransferredFrameQueueUnderlyingSource(
         ScriptState* script_state,
-        FrameQueueHost* host,
-        scoped_refptr<base::SequencedTaskRunner> host_runner)
+        CrossThreadPersistent<FrameQueueHost> host,
+        scoped_refptr<base::SequencedTaskRunner> host_runner,
+        CrossThreadOnceClosure transferred_source_destroyed_callback)
     : FrameQueueUnderlyingSource<NativeFrameType>(script_state, host),
       host_runner_(host_runner),
-      host_(host) {}
+      host_(std::move(host)),
+      transferred_source_destroyed_callback_(
+          std::move(transferred_source_destroyed_callback)) {}
 
 template <typename NativeFrameType>
 bool TransferredFrameQueueUnderlyingSource<
@@ -42,6 +45,13 @@ void TransferredFrameQueueUnderlyingSource<
     NativeFrameType>::StopFrameDelivery() {
   PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
                       CrossThreadBindOnce(&FrameQueueHost::Close, host_));
+}
+
+template <typename NativeFrameType>
+void TransferredFrameQueueUnderlyingSource<
+    NativeFrameType>::ContextDestroyed() {
+  std::move(transferred_source_destroyed_callback_).Run();
+  FrameQueueUnderlyingSource<NativeFrameType>::ContextDestroyed();
 }
 
 template <typename NativeFrameType>

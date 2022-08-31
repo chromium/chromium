@@ -56,7 +56,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void DisconnectFromTrack();
   void OnSourceTransferStarted(
       scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-      TransferredAudioDataQueueUnderlyingSource* source);
+      CrossThreadPersistent<TransferredAudioDataQueueUnderlyingSource> source);
 
   // Only used to prevent the gargabe collector from reclaiming the media
   // stream track processor that created |this|.

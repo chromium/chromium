@@ -25,13 +25,15 @@ class FrameQueueTransferringOptimizer final
 
   using ConnectHostCallback = CrossThreadOnceFunction<void(
       scoped_refptr<base::SequencedTaskRunner>,
-      TransferredFrameQueueUnderlyingSource<NativeFrameType>*)>;
+      CrossThreadPersistent<
+          TransferredFrameQueueUnderlyingSource<NativeFrameType>>)>;
 
   FrameQueueTransferringOptimizer(
       FrameQueueHost*,
       scoped_refptr<base::SequencedTaskRunner> host_runner,
       wtf_size_t max_queue_size,
-      ConnectHostCallback callback);
+      ConnectHostCallback connect_host_callback,
+      CrossThreadOnceFunction<void()> transferred_source_destroyed_callback);
   ~FrameQueueTransferringOptimizer() override = default;
 
   UnderlyingSourceBase* PerformInProcessOptimization(
@@ -41,6 +43,7 @@ class FrameQueueTransferringOptimizer final
   CrossThreadWeakPersistent<FrameQueueHost> host_;
   scoped_refptr<base::SequencedTaskRunner> host_runner_;
   ConnectHostCallback connect_host_callback_;
+  CrossThreadOnceFunction<void()> transferred_source_destroyed_callback_;
   wtf_size_t max_queue_size_;
 };
 

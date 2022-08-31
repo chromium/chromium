@@ -93,14 +93,17 @@ MediaStreamAudioTrackUnderlyingSource::GetTransferringOptimizer() {
       this, GetRealmRunner(), MaxQueueSize(),
       CrossThreadBindOnce(
           &MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted,
+          WrapCrossThreadWeakPersistent(this)),
+      CrossThreadBindOnce(
+          &MediaStreamAudioTrackUnderlyingSource::ClearTransferredSource,
           WrapCrossThreadWeakPersistent(this)));
 }
 
 void MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    TransferredAudioDataQueueUnderlyingSource* source) {
+    CrossThreadPersistent<TransferredAudioDataQueueUnderlyingSource> source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransferSource(source);
+  TransferSource(std::move(source));
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableAudioWorker);
 }
 
