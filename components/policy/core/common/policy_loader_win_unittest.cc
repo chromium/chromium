@@ -186,8 +186,8 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value* policy_value) override;
-  void Install3rdPartyPolicy(const base::DictionaryValue* policies) override;
+                               const base::Value::Dict& policy_value) override;
+  void Install3rdPartyPolicy(const base::Value::Dict& policies) override;
 
   // Creates a harness instance that will install policy in HKCU or HKLM,
   // respectively.
@@ -335,9 +335,9 @@ void RegistryTestHarness::InstallStringListPolicy(
 
 void RegistryTestHarness::InstallDictionaryPolicy(
     const std::string& policy_name,
-    const base::Value* policy_value) {
+    const base::Value::Dict& policy_value) {
   std::string json;
-  base::JSONWriter::Write(*policy_value, &json);
+  base::JSONWriter::Write(policy_value, &json);
   RegKey key(hive_, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
   key.WriteValue(base::UTF8ToWide(policy_name).c_str(),
@@ -345,12 +345,12 @@ void RegistryTestHarness::InstallDictionaryPolicy(
 }
 
 void RegistryTestHarness::Install3rdPartyPolicy(
-    const base::DictionaryValue* policies) {
+    const base::Value::Dict& policies) {
   // The first level entries are domains, and the second level entries map
   // components to their policy.
   const std::wstring kPathPrefix =
       std::wstring(kTestPolicyKey) + kPathSep + kThirdParty + kPathSep;
-  for (auto domain : policies->DictItems()) {
+  for (auto domain : policies) {
     const base::Value& components = domain.second;
     if (!components.is_dict()) {
       ADD_FAILURE();

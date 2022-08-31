@@ -57,7 +57,7 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value* policy_value) override;
+                               const base::Value::Dict& policy_value) override;
 
   static PolicyProviderTestHarness* Create();
   static PolicyProviderTestHarness* CreateWithJSONEncoding();
@@ -145,20 +145,21 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
   }
 }
 
-void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
-                                          const base::Value* policy_value) {
+void TestHarness::InstallDictionaryPolicy(
+    const std::string& policy_name,
+    const base::Value::Dict& policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
 
   if (encode_complex_data_as_json_) {
     // Convert |policy_value| to a JSON-encoded string.
     std::string json_string;
     JSONStringValueSerializer serializer(&json_string);
-    ASSERT_TRUE(serializer.Serialize(*policy_value));
+    ASSERT_TRUE(serializer.Serialize(policy_value));
 
     AddPolicies(@{key : base::SysUTF8ToNSString(json_string)});
   } else {
     base::ScopedCFTypeRef<CFPropertyListRef> value(
-        ValueToProperty(*policy_value));
+        ValueToProperty(base::Value(policy_value.Clone())));
     AddPolicies(@{key : (__bridge NSDictionary*)(value.get())});
   }
 }

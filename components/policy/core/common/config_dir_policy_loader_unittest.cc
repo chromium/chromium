@@ -60,13 +60,13 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value* policy_value) override;
-  void Install3rdPartyPolicy(const base::DictionaryValue* policies) override;
+                               const base::Value::Dict& policy_value) override;
+  void Install3rdPartyPolicy(const base::Value::Dict& policies) override;
 
   const base::FilePath& test_dir() { return test_dir_.GetPath(); }
 
   // JSON-encode a dictionary and write it to a file.
-  void WriteConfigFile(const base::DictionaryValue& dict,
+  void WriteConfigFile(const base::Value::Dict& dict,
                        const std::string& file_name);
   void WriteConfigFile(const std::string& data, const std::string& file_name);
 
@@ -102,52 +102,53 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
 }
 
 void TestHarness::InstallEmptyPolicy() {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallStringPolicy(const std::string& policy_name,
                                       const std::string& policy_value) {
-  base::DictionaryValue dict;
-  dict.SetStringKey(policy_name, policy_value);
+  base::Value::Dict dict;
+  dict.Set(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallIntegerPolicy(const std::string& policy_name,
                                        int policy_value) {
-  base::DictionaryValue dict;
-  dict.SetIntKey(policy_name, policy_value);
+  base::Value::Dict dict;
+  dict.Set(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                                        bool policy_value) {
-  base::DictionaryValue dict;
-  dict.SetBoolKey(policy_name, policy_value);
+  base::Value::Dict dict;
+  dict.Set(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallStringListPolicy(const std::string& policy_name,
                                           const base::ListValue* policy_value) {
-  base::DictionaryValue dict;
-  dict.SetKey(policy_name, policy_value->Clone());
+  base::Value::Dict dict;
+  dict.Set(policy_name, policy_value->GetList().Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
-                                          const base::Value* policy_value) {
-  base::DictionaryValue dict;
-  dict.SetKey(policy_name, policy_value->Clone());
+void TestHarness::InstallDictionaryPolicy(
+    const std::string& policy_name,
+    const base::Value::Dict& policy_value) {
+  base::Value::Dict dict;
+  dict.Set(policy_name, policy_value.Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::Install3rdPartyPolicy(const base::DictionaryValue* policies) {
-  base::DictionaryValue dict;
-  dict.SetKey("3rdparty", policies->Clone());
+void TestHarness::Install3rdPartyPolicy(const base::Value::Dict& policies) {
+  base::Value::Dict dict;
+  dict.Set("3rdparty", policies.Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::WriteConfigFile(const base::DictionaryValue& dict,
+void TestHarness::WriteConfigFile(const base::Value::Dict& dict,
                                   const std::string& file_name) {
   std::string data;
   JSONStringValueSerializer serializer(&data);
@@ -243,13 +244,13 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
   // provider not respecting lexicographic ordering when reading them. Since the
   // filesystem may return files in arbitrary order, there is no way to be sure,
   // but this is better than nothing.
-  base::DictionaryValue test_dict_bar;
+  base::Value::Dict test_dict_bar;
   const char kHomepageLocation[] = "HomepageLocation";
-  test_dict_bar.SetStringKey(kHomepageLocation, "http://bar.com");
+  test_dict_bar.Set(kHomepageLocation, "http://bar.com");
   for (unsigned int i = 1; i <= 4; ++i)
     harness_.WriteConfigFile(test_dict_bar, base::NumberToString(i));
-  base::DictionaryValue test_dict_foo;
-  test_dict_foo.SetStringKey(kHomepageLocation, "http://foo.com");
+  base::Value::Dict test_dict_foo;
+  test_dict_foo.Set(kHomepageLocation, "http://foo.com");
   harness_.WriteConfigFile(test_dict_foo, "9");
   for (unsigned int i = 5; i <= 8; ++i)
     harness_.WriteConfigFile(test_dict_bar, base::NumberToString(i));
@@ -260,8 +261,8 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
   ASSERT_TRUE(bundle.get());
   PolicyBundle expected_bundle;
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .LoadFrom(test_dict_foo.GetDict(), POLICY_LEVEL_MANDATORY,
-                POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM);
+      .LoadFrom(test_dict_foo, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                POLICY_SOURCE_PLATFORM);
   for (unsigned int i = 1; i <= 8; ++i) {
     auto conflict_policy =
         expected_bundle

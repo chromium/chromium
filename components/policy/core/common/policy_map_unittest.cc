@@ -1022,13 +1022,13 @@ TEST_F(PolicyMapTest, MergeValuesGroup) {
 }
 
 TEST_F(PolicyMapTest, LoadFromSetsLevelScopeAndSource) {
-  base::DictionaryValue policies;
-  policies.SetStringKey("TestPolicy1", "google.com");
-  policies.SetBoolKey("TestPolicy2", true);
-  policies.SetIntKey("TestPolicy3", -12321);
+  base::Value::Dict policies;
+  policies.Set("TestPolicy1", "google.com");
+  policies.Set("TestPolicy2", true);
+  policies.Set("TestPolicy3", -12321);
 
   PolicyMap loaded;
-  loaded.LoadFrom(policies.GetDict(), POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+  loaded.LoadFrom(policies, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_PLATFORM);
 
   PolicyMap expected;
@@ -1042,20 +1042,20 @@ TEST_F(PolicyMapTest, LoadFromSetsLevelScopeAndSource) {
 }
 
 TEST_F(PolicyMapTest, LoadFromCheckForExternalPolicy) {
-  base::DictionaryValue policies;
-  policies.SetStringKey("TestPolicy1", "google.com");
+  base::Value::Dict policies;
+  policies.Set("TestPolicy1", "google.com");
 
   PolicyMap loaded;
   loaded.set_chrome_policy_details_callback_for_test(
       base::BindRepeating(&PolicyMapTest::GetPolicyDetailsExternalCallback,
                           base::Unretained(this)));
-  loaded.LoadFrom(policies.GetDict(), POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+  loaded.LoadFrom(policies, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_PLATFORM);
   EXPECT_TRUE(loaded.empty());
   loaded.set_chrome_policy_details_callback_for_test(
       base::BindRepeating(&PolicyMapTest::GetPolicyDetailsNonExternalCallback,
                           base::Unretained(this)));
-  loaded.LoadFrom(policies.GetDict(), POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+  loaded.LoadFrom(policies, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_PLATFORM);
   EXPECT_FALSE(loaded.empty());
 }

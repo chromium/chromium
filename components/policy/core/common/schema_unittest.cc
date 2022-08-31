@@ -665,130 +665,131 @@ TEST(SchemaTest, Validate) {
   Schema schema = Schema::Parse(kTestSchema, &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  base::DictionaryValue bundle;
+  base::Value bundle((base::Value::Dict()));
+  base::Value::Dict& dict = bundle.GetDict();
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, true);
 
   // Wrong type, expected integer.
-  bundle.SetBoolKey("Integer", true);
+  dict.Set("Integer", true);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
 
   // Wrong type, expected list of strings.
   {
-    bundle.DictClear();
-    base::ListValue list;
+    dict.clear();
+    base::Value::List list;
     list.Append(1);
-    bundle.SetKey("Array", std::move(list));
+    dict.Set("Array", std::move(list));
     TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
   }
 
   // Wrong type in a sub-object.
   {
-    bundle.DictClear();
-    base::DictionaryValue dict;
-    dict.SetStringKey("one", "one");
-    bundle.SetKey("Object", std::move(dict));
+    dict.clear();
+    base::Value::Dict subdict;
+    subdict.Set("one", "one");
+    dict.Set("Object", std::move(subdict));
     TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
   }
 
   // Unknown name.
-  bundle.DictClear();
-  bundle.SetBoolKey("Unknown", true);
+  dict.clear();
+  dict.Set("Unknown", true);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
 
   // All of these will be valid.
-  bundle.DictClear();
-  bundle.SetBoolKey("Boolean", true);
-  bundle.SetIntKey("Integer", 123);
-  bundle.SetDoubleKey("Number", 3.14);
-  bundle.SetStringKey("String", "omg");
+  dict.clear();
+  dict.Set("Boolean", true);
+  dict.Set("Integer", 123);
+  dict.Set("Number", 3.14);
+  dict.Set("String", "omg");
 
   {
-    base::ListValue list;
+    base::Value::List list;
     list.Append("a string");
     list.Append("another string");
-    bundle.SetKey("Array", std::move(list));
+    dict.Set("Array", std::move(list));
   }
 
   {
-    base::DictionaryValue dict;
-    dict.SetStringKey("one", "string");
-    dict.SetIntKey("two", 2);
-    base::ListValue list;
-    list.Append(dict.Clone());
-    list.Append(std::move(dict));
-    bundle.SetKey("ArrayOfObjects", std::move(list));
+    base::Value::Dict subdict;
+    subdict.Set("one", "string");
+    subdict.Set("two", 2);
+    base::Value::List list;
+    list.Append(subdict.Clone());
+    list.Append(std::move(subdict));
+    dict.Set("ArrayOfObjects", std::move(list));
   }
 
   {
-    base::ListValue list;
+    base::Value::List list;
     list.Append("a string");
     list.Append("another string");
-    base::ListValue listlist;
+    base::Value::List listlist;
     listlist.Append(list.Clone());
     listlist.Append(std::move(list));
-    bundle.SetKey("ArrayOfArray", std::move(listlist));
+    dict.Set("ArrayOfArray", std::move(listlist));
   }
 
   {
-    base::DictionaryValue dict;
-    dict.SetBoolKey("one", true);
-    dict.SetIntKey("two", 2);
-    dict.SetStringKey("additionally", "a string");
-    dict.SetStringKey("and also", "another string");
-    bundle.SetKey("Object", std::move(dict));
+    base::Value::Dict subdict;
+    subdict.Set("one", true);
+    subdict.Set("two", 2);
+    subdict.Set("additionally", "a string");
+    subdict.Set("and also", "another string");
+    dict.Set("Object", std::move(subdict));
   }
 
   {
-    base::DictionaryValue dict;
-    dict.SetIntKey("Integer", 1);
-    dict.SetStringKey("String", "a string");
-    dict.SetDoubleKey("Number", 3.14);
-    bundle.SetKey("ObjectWithRequiredProperties", std::move(dict));
+    base::Value::Dict subdict;
+    subdict.Set("Integer", 1);
+    subdict.Set("String", "a string");
+    subdict.Set("Number", 3.14);
+    dict.Set("ObjectWithRequiredProperties", std::move(subdict));
   }
 
-  bundle.SetIntKey("IntegerWithEnums", 1);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 20);
-  bundle.SetStringKey("StringWithEnums", "two");
-  bundle.SetIntKey("IntegerWithRange", 3);
+  dict.Set("IntegerWithEnums", 1);
+  dict.Set("IntegerWithEnumsGaps", 20);
+  dict.Set("StringWithEnums", "two");
+  dict.Set("IntegerWithRange", 3);
 
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, true);
 
-  bundle.SetIntKey("IntegerWithEnums", 0);
+  dict.Set("IntegerWithEnums", 0);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnums", 1);
+  dict.Set("IntegerWithEnums", 1);
 
-  bundle.SetIntKey("IntegerWithEnumsGaps", 0);
+  dict.Set("IntegerWithEnumsGaps", 0);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 9);
+  dict.Set("IntegerWithEnumsGaps", 9);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 10);
+  dict.Set("IntegerWithEnumsGaps", 10);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, true);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 11);
+  dict.Set("IntegerWithEnumsGaps", 11);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 19);
+  dict.Set("IntegerWithEnumsGaps", 19);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 21);
+  dict.Set("IntegerWithEnumsGaps", 21);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 29);
+  dict.Set("IntegerWithEnumsGaps", 29);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 30);
+  dict.Set("IntegerWithEnumsGaps", 30);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, true);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 31);
+  dict.Set("IntegerWithEnumsGaps", 31);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 100);
+  dict.Set("IntegerWithEnumsGaps", 100);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithEnumsGaps", 20);
+  dict.Set("IntegerWithEnumsGaps", 20);
 
-  bundle.SetStringKey("StringWithEnums", "FOUR");
+  dict.Set("StringWithEnums", "FOUR");
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetStringKey("StringWithEnums", "two");
+  dict.Set("StringWithEnums", "two");
 
-  bundle.SetIntKey("IntegerWithRange", 4);
+  dict.Set("IntegerWithRange", 4);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
-  bundle.SetIntKey("IntegerWithRange", 3);
+  dict.Set("IntegerWithRange", 3);
 
   // Unknown top level property.
-  bundle.SetStringKey("boom", "bang");
+  dict.Set("boom", "bang");
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN, true);
   TestSchemaValidation(schema, bundle,
@@ -796,10 +797,10 @@ TEST(SchemaTest, Validate) {
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                        true);
   TestSchemaValidationWithPath(schema, bundle, {});
-  bundle.RemoveKey("boom");
+  dict.Remove("boom");
 
   // Invalid top level property.
-  bundle.SetIntKey("Boolean", 12345);
+  dict.Set("Boolean", 12345);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN, false);
   TestSchemaValidation(schema, bundle,
@@ -807,16 +808,17 @@ TEST(SchemaTest, Validate) {
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                        false);
   TestSchemaValidationWithPath(schema, bundle, {"Boolean"});
-  bundle.SetBoolKey("Boolean", true);
+  dict.Set("Boolean", true);
 
   // Tests on ObjectOfObject.
   {
     Schema subschema = schema.GetProperty("ObjectOfObject");
     ASSERT_TRUE(subschema.valid());
-    base::DictionaryValue root;
+    base::Value root((base::Value::Dict()));
+    base::Value::Dict& root_dict = root.GetDict();
 
     // Unknown property.
-    root.SetBoolPath("Object.three", false);
+    root_dict.SetByDottedPath("Object.three", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
@@ -824,10 +826,10 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          true);
     TestSchemaValidationWithPath(subschema, root, {"Object"});
-    root.RemovePath("Object.three");
+    root_dict.RemoveByDottedPath("Object.three");
 
     // Invalid property.
-    root.SetIntPath("Object.one", 12345);
+    root_dict.SetByDottedPath("Object.one", 12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -835,7 +837,7 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
     TestSchemaValidationWithPath(subschema, root, {"Object", "one"});
-    root.RemovePath("Object.one");
+    root_dict.RemoveByDottedPath("Object.one");
   }
 
   // Tests on ArrayOfObjects.
@@ -875,13 +877,13 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema.GetProperty("ObjectOfArray");
     ASSERT_TRUE(subschema.valid());
-    base::DictionaryValue root;
+    base::Value root((base::Value::Dict()));
 
-    base::ListValue* list_value =
-        root.SetList("List", std::make_unique<base::ListValue>());
+    base::Value::List& list_value =
+        root.GetDict().Set("List", base::Value::List())->GetList();
 
     // Test that there are not errors here.
-    list_value->Append(12345);
+    list_value.Append(12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
@@ -890,7 +892,7 @@ TEST(SchemaTest, Validate) {
                          true);
 
     // Invalid list item.
-    list_value->Append("blabla");
+    list_value.Append("blabla");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -948,7 +950,8 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema.GetProperty("ObjectWithPatternProperties");
     ASSERT_TRUE(subschema.valid());
-    base::DictionaryValue root;
+    base::Value root((base::Value::Dict()));
+    base::Value::Dict& root_dict = root.GetDict();
 
     ASSERT_EQ(1u, subschema.GetPatternProperties("fooo").size());
     ASSERT_EQ(1u, subschema.GetPatternProperties("foo").size());
@@ -960,53 +963,54 @@ TEST(SchemaTest, Validate) {
     ASSERT_EQ(2u, subschema.GetMatchingProperties("bar").size());
     ASSERT_TRUE(subschema.GetPatternProperties("foobar").empty());
 
-    root.SetIntKey("fooo", 123);
+    root_dict.Set("fooo", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
-    root.SetBoolKey("fooo", false);
+    root_dict.Set("fooo", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.RemoveKey("fooo");
+    root_dict.Remove("fooo");
 
-    root.SetIntKey("foo", 123);
+    root_dict.Set("foo", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
-    root.SetBoolKey("foo", false);
+    root_dict.Set("foo", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.RemoveKey("foo");
+    root_dict.Remove("foo");
 
-    root.SetStringKey("barr", "one");
+    root_dict.Set("barr", "one");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
-    root.SetStringKey("barr", "three");
+    root_dict.Set("barr", "three");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.SetBoolKey("barr", false);
+    root_dict.Set("barr", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.RemoveKey("barr");
+    root_dict.Remove("barr");
 
-    root.SetStringKey("bar", "one");
+    root_dict.Set("bar", "one");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
-    root.SetStringKey("bar", "two");
+    root_dict.Set("bar", "two");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.SetStringKey("bar", "three");
+    root_dict.Set("bar", "three");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.RemoveKey("bar");
+    root_dict.Remove("bar");
 
-    root.SetIntKey("foobar", 123);
+    root_dict.Set("foobar", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          true);
-    root.RemoveKey("foobar");
+    root_dict.Remove("foobar");
   }
 
   // Tests on ObjectWithRequiredProperties
   {
     Schema subschema = schema.GetProperty("ObjectWithRequiredProperties");
     ASSERT_TRUE(subschema.valid());
-    base::DictionaryValue root;
+    base::Value root((base::Value::Dict()));
+    base::Value::Dict& root_dict = root.GetDict();
 
     // Required property missing.
-    root.SetIntKey("Integer", 1);
-    root.SetDoubleKey("Number", 3.14);
+    root_dict.Set("Integer", 1);
+    root_dict.Set("Number", 3.14);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -1015,14 +1019,14 @@ TEST(SchemaTest, Validate) {
                          false);
 
     // Invalid required property.
-    root.SetIntKey("String", 123);
+    root_dict.Set("String", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
-    root.SetStringKey("String", "a string");
+    root_dict.Set("String", "a string");
 
     // Invalid subschema of required property with multiple subschemas.
     //
@@ -1031,7 +1035,7 @@ TEST(SchemaTest, Validate) {
     // first subschema and the second test generates a valid schema for the
     // second subschema. In both cases validation should fail because one of the
     // required properties is invalid.
-    root.SetIntKey("Integer", 2);
+    root_dict.Set("Integer", 2);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -1039,7 +1043,7 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
 
-    root.SetIntKey("Integer", 3);
+    root_dict.Set("Integer", 3);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -1049,7 +1053,7 @@ TEST(SchemaTest, Validate) {
   }
 
   // Test that integer to double promotion is allowed.
-  bundle.SetIntKey("Number", 31415);
+  dict.Set("Number", 31415);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, true);
 }
 
@@ -1352,31 +1356,32 @@ TEST(SchemaTest, SchemaNodeSensitiveValues) {
   EXPECT_FALSE(sensitive_number.HasSensitiveChildren());
 
   // Run |MaskSensitiveValues| on the top-level schema
-  base::DictionaryValue object;
-  object.SetKey("objectProperty", base::Value(true));
-  base::ListValue array;
-  array.Append(base::Value(true));
+  base::Value::Dict object;
+  object.Set("objectProperty", true);
+  base::Value::List array;
+  array.Append(true);
 
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(kNormalBooleanSchema, base::Value(true));
-  value.SetKey(kSensitiveBooleanSchema, base::Value(true));
-  value.SetKey(kSensitiveStringSchema, base::Value("testvalue"));
-  value.SetKey(kSensitiveObjectSchema, std::move(object));
-  value.SetKey(kSensitiveArraySchema, std::move(array));
-  value.SetKey(kSensitiveIntegerSchema, base::Value(42));
-  value.SetKey(kSensitiveNumberSchema, base::Value(3.141));
+  base::Value value((base::Value::Dict()));
+  base::Value::Dict& value_dict = value.GetDict();
+  value_dict.Set(kNormalBooleanSchema, true);
+  value_dict.Set(kSensitiveBooleanSchema, true);
+  value_dict.Set(kSensitiveStringSchema, "testvalue");
+  value_dict.Set(kSensitiveObjectSchema, std::move(object));
+  value_dict.Set(kSensitiveArraySchema, std::move(array));
+  value_dict.Set(kSensitiveIntegerSchema, 42);
+  value_dict.Set(kSensitiveNumberSchema, 3.141);
   schema.MaskSensitiveValues(&value);
 
   base::Value value_masked("********");
-  base::Value value_expected(base::Value::Type::DICTIONARY);
-  value_expected.SetKey(kNormalBooleanSchema, base::Value(true));
-  value_expected.SetKey(kSensitiveBooleanSchema, value_masked.Clone());
-  value_expected.SetKey(kSensitiveStringSchema, value_masked.Clone());
-  value_expected.SetKey(kSensitiveObjectSchema, value_masked.Clone());
-  value_expected.SetKey(kSensitiveArraySchema, value_masked.Clone());
-  value_expected.SetKey(kSensitiveIntegerSchema, value_masked.Clone());
-  value_expected.SetKey(kSensitiveNumberSchema, value_masked.Clone());
-  EXPECT_EQ(value_expected, value);
+  base::Value::Dict value_expected;
+  value_expected.Set(kNormalBooleanSchema, true);
+  value_expected.Set(kSensitiveBooleanSchema, value_masked.Clone());
+  value_expected.Set(kSensitiveStringSchema, value_masked.Clone());
+  value_expected.Set(kSensitiveObjectSchema, value_masked.Clone());
+  value_expected.Set(kSensitiveArraySchema, value_masked.Clone());
+  value_expected.Set(kSensitiveIntegerSchema, value_masked.Clone());
+  value_expected.Set(kSensitiveNumberSchema, value_masked.Clone());
+  EXPECT_EQ(value_expected, value_dict);
 
   // Run |MaskSensitiveValues| on a sub-schema
   base::Value string_value("testvalue");

@@ -400,18 +400,20 @@ class PolicyTestCases {
       ADD_FAILURE() << "Error reading: " << test_case_path;
       return;
     }
-    base::DictionaryValue* dict = nullptr;
     auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
     if (!parsed_json.has_value()) {
       ADD_FAILURE() << "Error parsing policy_test_cases.json: "
                     << parsed_json.error().message;
       return;
-    } else if (!parsed_json->GetAsDictionary(&dict)) {
+    }
+
+    base::Value::Dict* dict = parsed_json->GetIfDict();
+    if (!dict) {
       ADD_FAILURE()
           << "Error parsing policy_test_cases.json: Expected dictionary.";
       return;
     }
-    for (auto it : dict->DictItems()) {
+    for (auto it : *dict) {
       const std::string policy_name = GetPolicyName(it.first);
       if (policy_name == kInstructionKeyName)
         continue;
