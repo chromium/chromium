@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<!-- This cannot be upstreamed as a WPT test because the spec (probably) will
-     require that no error is thrown until activation. -->
 <title>Same-origin prerendering cannot access local file system</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
@@ -9,6 +7,7 @@
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   const uid = token();
