@@ -11,7 +11,11 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
   private products_: BookmarkProductInfo[] = [];
 
   constructor() {
-    super(['getAllBookmarkProductInfo']);
+    super([
+      'getAllBookmarkProductInfo',
+      'trackPriceForBookmark',
+      'untrackPriceForBookmark',
+    ]);
   }
 
   setProducts(products: BookmarkProductInfo[]) {
@@ -21,5 +25,13 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
   getAllBookmarkProductInfo() {
     this.methodCalled('getAllBookmarkProductInfo');
     return Promise.resolve({productInfos: this.products_});
+  }
+
+  trackPriceForBookmark(bookmarkId: bigint) {
+    this.methodCalled('trackPriceForBookmark', bookmarkId);
+  }
+
+  untrackPriceForBookmark(bookmarkId: bigint) {
+    this.methodCalled('untrackPriceForBookmark', bookmarkId);
   }
 }

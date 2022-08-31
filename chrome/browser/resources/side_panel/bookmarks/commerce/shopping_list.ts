@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './icons.html.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from '../bookmarks.mojom-webui.js';
@@ -16,8 +17,13 @@ import {BookmarksApiProxy, BookmarksApiProxyImpl} from '../bookmarks_api_proxy.j
 
 import {getTemplate} from './shopping_list.html.js';
 import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
+import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './shopping_list_api_proxy.js';
 
 export const LOCAL_STORAGE_EXPAND_STATUS_KEY = 'shoppingListExpanded';
+export const ACTION_BUTTON_TRACK_IMAGE =
+    'shopping-list:shopping-list-track-icon';
+export const ACTION_BUTTON_UNTRACK_IMAGE =
+    'shopping-list:shopping-list-untrack-icon';
 
 export class ShoppingListElement extends PolymerElement {
   static get is() {
@@ -35,14 +41,22 @@ export class ShoppingListElement extends PolymerElement {
         value: true,
       },
 
+      untrackedItems_: {
+        type: Array,
+        value: [],
+      },
+
       productInfos: Array,
     };
   }
 
   productInfos: BookmarkProductInfo[];
+  private untrackedItems_: BookmarkProductInfo[];
   private open_: boolean;
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
+  private shoppingListApi_: ShoppingListApiProxy =
+      ShoppingListApiProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -109,6 +123,32 @@ export class ShoppingListElement extends PolymerElement {
     this.bookmarksApi_.showContextMenu(
         event.model.item.bookmarkId!.toString(), event.clientX, event.clientY,
         ActionSource.kPriceTracking);
+  }
+
+  private onActionButtonClick_(
+      event: DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
+    event.preventDefault();
+    event.stopPropagation();
+    const bookmarkId = event.model.item.bookmarkId!;
+    if (this.untrackedItems_.includes(event.model.item)) {
+      const index = this.untrackedItems_.indexOf(event.model.item);
+      this.splice('untrackedItems_', index, 1);
+      this.shoppingListApi_.trackPriceForBookmark(bookmarkId);
+    } else {
+      this.push('untrackedItems_', event.model.item);
+      this.shoppingListApi_.untrackPriceForBookmark(bookmarkId);
+    }
+  }
+
+  private getIconForItem_(item: BookmarkProductInfo): string {
+    return this.untrackedItems_.includes(item) ? ACTION_BUTTON_TRACK_IMAGE :
+                                                 ACTION_BUTTON_UNTRACK_IMAGE;
+  }
+
+  private getButtonDescriptionForItem_(item: BookmarkProductInfo): string {
+    return this.untrackedItems_.includes(item) ?
+        loadTimeData.getString('shoppingListTrackPriceButtonDescription') :
+        loadTimeData.getString('shoppingListUntrackPriceButtonDescription');
   }
 }
 

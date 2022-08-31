@@ -8,6 +8,8 @@ let instance: ShoppingListApiProxy|null = null;
 
 export interface ShoppingListApiProxy {
   getAllBookmarkProductInfo(): Promise<{productInfos: BookmarkProductInfo[]}>;
+  trackPriceForBookmark(bookmarkId: bigint): void;
+  untrackPriceForBookmark(bookmarkId: bigint): void;
 }
 
 export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
@@ -23,6 +25,14 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   getAllBookmarkProductInfo() {
     return this.handler.getAllBookmarkProductInfo();
+  }
+
+  trackPriceForBookmark(bookmarkId: bigint) {
+    this.handler.trackPriceForBookmark(bookmarkId);
+  }
+
+  untrackPriceForBookmark(bookmarkId: bigint) {
+    this.handler.untrackPriceForBookmark(bookmarkId);
   }
 
   static getInstance(): ShoppingListApiProxy {

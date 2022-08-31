@@ -107,11 +107,13 @@
   }
 
   .product-item {
+    align-items: center;
     appearance: none;
     background: transparent;
     border: none;
     display: flex;
     height: 76px;
+    justify-content: center;
     padding: 10px 0;
     width: 100%;
   }
@@ -121,6 +123,7 @@
     display: flex;
     height: 100%;
     margin-inline-start: 16px;
+    min-width: 56px;
     width: 56px;
   }
 
@@ -146,6 +149,7 @@
   .product-title {
     color: var(--cr-primary-text-color);
     line-height: 20px;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -179,6 +183,22 @@
     margin-inline-end: 7px;
     margin-inline-start: 4px;
     text-decoration: line-through;
+  }
+
+  .action-button {
+    background: transparent;
+    margin-inline-end: 16px;
+    margin-inline-start: auto;
+    --cr-icon-button-fill-color: var(--icon-color);
+  }
+
+  .action-button:focus-visible {
+    background-color: var(--mwb-list-item-selected-background-color);
+    box-shadow: none;
+  }
+
+  .action-button:focus {
+    box-shadow: none;
   }
 </style>
 
@@ -224,6 +244,10 @@
             </div>
           </template>
         </div>
+        <cr-icon-button class="action-button" on-click="onActionButtonClick_"
+            iron-icon="[[getIconForItem_(item, untrackedItems_.*)]]"
+            title="[[getButtonDescriptionForItem_(item, untrackedItems_.*)]]">
+        </cr-icon-button>
       </button>
     </template>
   </template>

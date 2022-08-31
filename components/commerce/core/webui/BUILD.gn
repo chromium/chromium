@@ -11,6 +11,8 @@ source_set("webui") {
   deps = [
     "../mojom:mojo_bindings",
     "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:shopping_service",
     "//mojo/public/cpp/bindings",
   ]
 }
