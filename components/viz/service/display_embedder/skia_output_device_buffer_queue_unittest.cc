@@ -191,10 +191,11 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
   }
   bool IsSupported(uint32_t usage,
                    ResourceFormat format,
+                   const gfx::Size& size,
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
-                   gpu::GrContextType gr_context_type_,
-                   bool is_pixel_used) override {
+                   gpu::GrContextType gr_context_type,
+                   base::span<const uint8_t> pixel_data) override {
     return true;
   }
 };

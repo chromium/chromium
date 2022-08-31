@@ -545,17 +545,11 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     bool is_thread_safe) {
-  const FormatInfo& format_info = format_info_[format];
-  if (!CanCreateSharedImage(size, /*pixel_data=*/{}, format_info,
-                            GL_TEXTURE_2D)) {
-    return nullptr;
-  }
-
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage);
 
-  if (!backing->Initialize(format_info, {}))
+  if (!backing->Initialize(format_info_[format], {}))
     return nullptr;
 
   return backing;
@@ -571,15 +565,11 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> data) {
-  const FormatInfo& format_info = format_info_[format];
-  if (!CanCreateSharedImage(size, data, format_info, GL_TEXTURE_2D))
-    return nullptr;
-
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage);
 
-  if (!backing->Initialize(format_info, data))
+  if (!backing->Initialize(format_info_[format], data))
     return nullptr;
 
   return backing;
@@ -629,10 +619,11 @@ bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
 bool AngleVulkanImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
+    const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool is_pixel_used) {
+    base::span<const uint8_t> pixel_data) {
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
   if (!CanUseAngleVulkanImageBacking(usage))
     return false;
@@ -644,7 +635,8 @@ bool AngleVulkanImageBackingFactory::IsSupported(
     return false;
   }
 
-  return true;
+  return CanCreateSharedImage(size, pixel_data, format_info_[format],
+                              GL_TEXTURE_2D);
 }
 
 }  // namespace gpu

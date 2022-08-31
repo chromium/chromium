@@ -567,11 +567,12 @@ bool D3DImageBackingFactory::CanImportGpuMemoryBuffer(
 
 bool D3DImageBackingFactory::IsSupported(uint32_t usage,
                                          viz::ResourceFormat format,
+                                         const gfx::Size& size,
                                          bool thread_safe,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
-                                         bool is_pixel_used) {
-  if (is_pixel_used) {
+                                         base::span<const uint8_t> pixel_data) {
+  if (!pixel_data.empty()) {
     return false;
   }
   if (gmb_type == gfx::EMPTY_BUFFER) {

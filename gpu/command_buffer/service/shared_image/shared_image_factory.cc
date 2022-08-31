@@ -452,8 +452,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            gpu::SurfaceHandle surface_handle,
                                            uint32_t usage) {
-  auto* factory = GetFactoryByUsage(usage, format,
-                                    /*is_pixel_used=*/false, gfx::EMPTY_BUFFER);
+  auto* factory = GetFactoryByUsage(usage, format, size,
+                                    /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory)
     return false;
 
@@ -490,8 +490,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   if (backing_factory_for_testing_) {
     factory = backing_factory_for_testing_;
   } else {
-    factory = GetFactoryByUsage(usage, format,
-                                /*is_pixel_used=*/true, gfx::EMPTY_BUFFER);
+    factory = GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER);
   }
   if (!factory)
     return false;
@@ -525,9 +524,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   gfx::GpuMemoryBufferType gmb_type = handle.type;
 
   bool use_compound = false;
-  auto* factory =
-      GetFactoryByUsage(usage, resource_format,
-                        /*is_pixel_used=*/false, gmb_type, &use_compound);
+  auto* factory = GetFactoryByUsage(usage, resource_format, size,
+                                    /*pixel_data=*/{}, gmb_type, &use_compound);
   if (!factory)
     return false;
 
@@ -747,7 +745,8 @@ bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
 SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     uint32_t usage,
     viz::ResourceFormat format,
-    bool is_pixel_used,
+    const gfx::Size& size,
+    base::span<const uint8_t> pixel_data,
     gfx::GpuMemoryBufferType gmb_type,
     bool* use_compound_backing) {
   if (backing_factory_for_testing_)
@@ -755,15 +754,15 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
 
   bool share_between_threads = IsSharedBetweenThreads(usage);
   for (auto& factory : factories_) {
-    if (factory->IsSupported(usage, format, share_between_threads, gmb_type,
-                             gr_context_type_, is_pixel_used)) {
+    if (factory->IsSupported(usage, format, size, share_between_threads,
+                             gmb_type, gr_context_type_, pixel_data)) {
       return factory.get();
     } else if (use_compound_backing && gmb_type == gfx::SHARED_MEMORY_BUFFER) {
       // Check if backing type supports CPU upload with no buffer handle so it
       // can be used with a compound backing instead.
       if (factory->IsSupported(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, format,
-                               share_between_threads, gfx::EMPTY_BUFFER,
-                               gr_context_type_, is_pixel_used)) {
+                               size, share_between_threads, gfx::EMPTY_BUFFER,
+                               gr_context_type_, pixel_data)) {
         *use_compound_backing = true;
         return factory.get();
       }

@@ -76,10 +76,11 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
 bool SharedMemoryImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
+    const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool is_pixel_used) {
+    base::span<const uint8_t> pixel_data) {
   if (gmb_type != gfx::SHARED_MEMORY_BUFFER) {
     return false;
   }

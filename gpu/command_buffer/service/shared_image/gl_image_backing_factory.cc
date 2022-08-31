@@ -245,11 +245,12 @@ scoped_refptr<gl::GLImage> GLImageBackingFactory::MakeGLImage(
 
 bool GLImageBackingFactory::IsSupported(uint32_t usage,
                                         viz::ResourceFormat format,
+                                        const gfx::Size& size,
                                         bool thread_safe,
                                         gfx::GpuMemoryBufferType gmb_type,
                                         GrContextType gr_context_type,
-                                        bool is_pixel_used) {
-  if (is_pixel_used && gr_context_type != GrContextType::kGL) {
+                                        base::span<const uint8_t> pixel_data) {
+  if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
     return false;
   }
   if (thread_safe) {

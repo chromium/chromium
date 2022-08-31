@@ -74,17 +74,19 @@ bool RawDrawImageBackingFactory::CanUseRawDrawImageBacking(
   return usage == kRawDrawImageBackingUsage;
 }
 
-bool RawDrawImageBackingFactory::IsSupported(uint32_t usage,
-                                             viz::ResourceFormat format,
-                                             bool thread_safe,
-                                             gfx::GpuMemoryBufferType gmb_type,
-                                             GrContextType gr_context_type,
-                                             bool is_pixel_used) {
+bool RawDrawImageBackingFactory::IsSupported(
+    uint32_t usage,
+    viz::ResourceFormat format,
+    const gfx::Size& size,
+    bool thread_safe,
+    gfx::GpuMemoryBufferType gmb_type,
+    GrContextType gr_context_type,
+    base::span<const uint8_t> pixel_data) {
   if (!CanUseRawDrawImageBacking(usage, gr_context_type)) {
     return false;
   }
 
-  if (is_pixel_used) {
+  if (!pixel_data.empty()) {
     return false;
   }
 

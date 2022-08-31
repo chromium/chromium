@@ -504,10 +504,11 @@ bool WrappedSkImageBackingFactory::CanUseWrappedSkImage(
 bool WrappedSkImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
+    const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool is_pixel_used) {
+    base::span<const uint8_t> pixel_data) {
   // Note that this backing support thread safety only for vulkan mode because
   // the underlying vulkan resources like vulkan images can be shared across
   // multiple vulkan queues. Also note that this backing currently only supports

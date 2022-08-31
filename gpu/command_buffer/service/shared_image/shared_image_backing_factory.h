@@ -71,10 +71,11 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
   // Returns true if the factory is supported
   virtual bool IsSupported(uint32_t usage,
                            viz::ResourceFormat format,
+                           const gfx::Size& size,
                            bool thread_safe,
                            gfx::GpuMemoryBufferType gmb_type,
                            GrContextType gr_context_type,
-                           bool is_pixel_used) = 0;
+                           base::span<const uint8_t> pixel_data) = 0;
 };
 
 }  // namespace gpu

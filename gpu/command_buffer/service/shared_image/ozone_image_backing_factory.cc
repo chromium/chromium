@@ -173,12 +173,14 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   return backing;
 }
 
-bool OzoneImageBackingFactory::IsSupported(uint32_t usage,
-                                           viz::ResourceFormat format,
-                                           bool thread_safe,
-                                           gfx::GpuMemoryBufferType gmb_type,
-                                           GrContextType gr_context_type,
-                                           bool is_pixel_used) {
+bool OzoneImageBackingFactory::IsSupported(
+    uint32_t usage,
+    viz::ResourceFormat format,
+    const gfx::Size& size,
+    bool thread_safe,
+    gfx::GpuMemoryBufferType gmb_type,
+    GrContextType gr_context_type,
+    base::span<const uint8_t> pixel_data) {
   if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP) {
     return false;
   }

@@ -81,11 +81,12 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
 
 bool EGLImageBackingFactory::IsSupported(uint32_t usage,
                                          viz::ResourceFormat format,
+                                         const gfx::Size& size,
                                          bool thread_safe,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
-                                         bool is_pixel_used) {
-  if (is_pixel_used && gr_context_type != GrContextType::kGL) {
+                                         base::span<const uint8_t> pixel_data) {
+  if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
     return false;
   }
 
@@ -106,7 +107,9 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
   if (usage & kInvalidUsage) {
     return false;
   }
-  return true;
+
+  return CanCreateSharedImage(size, pixel_data, format_info_[format],
+                              GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
@@ -120,12 +123,6 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     base::span<const uint8_t> pixel_data) {
   DCHECK(!(usage & SHARED_IMAGE_USAGE_SCANOUT));
 
-  const FormatInfo& format_info = format_info_[format];
-  GLenum target = GL_TEXTURE_2D;
-  if (!CanCreateSharedImage(size, pixel_data, format_info, target)) {
-    return nullptr;
-  }
-
   // Calculate SharedImage size in bytes.
   size_t estimated_size;
   if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size)) {
@@ -135,7 +132,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
 
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, format_info, workarounds_, use_passthrough_, pixel_data);
+      estimated_size, format_info_[format], workarounds_, use_passthrough_,
+      pixel_data);
 }
 
 }  // namespace gpu

@@ -119,11 +119,12 @@ GLTextureImageBackingFactory::CreateSharedImageForTest(
 bool GLTextureImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
+    const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool is_pixel_used) {
-  if (is_pixel_used && gr_context_type != GrContextType::kGL) {
+    base::span<const uint8_t> pixel_data) {
+  if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
     return false;
   }
   if (thread_safe) {
@@ -160,7 +161,8 @@ bool GLTextureImageBackingFactory::IsSupported(
 #endif
   }
 
-  return true;
+  return CanCreateSharedImage(size, pixel_data, format_info_[format],
+                              GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -176,9 +178,6 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     base::span<const uint8_t> pixel_data) {
   const FormatInfo& format_info = format_info_[format];
   GLenum target = GL_TEXTURE_2D;
-  if (!CanCreateSharedImage(size, pixel_data, format_info, target)) {
-    return nullptr;
-  }
 
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |

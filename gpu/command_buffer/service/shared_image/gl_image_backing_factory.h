@@ -81,10 +81,11 @@ class GPU_GLES2_EXPORT GLImageBackingFactory
       uint32_t usage) override;
   bool IsSupported(uint32_t usage,
                    viz::ResourceFormat format,
+                   const gfx::Size& size,
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
-                   bool is_pixel_used) override;
+                   base::span<const uint8_t> pixel_data) override;
 
  private:
   scoped_refptr<gl::GLImage> MakeGLImage(int client_id,
