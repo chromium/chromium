@@ -3092,21 +3092,29 @@ if (!is_android) {
 
       if (is_win || is_linux || is_mac) {
         sources += [
-          "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc",
           "../browser/enterprise/idle/idle_service_browsertest.cc",
           "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
         ]
+      }
+
+      if (is_win || is_linux || is_mac || is_chromeos_ash) {
+        sources += [ "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc" ]
 
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust:features",
           "//chrome/browser/enterprise/connectors/device_trust:prefs",
           "//chrome/browser/enterprise/connectors/device_trust/common",
-          "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
-          "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
           "//components/device_signals/core/common",
           "//components/device_signals/core/common:features",
+        ]
+      }
+
+      if (is_win || is_linux || is_mac) {
+        deps += [
+          "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
+          "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
         ]
       }
 

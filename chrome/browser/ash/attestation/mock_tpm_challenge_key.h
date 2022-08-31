@@ -21,6 +21,8 @@ class MockTpmChallengeKey : public TpmChallengeKey {
 
   void EnableFake();
 
+  void EnableFakeError(TpmChallengeKeyResultCode error_code);
+
   MOCK_METHOD(void,
               BuildResponse,
               (AttestationKeyType key_type,
@@ -33,6 +35,8 @@ class MockTpmChallengeKey : public TpmChallengeKey {
               (override));
 
   void FakeBuildResponseSuccess(TpmChallengeKeyCallback callback);
+  void FakeBuildResponseError(TpmChallengeKeyCallback callback,
+                              TpmChallengeKeyResultCode error_code);
 };
 
 }  // namespace attestation

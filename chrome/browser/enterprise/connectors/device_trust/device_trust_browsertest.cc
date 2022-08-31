@@ -12,13 +12,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
@@ -44,6 +42,16 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#else
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
+#endif
 
 using content::NavigationHandle;
 using content::TestNavigationManager;
@@ -86,9 +94,11 @@ constexpr char kChallengeV1[] =
     "}";
 
 constexpr char kFakeCustomerId[] = "fake-customer-id";
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
 constexpr char kFakeBrowserClientId[] = "fake-browser-client-id";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kAllowedHost[] = "allowed.google.com";
 constexpr char kOtherHost[] = "notallowed.google.com";
@@ -111,20 +121,11 @@ constexpr char kLatencyFailureHistogramName[] =
 
 }  // namespace
 
-class DeviceTrustBrowserTest
+class DeviceTrustBrowserTestBase
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  DeviceTrustBrowserTest() {
-    browser_dm_token_storage_ =
-        std::make_unique<policy::FakeBrowserDMTokenStorage>();
-    browser_dm_token_storage_->SetEnrollmentToken(kFakeEnrollmentToken);
-    browser_dm_token_storage_->SetClientId(kFakeBrowserClientId);
-    browser_dm_token_storage_->EnableStorage(true);
-    browser_dm_token_storage_->SetDMToken(kFakeBrowserDMToken);
-    policy::BrowserDMTokenStorage::SetForTesting(
-        browser_dm_token_storage_.get());
-
+  DeviceTrustBrowserTestBase() {
     scoped_feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
                                               is_enabled());
   }
@@ -132,27 +133,12 @@ class DeviceTrustBrowserTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    scoped_persistence_delegate_factory_.emplace();
-    scoped_rotation_command_factory_.emplace();
-    enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(true);
-
-    auto* browser_policy_manager =
-        g_browser_process->browser_policy_connector()
-            ->machine_level_user_cloud_policy_manager();
-    auto browser_policy_data =
-        std::make_unique<enterprise_management::PolicyData>();
-
-    browser_policy_data->set_obfuscated_customer_id(kFakeCustomerId);
-
-    browser_policy_manager->core()->store()->set_policy_data_for_testing(
-        std::move(browser_policy_data));
-
     // Device trust only works with VerfiedAccess v2. However make sure that v1
     // headers are just treated like "untrusted" and nothing further.
     const std::string header = use_v2_header() ? kChallenge : kChallengeV1;
 
     embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&DeviceTrustBrowserTest::HandleRequest,
+        base::BindRepeating(&DeviceTrustBrowserTestBase::HandleRequest,
                             base::Unretained(this), header));
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(test_server_handle_ =
@@ -165,13 +151,6 @@ class DeviceTrustBrowserTest
         /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
-
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
-  }
-#endif
 
   void TearDownOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -280,14 +259,99 @@ class DeviceTrustBrowserTest
       initial_attestation_request_;
   absl::optional<const net::test_server::HttpRequest>
       challenge_response_request_;
+
+ protected:
+  void SetObfuscatedCustomerIDPolicy(
+      policy::CloudPolicyManager* cloud_policy_manager) {
+    auto browser_policy_data =
+        std::make_unique<enterprise_management::PolicyData>();
+
+    browser_policy_data->set_obfuscated_customer_id(kFakeCustomerId);
+
+    cloud_policy_manager->core()->store()->set_policy_data_for_testing(
+        std::move(browser_policy_data));
+  }
+};
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
+ public:
+  DeviceTrustAshBrowserTest() {
+    auto mock_challenge_key =
+        std::make_unique<ash::attestation::MockTpmChallengeKey>();
+    if (use_v2_header()) {
+      mock_challenge_key->EnableFake();
+    } else {
+      // It is not possible to test the real TPM during browser test, which we
+      // are dependent on to decide, whether we can build a response from the
+      // challenge or not. Thus, we are purposely failing here for tests with
+      // the old VA header
+      mock_challenge_key->EnableFakeError(
+          ash::attestation::TpmChallengeKeyResultCode::
+              kChallengeBadBase64Error);
+    }
+    ash::attestation::TpmChallengeKeyFactory::SetForTesting(
+        std::move(mock_challenge_key));
+  }
+
+  void SetUpOnMainThread() override {
+    DeviceTrustBrowserTestBase::SetUpOnMainThread();
+
+    SetObfuscatedCustomerIDPolicy(
+        browser()->profile()->GetUserCloudPolicyManagerAsh());
+  }
+
+  void TearDownOnMainThread() override {
+    ash::attestation::TpmChallengeKeyFactory::Create();
+    DeviceTrustBrowserTestBase::TearDownOnMainThread();
+  }
+};
+
+using DeviceTrustBrowserTest = DeviceTrustAshBrowserTest;
+#else
+class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
+ public:
+  DeviceTrustDesktopBrowserTest() {
+    browser_dm_token_storage_ =
+        std::make_unique<policy::FakeBrowserDMTokenStorage>();
+    browser_dm_token_storage_->SetEnrollmentToken(kFakeEnrollmentToken);
+    browser_dm_token_storage_->SetClientId(kFakeBrowserClientId);
+    browser_dm_token_storage_->EnableStorage(true);
+    browser_dm_token_storage_->SetDMToken(kFakeBrowserDMToken);
+    policy::BrowserDMTokenStorage::SetForTesting(
+        browser_dm_token_storage_.get());
+  }
+
+  void SetUpOnMainThread() override {
+    DeviceTrustBrowserTestBase::SetUpOnMainThread();
+
+    scoped_persistence_delegate_factory_.emplace();
+    scoped_rotation_command_factory_.emplace();
+    enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(true);
+
+    SetObfuscatedCustomerIDPolicy(
+        g_browser_process->browser_policy_connector()
+            ->machine_level_user_cloud_policy_manager());
+  }
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
+  }
+#endif
+
   absl::optional<test::ScopedKeyPersistenceDelegateFactory>
       scoped_persistence_delegate_factory_;
   absl::optional<ScopedKeyRotationCommandFactory>
       scoped_rotation_command_factory_;
 };
 
-// Tests that the whole attestation flow occurs when navigating to an allowed
-// domain.
+using DeviceTrustBrowserTest = DeviceTrustDesktopBrowserTest;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Tests that the whole attestation flow occurs when navigating to an
+// allowed domain.
 IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
   GURL redirect_url = GetRedirectUrl();
   TestNavigationManager first_navigation(web_contents(), redirect_url);

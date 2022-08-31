@@ -21,10 +21,26 @@ void MockTpmChallengeKey::EnableFake() {
           Invoke(this, &MockTpmChallengeKey::FakeBuildResponseSuccess)));
 }
 
+void MockTpmChallengeKey::EnableFakeError(
+    TpmChallengeKeyResultCode error_code) {
+  ON_CALL(*this, BuildResponse)
+      .WillByDefault(WithArgs<2>(
+          Invoke([this, error_code](TpmChallengeKeyCallback callback) {
+            MockTpmChallengeKey::FakeBuildResponseError(std::move(callback),
+                                                        error_code);
+          })));
+}
+
 void MockTpmChallengeKey::FakeBuildResponseSuccess(
     TpmChallengeKeyCallback callback) {
   std::move(callback).Run(
       TpmChallengeKeyResult::MakeChallengeResponse("response"));
+}
+
+void MockTpmChallengeKey::FakeBuildResponseError(
+    TpmChallengeKeyCallback callback,
+    TpmChallengeKeyResultCode error_code) {
+  std::move(callback).Run(TpmChallengeKeyResult::MakeError(error_code));
 }
 
 }  // namespace attestation
