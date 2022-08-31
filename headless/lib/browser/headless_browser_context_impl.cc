@@ -17,6 +17,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -85,8 +86,14 @@ HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   SimpleKeyMap::GetInstance()->Dissociate(this);
   NotifyWillBeDestroyed();
 
-  // Destroy all web contents before shutting down storage partitions.
+  // Destroy all web contents before shutting down in process renderer and
+  // storage partitions.
   web_contents_map_.clear();
+
+  // In single process mode we can only have one browser context, so it's
+  // safe to shutdown the in-process renderer here.
+  if (content::RenderProcessHost::run_renderer_in_process())
+    content::RenderProcessHost::ShutDownInProcessRenderer();
 
   if (request_context_manager_) {
     content::GetIOThreadTaskRunner({})->DeleteSoon(
