@@ -59,8 +59,10 @@ bool WebAuthenticationDelegate::SupportsResidentKeys(
     RenderFrameHost* render_frame_host) {
   // The testing API supports resident keys, but for real requests //content
   // doesn't by default.
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
   if (AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(render_frame_host)) {
+          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
     return true;
   }
   return false;
@@ -73,10 +75,12 @@ bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
 absl::optional<bool> WebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
         RenderFrameHost* render_frame_host) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
   if (AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(render_frame_host)) {
+          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
     return AuthenticatorEnvironmentImpl::GetInstance()
-        ->HasVirtualUserVerifyingPlatformAuthenticator(render_frame_host);
+        ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
   }
   return absl::nullopt;
 }

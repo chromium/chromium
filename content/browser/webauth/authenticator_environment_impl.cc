@@ -38,59 +38,59 @@ AuthenticatorEnvironmentImpl::AuthenticatorEnvironmentImpl() = default;
 AuthenticatorEnvironmentImpl::~AuthenticatorEnvironmentImpl() = default;
 
 void AuthenticatorEnvironmentImpl::EnableVirtualAuthenticatorFor(
-    RenderFrameHost* rfh,
+    FrameTreeNode* node,
     bool enable_ui) {
   // Do not create a new virtual authenticator if there is one already defined
   // for the |node|.
-  if (VirtualAuthenticatorManagerImpl::GetForCurrentDocument(rfh))
+  if (base::Contains(virtual_authenticator_managers_, node))
     return;
 
-  auto* virtual_authenticator_manager =
-      VirtualAuthenticatorManagerImpl::GetOrCreateForCurrentDocument(rfh);
+  node->AddObserver(this);
+  auto virtual_authenticator_manager =
+      std::make_unique<VirtualAuthenticatorManagerImpl>();
   virtual_authenticator_manager->enable_ui(enable_ui);
+  virtual_authenticator_managers_[node] =
+      std::move(virtual_authenticator_manager);
 }
 
 void AuthenticatorEnvironmentImpl::DisableVirtualAuthenticatorFor(
-    RenderFrameHost* rfh) {
-  auto* virtual_authenticator_manager =
-      VirtualAuthenticatorManagerImpl::GetForCurrentDocument(rfh);
-  if (!virtual_authenticator_manager)
+    FrameTreeNode* node) {
+  if (!base::Contains(virtual_authenticator_managers_, node))
     return;
 
-  VirtualAuthenticatorManagerImpl::DeleteForCurrentDocument(rfh);
+  node->RemoveObserver(this);
+  virtual_authenticator_managers_.erase(node);
 }
 
 bool AuthenticatorEnvironmentImpl::IsVirtualAuthenticatorEnabledFor(
-    RenderFrameHost* rfh) {
-  return MaybeGetVirtualAuthenticatorManager(rfh) != nullptr;
+    FrameTreeNode* node) {
+  return MaybeGetVirtualAuthenticatorManager(node) != nullptr;
 }
 
 VirtualAuthenticatorManagerImpl*
 AuthenticatorEnvironmentImpl::MaybeGetVirtualAuthenticatorManager(
-    RenderFrameHost* rfh) {
-  for (; rfh; rfh = rfh->GetParent()) {
-    if (auto* virtual_authenticator_manager =
-            VirtualAuthenticatorManagerImpl::GetForCurrentDocument(rfh)) {
-      return virtual_authenticator_manager;
+    FrameTreeNode* node) {
+  for (; node; node = FrameTreeNode::From(node->parent())) {
+    if (base::Contains(virtual_authenticator_managers_, node)) {
+      return virtual_authenticator_managers_[node].get();
     }
   }
   return nullptr;
 }
 
 void AuthenticatorEnvironmentImpl::AddVirtualAuthenticatorReceiver(
-    RenderFrameHost* rfh,
+    FrameTreeNode* node,
     mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
         receiver) {
-  auto* virtual_authenticator_manager =
-      VirtualAuthenticatorManagerImpl::GetForCurrentDocument(rfh);
-  DCHECK(virtual_authenticator_manager);
-  virtual_authenticator_manager->AddReceiver(std::move(receiver));
+  auto it = virtual_authenticator_managers_.find(node);
+  DCHECK(it != virtual_authenticator_managers_.end());
+  it->second->AddReceiver(std::move(receiver));
 }
 
 bool AuthenticatorEnvironmentImpl::HasVirtualUserVerifyingPlatformAuthenticator(
-    RenderFrameHost* rfh) {
+    FrameTreeNode* node) {
   VirtualAuthenticatorManagerImpl* authenticator_manager =
-      MaybeGetVirtualAuthenticatorManager(rfh);
+      MaybeGetVirtualAuthenticatorManager(node);
   if (!authenticator_manager) {
     return false;
   }
@@ -128,6 +128,11 @@ void AuthenticatorEnvironmentImpl::ClearWinWebAuthnApiForTesting() {
 void AuthenticatorEnvironmentImpl::ReplaceDefaultDiscoveryFactoryForTesting(
     std::unique_ptr<device::FidoDiscoveryFactory> factory) {
   replaced_discovery_factory_ = std::move(factory);
+}
+
+void AuthenticatorEnvironmentImpl::OnFrameTreeNodeDestroyed(
+    FrameTreeNode* node) {
+  DisableVirtualAuthenticatorFor(node);
 }
 
 }  // namespace content

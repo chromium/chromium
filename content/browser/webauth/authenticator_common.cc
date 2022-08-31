@@ -18,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
@@ -242,7 +241,9 @@ base::TimeDelta AdjustTimeout(absl::optional<base::TimeDelta> timeout,
   }
   const bool testing_api_enabled =
       AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(render_frame_host);
+          ->IsVirtualAuthenticatorEnabledFor(
+              static_cast<RenderFrameHostImpl*>(render_frame_host)
+                  ->frame_tree_node());
   if (testing_api_enabled) {
     return *timeout;
   }
@@ -322,7 +323,9 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
     bool is_u2f_api_request) {
   VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
       AuthenticatorEnvironmentImpl::GetInstance()
-          ->MaybeGetVirtualAuthenticatorManager(render_frame_host);
+          ->MaybeGetVirtualAuthenticatorManager(
+              static_cast<RenderFrameHostImpl*>(render_frame_host)
+                  ->frame_tree_node());
   if (virtual_authenticator_manager) {
     return virtual_authenticator_manager->MakeDiscoveryFactory();
   }
@@ -392,7 +395,8 @@ AuthenticatorCommon::MaybeCreateRequestDelegate() {
   }
   VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
       AuthenticatorEnvironmentImpl::GetInstance()
-          ->MaybeGetVirtualAuthenticatorManager(render_frame_host_impl);
+          ->MaybeGetVirtualAuthenticatorManager(
+              render_frame_host_impl->frame_tree_node());
   if (virtual_authenticator_manager) {
     delegate->SetVirtualEnvironment(true);
     if (!virtual_authenticator_manager->is_ui_enabled()) {

@@ -12,7 +12,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "content/public/browser/document_user_data.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -27,8 +26,7 @@ class VirtualFidoDiscoveryFactory;
 // for the Web Authentication API. Allows setting up and configurating virtual
 // authenticator devices for testing.
 class VirtualAuthenticatorManagerImpl
-    : public DocumentUserData<VirtualAuthenticatorManagerImpl>,
-      public blink::test::mojom::VirtualAuthenticatorManager {
+    : public blink::test::mojom::VirtualAuthenticatorManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -36,7 +34,7 @@ class VirtualAuthenticatorManagerImpl
     virtual void AuthenticatorRemoved(const std::string& authenticator_id) = 0;
   };
 
-  explicit VirtualAuthenticatorManagerImpl(RenderFrameHost* render_frame_host);
+  VirtualAuthenticatorManagerImpl();
   VirtualAuthenticatorManagerImpl(const VirtualAuthenticatorManagerImpl&) =
       delete;
   VirtualAuthenticatorManagerImpl& operator=(
@@ -84,9 +82,6 @@ class VirtualAuthenticatorManagerImpl
   void ClearAuthenticators(ClearAuthenticatorsCallback callback) override;
 
  private:
-  friend class DocumentUserData<VirtualAuthenticatorManagerImpl>;
-  DOCUMENT_USER_DATA_KEY_DECL();
-
   VirtualAuthenticator* AddAuthenticator(
       std::unique_ptr<VirtualAuthenticator> authenticator);
 

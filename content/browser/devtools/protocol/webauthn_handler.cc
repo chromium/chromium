@@ -160,14 +160,15 @@ Response WebAuthnHandler::Enable(Maybe<bool> enable_ui) {
     return Response::ServerError(kDevToolsNotAttached);
 
   AuthenticatorEnvironmentImpl::GetInstance()->EnableVirtualAuthenticatorFor(
-      frame_host_, enable_ui.fromMaybe(/*default_value=*/false));
+      frame_host_->frame_tree_node(),
+      enable_ui.fromMaybe(/*default_value=*/false));
   return Response::Success();
 }
 
 Response WebAuthnHandler::Disable() {
   if (frame_host_) {
     AuthenticatorEnvironmentImpl::GetInstance()->DisableVirtualAuthenticatorFor(
-        frame_host_);
+        frame_host_->frame_tree_node());
   }
   return Response::Success();
 }
@@ -177,7 +178,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
     String* out_authenticator_id) {
   VirtualAuthenticatorManagerImpl* authenticator_manager =
       AuthenticatorEnvironmentImpl::GetInstance()
-          ->MaybeGetVirtualAuthenticatorManager(frame_host_);
+          ->MaybeGetVirtualAuthenticatorManager(frame_host_->frame_tree_node());
   if (!authenticator_manager)
     return Response::ServerError(kVirtualEnvironmentNotEnabled);
 
@@ -261,7 +262,7 @@ Response WebAuthnHandler::RemoveVirtualAuthenticator(
     const String& authenticator_id) {
   VirtualAuthenticatorManagerImpl* authenticator_manager =
       AuthenticatorEnvironmentImpl::GetInstance()
-          ->MaybeGetVirtualAuthenticatorManager(frame_host_);
+          ->MaybeGetVirtualAuthenticatorManager(frame_host_->frame_tree_node());
   if (!authenticator_manager)
     return Response::ServerError(kVirtualEnvironmentNotEnabled);
 
@@ -455,7 +456,7 @@ Response WebAuthnHandler::FindAuthenticator(
   *out_authenticator = nullptr;
   VirtualAuthenticatorManagerImpl* authenticator_manager =
       AuthenticatorEnvironmentImpl::GetInstance()
-          ->MaybeGetVirtualAuthenticatorManager(frame_host_);
+          ->MaybeGetVirtualAuthenticatorManager(frame_host_->frame_tree_node());
   if (!authenticator_manager)
     return Response::ServerError(kVirtualEnvironmentNotEnabled);
 

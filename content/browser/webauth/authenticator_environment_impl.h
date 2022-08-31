@@ -11,9 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_environment.h"
-#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 
@@ -33,7 +33,8 @@ class VirtualAuthenticatorManagerImpl;
 //
 // This class is a singleton.
 class CONTENT_EXPORT AuthenticatorEnvironmentImpl
-    : public AuthenticatorEnvironment {
+    : public AuthenticatorEnvironment,
+      FrameTreeNode::Observer {
  public:
   static AuthenticatorEnvironmentImpl* GetInstance();
 
@@ -45,32 +46,32 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   // descendants.
   // Does not have any effect if the |node| already has the virtual environment
   // enabled.
-  void EnableVirtualAuthenticatorFor(RenderFrameHost* rfh, bool enable_ui);
+  void EnableVirtualAuthenticatorFor(FrameTreeNode* node, bool enable_ui);
 
   // Disables the scoped virtual authenticator environment for this |node|,
   // resetting the state. If the environment is set on one of the |node|'s
   // parents instead, this won't have any effect.
-  void DisableVirtualAuthenticatorFor(RenderFrameHost* rfh);
+  void DisableVirtualAuthenticatorFor(FrameTreeNode* node);
 
   // Returns whether the virtual authenticator environment is enabled for
   // |node|.
-  bool IsVirtualAuthenticatorEnabledFor(RenderFrameHost* rfh);
+  bool IsVirtualAuthenticatorEnabledFor(FrameTreeNode* node);
 
   // Returns the virtual fido discovery factory for the |node| if the virtual
   // environment is enabled for it, otherwise returns nullptr.
   VirtualAuthenticatorManagerImpl* MaybeGetVirtualAuthenticatorManager(
-      RenderFrameHost* rfh);
+      FrameTreeNode* node);
 
   // Adds the receiver to the virtual authenticator enabled for the |node|. The
   // virtual authenticator must be enabled beforehand.
   void AddVirtualAuthenticatorReceiver(
-      RenderFrameHost* rfh,
+      FrameTreeNode* node,
       mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
           receiver);
 
   // Returns whether |node| has the virtual authenticator environment enabled
   // with a user-verifying platform installed in that environment.
-  bool HasVirtualUserVerifyingPlatformAuthenticator(RenderFrameHost* rfh);
+  bool HasVirtualUserVerifyingPlatformAuthenticator(FrameTreeNode* node);
 
   // Returns the override installed by
   // ReplaceDefaultDiscoveryFactoryForTesting().
@@ -94,6 +95,9 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   void ReplaceDefaultDiscoveryFactoryForTesting(
       std::unique_ptr<device::FidoDiscoveryFactory> factory) override;
 
+  // FrameTreeNode::Observer:
+  void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
+
  protected:
   AuthenticatorEnvironmentImpl();
   ~AuthenticatorEnvironmentImpl() override;
@@ -102,6 +106,9 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   friend class base::NoDestructor<AuthenticatorEnvironmentImpl>;
 
   std::unique_ptr<device::FidoDiscoveryFactory> replaced_discovery_factory_;
+
+  std::map<FrameTreeNode*, std::unique_ptr<VirtualAuthenticatorManagerImpl>>
+      virtual_authenticator_managers_;
 
 #if BUILDFLAG(IS_WIN)
   raw_ptr<device::WinWebAuthnApi> win_webauthn_api_for_testing_ = nullptr;
