@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler.h"
 
 #include <string>
 #include <utility>
@@ -16,9 +16,9 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -31,7 +31,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
+namespace ash {
 
 AddSupervisionHandler::AddSupervisionHandler(
     mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
@@ -147,4 +147,4 @@ void AddSupervisionHandler::SetCloseOnEscape(bool enabled) {
   delegate_->SetCloseOnEscape(enabled);
 }
 
-}  // namespace chromeos
+}  // namespace ash

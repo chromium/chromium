@@ -6,18 +6,18 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace chromeos {
+namespace ash {
 
 // This browser test class is for the Add Supervision metrics recorder.
 class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
@@ -288,4 +288,4 @@ IN_PROC_BROWSER_TEST_P(AddSupervisionMetricsRecorderTimeTest, UserTimingTest) {
       "AddSupervisionDialog.SignoutCompletedUserTime", 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

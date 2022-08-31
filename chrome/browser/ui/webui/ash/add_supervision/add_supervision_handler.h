@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -23,7 +23,7 @@ class IdentityManager;
 
 class GoogleServiceAuthError;
 
-namespace chromeos {
+namespace ash {
 
 class AddSupervisionHandler
     : public add_supervision::mojom::AddSupervisionHandler {
@@ -83,6 +83,6 @@ class AddSupervisionHandler
   base::WeakPtrFactory<AddSupervisionHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_

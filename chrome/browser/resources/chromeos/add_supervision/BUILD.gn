@@ -16,7 +16,7 @@ js_type_check("closure_compile") {
 
 js_library("add_supervision_api_server") {
   deps = [
-    "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:post_message_api_server.m",
   ]
 }

@@ -249,8 +249,8 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_internals_page_handler.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
@@ -1030,8 +1030,8 @@ void PopulateChromeWebUIFrameBinders(
       ash::file_manager::FileManagerUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      add_supervision::mojom::AddSupervisionHandler,
-      chromeos::AddSupervisionUI>(map);
+      add_supervision::mojom::AddSupervisionHandler, ash::AddSupervisionUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       app_management::mojom::PageHandlerFactory,
