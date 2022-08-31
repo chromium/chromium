@@ -475,7 +475,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'highway_revision': '3b801c855540d7e2b4f5d50fad6333e33cb7df04',
+  'highway_revision': '8ae5b88670fb918f815b717c7c13d38a9b0eb4bb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ffmpeg
   # and whatever else without interference from each other.
