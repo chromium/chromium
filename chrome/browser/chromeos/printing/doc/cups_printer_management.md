@@ -82,7 +82,7 @@ There are 4 primary consumers of `CupsPrintersManager` information:
   (`chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.cc`).
   This is mostly a thread workaround to access the stuff in the print backend.
 * The ChromeOS printers settings
-  page. (`chrome/browser/ui/webui/settings/chromeos/cups_printers_handler.cc`
+  page. (`chrome/browser/ui/webui/settings/ash/cups_printers_handler.cc`
   and related code).  This is the primary place the user manages available
   printers.
 * `CupsPrintJobManager`.  Requires printer information for the display and

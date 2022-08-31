@@ -10,7 +10,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  * Type definition of AndroidAppsInfo entry. |playStoreEnabled| indicates that
  * Play Store is enabled. |settingsAppAvailable| indicates that Android settings
  * app is registered in the system.
- * @see chrome/browser/ui/webui/settings/chromeos/android_apps_handler.cc
+ * @see chrome/browser/ui/webui/settings/ash/android_apps_handler.cc
  */
 export interface AndroidAppsInfo {
   playStoreEnabled: boolean;

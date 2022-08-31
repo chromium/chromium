@@ -1,0 +1,17 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+group("mojom_js") {
+  public_deps = [
+    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js",
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js",
+    "//chromeos/ash/components/audio/public/mojom/:mojom_js",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
+  ]
+}

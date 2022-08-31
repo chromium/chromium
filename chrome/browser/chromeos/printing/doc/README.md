@@ -10,7 +10,7 @@ via the Common Unix Printing System (CUPS), *not* Cloud Print.
 
 * `chromeos/printing/` - ChromeOS CUPS printing code that doesn't have
   dependencies that require it to live in chrome/browser.
-* `chrome/browser/ui/webui/settings/chromeos/` - ChromeOS printing settings
+* `chrome/browser/ui/webui/settings/ash/` - ChromeOS printing settings
   dialog backend support
 * `chrome/browser/resources/settings/printing_page/` - Front end printer
   settings code.

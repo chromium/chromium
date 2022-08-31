@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
-#include "chrome/browser/ui/webui/settings/chromeos/device_storage_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/device_storage_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

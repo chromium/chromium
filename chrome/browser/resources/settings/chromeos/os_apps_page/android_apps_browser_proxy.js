@@ -15,7 +15,7 @@
  *   playStoreEnabled: boolean,
  *   settingsAppAvailable: boolean,
  * }}
- * @see chrome/browser/ui/webui/settings/chromeos/android_apps_handler.cc
+ * @see chrome/browser/ui/webui/settings/ash/android_apps_handler.cc
  */
 export let AndroidAppsInfo;
 
