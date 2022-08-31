@@ -24,7 +24,6 @@ group("polymer3_elements") {
     ":family_link_notice_module",
     ":fingerprint_setup_module",
     ":gaia_signin_module",
-    ":gesture_navigation_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
     ":marketing_opt_in_module",
@@ -69,7 +68,7 @@ js_type_check("closure_compile_local") {
     ":family_link_notice.m",
     ":fingerprint_setup.m",
     ":gaia_signin.m",
-    ":gesture_navigation.m",
+    ":gesture_navigation",
     ":guest_tos.m",
     ":hw_data_collection.m",
     ":managed_terms_of_service",
@@ -262,8 +261,8 @@ js_library("fingerprint_setup.m") {
   extra_deps = [ ":fingerprint_setup_module" ]
 }
 
-js_library("gesture_navigation.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gesture_navigation.m.js" ]
+js_library("gesture_navigation") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gesture_navigation.js" ]
   deps = [
     "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -275,7 +274,7 @@ js_library("gesture_navigation.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":gesture_navigation_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("gaia_signin.m") {
@@ -745,15 +744,6 @@ polymer_modulizer("gaia_signin") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("gesture_navigation") {
-  js_file = "gesture_navigation.js"
-  html_file = "gesture_navigation.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("guest_tos") {
   js_file = "guest_tos.js"
   html_file = "guest_tos.html"
@@ -902,6 +892,7 @@ html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
     "arc_terms_of_service.js",
+    "gesture_navigation.js",
     "managed_terms_of_service.js",
     "oobe_reset.js",
     "parental_handoff.js",
