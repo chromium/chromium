@@ -567,7 +567,7 @@
       'GPU FYI Mac Builder': 'gpu_fyi_tests_release_trybot',
       'GPU FYI Mac Builder (asan)': 'gpu_fyi_tests_release_trybot_asan',
       'GPU FYI Mac Builder (dbg)': 'gpu_fyi_tests_debug_trybot',
-      'GPU FYI Mac arm64 Builder': 'gpu_fyi_tests_release_trybot_arm64',
+      'GPU FYI Mac arm64 Builder': 'gpu_fyi_tests_release_trybot_arm64_reclient',
       'GPU FYI Win Builder': 'gpu_fyi_tests_release_trybot_x86_reclient',
       'GPU FYI Win x64 Builder': 'gpu_fyi_tests_release_trybot_reclient',
       'GPU FYI Win x64 Builder (dbg)': 'gpu_fyi_tests_debug_trybot_reclient',
@@ -2570,6 +2570,10 @@
 
     'gpu_fyi_tests_release_trybot_arm64': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'arm64', 'disable_nacl',
+    ],
+
+    'gpu_fyi_tests_release_trybot_arm64_reclient': [
+      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'arm64', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_asan': [

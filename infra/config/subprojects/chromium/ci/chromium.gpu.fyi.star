@@ -336,8 +336,7 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "arm",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
+    goma_backend = None,
 )
 
 ci.thin_tester(
