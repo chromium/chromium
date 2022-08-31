@@ -96,6 +96,7 @@
       "-Wno-string-concatenation",
       "-Wno-unreachable-code",
       "-Wno-unused-variable",
+      "-Wno-unused-result",
     ]
   }
 
