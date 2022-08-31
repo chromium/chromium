@@ -2483,6 +2483,7 @@ int HttpCache::Transaction::DoCacheReadData() {
       ToString(transaction_state_at_transition_to_reading_state_));
   if (entry_) {
     CHECK(InWriters() || entry_->TransactionInReaders(this));
+    entry_->writers_done_writing_to_entry_history = absl::nullopt;
   }
   do_cache_read_data_last_call_ = DoCacheReadDataLastCall::kDoCacheReadData;
   writer_about_to_be_removed_from_entry_caller_ =
@@ -2532,6 +2533,14 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
   SCOPED_CRASH_KEY_BOOL(
       "net", "has called DoneWithEntry",
       has_called_done_with_entry_since_last_do_cache_read_data_);
+
+  if (entry_) {
+    const auto& call_history = entry_->writers_done_writing_to_entry_history;
+    SCOPED_CRASH_KEY_STRING32("net", "WritersDoneWritingToEntry is...",
+                              !call_history.has_value() ? "not called"
+                              : call_history.value()    ? "called with success"
+                                                        : "called with error");
+  }
 
   CHECK_EQ(do_cache_read_data_last_call_,
            DoCacheReadDataLastCall::kDoCacheReadData);

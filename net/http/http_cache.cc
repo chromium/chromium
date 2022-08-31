@@ -984,9 +984,11 @@ void HttpCache::WritersDoneWritingToEntry(ActiveEntry* entry,
   // have valid contents.
   // - let them continue by invoking their callback since entry is
   // successfully written.
-  DCHECK(entry->writers);
-  DCHECK(entry->writers->IsEmpty());
-  DCHECK(success || make_readers.empty());
+  CHECK(entry->writers);
+  CHECK(entry->writers->IsEmpty());
+  CHECK(success || make_readers.empty());
+
+  entry->writers_done_writing_to_entry_history = absl::make_optional(success);
 
   if (!success && should_keep_entry) {
     // Restart already validated transactions so that they are able to read
