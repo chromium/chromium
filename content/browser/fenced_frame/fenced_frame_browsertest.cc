@@ -2009,6 +2009,14 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
+  WebContentsConsoleObserver console_error_observer(shell()->web_contents());
+  auto error_filter =
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      };
+  console_error_observer.SetFilter(base::BindRepeating(error_filter));
+  console_error_observer.SetPattern("Supports-Loading-Mode*");
+
   {
     TestFrameNavigationObserver navigation_observer(fenced_frame_root_node);
     WebContentsConsoleObserver console_observer(web_contents());
@@ -2034,6 +2042,9 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(
       url::Origin::Create(https_url),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedOrigin());
+  // Fenced frame navigation with opt-in 'Supports-Loading-Mode: fenced-frame'
+  // should not emit console errors.
+  EXPECT_TRUE(console_error_observer.messages().empty());
 
   // Parent will still see the src as the urn_uuid and not the mapped url.
   EXPECT_EQ(urn_uuid.spec(), EvalJs(root, "f.src"));
@@ -2781,10 +2792,24 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
   auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url);
 
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  auto filter =
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      };
+  console_observer.SetFilter(base::BindRepeating(filter));
+  console_observer.SetPattern("Supports-Loading-Mode*");
+
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script,
       net::ERR_BLOCKED_BY_RESPONSE);
+
+  EXPECT_FALSE(console_observer.messages().empty());
+  EXPECT_EQ(
+      console_observer.GetMessageAt(0),
+      "Supports-Loading-Mode HTTP response header 'fenced-frame' is required "
+      "to load the fenced frame root and its nested iframes.");
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
@@ -2815,11 +2840,25 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
         fenced_frame_root_node, fenced_frame_url, navigate_script);
   }
 
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  auto filter =
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      };
+  console_observer.SetFilter(base::BindRepeating(filter));
+  console_observer.SetPattern("Supports-Loading-Mode*");
+
   // Add a nested iframe inside the fenced frame and navigate.
   AddIframeInFencedFrame(fenced_frame_root_node, 0);
   GURL iframe_url(https_server()->GetURL("a.test", "/title1.html"));
   NavigateIframeInFencedFrame(fenced_frame_root_node->child_at(0), iframe_url,
                               net::ERR_BLOCKED_BY_RESPONSE);
+
+  EXPECT_FALSE(console_observer.messages().empty());
+  EXPECT_EQ(
+      console_observer.GetMessageAt(0),
+      "Supports-Loading-Mode HTTP response header 'fenced-frame' is required "
+      "to load the fenced frame root and its nested iframes.");
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,

@@ -3653,7 +3653,7 @@ void NavigationRequest::OnResponseStarted(
 
   // The fenced frame root and the nested iframes are required to have the
   // Supports-Loading-Mode HTTP response header "fenced-frame" to be able to
-  // load.
+  // load. Otherwise a console error is emitted.
   const bool should_enforce_fenced_frame_opt_in =
       response_should_be_rendered_ && response_head_->headers &&
       frame_tree_node_->IsInFencedFrameTree() &&
@@ -3661,6 +3661,10 @@ void NavigationRequest::OnResponseStarted(
         url.SchemeIs(url::kDataScheme));
   if (should_enforce_fenced_frame_opt_in &&
       !IsOptedInFencedFrame(*response_head_->headers)) {
+    AddDeferredConsoleMessage(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Supports-Loading-Mode HTTP response header 'fenced-frame' is required "
+        "to load the fenced frame root and its nested iframes.");
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
         false /* skip_throttles */, absl::nullopt /* error_page_content */,
