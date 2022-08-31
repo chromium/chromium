@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Zelenožuta</translation>
 <translation id="2523609930580546572">Vodič za ChromeVox</translation>
 <translation id="2525706221823668172">Tipkovni prečaci na Chromebooku</translation>
+<translation id="2543973100702367007">Dvaput dodirnite kako biste učinili sljedeće: <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">gramatička greška</translation>
 <translation id="2556326187583116255">Dodirnite s 2 prsta da zaustavite trenutni govor</translation>
 <translation id="2573256689920773241">Osnovna navigacija</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Moje omiljeno godišnje doba</translation>
 <translation id="8696284982970258155">svijetlozelena</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{uspravna crta}one{# uspravna crta}few{# uspravne crte}other{# uspravnih crta}}</translation>
+<translation id="8733397807344284494">Pritisnite tipku za pretraživanje i razmaknicu kako biste učinili sljedeće: <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Savjet: pritisnite tipke za pretraživanje i razmak da aktivirate trenutno odabranu stavku.</translation>
 <translation id="8743786158317878347">unos strukturiranog sadržaja, kao što su tabele</translation>
 <translation id="8746846427395705317">vrati na prethodnu riječ</translation>

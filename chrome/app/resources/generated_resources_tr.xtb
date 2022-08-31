@@ -5105,7 +5105,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5884474295213649357">Bu sekme bir USB cihazına bağlı.</translation>
 <translation id="5885314688092915589">Bu profil kuruluşunuz tarafından yönetilecektir.</translation>
 <translation id="5886009770935151472">1. parmak</translation>
-<translation id="5888843733007437002">Şablonlar görüntüleniyor. Gezinmek için Sekme tuşuna basın.</translation>
 <translation id="5889282057229379085">Ara CA sayısı üst sınırı: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Tercih edilen kablosuz ağlar</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
@@ -5573,7 +5572,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6333170995003625229">E-posta adresiniz veya şifreniz doğrulanamadı. Tekrar oturum açmayı deneyin.</translation>
 <translation id="6335920438823100346"><ph name="MANAGER" />, Linux'u başlatmak için verilerinizi yedekleyip bu Chromebook'u fabrika ayarlarına sıfırlamanızı zorunlu tutuyor.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />, ADB hata ayıklama işlevini devre dışı bıraktı. Bu işlem, 24 saat içinde <ph name="DEVICE_TYPE" /> cihazınızı sıfırlar. Saklamak istediğiniz dosyaları yedekleyin.</translation>
-<translation id="6338402296920404442">Bu cihazı kullanan diğer kişilerin şifrelerinizi görmemesi için <ph name="FILENAME" /> dosyasını silebilirsiniz.</translation>
 <translation id="6338981933082930623">Tüm siteler her reklamı gösterebilir</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> için yeni profil oluştur</translation>
 <translation id="6340071272923955280">İnternet Yazdırma Protokolü (IPPS)</translation>

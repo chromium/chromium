@@ -1014,6 +1014,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1925017091976104802">Tekan <ph name="MODIFIER_KEY_DESCRIPTION" /> untuk menampal</translation>
 <translation id="1925021887439448749">Masukkan alamat web tersuai</translation>
 <translation id="1925124445985510535">Semakan keselamatan dijalankan pada <ph name="TIME" /></translation>
+<translation id="192564025059434655">Versi lama Apl Chrome tidak akan dibuka pada peranti Windows selepas Disember 2022. Anda boleh menyemak jika terdapat versi baharu.</translation>
 <translation id="1926339101652878330">Tetapan ini dikawal oleh dasar perusahaan. Sila hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="1927632033341042996">Jari <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN kunci skrin</translation>
@@ -2521,6 +2522,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3348131053948466246">Emoji dicadangkan. Tekan ke atas atau ke bawah untuk menavigasi dan enter untuk memasukkan.</translation>
 <translation id="3349933790966648062">Jejak Memori</translation>
 <translation id="3353786022389205125">Hidupkan "Tunjukkan skrin kunci apabila bangkit daripada tidur" dan cuba lagi</translation>
+<translation id="3354768182971982851">Versi lama Apl Chrome tidak akan dibuka pada peranti Mac selepas Disember 2022. Anda boleh menyemak jika terdapat versi baharu.</translation>
 <translation id="3354972872297836698">Tidak dapat menggandingkan dengan peranti <ph name="DEVICE_NAME" />; pilih peranti untuk mencuba lagi</translation>
 <translation id="3355936511340229503">Ralat sambungan</translation>
 <translation id="3356469410714175391">(Kad maya didayakan)</translation>
@@ -3128,6 +3130,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3918972485393593704">Laporkan butiran kepada Google</translation>
 <translation id="3919145445993746351">Hidupkan penyegerakan untuk mendapatkan sambungan anda pada semua komputer anda</translation>
 <translation id="3919229493046408863">Matikan pemberitahuan apabila terdapat peranti berdekatan</translation>
+<translation id="3919262972282962508">Versi lama Apl Chrome tidak akan dibuka pada peranti Mac selepas Disember 2022. Hubungi pentadbir anda untuk mengemas kini kepada versi baharu atau mengalih keluar apl ini.</translation>
 <translation id="3919798653937160644">Halaman yang anda lihat dalam tetingkap ini tidak akan dipaparkan dalam sejarah penyemak imbas dan halaman ini tidak akan meninggalkan surih lain, seperti kuki, pada komputer selepas anda menutup semua tetingkap Tetamu yang terbuka. Walau bagaimanapun, sebarang fail yang anda muat turun akan dikekalkan.</translation>
 <translation id="3920504717067627103">Dasar Sijil</translation>
 <translation id="3920909973552939961">Tidak dibenarkan untuk memasang pengendali pembayaran</translation>
@@ -5134,7 +5137,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5884474295213649357">Tab ini disambungkan ke peranti USB.</translation>
 <translation id="5885314688092915589">Organisasi anda akan mengurus profil ini</translation>
 <translation id="5886009770935151472">Jari 1</translation>
-<translation id="5888843733007437002">Memaparkan templat. Tekan tab untuk menavigasi.</translation>
 <translation id="5889282057229379085">Bilangan maksimum CA pengantara: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Rangkaian Wi-Fi pilihan</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
@@ -5602,7 +5604,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6333170995003625229">Alamat e-mel atau kata laluan anda tidak dapat disahkan. Cuba log masuk semula.</translation>
 <translation id="6335920438823100346">Untuk memulakan Linux, <ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan menetapkan semula Chromebook ini kepada tetapan kilang.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB. Tindakan ini akan menetapkan semula <ph name="DEVICE_TYPE" /> anda dalam masa 24 jam. Sandarkan mana-mana fail yang ingin anda simpan.</translation>
-<translation id="6338402296920404442">Pertimbangkan untuk memadam <ph name="FILENAME" />, supaya orang lain yang menggunakan peranti ini tidak dapat melihat kata laluan anda.</translation>
 <translation id="6338968693068997776">Tambah peranti USB</translation>
 <translation id="6338981933082930623">Semua tapak boleh memaparkan sebarang iklan kepada anda</translation>
 <translation id="6339668969738228384">Buat profil baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5639,6 +5640,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Cuba Lagi</translation>
 <translation id="6374635887697228982">Dapatkan diskaun?</translation>
+<translation id="637642201764944055">Versi lama Apl Chrome tidak akan dibuka pada peranti Linux selepas Disember 2022. Hubungi pentadbir anda untuk mengemas kini kepada versi baharu atau mengalih keluar apl ini.</translation>
 <translation id="6377268785556383139">1 hasil carian untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">Buka dalam rangkaian Wi-Fi</translation>
 <translation id="6380143666419481200">Terima dan teruskan</translation>
@@ -6116,6 +6118,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6826872289184051766">Sahkan melalui USB</translation>
 <translation id="6827121912381363404">Benarkan semua sambungan untuk membaca dan menukar <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Apl dan tetapan anda akan disegerakkan pada semua peranti Chrome OS yang anda gunakan untuk log masuk dengan akaun Google anda. Untuk mendapatkan pilihan penyegerakan penyemak imbas, pergi ke <ph name="LINK_BEGIN" />tetapan Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Versi lama Apl Chrome tidak akan dibuka pada peranti Windows selepas Disember 2022. Hubungi pentadbir anda untuk mengemas kini kepada versi baharu atau mengalih keluar apl ini.</translation>
 <translation id="6828153365543658583">Hadkan log masuk bagi pengguna berikut:</translation>
 <translation id="6828182567531805778">Masukkan ungkapan laluan anda untuk menyegerakkan data anda</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7975,6 +7978,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="863109444997383731">Tapak akan disekat daripada meminta untuk menunjukkan pemberitahuan kepada anda. Jika tapak meminta pemberitahuan, penunjuk disekat akan dipaparkan dalam bar alamat.</translation>
 <translation id="8632104508818855045">Sebelum ini Anda Memilih Untuk Tidak Membenarkan Sebarang Sambungan Pada <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Aktiviti baru-baru ini</translation>
+<translation id="8633979878370972178">Versi lama Apl Chrome tidak akan dibuka pada peranti Linux selepas Disember 2022. Anda boleh menyemak jika terdapat versi baharu.</translation>
 <translation id="8634348081024879304">Anda tidak akan dapat menggunakan kad maya anda dengan Google Pay lagi. <ph name="BEGIN_LINK" />Ketahui tentang kad maya<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Memuat semula...</translation>
 <translation id="8636284842992792762">Memulakan sambungan...</translation>

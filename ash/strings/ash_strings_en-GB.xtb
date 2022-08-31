@@ -508,6 +508,7 @@ Connect your device to power.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Change device to previous version within 1 minute}other{Change device to previous version within # minutes}}</translation>
 <translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Loading events.</translation>
+<translation id="392627956579011934">Restart needed to install speech files.</translation>
 <translation id="3932043219784172185">No device connected</translation>
 <translation id="3934456833412894880">Adaptive charging is on. Your battery will stay at 80% to extend battery life, and fully charge when you need it.</translation>
 <translation id="3943857333388298514">Paste</translation>

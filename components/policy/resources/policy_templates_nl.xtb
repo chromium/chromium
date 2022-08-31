@@ -847,23 +847,6 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 <translation id="1861206724856734193">Hiermee stel je een lijst in met regels ter voorkoming van datalekken.</translation>
 <translation id="1862267110714201519">De functie voor ghostvenster uitzetten.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
-<translation id="1867025364110179456">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers.
-
-Elk lijstitem van het beleid is een object met een verplicht lid:
-<ph name="URL_LABEL" /> (de URL van de web-app die moet worden geïnstalleerd)
-
-en 5 optionele leden:
-- <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (voor hoe de web-app wordt geopend: de standaardinstelling is een nieuw tabblad)
-
-- <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True als je <ph name="LINUX_OS_NAME" />- en <ph name="MS_WIN_NAME" />-snelkoppelingen wilt maken).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" /> (Vanaf versie 90 van <ph name="PRODUCT_NAME" /> kun je de app-naam overschrijven als het geen progressive web-app (PWA) is, of kun je de tijdelijk geïnstalleerde app-naam overschrijven als het een PWA is, maar verificatie vereist is voordat de installatie kan worden afgerond. Als zowel <ph name="CUSTOM_NAME_LABEL" /> als <ph name="FALLBACK_APP_NAME_LABEL" /> zijn verstrekt, wordt die laatste genegeerd.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" /> (Vanaf versie 99 van <ph name="PRODUCT_NAME" /> kun je de app-naam definitief overschrijven voor alle web-apps en PWA's. Momenteel alleen ondersteund op <ph name="PRODUCT_OS_NAME" />.)
-
-- <ph name="CUSTOM_ICON_LABEL" /> (Vanaf versie 99 van <ph name="PRODUCT_NAME" /> kun je het app-icoon van geïnstalleerde apps overschrijven. De iconen moeten vierkant zijn, met een maximale grootte van 1 MB en in een van de volgende indelingen: jpeg, png, gif, webp, ico. De hash-waarde moet de hash SHA256 van het icoonbestand zijn. Momenteel alleen ondersteund op <ph name="PRODUCT_OS_NAME" />.)
-
-Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van apps op de <ph name="PRODUCT_OS_NAME" />-plank.</translation>
 <translation id="186719019195685253">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op netspanning</translation>
 <translation id="1869688072690234823">Als je het beleid instelt, bepaal je welke WebAuthn-factoren kunnen worden gebruikt.
 
@@ -2673,6 +2656,17 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3727675072430693164">Als je het beleid toepast, rapporteren ingeschreven apparaten hardwarestatistieken voor SoC-componenten.
 
       Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten de statistieken niet.</translation>
+<translation id="372853200788846114">Als je het beleid toepast, vraagt <ph name="PRODUCT_OS_NAME" /> gebruikers om een wachtwoord om het apparaat te ontgrendelen als het in de slaapstand staat of als de klep is gesloten.
+
+      Apparaten worden vergrendeld als de klep wordt gesloten, behalve als ze zijn gedockt (met een externe monitor).  In dat geval wordt het apparaat niet vergrendeld als de klep wordt gesloten, maar wordt het vergrendeld als de externe monitor wordt verwijderd en de klep nog steeds is gesloten.
+
+      Tot <ph name="PRODUCT_OS_NAME" /> M106 wordt het apparaat alleen vergrendeld op basis van dit beleid als het in de slaapstand staat.  Vanaf M106 wordt het apparaat vergrendeld op basis van dit beleid als het in de slaapstand staat of de klep wordt gesloten.
+
+      Als je dit beleid toepast (True) en <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> instelt op <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />, wordt een apparaat vergrendeld als de klep wordt gesloten, maar wordt het alleen in de slaapstand gezet als dit is ingesteld in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Als je het beleid niet toepast (False), wordt gebruikers niet om een wachtwoord gevraagd om het apparaat te ontgrendelen.
+
+      Als je het beleid niet instelt, kunnen gebruikers zelf kiezen of ze een wachtwoord moeten opgeven om het apparaat te ontgrendelen.</translation>
 <translation id="3729937245044939404">Dit beleid is beëindigd in M70. Gebruik in plaats hiervan <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> en <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
 Hiermee wordt de functie Automatisch aanvullen van <ph name="PRODUCT_NAME" /> geactiveerd en wordt gebruikers toegestaan webformulieren automatisch in te vullen met eerder opgeslagen informatie zoals adres- of creditcardgegevens.

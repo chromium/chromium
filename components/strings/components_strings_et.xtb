@@ -691,6 +691,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742511345840685325">Lauatennis</translation>
 <translation id="2742870351467570537">Eemalda valitud üksused</translation>
+<translation id="2759825833388495838">sisestada rakenduses <ph name="APP_NAME" /> teie parooli</translation>
 <translation id="2764001903315068341">Koomiksid</translation>
 <translation id="2765217105034171413">Väike</translation>
 <translation id="277133753123645258">Tarneviis</translation>
@@ -1431,7 +1432,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4798269756263412078">Teile saadetakse teavitus, kui hind mõnel saidil langeb. Teavitused saadetakse teie e-posti aadressile.</translation>
 <translation id="4800132727771399293">Kontrollige aegumiskuupäeva ja CVC-d ning proovige uuesti</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Kasuta Touch ID-d</translation>
 <translation id="4809079943450490359">Juhised seadme administraatorilt:</translation>
 <translation id="4811450222531576619">Teave selle allika ja teema kohta</translation>
 <translation id="4812751092864334025">Kehal kantav tehnoloogia</translation>
@@ -1802,7 +1802,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5765072501007116331">Kohaletoimetamisviiside ja nõuete nägemiseks valige aadress</translation>
 <translation id="57689295674415555">Virtuaalkaardi numbrit pole sisestatud?</translation>
 <translation id="5776313857861697733">Prioriteet</translation>
-<translation id="5778389256418062749">Kasuta pääsukoodi teises seadmes</translation>
 <translation id="5781136890105823427">Katse on lubatud</translation>
 <translation id="578305955206182703">Merevaigukollane</translation>
 <translation id="57838592816432529">Vaigista</translation>
@@ -2570,7 +2569,6 @@ Lisateave:
 <translation id="7880146494886811634">Aadressi salvestamine</translation>
 <translation id="7882421473871500483">Pruun</translation>
 <translation id="7882995332186050355">Kaubaveokid ja haagised</translation>
-<translation id="788679692472636252">Paroolide ja pääsukoodide haldamine …</translation>
 <translation id="7887683347370398519">Kontrollige CVC-d ja proovige uuesti</translation>
 <translation id="7887885240995164102">Aktiveeri režiim Pilt pildis</translation>
 <translation id="7888575728750733395">Prindirenderduse kavatsus</translation>
@@ -2965,6 +2963,7 @@ Lisateave:
 <translation id="9039213469156557790">Lisaks sisaldab see leht teisi ressursse, mis pole turvalised. Edastamise ajal võivad ressursse vaadata ka teised ja ründajad saavad lehe käitumise muutmiseks ressursse muuta.</translation>
 <translation id="9040464167025094690">Nupp Leia mu seade, Google'i kontol oma seadme leidmiseks vajutage sisestusklahvi.</translation>
 <translation id="9042617223719777575">Suur mahutavus</translation>
+<translation id="9044359186343685026">Kasuta Touch ID-d</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Proovisite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas kehtetu sertifikaadi.</translation>
 <translation id="9050666287014529139">Parool</translation>

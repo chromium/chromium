@@ -688,6 +688,7 @@
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2742511345840685325">Үстел теннисі</translation>
 <translation id="2742870351467570537">Таңдалған элементтерді жою</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> қолданбасында құпия сөздеріңізді толтырмақ</translation>
 <translation id="2764001903315068341">Комикс</translation>
 <translation id="2765217105034171413">Кіші</translation>
 <translation id="277133753123645258">Жөнелту әдісі</translation>
@@ -1418,7 +1419,6 @@
 <translation id="4798078619018708837">Карта мәліметтерін жаңарту үшін <ph name="CREDIT_CARD" /> картасының жарамдылық мерзімі мен CVC кодын енгізіңіз. Растағаннан кейін, Google аккаунтындағы карта мәліметтері осы сайтқа беріледі.</translation>
 <translation id="4800132727771399293">Жарамдылық мерзімі мен CVC кодын тексеріп, әрекетті қайталаңыз</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">TouchID кіру кілтін пайдалану</translation>
 <translation id="4809079943450490359">Құрылғы әкімшісінің нұсқаулары:</translation>
 <translation id="4811450222531576619">Бет дереккөзі мен тақырыбы туралы ақпарат алыңыз.</translation>
 <translation id="4812751092864334025">Денеге тағылатын құрылғылар</translation>
@@ -1787,7 +1787,6 @@
 <translation id="5765072501007116331">Жеткізу әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
 <translation id="57689295674415555">Виртуалдық карта нөмірі толтырылмаған ба?</translation>
 <translation id="5776313857861697733">Басымдық</translation>
-<translation id="5778389256418062749">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
 <translation id="5781136890105823427">Эксперимент қосылды.</translation>
 <translation id="578305955206182703">Қою сары</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
@@ -2549,7 +2548,6 @@
 <translation id="7880146494886811634">Мекенжайды сақтау</translation>
 <translation id="7882421473871500483">Қоңыр</translation>
 <translation id="7882995332186050355">Жүк көліктері мен тіркемелері</translation>
-<translation id="788679692472636252">Құпия сөздер мен кіру кілттерін басқару…</translation>
 <translation id="7887683347370398519">CVC нөмірін енгізіп, әрекетті қайталаңыз</translation>
 <translation id="7887885240995164102">"Суреттегі сурет" режиміне өту</translation>
 <translation id="7888575728750733395">Басып шығарудың рендеринг мақсаты</translation>
@@ -2944,6 +2942,7 @@
 <translation id="9039213469156557790">Сонымен қатар бұл бет басқа да қауіпті ресурстарды қамтиды. Бұл ресурстарды өту кезінде басқалар көре алады және беттің іс-әрекетіне өзгеріс енгізу мақсатында оны шабуылшы өзгерте алады.</translation>
 <translation id="9040464167025094690">"Find My Device" түймесі. Google аккаунтында құрылғыны табу бөліміне кіру үшін Enter пернесін басыңыз.</translation>
 <translation id="9042617223719777575">Үлкен сыйымдылық</translation>
+<translation id="9044359186343685026">Touch ID пайдалану</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер жарамсыз сертификат ұсынды.</translation>
 <translation id="9050666287014529139">Құпия фраза</translation>

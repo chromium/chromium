@@ -1431,7 +1431,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4798269756263412078">Merr sinjalizime nëse ulet çmimi në ndonjë sajt. Sinjalizimet do të dërgohen në email-in tënd.</translation>
 <translation id="4800132727771399293">Kontrollo datën e skadimit dhe CVC-në dhe provo sërish.</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Përdor TouchID</translation>
 <translation id="4809079943450490359">Udhëzimet nga administratori i pajisjes sate:</translation>
 <translation id="4811450222531576619">Mëso rreth burimit të saj dhe temës</translation>
 <translation id="4812751092864334025">Teknologjia që vishet</translation>
@@ -1802,7 +1801,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5765072501007116331">Për të parë mënyrat dhe kërkesat e dorëzimit, zgjidh një adresë</translation>
 <translation id="57689295674415555">Nuk është plotësuar numri i kartës virtuale?</translation>
 <translation id="5776313857861697733">Përparësia</translation>
-<translation id="5778389256418062749">Përdor një çelës kalimi në një pajisje tjetër</translation>
 <translation id="5781136890105823427">Eksperimenti u aktivizua</translation>
 <translation id="578305955206182703">E verdhë portokalli</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
@@ -2569,7 +2567,6 @@ Detaje shtesë:
 <translation id="7880146494886811634">Ruaj adresën</translation>
 <translation id="7882421473871500483">Kafe</translation>
 <translation id="7882995332186050355">Kamionët e mallrave dhe rimorkiot</translation>
-<translation id="788679692472636252">Menaxho fjalëkalimet dhe çelësat e kalimit…</translation>
 <translation id="7887683347370398519">Kontrollo CVC-në tënde dhe provo përsëri</translation>
 <translation id="7887885240995164102">Hyr në veçorinë "figurë brenda figurës"</translation>
 <translation id="7888575728750733395">Synimi i paraqitjes për printimin</translation>
@@ -2964,6 +2961,7 @@ Detaje shtesë:
 <translation id="9039213469156557790">Për më tepër, kjo faqe përfshin burime të tjera që nuk janë të sigurta. Këto burime mund të shikohen nga të tjerët kur janë në procesin e kalimit dhe mund të modifikohen nga ndonjë sulmues për të ndryshuar sjelljen e faqes.</translation>
 <translation id="9040464167025094690">Butoni "Gjej pajisjen time". Shtyp "Enter" për të vizituar "Gjej pajisjen time" në "Llogarinë e Google".</translation>
 <translation id="9042617223719777575">Kapacitet i madh</translation>
+<translation id="9044359186343685026">Përdor Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Tentove të gjeje <ph name="DOMAIN" />, por serveri paraqiti një certifikatë të pavlefshme.</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>

@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">কিবা ভুল হ’ল। Linuxক হয়তো আংশিকভাৱেহে আপগ্ৰে’ড কৰিব পৰা যাব। অধিক তথ্যৰ বাবে লগ পৰ্যালোচনা কৰক। ফাইল &gt; মোৰ ফাইল &gt; <ph name="LOG_FILE" />ত লগসমূহ ছেভ কৰা হৈছে</translation>
 <translation id="1043818413152647937">লগতে এই এপ্‌সমূহৰ পৰা ডেটা মচিবনে?</translation>
 <translation id="1043824690776631483">এই ছাইটটো চাবলৈ আপোনাক অনুমতিৰ প্ৰয়োজন। ইয়াত অনুপযুক্ত সমল থাকিব পাৰে।</translation>
+<translation id="104419033123549300">কীমেপৰ শৈলী</translation>
 <translation id="104710386808485638">Linux ৰিষ্টাৰ্ট কৰিবনে?</translation>
 <translation id="1047431265488717055">লিংক আৰু পা&amp;ঠ প্ৰতিলিপি কৰক</translation>
 <translation id="1048286738600630630">দেখুৱায়</translation>
@@ -781,6 +782,7 @@
 <translation id="1721312023322545264">এই ছাইটটো চাবলৈ আপোনাক <ph name="NAME" />ৰ অনুমতিৰ প্ৰয়োজন</translation>
 <translation id="1722460139690167654">আপোনাৰ <ph name="BEGIN_LINK" /> <ph name="DEVICE_TYPE" /><ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" />এ পৰিচালনা কৰে</translation>
 <translation id="1723824996674794290">&amp;নতুন ৱিণ্ড’</translation>
+<translation id="1724801751621173132">ইনপুট ম’ড</translation>
 <translation id="1725562816265788801">টেব স্ক্ৰ’ল কৰা</translation>
 <translation id="1729533290416704613">এইটোৱে লগতে আপুনি Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা দেখুওৱা হয় সেয়াও নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />এপ্‌ আঁতৰাবলৈ ছেটিংসমূহ &gt; Google Play Store &gt; Androidৰ অগ্ৰাধিকাৰ পৰিচালনা কৰক&gt; এপ্‌ বা এপ্লিকেশ্বন মেনেজাৰ-লৈ যাওক। তাৰ পিছত আপুনি আনইনষ্টল কৰিব খোজা এপ্‌টোত টিপক (আপুনি এপ্‌টো বিচাৰিবলৈ সোঁফাললৈ বা বাওঁফাললৈ ছোৱাইপ কৰিবলগা হ‘ব পাৰে)। তাৰ পিছত আনইনষ্টল কৰক বা অক্ষম কৰক-ত টিপক।<ph name="END_PARAGRAPH1" /></translation>
@@ -1010,6 +1012,7 @@
 <translation id="1925017091976104802">পে’ষ্ট কৰিবলৈ <ph name="MODIFIER_KEY_DESCRIPTION" /> টিপক</translation>
 <translation id="1925021887439448749">কাষ্টম ৱেব ঠিকনা দিয়ক</translation>
 <translation id="1925124445985510535"><ph name="TIME" />ত সুৰক্ষা পৰীক্ষা চলোৱা হৈছে</translation>
+<translation id="192564025059434655">২০২২ চনৰ ডিচেম্বৰৰ পাছত Windows ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। নতুন সংস্কৰণ উপলব্ধ আছে নে নাই সেয়া আপুনি চাব পাৰে।</translation>
 <translation id="1926339101652878330">এণ্টাৰপ্ৰাইজৰ নীতিয়ে এই ছেটিংসমূহ নিয়ন্ত্ৰণ কৰে। অধিক তথ্যৰ বাবে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" /> আঙুলি</translation>
 <translation id="192817607445937251">স্ক্রীন লকৰ পিন</translation>
@@ -1965,6 +1968,7 @@
 <translation id="2796740370559399562">কুকিসমূহক অনুমতি দিয়াটো অব্যাহত ৰাখক</translation>
 <translation id="2798347533012571708">আপডে’টসমূহ ৰাখক</translation>
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
+<translation id="2800309299477632167">কাষ্টম কীমেপ</translation>
 <translation id="2800760947029405028">ছবি আপল’ড কৰক</translation>
 <translation id="2801954693771979815">স্ক্ৰীনৰ আকাৰ</translation>
 <translation id="2802557211515765772">কোনো পৰিচালিত প্ৰিণ্টাৰ নাই।</translation>
@@ -2026,6 +2030,7 @@
 <translation id="2849767214114481738">আপোনাৰ পিন যোগ দিয়া হৈছে</translation>
 <translation id="2849936225196189499">জটিল</translation>
 <translation id="2850541429955027218">থীম যোগ কৰক</translation>
+<translation id="2850672011315104382">যতিচিহ্নৰ শৈলী</translation>
 <translation id="2851634818064021665">এই ছাইটটো চাবলৈ আপোনাক অনুমতিৰ প্ৰয়োজন</translation>
 <translation id="2851728849045278002">কিবা ভুল হ’ল। অধিক সবিশেষৰ বাবে ক্লিক কৰক।</translation>
 <translation id="2852385257476173980">আপুনি ৱেব ব্ৰাউজ কৰোঁতে ইয়াত আপুনি চোৱা ছাইটসমূহৰ এখন তালিকা প্ৰদৰ্শিত হ’ব পাৰে</translation>
@@ -2515,6 +2520,7 @@
 <translation id="3348131053948466246">ইম'জী পৰামৰ্শ হিচাপে আগবঢ়োৱা হৈছে। নেভিগে’ট কৰিবলৈ আপ অথবা ডাউনত টিপক আৰু ভৰাবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="3349933790966648062">ব্যৱহৃত মুখ্য মেম’ৰী</translation>
 <translation id="3353786022389205125">"টোপনিৰ পৰা সাৰ পোৱাৰ সময়ত লক স্ক্ৰীন দেখুৱাওক" সুবিধাটো অন কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
+<translation id="3354768182971982851">২০২২ চনৰ ডিচেম্বৰৰ পাছত Mac ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। নতুন সংস্কৰণ উপলব্ধ আছে নে নাই সেয়া আপুনি চাব পাৰে।</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ডিভাইচৰ সৈতে পেয়াৰ কৰিব পৰা নগ’ল; পুনৰ চেষ্টা কৰিবলৈ ডিভাইচ বাছনি কৰক</translation>
 <translation id="3355936511340229503">সংযোগৰ আসোঁৱাহ</translation>
 <translation id="3356469410714175391">(ভাৰ্চুৱেল কাৰ্ডখন সক্ষম কৰা হ’ল)</translation>
@@ -2522,6 +2528,7 @@
 <translation id="3359256513598016054">প্ৰমাণপত্ৰৰ নীতিৰ সীমাবদ্ধতা</translation>
 <translation id="3360297538363969800">প্ৰিণ্টিং কৰিব পৰা নগ’ল। আপোনাৰ প্ৰিণ্টাৰ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />এ আপোনাৰ সৈতে <ph name="ATTACHMENTS" /> শ্বেয়াৰ কৰি আছে।}one{<ph name="DEVICE_NAME" />এ আপোনাৰ সৈতে <ph name="ATTACHMENTS" /> শ্বেয়াৰ কৰি আছে।}other{<ph name="DEVICE_NAME" />এ আপোনাৰ সৈতে <ph name="ATTACHMENTS" /> শ্বেয়াৰ কৰি আছে।}}</translation>
+<translation id="3361954577771524115">এপ্‌টোৰ পৰা</translation>
 <translation id="3363202073972776113">এই নতুন প্ৰ’ফাইলটো আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">আপোনাৰ প্ৰশাসকৰ পৰা: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">হয় Ctrl নহয় Alt ব্যৱহাৰ কৰক</translation>
@@ -2673,6 +2680,7 @@
 <translation id="3494769164076977169">কোনো ছাইটে প্ৰথম ফাইলটো ডাউনল’ড হোৱাৰ পাছত স্বয়ংক্ৰিয়ভাৱে ফাইলসমূহ ডাউনল’ড কৰিব বিচাৰিলে অনুমতি লওক(চুপাৰিছ কৰা)</translation>
 <translation id="3495496470825196617">চার্জ কৰি থকাৰ সময়ত পাৱাৰ ব্যৱহাৰ নকৰাকৈ ৰাখক</translation>
 <translation id="3495660573538963482">Google Assistantৰ ছেটিংসমূহ</translation>
+<translation id="3495675993466884458">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে <ph name="APP_ORIGIN" />ক আপোনাৰ স্ক্ৰীনখন ৰেকৰ্ড কৰাৰ অনুমতি দিছে</translation>
 <translation id="3496213124478423963">সংকোচন কৰক</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (বাছনি কৰা হোৱা নাই)</translation>
 <translation id="3496689104192986836">বেটাৰীৰ পৰিমাণ <ph name="PERCENTAGE" />%</translation>
@@ -2792,6 +2800,7 @@
 <translation id="3617891479562106823">নেপথ্য উপলব্ধ নহয়। পিছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3619115746895587757">কেপ’চিনো</translation>
 <translation id="3619962278978697442">প্ৰতিবাৰ ছাইন ইন কৰোঁতে ইয়াৰ এটা বাছনি কৰক</translation>
+<translation id="3620136223548713675">জিঅ’লোকেশ্বন</translation>
 <translation id="3621807901162200696">ChromeOSৰ সুবিধা আৰু কাৰ্যক্ষমতা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{এটা এপ্}one{# টা এপ্}other{# টা এপ্}}</translation>
 <translation id="362333465072914957">CAএ এখন প্ৰমাণপত্ৰ জাৰি কৰালৈ অপেক্ষা কৰি থকা হৈছে</translation>
@@ -3046,6 +3055,7 @@
 <translation id="3848547754896969219">&amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3851428669031642514">অসুৰক্ষিত স্ক্ৰিপ্ট ল’ড কৰক</translation>
+<translation id="3852215160863921508">ইনপুট সহায়তা</translation>
 <translation id="3854599674806204102">কোনো বিকল্প বাছনি কৰক</translation>
 <translation id="3854967233147778866">অন্য ভাষাত ৱেবছাইটসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
 <translation id="3854976556788175030">আউটপুট ট্ৰে’ ভৰি পৰিছে</translation>
@@ -3120,6 +3130,7 @@
 <translation id="3918972485393593704">Googleলৈ সবিশেষৰ ৰিপর্ট পঠিয়াওক</translation>
 <translation id="3919145445993746351">আপোনাৰ সকলো কম্পিউটাৰতে নিজৰ এক্সটেনশ্বনসমূহ পাবলৈ ছিংক অন কৰক</translation>
 <translation id="3919229493046408863">আশে-পাশে ডিভাইচ থাকিলে জাননী পোৱাৰ সুবিধাটো অফ কৰক</translation>
+<translation id="3919262972282962508">২০২২ চনৰ ডিচেম্বৰৰ পাছত Mac ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। এটা নতুন সংস্কৰণলৈ আপডে’ট কৰিবলৈ অথবা এই এপ্‌টো আঁতৰাবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="3919798653937160644">আপুনি এই ৱিণ্ড’খনত চোৱা পৃষ্ঠাসমূহ ব্ৰাউজাৰৰ ইতিহাসত দেখা পোৱা নাযাব আৰু আপুনি খোলা থকা অতিথিৰ আটাইবোৰ ৱিণ্ড’ বন্ধ কৰাৰ পাছত সেইসমূহে কম্পিউটাৰত কুকিৰ দৰে অন্য কোনো ট্ৰে’চ নেৰে। অৱশ্যে, আপুনি ডাউনল’ড কৰা আটাইবোৰ ফাইল সংৰক্ষণ কৰা হ’ব।</translation>
 <translation id="3920504717067627103">প্ৰমাণপত্ৰৰ নীতিসমূহ</translation>
 <translation id="3920909973552939961">পৰিশোধ নিয়ন্ত্ৰক ইনষ্টল কৰাৰ অনুমতি নাই</translation>
@@ -3177,6 +3188,7 @@
 <translation id="3966072572894326936">অন্য এটা ফ'ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3967841595862839006">আপোনাৰ ভাষা আৰু কীব’ৰ্ড বাছনি কৰক</translation>
+<translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="3971764089670057203">এই সুৰক্ষা চাবিটোত থকা ফিংগাৰপ্ৰিণ্টসমূহ</translation>
@@ -3280,6 +3292,7 @@
 <translation id="4062561150282203854">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ এপ্, ছেটিং আৰু বহুতো ছিংক কৰক</translation>
 <translation id="4065876735068446555">আপুনি ব্যৱহাৰ কৰি থকা নেটৱর্ক(<ph name="NETWORK_ID" />)টোৰ বাবে আপুনি ইয়াৰ লগ ইন কৰা পৃষ্ঠালৈ যোৱাটো আৱশ্যক হ’ব পাৰে।</translation>
 <translation id="4066207411788646768">আপোনাৰ নেটৱৰ্কত উপলব্ধ প্ৰিণ্টাৰবোৰ চাবলৈ অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক</translation>
+<translation id="4066945815577305767">পাছৱৰ্ডৰ সময় উকলিছে</translation>
 <translation id="4068776064906523561">ছেভ কৰি থোৱা ফিংগাৰপ্ৰিণ্ট</translation>
 <translation id="407173827865827707">ক্লিক কৰিলে আৰম্ভ হয়</translation>
 <translation id="4072701974556190758">আপোনাৰ Google একাউণ্টত <ph name="ACCOUNT" /> পাছৱৰ্ডটো ছেভ কৰা হ’ব। আপুনি এইটো মনত ৰাখিব নালাগে।</translation>
@@ -3801,6 +3814,7 @@
 <translation id="4579453506923101210">সংযুক্ত হৈ থকা ফ’নটো পাহৰি যাওক</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> কাষ্ট কৰিব পৰা নগ’ল।</translation>
 <translation id="4579876313423027742">ব্ৰাউজাৰ সম্পৰ্কীয় জাননীৰ বাবে, <ph name="LINK_BEGIN" />Chromeৰ ব্ৰাউজাৰৰ ছেটিঙ <ph name="LINK_END" />লৈ যাওক</translation>
+<translation id="4580587929153007251">Google Password Managerত পুনৰ ছাইন ইন কৰক</translation>
 <translation id="4580596421317071374">পাছৱৰ্ডসমূহ এই ডিভাইচটোত<ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰা হয়।</translation>
 <translation id="4580626299762849806">পাছৱৰ্ড আমদানি কৰিব নোৱাৰি। <ph name="FILENAME" /> পৰীক্ষা কৰক আৰু সেইটো সঠিকভাৱে ফৰ্মেট কৰি থোৱাটো নিশ্চিত কৰক।</translation>
 <translation id="4581774856936278355">Linux পুনঃস্থাপন কৰি থাকোঁতে আসোঁৱাহ হ’ল</translation>
@@ -4424,6 +4438,7 @@
 <translation id="5207949376430453814">পাঠৰ কেৰেট হাইলাইট কৰক</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />এ আপুনি যোগ্য ChromeOS ডিভাইচ ব্যৱহাৰ কৰি আছেনে সেয়া পৰীক্ষা কৰিবলৈ বিচাৰে।</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" />ৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ ট’কেন ষ্ট’ৰ কৰি থকা হৈছে</translation>
+<translation id="5208988882104884956">আধা প্ৰস্থৰ</translation>
 <translation id="520902706163766447">বৰ্তমান খোলা থকা টেবসমূহত সন্ধান কৰিবলৈ Chrome UIৰ একেবাৰে ওপৰত ভাঁহি উঠা এটা পপআপ সক্ষম কৰক।</translation>
 <translation id="5209320130288484488">কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="5209513429611499188">ব্যৱহাৰ সংক্ৰান্তীয় পৃষ্ঠা <ph name="USAGE_PAGE" />ৰ পৰা HID ডিভাইচ</translation>
@@ -4481,6 +4496,7 @@
 <translation id="5268373933383932086">আপুনি বিচৰা ধৰণে আপোনাৰ পৃষ্ঠা</translation>
 <translation id="5269977353971873915">প্ৰিণ্ট কৰিব পৰা নগ'ল</translation>
 <translation id="5273806377963980154">ছাইটৰ URL সম্পাদনা কৰক</translation>
+<translation id="5275084684151588738">ব্যৱহাৰকাৰীৰ অভিধানসমূহ</translation>
 <translation id="5275338516105640560">ছেভ হৈ থকা টেবৰ গোটৰ বুটাম</translation>
 <translation id="5275352920323889391">কুকুৰ</translation>
 <translation id="527605719918376753">টেব মিউট কৰক</translation>
@@ -4641,6 +4657,7 @@
 <translation id="542750953150239272">অব্যাহত ৰাখি আপুনি সন্মতি দিয়ে যে এই ডিভাইচটোৱে স্বয়ংক্ৰিয়ভাৱে Google, আপোনাৰ বাহক আৰু আপোনাৰ ডিভাইচটোৰ নিৰ্মাতাৰ পৰা সম্ভৱতঃ চেলুলাৰ ডেটা ব্যৱহাৰ কৰি আপডে’ট আৰু এপ্‌ ডাউনল’ড আৰু ইনষ্টল কৰিবও পাৰে। এই এপ্‌সমূহৰ কিছুমানে এপৰ ভিতৰত ক্ৰয় কৰাৰ সুবিধা আগবঢ়াব পাৰে।</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (আপডে'ট উপলব্ধ)</translation>
 <translation id="542948651837270806">বিশ্বাসী প্লেটফৰ্ম মডিউল ফাৰ্মৱেৰটোৰ বাবে এটা আপডে’ট ইনষ্টল কৰিব লাগিব। <ph name="TPM_FIRMWARE_UPDATE_LINK" /> চাওক</translation>
+<translation id="5429818411180678468">সম্পূৰ্ণ প্ৰস্থৰ</translation>
 <translation id="5430931332414098647">তাৎক্ষণিক টেথাৰিং কৰাৰ সুবিধা</translation>
 <translation id="5431318178759467895">ৰং</translation>
 <translation id="543338862236136125">পাছৱৰ্ড সম্পাদনা কৰক</translation>
@@ -4695,6 +4712,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{পিনত অতি কমেও এটা বৰ্ণ থাকিবই লাগিব}one{পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব}other{পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" />ৰ বাবে আপুনি এতিয়াই এটা ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযোগ কৰিব লাগিব আৰু এটা আপডে’ট ডাউনল’ড কৰিব লাগিব। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।</translation>
 <translation id="5481273127572794904">স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ অনুমতি নাই</translation>
+<translation id="5481755802440890178">বাছনি কৰা পাঠ এই মুহূৰ্তত অনুবাদ কৰিব পৰা নগ’ল</translation>
 <translation id="5481941284378890518">নিকটৱৰ্তী প্ৰিণ্টাৰ যোগ কৰক</translation>
 <translation id="5483785310822538350">ফাইল আৰু ডিভাইচৰ এক্সেছ প্ৰত্যাহাৰ কৰক</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু এই <ph name="DEVICE_TYPE" />টো আজি উভতাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}one{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}other{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}}</translation>
@@ -4927,6 +4945,7 @@
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" সম্পর্কীয় দুৰ্ব্যৱহাৰৰ অভিযোগ দিয়ক</translation>
 <translation id="5696679855467848181">বৰ্তমান ব্যৱহৃত হৈ থকা PPD ফাইল: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ইম’জী বাছনি কৰোঁতা</translation>
+<translation id="5698462638680260399">পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="570043786759263127">Google Play এপ্ আৰু সেৱাসমূহ</translation>
 <translation id="5700836101007545240">আপোনাৰ প্ৰশাসকে সংযোগ যোগ কৰাটো অক্ষম কৰি থৈছে</translation>
 <translation id="5701080607174488915">ছার্ভাৰৰ পৰা নীতি আহৰণ কৰাত কিবা আসোঁৱাহ হৈছে।</translation>
@@ -4944,6 +4963,7 @@
 <translation id="5712153969432126546">ছাইটে কেতিয়াবা কেতিয়াবা নথি, সম্পৰ্ক আৰু ফৰ্মৰ দৰে PDF প্ৰকাশ কৰে</translation>
 <translation id="571222594670061844">ছাইটবিলাকে পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট দেখুৱাব পাৰে</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />ৰ সৈতে সংযোগ কৰা হৈছে</translation>
+<translation id="5713960379473463904">স্পেচ ইনপুটৰ শৈলী</translation>
 <translation id="5715711091495208045">প্লাগ ইন ব্ৰ’কাৰ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">সন্ধানৰ ডিফ'ল্ট ইঞ্জিন</translation>
 <translation id="5719854774000914513">ছাইটে HID ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
@@ -5116,7 +5136,6 @@
 <translation id="5884474295213649357">এই টেবটো USB ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে।</translation>
 <translation id="5885314688092915589">আপোনাৰ প্ৰতিষ্ঠানে এই প্ৰ’ফাইলটো পৰিচালনা কৰিব</translation>
 <translation id="5886009770935151472">আঙুলি ১</translation>
-<translation id="5888843733007437002">টেমপ্লে’ট চাই আছে। নেভিগে’ট কৰিবলৈ টেব টিপক৷</translation>
 <translation id="5889282057229379085">মধ্যৱৰ্তী CAৰ সর্বাধিক সংখ্যা: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">অগ্ৰাধিকাৰপ্ৰাপ্ত ৱাই-ফাই নেটৱৰ্কসমূহ</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
@@ -5584,7 +5603,7 @@
 <translation id="6333170995003625229">আপোনাৰ ইমেইল ঠিকনা অথবা পাছৱৰ্ড সত্যাপন কৰিব নোৱাৰি। পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="6335920438823100346">Linux ব্যৱহাৰ কৰা আৰম্ভ কৰিবলৈ <ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু এই Chromebookটো ফেক্টৰীৰ ছেটিঙলৈ ৰিছেট কৰাৰ আৱশ্যক।</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />এ ADB ডিবাগিং অক্ষম কৰিছে। ই ২৪ ঘণ্টাত আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিছেট কৰিব। আপুনি ৰাখিবলৈ বিচৰা যিকোনো ফাইলৰ বেক আপ লওক।</translation>
-<translation id="6338402296920404442"><ph name="FILENAME" /> মচাৰ বিষয়ে বিবেচনা কৰক, যাতে এই ডিভাইচটো ব্যৱহাৰ কৰা অন্য লোকে আপোনাৰ পাছৱৰ্ডসমূহ চাব নোৱাৰে।</translation>
+<translation id="6338968693068997776">ইউএছবি ডিভাইচ যোগ দিয়ক</translation>
 <translation id="6338981933082930623">সকলো ছাইটে আপোনাক যিকোনো বিজ্ঞাপন দেখুৱাব পাৰে</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে এটা নতুন প্ৰ’ফাইল সৃষ্টি কৰক</translation>
 <translation id="6340071272923955280">ইণ্টাৰনেট প্ৰিণ্টিং প্ৰ’ট’কল (IPPS)</translation>
@@ -5620,6 +5639,7 @@
 <translation id="6374077068638737855">আইচৱিজল</translation>
 <translation id="6374469231428023295">আকৌ চেষ্টা কৰক</translation>
 <translation id="6374635887697228982">ৰেহাই পাব বিচাৰেনে?</translation>
+<translation id="637642201764944055">২০২২ চনৰ ডিচেম্বৰৰ পাছত Linux ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। এটা নতুন সংস্কৰণলৈ আপডে’ট কৰিবলৈ অথবা এই এপ্‌টো আঁতৰাবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="6377268785556383139">’<ph name="SEARCH_TEXT" />’ৰ বাবে পোৱা ১টা ফলাফল</translation>
 <translation id="6378392501584240055">ৱাই-ফাই নেটৱৰ্কত খোলক</translation>
 <translation id="6380143666419481200">গ্ৰহণ কৰি অব্যাহত ৰাখক</translation>
@@ -6099,6 +6119,7 @@
 <translation id="6826872289184051766">USBৰ মাধ্যমেৰে সত্যাপন কৰক</translation>
 <translation id="6827121912381363404">আটাইবোৰ এক্সটেনশ্বনক <ph name="PERMITTED_SITE" /> পঢ়িবলৈ আৰু সলনি কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="6827517233063803343">আপোনাৰ এপ্‌ আৰু ছেটিং আপুনি আপোনাৰ Google একাউণ্টেৰে ছাইন ইন কৰি থোৱা আটাইবোৰ ChromeOS ডিভাইচত ছিংক হ’ব। ব্ৰাউজাৰ ছিংক কৰাৰ বিকল্পসমূহৰ বাবে <ph name="LINK_BEGIN" />Chromeৰ ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
+<translation id="6827767090350758381">২০২২ চনৰ ডিচেম্বৰৰ পাছত Windows ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। এটা নতুন সংস্কৰণলৈ আপডে’ট কৰিবলৈ অথবা এই এপ্‌টো আঁতৰাবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="6828153365543658583">নিম্নোক্ত ব্যৱহাৰকাৰীসকলক ছাইন ইন কৰিব নিদিব:</translation>
 <translation id="6828182567531805778">আপোনাৰ ডেটা ছিংক কৰিবলৈ আপোনাৰ পাছফ্ৰেজ দিয়ক</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -6184,6 +6205,7 @@
 <translation id="6903907808598579934">ছিংক অন কৰক</translation>
 <translation id="6904344821472985372">ফাইলৰ এক্সেছ প্ৰত্যাহাৰ কৰক</translation>
 <translation id="6904655473976120856">প্ৰস্থান কৰিবলৈ এপ্ বুটামটো টিপক</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত ৰাখিবলৈ, ১ মিনিট নিষ্ক্ৰিয় হৈ থকাৰ পাছত Google Password Manager লক হৈ যায়}one{আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত ৰাখিবলৈ, {NUM_MINS} মিনিট নিষ্ক্ৰিয় হৈ থকাৰ পাছত Google Password Manager লক হৈ যায়}other{আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত ৰাখিবলৈ, {NUM_MINS} মিনিট নিষ্ক্ৰিয় হৈ থকাৰ পাছত Google Password Manager লক হৈ যায়}}</translation>
 <translation id="6909422577741440844">এই ডিভাইচটোৰ পৰা লাভ কৰিবনে?</translation>
 <translation id="6910211073230771657">মচা হ’ল</translation>
 <translation id="691106080621596509">এই কাৰ্যই <ph name="SITE_GROUP_NAME" />, ইয়াৰ অধীনত থকা যিকোনো ছাইট আৰু এইটোৰ ইনষ্টল হৈ থকা এপে ষ্ট’ৰ কৰা সকলো ডেটা আৰু কুকি মচিব</translation>
@@ -6368,6 +6390,7 @@
 <translation id="7069811530847688087"><ph name="WEBSITE" />ৰ বাবে এটা নতুন বা বেলেগ ধৰণৰ সুৰক্ষা সম্পৰ্কীয় চাবিৰ আৱশ্যক হ'ব পাৰে</translation>
 <translation id="7070484045139057854">ই ছাইট ডেটা পঢ়িব আৰু সলনি কৰিব পাৰে</translation>
 <translation id="7072010813301522126">শ্বৰ্টকাটৰ নাম</translation>
+<translation id="7074066049407662839">পাছৱৰ্ডসমূহ ছেভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="7075513071073410194">RSA এনক্রিপশ্বনৰ সৈতে PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL প্ৰমাণপত্ৰ আৰু ছেটিংসমূহ পৰিচালনা কৰক</translation>
 <translation id="7076875098323397992">আপগ্ৰে’ড আৰম্ভ কৰিব নোৱাৰি</translation>
@@ -6899,6 +6922,7 @@
 <translation id="7625568159987162309">ছাইটসমূহত সঞ্চিত হৈ থকা অনুমতি আৰূ ডেটা চাওক</translation>
 <translation id="7625823789272218216">বাওঁফালৰ নতুন টেব</translation>
 <translation id="7628201176665550262">ৰিফ্ৰেশ্বৰ হাৰ</translation>
+<translation id="7628392600831846024">চিহ্নৰ শৈলী</translation>
 <translation id="7629827748548208700">টেব: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">এই ডিভাইচটো <ph name="MANAGER" />এ পৰিচালনা কৰে আৰু আপুনি প্ৰতিবাৰতে ছাইন ইন কৰাৰ প্ৰয়োজন হয়।</translation>
 <translation id="7631014249255418691">Linux এপ্‌ আৰু ফাইলসমূহ সফলভাৱে বেক আপ কৰা হ'ল</translation>
@@ -7142,6 +7166,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিওৱা হ'ল}one{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিওৱা হ'ল}other{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিওৱা হ'ল}}</translation>
 <translation id="7839051173341654115">মিডিয়া চাওক/বেক আপ কৰক</translation>
 <translation id="7839192898639727867">প্ৰমাণপত্ৰৰ বিষয়ৰ চাবিৰ আইডি</translation>
+<translation id="7842062217214609161">কোনো শ্বৰ্টকাট নাই</translation>
 <translation id="7842692330619197998">আপুনি যদি এটা নতুন একাউণ্ট সৃষ্টি কৰাৰ প্ৰয়োজন হৈছে g.co/ChromeEnterpriseAccountলৈ যাওক।</translation>
 <translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" />ৰ জৰিয়তে পৃষ্ঠাখনৰ কোনো অংশ সন্ধান কৰক</translation>
 <translation id="784273751836026224">Linux আনইনষ্টল কৰক</translation>
@@ -7183,6 +7208,7 @@
 <translation id="7874257161694977650">Chromeৰ নেপথ্য</translation>
 <translation id="7876027585589532670">শ্বৰ্টকাট সম্পাদনা কৰিব নোৱাৰি</translation>
 <translation id="7877451762676714207">ছার্ভাৰৰ অজ্ঞাত আসোঁৱাহ। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক বা ছার্ভাৰৰ প্ৰশাসকৰ সৈতে সম্পর্ক কৰক।</translation>
+<translation id="7879478708475862060">ইনপুট ম’ড অনুসৰণ কৰক</translation>
 <translation id="7879631849810108578">শ্বৰ্টকাট ছেট কৰা হৈছে: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">অন হৈ থকা অৱস্থাত আৰু স্থিতিটো সক্ৰিয় হৈ থাকিলে, Chromeএ আপুনি থকা কোনো গোট অথবা “একেধৰণৰ বৈশিষ্ট্য শ্বেয়াৰ কৰা গোট” নিৰ্ধাৰণ কৰিবলৈ আপোনাৰ ৭ দিনৰ ব্ৰাউজিঙৰ ইতিহাস ব্যৱহাৰ কৰে। বিজ্ঞাপনদাতাই গোটটোৰ বাবে বিজ্ঞাপন বাছনি কৰিব পাৰে। এই ডিভাইচটোত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ব্যক্তিগত কৰি ৰখা হয়। এই ট্ৰায়েলটো কেৱল <ph name="BEGIN_LINK" />কিছুমান অঞ্চল<ph name="END_LINK" />ত সক্ৰিয়।</translation>
 <translation id="7880823633812189969">আপুনি ৰিষ্টার্ট কৰিলে স্থানীয় ডেটা মচা হ'ব</translation>
@@ -7950,6 +7976,7 @@
 <translation id="863109444997383731">ছাইটসমূহে আপোনাক জাননীসমূহ প্ৰদর্শন কৰিবলৈ সোধাটো অৱৰোধ কৰা হব। যদি কোনো ছাইটে জাননীসমূহৰ বাবে অনুৰোধ কৰে, তেন্তে ঠিকনা দণ্ডত এটা অৱৰোধ কৰাৰ সূচক প্ৰদর্শিত হ’ব।</translation>
 <translation id="8632104508818855045">আপুনি পূৰ্বে <ph name="ORIGIN" />ত কোনো এক্সটেনশ্বনক অনুমতি নিদিবলৈ সিদ্ধান্ত লৈছিল</translation>
 <translation id="8633025649649592204">শেহতীয়া কাৰ্যকলাপ</translation>
+<translation id="8633979878370972178">২০২২ চনৰ ডিচেম্বৰৰ পাছত Linux ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। নতুন সংস্কৰণ উপলব্ধ আছে নে নাই সেয়া আপুনি চাব পাৰে।</translation>
 <translation id="8634348081024879304">আপুনি আপোনাৰ ভাৰ্ছুৱেল কাৰ্ডখন Google Payৰ জৰিয়তে আৰু ব্যৱহাৰ কৰিব নোৱাৰিব। <ph name="BEGIN_LINK" />ভাৰ্ছুৱেল কাৰ্ডৰ বিষয়ে জানক<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">পুনৰ ল’ড কৰি থকা হৈছে...</translation>
 <translation id="8636284842992792762">এক্সটেনশ্বনসমূহ আৰম্ভ কৰি থকা হৈছে...</translation>
@@ -8021,6 +8048,7 @@
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="8690129572193755009">ছাইটে প্ৰট’কল পৰিচালনা কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="8692107307702113268">পাছৱৰ্ডটোত ১০০০ টাতকৈ অধিক বৰ্ণ আছে</translation>
+<translation id="8694596275649352090">সুপ্ত ম’ডত অথবা লিডখন বন্ধ কৰা থাকিলে লক কৰক</translation>
 <translation id="8695139659682234808">ছেটআপ কৰাৰ পাছত অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ যোগ দিয়ক</translation>
 <translation id="8695825812785969222">&amp;অৱস্থান খোলক...</translation>
 <translation id="8698269656364382265">পূৰ্বৱৰ্তী স্ক্রীনখনলৈ উভতি যাবলৈ বাওঁফালৰ পৰা ছোৱাইপ কৰক।</translation>
@@ -8069,6 +8097,7 @@
 <translation id="8732844209475700754">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহৰ সৈতে জড়িত অধিক ছেটিং</translation>
 <translation id="8734073480934656039">এই ছেটিং সক্ষম কৰিলে কিঅ’স্ক এপ্লিকেশ্বনসমূহক আৰম্ভণিতে স্বয়ংক্ৰিয়াভাৱে খোল খাবলৈ দিয়ে।</translation>
 <translation id="8734674662128056360">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা আছে</translation>
+<translation id="8734755021067981851">কোনো ইউএছবি ডিভাইচ সংলগ্ন কৰি থোৱা নাই।</translation>
 <translation id="873545264931343897"><ph name="PLUGIN_NAME" />ৰ আপডে'ট সম্পূৰ্ণ হ'লে সেয়া সক্রিয় কৰিবলৈ পৃষ্ঠাটো পুনৰ ল'ড কৰক</translation>
 <translation id="8736288397686080465">নেপথ্যত ছাইটটোক আপডে’ট কৰা হ’ল।</translation>
 <translation id="8737709691285775803">শ্বিল</translation>
@@ -8077,6 +8106,7 @@
 <translation id="8740672167979365981">ChromeOS Flex আপডে’ট কৰাৰ আৱশ্যক</translation>
 <translation id="8741944563400125534">এক্সেছ সলনি কৰাৰ সুবিধাটো ছেট আপ কৰাৰ নিৰ্দেশনাৱলী</translation>
 <translation id="8742998548129056176">এইয়া হৈছে আপোনাৰ ডিভাইচটো আৰু আপুনি এইটো কেনেদৰে ব্যৱহাৰ কৰে সেই বিষয়ে কিছুমান সাধাৰণ তথ্য (যেনে, বেটাৰীৰ স্তৰ, ছিষ্টেম আৰু এপৰ কাৰ্যকলাপ আৰু আসোঁৱাহসমূহ)। এই ডেটাসমূহ Androidক উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ'ব, লগতে কিছুমান একত্ৰিত ডেটাই Google এপ্‌সমূহ আৰু অংশীদাৰসকল, যেনে Android বিকাশকৰ্তাসকলক তেওঁলোকৰ এপ্ আৰু অইন প্ৰডাক্টসমূহ অধিক উন্নত কৰাত সহায় কৰিব।</translation>
+<translation id="8744641000906923997">Romaji</translation>
 <translation id="8746654918629346731">আপুনি ইতিমধ্যে "<ph name="EXTENSION_NAME" />"ৰ বাবে অনুৰোধ কৰিছে</translation>
 <translation id="874689135111202667">{0,plural, =1{এই ছাইটটোত এটা ফাইল ল’ড কৰিবনে?}one{এই ছাইটটোত #টা ফাইল ল’ড কৰিবনে?}other{এই ছাইটটোত #টা ফাইল ল’ড কৰিবনে?}}</translation>
 <translation id="8749805710397399240">আপোনাৰ স্ক্ৰীনখন কাষ্ট কৰিব পৰা নগ’ল। ছিষ্টেমৰ অগ্ৰাধিকাৰসমূহত স্ক্ৰীন ৰেকৰ্ড কৰাৰ অনুমতিটো পৰীক্ষা কৰক।</translation>
@@ -8102,6 +8132,7 @@
 <translation id="8761945298804995673">এই ব্যৱহাৰকাৰীজন ইতিমধ্যে উপলব্ধ</translation>
 <translation id="8762886931014513155">আপোনাৰ <ph name="DEVICE_TYPE" />ক আপডে'ট কৰাৰ আৱশ্যক হৈছে।</translation>
 <translation id="8763927697961133303">ইউএছবি ডিভাইচ</translation>
+<translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">সকলো ব্যৱহাৰকাৰীৰ বাবে Chrome স্বয়ংক্ৰিয়ভাৱে আপডে'ট কৰক</translation>
 <translation id="8769901904650373714">Steam ছেটআপ কৰোঁতে কিবা সমস্যা হৈছে</translation>
 <translation id="8770406935328356739">এক্সটেনশ্বন ৰুট ডাইৰেক্টৰী</translation>
@@ -8192,6 +8223,7 @@
 <translation id="8850251000316748990">অধিক চাওক...</translation>
 <translation id="885246833287407341">API ফাংশ্বনৰ যুক্তিসমূহ</translation>
 <translation id="8853586775156634952">এই কাৰ্ডখন কেৱল এই ডিভাইচটোতহে ছেভ কৰা হ'ব</translation>
+<translation id="8854745870658584490">বাছনিৰ শ্বৰ্টকাট</translation>
 <translation id="8855977033756560989">এই Chromebook Enterprise ডিভাইচটো Chrome Enterpriseৰ আপগ্রে’ডৰ সৈতে আহে। এণ্টাৰপ্ৰাইজৰ ক্ষমতাসমূহৰ সুবিধা গ্ৰহণ কৰিবলৈ এই ডিভাইচটো Google প্ৰশাসকৰ এটা একাউণ্টৰ সৈতে পঞ্জীয়ন কৰক।</translation>
 <translation id="8856028055086294840">এপ্‌ আৰু পৃষ্ঠা পুনঃস্থাপন কৰক</translation>
 <translation id="885701979325669005">ষ্ট’ৰেজ</translation>

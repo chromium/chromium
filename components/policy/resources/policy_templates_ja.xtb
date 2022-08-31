@@ -807,11 +807,6 @@
 <translation id="1861206724856734193">データ漏洩防止ルールのリストを設定します。</translation>
 <translation id="1862267110714201519">ゴースト ウィンドウ機能を無効にする</translation>
 <translation id="1865417998205858223">キーの権限</translation>
-<translation id="1867025364110179456">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするウェブアプリのリストを指定します。ユーザーはこれらのウェブアプリをアンインストールすることもオフにすることもできません。
-
-      このポリシーで指定するリストの個々の項目は、必須の <ph name="URL_LABEL" />（インストールするウェブアプリの URL）と、5 つの省略可能な <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />（ウェブアプリを開く方法、デフォルトは新しいタブ）、<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />（<ph name="LINUX_OS_NAME" /> と <ph name="MS_WIN_NAME" /> のデスクトップ ショートカットを作成する場合は True）、<ph name="FALLBACK_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 90 以降では、プログレッシブ ウェブアプリ（PWA）以外のアプリ名をオーバーライドできます。また、PWA であってもインストールの完了に認証が必要な場合は、一時的にインストールされたアプリ名をオーバーライドできます。<ph name="CUSTOM_NAME_LABEL" /> と <ph name="FALLBACK_APP_NAME_LABEL" /> の両方が設定されている場合、後者は無視されます）、<ph name="OVERRIDE_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 99 以降では、すべてのウェブアプリと PWA のアプリ名を完全にオーバーライドできます。現在 <ph name="PRODUCT_OS_NAME" /> でのみサポートされています）、<ph name="CUSTOM_ICON_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン　99 以降では、インストールされたアプリのアプリアイコンをオーバーライドできます。アイコンは正方形でサイズを 1 MB 以内とし、jpeg、png、gif、webp、ico のいずれかの形式にする必要があります。ハッシュ値は SHA256 ハッシュのアイコン ファイルとします。現在 <ph name="PRODUCT_OS_NAME" /> でのみサポートされています）で構成されるオブジェクトとなります。
-
-      <ph name="PRODUCT_OS_NAME" /> のシェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> をご使用ください。</translation>
 <translation id="186719019195685253">AC 電源での実行時、アイドル時間に到達したときに行う操作</translation>
 <translation id="1869688072690234823">このポリシー設定では、使用を許可する WebAuthn 要素を管理します。
 

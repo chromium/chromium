@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742511345840685325">Stolüstü tennis</translation>
 <translation id="2742870351467570537">Seçilmiş elementləri silin</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> tətbiqində parolunuzu daxil edin</translation>
 <translation id="2764001903315068341">Komiks</translation>
 <translation id="2765217105034171413">Kiçik</translation>
 <translation id="277133753123645258">Göndərmə üsulu</translation>
@@ -1427,7 +1428,6 @@
 <translation id="4798269756263412078">Hər hansı bir saytda qiymət enərsə, bildiriş alın Xəbərdarlıqlar e-poçtunuza göndəriləcək.</translation>
 <translation id="4800132727771399293">Bitmə tarixi və CVC nömrəsini yoxlayın və yenidən cəhd edin</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Toxunuş ID-sindən istifadə edin</translation>
 <translation id="4809079943450490359">Cihaz adminindən təlimatlar:</translation>
 <translation id="4811450222531576619">Onun mənbəyi və mövzusu haqqında məlumat əldə edin</translation>
 <translation id="4812751092864334025">Daşına bilən texnologiya</translation>
@@ -1798,7 +1798,6 @@
 <translation id="5765072501007116331">Çatdırılma üsulları və tələblərinə baxın, ünvan seçin</translation>
 <translation id="57689295674415555">Virtual kart nömrəsi daxil edilməyib?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
-<translation id="5778389256418062749">Fərqli Cihazda Şifrə İstifadə edin</translation>
 <translation id="5781136890105823427">Sınaq aktiv edildi</translation>
 <translation id="578305955206182703">Kəhrəba</translation>
 <translation id="57838592816432529">Səssiz</translation>
@@ -2566,7 +2565,6 @@
 <translation id="7880146494886811634">Ünvanın Yadda Saxlanması</translation>
 <translation id="7882421473871500483">Qəhvəyi</translation>
 <translation id="7882995332186050355">Karqo maşınları və treyleri</translation>
-<translation id="788679692472636252">Parolları və Şifrələri idarə edin…</translation>
 <translation id="7887683347370398519">CVC kodunuzu yoxlayın və yenidən cəhd edin</translation>
 <translation id="7887885240995164102">Şəkildə şəkil xüsusiyyətinə daxil olun</translation>
 <translation id="7888575728750733395">Çapın göstərilmə məqsədi</translation>
@@ -2961,6 +2959,7 @@
 <translation id="9039213469156557790">Bundan əlavə, bu səhifəyə təhlükəsiz olmayan başqa resurslar daxildir. Bu resurslar keçid zamanı başqaları tərəfindən görüntülən bilər və hücumçu tərəfindən səhifə rejiminin dəyişdirilməsi üçün modifikasiya edilə bilər.</translation>
 <translation id="9040464167025094690">"Cihazımı Tap" düyməsi, Enter düyməsinə basaraq Google Hesabında cihazınızı tapma bölməsinə keçin</translation>
 <translation id="9042617223719777575">Geniş Tutum</translation>
+<translation id="9044359186343685026">Toxunuş ID-dən istifadə edin</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeninə giriş cəhdi etdiniz, amma server yanlış sertifikat təqdim etdi.</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>

@@ -689,6 +689,7 @@
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2742511345840685325">टेबल टेनिस</translation>
 <translation id="2742870351467570537">चयनित आइटम निकालें</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> पर अपना पासवर्ड भरने की अनुमति दें</translation>
 <translation id="2764001903315068341">कॉमिक</translation>
 <translation id="2765217105034171413">छोटा</translation>
 <translation id="277133753123645258">शिपिंग का तरीका</translation>
@@ -1419,7 +1420,6 @@
 <translation id="4798078619018708837">अपने कार्ड का ब्यौरा अपडेट करने के लिए <ph name="CREDIT_CARD" /> की खत्म होने की तारीख और कार्ड वेरीफ़िकेशन कोड (सीवीसी) डालें. आपके पुष्टि करने के बाद, आपके Google खाते के कार्ड का ब्यौरा इस साइट के साथ शेयर किया जाएगा.</translation>
 <translation id="4800132727771399293">अपने क्रेडिट कार्ड की समय सीमा खत्म होने की तारीख और कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचें और फिर से कोशिश करें</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Use Touch ID</translation>
 <translation id="4809079943450490359">आपके डिवाइस के एडमिन से मिले निर्देश:</translation>
 <translation id="4811450222531576619">इस पेज के स्रोत और विषय के बारे में जानें</translation>
 <translation id="4812751092864334025">पहने जाने वाले डिवाइस</translation>
@@ -1788,7 +1788,6 @@
 <translation id="5765072501007116331">वितरण के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>
 <translation id="57689295674415555">वर्चुअल कार्ड नंबर नहीं भरा गया?</translation>
 <translation id="5776313857861697733">प्राथमिकता</translation>
-<translation id="5778389256418062749">Use A Passkey On A Different Device</translation>
 <translation id="5781136890105823427">परफ़ॉर्मेंस जांचना चालू है</translation>
 <translation id="578305955206182703">ऐंबर</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
@@ -2550,7 +2549,6 @@
 <translation id="7880146494886811634">पता सेव करें</translation>
 <translation id="7882421473871500483">भूरा</translation>
 <translation id="7882995332186050355">कार्गो ट्रक और ट्रेलर</translation>
-<translation id="788679692472636252">Manage Passwords And Passkeys…</translation>
 <translation id="7887683347370398519">अपना कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचे और फिर से कोशिश करें</translation>
 <translation id="7887885240995164102">पिक्चर में पिक्चर चालू करें</translation>
 <translation id="7888575728750733395">प्रिंट रेंडरिंग इंटेंट</translation>
@@ -2946,6 +2944,7 @@
 <translation id="9039213469156557790">इसके अतिरिक्त, इस पेज में ऐसे अन्य संसाधन भी शामिल हैं, जो सुरक्षित नहीं हैं. ट्रांज़िट में होने के दौरान ये संसाधन अन्य लोगों द्वारा देखे जा सकते हैं और पेज का व्यवहार बदलने के लिए किसी हमवलावर द्वारा इनमें बदलाव किए जा सकते हैं.</translation>
 <translation id="9040464167025094690">डिवाइस को ढूंढने वाला बटन, Google खाते में अपने डिवाइस को ढूंढने वाली सुविधा पर जाने के लिए, Enter दबाएं</translation>
 <translation id="9042617223719777575">ज़्यादा क्षमता</translation>
+<translation id="9044359186343685026">टच आईडी का इस्तेमाल करें</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">आपने <ph name="DOMAIN" /> पर पहुंचने की कोशिश की लेकिन सर्वर ने एक अमान्‍य प्रमाणपत्र पेश किया.</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>

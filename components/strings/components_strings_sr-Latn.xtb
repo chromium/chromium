@@ -1432,7 +1432,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4798269756263412078">Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu. Obaveštenja će vam biti poslata na imejl.</translation>
 <translation id="4800132727771399293">Proverite datum isteka i CVC i pokušajte ponovo</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Koristi TouchID</translation>
 <translation id="4809079943450490359">Uputstva administratora uređaja:</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
 <translation id="4812751092864334025">Nosiva tehnologija</translation>
@@ -1803,7 +1802,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5765072501007116331">Da biste videli načine i zahteve za isporuku, izaberite adresu</translation>
 <translation id="57689295674415555">Broj virtuelne kartice nije unet?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
-<translation id="5778389256418062749">Koristite pristupni kôd na drugom uređaju</translation>
 <translation id="5781136890105823427">Eksperiment je omogućen</translation>
 <translation id="578305955206182703">Oker</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
@@ -2570,7 +2568,6 @@ Dodatni detalji:
 <translation id="7880146494886811634">Sačuvajte adresu</translation>
 <translation id="7882421473871500483">Braon</translation>
 <translation id="7882995332186050355">Teretni kamioni i prikolice</translation>
-<translation id="788679692472636252">Upravljajte lozinkama i pristupnim kodovima…</translation>
 <translation id="7887683347370398519">Proverite CVC i pokušajte ponovo</translation>
 <translation id="7887885240995164102">Pokreni režim slike u slici</translation>
 <translation id="7888575728750733395">Namera renderovanja štampanja</translation>
@@ -2966,6 +2963,7 @@ Dodatni detalji:
 <translation id="9039213469156557790">Pored toga, ova stranica sadrži i druge resurse koji nisu bezbedni. Ove resurse mogu da vide i drugi dok su u prolazu i napadač može da ih izmeni kako bi promenio ponašanje stranice.</translation>
 <translation id="9040464167025094690">Dugme Pronađi moj uređaj, pritisnite Enter da biste posetili opciju za traženje uređaja na Google nalogu</translation>
 <translation id="9042617223719777575">Veliki kapacitet</translation>
+<translation id="9044359186343685026">Koristi Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Pokušali ste da dođete do domena <ph name="DOMAIN" />, ali server je poslao nevažeći sertifikat.</translation>
 <translation id="9050666287014529139">Pristupna fraza</translation>

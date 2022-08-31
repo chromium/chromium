@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">හරි</translation>
 <translation id="2742511345840685325">මේස පන්දු</translation>
 <translation id="2742870351467570537">තේරූ අයිතම ඉවත් කරන්න</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> මත ඔබේ මුරපදය පුරවන්න</translation>
 <translation id="2764001903315068341">විකට</translation>
 <translation id="2765217105034171413">කුඩා</translation>
 <translation id="277133753123645258">නැව්ගත කිරීමේ ක්‍රමය</translation>
@@ -1431,7 +1432,6 @@
 <translation id="4798269756263412078">ඕනෑම අඩවියක මිල අඩු වුවහොත් ඇඟවීම් ලබා ගන්න. ඇඟවීම් ඔබේ ඉ-තැපෑලට යවනු ලැබේ.</translation>
 <translation id="4800132727771399293">ඔබේ කල් ඉකුත් වූ දිනය සහ CVC, පරික්ෂා කර යළි උත්සාහ කරන්න</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">TouchID භාවිතා කරන්න</translation>
 <translation id="4809079943450490359">ඔබේ උපාංග පරිපාලකයාගෙන් ලැබෙන උපදෙස්:</translation>
 <translation id="4811450222531576619">එහි මූලාශ්‍රය සහ මාතෘකාව පිළිබඳව දැන ගන්න</translation>
 <translation id="4812751092864334025">පළඳිය හැකි තාක්ෂණය</translation>
@@ -1802,7 +1802,6 @@
 <translation id="5765072501007116331">බෙදා හැරීමේ ක්‍රම සහ අවශ්‍යතා බැලීමට, ලිපිනයක් තෝරන්න</translation>
 <translation id="57689295674415555">අථත්‍ය කාඩ්පත් අංකය පුරවා නැතිද?</translation>
 <translation id="5776313857861697733">ප්‍රමුඛතාව</translation>
-<translation id="5778389256418062749">වෙනස් උපාංගයක මුරයතුරක් භාවිතා කරන්න</translation>
 <translation id="5781136890105823427">පරීක්‍ෂණය සබල කළා</translation>
 <translation id="578305955206182703">ඇම්බර්</translation>
 <translation id="57838592816432529">නිහඬ කරන්න</translation>
@@ -2570,7 +2569,6 @@
 <translation id="7880146494886811634">ලිපිනය සුරකින්න</translation>
 <translation id="7882421473871500483">දුඹුරු</translation>
 <translation id="7882995332186050355">කාගෝ ට්‍රක් සහ ට්‍රේලර</translation>
-<translation id="788679692472636252">මුරපද සහ මුරයතුරු කළමනාකරණය කරන්න…</translation>
 <translation id="7887683347370398519">ඔබේ CVC පරීක්ෂා කර නැවත උත්සාහ කරන්න</translation>
 <translation id="7887885240995164102">පින්තූරය-තුළ-පින්තූරයට ඇතුළු වන්න</translation>
 <translation id="7888575728750733395">මුද්‍රණ විදහීමේ යෙදීම</translation>
@@ -2965,6 +2963,7 @@
 <translation id="9039213469156557790">තවද, මෙම පිටුවේ ආරක්ෂිත නොවන වෙනත් සම්පත් ඇත. එම සම්පත් හුවමාරුව අතරතුර ‍අනෙක් අයටත් බැලිය හැකි අතර, පිටුවේ හැසිරීම වෙනස් වන අයුරින් වෙනස් කිරීමට වෙබ් ප්‍රහාරකයෙකුට හැකිය.</translation>
 <translation id="9040464167025094690">මගේ උපාංගය සොයන්න බොත්තම, Google ගිණුම තුළ ඔබගේ උපාංගය සොයා සොයන්න වෙත පිවිසීමට Enter ඔබන්න</translation>
 <translation id="9042617223719777575">Large Capacity</translation>
+<translation id="9044359186343685026">ස්පර්ශ හැඳුනුම භාවිත කරන්න</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">ඔබ <ph name="DOMAIN" /> වෙත පිවිසීමට උත්සාහ කර තිබේ, නමුත් සර්වරය ඉදිරිපත් කළේ වැරදි සහතිකයකි.</translation>
 <translation id="9050666287014529139">රහස්වැකිය</translation>

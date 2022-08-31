@@ -850,44 +850,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="1861206724856734193">Consente di configurare un elenco di regole per la prevenzione della fuga di dati.</translation>
 <translation id="1862267110714201519">Disattiva la funzionalità di finestre nascoste.</translation>
 <translation id="1865417998205858223">Autorizzazioni chiave</translation>
-<translation id="1867025364110179456">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
-
-      Ogni voce del criterio è un oggetto con un componente obbligatorio:
-      <ph name="URL_LABEL" /> (l'URL dell'app web da installare)
-
-      e 5 componenti facoltativi:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (indica la modalità di apertura dell'app web, che per impostazione predefinita è una nuova scheda).
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (Vero se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e
-       <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />,
-      consente di eseguire l'override del nome dell'app se non si tratta di
-      un'app web progressiva [PWA] o il nome dell'app installata temporaneamente
-      se si tratta di una PWA, ma è necessaria l'autenticazione per poter
-      completare l'installazione. Se vengono
-      impostati entrambi i valori <ph name="CUSTOM_NAME_LABEL" /> e
-      <ph name="FALLBACK_APP_NAME_LABEL" />, il secondo viene
-      ignorato).
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (a partire dalla versione 99 di <ph name="PRODUCT_NAME" />,
-      consente di eseguire definitivamente l'override del nome dell'app per tutte le app
-      web e le PWA. Al momento funzione supportata solo su
-      <ph name="PRODUCT_OS_NAME" />).
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (a partire dalla versione 99 di <ph name="PRODUCT_NAME" />,
-      consente di eseguire l'override dell'icona dell'app delle app installate. Le
-      icone devono essere quadrate, avere dimensioni massime pari a 1 MB ed essere in uno dei seguenti
-      formati: jpeg, png, gif, webp, ico. Il valore hash deve essere l'hash
-      SHA256 del file dell'icona. Al momento funzione supportata solo su
-      <ph name="PRODUCT_OS_NAME" />).
-
-      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per il blocco delle app nella barra di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="186719019195685253">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della corrente CA</translation>
 <translation id="1869688072690234823">Questo criterio consente di stabilire quali fattori WebAuthn è possibile usare.
 
@@ -2067,6 +2029,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente il puntatore grande è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
+<translation id="3027837632741099453">La modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria.</translation>
 <translation id="3028296787914825213">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> mettere a disposizione degli utenti.
 
       * Se viene selezionata l'opzione <ph name="PRINTERS_BLACKLIST" /> (valore 0), <ph name="BULK_PRINTERS_BLACKLIST" /> consente di limitare l'accesso alle stampanti specificate.
@@ -2110,6 +2073,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3063302084011279315">Disattiva Registra schermo</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>
 <translation id="3066446511111537292">Consenti agli utenti affiliati di questo dispositivo di utilizzare il processo sideload ADB</translation>
+<translation id="3067462824622454143">Consenti agli utenti di decidere se il dispositivo deve bloccarsi quando viene sospeso o il coperchio viene chiuso</translation>
 <translation id="3070119171976169951">Impedisci la visualizzazione di immagini di terze parti in un prompt di autenticazione</translation>
 <translation id="3072045631333522102">Salvaschermo da utilizzare nella schermata di accesso in modalità retail</translation>
 <translation id="3072788420987305247">Se il criterio viene impostato su Attivato o se non viene configurato, i controlli multimediali vengono visualizzati nella schermata di blocco se gli utenti bloccano il dispositivo durante la riproduzione dei contenuti.
@@ -2712,6 +2676,17 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
 <translation id="3727675072430693164">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware relative ai componenti SoC.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano le statistiche.</translation>
+<translation id="372853200788846114">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> richiede agli utenti una password per sbloccare il dispositivo quando questo viene sospeso o il coperchio viene chiuso.
+
+      I dispositivi si bloccano quando il coperchio viene chiuso, tranne se sono inseriti nel dock (utilizzando un monitor esterno).  In questo caso, il dispositivo non si blocca alla chiusura del coperchio, ma se il monitor esterno viene rimosso e il coperchio è ancora chiuso.
+
+      Fino a <ph name="PRODUCT_OS_NAME" /> M106, questo criterio bloccherà il dispositivo solo quando questo viene sospeso.  A partire da M106, questo criterio bloccherà il dispositivo quando questo viene sospeso o il coperchio viene chiuso.
+
+      Se questo criterio viene impostato su true e da <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> a <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />, il dispositivo si blocca quando il coperchio viene chiuso, ma viene sospeso soltanto se e quando questo viene appositamente configurato in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Se il criterio viene impostato su Disabled, agli utenti non viene richiesta la password per sbloccare il dispositivo.
+
+      Se non viene configurato, gli utenti possono scegliere se devono inserire una password o meno per sbloccare il dispositivo.</translation>
 <translation id="3729937245044939404">Questo criterio è stata deprecato in M70, utilizza invece <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> e <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Consente di attivare la funzionalità di compilazione automatica di <ph name="PRODUCT_NAME" /> e permette agli utenti di compilare automaticamente i moduli web utilizzando informazioni memorizzate in precedenza, come l'indirizzo o i dati della carta di credito.
@@ -2986,6 +2961,7 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
 
       Se il criterio è impostato su false, la compilazione automatica non fornisce mai suggerimenti, né compila i dati della carta di credito, né salva dati aggiuntivi della carta di credito che gli utenti potrebbero inviare durante la navigazione sul Web.</translation>
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
+<translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
 <translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="3997519162482760140">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione video su pagine di accesso SAML</translation>
 <translation id="4004523942550416237">Non mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
@@ -3312,6 +3288,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4347908978527632940">Se la norma viene impostata su true e l'utente è supervisionato, le altre app Android possono chiedere le restrizioni web dell'utente tramite un provider di contenuti.
 
           Se la norma è impostata su false o non è impostata, il provider di contenuti non restituisce informazioni.</translation>
+<translation id="435395045087992163">Non bloccare il dispositivo quando viene sospeso o il coperchio viene chiuso</translation>
 <translation id="4357587374229381015">Specifica il nome di un parametro URL che verrà utilizzato nella pagina di accesso dell'IdP SAML per compilare automaticamente il campo del nome utente.
 
       L'indirizzo email dell'utente associato al profilo <ph name="PRODUCT_OS_NAME" /> verrà utilizzato come valore per il parametro url. Pertanto, questa impostazione deve essere disattivata se si prevede che gli utenti utilizzeranno email diverse con l'IdP SAML.
@@ -3613,6 +3590,13 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       Se questo criterio non viene impostato o viene attivato, i controlli dell'intercettazione DNS vengono eseguiti. Se viene disattivato, i controlli non vengono eseguiti.</translation>
 <translation id="4700190441681139987">Non consentire a nessun sito di accedere ai sensori</translation>
+<translation id="4701899474784891858">Questo criterio attiva o disattiva l'impostazione della modalità Risparmio energetico. Questa impostazione fa sì che la frequenza fotogrammi venga limitata per ridurre il consumo energetico.
+      Se questo criterio non viene configurato, l'utente finale può controllare questa impostazione in chrome://settings/performance.
+      I diversi livelli sono:
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): la modalità Risparmio energetico viene disattivata.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): la modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria e il livello batteria è basso.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): la modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria.
+      </translation>
 <translation id="4703402283970867140">Attiva il modello di oscuramento smart per ritardare l'oscuramento dello schermo</translation>
 <translation id="4704958130749494760">Concedi automaticamente ai siti l'autorizzazione a connettersi a dispositivi seriali USB</translation>
 <translation id="471360812659157054">window.webkitStorageInfo non sarà disponibile.</translation>
@@ -5340,6 +5324,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6575944031719151455">La configurazione del criterio consente di specificare l'elenco di account locali del dispositivo da visualizzare nella schermata di accesso. Gli identificatori fanno distinzione tra i diversi account locali del dispositivo.
 
       Se il criterio non viene configurato o se l'elenco è vuoto, non vengono visualizzati account locali del dispositivo.</translation>
+<translation id="6580851705156412587">Blocca il dispositivo quando viene sospeso o il coperchio viene chiuso</translation>
 <translation id="6581048059229620221">Se questo criterio viene disattivato, non è possibile avviare o configurare l'host di assistenza da remoto per accettare le connessioni in arrivo.
 
           Questo criterio non influisce sugli scenari di accesso remoto.
@@ -6156,6 +6141,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, la previsione di rete viene attivata, ma gli utenti possono modificarlo.</translation>
 <translation id="7408815947231046196">Consenti il backup dei dati di <ph name="PRODUCT_NAME" /></translation>
+<translation id="740885188496462583">Attiva la modalità Risparmio energetico</translation>
 <translation id="7410074797376205571">Consenti a <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> di eseguire richieste API WebAuthn trasferite al proxy da un host remoto.</translation>
 <translation id="7412456346709338637">Attiva accesso ai dati per le periferiche Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Consenti le connessioni di accesso remoto a questo computer</translation>
@@ -6638,6 +6624,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7937766917976512374">Consenti o nega acquisizione video</translation>
 <translation id="7941528208359969119">Consenti l'esecuzione dei controlli <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">Non prevedere le azioni di rete su qualsiasi connessione di rete</translation>
+<translation id="7945445169067895719">Attiva il blocco quando il dispositivo viene sospeso o il coperchio viene chiuso</translation>
 <translation id="7946350455013548764">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso ai dispositivi HID. Se il criterio viene impostato su 2, viene negato l'accesso ai dispositivi HID.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.
@@ -6963,6 +6950,7 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 
           Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="8288199156259560552">Attiva il servizio di geolocalizzazione di Google per Android</translation>
+<translation id="8289824033213234651">La modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria e il livello batteria è basso.</translation>
 <translation id="8290875622178450531">Consente di attivare la funzione di accessibilità di dettatura.
 
           Se questo criterio viene attivato, la dettatura sarà sempre attiva.

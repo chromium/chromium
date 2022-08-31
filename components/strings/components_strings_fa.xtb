@@ -1432,7 +1432,6 @@
 <translation id="4798269756263412078">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید. هشدارها به ایمیلتان ارسال خواهد شد.</translation>
 <translation id="4800132727771399293">‏تاریخ انقضا و CVC را بررسی کرده و دوباره امتحان کنید</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">استفاده از شناسه لمسی</translation>
 <translation id="4809079943450490359">دستورالعمل‌ها از سرپرست دستگاهتان:</translation>
 <translation id="4811450222531576619">با منبع و موضوعش آشنا شوید</translation>
 <translation id="4812751092864334025">فناوری پوشیدنی</translation>
@@ -1803,7 +1802,6 @@
 <translation id="5765072501007116331">برای دیدن روش‌های تحویل و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
 <translation id="57689295674415555">شماره کارت مجازی تکمیل نشود؟</translation>
 <translation id="5776313857861697733">اولویت</translation>
-<translation id="5778389256418062749">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="5781136890105823427">آزمایش فعال شد</translation>
 <translation id="578305955206182703">کهربایی</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
@@ -2571,7 +2569,6 @@
 <translation id="7880146494886811634">ذخیره نشانی</translation>
 <translation id="7882421473871500483">قهوه‌ای</translation>
 <translation id="7882995332186050355">کامیون باری و تریلر</translation>
-<translation id="788679692472636252">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>
 <translation id="7887683347370398519">‏CVC را بررسی کرده و دوباره امتحان کنید</translation>
 <translation id="7887885240995164102">ورود به تصویر در تصویر</translation>
 <translation id="7888575728750733395">هدف پرداز چاپ</translation>
@@ -2966,6 +2963,7 @@
 <translation id="9039213469156557790">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر رفتار صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
 <translation id="9040464167025094690">‏دکمه «یافتن دستگاهم»؛ برای پیدا کردن دستگاهتان در «حساب Google»، کلید «ورود» را فشار دهید</translation>
 <translation id="9042617223719777575">ظرفیت بالا</translation>
+<translation id="9044359186343685026">استفاده از شناسه لمسی</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">شما سعی کردید به <ph name="DOMAIN" /> دسترسی داشته باشید، اما سرور یک گواهی نامعتبر را نشان داد.</translation>
 <translation id="9050666287014529139">گذرعبارت</translation>

@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">出了点问题。Linux 可能只能完成部分升级。请查看日志了解详情。日志已保存在“文件”&gt;“我的文件”&gt;“<ph name="LOG_FILE" />”中</translation>
 <translation id="1043818413152647937">要一并清除以下应用内的数据吗？</translation>
 <translation id="1043824690776631483">您需获得许可才能访问此网站，因为它可能含有不当内容。</translation>
+<translation id="104419033123549300">按键映射样式</translation>
 <translation id="104710386808485638">重启 Linux？</translation>
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
 <translation id="1048286738600630630">显示</translation>
@@ -767,6 +768,7 @@
 <translation id="1721312023322545264">您需要获得<ph name="NAME" />的许可，然后才能访问此网站</translation>
 <translation id="1722460139690167654">您的<ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
+<translation id="1724801751621173132">输入法</translation>
 <translation id="1725562816265788801">标签页滚动</translation>
 <translation id="1729533290416704613">它还能够控制您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。<ph name="END_PARAGRAPH1" /></translation>
@@ -1944,6 +1946,7 @@
 <translation id="2796740370559399562">继续允许设置 Cookie</translation>
 <translation id="2798347533012571708">保留更新</translation>
 <translation id="2799223571221894425">重新启动</translation>
+<translation id="2800309299477632167">自定义按键映射</translation>
 <translation id="2800760947029405028">上传图片</translation>
 <translation id="2801954693771979815">屏幕上的内容大小</translation>
 <translation id="2802557211515765772">没有任何受管理的打印机。</translation>
@@ -2005,6 +2008,7 @@
 <translation id="2849767214114481738">您的 PIN 码已添加完毕</translation>
 <translation id="2849936225196189499">关键</translation>
 <translation id="2850541429955027218">添加主题背景</translation>
+<translation id="2850672011315104382">标点样式</translation>
 <translation id="2851634818064021665">您需获得许可，才能访问此网站</translation>
 <translation id="2851728849045278002">出了点问题。点击即可了解更多详情。</translation>
 <translation id="2852385257476173980">当您浏览网页时，此处可能会列出您访问过的网站</translation>
@@ -2501,6 +2505,7 @@
 <translation id="3359256513598016054">证书政策约束</translation>
 <translation id="3360297538363969800">打印失败。请检查您的打印机，然后重试。</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}other{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}}</translation>
+<translation id="3361954577771524115">来自该应用</translation>
 <translation id="3363202073972776113">这份新个人资料将由贵组织管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">来自您的管理员：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">使用 Ctrl 键或 Alt 键</translation>
@@ -3025,6 +3030,7 @@
 <translation id="3848547754896969219">在无痕式窗口中打开(&amp;I)</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3851428669031642514">加载不安全的脚本</translation>
+<translation id="3852215160863921508">输入帮助</translation>
 <translation id="3854599674806204102">选择一个选项</translation>
 <translation id="3854967233147778866">询问是否翻译以其他语言显示的网站</translation>
 <translation id="3854976556788175030">出纸盘已满</translation>
@@ -3260,6 +3266,7 @@
 <translation id="4062561150282203854">同步您的 <ph name="DEVICE_TYPE" /> 应用、设置等内容</translation>
 <translation id="4065876735068446555">您正在使用的网络 (<ph name="NETWORK_ID" />) 可能需要您访问其登录页面。</translation>
 <translation id="4066207411788646768">请检查您的网络连接状况，以查看网络中可用的打印机</translation>
+<translation id="4066945815577305767">密码验证超时</translation>
 <translation id="4068776064906523561">已保存的指纹</translation>
 <translation id="407173827865827707">点击时</translation>
 <translation id="4072701974556190758">系统会将该密码保存在您的 Google 帐号 (<ph name="ACCOUNT" />) 中。您无需记住该密码。</translation>
@@ -3778,6 +3785,7 @@
 <translation id="4579453506923101210">移除已连接的手机</translation>
 <translation id="4579581181964204535">无法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">若要设置浏览器通知，请转到 <ph name="LINK_BEGIN" />Chrome 浏览器设置<ph name="LINK_END" /></translation>
+<translation id="4580587929153007251">请重新登录 Google 密码管理工具</translation>
 <translation id="4580596421317071374">系统会将密码保存到此设备上的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="4580626299762849806">无法导入密码。请检查 <ph name="FILENAME" /> 并确保其格式无误。</translation>
 <translation id="4581774856936278355">恢复 Linux 容器时出错</translation>
@@ -4459,6 +4467,7 @@
 <translation id="5268373933383932086">网页随心享</translation>
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5273806377963980154">修改网站网址</translation>
+<translation id="5275084684151588738">用户字典</translation>
 <translation id="5275338516105640560">“已保存的标签页分组”按钮</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605719918376753">将此标签页静音</translation>
@@ -4674,6 +4683,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
+<translation id="5481755802440890178">目前无法翻译所选内容</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5483785310822538350">撤消对文件和设备的访问权限</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您备份自己的数据并在 {NUM_DAYS} 天内退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}}</translation>
@@ -4904,6 +4914,7 @@
 <translation id="5696143504434933566">举报“<ph name="EXTENSION_NAME" />”的滥用行为</translation>
 <translation id="5696679855467848181">当前正在使用的 PPD 文件：<ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">表情符号选择器</translation>
+<translation id="5698462638680260399">登录后才能使用密码</translation>
 <translation id="570043786759263127">Google Play 应用和服务</translation>
 <translation id="5700836101007545240">“添加连接”功能已由您的管理员停用</translation>
 <translation id="5701080607174488915">从服务器获取政策时出错。</translation>
@@ -4921,6 +4932,7 @@
 <translation id="5712153969432126546">网站有时会发布 PDF 文件，例如文档、合同和表单</translation>
 <translation id="571222594670061844">网站可以显示来自身份服务的登录提示</translation>
 <translation id="5713158217420111469">已连接到“<ph name="DEVICE" />”</translation>
+<translation id="5713960379473463904">空格输入样式</translation>
 <translation id="5715711091495208045">插件代理程序：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">默认搜索引擎</translation>
 <translation id="5719854774000914513">网站可以请求连接到 HID 设备</translation>
@@ -5093,7 +5105,6 @@
 <translation id="5884474295213649357">此标签页已连接到 USB 设备。</translation>
 <translation id="5885314688092915589">贵组织将管理这份资料</translation>
 <translation id="5886009770935151472">手指 1</translation>
-<translation id="5888843733007437002">正在查看模板。按 Tab 键即可导航。</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -5560,7 +5571,7 @@
 <translation id="6333170995003625229">无法验证您的电子邮件地址或密码。请尝试重新登录。</translation>
 <translation id="6335920438823100346">根据 <ph name="MANAGER" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
-<translation id="6338402296920404442">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码。</translation>
+<translation id="6338968693068997776">添加 USB 设备</translation>
 <translation id="6338981933082930623">所有网站都可以向您显示任何广告</translation>
 <translation id="6339668969738228384">为 <ph name="USER_EMAIL_ADDRESS" /> 创建新的个人资料</translation>
 <translation id="6340071272923955280">互联网打印协议 (IPPS)</translation>
@@ -6158,6 +6169,7 @@
 <translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6904344821472985372">撤消文件访问权限</translation>
 <translation id="6904655473976120856">按“应用”按钮即可退出</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{为了确保您密码的安全，Google 密码管理工具会在闲置 1 分钟后锁定}other{为了确保您密码的安全，Google 密码管理工具会在闲置 {NUM_MINS} 分钟后锁定}}</translation>
 <translation id="6909422577741440844">接收此设备分享的内容？</translation>
 <translation id="6910211073230771657">已删除</translation>
 <translation id="691106080621596509">此操作会清除 <ph name="SITE_GROUP_NAME" />、其下属所有网站及其安装的应用存储的所有数据和 Cookie</translation>
@@ -6342,6 +6354,7 @@
 <translation id="7069811530847688087"><ph name="WEBSITE" /> 可能需要一个较新的或其他类型的安全密钥</translation>
 <translation id="7070484045139057854">可读取和更改网站数据</translation>
 <translation id="7072010813301522126">快捷方式名称</translation>
+<translation id="7074066049407662839">登录后才能保存密码</translation>
 <translation id="7075513071073410194">PKCS #1，带有 RSA 加密的 MD5</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 证书和设置</translation>
 <translation id="7076875098323397992">无法开始升级</translation>
@@ -6873,6 +6886,7 @@
 <translation id="7625568159987162309">查看各网站的权限及储存的数据</translation>
 <translation id="7625823789272218216">在左侧新增标签页</translation>
 <translation id="7628201176665550262">刷新频率</translation>
+<translation id="7628392600831846024">符号样式</translation>
 <translation id="7629827748548208700">标签页：<ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">此设备由 <ph name="MANAGER" /> 管理，要求您每次使用前必须先登录。</translation>
 <translation id="7631014249255418691">已成功备份 Linux 应用和文件</translation>
@@ -7998,6 +8012,7 @@
 <translation id="8688672835843460752">可用</translation>
 <translation id="8690129572193755009">网站可以请求处理协议</translation>
 <translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
+<translation id="8694596275649352090">在休眠或合盖时锁定</translation>
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>
 <translation id="8695825812785969222">打开位置(&amp;L)...</translation>
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
@@ -8046,6 +8061,7 @@
 <translation id="8732844209475700754">更多与隐私、安全和数据收集相关的设置</translation>
 <translation id="8734073480934656039">如果您启用了此设置，在浏览器启动时，自助服务终端应用会自动启动。</translation>
 <translation id="8734674662128056360">第三方 Cookie 屏蔽</translation>
+<translation id="8734755021067981851">未连接任何 USB 设备。</translation>
 <translation id="873545264931343897"><ph name="PLUGIN_NAME" /> 更新完毕后，重新加载页面即可启用该插件</translation>
 <translation id="8736288397686080465">此网站已在后台更新。</translation>
 <translation id="8737709691285775803">Shill</translation>
@@ -8170,6 +8186,7 @@
 <translation id="8850251000316748990">查看更多…</translation>
 <translation id="885246833287407341">API 函数参数</translation>
 <translation id="8853586775156634952">此信用卡信息将仅保存到此设备上</translation>
+<translation id="8854745870658584490">“选择”快捷方式</translation>
 <translation id="8855977033756560989">该 Chromebook 企业版设备捆绑了 Chrome 企业版升级许可。要充分利用企业版功能，请使用 Google 管理控制台帐号注册该设备。</translation>
 <translation id="8856028055086294840">恢复应用和网页</translation>
 <translation id="885701979325669005">存储数据</translation>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1068168522143272502">La liste des adresses et options de paiement à renseigner dans les flux de paiement est ouverte à mi-hauteur.</translation>
+<translation id="2501278716633472235">Retour</translation>
 <translation id="4401440167302712543">Laissez le remplissage automatique entrer les renseignements d'expédition et de paiement</translation>
 <translation id="567079066552447069">La liste des adresses et options de paiement à renseigner dans les flux de paiement est fermée.</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="8264703973415044493">La liste des adresses et options de paiement à renseigner dans les flux de paiement est ouverte à pleine hauteur.</translation>
 <translation id="8315600272591552085">Liste des adresses et options de paiement à renseigner dans les flux de paiement.</translation>
+<translation id="884264119367021077">Adresse d'expédition</translation>
 <translation id="8873105120914375071">Payer plus rapidement?</translation>
 <translation id="9032876013752408138">Utiliser le remplissage automatique</translation>
 </translationbundle>

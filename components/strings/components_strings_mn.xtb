@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">Энэ сайт аюултай апп агуулсан байна</translation>
 <translation id="1348779747280417563">Нэрийг баталгаажуулах</translation>
 <translation id="1354976809542763843">Орон сууцны санхүүжилт</translation>
+<translation id="1355158069018170842">Үнэ хямдарсан мэдээллийг таб дээр харуулах</translation>
 <translation id="1355301061807280185">Ажил</translation>
 <translation id="1355754231781595724">Тээврийн хэрэгсэл болон авто замын аюулгүй байдал</translation>
 <translation id="1357195169723583938">Энэ төхөөрөмжийг саяхан хэн, хэзээ ашигласан бэ?</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Google Play Services for AR-г суулгах уу?</translation>
 <translation id="2154054054215849342">Таны домайнд синк хийх боломжгүй байна</translation>
 <translation id="2154484045852737596">Картыг засах</translation>
+<translation id="2157640075051554492">Үнэ хяналтын мэдэгдэл</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162510787844374618">Таны банктай холбогдож байна…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
@@ -691,6 +693,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Ширээний теннис</translation>
 <translation id="2742870351467570537">Сонгосон зүйлсийг устга</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> дээр нууц үгээ оруулна уу</translation>
 <translation id="2764001903315068341">Комик</translation>
 <translation id="2765217105034171413">Жижиг</translation>
 <translation id="277133753123645258">Хүргэлтийн арга</translation>
@@ -1003,6 +1006,7 @@
 <translation id="3633738897356909127">Chrome-г шинэчлэх товч, Chrome-н тохиргооноосоо Chrome-г шинэчлэхийн тулд Enter дарна уу</translation>
 <translation id="3634530185120165534">Гарах цаасны тавиур 5</translation>
 <translation id="3634567936866541746">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Бүртгэлүүдээ хамгаалахын тулд Chrome хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
+<translation id="3637033245385760976">Chrome-н мэдэгдэл асаалттай байх ёстой. Та үүнийг <ph name="NOTIFICATION_SETTINGS" />-д асаах боломжтой</translation>
 <translation id="3637662659967048211">Google Бүртгэлд хадгалах</translation>
 <translation id="3640766068866876100">Индекс-4x6-Ext</translation>
 <translation id="3642638418806704195">Аппликэйшн:</translation>
@@ -1425,6 +1429,7 @@
 <translation id="4785376858512657294">Google Бүртгэлийг удирдах</translation>
 <translation id="4785689107224900852">Энэ таб руу сэлгэх</translation>
 <translation id="4786804728079074733">Гар бөмбөг</translation>
+<translation id="4789704664580239421">Үнэ хямдарсан талаарх сэрэмжлүүлгийг таны нээлттэй таб дээр харуулна</translation>
 <translation id="4791134497475588553">Linux-н апп суулгагдсан болон хэзээ хамгийн сүүлд түүнийг ашигласан</translation>
 <translation id="4792686369684665359">Таны илгээх гэж буй мэдээлэл аюултай байна</translation>
 <translation id="4796594887379589189">Ажилтай холбоотой бүртгэлийн ID</translation>
@@ -1432,7 +1437,6 @@
 <translation id="4798269756263412078">Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай. Сэрэмжлүүлгийг таны имэйл рүү илгээнэ.</translation>
 <translation id="4800132727771399293">Дуусах хугацаа болон CVC-гээ шалгаад дахин оролдож үзнэ үү</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Touch ID ашиглах</translation>
 <translation id="4809079943450490359">Таны төхөөрөмжийн администраторын зааварчилгаа:</translation>
 <translation id="4811450222531576619">Үүний эх сурвалж болон сэдвийн талаар мэдэж авах</translation>
 <translation id="4812751092864334025">Зүүсгэл технологи</translation>
@@ -1791,6 +1795,7 @@
 <translation id="5730040223043577876">Хэрэв та нууц үгээ бусад сайтад дахин ашигласан бол Chrome-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="5736165827969430182">Металл, уул уурхай</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Google Бүртгэлдээ карт хадгалах}other{Google Бүртгэлдээ карт хадгалах}}</translation>
+<translation id="5738385766833540397">Та хянаж буй бүтээгдэхүүнүүдийнхээ үнэ хямдарсан талаарх сэрэмжлүүлгийг хэрхэн хүлээн авахаа удирдана уу</translation>
 <translation id="5743638595296120378">Тээврийн хэрэгслийн худалдаа</translation>
 <translation id="5743898850056428078">Мотоциклын уралдаан</translation>
 <translation id="5745733273847572235">Таны байршлыг хүсэх боломжтой</translation>
@@ -1800,10 +1805,10 @@
 <translation id="5759751709240058861">Таны камерыг ашиглах, хөдөлгөх</translation>
 <translation id="5763042198335101085">Зөв имэйл хаяг оруулна уу</translation>
 <translation id="5764725887548570807">Эхийн формат буруу байна.</translation>
+<translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />-д илгээх</translation>
 <translation id="5765072501007116331">Хүргэлтийн арга болон шаардлагыг харахын тулд хаяг сонгоно уу</translation>
 <translation id="57689295674415555">Виртуал картын дугаарыг бөглөөгүй байна уу?</translation>
 <translation id="5776313857861697733">Ач холбогдол</translation>
-<translation id="5778389256418062749">Өөр төхөөрөмж дээр passkey ашиглах</translation>
 <translation id="5781136890105823427">Туршилтыг идэвхжүүлсэн</translation>
 <translation id="578305955206182703">Улбар шар</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
@@ -1891,6 +1896,7 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-н халдагчид ямар нэг дүр эсгэсэн эсвэл таныг хянахын тулд өгөгдөл цуглуулах зорилготой хуурамч апп суулгаж болзошгүй. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (синк хийсэн)</translation>
 <translation id="6027201098523975773">Нэр оруулна уу</translation>
+<translation id="6028591542479806248">Мобайл болон имэйл мэдэгдлийг удирдах</translation>
 <translation id="603068602130820122">Баруун ирмэг дагуу хоёр удаа үдэх</translation>
 <translation id="6032524144326295339">Шуудангийн хайрцаг 2</translation>
 <translation id="6032955021262906325">Зүүн ирмэг дагуу үдэж хавтаслах</translation>
@@ -2570,7 +2576,6 @@
 <translation id="7880146494886811634">Хаягийг хадгалах</translation>
 <translation id="7882421473871500483">Бор</translation>
 <translation id="7882995332186050355">Каргоны ачааны машин, чиргүүл</translation>
-<translation id="788679692472636252">Нууц үг болон passkey-г удирдах…</translation>
 <translation id="7887683347370398519">CVC-гээ шалгаад дахин оролдоно уу</translation>
 <translation id="7887885240995164102">Дэлгэц доторх дэлгэц горимд орох</translation>
 <translation id="7888575728750733395">Хэвлэхэд өнгө буулгах тодорхойлолт</translation>
@@ -2811,6 +2816,7 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> руу таны төхөөрөмжийн он сар өдөр, цаг <ph name="DATE_AND_TIME" /> ) буруу байгаа учраас хувийн холболт үүсгэж болохгүй байна.</translation>
 <translation id="8564182942834072828">Тусдаа документ/Зэрэгцүүлээгүй хувь</translation>
 <translation id="8564985650692024650">Хэрэв та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-н нууц үгийг бусад сайтад дахин ашигласан бол Chromium-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
+<translation id="8573969211731659953">Үнэ хямдарсан талаарх сэрэмжлүүлэг асаалттай байна. Та үүнийг <ph name="NOTIFICATION_SETTINGS" />-д өөрчлөх боломжтой</translation>
 <translation id="8576310925653847813">Гэрийн театрын систем</translation>
 <translation id="8577348305244205642">Виртуал карт боломжгүй байна</translation>
 <translation id="858637041960032120">Утасны дугаар нэмэх</translation>
@@ -2965,6 +2971,7 @@
 <translation id="9039213469156557790">Цаашилбал, энэ хуудас нь аюултай бусад үүсвэр агуулж байна. Ийм төрлийн үүсвэрийг дамжуулж байх явцад бусад хүмүүс харах, мөн халдагчийн хуудасны функцийг өөрчлөх хэрэгсэл болж болзошгүй.</translation>
 <translation id="9040464167025094690">Миний төхөөрөмжийг олох товчлуур, Google Бүртгэл дэх төхөөрөмжөө олоход зочлохын тулд Enter дээр дарна уу</translation>
 <translation id="9042617223719777575">Багтаамж ихтэй</translation>
+<translation id="9044359186343685026">Touch ID ашиглах</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Та <ph name="DOMAIN" /> рүү хүрэхийг оролдсон хэдий ч серверээс хүчингүй гэрчилгээ өгсөн байна.</translation>
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>

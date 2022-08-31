@@ -508,6 +508,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Byt till en tidigare version av enheten inom en minut}other{Byt till en tidigare version av enheten inom # minuter}}</translation>
 <translation id="3923494859158167397">Inga mobilnätverk har konfigurerats</translation>
 <translation id="3925540965556789199">Läser in händelser den <ph name="DATE" />.</translation>
+<translation id="392627956579011934">Omstart krävs för att installera ljudfiler.</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
 <translation id="3934456833412894880">Smart laddning har aktiverats. Batteriet laddas upp till 80 % så att det ska räcka längre. Det laddas helt när du behöver det.</translation>
 <translation id="3943857333388298514">Klistra in</translation>
@@ -562,6 +563,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4247123849143712100">Uppdatera och stäng av</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
+<translation id="4250899820387052060">Snabbfiler</translation>
 <translation id="425364040945105958">Inget SIM-kort</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>

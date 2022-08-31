@@ -345,7 +345,7 @@
 <translation id="4453205916657964690">Aliverkon maski</translation>
 <translation id="4454245904991689773">Skannauskohde</translation>
 <translation id="4479639480957787382">Ethernet</translation>
-<translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
+<translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
 <translation id="4511264077854731334">Portaali</translation>
 <translation id="4521826082652183069">Aiheen vaihtoehtoisen nimen vastaavuus</translation>
@@ -731,7 +731,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
 <translation id="8227119283605456246">Liitä tiedosto</translation>
-<translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
+<translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Yhdistä verkkoon ja päivitä sivu nähdäksesi taustakuvan.</translation>

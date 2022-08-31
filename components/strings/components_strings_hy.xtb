@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2742511345840685325">Սեղանի թենիս</translation>
 <translation id="2742870351467570537">Հեռացնել ընտրված կետերը</translation>
+<translation id="2759825833388495838">լրացրեք ձեր գաղտնաբառը <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="2764001903315068341">Կոմիքսներ</translation>
 <translation id="2765217105034171413">Փոքր</translation>
 <translation id="277133753123645258">Ուղարկման եղանակ</translation>
@@ -1431,7 +1432,6 @@
 <translation id="4798269756263412078">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի։ Ծանուցումները կուղարկվեն ձեր էլ․ հասցեին։</translation>
 <translation id="4800132727771399293">Ստուգեք սպառման ժամկետն ու CVC կոդը և նորից փորձեք</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Օգտագործել Touch ID</translation>
 <translation id="4809079943450490359">Հրահանգներ ձեր սարքի ադմինիստրատորի կողմից՝</translation>
 <translation id="4811450222531576619">Իմացեք ավելին աղբյուրի և թեմայի մասին</translation>
 <translation id="4812751092864334025">Կրելի սարքերի տեխնոլոգիաներ</translation>
@@ -1803,7 +1803,6 @@
 <translation id="5765072501007116331">Առաքման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
 <translation id="57689295674415555">Վիրտուալ քարտի համարը չի՞ լրացվել</translation>
 <translation id="5776313857861697733">Առաջնահերթություն</translation>
-<translation id="5778389256418062749">Օգտագործել անցաբառ մեկ այլ սարքում</translation>
 <translation id="5781136890105823427">Փորձարկումը միացված է</translation>
 <translation id="578305955206182703">Սաթ</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
@@ -2571,7 +2570,6 @@
 <translation id="7880146494886811634">Պահել հասցեն</translation>
 <translation id="7882421473871500483">Շագանակագույն</translation>
 <translation id="7882995332186050355">Բեռնատարներ և քարշակներ</translation>
-<translation id="788679692472636252">Կառավարել գաղտնաբառերն ու անցաբառերը…</translation>
 <translation id="7887683347370398519">Ստուգեք ձեր CVC կոդը և նորից փորձեք</translation>
 <translation id="7887885240995164102">Անցնել «նկար նկարի մեջ» ռեժիմի</translation>
 <translation id="7888575728750733395">Գույները վերահաշվելու եղանակ տպման համար</translation>
@@ -2966,6 +2964,7 @@
 <translation id="9039213469156557790">Բացի այդ, այս էջը պարունակում է այլ ռեսուրսներ, որոնք ապահով չեն: Այս ռեսուրսները տարանցման ժամանակ կարող են դիտվել ուրիշների կողմից և փոփոխվել հարձակվողի կողմից, ինչը կփոխի էջի վարքագիծը:</translation>
 <translation id="9040464167025094690">«Գտնել իմ սարքը» կոճակ։ Սեղմեք Enter՝ ձեր Google հաշվում «Գտնել իմ սարքը» բաժինը բացելու համար։</translation>
 <translation id="9042617223719777575">Մեծ տարողություն</translation>
+<translation id="9044359186343685026">Օգտագործել Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Դուք փորձում էիք մտնել <ph name="DOMAIN" />, սակայն սերվերը սխալ վկայագիր ներկայացրեց:</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>

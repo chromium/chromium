@@ -691,6 +691,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Stolný tenis</translation>
 <translation id="2742870351467570537">Odstrániť vybraté položky</translation>
+<translation id="2759825833388495838">vyplňte heslo v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komiksy</translation>
 <translation id="2765217105034171413">Malé</translation>
 <translation id="277133753123645258">Spôsob dodania</translation>
@@ -1427,7 +1428,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4798269756263412078">Dostávajte upozornenia, keď na ľubovoľnom webe poklesne cena. Upozornenia budú odosielané na váš e‑mail.</translation>
 <translation id="4800132727771399293">Skontrolujte dátum vypršania platnosti aj kód CVC a skúste to znova</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Použiť TouchID</translation>
 <translation id="4809079943450490359">Pokyny od správcu vášho zariadenia:</translation>
 <translation id="4811450222531576619">Ďalšie informácie o príslušnom zdroji a téme</translation>
 <translation id="4812751092864334025">Nositeľné zariadenia</translation>
@@ -1798,7 +1798,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5765072501007116331">Ak chcete zobraziť spôsoby a požiadavky doručenia, vyberte adresu</translation>
 <translation id="57689295674415555">Nebolo vyplnené číslo virtuálnej karty?</translation>
 <translation id="5776313857861697733">Priorita</translation>
-<translation id="5778389256418062749">Použiť prístupový kľúč v inom zariadení</translation>
 <translation id="5781136890105823427">Experiment je povolený</translation>
 <translation id="578305955206182703">Žltohnedá</translation>
 <translation id="57838592816432529">Vypnúť zvuk</translation>
@@ -2565,7 +2564,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7880146494886811634">Uloženie adresy</translation>
 <translation id="7882421473871500483">Hnedá</translation>
 <translation id="7882995332186050355">Nákladné vozidlá a ťahače</translation>
-<translation id="788679692472636252">Spravovať heslá a prístupové kľúče…</translation>
 <translation id="7887683347370398519">Skontrolujte svoj kód CVC a skúste to znova</translation>
 <translation id="7887885240995164102">Spustiť obraz v obraze</translation>
 <translation id="7888575728750733395">Vykresľovacia intencia tlače</translation>
@@ -2961,6 +2959,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9039213469156557790">Táto stránka obsahuje aj iné zdroje, ktoré nie sú zabezpečené. Tieto zdroje môžu pri prenose vidieť ostatní používatelia a útočník ich môže upraviť tak, aby zmenil správanie stránky.</translation>
 <translation id="9040464167025094690">Tlačidlo na vyhľadanie zariadenia, stlačením klávesa Enter prejdite do funkcie Nájdi moje zariadenie v účte Google</translation>
 <translation id="9042617223719777575">Veľká kapacita</translation>
+<translation id="9044359186343685026">Použiť Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Pokúšate sa otvoriť doménu <ph name="DOMAIN" />, ale server predložil neplatný certifikát.</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>

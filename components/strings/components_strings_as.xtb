@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2742511345840685325">টেবুল টেনিছ</translation>
 <translation id="2742870351467570537">বাছি লোৱা সামগ্ৰীবোৰ আঁতৰাওক</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" />ত আপোনাৰ পাছৱৰ্ডটো দিয়ক</translation>
 <translation id="2764001903315068341">কমিক</translation>
 <translation id="2765217105034171413">সৰু</translation>
 <translation id="277133753123645258">শ্বিপিঙৰ পদ্ধতি</translation>
@@ -1427,7 +1428,6 @@
 <translation id="4798269756263412078">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক। সতৰ্কবাৰ্তা আপোনাৰ ইমেইললৈ পঠিওৱা হ’ব।</translation>
 <translation id="4800132727771399293">আপোনাৰ ম্যাদ উকলা তাৰিখ আৰু CVC পৰীক্ষা কৰক আৰু আকৌ চেষ্টা কৰক</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
 <translation id="4809079943450490359">আপোনাৰ ডিভাইচ প্ৰশাসকৰ নিৰ্দেশাৱলী:</translation>
 <translation id="4811450222531576619">ইয়াৰ উৎস আৰু বিষয়বস্তুৰ সম্পৰ্কে অধিক জানক</translation>
 <translation id="4812751092864334025">পৰিধানযোগ্য প্ৰযুক্তিবিদ্যা</translation>
@@ -1798,7 +1798,6 @@
 <translation id="5765072501007116331">ডেলিভাৰীৰ পদ্ধতি আৰু আৱশ্যকতা সম্পর্কে চাবলৈ কোনো ঠিকনা বাছনি কৰক</translation>
 <translation id="57689295674415555">ভাৰ্চুৱেল কাৰ্ডৰ নম্বৰটো পূৰ কৰা নাই নেকি?</translation>
 <translation id="5776313857861697733">অগ্ৰাধিকাৰ</translation>
-<translation id="5778389256418062749">অন্য এটা ডিভাইচত এটা পাছকী ব্যৱহাৰ কৰক</translation>
 <translation id="5781136890105823427">পৰীক্ষণ সক্ষম কৰা হৈছে</translation>
 <translation id="578305955206182703">এম্বাৰ</translation>
 <translation id="57838592816432529">মিউট কৰক</translation>
@@ -2565,7 +2564,6 @@
 <translation id="7880146494886811634">ঠিকনা ছেভ কৰক</translation>
 <translation id="7882421473871500483">মাটীয়া</translation>
 <translation id="7882995332186050355">মালবস্তু কঢ়িওৱা ট্ৰাক আৰু ট্ৰেলাৰ</translation>
-<translation id="788679692472636252">পাছৱৰ্ড আৰু পাছকী পৰিচালনা কৰক…</translation>
 <translation id="7887683347370398519">আপোনাৰ CVC পৰীক্ষা কৰি আকৌ চেষ্টা কৰক</translation>
 <translation id="7887885240995164102">চিত্ৰৰ ভিতৰত চিত্ৰ আৰম্ভ কৰক</translation>
 <translation id="7888575728750733395">প্ৰিণ্ট ৰেণ্ডাৰ কৰা ইনটেণ্ট</translation>
@@ -2960,6 +2958,7 @@
 <translation id="9039213469156557790">তদুপৰি, এই পৃষ্ঠাত কিছুমান অসুৰক্ষিত সমল আছে। এই সমল পৰিবহণৰ সময়ত অন্য লোকসকলে চাব পাৰিব আৰু পৃষ্ঠাটোৰ কার্যকলাপ সলনি কৰিবলৈ কোনো আক্ৰমণকাৰীয়ে এই সমল সংশোধন কৰিব পাৰে।</translation>
 <translation id="9040464167025094690">মোৰ ডিভাইচ বিচাৰক বুটাম, Google একাউণ্টটোত আপোনাৰ ডিভাইচ বিচাৰকলৈ যাবলৈ এণ্টাৰ টিপক</translation>
 <translation id="9042617223719777575">সৰহীয়া বহনক্ষমতা</translation>
+<translation id="9044359186343685026">স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">আপুনি <ph name="DOMAIN" /> পাবলৈ প্ৰয়াস কৰিছে কিন্তু ছার্ভাৰে এখন অমান্য প্ৰমাণপত্ৰ উপস্থাপন কৰিছে।</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>

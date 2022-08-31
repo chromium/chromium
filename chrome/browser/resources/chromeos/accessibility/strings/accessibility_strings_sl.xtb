@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Zelenorumena</translation>
 <translation id="2523609930580546572">Vadnica za ChromeVox</translation>
 <translation id="2525706221823668172">Bližnjične tipke za Chromebook</translation>
+<translation id="2543973100702367007">Dvakrat se dotaknite za to: <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">slovnična napaka</translation>
 <translation id="2556326187583116255">Dotaknite se z dvema prstoma, če želite ustaviti kateri koli trenutni govor.</translation>
 <translation id="2573256689920773241">Osnovno pomikanje</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Moj priljubljeni letni čas</translation>
 <translation id="8696284982970258155">Zelenkasta</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{navpičnica}one{# navpičnica}two{# navpičnici}few{# navpičnice}other{# navpičnic}}</translation>
+<translation id="8733397807344284494">Pritisnite tipko za iskanje in preslednico, če želite to: <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Namig: Če želite aktivirati trenutni element, pritisnite tipko za iskanje + preslednico.</translation>
 <translation id="8743786158317878347">odpiranje strukturirane vsebine, npr. tabele</translation>
 <translation id="8746846427395705317">premik na prejšnjo besedo</translation>

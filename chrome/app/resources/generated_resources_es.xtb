@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">Se ha producido un error. Es posible que Linux solo se haya actualizado parcialmente. Revisa los registros para consultar más información. Los registros se han guardado en Archivos &gt; Mis archivos &gt; <ph name="LOG_FILE" />.</translation>
 <translation id="1043818413152647937">¿Quieres borrar también los datos de estas aplicaciones?</translation>
 <translation id="1043824690776631483">Necesitas permiso para acceder a este sitio. Puede tener contenido inapropiado.</translation>
+<translation id="104419033123549300">Estilo de mapa de teclas</translation>
 <translation id="104710386808485638">¿Quieres reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto de enlace</translation>
 <translation id="1048286738600630630">Pantallas</translation>
@@ -772,6 +773,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1721312023322545264">Necesitas permiso de <ph name="NAME" /> para acceder a este sitio web</translation>
 <translation id="1722460139690167654">Tu <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> está gestionado<ph name="END_LINK" /> por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nueva ventana</translation>
+<translation id="1724801751621173132">Modo de introducción de texto</translation>
 <translation id="1725562816265788801">Desplazamiento por pestañas</translation>
 <translation id="1729533290416704613">También controla qué página se muestra al hacer búsquedas desde el omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para desinstalar aplicaciones, ve a Ajustes &gt; Google Play Store &gt; Gestionar preferencias de Android &gt; Aplicaciones o Administrador de aplicaciones. A continuación, toca la aplicación que quieras desinstalar (es posible que tengas que deslizar el dedo hacia la derecha o la izquierda para encontrar la aplicación) y Desinstalar o Inhabilitar.<ph name="END_PARAGRAPH1" /></translation>
@@ -1953,6 +1955,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2796740370559399562">Seguir permitiendo cookies</translation>
 <translation id="2798347533012571708">Conservar actualizaciones</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
+<translation id="2800309299477632167">Mapa de teclas personalizado</translation>
 <translation id="2800760947029405028">Subir una imagen</translation>
 <translation id="2801954693771979815">Tamaño de la pantalla</translation>
 <translation id="2802557211515765772">No hay impresoras gestionadas.</translation>
@@ -2014,6 +2017,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2849767214114481738">Tu PIN se ha añadido</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2850541429955027218">Añadir tema</translation>
+<translation id="2850672011315104382">Estilo de puntuación</translation>
 <translation id="2851634818064021665">Necesitas permiso para acceder a este sitio web</translation>
 <translation id="2851728849045278002">Se ha producido un error. Haz clic para obtener más detalles.</translation>
 <translation id="2852385257476173980">Una lista de sitios que visites puede aparecer aquí a medida que navegues por la Web</translation>
@@ -2510,6 +2514,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3359256513598016054">Restricciones de políticas de certificados</translation>
 <translation id="3360297538363969800">Se ha producido un error al imprimir. Comprueba la impresora y vuelve a intentarlo.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}other{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}}</translation>
+<translation id="3361954577771524115">Desde la aplicación</translation>
 <translation id="3363202073972776113">Tu organización gestionará este nuevo perfil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">De tu administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Usa Ctrl o Alt</translation>
@@ -3034,6 +3039,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3848547754896969219">Abrir en una ventana de &amp;incógnito</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="3851428669031642514">Cargar scripts no seguros</translation>
+<translation id="3852215160863921508">Asistencia de introducción de texto</translation>
 <translation id="3854599674806204102">Elige una opción</translation>
 <translation id="3854967233147778866">Ofrecer la traducción de sitios web en otros idiomas</translation>
 <translation id="3854976556788175030">La bandeja de salida está llena</translation>
@@ -3790,6 +3796,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4579453506923101210">Olvidar teléfono conectado</translation>
 <translation id="4579581181964204535">No se puede enviar <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Para activar las notificaciones del navegador, ve a <ph name="LINK_BEGIN" />configuración del navegador Chrome<ph name="LINK_END" /></translation>
+<translation id="4580587929153007251">Vuelve a iniciar sesión en el gestor de contraseñas de Google</translation>
 <translation id="4580596421317071374">Las contraseñas se guardan en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de este dispositivo.</translation>
 <translation id="4580626299762849806">No se pueden importar las contraseñas. Revisa <ph name="FILENAME" /> y comprueba que tenga el formato correcto.</translation>
 <translation id="4581774856936278355">Error al restaurar Linux</translation>
@@ -4471,6 +4478,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5268373933383932086">Tu página, tu estilo</translation>
 <translation id="5269977353971873915">Error de impresión</translation>
 <translation id="5273806377963980154">Editar URL del sitio</translation>
+<translation id="5275084684151588738">Diccionarios del usuario</translation>
 <translation id="5275338516105640560">Botón de grupo de pestañas guardado</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605719918376753">Silenciar pestaña</translation>
@@ -4686,6 +4694,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN debe tener al menos un carácter}other{El PIN debe tener al menos # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).</translation>
 <translation id="5481273127572794904">No puede descargar varios archivos automáticamente</translation>
+<translation id="5481755802440890178">La selección no se ha podido traducir en este momento</translation>
 <translation id="5481941284378890518">Añadir impresoras cercanas</translation>
 <translation id="5483785310822538350">Revocar acceso al archivo y al dispositivo</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que crees una copia de seguridad de tus datos y devuelvas este <ph name="DEVICE_TYPE" /> hoy. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" />}other{<ph name="MANAGER" /> requiere que crees una copia de seguridad de tus datos y devuelvas este <ph name="DEVICE_TYPE" /> en un plazo de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" />}}</translation>
@@ -4918,6 +4927,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5696143504434933566">Denunciar uso inadecuado de <ph name="EXTENSION_NAME" /></translation>
 <translation id="5696679855467848181">Archivo PPD en uso: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Selector de emojis</translation>
+<translation id="5698462638680260399">Inicia sesión para usar contraseñas</translation>
 <translation id="570043786759263127">Servicios y aplicaciones de Google Play</translation>
 <translation id="5700836101007545240">El administrador ha inhabilitado la opción Añadir conexión</translation>
 <translation id="5701080607174488915">No se ha podido recuperar la política del servidor.</translation>
@@ -4935,6 +4945,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5712153969432126546">A veces, los sitios publican archivos PDF, como documentos, contratos y formularios</translation>
 <translation id="571222594670061844">Los sitios pueden mostrar notificaciones de inicio de sesión de servicios de identidad</translation>
 <translation id="5713158217420111469">Conectado a <ph name="DEVICE" /></translation>
+<translation id="5713960379473463904">Estilo de introducción de espacios</translation>
 <translation id="5715711091495208045">Agente de complementos: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Buscadores predeterminados</translation>
 <translation id="5719854774000914513">Los sitios pueden solicitar permiso para conectarse a dispositivos HID</translation>
@@ -5107,7 +5118,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5884474295213649357">Esta pestaña está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">Tu organización gestionará este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
-<translation id="5888843733007437002">Visualizando plantillas. Pulsa el tabulador para navegar.</translation>
 <translation id="5889282057229379085">Número máximo de entidades emisoras de certificados intermediarias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -5575,7 +5585,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6333170995003625229">No se ha podido verificar tu dirección de correo o tu contraseña. Prueba a iniciar sesión de nuevo.</translation>
 <translation id="6335920438823100346">Para iniciar Linux, <ph name="MANAGER" /> necesita que crees una copia de seguridad de tus datos y restablezcas los ajustes de fábrica de este Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Se restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
-<translation id="6338402296920404442">Te recomendamos que elimines <ph name="FILENAME" /> para que otras personas que usen este dispositivo no puedan ver tus contraseñas.</translation>
 <translation id="6338968693068997776">Añadir dispositivo USB</translation>
 <translation id="6338981933082930623">Todos los sitios pueden mostrarte cualquier anuncio</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -6359,6 +6368,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7069811530847688087">Puede que <ph name="WEBSITE" /> requiera una llave de seguridad de otro tipo o más reciente</translation>
 <translation id="7070484045139057854">Puede leer y cambiar datos de sitios</translation>
 <translation id="7072010813301522126">Nombre del acceso directo</translation>
+<translation id="7074066049407662839">Inicia sesión para guardar contraseñas</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 con cifrado RSA</translation>
 <translation id="7075625805486468288">Administra la configuración y los certificados HTTPS/SSL</translation>
 <translation id="7076875098323397992">No se puede iniciar la actualización</translation>
@@ -6890,6 +6900,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7625568159987162309">Ver permisos y datos almacenados en todos los sitios</translation>
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="7628201176665550262">Frecuencia de actualización</translation>
+<translation id="7628392600831846024">Estilo de símbolos</translation>
 <translation id="7629827748548208700">Pestaña: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Este dispositivo lo gestiona <ph name="MANAGER" /> y requiere que inicies sesión siempre.</translation>
 <translation id="7631014249255418691">La copia de seguridad de las aplicaciones y archivos de Linux se ha completado correctamente</translation>
@@ -8190,6 +8201,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8850251000316748990">Ver más...</translation>
 <translation id="885246833287407341">Argumentos de función de API</translation>
 <translation id="8853586775156634952">Esta tarjeta solo se guardará en este dispositivo</translation>
+<translation id="8854745870658584490">Combinación de teclas de selección</translation>
 <translation id="8855977033756560989">Este dispositivo Chromebook Enterprise incluye Chrome Enterprise Upgrade. Para aprovechar las funciones empresariales, registra este dispositivo con una cuenta de administrador de Google.</translation>
 <translation id="8856028055086294840">Restaurar aplicaciones y páginas</translation>
 <translation id="885701979325669005">Almacenamiento</translation>

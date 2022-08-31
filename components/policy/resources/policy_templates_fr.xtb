@@ -847,43 +847,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1861206724856734193">Définit la liste des règles de prévention des fuites de données.</translation>
 <translation id="1862267110714201519">Désactiver la fonctionnalité Fenêtre fantôme.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
-<translation id="1867025364110179456">Permet d'établir la liste des applis Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de spécifier les utilisateurs qui ne peuvent pas les désinstaller ni les désactiver.
-
-      Chaque élément de la liste de cette règle est un objet constitué d'un membre obligatoire :
-      <ph name="URL_LABEL" /> (qui correspond à l'URL de l'appli Web à installer)
-
-      et de cinq membres facultatifs :
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (qui indiquent où s'ouvre l'appli Web ; par défaut, elle s'ouvre dans un nouvel onglet)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      ("True" si vous voulez créer des raccourcis sur le bureau <ph name="LINUX_OS_NAME" /> et
-      <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (Disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ;
-      permet de remplacer le nom de l'appli,
-      sauf pour les progressive web apps (PWA) ;
-      dans le cas d'une PWA avec authentification requise pour l'installation,
-      le nom de l'appli temporaire peut être remplacé. Si les règles
-      <ph name="CUSTOM_NAME_LABEL" /> et
-      <ph name="FALLBACK_APP_NAME_LABEL" /> sont fournies,
-      cette dernière sera ignorée.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (Disponible depuis la version 99 de <ph name="PRODUCT_NAME" /> ;
-      permet de remplacer définitivement le nom d'une appli pour toutes les applis Web et les PWA. Uniquement disponible sur
-      <ph name="PRODUCT_OS_NAME" /> actuellement.)
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (Disponible depuis la version 99 de <ph name="PRODUCT_NAME" /> ;
-      permet de remplacer l'icône des applis installées. Les
-      icônes doivent être carrées, faire 1 Mo au maximum, dans l'un des formats
-      suivants : jpeg, png, gif, webp, ico. La valeur de hachage doit être un hachage SHA256
-      du fichier d'icône. Uniquement disponible sur
-      <ph name="PRODUCT_OS_NAME" /> actuellement.)
-
-      Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applis à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="186719019195685253">Indique l'action à effectuer lorsque le délai d'inactivité est atteint en cas de fonctionnement sur une source d'alimentation CA.</translation>
 <translation id="1869688072690234823">Cette règle permet de contrôler les facteurs WebAuthn qui peuvent être utilisés.
 

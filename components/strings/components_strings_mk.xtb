@@ -1432,7 +1432,6 @@
 <translation id="4798269756263412078">Добивајте известувања ако цената се намали на кој било сајт. Известувањата ќе се испраќаат на вашата е-пошта.</translation>
 <translation id="4800132727771399293">Проверете го датумот на истекување на КВК и обидете се повторно</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Користете TouchID</translation>
 <translation id="4809079943450490359">Упатства од администраторот на уредот:</translation>
 <translation id="4811450222531576619">Дознајте повеќе за изворот и темата</translation>
 <translation id="4812751092864334025">Технологија на уреди за носење</translation>
@@ -1803,7 +1802,6 @@
 <translation id="5765072501007116331">За да ги видите методите и условите за доставување, изберете адреса</translation>
 <translation id="57689295674415555">Не е пополнет бројот на виртуелна картичка?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
-<translation id="5778389256418062749">Користете криптографски клуч на друг уред</translation>
 <translation id="5781136890105823427">Експериментот е овозможен</translation>
 <translation id="578305955206182703">Килибарна</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
@@ -2571,7 +2569,6 @@
 <translation id="7880146494886811634">Зачувајте ја адресата</translation>
 <translation id="7882421473871500483">Кафеава</translation>
 <translation id="7882995332186050355">Товарни камиони и приколки</translation>
-<translation id="788679692472636252">Управувајте со лозинките и криптографските клучеви…</translation>
 <translation id="7887683347370398519">Проверете го КВК и обидете се повторно.</translation>
 <translation id="7887885240995164102">Влези во „Слика во слика“</translation>
 <translation id="7888575728750733395">Намера за прикажување на печатењето</translation>
@@ -2966,6 +2963,7 @@
 <translation id="9039213469156557790">Понатаму, страницава опфаќа други ресурси што не се безбедни. Нив може да ги гледаат други лица при преносот и може да ги менува напаѓач за да го смени однесувањето на страницата.</translation>
 <translation id="9040464167025094690">Копче „Најди го мојот уред“, притиснете Enter за да отидете на „Најди го мојот уред“ во сметката на Google</translation>
 <translation id="9042617223719777575">Голем капацитет</translation>
+<translation id="9044359186343685026">Користи Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Се обидовте да го добиете <ph name="DOMAIN" />, но серверот даде неважечки сертификат.</translation>
 <translation id="9050666287014529139">Пристапна фраза</translation>

@@ -1418,7 +1418,6 @@
 <translation id="4798078619018708837">カード情報を更新するには <ph name="CREDIT_CARD" /> の有効期限と CVC を入力します。確認後、Google アカウントのカード情報がこのサイトと共有されます。</translation>
 <translation id="4800132727771399293">有効期限と CVC を確認してからもう一度お試しください</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Touch ID を使用</translation>
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
 <translation id="4811450222531576619">ソースとトピックの詳細</translation>
 <translation id="4812751092864334025">ウェアラブル技術</translation>
@@ -1787,7 +1786,6 @@
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
 <translation id="57689295674415555">仮想カード番号が入力されない場合</translation>
 <translation id="5776313857861697733">優先度</translation>
-<translation id="5778389256418062749">別のデバイスのパスキーを使用</translation>
 <translation id="5781136890105823427">テスト機能を有効にしました</translation>
 <translation id="578305955206182703">アンバー</translation>
 <translation id="57838592816432529">ミュート</translation>
@@ -2549,7 +2547,6 @@
 <translation id="7880146494886811634">住所を保存</translation>
 <translation id="7882421473871500483">茶</translation>
 <translation id="7882995332186050355">貨物トラック、トレーラー</translation>
-<translation id="788679692472636252">パスワードとパスキーを管理...</translation>
 <translation id="7887683347370398519">CVC を確認してからもう一度お試しください</translation>
 <translation id="7887885240995164102">ピクチャー イン ピクチャーを開始</translation>
 <translation id="7888575728750733395">印刷時のレンダリング インテント</translation>
@@ -2945,6 +2942,7 @@
 <translation id="9039213469156557790">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの動作が変わる可能性もあります。</translation>
 <translation id="9040464167025094690">[デバイスを探す] ボタンです。Enter キーを押すと、Google アカウントで「デバイスを探す」に移動します</translation>
 <translation id="9042617223719777575">大容量</translation>
+<translation id="9044359186343685026">Touch ID を使用</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから無効な証明書が提示されました。</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>

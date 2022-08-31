@@ -692,6 +692,7 @@
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2742511345840685325">تنس الطاولة</translation>
 <translation id="2742870351467570537">إزالة العناصر المحددة</translation>
+<translation id="2759825833388495838">إدخال كلمة مرورك في "<ph name="APP_NAME" />".</translation>
 <translation id="2764001903315068341">كتب مصوّرة</translation>
 <translation id="2765217105034171413">صغير</translation>
 <translation id="277133753123645258">طريقة الشحن</translation>
@@ -1434,7 +1435,6 @@
 <translation id="4798269756263412078">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني. سيتم إرسال التنبيهات إلى عنوان بريدك الإلكتروني.</translation>
 <translation id="4800132727771399293">‏تحقق من تاريخ انتهاء الصلاحية ورمز التحقق من البطاقة (CVC) وأعد المحاولة مرة أخرى.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">‏استخدام ميزة Touch ID</translation>
 <translation id="4809079943450490359">تعليمات من مشرف الجهاز:</translation>
 <translation id="4811450222531576619">الاطّلاع على مصدر الصفحة وموضوعها</translation>
 <translation id="4812751092864334025">أجهزة قابلة للارتداء</translation>
@@ -1805,7 +1805,6 @@
 <translation id="5765072501007116331">لعرض طرق التسليم ومتطلباته، اختَر عنوانًا</translation>
 <translation id="57689295674415555">ألم تتم تعبئة الحقل برقم البطاقة الافتراضية؟</translation>
 <translation id="5776313857861697733">الأولوية</translation>
-<translation id="5778389256418062749">استخدام مفتاح مرور على جهاز آخر</translation>
 <translation id="5781136890105823427">تم تفعيل التجربة.</translation>
 <translation id="578305955206182703">كهرمان</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
@@ -2573,7 +2572,6 @@
 <translation id="7880146494886811634">حفظ العنوان</translation>
 <translation id="7882421473871500483">بني</translation>
 <translation id="7882995332186050355">شاحنات نقل ومقطورات</translation>
-<translation id="788679692472636252">إدارة كلمات المرور ومفاتيح المرور…</translation>
 <translation id="7887683347370398519">‏تحقق من رمز التحقق من البطاقة (CVC) ثم أعد المحاولة.</translation>
 <translation id="7887885240995164102">الدخول في وضع "نافذة ضمن نافذة"</translation>
 <translation id="7888575728750733395">تحديد لون الصورة</translation>
@@ -2971,6 +2969,7 @@
 <translation id="9039213469156557790">إضافة إلى ذلك، تتضمن هذه الصفحة موارد أخرى غير آمنة. ويستطيع الآخرون مشاهدة هذه الموارد أثناء نقلها، كما يستطيع أي مهاجم تعديلها لتغيير سلوك الصفحة.</translation>
 <translation id="9040464167025094690">‏زر "العثور على جهازي": اضغط على مفتاح Enter للانتقال إلى ميزة "العثور على جهازي" المتوفّرة في حساب Google.</translation>
 <translation id="9042617223719777575">سِعة كبيرة</translation>
+<translation id="9044359186343685026">‏استخدام ميزة Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">لقد حاولت الوصول إلى <ph name="DOMAIN" />, ولكن الخادم قدّم شهادة غير صالحة.</translation>
 <translation id="9050666287014529139">عبارة المرور</translation>

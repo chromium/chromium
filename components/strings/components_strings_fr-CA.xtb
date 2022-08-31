@@ -1431,7 +1431,6 @@
 <translation id="4798269756263412078">Obtenez des alertes si le prix est réduit sur un site. Les alertes seront envoyées à votre adresse de courriel.</translation>
 <translation id="4800132727771399293">Vérifiez votre CVC et la date d'expiration, puis réessayez.</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Utiliser Touch ID</translation>
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son sujet</translation>
 <translation id="4812751092864334025">Accessoires connectés</translation>
@@ -1802,7 +1801,6 @@
 <translation id="5765072501007116331">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="57689295674415555">Numéro de carte virtuelle non rempli?</translation>
 <translation id="5776313857861697733">Priorité</translation>
-<translation id="5778389256418062749">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="5781136890105823427">Expérience activée</translation>
 <translation id="578305955206182703">Ambre</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
@@ -2570,7 +2568,6 @@ Détails supplémentaires :
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7882995332186050355">Poids lourds et semi-remorques</translation>
-<translation id="788679692472636252">Gérer les clés d'accès…</translation>
 <translation id="7887683347370398519">Veuillez vérifier votre CVC et réessayer</translation>
 <translation id="7887885240995164102">Lancer le mode d'incrustation d'image</translation>
 <translation id="7888575728750733395">Intention de rendu d'impression</translation>
@@ -2965,6 +2962,7 @@ Détails supplémentaires :
 <translation id="9039213469156557790">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer le comportement de cette page.</translation>
 <translation id="9040464167025094690">Bouton Localiser mon appareil, appuyez sur la touche Entrée pour accéder à la fonctionnalité Localiser mon appareil dans le compte Google</translation>
 <translation id="9042617223719777575">Grande capacité</translation>
+<translation id="9044359186343685026">Utiliser Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat non valide.</translation>
 <translation id="9050666287014529139">Phrase de passe</translation>

@@ -1000,6 +1000,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1925017091976104802">Naciśnij <ph name="MODIFIER_KEY_DESCRIPTION" />, by wkleić</translation>
 <translation id="1925021887439448749">Wpisz niestandardowy adres internetowy</translation>
 <translation id="1925124445985510535">Kontrola zabezpieczeń została wykonana o <ph name="TIME" /></translation>
+<translation id="192564025059434655">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach z systemem Windows. Możesz sprawdzić, czy jest dostępna nowa wersja.</translation>
 <translation id="1926339101652878330">Te ustawienia są kontrolowane przez zasady obowiązujące w firmie. Skontaktuj się z administratorem, by uzyskać więcej informacji.</translation>
 <translation id="1927632033341042996">Palec nr <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Kod PIN blokady ekranu</translation>
@@ -2493,6 +2494,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3348131053948466246">Zasugerowano emotikony. Naciśnij strzałkę w górę lub w dół, by przejść do innego elementu, i naciśnij Enter, by go wstawić.</translation>
 <translation id="3349933790966648062">Wykorzystanie pamięci</translation>
 <translation id="3353786022389205125">Włącz „Pokaż ekran blokady po wybudzeniu” i spróbuj ponownie</translation>
+<translation id="3354768182971982851">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach Mac. Możesz sprawdzić, czy jest dostępna nowa wersja.</translation>
 <translation id="3354972872297836698">Nie udało się sparować urządzenia <ph name="DEVICE_NAME" />. Wybierz urządzenie i spróbuj ponownie</translation>
 <translation id="3355936511340229503">Błąd połączenia</translation>
 <translation id="3356469410714175391">(Włączono wirtualną kartę)</translation>
@@ -2652,6 +2654,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3494769164076977169">Pytaj, gdy strona próbuje automatycznie pobrać pliki po pobraniu pierwszego (zalecane)</translation>
 <translation id="3495496470825196617">Zasilanie w stanie nieaktywnym podczas ładowania</translation>
 <translation id="3495660573538963482">Ustawienia Asystenta Google</translation>
+<translation id="3495675993466884458">Administrator systemu pozwolił aplikacji <ph name="APP_ORIGIN" /> na nagrywanie Twojego ekranu</translation>
 <translation id="3496213124478423963">Pomniejsz</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (nie wybrano)</translation>
 <translation id="3496689104192986836">Poziom naładowania baterii: <ph name="PERCENTAGE" />%</translation>
@@ -2771,6 +2774,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3617891479562106823">Tła są niedostępne. Spróbuj ponownie później.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619962278978697442">Wybierz dowolny przy każdym logowaniu</translation>
+<translation id="3620136223548713675">Geolokalizacja</translation>
 <translation id="3621807901162200696">Pomóż w ulepszaniu funkcji i działania Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikację}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
 <translation id="362333465072914957">Czekam na wygenerowanie certyfikatu CA</translation>
@@ -3100,6 +3104,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3918972485393593704">Przesyłaj do Google szczegółowe informacje</translation>
 <translation id="3919145445993746351">Aby korzystać z rozszerzeń na wszystkich swoich komputerach, włącz synchronizację</translation>
 <translation id="3919229493046408863">Wyłącz powiadomienia, gdy urządzenia są w pobliżu</translation>
+<translation id="3919262972282962508">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach Mac. Skontaktuj się z administratorem, aby zaktualizować tę aplikację do nowej wersji lub ją usunąć.</translation>
 <translation id="3919798653937160644">Strony wyświetlane w tym oknie nie pojawią się w historii przeglądarki. Gdy zamkniesz wszystkie okna otwarte w trybie gościa, nie zostanie po nich na komputerze żaden ślad (np. w postaci plików cookie). Pobrane pliki zostaną jednak zachowane.</translation>
 <translation id="3920504717067627103">Zasady certyfikatu</translation>
 <translation id="3920909973552939961">Nie zezwolono na instalowanie modułów do obsługi płatności</translation>
@@ -3262,6 +3267,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4062561150282203854">Zsynchronizuj aplikacje, ustawienia i inne opcje urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Sieć, której używasz (<ph name="NETWORK_ID" />), może wymagać przejścia na stronę logowania.</translation>
 <translation id="4066207411788646768">Aby wyświetlić drukarki dostępne w sieci, sprawdź połączenie</translation>
+<translation id="4066945815577305767">Menedżer został zablokowany</translation>
 <translation id="4068776064906523561">Zapisane odciski palców</translation>
 <translation id="407173827865827707">Po kliknięciu</translation>
 <translation id="4072701974556190758">Hasło zostanie zapisane na Twoim koncie Google <ph name="ACCOUNT" />. Nie musisz go zapamiętywać.</translation>
@@ -5103,7 +5109,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5884474295213649357">Ta karta jest połączona z urządzeniem USB.</translation>
 <translation id="5885314688092915589">Tym profilem będzie zarządzać Twoja organizacja</translation>
 <translation id="5886009770935151472">Palec 1</translation>
-<translation id="5888843733007437002">Wyświetlanie szablonów. Poruszaj się za pomocą klawisza Tab.</translation>
 <translation id="5889282057229379085">Maksymalna liczba pośrednich urzędów certyfikacji: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Preferowane sieci Wi-Fi</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -5571,7 +5576,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6333170995003625229">Nie udało się zweryfikować Twojego adresu e-mail ani hasła. Zaloguj się jeszcze raz.</translation>
 <translation id="6335920438823100346">Przed uruchomieniem Linuksa <ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych oraz przywrócenia na tym Chromebooku ustawień fabrycznych.</translation>
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB. W związku z tym za 24 godziny Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie zresetowane. Utwórz kopie zapasowe plików, które chcesz zachować.</translation>
-<translation id="6338402296920404442">Zastanów się, czy nie usunąć pliku <ph name="FILENAME" />, aby Twoich haseł nie zobaczyły inne osoby korzystające z tego urządzenia.</translation>
+<translation id="6338968693068997776">Dodaj urządzenie USB</translation>
 <translation id="6338981933082930623">Wszystkie strony mogą wyświetlać wszystkie reklamy</translation>
 <translation id="6339668969738228384">Utwórz nowy profil dla adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -5607,6 +5612,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Spróbuj jeszcze raz</translation>
 <translation id="6374635887697228982">Skorzystać z rabatów?</translation>
+<translation id="637642201764944055">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach z Linuksem. Skontaktuj się z administratorem, aby zaktualizować tę aplikację do nowej wersji lub ją usunąć.</translation>
 <translation id="6377268785556383139">1 wynik dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6378392501584240055">Otwórz listę sieci Wi-Fi</translation>
 <translation id="6380143666419481200">Zaakceptuj i kontynuuj</translation>
@@ -6088,6 +6094,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6826872289184051766">Zweryfikuj przez USB</translation>
 <translation id="6827121912381363404">Zezwalaj wszystkim rozszerzeniom na odczytywanie i zmienianie <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Twoje aplikacje i ustawienia będą synchronizować się na wszystkich urządzeniach z Chrome OS, na których zalogujesz się na swoje konto Google. Opcje synchronizacji przeglądarki znajdziesz w <ph name="LINK_BEGIN" />ustawieniach Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach z systemem Windows. Skontaktuj się z administratorem, aby zaktualizować tę aplikację do nowej wersji lub ją usunąć.</translation>
 <translation id="6828153365543658583">Ogranicz logowanie do następujących użytkowników:</translation>
 <translation id="6828182567531805778">Aby synchronizować dane, wpisz hasło</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -6173,6 +6180,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6904344821472985372">Odwołaj dostęp do plików</translation>
 <translation id="6904655473976120856">Naciśnij przycisk aplikacji, by wyjść</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{Menedżer haseł Google blokuje się po minucie bezczynności, aby chronić Twoje hasła}few{Menedżer haseł Google blokuje się po {NUM_MINS} minutach bezczynności, aby chronić Twoje hasła}many{Menedżer haseł Google blokuje się po {NUM_MINS} minutach bezczynności, aby chronić Twoje hasła}other{Menedżer haseł Google blokuje się po {NUM_MINS} minuty bezczynności, aby chronić Twoje hasła}}</translation>
 <translation id="6909422577741440844">Odebrać z tego urządzenia?</translation>
 <translation id="6910211073230771657">Usunięto</translation>
 <translation id="691106080621596509">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez grupę <ph name="SITE_GROUP_NAME" />, należące do niej strony i jej zainstalowaną aplikację</translation>
@@ -7943,6 +7951,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="863109444997383731">Prośby o pokazywanie powiadomień przez strony będą blokowane. Jeśli strona będzie prosić o zgodę na wysyłanie powiadomień, na pasku adresu pojawi się wskaźnik blokowania.</translation>
 <translation id="8632104508818855045">Poprzednio nie zezwoliłeś(-aś) na żadne rozszerzenia na <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Ostatnia aktywność</translation>
+<translation id="8633979878370972178">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach z Linuksem. Możesz sprawdzić, czy jest dostępna nowa wersja.</translation>
 <translation id="8634348081024879304">Stracisz możliwość korzystania z karty wirtualnej w Google Pay. <ph name="BEGIN_LINK" />Dowiedz się więcej o kartach wirtualnych<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Ładuję ponownie…</translation>
 <translation id="8636284842992792762">Inicjuję rozszerzenia…</translation>
@@ -8014,6 +8023,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8688672835843460752">Dostępne</translation>
 <translation id="8690129572193755009">Witryny mogą prosić o zgodę na obsługę protokołów</translation>
 <translation id="8692107307702113268">Hasło ma ponad 1000 znaków</translation>
+<translation id="8694596275649352090">Zablokuj po uśpieniu urządzenia lub zamknięciu pokrywy</translation>
 <translation id="8695139659682234808">Dodaj kontrolę rodzicielską po konfiguracji</translation>
 <translation id="8695825812785969222">Otwórz &amp;lokalizację</translation>
 <translation id="8698269656364382265">Aby wrócić do poprzedniego ekranu, przesuń palcem od lewej.</translation>
@@ -8062,6 +8072,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8732844209475700754">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych</translation>
 <translation id="8734073480934656039">Jeśli włączysz to ustawienie, możliwe będzie automatyczne uruchamianie aplikacji kiosku po włączeniu komputera.</translation>
 <translation id="8734674662128056360">Blokowanie plików cookie innych firm</translation>
+<translation id="8734755021067981851">Nie są podłączone żadne urządzenia USB.</translation>
 <translation id="873545264931343897">Aby aktywować wtyczkę <ph name="PLUGIN_NAME" /> po jej zaktualizowaniu, ponownie załaduj stronę</translation>
 <translation id="8736288397686080465">Ta witryna została zaktualizowana w tle.</translation>
 <translation id="8737709691285775803">Menedżer połączeń</translation>

@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2742511345840685325">ଟେବୁଲ ଟେନିସ</translation>
 <translation id="2742870351467570537">ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ଗୁଡ଼ିକୁ କାଢ଼ନ୍ତୁ</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" />ରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="2764001903315068341">କମିକ୍ସ</translation>
 <translation id="2765217105034171413">ଛୋଟ</translation>
 <translation id="277133753123645258">ସିପିଂ ପଦ୍ଧତି</translation>
@@ -1428,7 +1429,6 @@
 <translation id="4798269756263412078">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ। ଆପଣଙ୍କ ଇମେଲକୁ ଆଲର୍ଟ ପଠାଯିବ।</translation>
 <translation id="4800132727771399293">ସମୟ ସୀମା ସମାପ୍ତ ହେବାର ତାରିଖ ଏବଂ CVCକୁ ଯାଞ୍ଚ କରିବା ସହିତ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">TouchID ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4809079943450490359">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଠାରୁ ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକ:</translation>
 <translation id="4811450222531576619">ଏହାର ସୋର୍ସ ଏବଂ ବିଷୟ ସମ୍ବନ୍ଧରେ ଜାଣନ୍ତୁ</translation>
 <translation id="4812751092864334025">ୱେରେବୁଲ ଟେକ୍ନୋଲୋଜି</translation>
@@ -1800,7 +1800,6 @@
 <translation id="5765072501007116331">ବିତରଣ ପଦ୍ଧତି ଓ ଆବଶ୍ୟକତା ଦେଖିବା ପାଇଁ ଗୋଟିଏ ଠିକଣା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="57689295674415555">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ପୂରଣ କରାଯାଇନାହିଁ?</translation>
 <translation id="5776313857861697733">ପ୍ରାଥମିକତା</translation>
-<translation id="5778389256418062749">ଗୋଟିଏ ଭିନ୍ନ ଡିଭାଇସରେ ଏକ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="5781136890105823427">ପରୀକ୍ଷଣ କରାଯାଇଛି</translation>
 <translation id="578305955206182703">ଅମ୍ବର୍</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
@@ -2567,7 +2566,6 @@
 <translation id="7880146494886811634">ଠିକଣା ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="7882421473871500483">ବାଦାମୀ</translation>
 <translation id="7882995332186050355">ମାଲବାହୀ ଟ୍ରକ ଏବଂ ଟ୍ରେଲରଗୁଡ଼ିକ</translation>
-<translation id="788679692472636252">ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ…</translation>
 <translation id="7887683347370398519">ଆପଣଙ୍କର CVC ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7887885240995164102">ପିକଚର୍-ଇନ୍-ପିକଚର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="7888575728750733395">ପ୍ରିଣ୍ଟ ରେଣ୍ଡରିଂ ଇଣ୍ଟେଣ୍ଟ</translation>
@@ -2962,6 +2960,7 @@
 <translation id="9039213469156557790">ସେ ଯାହା ହେଉ, ଏହି ପୃଷ୍ଠାଟି ସେହି ଅନ୍ୟ ଉତ୍ସଗୁଡିକ ଅନ୍ତର୍ଭୂକ୍ତ କରେ ଯେଉଁଗୁଡିକ ସୁରକ୍ଷିତ ନୁହେଁ। ଗମନାଗମନ ସମୟରେ ଏହି ଉତ୍ସଗୁଡିକ ଅନ୍ୟମାନଙ୍କ ଦ୍ଵାରା ପରିଦୃଷ୍ଟ ହୋଇ ପାରିବ, ତଥା ପୃଷ୍ଠାଟିର ରୂପ ବା ଆଚରଣ ପରିବର୍ତ୍ତନ କରିବାକୁ ଏକ ଆକ୍ରମଣକାରୀଙ୍କ ଦ୍ଵାରା ରୂପାନ୍ତରିତ କରାଯାଇ ପାରିବ।</translation>
 <translation id="9040464167025094690">"Find My Device" ବଟନ, Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ ଡିଭାଇସ ଖୋଜିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="9042617223719777575">ଅଧିକ କ୍ଷମତା</translation>
+<translation id="9044359186343685026">Touch ID ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଥିଲେ କିନ୍ତୁ ସର୍ଭର୍‌ ଏକ ଅବୈଧ ସାର୍ଟିଫିକେଟ୍‍ ଉପସ୍ଥାପନ କରିଛି।</translation>
 <translation id="9050666287014529139">ପାସ୍‌ଫ୍ରେଜ୍</translation>

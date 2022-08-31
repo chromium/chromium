@@ -854,43 +854,6 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="1861206724856734193">Establece una lista de reglas para prevenir la filtración de datos</translation>
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma.</translation>
 <translation id="1865417998205858223">Permisos de clave</translation>
-<translation id="1867025364110179456">Si estableces la política, se especificará una lista de aplicaciones web que se instalan de manera discreta, sin la interacción del usuario, y que este no podrá desinstalar ni desactivar.
-
-      Cada elemento de la lista de la política es un objeto con un miembro obligatorio:
-      <ph name="URL_LABEL" /> (la URL de la aplicación web que se instalará),
-
-      y 5 miembros opcionales:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (establece la manera en la que se abrirá la aplicación web; la opción predeterminada es una nueva pestaña)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (verdadero, si se crean accesos directos de escritorio para <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      te permite anular el nombre de la app si no es una
-      app web progresiva [AWP], o el nombre de la app instalada
-      temporalmente si es una AWP, pero se requiere autenticación para que la
-      instalación pueda completarse. Si se proporcionan
-      <ph name="CUSTOM_NAME_LABEL" /> y
-      <ph name="FALLBACK_APP_NAME_LABEL" />,
-      se ignorará este último).
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (A partir de la versión 99 de <ph name="PRODUCT_NAME" />,
-      te permite anular de forma permanente el nombre de la app para todas las aplicaciones
-      web y AWP. Actualmente, solo se admite en
-      <ph name="PRODUCT_OS_NAME" />).
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (A partir de la versión 99 de <ph name="PRODUCT_NAME" />,
-      te permite anular el ícono de las apps instaladas. Los
-      íconos deben tener forma cuadrada, un tamaño máximo de 1 MB y uno de los siguientes
-      formatos: jpeg, png, gif, webp o ico. El valor de hash del archivo del ícono
-      debe ser SHA256. Actualmente, solo se admite en
-      <ph name="PRODUCT_OS_NAME" />).
-
-      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar apps a la barra de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="186719019195685253">Acción a realizar si se alcanza la demora de inactividad mientras el dispositivo funciona con alimentación de corriente</translation>
 <translation id="1869688072690234823">Si estableces la política, controlarás qué factores de WebAuthn se pueden usar.
 
@@ -2067,6 +2030,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, el cursor grande estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="3027837632741099453">Habilitar el modo de Ahorro de batería cuando el dispositivo esté funcionando con la batería</translation>
 <translation id="3028296787914825213">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> que estarán disponibles para los usuarios.
 
       * Si seleccionas <ph name="PRINTERS_BLACKLIST" /> (valor 0), <ph name="BULK_PRINTERS_BLACKLIST" /> restringirá el acceso a las impresoras especificadas.
@@ -2110,6 +2074,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3063302084011279315">Inhabilitar Screencast</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo apliquen la transferencia de ADB</translation>
+<translation id="3067462824622454143">Permitir que los usuarios decidan si el dispositivo debe bloquearse cuando se suspende o se cierra la tapa</translation>
 <translation id="3070119171976169951">Impedir que las imágenes de terceros muestren una solicitud de autenticación</translation>
 <translation id="3072045631333522102">Protector de pantalla que se utilizará en la pantalla de inicio de sesión del modo de venta</translation>
 <translation id="3072788420987305247">Si habilitas la política o no la estableces, se mostrarán los controles multimedia en la pantalla de bloqueo cuando los usuarios bloqueen el dispositivo y se esté reproduciendo contenido multimedia.
@@ -2989,6 +2954,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 
       Si la estableces como falsa, la función Autocompletar nunca sugerirá ni completará información de las tarjetas de crédito, ni guardará información adicional relacionada que envíen los usuarios cuando navegan por la Web.</translation>
 <translation id="3989829840000169163">Bloquear los puntos de extensiones heredados del navegador</translation>
+<translation id="3990391739475801018">Inhabilitar el modo de Ahorro de batería</translation>
 <translation id="3994043824457743421">Mostrar la notificación del espacio del medio en la página Nueva pestaña</translation>
 <translation id="3997519162482760140">URL a las que se les concede acceso a los dispositivos de captura de video en las páginas de acceso de SAML</translation>
 <translation id="4004523942550416237">No mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
@@ -3329,6 +3295,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4347908978527632940">Si la política se establece en true y el usuario es uno supervisado, otras apps de Android pueden consultar las restricciones web del usuario mediante un proveedor de contenido.
 
           Si la política se establece en false o no se establece, el proveedor de contenido no muestra ninguna información.</translation>
+<translation id="435395045087992163">No bloquear el dispositivo cuando se suspenda o se cierre la tapa</translation>
 <translation id="4357587374229381015">Especifica un nombre de parámetro de URL que se utilizará en la página de acceso del IdP de SAML para autocompletar el campo de nombre de usuario.
 
       Se usará el correo electrónico del usuario asociado con su perfil de <ph name="PRODUCT_OS_NAME" /> como valor del parámetro de URL. Por lo tanto, esta configuración debe estar inhabilitada si se espera que los usuarios usen correos electrónicos con el IdP de SAML.
@@ -3629,6 +3596,13 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Si no se establece esta política, o está habilitada, se llevarán a cabo las revisiones de intercepción de DNS. Si se inhabilita explícitamente, no se llevarán a cabo.</translation>
 <translation id="4700190441681139987">No permite que ningún sitio acceda a los sensores</translation>
+<translation id="4701899474784891858">Esta política habilita o inhabilita la configuración del modo de Ahorro de batería. Esta configuración hace que la velocidad de fotogramas se limite a un consumo de energía más bajo.
+      Si no estableces esta política, el usuario final podrá controlar esta configuración desde chrome://settings/performance.
+      Los diferentes niveles son los siguientes:
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): Se inhabilita el modo de Ahorro de batería.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): Se habilita el modo de Ahorro de batería cuando el dispositivo esté funcionando con la batería y el nivel esté bajo.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Se habilita el modo de Ahorro de batería cuando el dispositivo esté funcionando con la batería.
+      </translation>
 <translation id="4703402283970867140">Habilitar un modelo de atenuación inteligente para extender el tiempo de atenuación de la pantalla</translation>
 <translation id="4704958130749494760">Otorgar permiso automáticamente a los sitios para conectarse a dispositivos seriales USB</translation>
 <translation id="471360812659157054">No hacer que window.webkitStorageInfo esté disponible</translation>
@@ -5378,6 +5352,7 @@ principal del string usuario-agente en 99.
 <translation id="6575944031719151455">Si estableces la política, esta especificará la lista de cuentas locales del dispositivo que se muestran en la pantalla de acceso. Se usan identificadores para diferenciar las diversas cuentas locales del dispositivo.
 
       Si no estableces la política o la defines con una lista vacía, no habrá ninguna cuenta local del dispositivo.</translation>
+<translation id="6580851705156412587">Bloquear el dispositivo cuando se suspende o se cierra la tapa</translation>
 <translation id="6581048059229620221">Si se inhabilita esta política, el host de asistencia remota no podrá iniciarse ni configurarse para aceptar las conexiones entrantes.
 
           Esta política no afecta a los casos de acceso remoto.
@@ -6191,6 +6166,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, se activará la predicción de red, pero el usuario podrá cambiarla.</translation>
 <translation id="7408815947231046196">Permitir la copia de seguridad de los datos de <ph name="PRODUCT_NAME" /></translation>
+<translation id="740885188496462583">Habilitar el modo de Ahorro de batería</translation>
 <translation id="7410074797376205571">Permitir que <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> realice solicitudes a la API de WebAuthn que se envíen al proxy a través de un host remoto</translation>
 <translation id="7412456346709338637">Habilita el acceso de datos para dispositivos periféricos Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Permite las conexiones de acceso remoto a esta máquina</translation>
@@ -6673,6 +6649,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7937766917976512374">Permitir o rechazar la captura de video</translation>
 <translation id="7941528208359969119">Permitir que se realicen verificaciones en línea de <ph name="OCSP_CRL_LABEL" /></translation>
 <translation id="7941975817681987555">No predecir acciones de la red en ninguna conexión de red</translation>
+<translation id="7945445169067895719">Habilitar el bloqueo cuando el dispositivo se suspenda o se cierra la tapa</translation>
 <translation id="7946350455013548764">Si estableces la política en 3, los sitios web podrán solicitar acceso a los dispositivos HID. Si estableces la política en 2, los sitios no podrán acceder a los dispositivos HID.
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.
@@ -7009,6 +6986,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
           Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8288199156259560552">Habilita el servicio de ubicación de Google para Android</translation>
+<translation id="8289824033213234651">Habilitar el modo de Ahorro de batería cuando el dispositivo esté funcionando con la batería y el nivel esté bajo</translation>
 <translation id="8290875622178450531">Habilita la función de accesibilidad de dictado.
 
           Si se habilita esta política, la función de dictado estará siempre habilitada.

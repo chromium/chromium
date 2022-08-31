@@ -1432,7 +1432,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4798269756263412078">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert. Alerty będą wysyłane na Twój adres e-mail.</translation>
 <translation id="4800132727771399293">Sprawdź datę ważności i kod CVC, a potem spróbuj ponownie</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Użyj funkcji Touch ID</translation>
 <translation id="4809079943450490359">Instrukcje od administratora urządzenia:</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
 <translation id="4812751092864334025">Urządzenia do noszenia</translation>
@@ -1803,7 +1802,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5765072501007116331">Aby zobaczyć metody dostawy oraz wymagania, wybierz adres</translation>
 <translation id="57689295674415555">Nie uzupełniono numeru karty wirtualnej?</translation>
 <translation id="5776313857861697733">Priorytet</translation>
-<translation id="5778389256418062749">Użyj klucza na innym urządzeniu</translation>
 <translation id="5781136890105823427">Eksperyment włączony</translation>
 <translation id="578305955206182703">Bursztynowy</translation>
 <translation id="57838592816432529">Wycisz</translation>
@@ -2571,7 +2569,6 @@ Dodatkowe informacje:
 <translation id="7880146494886811634">Zapisz adres</translation>
 <translation id="7882421473871500483">Brązowy</translation>
 <translation id="7882995332186050355">Samochody ciężarowe i przyczepy</translation>
-<translation id="788679692472636252">Zarządzaj hasłami i kluczami…</translation>
 <translation id="7887683347370398519">Sprawdź kod CVC i spróbuj ponownie</translation>
 <translation id="7887885240995164102">Włącz obraz w obrazie</translation>
 <translation id="7888575728750733395">Intencja renderowania wydruku</translation>
@@ -2966,6 +2963,7 @@ Dodatkowe informacje:
 <translation id="9039213469156557790">Ta strona zawiera także niezabezpieczone zasoby. Podczas przesyłania mogą je wyświetlić inni użytkownicy, a osoby atakujące mogą je zmodyfikować, by zmienić sposób działania strony.</translation>
 <translation id="9040464167025094690">Przycisk Znajdź moje urządzenie; aby znaleźć swoje urządzenie na koncie Google, naciśnij Enter</translation>
 <translation id="9042617223719777575">Duża pojemność</translation>
+<translation id="9044359186343685026">Używaj Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Podjęto próbę nawiązania połączenia z witryną <ph name="DOMAIN" />, jednak serwer przedstawił nieprawidłowy certyfikat.</translation>
 <translation id="9050666287014529139">Hasło</translation>

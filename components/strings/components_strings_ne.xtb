@@ -1429,7 +1429,6 @@
 <translation id="4798269756263412078">कुनै साइटमा तपाईंले ट्र्याक गरेको उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्। तपाईंलाई इमेलमार्फत अलर्ट पठाइने छ।</translation>
 <translation id="4800132727771399293">तपाईँको म्याद समाप्त हुने मिति र CVC जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">TouchID प्रयोग गर्नुहोस्</translation>
 <translation id="4809079943450490359">तपाईंको डिभाइसको एड्मिनबाट प्राप्त भएका निर्देशनहरू:</translation>
 <translation id="4811450222531576619">यो पेजको स्रोत र विषयका बारेमा जान्नुहोस्</translation>
 <translation id="4812751092864334025">लगाउन मिल्ने प्रविधि</translation>
@@ -1800,7 +1799,6 @@
 <translation id="5765072501007116331">डेलिभरीका विधि र मापदण्डहरू हेर्न, ठेगाना चयन गर्नुहोस्</translation>
 <translation id="57689295674415555">भर्चुअल कार्ड नम्बर भरिएको छैन?</translation>
 <translation id="5776313857861697733">प्राथमिकता</translation>
-<translation id="5778389256418062749">अर्कै डिभाइसको पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="5781136890105823427">परीक्षण सक्षम पारियो</translation>
 <translation id="578305955206182703">एम्बर</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
@@ -2568,7 +2566,6 @@
 <translation id="7880146494886811634">ठेगाना सेभ गर्नुहोस्</translation>
 <translation id="7882421473871500483">खैरो</translation>
 <translation id="7882995332186050355">कार्गो ट्रक तथा ट्रेलरहरू</translation>
-<translation id="788679692472636252">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="7887683347370398519">तपाईँको CVC जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7887885240995164102">picture-in-picture मोडमा प्रविष्टि गर्नुहोस्‌</translation>
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
@@ -2963,6 +2960,7 @@
 <translation id="9039213469156557790">यसबाहेक, यस पृष्ठले सुरक्षित नभएका अन्य संसाधनहरू समावेश गर्छ। यी स्रोतहरू ट्रान्जिटमा भएको बेला अन्यले हेर्न सक्छन्, र पृष्ठको व्यवहार परिवर्तन गर्न कुनै आक्रमणकारीद्वारा परिमार्जन गर्न सकिन्छ।</translation>
 <translation id="9040464167025094690">"मेरो डिभाइस पत्ता लगाइयोस्" नामक बटन, तपाईं Google खातामा रहेको डिभाइस पत्ता लगाउने पेजमा जान चाहनुहुन्छ भने इन्टर थिच्नुहोस्</translation>
 <translation id="9042617223719777575">धेरै क्षमता भएको</translation>
+<translation id="9044359186343685026">Touch ID प्रयोग गर्नुहोस्</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">तपाइँले <ph name="DOMAIN" /> मा पुग्ने प्रयास गर्नुभयो, तर सर्भरले एक अवैध प्रमाणपत्र प्रदर्शन गर्‍यो।</translation>
 <translation id="9050666287014529139">पासफ्रेज</translation>

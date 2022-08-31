@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742511345840685325">Стол тенниси</translation>
 <translation id="2742870351467570537">Тандалган нерселерди алып салуу</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> сырсөзүн толтурганы жатат</translation>
 <translation id="2764001903315068341">Комикстер</translation>
 <translation id="2765217105034171413">Кичине</translation>
 <translation id="277133753123645258">Жөнөтүү ыкмасы</translation>
@@ -1430,7 +1431,6 @@
 <translation id="4798269756263412078">Кандайдыр бир сайтта баасы төмөндөсө, эскертүүлөрдү аласыз. Эскертүүлөр электрондук почтаңызга жөнөтүлөт.</translation>
 <translation id="4800132727771399293">Мөөнөтү бүтчү күндү жана CVC'иңизди текшерип, кайталап көрүңүз</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">TouchID функциясын колдонуу</translation>
 <translation id="4809079943450490359">Түзмөгүңүздүн администратору жөнөткөн нускама:</translation>
 <translation id="4811450222531576619">Булагы жана темасы тууралуу кеңири маалымат</translation>
 <translation id="4812751092864334025">Кийилүүчү технология</translation>
@@ -1801,7 +1801,6 @@
 <translation id="5765072501007116331">Жеткирүү ыкмаларын жана талаптарын көрүү үчүн дарегин тандаңыз</translation>
 <translation id="57689295674415555">Виртуалдык картанын номери киргизилген жокпу?</translation>
 <translation id="5776313857861697733">Маанилүүлүгү</translation>
-<translation id="5778389256418062749">Мүмкүндүк алуу ачкычын башка түзмөктө колдонуу</translation>
 <translation id="5781136890105823427">Тажрыйба иштетилди</translation>
 <translation id="578305955206182703">Кочкул сары</translation>
 <translation id="57838592816432529">Үнсүз</translation>
@@ -2569,7 +2568,6 @@
 <translation id="7880146494886811634">Даректи сактоо</translation>
 <translation id="7882421473871500483">Күрөң</translation>
 <translation id="7882995332186050355">Жүк ташуучу унаалар жана чиркегичтер</translation>
-<translation id="788679692472636252">Сырсөздөрдү жана мүмкүндүк алуу ачкычтарын башкаруу…</translation>
 <translation id="7887683347370398519">CVC'иңизди текшерип, кайталап көрүңүз</translation>
 <translation id="7887885240995164102">Сүрөт ичиндеги сүрөт режимине кирүү</translation>
 <translation id="7888575728750733395">Басып чыгаруу аралыгы</translation>
@@ -2964,6 +2962,7 @@
 <translation id="9039213469156557790">Андан тышкары, бул бетте башка кооптуу булактар бар. Өткөрүү учурунда аларды башка колдонуучулар көрө алышат, ошону менен катар, беттин иш-аракетин өзгөртүү үчүн аларды чабуулчулар бурмалап коюшу мүмкүн.</translation>
 <translation id="9040464167025094690">Түзмөгүм кайда? баскычы. Google аккаунтуңуз менен түзмөгүңүздү табуу үчүн Enter баскычын басыңыз</translation>
 <translation id="9042617223719777575">Сыйымдуулугу чоң</translation>
+<translation id="9044359186343685026">Touch ID функциясын колдонуу</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> жетүүгө аракет кылдыңыз, бирок сервер жараксыз тастыктама сунуштады.</translation>
 <translation id="9050666287014529139">Купуя сөз айкашы</translation>

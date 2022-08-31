@@ -1432,7 +1432,6 @@
 <translation id="4798269756263412078">Добијајте обавештења када се цена снизи на било ком сајту. Обавештења ће вам бити послата на имејл.</translation>
 <translation id="4800132727771399293">Проверите датум истека и CVC и покушајте поново</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Користи TouchID</translation>
 <translation id="4809079943450490359">Упутства администратора уређаја:</translation>
 <translation id="4811450222531576619">Сазнајте више о њеном извору и теми</translation>
 <translation id="4812751092864334025">Носива технологија</translation>
@@ -1803,7 +1802,6 @@
 <translation id="5765072501007116331">Да бисте видели начине и захтеве за испоруку, изаберите адресу</translation>
 <translation id="57689295674415555">Број виртуелне картице није унет?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
-<translation id="5778389256418062749">Користите приступни кôд на другом уређају</translation>
 <translation id="5781136890105823427">Експеримент је омогућен</translation>
 <translation id="578305955206182703">Окер</translation>
 <translation id="57838592816432529">Искључи звук</translation>
@@ -2570,7 +2568,6 @@
 <translation id="7880146494886811634">Сачувајте адресу</translation>
 <translation id="7882421473871500483">Браон</translation>
 <translation id="7882995332186050355">Теретни камиони и приколице</translation>
-<translation id="788679692472636252">Управљајте лозинкама и приступним кодовима…</translation>
 <translation id="7887683347370398519">Проверите CVC и покушајте поново</translation>
 <translation id="7887885240995164102">Покрени режим слике у слици</translation>
 <translation id="7888575728750733395">Намера рендеровања штампања</translation>
@@ -2966,6 +2963,7 @@
 <translation id="9039213469156557790">Поред тога, ова страница садржи и друге ресурсе који нису безбедни. Ове ресурсе могу да виде и други док су у пролазу и нападач може да их измени како би променио понашање странице.</translation>
 <translation id="9040464167025094690">Дугме Пронађи мој уређај, притисните Enter да бисте посетили опцију за тражење уређаја на Google налогу</translation>
 <translation id="9042617223719777575">Велики капацитет</translation>
+<translation id="9044359186343685026">Користи Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Покушали сте да дођете до домена <ph name="DOMAIN" />, али сервер је послао неважећи сертификат.</translation>
 <translation id="9050666287014529139">Приступна фраза</translation>

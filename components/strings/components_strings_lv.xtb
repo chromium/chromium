@@ -1430,7 +1430,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4798269756263412078">Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums. Paziņojumi tiks nosūtīti uz jūsu e-pasta adresi.</translation>
 <translation id="4800132727771399293">Pārbaudiet derīguma termiņu un CVC kodu un mēģiniet vēlreiz.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Izmantot TouchID</translation>
 <translation id="4809079943450490359">Ierīces administratora norādījumi</translation>
 <translation id="4811450222531576619">Uzziniet par tās avotu un tēmu.</translation>
 <translation id="4812751092864334025">Valkājamo ierīču tehnoloģijas</translation>
@@ -1801,7 +1800,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5765072501007116331">Lai skatītu piegādes veidus un prasības, atlasiet adresi.</translation>
 <translation id="57689295674415555">Vai nav ievadīts virtuālās kartes numurs?</translation>
 <translation id="5776313857861697733">Prioritārs</translation>
-<translation id="5778389256418062749">Izmantot piekļuves atslēgu citā ierīcē</translation>
 <translation id="5781136890105823427">Eksperiments iespējots</translation>
 <translation id="578305955206182703">Dzintarkrāsa</translation>
 <translation id="57838592816432529">Izslēgt skaņu</translation>
@@ -2569,7 +2567,6 @@ Papildu informācija:
 <translation id="7880146494886811634">Adreses saglabāšana</translation>
 <translation id="7882421473871500483">Brūna</translation>
 <translation id="7882995332186050355">Kravas automobiļi un autopiekabes</translation>
-<translation id="788679692472636252">Pārvaldīt paroles un piekļuves atslēgas…</translation>
 <translation id="7887683347370398519">Pārbaudiet CVC kodu un mēģiniet vēlreiz.</translation>
 <translation id="7887885240995164102">Atvērt režīmu “attēls attēlā”</translation>
 <translation id="7888575728750733395">Drukāšanas krāsu atveide</translation>
@@ -2965,6 +2962,7 @@ Papildu informācija:
 <translation id="9039213469156557790">Turklāt šajā lapā ir citi resursi, kas nav droši. Kamēr šie resursi tiek pārsūtīti, tos var aplūkot citi, kā arī uzbrucējs var tos pārveidot, lai mainītu lapas uzvedību.</translation>
 <translation id="9040464167025094690">Poga Atrast ierīci. Lai meklētu ierīci Google kontā, nospiediet taustiņu Enter</translation>
 <translation id="9042617223719777575">Liela ietilpība</translation>
+<translation id="9044359186343685026">Izmantot Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Jūs centāties piekļūt <ph name="DOMAIN" />, bet serveris piedāvāja nederīgu sertifikātu.</translation>
 <translation id="9050666287014529139">Ieejas frāze</translation>

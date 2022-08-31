@@ -1432,7 +1432,6 @@
 <translation id="4798269756263412078">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો. અલર્ટને તમારા ઇમેઇલ ઍડ્રેસ પર મોકલવામાં આવશે.</translation>
 <translation id="4800132727771399293">તમારી સમાપ્તિ તારીખ અને CVC તપાસો અને ફરીથી પ્રયાસ કરો</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Touch IDનો ઉપયોગ કરો</translation>
 <translation id="4809079943450490359">તમારા ડિવાઇસ વ્યવસ્થાપક તરફથી સૂચનાઓ</translation>
 <translation id="4811450222531576619">તેના સૉર્સ અને વિષય વિશે જાણો</translation>
 <translation id="4812751092864334025">પહેરી શકાય તેવી ટેક્નોલોજી</translation>
@@ -1803,7 +1802,6 @@
 <translation id="5765072501007116331">વિતરણ પદ્ધતિઓ અને આવશ્યકતાઓ જોવા માટે, એક સરનામું પસંદ કરો</translation>
 <translation id="57689295674415555">શું તમારો વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવ્યો નથી?</translation>
 <translation id="5776313857861697733">પ્રાધાન્યતા</translation>
-<translation id="5778389256418062749">કોઈ બીજા ડિવાઇસ પર પાસકીનો ઉપયોગ કરો</translation>
 <translation id="5781136890105823427">પ્રયોગ ચાલુ કર્યો</translation>
 <translation id="578305955206182703">પીળાશ પડતો નારંગી</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
@@ -2571,7 +2569,6 @@
 <translation id="7880146494886811634">સરનામું સાચવો</translation>
 <translation id="7882421473871500483">ભૂરો</translation>
 <translation id="7882995332186050355">કાર્ગો ટ્રક અને ટ્રેલર</translation>
-<translation id="788679692472636252">પાસવર્ડ અને પાસકી મેનેજ કરો…</translation>
 <translation id="7887683347370398519">તમારું CVC તપાસો અને ફરીથી પ્રયાસ કરો</translation>
 <translation id="7887885240995164102">ચિત્ર-માં-ચિત્ર મોડમાં દાખલ થાઓ</translation>
 <translation id="7888575728750733395">પ્રિન્ટ રેન્ડર કરવાનું ઇન્ટેન્ટ</translation>
@@ -2966,6 +2963,7 @@
 <translation id="9039213469156557790">વળી, આ પેજમાં અન્ય એવા સાધનો છે જે સુરક્ષિત નથી. પરિવહનમાં હોવા પર અન્ય લોકો દ્વારા આ સાધનો જોઈ શકાય છે અને પેજનો વ્યવહાર બદલવા માટે હુમલાખોર દ્વારા સંશોધિત કરવામાં આવી શકે છે.</translation>
 <translation id="9040464167025094690">Find My Deviceનું બટન, Google એકાઉન્ટમાં Find My Device સુવિધાની મુલાકાત લેવા માટે Enter કી દબાવો</translation>
 <translation id="9042617223719777575">વધુ ક્ષમતા</translation>
+<translation id="9044359186343685026">Touch IDનો ઉપયોગ કરો</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">તમે <ph name="DOMAIN" /> સુધી પહોંચવાનો પ્રયાસ કર્યો, પરંતુ સર્વરે અમાન્ય પ્રમાણપત્ર પ્રસ્તુત કર્યું. </translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>

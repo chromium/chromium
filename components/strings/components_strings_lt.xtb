@@ -1432,7 +1432,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4798269756263412078">Gaukite įspėjimus, jei kaina bus sumažinta bet kurioje svetainėje. Įspėjimai bus siunčiami jūsų el. pašto adresu.</translation>
 <translation id="4800132727771399293">Patikrinkite kortelės galiojimo pabaigos datą bei saugos kodą (CVC) ir bandykite dar kart</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Naudoti „Touch ID“</translation>
 <translation id="4809079943450490359">Įrenginio administratoriaus instrukcijos:</translation>
 <translation id="4811450222531576619">Sužinokite apie jo šaltinį ir temą</translation>
 <translation id="4812751092864334025">Nešiojamosios technologijos</translation>
@@ -1803,7 +1802,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5765072501007116331">Jei norite peržiūrėti pristatymo metodus ir reikalavimus, pasirinkite adresą.</translation>
 <translation id="57689295674415555">Virtualios kortelės numeris neįvestas?</translation>
 <translation id="5776313857861697733">Prioritetas</translation>
-<translation id="5778389256418062749">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="5781136890105823427">Eksperimentas įgalintas</translation>
 <translation id="578305955206182703">Gintaro spalva</translation>
 <translation id="57838592816432529">Nutildyti</translation>
@@ -2571,7 +2569,6 @@ Papildoma išsami informacija:
 <translation id="7880146494886811634">Adreso išsaugojimas</translation>
 <translation id="7882421473871500483">Ruda</translation>
 <translation id="7882995332186050355">Krovininiai sunkvežimiai ir priekabos</translation>
-<translation id="788679692472636252">Tvarkyti slaptažodžius…</translation>
 <translation id="7887683347370398519">Patikrinkite kortelės saugos kodą (CVC) ir bandykite dar kartą</translation>
 <translation id="7887885240995164102">Įeiti į vaizdo vaizde režimą</translation>
 <translation id="7888575728750733395">Spausdinimo pateikimo tikslas</translation>
@@ -2967,6 +2964,7 @@ Papildoma išsami informacija:
 <translation id="9039213469156557790">Be to, šiame puslapyje yra kitų nesaugių išteklių. Perduodant duomenis šiuos išteklius gali peržiūrėti kiti asmenys ir keisti atakuojanti programa, siekianti pakeisti puslapio veikimą.</translation>
 <translation id="9040464167025094690">Mygtukas „Rasti įrenginį“; paspauskite „Enter“, kad apsilankytumėte įrenginio paieškos skiltyje „Google“ paskyroje.</translation>
 <translation id="9042617223719777575">Didelė talpa</translation>
+<translation id="9044359186343685026">Naudoti „Touch ID“</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė neteisingą sertifikatą.</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>

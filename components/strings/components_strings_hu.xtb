@@ -691,6 +691,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Asztalitenisz</translation>
 <translation id="2742870351467570537">A kijelölt elemek eltávolítása</translation>
+<translation id="2759825833388495838">kitölteni a jelszót itt: <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Képregények</translation>
 <translation id="2765217105034171413">Kicsi</translation>
 <translation id="277133753123645258">Szállítási mód</translation>
@@ -1429,7 +1430,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4798269756263412078">Értesítést kaphat, ha valamelyik webhelyen csökken az ár. Az értesítések az e-mail-címére érkeznek majd.</translation>
 <translation id="4800132727771399293">Ellenőrizze a lejárati dátumot és a CVC-t, majd próbálja újra</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Touch ID használata</translation>
 <translation id="4809079943450490359">Utasítások az eszköz rendszergazdájától:</translation>
 <translation id="4811450222531576619">További információ a forrásról és a témáról</translation>
 <translation id="4812751092864334025">Hordható technológia</translation>
@@ -1800,7 +1800,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5765072501007116331">A kézbesítési módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="57689295674415555">Nincs kitöltve a virtuális kártya száma?</translation>
 <translation id="5776313857861697733">Prioritás</translation>
-<translation id="5778389256418062749">Azonosítókulcs használata másik eszközön</translation>
 <translation id="5781136890105823427">Kísérlet engedélyezve</translation>
 <translation id="578305955206182703">Borostyánsárga</translation>
 <translation id="57838592816432529">Némítás</translation>
@@ -2568,7 +2567,6 @@ További részletek:
 <translation id="7880146494886811634">Cím mentése</translation>
 <translation id="7882421473871500483">Barna</translation>
 <translation id="7882995332186050355">Áruszállító teherautók és kamionok</translation>
-<translation id="788679692472636252">Jelszavak és azonosítókulcsok kezelése…</translation>
 <translation id="7887683347370398519">Ellenőrizze a CVC-t, majd próbálja újra</translation>
 <translation id="7887885240995164102">Belépés a kép a képben módba</translation>
 <translation id="7888575728750733395">Nyomatmegjelenítési szándék</translation>
@@ -2964,6 +2962,7 @@ További részletek:
 <translation id="9039213469156557790">Emellett az oldal más forrásokat is tartalmaz, amelyek nem biztonságosak. Ezeket a forrásokat mások is megtekinthetik átvitel közben, és megváltoztatásukkal a támadók módosíthatják az oldal viselkedését.</translation>
 <translation id="9040464167025094690">Készülékkereső gomb. Nyomja le az Entert a Készülékkereső megnyitásához a Google-fiókban.</translation>
 <translation id="9042617223719777575">Nagy kapacitás</translation>
+<translation id="9044359186343685026">Touch ID használata</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Megpróbálta elérni a(z) <ph name="DOMAIN" /> webhelyet, de a szerver érvénytelen tanúsítványt mutatott be.</translation>
 <translation id="9050666287014529139">Összetett jelszó</translation>

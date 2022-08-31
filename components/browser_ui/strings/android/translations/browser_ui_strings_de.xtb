@@ -79,6 +79,7 @@
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
+<translation id="2692299144678073135">Zulassen, dass sich ähnliche Websites websiteübergreifend an dich erinnern</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2717722538473713889">E-Mail-Adressen</translation>
@@ -139,6 +140,7 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Cookies für eine bestimmte Website werden zugelassen.</translation>
 <translation id="4046123991198612571">Nächster Titel</translation>
+<translation id="4048876521107516222">Ähnliche Websites nutzen Cookies, damit du beispielsweise angemeldet bleibst</translation>
 <translation id="4149994727733219643">Vereinfachte Ansicht für Webseiten</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4169549551965910670">Mit einem USB-Gerät verbunden</translation>
@@ -220,6 +222,7 @@
 <translation id="5887687176710214216">Gestern zuletzt besucht</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5922853908706496913">Bildschirmfreigabe läuft</translation>
+<translation id="5922967540311291836">Drittanbieter-Cookies blockieren:</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +313,7 @@
 <translation id="7846076177841592234">Auswahl aufheben</translation>
 <translation id="7846621471902887024">Du wirst von allen Websites abgemeldet.</translation>
 <translation id="7882806643839505685">Wiedergabe von Ton auf einer bestimmten Website zulassen.</translation>
+<translation id="789180354981963912">Cookies von Drittanbietern im Inkognitomodus blockieren:</translation>
 <translation id="7940722705963108451">Erinnern</translation>
 <translation id="7986741934819883144">Kontakt auswählen</translation>
 <translation id="7999064672810608036">Möchtest du wirklich alle lokalen Daten einschließlich Cookies löschen und alle Berechtigungen für diese Website zurücksetzen?</translation>

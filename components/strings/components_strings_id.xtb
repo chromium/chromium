@@ -691,6 +691,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2742511345840685325">Tenis meja</translation>
 <translation id="2742870351467570537">Hapus item yang dipilih</translation>
+<translation id="2759825833388495838">mengisi sandi Anda di <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komik</translation>
 <translation id="2765217105034171413">Kecil</translation>
 <translation id="277133753123645258">Metode pengiriman</translation>
@@ -1430,7 +1431,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4798269756263412078">Dapatkan notifikasi jika ada diskon di situs mana pun. Notifikasi akan dikirim ke email Anda.</translation>
 <translation id="4800132727771399293">Periksa tanggal masa berlaku habis dan CVC, lalu coba lagi</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Gunakan Touch ID</translation>
 <translation id="4809079943450490359">Petunjuk dari administrator perangkat Anda:</translation>
 <translation id="4811450222531576619">Pelajari sumber dan topik halaman ini</translation>
 <translation id="4812751092864334025">Teknologi wearable</translation>
@@ -1801,7 +1801,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5765072501007116331">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>
 <translation id="57689295674415555">Nomor kartu virtual tidak diisi?</translation>
 <translation id="5776313857861697733">Prioritas</translation>
-<translation id="5778389256418062749">Gunakan Kunci Sandi di Perangkat Lain</translation>
 <translation id="5781136890105823427">Eksperimen diaktifkan</translation>
 <translation id="578305955206182703">Oranye kekuningan</translation>
 <translation id="57838592816432529">Bisukan</translation>
@@ -2567,7 +2566,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7880146494886811634">Simpan Alamat</translation>
 <translation id="7882421473871500483">Cokelat</translation>
 <translation id="7882995332186050355">Truk &amp; trailer kargo</translation>
-<translation id="788679692472636252">Kelola Sandi dan Kunci Sandi …</translation>
 <translation id="7887683347370398519">Periksa CVC dan coba lagi</translation>
 <translation id="7887885240995164102">Masuk ke mode picture-in-picture</translation>
 <translation id="7888575728750733395">Intent rendering cetak</translation>
@@ -2960,6 +2958,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9039213469156557790">Selain itu, halaman ini berisi sumber daya lainnya yang tidak aman. Sumber daya ini dapat dilihat oleh orang lain saat transit dan dapat dimodifikasi oleh penyerang untuk mengubah perilaku halaman.</translation>
 <translation id="9040464167025094690">Tombol Temukan perangkat saya, tekan Enter untuk membuka fitur temukan perangkat saya di Akun Google</translation>
 <translation id="9042617223719777575">Kapasitas Besar</translation>
+<translation id="9044359186343685026">Gunakan Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Anda berupaya menjangkau <ph name="DOMAIN" />, tetapi server menyajikan sertifikat yang tidak valid.</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>

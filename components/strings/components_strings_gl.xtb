@@ -1431,7 +1431,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4798269756263412078">Recibe alertas se baixa o prezo en calquera sitio. As alertas enviaranse ao teu correo electrónico.</translation>
 <translation id="4800132727771399293">Comproba a túa data de caducidade e o CVC e téntao de novo</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Usar Touch ID</translation>
 <translation id="4809079943450490359">Instrucións do administrador do teu dispositivo:</translation>
 <translation id="4811450222531576619">Obtén información sobre esta fonte e este tema</translation>
 <translation id="4812751092864334025">Tecnoloxía poñible</translation>
@@ -1802,7 +1801,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5765072501007116331">Para consultar os requisitos e métodos de entrega, selecciona un enderezo</translation>
 <translation id="57689295674415555">Non se autocompletou o número da tarxeta virtual?</translation>
 <translation id="5776313857861697733">Prioridade</translation>
-<translation id="5778389256418062749">Usar clave de acceso dun dispositivo distinto</translation>
 <translation id="5781136890105823427">O experimento está activado</translation>
 <translation id="578305955206182703">Ámbar</translation>
 <translation id="57838592816432529">Silenciar</translation>
@@ -2570,7 +2568,6 @@ Detalles adicionais:
 <translation id="7880146494886811634">Gardar enderezo</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7882995332186050355">Camións e tráilers</translation>
-<translation id="788679692472636252">Xestionar contrasinais e claves de acceso…</translation>
 <translation id="7887683347370398519">Comproba o CVC e téntao de novo</translation>
 <translation id="7887885240995164102">Acceder ao modo de pantalla superposta</translation>
 <translation id="7888575728750733395">Intent de renderización da impresión</translation>
@@ -2965,6 +2962,7 @@ Detalles adicionais:
 <translation id="9039213469156557790">Ademais, esta páxina inclúe outros recursos que non son seguros. Outros usuarios poden ver estes recursos mentres se desprazan e un atacante pode modificalos para cambiar o comportamento da páxina.</translation>
 <translation id="9040464167025094690">Botón da función Localizar o meu dispositivo. Para acceder á función da Conta de Google Localizar o meu dispositivo, preme Introducir</translation>
 <translation id="9042617223719777575">Gran capacidade</translation>
+<translation id="9044359186343685026">Usar Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Intentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado non válido.</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>

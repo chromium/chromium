@@ -1416,7 +1416,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4798078619018708837"><ph name="CREDIT_CARD" /> txartelaren xehetasunak eguneratzeko, idatzi iraungitze-data eta CVC kodea. Datuok berresten dituzunean, webgune honekin partekatuko dira Google-ko kontuarekin lotutako txartelaren xehetasunak.</translation>
 <translation id="4800132727771399293">Egiaztatu CVC kodea eta saiatu berriro</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Erabili Touch ID</translation>
 <translation id="4809079943450490359">Gailuaren administratzailearen argibideak:</translation>
 <translation id="4811450222531576619">Lortu haren iturburuari eta bertan jorratzen den gaiari buruzko informazio gehiago</translation>
 <translation id="4812751092864334025">Soinean eramateko gailuek darabilten teknologia</translation>
@@ -1785,7 +1784,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5765072501007116331">Entrega-metodoak eta -eskakizunak ikusteko, hautatu helbide bat</translation>
 <translation id="57689295674415555">Txartel birtualaren zenbakia ez dago beteta?</translation>
 <translation id="5776313857861697733">Lehentasuna</translation>
-<translation id="5778389256418062749">Erabili sarbide-gako bat beste gailu batean</translation>
 <translation id="5781136890105823427">Proba gaituta dago</translation>
 <translation id="578305955206182703">Horixka</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
@@ -2546,7 +2544,6 @@ Xehetasun gehiago:
 <translation id="7880146494886811634">Gorde helbidea</translation>
 <translation id="7882421473871500483">Marroia</translation>
 <translation id="7882995332186050355">Zama-kamioiak eta trailerrak</translation>
-<translation id="788679692472636252">Kudeatu pasahitzak eta sarbide-gakoak…</translation>
 <translation id="7887683347370398519">Begiratu CVC kodea eta saiatu berriro</translation>
 <translation id="7887885240995164102">Sartu pantaila txiki gainjarriko moduan</translation>
 <translation id="7888575728750733395">Inprimatzeko errendatzearen helburua</translation>
@@ -2941,6 +2938,7 @@ Xehetasun gehiago:
 <translation id="9039213469156557790">Gainera, orri honetan seguruak ez diren beste baliabide batzuk daude. Bidean dauden bitartean, beste pertsonek baliabide horiek ikus ditzakete eta erasotzaileek aldatu egin ditzakete orriaren portaera aldatzeko.</translation>
 <translation id="9040464167025094690">Bilatu nire gailua botoia: sakatu "Sartu" tekla Google-ko kontuko Bilatu nire gailua zerbitzura joateko</translation>
 <translation id="9042617223719777575">Edukiera handia</translation>
+<translation id="9044359186343685026">Erabili Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_PRODUCT_SOURCE" /> (<ph name="RESULT_MODIFIED_DATE" />)</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeinura konektatzen saiatu zara, baina zerbitzariak balio ez duen ziurtagiria aurkeztu du.</translation>
 <translation id="9050666287014529139">Pasaesaldia</translation>

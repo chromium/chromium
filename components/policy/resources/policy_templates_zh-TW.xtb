@@ -843,32 +843,6 @@
 <translation id="1861206724856734193">設定防止資料外洩的規則清單。</translation>
 <translation id="1862267110714201519">停用 ghost 視窗功能。</translation>
 <translation id="1865417998205858223">金鑰權限</translation>
-<translation id="1867025364110179456">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
-
-      這項政策的每個清單項目都是一個物件，由下列必要元素組成：
-      <ph name="URL_LABEL" /> (要安裝的網頁應用程式網址)
-
-      5 個選擇性元素：
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (如要建立 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面捷徑，請設為 True)。
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (適用於 <ph name="PRODUCT_NAME" /> 90 以上版本，可用於針對不是漸進式網頁應用程式 (PWA) 的應用程式覆寫名稱，或是針對暫時性安裝，而且需經過驗證才能完成安裝的 PWA 應用程式覆寫名稱。如果同時提供 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，後者會被忽略)。
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (適用於 <ph name="PRODUCT_NAME" /> 99 以上版本，可用於為所有網頁應用程式和 PWA 永久覆寫應用程式名稱。
-
-      目前僅支援
-      <ph name="PRODUCT_OS_NAME" />)。
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (適用於 <ph name="PRODUCT_NAME" /> 99 以上版本，可用於覆寫安裝版應用程式的應用程式圖示。該圖示必須為方形，大小不得超過 1 MB，且採用下列其中一種格式：jpeg、png、gif、webp、ico。雜湊值必須是圖示檔案的 SHA256 雜湊。目前僅支援
-      <ph name="PRODUCT_OS_NAME" />)。
-
-      請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 瞭解如何將應用程式固定到 <ph name="PRODUCT_OS_NAME" /> 檔案櫃。</translation>
 <translation id="186719019195685253">使用 AC 電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="1869688072690234823">你可以透過這項政策，控管可使用哪些 WebAuthn 要素。
 
@@ -2033,6 +2007,7 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用大型游標，但使用者隨時可以啟用。</translation>
+<translation id="3027837632741099453">使用電池供電時，裝置會啟用省電模式。</translation>
 <translation id="3028296787914825213">你可以透過這項政策指定要套用到大量印表機設定的存取權政策，藉此控管要為使用者提供 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 的哪些印表機。
 
       * 如果選取 <ph name="PRINTERS_BLACKLIST" /> (值為 0)，<ph name="BULK_PRINTERS_BLACKLIST" /> 會禁止使用者存取特定印表機
@@ -2075,6 +2050,7 @@
 <translation id="3063302084011279315">停用螢幕側錄功能</translation>
 <translation id="3064530882228745118">在 Kerberos 驗證期間使用 CNAME 查詢</translation>
 <translation id="3066446511111537292">允許這部裝置的相關使用者採用 ADB 側載</translation>
+<translation id="3067462824622454143">允許使用者決定是否在裝置暫停或機蓋蓋上時鎖定裝置</translation>
 <translation id="3070119171976169951">禁止第三方映像檔顯示驗證提示</translation>
 <translation id="3072045631333522102">在零售模式下登入畫面所使用的螢幕保護程式</translation>
 <translation id="3072788420987305247">將這項政策設為啟用或不設定時，如果使用者在媒體播放時鎖定裝置，系統會在螢幕鎖定畫面上顯示媒體控制項。
@@ -2934,6 +2910,7 @@
 
       如果將這項政策設為 False，自動填入功能一律不會建議或填入信用卡資訊，也不會在使用者瀏覽網頁時儲存其提交的其他信用卡資訊。</translation>
 <translation id="3989829840000169163">封鎖瀏覽器的舊版擴充點</translation>
+<translation id="3990391739475801018">裝置將停用省電模式。</translation>
 <translation id="3994043824457743421">在新分頁顯示中間版位公告</translation>
 <translation id="3997519162482760140">可在 SAML 登入網頁取得錄影裝置存取權的網址</translation>
 <translation id="4004523942550416237">在初始設定期間不顯示 Google 助理 Voice Match 流程</translation>
@@ -3250,6 +3227,7 @@
 <translation id="4347908978527632940">如果設為 true，且使用者是受監管的使用者，其他 Android 應用程式即可透過內容提供者查詢使用者的網路限制。
 
           如果設為 false 或沒有設定，內容提供者將不會傳回任何資訊。</translation>
+<translation id="435395045087992163">在裝置暫停或蓋上機蓋時不要鎖定裝置</translation>
 <translation id="4357587374229381015">指定網址參數名稱，供系統在 SAML IdP 登入頁面上用於自動填入使用者名稱欄位。
 
       系統會使用與 <ph name="PRODUCT_OS_NAME" /> 設定檔相關聯的使用者電子郵件地址做為網址參數值。因此如果使用者要在 SAML IdP 使用其他電子郵件地址，應停用這項設定。
@@ -3550,6 +3528,13 @@
 
       如果不設定這項政策或設為啟用，系統會執行 DNS 攔截檢查。如果明確指定停用這項政策，系統就不會執行 DNS 攔截檢查。</translation>
 <translation id="4700190441681139987">不允許任何網站存取感應器</translation>
+<translation id="4701899474784891858">這項政策會啟用或停用省電模式設定。當這項設定啟用時，系統會降低畫面更新率，以降低耗電量。
+      如果不設定這項政策，使用者可前往 chrome://settings/performance 控管這項設定。
+      這項設定有以下不同層級：
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0)：裝置將停用省電模式。
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1)：使用電池供電且電量太低時，裝置會啟用省電模式。
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2)：使用電池供電時，裝置會啟用省電模式。
+      </translation>
 <translation id="4703402283970867140">啟用智慧型調光模式來延長使用時間，直到螢幕變暗為止</translation>
 <translation id="4704958130749494760">自動授權網站連線至 USB 序列裝置。</translation>
 <translation id="471360812659157054">window.webkitStorageInfo 將無法使用。</translation>
@@ -5247,6 +5232,7 @@
 <translation id="6575944031719151455">你可以透過這項政策指定裝置本機帳戶清單，系統會在登入畫面上顯示這些帳戶。可透過 ID 來分辨不同的裝置本機帳戶。
 
       如果不設定這項政策或設為空白清單，系統不會顯示任何裝置本機帳戶。</translation>
+<translation id="6580851705156412587">在裝置暫停或機蓋蓋上時鎖定裝置</translation>
 <translation id="6581048059229620221">如果停用這項政策，就無法啟動遠端支援主機，也無法將主機設為接受外來連線。
 
           這項政策不適用於遠端存取情境。
@@ -6062,6 +6048,7 @@
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
 <translation id="7408815947231046196">允許備份 <ph name="PRODUCT_NAME" /> 資料</translation>
+<translation id="740885188496462583">啟用省電模式</translation>
 <translation id="7410074797376205571">允許 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
 <translation id="7412456346709338637">啟用 Thunderbolt/USB4 周邊裝置資料存取權</translation>
 <translation id="7417438464912687020">允許與這部裝置建立遠端存取連線</translation>
@@ -6537,6 +6524,7 @@
 <translation id="7937766917976512374">允許或拒絕擷取視訊</translation>
 <translation id="7941528208359969119">允許執行線上 <ph name="OCSP_CRL_LABEL" /> 檢查</translation>
 <translation id="7941975817681987555">無論使用任何網路連線，皆不預測網路動作</translation>
+<translation id="7945445169067895719">在裝置暫停或機蓋蓋上時啟用鎖定功能</translation>
 <translation id="7946350455013548764">如果將這項政策設為 3，網站即可要求存取 HID 裝置。如果將這項政策設為 2，系統會拒絕網站存取 HID 裝置。如果不設定，網站可要求存取權，但使用者可以變更這項設定。
 
       你可以將特定<ph name="URL_LABEL" />模式列於 <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策中，藉此覆寫這項政策。</translation>
@@ -6857,6 +6845,7 @@
 
           想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="8288199156259560552">啟用 Android Google 定位服務</translation>
+<translation id="8289824033213234651">使用電池供電且電量太低時，裝置會啟用省電模式。</translation>
 <translation id="8290875622178450531">啟用語音輸入無障礙功能。
 
           如果將這項政策設為啟用，系統會一律啟用語音輸入功能。

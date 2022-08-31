@@ -853,44 +853,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="1861206724856734193">Menyetel daftar aturan pencegahan kebocoran data.</translation>
 <translation id="1862267110714201519">Nonaktifkan fitur jendela bayangan.</translation>
 <translation id="1865417998205858223">Izin Kunci</translation>
-<translation id="1867025364110179456">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
-
-      Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib:
-      <ph name="URL_LABEL" /> (URL aplikasi web yang akan diinstal)
-
-      dan 5 elemen opsional:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (untuk cara aplikasi web terbuka—tab baru adalah default)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (Berlaku jika Anda ingin membuat pintasan desktop <ph name="LINUX_OS_NAME" /> dan
-      <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (<ph name="PRODUCT_NAME" /> mulai dari versi 90
-      memungkinkan Anda mengganti nama aplikasi jika aplikasi bukan
-      Progressive Web App (PWA), atau mengganti nama aplikasi yang diinstal
-      sementara jika aplikasi adalah PWA, tetapi perlu autentikasi sebelum
-      penginstalan dapat diselesaikan. Jika
-      <ph name="CUSTOM_NAME_LABEL" /> dan
-      <ph name="FALLBACK_APP_NAME_LABEL" /> tersedia,
-      yang kedua akan diabaikan).
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (<ph name="PRODUCT_NAME" />
-      mulai dari versi 99 memungkinkan Anda secara permanen mengganti nama aplikasi untuk semua aplikasi
-      web dan PWA. Saat ini hanya didukung di
-      <ph name="PRODUCT_OS_NAME" />).
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (<ph name="PRODUCT_NAME" />
-      mulai dari versi 99 memungkinkan Anda mengganti ikon aplikasi yang diinstal. Ikon
-      harus berbentuk persegi, berukuran maksimal 1 MB, dan dalam salah satu format
-      berikut: jpeg, png, gif, webp, ico. Nilai hash file ikon harus
-      hash SHA256. Saat ini hanya didukung di
-      <ph name="PRODUCT_OS_NAME" />).
-
-      Lihat <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> untuk menyematkan aplikasi ke rak <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="186719019195685253">Kebijakan yang diambil saat penundaan nganggur tercapai ketika dijalankan pada daya AC</translation>
 <translation id="1869688072690234823">Menyetel kebijakan akan mengontrol faktor WebAuthn yang dapat digunakan.
 
@@ -2072,6 +2034,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, kursor besar mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="3027837632741099453">Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai.</translation>
 <translation id="3028296787914825213">Menyetel kebijakan akan menentukan kebijakan akses yang berlaku untuk konfigurasi printer massal sehingga akan mengontrol printer mana dari <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> yang akan tersedia bagi pengguna.
 
       * Jika <ph name="PRINTERS_BLACKLIST" /> (nilai 0) dipilih, <ph name="BULK_PRINTERS_BLACKLIST" /> akan membatasi akses ke printer yang ditentukan
@@ -2115,6 +2078,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3063302084011279315">Nonaktifkan Screencast</translation>
 <translation id="3064530882228745118">Gunakan pencarian CNAME selama autentikasi Kerberos</translation>
 <translation id="3066446511111537292">Izinkan pengguna terafiliasi di perangkat ini untuk menggunakan sideload ADB</translation>
+<translation id="3067462824622454143">Izinkan pengguna menentukan apakah perangkat akan dikunci saat perangkat ditangguhkan atau penutupnya ditutup</translation>
 <translation id="3070119171976169951">Cegah gambar pihak ketiga menampilkan perintah autentikasi</translation>
 <translation id="3072045631333522102">Tirai layar untuk digunakan pada layar masuk dalam mode eceran</translation>
 <translation id="3072788420987305247">Jika kebijakan disetel ke Aktif atau tidak disetel, kontrol media akan ditampilkan di layar kunci ketika pengguna mengunci perangkat saat media sedang diputar.
@@ -2996,6 +2960,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan disetel ke Salah (False), isi otomatis tidak akan menyarankan atau mengisi informasi kartu kredit, juga tidak menyimpan informasi kartu kredit tambahan yang mungkin dikirimkan pengguna saat menjelajahi web.</translation>
 <translation id="3989829840000169163">Memblokir Titik Ekstensi Lama Browser</translation>
+<translation id="3990391739475801018">Mode Penghemat Baterai akan dinonaktifkan.</translation>
 <translation id="3994043824457743421">Menampilkan pengumuman slot tengah di Halaman Tab Baru</translation>
 <translation id="3997519162482760140">URL yang akan diberi akses ke perangkat perekam video di halaman masuk SAML</translation>
 <translation id="4004523942550416237">Jangan tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
@@ -3336,6 +3301,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4347908978527632940">Jika nilai disetel ke "true" dan pengguna adalah pengguna yang dilindungi, aplikasi Android lainnya dapat mengajukan kueri batasan web pengguna melalui penyedia konten.
 
           Jika nilai disetel ke "false" atau tidak disetel, penyedia konten tidak mengembalikan informasi apa pun.</translation>
+<translation id="435395045087992163">Jangan kunci perangkat saat perangkat ditangguhkan atau penutupnya ditutup</translation>
 <translation id="4357587374229381015">Menentukan nama parameter URL yang akan digunakan di halaman login IdP SAML untuk mengisi otomatis kolom nama pengguna.
 
       Email pengguna yang dikaitkan dengan profil <ph name="PRODUCT_OS_NAME" />-nya akan digunakan sebagai nilai untuk parameter URL. Oleh karena itu, setelan ini harus dinonaktifkan jika pengguna diperkirakan akan menggunakan email yang berbeda dengan IdP SAML.
@@ -3636,6 +3602,13 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       Saat kebijakan ini tidak ditetapkan, atau diaktifkan, pemeriksaan intersepsi DNS akan dilakukan. Pemeriksaan tidak dilakukan ketika kebijakan dinonaktifkan secara eksplisit.</translation>
 <translation id="4700190441681139987">Jangan izinkan situs apa pun mengakses sensor</translation>
+<translation id="4701899474784891858">Kebijakan ini mengaktifkan atau menonaktifkan setelan Mode Penghemat Baterai. Setelan ini membuat kecepatan frame di-throttle agar mengurangi konsumsi daya.
+      Jika kebijakan ini tidak disetel, pengguna akhir dapat mengontrol setelan ini di chrome://settings/performance.
+      Level yang berbeda adalah:
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): Mode Penghemat Baterai akan dinonaktifkan.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai dan level baterai rendah.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai.
+      </translation>
 <translation id="4703402283970867140">Aktifkan model redup smart untuk memperpanjang waktu hingga layar diredupkan</translation>
 <translation id="4704958130749494760">Otomatis memberikan izin ke situs untuk terhubung ke perangkat serial USB.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo tidak akan tersedia.</translation>
@@ -5385,6 +5358,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6575944031719151455">Menyetel kebijakan akan menentukan daftar akun lokal perangkat yang ditampilkan di layar login. ID akan menunjukkan akun lokal perangkat yang berbeda.
 
       Jika kebijakan ini tidak disetel atau disetel ke daftar kosong, berarti tidak ada akun lokal perangkat yang ditampilkan.</translation>
+<translation id="6580851705156412587">Kunci perangkat saat perangkat ditangguhkan atau penutupnya ditutup</translation>
 <translation id="6581048059229620221">Jika kebijakan ini disetel ke nonaktif, host dukungan jarak jauh tidak dapat dimulai atau dikonfigurasi untuk menerima koneksi masuk.
 
           Kebijakan ini tidak memengaruhi skenario akses jarak jauh.
@@ -6200,6 +6174,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, prediksi jaringan akan diaktifkan, tetapi pengguna dapat mengubahnya.</translation>
 <translation id="7408815947231046196">Mengizinkan pencadangan data <ph name="PRODUCT_NAME" /></translation>
+<translation id="740885188496462583">Mengaktifkan Mode Penghemat Baterai</translation>
 <translation id="7410074797376205571">Izinkan <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
 <translation id="7412456346709338637">Mengaktifkan akses data periferal Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Izinkan koneksi akses jarak jauh ke perangkat ini</translation>
@@ -6682,6 +6657,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7937766917976512374">Izinkan atau tolak penangkapan video</translation>
 <translation id="7941528208359969119">Izinkan pelaksanaan pemeriksaan <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">Jangan memprediksi tindakan jaringan di koneksi jaringan apa pun</translation>
+<translation id="7945445169067895719">Mengaktifkan kunci saat perangkat ditangguhkan atau penutupnya ditutup</translation>
 <translation id="7946350455013548764">Jika kebijakan disetel ke 3, situs akan diizinkan meminta akses ke perangkat HID. Jika kebijakan disetel ke 2, situs akan dilarang meminta akses ke perangkat HID.
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.
@@ -7008,6 +6984,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 
           Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="8288199156259560552">Mengaktifkan Layanan Lokasi Google Android</translation>
+<translation id="8289824033213234651">Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai dan level baterai rendah.</translation>
 <translation id="8290875622178450531">Mengaktifkan fitur aksesibilitas dikte.
 
           Jika kebijakan ini ditetapkan ke aktif, dikte akan selalu diaktifkan.

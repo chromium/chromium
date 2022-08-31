@@ -691,6 +691,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2742511345840685325">Borðtennis</translation>
 <translation id="2742870351467570537">Fjarlægja valin atriði</translation>
+<translation id="2759825833388495838">fylla út aðgangsorðið þitt í <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Myndasögur</translation>
 <translation id="2765217105034171413">Lítið</translation>
 <translation id="277133753123645258">Sendingarmáti</translation>
@@ -1431,7 +1432,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4798269756263412078">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði. Tilkynningar verða sendar á netfangið þitt.</translation>
 <translation id="4800132727771399293">Athugaðu gildistímann og CVC-númerið og reyndu aftur</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Nota snertiauðkenni</translation>
 <translation id="4809079943450490359">Leiðbeiningar frá stjórnanda tækisins:</translation>
 <translation id="4811450222531576619">Kynntu þér uppruna og umfjöllunarefni síðunnar</translation>
 <translation id="4812751092864334025">Tækni sem notandi ber á sér</translation>
@@ -1802,7 +1802,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5765072501007116331">Veldu heimilisfang til að sjá sendingarmáta og kröfur</translation>
 <translation id="57689295674415555">Var sýndarkortsnúmerið ekki útfyllt?</translation>
 <translation id="5776313857861697733">Forgangur</translation>
-<translation id="5778389256418062749">Nota aðgangslykil í öðru tæki</translation>
 <translation id="5781136890105823427">Tilraun gerð virk</translation>
 <translation id="578305955206182703">Rafgulur</translation>
 <translation id="57838592816432529">Þagga</translation>
@@ -2570,7 +2569,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7880146494886811634">Vista heimilisfang</translation>
 <translation id="7882421473871500483">Brúnn</translation>
 <translation id="7882995332186050355">Flutningabílar og eftirvagnar</translation>
-<translation id="788679692472636252">Stjórna aðgangsorðum og aðgangslyklum…</translation>
 <translation id="7887683347370398519">Athugaðu CVC-númerið og reyndu aftur</translation>
 <translation id="7887885240995164102">Skoða mynd í mynd</translation>
 <translation id="7888575728750733395">Tilgangur myndsetningar</translation>
@@ -2965,6 +2963,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9039213469156557790">Aukinheldur inniheldur þessi síða önnir tilföng sem ekki er hægt að treysta. Þessi tilföng kunna að vera skoðuð af öðrum á meðan þau eru í umferð, og tölvuþrjótur gæti breytt þeim til þess að reyna að breyta hegðun síðunnar.</translation>
 <translation id="9040464167025094690">Hnappur til að finna tækið mitt, ýttu á Enter til að opna „Finna tækið mitt“ á Google reikningnum</translation>
 <translation id="9042617223719777575">Stór bakki</translation>
+<translation id="9044359186343685026">Nota snertiauðkenni</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Þú reyndir að tengjast <ph name="DOMAIN" /> en netþjónninn framvísaði ógildu vottorði.</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>

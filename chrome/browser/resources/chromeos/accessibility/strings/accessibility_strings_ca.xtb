@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Groc verdós</translation>
 <translation id="2523609930580546572">Tutorial de ChromeVox</translation>
 <translation id="2525706221823668172">Tecles de drecera de Chromebook</translation>
+<translation id="2543973100702367007">Fes doble toc per <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">error gramatical</translation>
 <translation id="2556326187583116255">Toca amb 2 dits per aturar qualsevol entrada de veu en curs</translation>
 <translation id="2573256689920773241">Navegació bàsica</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">La meva estació preferida</translation>
 <translation id="8696284982970258155">Verd pàl·lid</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra}other{# barres verticals}}</translation>
+<translation id="8733397807344284494">Prem Cerca+Espai per <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Suggeriment: per activar l'element actual, prem Cerca+barra espaiadora.</translation>
 <translation id="8743786158317878347">entra al contingut estructurat, com ara les taules</translation>
 <translation id="8746846427395705317">mou a la paraula anterior</translation>

@@ -840,43 +840,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="1861206724856734193">Legt eine Liste mit Regeln zur Vermeidung von Datenlecks fest.</translation>
 <translation id="1862267110714201519">Funktion für ghost-Dialogfelder deaktivieren.</translation>
 <translation id="1865417998205858223">Hauptberechtigungen</translation>
-<translation id="1867025364110179456">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch – also ohne Interaktion des Nutzers – installiert werden und vom Nutzer weder deinstalliert noch deaktiviert werden können.
-
-      Jedes Listenelement der Richtlinie ist ein Objekt, das aus der obligatorischen Komponente
-      „<ph name="URL_LABEL" />“ (der URL der Web-App, die installiert werden soll)
-
-      und fünf optionalen Komponenten
-      „<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />“
-      (legt fest, wie die Web-App geöffnet wird – standardmäßig in einem neuen Tab),
-
-      „<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />“
-      (auf „True“ setzen, wenn du Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und
-      <ph name="MS_WIN_NAME" /> erstellen möchtest) und
-
-      „<ph name="FALLBACK_APP_NAME_LABEL" />“ besteht.
-      (Ab <ph name="PRODUCT_NAME" /> Version 90 –
-      ermöglicht, den App-Namen zu überschreiben, wenn es keine
-      progressive Web-App (PWA) ist oder es eine temporär installierte PWA ist,
-      für die vor Abschluss der Installation
-      eine Authentifizierung erforderlich ist. Wenn sowohl
-      „<ph name="CUSTOM_NAME_LABEL" />“ als auch
-      „<ph name="FALLBACK_APP_NAME_LABEL" />“ angegeben sind,
-      wird Letzteres ignoriert.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (Ab <ph name="PRODUCT_NAME" />
-      Version 99 kannst du den App-Namen für alle Web-Apps und PWAs dauerhaft überschreiben. Wird derzeit nur bei
-      <ph name="PRODUCT_OS_NAME" /> unterstützt.)
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (Ab <ph name="PRODUCT_NAME" />
-      Version 99 kannst du das App-Symbol installierter Apps überschreiben. Die
-      Symbole müssen quadratisch und maximal 1 MB groß sein und in einem der folgenden
-      Formate vorliegen: JPEG, PNG, GIF, WEBP, ICO. Der Hashwert muss der SHA256-Hash
-      der Symboldatei sein. Wird derzeit nur bei
-      <ph name="PRODUCT_OS_NAME" /> unterstützt.)
-
-      Siehe „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ für das Anpinnen von Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage.</translation>
 <translation id="186719019195685253">Auszuführende Aktion beim Erreichen der Leerlaufverzögerung während des Wechselstrombetriebs</translation>
 <translation id="1869688072690234823">Durch die Konfiguration der Richtlinie wird festgelegt, welche WebAuthn-Faktoren verwendet werden können.
 
@@ -1082,6 +1045,7 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="2043770014371753404">Deaktivierte Unternehmensdrucker</translation>
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
 <translation id="2058055310819710697">Entwicklermodus für isolierte Apps aktivieren</translation>
+<translation id="205807990145127714">Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden.</translation>
 <translation id="2061123930713023976">Fehlerbehebung von Netzwerkpaketaufnahmen erlauben</translation>
 <translation id="2061810934846663491">Erforderliche Domainnamen für Remotezugriff-Hosts konfigurieren</translation>
 <translation id="2062632109797189011">Veraltete window.webmasterStorageInfo API wieder aktivieren</translation>
@@ -3661,6 +3625,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Bei deaktivierter Richtlinie ist die Registrierung für <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optional und bei Nichterfüllung wird der Startprozess von <ph name="PRODUCT_NAME" /> nicht blockiert.
 
       Diese Richtlinie wird im Rahmen der Registrierung von Cloud-Richtlinien auf Computern verwendet. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="488996881569316769">Netzwerktelemetrie</translation>
 <translation id="4890453377345554695">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
@@ -3991,6 +3956,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
       Ist die Richtlinie nicht konfiguriert oder ungültig, gilt dasselbe Verhalten wie für "Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist".</translation>
 <translation id="5229339291699779956">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte; Peripheriegeräte sind voll funktionsfähig</translation>
+<translation id="5230095739094490896">IPP-Attributvorlage „client-name“ drucken</translation>
 <translation id="5233239004553860036">Wenn diese Richtlinie auf <ph name="POLICY_VALUE_ALL" /> gesetzt oder nicht konfiguriert ist, ist jegliche Nutzung von verwalteten Konten zulässig. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Ein sekundäres Konto kann nur Richtlinien empfangen, wenn das Konto in einem Browserprofil als primäres Konto angemeldet ist.
       Richtlinien für das Konto werden in den folgenden Szenarien nicht umgesetzt:
         – Es ist ein sekundäres Konto auf Betriebssystemebene (Kontoeinstellungen)
@@ -5165,6 +5131,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6506486086262398387">Wenn die Richtlinie aktiviert ist, verwendet die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_OS_NAME" /> bei Bedarf NTLM zur Authentifizierung gegenüber SMB-Freigaben. Ist die Richtlinie deaktiviert, wird die NTLM-Authentifizierung gegenüber SMB-Freigaben ausgeschaltet.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
+<translation id="6513453889192806240">HTTPS-Latenz</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-Bild</translation>
 <translation id="6518102411616460786">Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist</translation>
 <translation id="6520802717075138474">Suchmaschinen bei erster Ausführung aus Standardbrowser importieren</translation>
@@ -5433,6 +5400,12 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
 
       Wenn diese Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, ist <ph name="PLUGIN_VM_NAME" /> für den Nutzer nicht aktiviert.
       Ist die Richtlinie auf "true" gesetzt, ist <ph name="PLUGIN_VM_NAME" /> für den Nutzer aktiviert, solange andere Einstellungen dies ebenfalls zulassen. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> und <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> müssen "true" sein und entweder <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> oder <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> müssen für <ph name="PLUGIN_VM_NAME" /> aktiviert sein.</translation>
+<translation id="6750902920405577210">Liste der Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden sollen.
+
+      Die Telemetriedaten werden nur gesendet, wenn sie nicht durch die steuernde Richtlinie deaktiviert wurden.
+      Die Steuerrichtlinie für https_latency und network_telemetry ist ReportDeviceNetworkStatus.
+
+      Wenn die Richtlinie nicht konfiguriert ist, werden keine zusätzlichen Telemetriedaten zu Änderungen der Signalstärke gesendet.</translation>
 <translation id="6752711782954612641">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" die Parameter für die Suche nach einer URL mit POST an. Die Richtlinie besteht aus kommagetrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie <ph name="SEARCH_TERM_MARKER" /> ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />" nicht konfiguriert, werden Suchanfragen mithilfe der GET-Methode gesendet.</translation>
@@ -7217,6 +7190,18 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Wenn die Richtlinie auf "false" gesetzt ist, werden Tabs nicht deaktiviert.</translation>
 <translation id="8619748440665904084">Import von Autofill-Daten für Formulare bei der ersten Ausführung deaktivieren</translation>
+<translation id="8620103780247748230">Diese Richtlinie steuert den Wert des Attributs <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> IPP (Internet Printing Protocol) in Druckaufträgen.
+
+      Wird für die Richtlinie ein String festgelegt, wird jedem Druckauftrag ein zusätzliches <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-Element hinzugefügt. Für das <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />-Mitglied des hinzugefügten <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-Elements wird nach dem Ersetzen von Variablen der Wert der Richtlinie festgelegt.
+
+      Unterstützte Variablen sind <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> und <ph name="USER_EMAIL_DOMAIN" />. Nicht unterstützte Platzhaltervariablen werden nicht ersetzt.
+
+      Der Ergebniswert nach dem Ersetzen von Variablen gilt als gültig, wenn er nur aus druckbaren <ph name="ASCII" />-Zeichen besteht und nicht länger als 255 Zeichen ist.
+
+      Hinweis: Aus Datenschutzgründen gilt diese Richtlinie nur für die Kommunikation mit einem Drucker, der das Protokoll <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> oder <ph name="IPP_USB_PROTOCOL" /> verwendet. Sie gilt außerdem nur für Drucker, die <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> unterstützen.
+
+      Wenn die Richtlinie nicht konfiguriert ist oder auf einen leeren oder ungültigen Wert festgelegt ist, wird keine zusätzliche <ph name="CLIENT_INFO_PLACEHOLDER" /> zu Druckauftragsanfragen hinzugefügt.
+      </translation>
 <translation id="8623672932476443039">Wenn die Richtlinie aktiviert ist, können Nutzer den Entwicklermodus für isolierte Apps nutzen.
       Ist sie deaktiviert, können Nutzer diese Funktion nicht nutzen.
       Wenn die Richtlinie nicht konfiguriert ist, kann die Funktion nicht standardmäßig von durch Unternehmen verwalteten Nutzern unter Chrome OS verwendet werden – für alle anderen Nutzer und Betriebssysteme ist sie jedoch verfügbar.</translation>

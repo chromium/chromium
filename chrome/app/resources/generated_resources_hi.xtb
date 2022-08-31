@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">कोई गड़बड़ी हुई. हो सकता है कि Linux पूरी तरह से अपग्रेड न हुआ हो. ज़्यादा जानकारी के लिए लॉग देखें. लॉग को फ़ाइल &gt; मेरी फ़ाइलें &gt; <ph name="LOG_FILE" /> में सेव किया गया है</translation>
 <translation id="1043818413152647937">क्या आप इन ऐप्लिकेशन से डेटा भी मिटाना चाहते हैं?</translation>
 <translation id="1043824690776631483">आपको इस साइट पर जाने की अनुमति लेनी होगी. इसमें गलत कॉन्टेंट हो सकता है.</translation>
+<translation id="104419033123549300">कीमैप स्टाइल</translation>
 <translation id="104710386808485638">क्या आप Linux को रीस्टार्ट करना चाहते हैं?</translation>
 <translation id="1047431265488717055">लिंक ले&amp;ख को कॉपी करें</translation>
 <translation id="1048286738600630630">डिसप्ले</translation>
@@ -783,6 +784,7 @@
 <translation id="1721312023322545264">आपको <ph name="NAME" /> से इस साइट पर जाने की अनुमति लेनी होगी</translation>
 <translation id="1722460139690167654">आपके <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> का प्रबंधन<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> करता है</translation>
 <translation id="1723824996674794290">&amp;नई विंडो</translation>
+<translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">टैब स्क्रोलिंग</translation>
 <translation id="1729533290416704613">इससे यह भी नियंत्रित होता है कि ऑम्निबॉक्‍स से खोजते समय आपको कौन सा पेज दिखाया जाए.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; Google Play Store &gt; Android प्राथमिकताएं प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन एडमिन पर जाएं. फिर उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर अनइंस्टॉल करें या बंद करें पर टैप करें.<ph name="END_PARAGRAPH1" /></translation>
@@ -1967,6 +1969,7 @@
 <translation id="2796740370559399562">कुकी को अनुमति देना जारी रखें</translation>
 <translation id="2798347533012571708">अपडेट जारी रखें</translation>
 <translation id="2799223571221894425">फिर से लॉन्‍च करें</translation>
+<translation id="2800309299477632167">कस्टम कीमैप</translation>
 <translation id="2800760947029405028">एक इमेज अपलोड करें</translation>
 <translation id="2801954693771979815">स्क्रीन का साइ़ज़</translation>
 <translation id="2802557211515765772">मैनेज किया गया कोई भी प्रिंटर नहीं है.</translation>
@@ -2028,6 +2031,7 @@
 <translation id="2849767214114481738">आपका पिन जोड़ दिया गया है</translation>
 <translation id="2849936225196189499">महत्वपूर्ण</translation>
 <translation id="2850541429955027218">थीम जोड़ें</translation>
+<translation id="2850672011315104382">पंक्चुएशन स्टाइल</translation>
 <translation id="2851634818064021665">आपको इस साइट पर जाने की अनुमति लेनी होगी</translation>
 <translation id="2851728849045278002">कोई गड़बड़ी हुई. ज़्यादा जानकारी पाने के लिए क्लिक करें.</translation>
 <translation id="2852385257476173980">वेब को ब्राउज़ करने पर, आपने जिन साइटों को देखा है उनकी सूची यहां दिख सकती है</translation>
@@ -2524,6 +2528,7 @@
 <translation id="3359256513598016054">प्रमाणपत्र नीति बाध्यताएं</translation>
 <translation id="3360297538363969800">प्रिंट करना पूरा नहीं हो सका. कृपया अपना प्रिंटर जाँचें और फिर से कोशिश करें.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}one{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}other{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}}</translation>
+<translation id="3361954577771524115">ऐप्लिकेशन से</translation>
 <translation id="3363202073972776113">इस नई प्रोफ़ाइल को आपका संगठन मैनेज करेगा. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">आपके एडमिन से: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl या फिर Alt का इस्तेमाल करें</translation>
@@ -3048,6 +3053,7 @@
 <translation id="3848547754896969219">यूआरएल को &amp;गुप्त विंडो में खोलें</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="3851428669031642514">असुरक्षित स्‍क्रिप्‍ट लोड करें</translation>
+<translation id="3852215160863921508">इनपुट से जुड़ी सहायता</translation>
 <translation id="3854599674806204102">कोई विकल्प चुनें</translation>
 <translation id="3854967233147778866">दूसरी भाषाओं में वेबसाइटों का अनुवाद करने की सुविधा दें</translation>
 <translation id="3854976556788175030">आउटपुट ट्रे भरी हुई है</translation>
@@ -3804,6 +3810,7 @@
 <translation id="4579453506923101210">जुड़ा हुआ फ़ोन हटाएं</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> को कास्ट करने में असमर्थ.</translation>
 <translation id="4579876313423027742">ब्राउज़र की सूचनाओं के लिए, <ph name="LINK_BEGIN" />Chrome ब्राउज़र सेटिंग<ph name="LINK_END" /> पर जाएं</translation>
+<translation id="4580587929153007251">Google Password Manager में फिर से साइन इन करें</translation>
 <translation id="4580596421317071374">इस डिवाइस पर, पासवर्ड, <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किए जाते हैं.</translation>
 <translation id="4580626299762849806">पासवर्ड इंपोर्ट नहीं किए जा सके. <ph name="FILENAME" /> की जांच करें और पक्का करें कि इसका फ़ॉर्मैट सही हो.</translation>
 <translation id="4581774856936278355">Linux को बहाल करते समय गड़बड़ी हुई</translation>
@@ -4485,6 +4492,7 @@
 <translation id="5268373933383932086">अपने पेज को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="5269977353971873915">प्रिंट विफल</translation>
 <translation id="5273806377963980154">साइट के यूआरएल में बदलाव करें</translation>
+<translation id="5275084684151588738">उपयोगकर्ता की बनाई डिक्शनरी</translation>
 <translation id="5275338516105640560">सेव किए गए टैब ग्रुप का बटन</translation>
 <translation id="5275352920323889391">श्‍वान</translation>
 <translation id="527605719918376753">टैब म्यूट करें</translation>
@@ -4700,6 +4708,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{पिन में कम से कम 1 वर्ण होना ज़रूरी है}one{पिन में कम से कम # वर्ण होना ज़रूरी है}other{पिन में कम से कम # वर्ण होने ज़रूरी हैं}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अभी वाई-फ़ाई से कनेक्ट करें और अपडेट डाउनलोड करें. इसके अलावा, आप सीमित डेटा वाले कनेक्शन से भी डाउनलोड कर सकते हैं. इसके लिए शुल्क लिया जा सकता है.</translation>
 <translation id="5481273127572794904">एक से ज़्यादा फ़ाइलों को अपने-आप डाउनलोड करने की अनुमति नहीं है</translation>
+<translation id="5481755802440890178">चुने गए टेक्स्ट का अनुवाद नहीं किया जा सका</translation>
 <translation id="5481941284378890518">आस-पास के प्रिंटर जोड़ें</translation>
 <translation id="5483785310822538350">फ़ाइल और डिवाइस के एक्सेस रद्द करें</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को आज ही लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}one{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}other{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}}</translation>
@@ -4932,6 +4941,7 @@
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" से दुर्व्यवहार की रिपोर्ट करें</translation>
 <translation id="5696679855467848181">मौजूदा पीपीडी फ़ाइल का इस्तेमाल किया जा रहा है: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">इमोजी पिकर</translation>
+<translation id="5698462638680260399">पासवर्ड का इस्तेमाल करने के लिए साइन इन करें</translation>
 <translation id="570043786759263127">Google Play ऐप्लिकेशन और सेवाएं</translation>
 <translation id="5700836101007545240">आपके व्यवस्थापक ने कनेक्शन जोड़ने की सुविधा बंद कर दी है</translation>
 <translation id="5701080607174488915">सर्वर से नीति लाते समय गड़बडी हुई.</translation>
@@ -4949,6 +4959,7 @@
 <translation id="5712153969432126546">कभी-कभी साइटें, पीडीएफ़ प्रकाशित करती हैं. जैसे, दस्तावेज़, कॉन्ट्रैक्ट, और फ़ॉर्म</translation>
 <translation id="571222594670061844">साइटें, पहचान करने वाली सेवाओं से जुड़े, साइन इन करने के अनुरोध दिखा सकती हैं</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> से कनेक्ट किया गया</translation>
+<translation id="5713960379473463904">स्पेस इनपुट स्टाइल</translation>
 <translation id="5715711091495208045">प्‍लग इन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">डिफ़ॉल्ट सर्च इंजन</translation>
 <translation id="5719854774000914513">साइटें, एचआईडी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती हैं</translation>
@@ -5121,7 +5132,6 @@
 <translation id="5884474295213649357">यह टैब किसी USB डिवाइस से कनेक्ट है.</translation>
 <translation id="5885314688092915589">आपका संगठन इस प्रोफ़ाइल को मैनेज करेगा</translation>
 <translation id="5886009770935151472">उंगली 1</translation>
-<translation id="5888843733007437002">टेंप्लेट देखा जा रहा है. नेविगेट करने के लिए Tab दबाएं.</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA की अधिकतम संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">पसंदीदा वाई-फ़ाई नेटवर्क</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
@@ -5589,7 +5599,6 @@
 <translation id="6333170995003625229">आपके ईमेल पते या पासवर्ड की पुष्टि नहीं की जा सकी. फिर से साइन इन करने की कोशिश करें.</translation>
 <translation id="6335920438823100346">Linux शुरू करने के लिए, <ph name="MANAGER" /> के लिए यह ज़रूरी है कि आप अपने डेटा का बैक अप ले लें. साथ ही, इस Chromebook को फ़ैक्ट्री सेटिंग पर रीसेट कर लें.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. इससे आपका <ph name="DEVICE_TYPE" />, 24 घंटे में रीसेट हो जाएगा. आप जिन फ़ाइलों को सेव रखना चाहते हैं उनका बैक अप लें.</translation>
-<translation id="6338402296920404442"><ph name="FILENAME" /> को मिटाएं, ताकि इस डिवाइस का इस्तेमाल करने वाले दूसरे लोग आपके पासवर्ड न देख सकें.</translation>
 <translation id="6338981933082930623">सभी साइटें आपको कोई भी विज्ञापन दिखा सकती हैं</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> के लिए एक नया प्रोफ़ाइल बनाएं</translation>
 <translation id="6340071272923955280">इंटरनेट प्रिंटिंग प्रोटोकॉल (IPPS)</translation>
@@ -6373,6 +6382,7 @@
 <translation id="7069811530847688087"><ph name="WEBSITE" /> को नई या अलग तरह की सुरक्षा कुंजी की ज़रूरत हो सकती है</translation>
 <translation id="7070484045139057854">यह साइट डेटा पढ़ सकता है और बदल सकता है</translation>
 <translation id="7072010813301522126">शॉर्टकट का नाम</translation>
+<translation id="7074066049407662839">पासवर्ड सेव करने के लिए साइन इन करें</translation>
 <translation id="7075513071073410194">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL प्रमाणपत्र और सेटिंग प्रबंधित करें</translation>
 <translation id="7076875098323397992">अपग्रेड करने की प्रोसेस शुरू नहीं की जा सकती</translation>
@@ -6904,6 +6914,7 @@
 <translation id="7625568159987162309">सभी साइटों की अनुमतियां और साइटों पर स्टोर डेटा देखें</translation>
 <translation id="7625823789272218216">बाईं ओर का नया टैब</translation>
 <translation id="7628201176665550262">रीफ़्रेश दर</translation>
+<translation id="7628392600831846024">सिंबल स्टाइल</translation>
 <translation id="7629827748548208700">टैब: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है. आपको हर बार साइन इन करना होगा.</translation>
 <translation id="7631014249255418691">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप ले लिया गया है</translation>
@@ -8202,6 +8213,7 @@
 <translation id="8850251000316748990">ज़्यादा देखें...</translation>
 <translation id="885246833287407341">एपीआई फ़ंक्शन के तर्क</translation>
 <translation id="8853586775156634952">इस कार्ड को सिर्फ़ इस डिवाइस पर सेव किया जाएगा</translation>
+<translation id="8854745870658584490">चुनने का शॉर्टकट</translation>
 <translation id="8855977033756560989">इस Chromebook Enterprise डिवाइस के साथ Chrome Enterprise Upgrade भी दिया जाता है. एंटरप्राइज़ की सुविधाओं का फ़ायदा उठाने के लिए, इस डिवाइस को Google Admin खाते से रजिस्टर करें.</translation>
 <translation id="8856028055086294840">ऐप्लिकेशन और पेजों को वापस लाएं</translation>
 <translation id="885701979325669005">मेमोरी</translation>

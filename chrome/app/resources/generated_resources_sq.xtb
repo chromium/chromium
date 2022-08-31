@@ -5104,7 +5104,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5884474295213649357">Kjo skedë është e lidhur me një pajisje me USB.</translation>
 <translation id="5885314688092915589">Këtë profil do ta menaxhojë organizata jote</translation>
 <translation id="5886009770935151472">Gishti 1</translation>
-<translation id="5888843733007437002">Shabllonet e shikimit. Shtyp tastin Tab për të naviguar.</translation>
 <translation id="5889282057229379085">Numri maksimal i autoriteteve ndërmjetëse të certifikatave: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Rrjetet e preferuara Wi-Fi</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -5572,7 +5571,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6333170995003625229">Adresa e email-it ose fjalëkalimi yt nuk mund të verifikohej. Provo të identifikohesh përsëri.</translation>
 <translation id="6335920438823100346">Për të nisur Linux, <ph name="MANAGER" /> kërkon që të rezervosh të dhënat e tua dhe ta rivendosësh këtë Chromebook te cilësimet e fabrikës.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Kjo do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" /> brenda 24 orësh. Rezervo çdo skedar që dëshiron ta mbash.</translation>
-<translation id="6338402296920404442">Ki parasysh që ta fshish <ph name="FILENAME" />, në mënyrë që të tjerët që e përdorin këtë pajisje të mos arrijnë t'i shikojnë fjalëkalimet e tua.</translation>
 <translation id="6338981933082930623">Të gjitha sajtet mund të të shfaqin çdo reklamë</translation>
 <translation id="6339668969738228384">Krijo një profil të ri për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokolli i printimit në internet (IPPS)</translation>

@@ -1432,7 +1432,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4798269756263412078">Recibe alertas si baja el precio en algún sitio. Las alertas se enviarán a tu correo electrónico.</translation>
 <translation id="4800132727771399293">Verifica la fecha de vencimiento y el CVC, y vuelve a intentarlo.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Usar Touch ID</translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
 <translation id="4811450222531576619">Obtén más información sobre el tema y la fuente de la página</translation>
 <translation id="4812751092864334025">Tecnología wearable</translation>
@@ -1803,7 +1802,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>
 <translation id="57689295674415555">¿No se completó el número de la tarjeta virtual?</translation>
 <translation id="5776313857861697733">Prioridad</translation>
-<translation id="5778389256418062749">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="5781136890105823427">Se habilitó un experimento</translation>
 <translation id="578305955206182703">Ámbar</translation>
 <translation id="57838592816432529">Silenciar</translation>
@@ -2571,7 +2569,6 @@ Detalles adicionales:
 <translation id="7880146494886811634">Guardar dirección</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7882995332186050355">Camiones de carga y remolques</translation>
-<translation id="788679692472636252">Administrar contraseñas y claves de acceso…</translation>
 <translation id="7887683347370398519">Verifica tu CVC y vuelve a intentarlo.</translation>
 <translation id="7887885240995164102">Ingresar al modo de pantalla en pantalla</translation>
 <translation id="7888575728750733395">Propósito de conversión para impresión</translation>
@@ -2967,6 +2964,7 @@ Detalles adicionales:
 <translation id="9039213469156557790">Además, esta página incluye otros recursos que no son seguros. Otras personas pueden ver estos recursos mientras se encuentran en tránsito, y un atacante puede modificarlos para cambiar el funcionamiento de la página.</translation>
 <translation id="9040464167025094690">Botón Encontrar mi dispositivo, presiona Intro para acceder al servicio Encontrar mi dispositivo en la Cuenta de Google</translation>
 <translation id="9042617223719777575">Gran capacidad</translation>
+<translation id="9044359186343685026">Usar Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor presentó un certificado no válido.</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>

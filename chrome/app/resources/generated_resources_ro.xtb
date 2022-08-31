@@ -5108,7 +5108,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5884474295213649357">Această filă este conectată la un dispozitiv USB.</translation>
 <translation id="5885314688092915589">Organizația ta va gestiona acest profil</translation>
 <translation id="5886009770935151472">Deget 1</translation>
-<translation id="5888843733007437002">S-au afișat șabloanele. Apasă tasta Tab pentru a naviga.</translation>
 <translation id="5889282057229379085">Număr maxim de Autorități de certificare (CA) intermediare: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Rețele Wi-Fi preferate</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -5576,7 +5575,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6333170995003625229">Adresa de e-mail sau parola nu a putut fi confirmată. Încearcă să te conectezi din nou.</translation>
 <translation id="6335920438823100346">Pentru a inițializa Linux, <ph name="MANAGER" /> îți solicită să faci backup datelor și să revii la setările din fabrică ale Chromebookului.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a dezactivat remedierea erorilor prin ADB. Astfel, <ph name="DEVICE_TYPE" /> se va reseta în termen de 24 de ore. Fă backup pentru fișierele pe care vrei să le păstrezi.</translation>
-<translation id="6338402296920404442">Șterge <ph name="FILENAME" />, pentru ca persoanele care folosesc acest dispozitiv să nu îți poată vedea parolele.</translation>
 <translation id="6338968693068997776">Adaugă un dispozitiv USB</translation>
 <translation id="6338981933082930623">Toate site-urile pot afișa orice anunțuri</translation>
 <translation id="6339668969738228384">Creează un profil nou pentru <ph name="USER_EMAIL_ADDRESS" /></translation>

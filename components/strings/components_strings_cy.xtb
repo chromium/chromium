@@ -691,6 +691,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2740531572673183784">Iawn</translation>
 <translation id="2742511345840685325">Tenis bwrdd</translation>
 <translation id="2742870351467570537">Tynnu'r eitemau a ddewisir</translation>
+<translation id="2759825833388495838">llenwi eich cyfrinair ar <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Comics</translation>
 <translation id="2765217105034171413">Bach</translation>
 <translation id="277133753123645258">Dull anfon</translation>
@@ -1431,7 +1432,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4798269756263412078">Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan. Bydd hysbysiadau yn cael eu hanfon i'ch e-bost.</translation>
 <translation id="4800132727771399293">Gwiriwch eich dyddiad darfod a'ch CGS a rhowch gynnig arall arni</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Defnyddio TouchID</translation>
 <translation id="4809079943450490359">Cyfarwyddiadau gan weinyddwr eich dyfais:</translation>
 <translation id="4811450222531576619">Dysgu am ei ffynhonnell a'i bwnc</translation>
 <translation id="4812751092864334025">Technoleg gwisgadwy</translation>
@@ -1802,7 +1802,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5765072501007116331">I weld dulliau anfon a gofynion, dewiswch gyfeiriad</translation>
 <translation id="57689295674415555">Rhif cerdyn rhithwir heb ei llenwi?</translation>
 <translation id="5776313857861697733">Blaenoriaeth</translation>
-<translation id="5778389256418062749">Defnyddio Cod Pas ar Ddyfais Wahanol</translation>
 <translation id="5781136890105823427">Mae'r arbrawf wedi'i alluogi</translation>
 <translation id="578305955206182703">Melyngoch</translation>
 <translation id="57838592816432529">Distewi</translation>
@@ -2570,7 +2569,6 @@ Manylion ychwanegol:
 <translation id="7880146494886811634">Cadw'r Cyfeiriad</translation>
 <translation id="7882421473871500483">Brown</translation>
 <translation id="7882995332186050355">Tryciau cargo ac ôl-gerbydau</translation>
-<translation id="788679692472636252">Rheoli Cyfrineiriau a Chodau pas…</translation>
 <translation id="7887683347370398519">Gwiriwch eich CVC a rhowch gynnig arall arni</translation>
 <translation id="7887885240995164102">Dechrau llun-mewn-llun</translation>
 <translation id="7888575728750733395">Argraffu bwriad rendro</translation>
@@ -2965,6 +2963,7 @@ Manylion ychwanegol:
 <translation id="9039213469156557790">Ymhellach, mae'r dudalen hon yn cynnwys adnoddau eraill nad ydynt yn ddiogel. Gall eraill weld yr adnoddau hyn wrth iddynt gael eu trosglwyddo, a gall ymosodwr eu haddasu i newid ymddygiad y dudalen.</translation>
 <translation id="9040464167025094690">Botwm Find my device, pwyswch Enter i ymweld â Find my device yn eich Cyfrif Google</translation>
 <translation id="9042617223719777575">Capasiti Mawr</translation>
+<translation id="9044359186343685026">Defnyddio Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Gwnaethoch geisio cyrraedd <ph name="DOMAIN" />, ond cyflwynodd y gweinydd dystysgrif annilys.</translation>
 <translation id="9050666287014529139">Cyfrinymadrodd</translation>

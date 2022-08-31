@@ -852,29 +852,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 <translation id="1861206724856734193">Veri sızıntısı önleme kuralları listesini ayarlar.</translation>
 <translation id="1862267110714201519">Hayalet pencere özelliğini devre dışı bırak.</translation>
 <translation id="1865417998205858223">Temel İzinler</translation>
-<translation id="1867025364110179456">Politikayı ayarlamak, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcıların kaldıramadığı veya kapatamadığı web uygulamalarının listesini belirtir.
-
-      Politikanın her liste öğesi, zorunlu üyeye sahip bir nesnedir:
-      <ph name="URL_LABEL" /> (yüklenecek web uygulamasının URL'si)
-
-      ve isteğe bağlı 5 üye:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (web uygulamasının açılma yöntemini belirlemek için — varsayılan yeni sekmedir)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (<ph name="LINUX_OS_NAME" /> ve
-      <ph name="MS_WIN_NAME" /> masaüstü kısayolları oluşturulmak istenirse doğru değerine ayarlanmalıdır).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (<ph name="PRODUCT_NAME" /> sürüm 90'dan başlayarak, Progresif Web Uygulaması (PWA) değilse uygulama adını veya PWA ise ancak yüklemenin tamamlanabilmesi için kimlik doğrulama gerekiyorsa geçici olarak yüklenen uygulama adını geçersiz kılmanıza olanak tanır.) Hem <ph name="CUSTOM_NAME_LABEL" /> hem de <ph name="FALLBACK_APP_NAME_LABEL" /> sağlanmışsa ikincisi dikkate alınmaz.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      (<ph name="PRODUCT_NAME" /> sürüm 99'dan itibaren tüm web uygulamaları ve PWA'lar için uygulama adını kalıcı olarak geçersiz kılmanıza olanak tanır. Şu anda yalnızca <ph name="PRODUCT_OS_NAME" /> işletim sisteminde desteklenmektedir.)
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      (<ph name="PRODUCT_NAME" /> sürüm 99'dan itibaren yüklü uygulamaların uygulama simgesini geçersiz kılmanıza olanak tanır. Simgeler; kare şeklinde, maksimum 1 MB boyutunda ve jpeg, png, gif, webp, ico biçimlerinden birinde olmalıdır. Karma değeri, simge dosyasının SHA256 karma değeri olmalıdır.) Şu anda yalnızca <ph name="PRODUCT_OS_NAME" /> işletim sisteminde desteklenmektedir.)
-
-      Uygulamaları <ph name="PRODUCT_OS_NAME" /> rafına sabitlemek için <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> politikasına bakın.</translation>
 <translation id="186719019195685253">Cihaz AC güçle çalışırken boşta kalma süresine ulaşıldığında yapılacak işlem</translation>
 <translation id="1869688072690234823">Bu politika hangi WebAuthn faktörlerinin kullanılabileceğini kontrol eder.
 

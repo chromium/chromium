@@ -1430,7 +1430,6 @@
 <translation id="4798269756263412078">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі. Яны будуць адпраўляцца на вашу электронную пошту.</translation>
 <translation id="4800132727771399293">Праверце тэрмін дзеяння і код CVC, затым паўтарыце спробу.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Выкарыстаць TouchID</translation>
 <translation id="4809079943450490359">Інструкцыі ад адміністратара прылады:</translation>
 <translation id="4811450222531576619">Даведайцеся пра яе крыніцу і тэму</translation>
 <translation id="4812751092864334025">Нацельныя тэхналогіі</translation>
@@ -1801,7 +1800,6 @@
 <translation id="5765072501007116331">Выберыце адрас, каб убачыць спосабы і ўмовы дастаўкі</translation>
 <translation id="57689295674415555">Не ўказаны нумар віртуальнай карткі?</translation>
 <translation id="5776313857861697733">Прыярытэт</translation>
-<translation id="5778389256418062749">Выкарыстаць ключ доступу на іншай прыладзе</translation>
 <translation id="5781136890105823427">Эксперымент уключаны</translation>
 <translation id="578305955206182703">Янтарны</translation>
 <translation id="57838592816432529">Выключыць</translation>
@@ -2570,7 +2568,6 @@
 <translation id="7880146494886811634">Захаваць адрас</translation>
 <translation id="7882421473871500483">Карычневы</translation>
 <translation id="7882995332186050355">Грузавыя аўтамабілі і прычэпы</translation>
-<translation id="788679692472636252">Кіраваць паролямі і ключамі доступу…</translation>
 <translation id="7887683347370398519">Праверце код CVC і паўтарыце спробу</translation>
 <translation id="7887885240995164102">Уключыць рэжым "Відарыс у відарысе"</translation>
 <translation id="7888575728750733395">Намер візуалізацыі раздрукоўкі</translation>
@@ -2965,6 +2962,7 @@
 <translation id="9039213469156557790">Акрамя таго, на гэтай старонцы ёсць іншыя рэсурсы, якія не з'яўляюцца бяспечнымі: яны могуць быць прагледжаны іншымі падчас перадачы, а таксама могуць быць мадыфікаваны зламыснікам з мэтай змяніць паводзіны старонкі.</translation>
 <translation id="9040464167025094690">Кнопка "Знайсці прыладу". Каб знайсці сваю прыладу ва Уліковым запісе Google, націсніце Enter</translation>
 <translation id="9042617223719777575">Вялікая ёмістасць</translation>
+<translation id="9044359186343685026">Выкарыстоўваць Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />.–.<ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў несапраўдны сертыфікат.</translation>
 <translation id="9050666287014529139">Фраза-пароль</translation>

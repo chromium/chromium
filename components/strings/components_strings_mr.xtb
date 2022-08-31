@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2742511345840685325">टेबल टेनिस</translation>
 <translation id="2742870351467570537">निवडलेले आयटम काढून टाका</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> मध्ये तुमचा पासवर्ड भरा</translation>
 <translation id="2764001903315068341">कॉमिक</translation>
 <translation id="2765217105034171413">लहान</translation>
 <translation id="277133753123645258">शिपिंग पद्धत</translation>
@@ -1430,7 +1431,6 @@
 <translation id="4798269756263412078">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा. तुमच्या ईमेलवर सूचना पाठवल्या जातील.</translation>
 <translation id="4800132727771399293">तुमची कालबाह्यता तारीख आणि CVC तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">टच आयडी वापरा</translation>
 <translation id="4809079943450490359">तुमच्या डिव्हाइस अ‍ॅडमिनिस्ट्रेटरकडून सूचना:</translation>
 <translation id="4811450222531576619">त्याचे स्रोत आणि विषय यांबद्दल जाणून घ्या</translation>
 <translation id="4812751092864334025">वेअरेबल तंत्रज्ञान</translation>
@@ -1801,7 +1801,6 @@
 <translation id="5765072501007116331">वितरण पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="57689295674415555">व्हर्च्युअल कार्ड नंबर भरला नाही का?</translation>
 <translation id="5776313857861697733">प्राधान्य</translation>
-<translation id="5778389256418062749">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
 <translation id="5781136890105823427">प्रयोग सुरू केला आहे</translation>
 <translation id="578305955206182703">अंबर</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
@@ -2570,7 +2569,6 @@
 <translation id="7880146494886811634">पत्ता सेव्ह करा</translation>
 <translation id="7882421473871500483">तपकिरी</translation>
 <translation id="7882995332186050355">कार्गो ट्रक आणि ट्रेलर</translation>
-<translation id="788679692472636252">पासवर्ड आणि पासकी व्यवस्थापित करा…</translation>
 <translation id="7887683347370398519">तुमचे CVC तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="7887885240995164102">चित्रात-चित्र एंटर करा</translation>
 <translation id="7888575728750733395">प्रस्तुतीकरण इंटेंट प्रिंट करा</translation>
@@ -2965,6 +2963,7 @@
 <translation id="9039213469156557790">पुढे, या पृष्ठात सुरक्षित नसलेली इतर संसाधने समाविष्ट आहेत. ही संसाधने संक्रमणात असताना इतरांद्वारे पाहिली जाऊ शकतात आणि पृष्ठाचे वर्तन बदलण्यासाठी आक्रमणकर्त्याद्वारे सुधारित केली जाऊ शकतात.</translation>
 <translation id="9040464167025094690">Find My Device बटण, Google खाते मध्ये तुमच्या Find My Device ला भेट देण्यासाठी एंटर दाबा</translation>
 <translation id="9042617223719777575">जास्त क्षमता</translation>
+<translation id="9044359186343685026">टच आयडी वापरा</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">तुम्ही <ph name="DOMAIN" /> वर पोहोचण्याचा प्रयत्न केला, परंतु सर्व्हरने चुकीचे सर्टिफिकेट दाखवले आहे.</translation>
 <translation id="9050666287014529139">सांकेतिक पासफ्रेझ</translation>

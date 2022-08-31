@@ -157,6 +157,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1348198688976932919">Spletno mesto vsebuje nevarne aplikacije</translation>
 <translation id="1348779747280417563">Potrditev imena</translation>
 <translation id="1354976809542763843">Financiranje nakupa stanovanja</translation>
+<translation id="1355158069018170842">Prikaz znižanj cen na zavihkih</translation>
 <translation id="1355301061807280185">Zaposlitve</translation>
 <translation id="1355754231781595724">Avtomobilska varnost in varnost v prometu</translation>
 <translation id="1357195169723583938">Kdo je nedavno uporabljal napravo in kdaj</translation>
@@ -466,6 +467,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2153609454945889823">Želite namestiti aplikacijo Storitve Google Play za RR?</translation>
 <translation id="2154054054215849342">Sinhronizacija ni na voljo za vašo domeno</translation>
 <translation id="2154484045852737596">Urejanje kartice</translation>
+<translation id="2157640075051554492">Obvestila o spremljanju cen</translation>
 <translation id="2161656808144014275">Besedilo</translation>
 <translation id="2162510787844374618">Vzpostavljanje stika z banko …</translation>
 <translation id="2162620598375156287">Zdaj <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3633738897356909127">Gumb za posodobitev Chroma, pritisnite Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
 <translation id="3634530185120165534">Pladenj 5</translation>
 <translation id="3634567936866541746">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome zaradi zaščite računov priporoča, da preverite shranjena gesla.</translation>
+<translation id="3637033245385760976">Obvestila v Chromu morajo biti vklopljena. Vklopite jih lahko tu: <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="3637662659967048211">Shranjevanje v račun Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Program:</translation>
@@ -1425,6 +1428,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4785376858512657294">Upravljanje računa Google</translation>
 <translation id="4785689107224900852">Preklop na ta zavihek</translation>
 <translation id="4786804728079074733">Odbojka</translation>
+<translation id="4789704664580239421">Opozorila o znižanju cen bodo prikazana na odprtih zavihkih.</translation>
 <translation id="4791134497475588553">Nameščene aplikacije za Linux in čas njihove zadnje uporabe</translation>
 <translation id="4792686369684665359">Podatki, ki jih želite poslati, niso zaščiteni</translation>
 <translation id="4796594887379589189">ID računa za opravilo</translation>
@@ -1432,7 +1436,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4798269756263412078">Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu. Opozorila bodo poslana na e-poštni naslov.</translation>
 <translation id="4800132727771399293">Preverite datum poteka in številko CVC ter poskusite znova</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Uporaba funkcije Touch ID</translation>
 <translation id="4809079943450490359">Navodila skrbnika naprave:</translation>
 <translation id="4811450222531576619">Preberite več o njenem viru in temi</translation>
 <translation id="4812751092864334025">Nosljiva tehnologija</translation>
@@ -1791,6 +1794,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5730040223043577876">Chrome priporoča, da ponastavite geslo, če ste ga uporabljali na drugih spletnih mestih.</translation>
 <translation id="5736165827969430182">Kovine in rudarstvo</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Shranjevanje kartice v Google Računu}one{Shranjevanje kartic v Google Računu}two{Shranjevanje kartic v Google Računu}few{Shranjevanje kartic v Google Računu}other{Shranjevanje kartic v Google Računu}}</translation>
+<translation id="5738385766833540397">Upravljanje načina prejemanja opozoril o znižanju cen za izdelke, ki jih spremljate.</translation>
 <translation id="5743638595296120378">Nakup vozil</translation>
 <translation id="5743898850056428078">Motoristične dirke</translation>
 <translation id="5745733273847572235">Lahko zahteva podatke o lokaciji.</translation>
@@ -1800,10 +1804,10 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5759751709240058861">Uporaba in premikanje kamere</translation>
 <translation id="5763042198335101085">Vnesite veljaven e-poštni naslov</translation>
 <translation id="5764725887548570807">Neveljavna oblika izhodišča.</translation>
+<translation id="5764920692828389743">Pošiljanje na <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="5765072501007116331">Če si želite ogledati načine dostave in zahteve, izberite naslov</translation>
 <translation id="57689295674415555">Številka virtualne kartice ni izpolnjena?</translation>
 <translation id="5776313857861697733">Prednost</translation>
-<translation id="5778389256418062749">Uporaba gesla v drugi napravi</translation>
 <translation id="5781136890105823427">Preizkus je omogočen</translation>
 <translation id="578305955206182703">Jantarna</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
@@ -1891,6 +1895,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6017850046339264347">Napadalci na spletnem mestu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> bi lahko namestili zavajajoče aplikacije, ki se pretvarjajo, da so nekaj drugega, ali zbirajo podatke, s katerimi vas lahko spremljajo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinhronizirano)</translation>
 <translation id="6027201098523975773">Vnesite ime</translation>
+<translation id="6028591542479806248">Upravljanje obvestil v mobilnih napravah in po e-pošti.</translation>
 <translation id="603068602130820122">Dvojno spenjanje na desni</translation>
 <translation id="6032524144326295339">Nabiralnik 2</translation>
 <translation id="6032955021262906325">Vezava na levi</translation>
@@ -2571,7 +2576,6 @@ Dodatne podrobnosti:
 <translation id="7880146494886811634">Shranjevanje naslova</translation>
 <translation id="7882421473871500483">Rjava</translation>
 <translation id="7882995332186050355">Tovorna vozila in prikolice</translation>
-<translation id="788679692472636252">Upravljanje gesel in gesel …</translation>
 <translation id="7887683347370398519">Preverite CVC in poskusite znova</translation>
 <translation id="7887885240995164102">Odpri način slike v sliki</translation>
 <translation id="7888575728750733395">Namen upodabljanja tiskanja</translation>
@@ -2812,6 +2816,7 @@ Dodatne podrobnosti:
 <translation id="8559762987265718583">Zasebne povezave z domeno <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ni mogoče vzpostaviti, ker sta datum in ura (<ph name="DATE_AND_TIME" />) v napravi nepravilna.</translation>
 <translation id="8564182942834072828">Ločeni dokumenti/nezbrane kopije</translation>
 <translation id="8564985650692024650">Chromium priporoča, da ponastavite geslo za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
+<translation id="8573969211731659953">Opozorila o znižanju cen so vklopljena. To lahko spremenite tu: <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="8576310925653847813">Sistemi za domači kino</translation>
 <translation id="8577348305244205642">Virtualna kartica ni na voljo</translation>
 <translation id="858637041960032120">Dodajte tel. št. </translation>
@@ -2966,6 +2971,7 @@ Dodatne podrobnosti:
 <translation id="9039213469156557790">Poleg tega so na tej strani druga sredstva, ki niso varna. Ta sredstva lahko med prenosom pregledujejo drugi, morebitni napadalec pa jih lahko spremeni, tako da se spremeni način delovanja strani.</translation>
 <translation id="9040464167025094690">Gumb za Poišči mojo napravo, pritisnite Enter, če želite odpreti razdelek za iskanje naprave v računu Google.</translation>
 <translation id="9042617223719777575">Velika zmogljivost</translation>
+<translation id="9044359186343685026">Uporabi Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Skušali ste dostopati do domene <ph name="DOMAIN" />, vendar je strežnik predložil neveljavno potrdilo.</translation>
 <translation id="9050666287014529139">Geslo</translation>

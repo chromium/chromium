@@ -696,6 +696,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">စားပွဲတင် တင်းနစ်</translation>
 <translation id="2742870351467570537">ရွေးချယ်ထားသည့် အရာများ ဖယ်ရှား</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> တွင် စကားဝှက်ဖြည့်လိုသည်</translation>
 <translation id="2764001903315068341">ရုပ်ပြ</translation>
 <translation id="2765217105034171413">သေး</translation>
 <translation id="277133753123645258">ပစ္စည်းပို့ခြင်း နည်းလမ်း</translation>
@@ -1432,7 +1433,6 @@
 <translation id="4798269756263412078">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျပါက သတိပေးချက် ရယူနိုင်သည်။ သတိပေးချက်ကို သင့်အီးမေးလ်သို့ ပို့ပါမည်။</translation>
 <translation id="4800132727771399293">သင်၏ သက်တမ်းကုန်ဆုံးရက်နှင့် CVC အား စစ်ဆေးပြီး ထပ်မံကြိုးစားပါ</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">TouchID အသုံးပြုရန်</translation>
 <translation id="4809079943450490359">သင့်စက် စီမံခန့်ခွဲသူထံမှ လမ်းညွှန်ချက်များ-</translation>
 <translation id="4811450222531576619">၎င်း၏အကြောင်းအရာနှင့် ရင်းမြစ်အကြောင်းကို ပိုမိုလေ့လာနိုင်ပါသည်</translation>
 <translation id="4812751092864334025">ဝတ်ဆင်ပစ္စည်း နည်းပညာ</translation>
@@ -1803,7 +1803,6 @@
 <translation id="5765072501007116331">ပစ္စည်းပို့ခြင်းနည်းလမ်းများနှင့် သတ်မှတ်ချက်များကို ကြည့်ရန် လိပ်စာရွေးပါ</translation>
 <translation id="57689295674415555">ပကတိအသွင်ကတ် နံပါတ် ဖြည့်မထားဘူးလား။</translation>
 <translation id="5776313857861697733">ဦးစားပေး</translation>
-<translation id="5778389256418062749">အခြားစက်တစ်ခုတွင် လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="5781136890105823427">စမ်းသပ်မှု ဖွင့်ထားသည်</translation>
 <translation id="578305955206182703">ပယင်း</translation>
 <translation id="57838592816432529">တိတ်ရန်</translation>
@@ -2571,7 +2570,6 @@
 <translation id="7880146494886811634">လိပ်စာ သိမ်းပါ</translation>
 <translation id="7882421473871500483">အညို</translation>
 <translation id="7882995332186050355">ကုန်တင်ကားနှင့် နောက်တွဲယာဉ်များ</translation>
-<translation id="788679692472636252">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်…</translation>
 <translation id="7887683347370398519">သင့် CVC အားစစ်ဆေးပြီး ထပ်မံကြိုးစားပါ</translation>
 <translation id="7887885240995164102">နှစ်ခုထပ်၍ကြည့်ခြင်းသို့ ဝင်ရန်</translation>
 <translation id="7888575728750733395">ပုံနှိပ်မှုဆိုင်ရာ ပြင်ဆင်မှု ရည်ရွယ်ချက်</translation>
@@ -2967,6 +2965,7 @@
 <translation id="9039213469156557790">ထပ်မံ၍၊ ဤစာမျက်နှာတွင် လုံခြုံမှု မရှိသော အခြားမှီငြမ်းထားမှုများ ပါဝင်သည်။ ဤမှီငြမ်းထားမှုများအား ကြားကာလတွင် အခြားသူများမှ ကြည့်နိုင်ပြီး စာမျက်နှာ၏ အမူအကျင့်ကို ပြောင်းလဲရန် တိုက်ခိုက်သူမှ ပြုပြင်နိုင်သည်။</translation>
 <translation id="9040464167025094690">ကျွန်ုပ်၏စက်ကို ရှာရန် ခလုတ်၊ Google Account တွင် သင်၏စက်ကိုရှာရန် Enter နှိပ်ပါ</translation>
 <translation id="9042617223719777575">ကြီးမားသည့်ပမာဏ</translation>
+<translation id="9044359186343685026">'တို့ထိ ID' အသုံးပြုရန်</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">သင်သည် <ph name="DOMAIN" />ကို လက်လှမ်းမှီရန် ကြိုးစားခဲ့သည်၊ သို့သော် ဆာဗာက မမှန်သည့် လက်မှတ်ကို တင်ပြခဲ့သည်။</translation>
 <translation id="9050666287014529139">စကားစုဝှက်</translation>

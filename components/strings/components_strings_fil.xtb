@@ -691,6 +691,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742511345840685325">Table tennis</translation>
 <translation id="2742870351467570537">Alisin ang mga napiling item</translation>
+<translation id="2759825833388495838">ilagay ang iyong password sa <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komiks</translation>
 <translation id="2765217105034171413">Maliit</translation>
 <translation id="277133753123645258">Paraan ng pagpapadala</translation>
@@ -1431,7 +1432,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4798269756263412078">Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site. Ipapadala ang mga alerto sa iyong email.</translation>
 <translation id="4800132727771399293">Tingnan ang iyong petsa ng pag-expire at CVC at subukang muli</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Gamitin ang TouchID</translation>
 <translation id="4809079943450490359">Mga tagubilin mula sa administrator ng iyong device:</translation>
 <translation id="4811450222531576619">Alamin ang tungkol sa source at paksa nito</translation>
 <translation id="4812751092864334025">Nasusuot na teknolohiya</translation>
@@ -1802,7 +1802,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5765072501007116331">Upang makita ang mga pamamaraan at kinakailangan sa paghahatid, pumili ng address</translation>
 <translation id="57689295674415555">Hindi napunan ang numero ng virtual card?</translation>
 <translation id="5776313857861697733">Priyoridad</translation>
-<translation id="5778389256418062749">Gumamit ng Passkey sa Ibang Device</translation>
 <translation id="5781136890105823427">Naka-enable ang eksperimento</translation>
 <translation id="578305955206182703">Amber</translation>
 <translation id="57838592816432529">I-mute</translation>
@@ -2570,7 +2569,6 @@ Mga karagdagang detalye:
 <translation id="7880146494886811634">I-save ang Address</translation>
 <translation id="7882421473871500483">Brown</translation>
 <translation id="7882995332186050355">Mga cargo truck at trailer</translation>
-<translation id="788679692472636252">Pamahalaan ang Mga Password at Passkey…</translation>
 <translation id="7887683347370398519">Tingnan ang iyong CVC at subukang muli</translation>
 <translation id="7887885240995164102">Pumasok sa picture-in-picture</translation>
 <translation id="7888575728750733395">Intent sa pag-render ng print</translation>
@@ -2965,6 +2963,7 @@ Mga karagdagang detalye:
 <translation id="9039213469156557790">Bukod pa rito, ang page na ito ay may iba pang mga mapagkukunang hindi secure. Makikita ng iba ang mga mapagkukunang ito habang ipinadadala, at maaaring baguhin ng isang umaatake upang baguhin ang gawi ng page.</translation>
 <translation id="9040464167025094690">Button na Hanapin ang aking device, pindutin ang Enter para bisitahin ang hanapin ang iyong device sa Google Account</translation>
 <translation id="9042617223719777575">Malaking Kapasidad</translation>
+<translation id="9044359186343685026">Gamitin ang Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Tinangka mong maabot ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng isang di-wastong certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>

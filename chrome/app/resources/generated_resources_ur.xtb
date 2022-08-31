@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">‏کچھ غلط ہوگیا۔ ممکن ہے کہ Linux صرف جزوی طور پر اپ گریڈ کیا جائے۔ مزید معلومات کے لیے لاگز کا جائزہ لیں۔ لاگز کو فائلز &gt; میری فائلز &gt; <ph name="LOG_FILE" /> میں محفوط کیا گیا ہے</translation>
 <translation id="1043818413152647937">ان ایپس سے بھی ڈیٹا کو صاف کریں؟</translation>
 <translation id="1043824690776631483">یہ سائٹ ملاحظہ کرنے کیلئے آپ کو اجازت درکار ہے۔ اس میں نامناسب مواد ہو سکتا ہے۔</translation>
+<translation id="104419033123549300">کلیدی نقشہ کی طرز</translation>
 <translation id="104710386808485638">‏Linux ری اسٹارٹ کریں؟</translation>
 <translation id="1047431265488717055">لنک کا مت&amp;ن کاپی کریں</translation>
 <translation id="1048286738600630630">ڈسپلیز</translation>
@@ -772,6 +773,7 @@
 <translation id="1721312023322545264">یہ سائٹ ملاحظہ کرنے کیلئے آپ کو <ph name="NAME" /> کی جانب سے اجازت درکار ہے</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> آپ کے <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> <ph name="END_LINK" /> کا نظم کرتا ہے</translation>
 <translation id="1723824996674794290">&amp;نئی ونڈو</translation>
+<translation id="1724801751621173132">اندراج کی طرز</translation>
 <translation id="1725562816265788801">ٹیب اسکرولنگ</translation>
 <translation id="1729533290416704613">یہ آپ کی جانب سے اومنی باکس سے تلاش کیے جانے پر دکھائی دینے والے صفحہ کو کنٹرول بھی کرتا ہے۔</translation>
 <translation id="1730917990259790240">‏<ph name="BEGIN_PARAGRAPH1" />ایپس ہٹانے کے لیے، ترتیبات &gt; Google Play اسٹور &gt; Android کی ترجیحات کا نظم کریں &gt; ایپس یا ایپلیکیشن مینیجر پر جائیں۔ پھر اس ایپ پر تھپتھپائیں جسے آپ اَن انسٹال کرنا چاہتے ہیں (ایپ تلاش کرنے کے لیے آپ کو دائیں یا بائیں سوائپ کرنا پڑ سکتا ہے)۔ پھر 'اَن انسٹال کریں' یا 'غیر فعال کریں' پر تھپتھپائیں۔<ph name="END_PARAGRAPH1" /></translation>
@@ -1000,6 +1002,7 @@
 <translation id="1925017091976104802">پیسٹ کرنے کے لیے <ph name="MODIFIER_KEY_DESCRIPTION" /> دبائیں</translation>
 <translation id="1925021887439448749">حسب ضرورت ویب پتہ درج کریں</translation>
 <translation id="1925124445985510535">سیفٹی چیک <ph name="TIME" /> پر کیا گیا</translation>
+<translation id="192564025059434655">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Windows آلات پر اب مزید نہیں کھل سکیں گے۔ آپ چیک کر سکتے ہیں کہ کیا نیا ورژن دستیاب ہے۔</translation>
 <translation id="1926339101652878330">یہ ترتیبات انٹرپرائز پالیسی کی جانب سے کنٹرول کی جاتی ہیں۔ براہ کرم مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1927632033341042996">انگلی <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">‏اسکرین لاک کا PIN</translation>
@@ -1954,6 +1957,7 @@
 <translation id="2796740370559399562">کوکیز کو اجازت دینا جاری رکھیں</translation>
 <translation id="2798347533012571708">اپ ڈیٹس رکھیں</translation>
 <translation id="2799223571221894425">دوبارہ شروع کریں</translation>
+<translation id="2800309299477632167">حسب ضرورت کلیدی نقشہ</translation>
 <translation id="2800760947029405028">ایک تصویر اپ لوڈ کریں</translation>
 <translation id="2801954693771979815">اسکرین کا سائز</translation>
 <translation id="2802557211515765772">کوئی نظم کردہ پرنٹر نہیں ہے۔</translation>
@@ -2015,6 +2019,7 @@
 <translation id="2849767214114481738">‏آپ کا PIN شامل کر دیا گیا ہے</translation>
 <translation id="2849936225196189499">اہم</translation>
 <translation id="2850541429955027218">تھیم شامل کریں</translation>
+<translation id="2850672011315104382">رموز و اوقاف کی طرز</translation>
 <translation id="2851634818064021665">یہ سائٹ ملاحظہ کرنے کیلئے آپ کو اجازت درکار ہے</translation>
 <translation id="2851728849045278002">کچھ غلط ہو گیا۔ مزید تفصیلات کیلئے کلک کریں۔</translation>
 <translation id="2852385257476173980">آپ کے ویب براؤز کرتے ہی سائٹس کی ایک فہرست یہاں ظاہر ہو سکتی ہے</translation>
@@ -2504,6 +2509,7 @@
 <translation id="3348131053948466246">تجویز کردہ ایموجی۔ نیویگیٹ کرنے کے لیے اوپر یا نیچے کا تیر دبائیں اور داخل کرنے کے لیے اینٹر دبائیں۔</translation>
 <translation id="3349933790966648062">میموری فوٹ پرنٹ</translation>
 <translation id="3353786022389205125">سلیپ وضع سے بیدار وضع میں جاتے وقت "مقفل اسکرین دکھائیں" آن کریں اور دوبارہ کوشش کریں</translation>
+<translation id="3354768182971982851">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Mac آلات پر اب مزید نہیں کھل سکیں گے۔ آپ چیک کر سکتے ہیں کہ کیا نیا ورژن دستیاب ہے۔</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> آلے سے جوڑا نہیں بنایا جا سکا؛ دوبارہ کوشش کرنے کے لیے آلہ منتخب کریں</translation>
 <translation id="3355936511340229503">کنکشن کی خرابی</translation>
 <translation id="3356469410714175391">(ورچوئل کارڈ فعال کیا گیا)</translation>
@@ -2511,6 +2517,7 @@
 <translation id="3359256513598016054">سرٹیفکیٹ کی پالیسی کی پابندیاں</translation>
 <translation id="3360297538363969800">پرنٹنگ ناکام ہو گئی۔ براہ کرم اپنا کمپیوٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> آپ کے ساتھ <ph name="ATTACHMENTS" /> کا اشتراک کر رہا ہے۔}other{<ph name="DEVICE_NAME" /> آپ کے ساتھ <ph name="ATTACHMENTS" /> کا اشتراک کر رہا ہے۔}}</translation>
+<translation id="3361954577771524115">ایپ سے</translation>
 <translation id="3363202073972776113">آپ کی تنظیم اس نئی پروفائل کا نظم کرے گی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">آپ کے منتظم کی جانب سے: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏Ctrl یا Alt کا استعمال کریں</translation>
@@ -3035,6 +3042,7 @@
 <translation id="3848547754896969219">&amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3851428669031642514">غیر محفوظ اسکرپٹس لوڈ کریں</translation>
+<translation id="3852215160863921508">ان پٹ معاونت</translation>
 <translation id="3854599674806204102">ایک اختیار منتخب کریں</translation>
 <translation id="3854967233147778866">ویب سائٹس کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3854976556788175030">آؤٹ پٹ ٹرے بھر گئی ہے</translation>
@@ -3109,6 +3117,7 @@
 <translation id="3918972485393593704">‏Google کو تفصیلات کی اطلاع دیں</translation>
 <translation id="3919145445993746351">اپنے سبھی کمپیوٹرز پر اپنی ایکسٹینشنز حاصل کرنے کے لیے، مطابقت پذیری کو آن کریں</translation>
 <translation id="3919229493046408863">آلات کے قریب ہونے پر اطلاع کو آف کریں</translation>
+<translation id="3919262972282962508">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Mac آلات پر اب مزید نہیں کھل سکیں گے۔ نئے ورژن پر اپ ڈیٹ کرنے کے لیے اپنے منتظم سے رابطہ کریں یا یہ ایپ ہٹائیں۔</translation>
 <translation id="3919798653937160644">جو صفحات آپ اس ونڈو میں دیکھتے ہیں وہ براؤزر کی سرگزشت میں ظاہر نہیں ہوں گے اور جب آپ سبھی کھلی ہوئی مہمان ونڈوز بند کر دیں گے تو وہ آپ کے کمپیوٹر پر کوکیز جیسے دیگر نشانات نہیں چھوڑیں گے۔ تاہم، جو بھی فائلیں آپ ڈاؤن لوڈ کریں گے انہیں برقرار رکھا جائے گا۔</translation>
 <translation id="3920504717067627103">سرٹیفکیٹ کی پالیسیاں</translation>
 <translation id="3920909973552939961">ادائیگی کے ہینڈلرز انسٹال کرنے کی اجازت نہیں ہے</translation>
@@ -3792,6 +3801,7 @@
 <translation id="4579453506923101210">منسلک کردہ فون کو بھول جائیں</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> کاسٹ کرنے سے قاصر۔</translation>
 <translation id="4579876313423027742">‏براؤزر کی اطلاعات کے لیے، <ph name="LINK_BEGIN" />Chrome براؤزر کی ترتیبات<ph name="LINK_END" /> پر جائیں</translation>
+<translation id="4580587929153007251">‏Google پاس ورڈ مینیجر میں دوبارہ سائن ان کریں</translation>
 <translation id="4580596421317071374">اس آلے پر پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہوتے ہیں۔</translation>
 <translation id="4580626299762849806">پاس ورڈز درآمد کرنے سے قاصر۔ <ph name="FILENAME" /> چیک کریں اور یقینی بنائیں کہ اسے درست طریقے سے فارمیٹ کیا گیا ہے۔</translation>
 <translation id="4581774856936278355">‏Linux کو بحال کرنے کے دوران خرابی</translation>
@@ -4473,6 +4483,7 @@
 <translation id="5268373933383932086">آپ کا صفحہ، آپ کا طریقہ</translation>
 <translation id="5269977353971873915">پرنٹ ناکام ہوگیا</translation>
 <translation id="5273806377963980154">‏سائٹ کا URL ترمیم کریں</translation>
+<translation id="5275084684151588738">صارف کی لغات</translation>
 <translation id="5275338516105640560">محفوظ کردہ ٹیب گروپ کا بٹن</translation>
 <translation id="5275352920323889391">کتا</translation>
 <translation id="527605719918376753">ٹیب خاموش کریں</translation>
@@ -4687,6 +4698,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{‏PIN میں کم از کم ایک حرف ہونا چاہیے}other{‏PIN میں کم از کم # حروف ہونا چاہیے}}</translation>
 <translation id="5474859849784484111">‏<ph name="MANAGER" /> کو درکار ہے کہ آپ ابھی Wi-Fi سے منسلک ہوں اور اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔</translation>
 <translation id="5481273127572794904">خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کی اجازت نہیں ہے</translation>
+<translation id="5481755802440890178">اس وقت ٹیکسٹ کے انتخاب کا ترجمہ نہیں ہو سکا</translation>
 <translation id="5481941284378890518">قریبی پرنٹرز کو شامل کریں</translation>
 <translation id="5483785310822538350">فائل اور آلہ کی رسائی کو کالعدم کریں</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو آج ہی واپس کرنے کا تقاضہ کرتا ہے۔ <ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}other{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو {NUM_DAYS} دن کے اندر واپس کرنے کا تقاضہ کرتا ہے۔<ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}}</translation>
@@ -4919,6 +4931,7 @@
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" کی جانب سے بیجا استعمال کی اطلاع دیں</translation>
 <translation id="5696679855467848181">‏موجودہ PPD فائل زیر استعمال ہے: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ایموجی منتخب کنندہ</translation>
+<translation id="5698462638680260399">پاس ورڈز کا استعمال کرنے کے لیے سائن ان کریں</translation>
 <translation id="570043786759263127">‏Google Play ایپس اور سروسز</translation>
 <translation id="5700836101007545240">کنکشن شامل کرنے کو آپ کے منتظم نے غیر فعال کر دیا ہے</translation>
 <translation id="5701080607174488915">سرور سے پالیسی بازیافت کرتے وقت ایک خرابی پیش آگئی۔</translation>
@@ -4936,6 +4949,7 @@
 <translation id="5712153969432126546">‏سائٹس کبھی کبھار دستاویزات، معاہدوں اور فارمز جیسی PDFs شائع کرتی ہیں</translation>
 <translation id="571222594670061844">سائٹس شناختی سروسز سے سائن ان پرامپٹس دکھا سکتی ہیں</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> سے منسلک ہے</translation>
+<translation id="5713960379473463904">اسپیس ان پٹ کی طرز</translation>
 <translation id="5715711091495208045">پلگ ان بروکر: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ڈیفالٹ سرچ انجنز</translation>
 <translation id="5719854774000914513">‏سائٹس HID آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
@@ -5108,7 +5122,6 @@
 <translation id="5884474295213649357">‏یہ ٹیب ایک USB آلہ سے منسلک ہے۔</translation>
 <translation id="5885314688092915589">آپ کی تنظیم اس پروفائل کا نظم کرے گی</translation>
 <translation id="5886009770935151472">انگلی 1</translation>
-<translation id="5888843733007437002">تمثیلات دیکھی جا رہی ہیں۔ نیویگیٹ کرنے کے لیے ٹیب دبائیں۔</translation>
 <translation id="5889282057229379085">‏انٹر میڈیٹ CAs کی زیادہ سے زیادہ تعداد: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">‏ترجیحی Wi-Fi نیٹ ورکس</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
@@ -5576,7 +5589,6 @@
 <translation id="6333170995003625229">آپ کے ای میل پتہ یا پاس ورڈ کی توثیق نہیں کی جا سکی۔ دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
 <translation id="6335920438823100346">‏Linux شروع کرنے کے لیے <ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ لیں اور اس Chromebook کو فیکٹری کی ترتیبات پر ری سیٹ کریں۔</translation>
 <translation id="6336038146639916978">‏<ph name="MANAGER" /> نے ADB ڈیبگنگ کو غیر فعال کر دیا ہے۔ یہ آپ کے <ph name="DEVICE_TYPE" /> کو 24 گھنٹوں میں ری سیٹ کر دے گا۔ کوئی بھی فائل کا بیک اپ لیں جسے آپ رکھنا چاہتے ہیں۔</translation>
-<translation id="6338402296920404442"><ph name="FILENAME" /> کو حذف کرنے پر غور کریں، تاکہ دوسرے لوگ جو اس آلہ کو استعمال کرتے ہیں وہ آپ کے پاس ورڈز نہ دیکھ سکیں۔</translation>
 <translation id="6338968693068997776">‏USB آلہ شامل کریں</translation>
 <translation id="6338981933082930623">سبھی سائٹس آپ کو کوئی اشتہار دکھا سکتی ہیں</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نیا پروفائل بنائیں</translation>
@@ -5613,6 +5625,7 @@
 <translation id="6374077068638737855">آئیس ویزل</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6374635887697228982">رعایتیں حاصل کریں؟</translation>
+<translation id="637642201764944055">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Linux آلات پر اب مزید نہیں کھل سکیں گے۔ نئے ورژن پر اپ ڈیٹ کرنے کے لیے اپنے منتظم سے رابطہ کریں یا یہ ایپ ہٹائیں۔</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6378392501584240055">‏Wi-Fi نیٹ ورکس میں کھولیں</translation>
 <translation id="6380143666419481200">قبول کریں اور جاری رکھیں</translation>
@@ -6090,6 +6103,7 @@
 <translation id="6826872289184051766">‏USB کے ذریعے توثیق کریں</translation>
 <translation id="6827121912381363404">تمام ایکسٹینشنز کو <ph name="PERMITTED_SITE" /> پڑھنے اور تبدیل کرنے کی اجازت دیں</translation>
 <translation id="6827517233063803343">‏آپ کی ایپس اور ترتیبات ان تمام ChromeOS آلات پر مطابقت پذیر ہوں گی جہاں آپ اپنے Google اکاؤنٹ کے ساتھ سائن ان ہیں۔ براؤزر کی مطابقت پذیری کے اختیارات کے ليے <ph name="LINK_BEGIN" />Chrome کی ترتیبات<ph name="LINK_END" /> پر جائیں۔</translation>
+<translation id="6827767090350758381">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Windows آلات پر اب مزید نہیں کھل سکیں گے۔ نئے ورژن پر اپ ڈیٹ کرنے کے لیے اپنے منتظم سے رابطہ کریں یا یہ ایپ ہٹائیں۔</translation>
 <translation id="6828153365543658583">سائن ان کو درج ذیل صارفین کیلئے محدود کریں:</translation>
 <translation id="6828182567531805778">اپنے ڈیٹا کو مطابقت پذیر بنانے کے لیے اپنا پاس فریز درج کریں</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -6360,6 +6374,7 @@
 <translation id="7069811530847688087"><ph name="WEBSITE" /> جدید تر یا مختلف قسم کی سیکیورٹی کلید کا تقاضہ کر سکتی ہے</translation>
 <translation id="7070484045139057854">یہ سائٹ کے ڈیٹا کو پڑھ اور اسے تبدیل کر سکتا ہے</translation>
 <translation id="7072010813301522126">شارٹ کٹ نام</translation>
+<translation id="7074066049407662839">پاس ورڈز محفوظ کرنے کے لیے سائن ان کریں</translation>
 <translation id="7075513071073410194">‏RSA مرموز کاری کے ساتھ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">‏HTTPS/SSL سرٹیفکیٹس اور ترتیبات کا نظم کریں</translation>
 <translation id="7076875098323397992">اپ گریڈ شروع نہیں کی جا سکتی</translation>
@@ -6891,6 +6906,7 @@
 <translation id="7625568159987162309">تمام سائٹس پر اسٹور کردہ اجازتوں اور ڈیٹا کو دیکھیں</translation>
 <translation id="7625823789272218216">بائیں طرف نیا ٹیب</translation>
 <translation id="7628201176665550262">ریفریش کرنے کی شرح</translation>
+<translation id="7628392600831846024">علامت کی طرز</translation>
 <translation id="7629827748548208700">ٹیب: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">یہ آلہ <ph name="MANAGER" /> کے زیر انتظام ہے اور آپ کو ہر بار سائن ان کرنے کی ضرورت ہے۔</translation>
 <translation id="7631014249255418691">‏Linux کی ایپس اور فائلز کا کامیابی کے ساتھ بیک اپ لے لیا گیا ہے</translation>
@@ -7944,6 +7960,7 @@
 <translation id="863109444997383731">سائٹس کو آپ کو اطلاعات دکھانے کی درخواست کرنے سے مسدود کر دیا جائے گا۔ اگر کوئی سائٹ اطلاعات کی درخواست کرتی ہے، تو ایڈریس بار میں مسدود کردہ انڈیکیٹر ظاہر ہوگا۔</translation>
 <translation id="8632104508818855045">آپ نے پہلے <ph name="ORIGIN" /> پر کسی بھی ایکسٹینشن کو اجازت نہ دینے کا انتخاب کیا</translation>
 <translation id="8633025649649592204">حالیہ سرگرمی</translation>
+<translation id="8633979878370972178">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Linux آلات پر اب مزید نہیں کھل سکیں گے۔ آپ چیک کر سکتے ہیں کہ کیا نیا ورژن دستیاب ہے۔</translation>
 <translation id="8634348081024879304">‏اب آپ Google Pay کے ساتھ اپنا ورچوئل کارڈ استعمال نہیں کر سکیں گے۔ <ph name="BEGIN_LINK" />ورچوئل کارڈز کے بارے میں جانیں<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">دوبارہ لوڈ ہو رہی ہے...</translation>
 <translation id="8636284842992792762">ایکسٹینشنز کا آغاز ہو رہا ہے...</translation>
@@ -8189,6 +8206,7 @@
 <translation id="8850251000316748990">مزید دیکھیں...</translation>
 <translation id="885246833287407341">‏API فنکشن آرگیومینٹس</translation>
 <translation id="8853586775156634952">یہ کارڈ صرف اس آلہ میں محفوظ کیا جائے گا</translation>
+<translation id="8854745870658584490">انتخاب کا شارٹ کٹ</translation>
 <translation id="8855977033756560989">‏Chromebook انٹرپرائز کا یہ آلہ Chrome انٹرپرائز اپ گریڈ کے ساتھ آتا ہے۔ انٹرپرائز کی ان اہلیتوں کا فائدہ اٹھانے کے لیے، Google منتظم اکاؤنٹ کے ذریعے اس آلہ کا اندراج کريں۔</translation>
 <translation id="8856028055086294840">ایپس اور صفحات کو بحال کریں</translation>
 <translation id="885701979325669005">اسٹوریج</translation>

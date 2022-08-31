@@ -840,28 +840,6 @@
 <translation id="1861206724856734193">设置一系列规则，防止数据泄露。</translation>
 <translation id="1862267110714201519">停用“ghost 窗口”功能。</translation>
 <translation id="1865417998205858223">密钥使用权限</translation>
-<translation id="1867025364110179456">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
-
-      此政策的每个列表项都是一个对象，其中会包含 1 个必要成员：
-      <ph name="URL_LABEL" />（要安装的 Web 应用的网址）
-
-      以及 5 个可选成员：
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      （用于指明 Web 应用的打开方式，默认在新标签页中打开）
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      （如果您想创建 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面快捷方式，请设为 True。）
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      （自 <ph name="PRODUCT_NAME" /> 90 版起，让您能够替换非渐进式 Web 应用 [PWA] 的应用名称，或临时安装但在安装完毕之前需进行身份验证的 PWA 的应用名称。如果同时提供了 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，系统会忽略后者。）
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      （自 <ph name="PRODUCT_NAME" /> 99 版起，让您能够永久地替换所有 Web 应用和 PWA 的应用名称。目前仅在 <ph name="PRODUCT_OS_NAME" />上受支持。）
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      （自 <ph name="PRODUCT_NAME" /> 99 版起，让您能够替换安装式应用的应用图标。图标必须为方形，大小不超过 1 MB，并采用以下格式之一：jpeg、png、gif、webp、ico。哈希值必须是图标文件的 SHA256 哈希。目前仅在 <ph name="PRODUCT_OS_NAME" />上受支持。）
-
-      如需了解如何将应用固定到 <ph name="PRODUCT_OS_NAME" />任务栏中，请参阅 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />。</translation>
 <translation id="186719019195685253">当闲置延迟时间已过且使用交流电源供电时执行的操作</translation>
 <translation id="1869688072690234823">通过设置此政策，您可以控制使用哪些 WebAuthn 因素。若要：
 
@@ -2027,6 +2005,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果您未设置此政策，大号光标在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
+<translation id="3027837632741099453">当设备使用电池供电时，系统会启用省电模式。</translation>
 <translation id="3028296787914825213">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="PRINTERS_BLACKLIST" />（值为 0），系统会使用 <ph name="BULK_PRINTERS_BLACKLIST" /> 来限制用户对指定打印机的访问权
@@ -2070,6 +2049,7 @@
 <translation id="3063302084011279315">停用“屏幕录制”功能</translation>
 <translation id="3064530882228745118">在 Kerberos 身份验证期间使用 CNAME 查找功能</translation>
 <translation id="3066446511111537292">允许此设备的关联用户使用 ADB 旁加载</translation>
+<translation id="3067462824622454143">允许用户决定是否应在设备休眠或合盖时锁定设备</translation>
 <translation id="3070119171976169951">禁止第三方图片显示身份验证提示</translation>
 <translation id="3072045631333522102">用于零售模式登录屏幕的屏幕保护程序</translation>
 <translation id="3072788420987305247">如果此政策已启用或未设置，当用户在媒体播放期间锁定设备时，系统会在锁定屏幕上显示媒体控件。
@@ -2939,6 +2919,7 @@
 
       如果此政策设为 False，则“自动填充”功能一律不会建议或填充信用卡信息，也不会保存用户在浏览网页时提交的其他信用卡信息。</translation>
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
+<translation id="3990391739475801018">系统将停用省电模式。</translation>
 <translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
 <translation id="3997519162482760140">可通过 SAML 登录页面访问视频捕获设备的网址</translation>
 <translation id="4004523942550416237">在初始设置期间不显示 Google 助理 Voice Match 流程</translation>
@@ -3257,6 +3238,7 @@
 <translation id="4347908978527632940">如果设为 true 且该用户是受监管用户，则其他 Android 应用可以通过内容提供方查询该用户的网络限制。
 
           如果设为 false 或未设置，则内容提供方不会返回任何信息。</translation>
+<translation id="435395045087992163">当设备休眠或合盖时不锁定设备</translation>
 <translation id="4357587374229381015">指定将用于在 SAML IdP 登录页面上自动填充用户名字段的网址参数名称。
 
       与用户的 <ph name="PRODUCT_OS_NAME" /> 个人资料关联的电子邮件地址将用作网址参数的值。因此，如果用户需要在 SAML IdP 页面上使用不同的电子邮件地址，此设置应被停用。
@@ -3557,6 +3539,13 @@
 
       如果未设置或启用了此政策，系统会执行 DNS 拦截检查。如果明确停用了此政策，系统便不会执行 DNS 拦截检查。</translation>
 <translation id="4700190441681139987">不允许任何网站使用传感器</translation>
+<translation id="4701899474784891858">此政策用于启用或停用“省电模式”设置。如果启用了该设置，系统会限制帧速率，从而降低功耗。
+      如果此政策未设置，最终用户可在 chrome://settings/performance 上控制该设置。
+      级别分为：
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0)：系统会停用省电模式。
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1)：当设备使用电池供电且电池电量低时，系统会启用省电模式。
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2)：当设备使用电池供电时，系统会启用省电模式。
+      </translation>
 <translation id="4703402283970867140">启用智能调暗模式，以最大限度地推迟屏幕变暗时间</translation>
 <translation id="4704958130749494760">自动授权网站连接到 USB 串行设备。</translation>
 <translation id="471360812659157054">window.webkitStorageInfo 将无法使用。</translation>
@@ -5271,6 +5260,7 @@
 <translation id="6575944031719151455">通过设置此政策，您可以指定将在登录屏幕中显示的设备本地帐号的列表。标识符会将不同的设备本地帐号区分开。
 
       如果您不设置此政策或此政策是空列表，则不存在设备本地帐号。</translation>
+<translation id="6580851705156412587">在设备休眠或合盖时锁定设备</translation>
 <translation id="6581048059229620221">如果停用此政策，将无法启动远程支持主机，也无法将该主机配置为接受传入连接。
 
           此政策不会影响远程访问场景。
@@ -6086,6 +6076,7 @@
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，系统会开启网络预测功能，但用户可以更改设置。</translation>
 <translation id="7408815947231046196">允许备份 <ph name="PRODUCT_NAME" /> 数据</translation>
+<translation id="740885188496462583">启用省电模式</translation>
 <translation id="7410074797376205571">允许 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="7412456346709338637">启用 Thunderbolt/USB4 外围设备数据访问</translation>
 <translation id="7417438464912687020">允许与这台计算机建立远程访问连接</translation>
@@ -6568,6 +6559,7 @@
 <translation id="7937766917976512374">是否允许视频捕获</translation>
 <translation id="7941528208359969119">允许执行在线 <ph name="OCSP_CRL_LABEL" /> 检查</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
+<translation id="7945445169067895719">允许在设备休眠或合盖时锁定设备</translation>
 <translation id="7946350455013548764">如果此政策设为 3，系统会允许网站请求对 HID 设备的访问权限。如果此政策设为 2，系统会禁止网站访问 HID 设备。
 
       如果此政策未设置，系统会允许网站请求获取访问权限，但用户可以更改此设置。
@@ -6893,6 +6885,7 @@
 
           如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="8288199156259560552">启用 Android Google 位置信息服务</translation>
+<translation id="8289824033213234651">当设备使用电池供电且电池电量低时，启用省电模式。</translation>
 <translation id="8290875622178450531">启用“语音输入”无障碍功能。
 
           如果此政策设为“enabled”，“语音输入”将始终处于启用状态。

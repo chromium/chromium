@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2742511345840685325">ปิงปอง</translation>
 <translation id="2742870351467570537">นำรายการที่เลือกออก </translation>
+<translation id="2759825833388495838">กรอกรหัสผ่านใน "<ph name="APP_NAME" />"</translation>
 <translation id="2764001903315068341">การ์ตูน</translation>
 <translation id="2765217105034171413">ขนาดเล็ก</translation>
 <translation id="277133753123645258">วิธีการจัดส่งสินค้า</translation>
@@ -1430,7 +1431,6 @@
 <translation id="4798269756263412078">รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม ระบบจะส่งการแจ้งเตือนไปยังอีเมลของคุณ</translation>
 <translation id="4800132727771399293">ตรวจสอบวันหมดอายุและ CVC แล้วลองอีกครั้ง</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">ใช้ Touch ID</translation>
 <translation id="4809079943450490359">วิธีการจากผู้ดูแลระบบอุปกรณ์ของคุณ</translation>
 <translation id="4811450222531576619">ดูข้อมูลเกี่ยวกับแหล่งที่มาและหัวข้อ</translation>
 <translation id="4812751092864334025">เทคโนโลยีที่สวมใส่ได้</translation>
@@ -1801,7 +1801,6 @@
 <translation id="5765072501007116331">หากต้องการดูวิธีการนำส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
 <translation id="57689295674415555">ไม่กรอกหมายเลขบัตรเสมือนใช่ไหม</translation>
 <translation id="5776313857861697733">ลำดับความสำคัญ</translation>
-<translation id="5778389256418062749">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
 <translation id="5781136890105823427">เปิดใช้การทดสอบอยู่</translation>
 <translation id="578305955206182703">เหลืองอำพัน</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
@@ -2569,7 +2568,6 @@
 <translation id="7880146494886811634">บันทึกที่อยู่</translation>
 <translation id="7882421473871500483">น้ำตาล</translation>
 <translation id="7882995332186050355">รถบรรทุกและรถพ่วง</translation>
-<translation id="788679692472636252">จัดการรหัสผ่านและพาสคีย์…</translation>
 <translation id="7887683347370398519">ตรวจสอบ CVC และลองอีกครั้ง</translation>
 <translation id="7887885240995164102">เข้าสู่การแสดงภาพซ้อนภาพ</translation>
 <translation id="7888575728750733395">การปรับค่าสีการพิมพ์</translation>
@@ -2965,6 +2963,7 @@
 <translation id="9039213469156557790">นอกจากนี้ หน้านี้ประกอบด้วยทรัพยากรอื่นๆ ซึ่งไม่ปลอดภัย ผู้อื่นสามารถดูทรัพยากรเหล่านี้ขณะถ่ายโอน และผู้บุกรุกสามารถแก้ไขเพื่อเปลี่ยนการทำงานของหน้าได้</translation>
 <translation id="9040464167025094690">ปุ่มหาอุปกรณ์ของฉัน กด Enter เพื่อหาอุปกรณ์ในบัญชี Google</translation>
 <translation id="9042617223719777575">ความจุมาก</translation>
+<translation id="9044359186343685026">ใช้ Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ถูกต้อง</translation>
 <translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>

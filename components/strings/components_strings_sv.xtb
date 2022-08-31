@@ -157,6 +157,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1348198688976932919">Det finns farliga appar på webbplatsen du är på väg till</translation>
 <translation id="1348779747280417563">Bekräfta namn</translation>
 <translation id="1354976809542763843">Husfinansiering</translation>
+<translation id="1355158069018170842">Visa sänkta priser på flikar</translation>
 <translation id="1355301061807280185">Jobb</translation>
 <translation id="1355754231781595724">Fordons- och trafiksäkerhet</translation>
 <translation id="1357195169723583938">Vem har använt enheten nyligen och när</translation>
@@ -466,6 +467,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2153609454945889823">Vill du installera Google Play-tjänster för AR?</translation>
 <translation id="2154054054215849342">Synkronisering är inte tillgänglig för din domän</translation>
 <translation id="2154484045852737596">Redigera kortet</translation>
+<translation id="2157640075051554492">Aviseringar för prisbevakningar</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162510787844374618">Kontaktar din bank …</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
@@ -691,6 +693,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Bordtennis</translation>
 <translation id="2742870351467570537">Ta bort valda objekt</translation>
+<translation id="2759825833388495838">fylla i ditt lösenord i <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Serietidningar</translation>
 <translation id="2765217105034171413">Liten</translation>
 <translation id="277133753123645258">Fraktalternativ</translation>
@@ -1002,6 +1005,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3633738897356909127">Knappen Uppdatera Chrome, tryck på retur om du vill uppdatera Chrome i inställningarna för Chrome</translation>
 <translation id="3634530185120165534">Fack 5</translation>
 <translation id="3634567936866541746">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas att kontrollera dina sparade lösenord i Chrome nu för att skydda dina konton.</translation>
+<translation id="3637033245385760976">Chrome-aviseringar måste vara aktiverade. Du kan aktivera dem i <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Spara i Google-kontot</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Program:</translation>
@@ -1424,6 +1428,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4785376858512657294">Hantera Google-kontot</translation>
 <translation id="4785689107224900852">Byt till den här fliken</translation>
 <translation id="4786804728079074733">Volleyboll</translation>
+<translation id="4789704664580239421">Aviseringar om sänkt pris visas på dina öppna flikar</translation>
 <translation id="4791134497475588553">Installerade Linux-program och när de användes senast</translation>
 <translation id="4792686369684665359">Informationen som du är på väg att skicka in är inte säker</translation>
 <translation id="4796594887379589189">Konto-ID för utskriften</translation>
@@ -1431,7 +1436,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4798269756263412078">Få aviseringar när priset sjunker på en webbplats. Aviseringarna skickas till din e-postadress.</translation>
 <translation id="4800132727771399293">Kontrollera utgångsdatum och CVC-kod och försök igen</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Använd Touch ID</translation>
 <translation id="4809079943450490359">Anvisningar från enhetsadministratören:</translation>
 <translation id="4811450222531576619">Läs mer om källan och ämnet</translation>
 <translation id="4812751092864334025">Kroppsburen teknik</translation>
@@ -1790,6 +1794,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5730040223043577876">Du rekommenderas att återställa lösenordet om du har återanvänt det på andra webbplatser.</translation>
 <translation id="5736165827969430182">Metaller och gruvdrift</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Spara kortet i Google-kontot}other{Spara korten i Google-kontot}}</translation>
+<translation id="5738385766833540397">Hantera hur du får sänkt pris-aviseringar för produkter du bevakar</translation>
 <translation id="5743638595296120378">Bilhandel</translation>
 <translation id="5743898850056428078">Motorcykelracing</translation>
 <translation id="5745733273847572235">Får fråga om din plats</translation>
@@ -1799,10 +1804,10 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5759751709240058861">Använda och röra din kamera</translation>
 <translation id="5763042198335101085">Ange en giltig e-postadress</translation>
 <translation id="5764725887548570807">Ogiltigt ursprungsformat.</translation>
+<translation id="5764920692828389743">Skicka till <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Välj en adress för att visa leveranssätt och krav</translation>
 <translation id="57689295674415555">Har det virtuella kortnumret inte fyllts i?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
-<translation id="5778389256418062749">Använd en nyckel på en annan enhet</translation>
 <translation id="5781136890105823427">Ett experiment har aktiverats</translation>
 <translation id="578305955206182703">Bärnstensfärgad</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
@@ -1890,6 +1895,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6017850046339264347">Angripare på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> skulle kunna installera bedrägliga appar som inte gör vad de påstås göra eller samla in data som används för att spåra dig. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synkroniserade)</translation>
 <translation id="6027201098523975773">Ange ett namn</translation>
+<translation id="6028591542479806248">Hantera telefon- och e-postaviseringar</translation>
 <translation id="603068602130820122">Två häftklamrar till höger</translation>
 <translation id="6032524144326295339">Postfack 2</translation>
 <translation id="6032955021262906325">Bindning till vänster</translation>
@@ -2570,7 +2576,6 @@ Mer information.
 <translation id="7880146494886811634">Spara adressen</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7882995332186050355">Lastbilar och släpvagnar</translation>
-<translation id="788679692472636252">Hantera lösenord och nycklar …</translation>
 <translation id="7887683347370398519">Kontrollera CVC-koden och försök igen</translation>
 <translation id="7887885240995164102">Öppna bild-i-bild-läge</translation>
 <translation id="7888575728750733395">Renderingsmetod för utskrifter</translation>
@@ -2811,6 +2816,7 @@ Mer information:
 <translation id="8559762987265718583">Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom enhetens datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.</translation>
 <translation id="8564182942834072828">Separata dokument/kopior grupperade per sida</translation>
 <translation id="8564985650692024650">Du rekommenderas att återställa lösenordet för <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> om du har återanvänt det på andra webbplatser.</translation>
+<translation id="8573969211731659953">Aviseringar för sänkt pris är aktiverade. Du kan ändra det i <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="8576310925653847813">Hemmabiosystem</translation>
 <translation id="8577348305244205642">Virtuella kort är inte tillgängliga</translation>
 <translation id="858637041960032120">Ange telefonnr
@@ -2966,6 +2972,7 @@ Mer information:
 <translation id="9039213469156557790">Den här sidan innehåller emellertid andra resurser som inte är säkra. Andra kan se resurserna när de överförs och hackare kan ändra resurserna så att sidan får ett annat beteende.</translation>
 <translation id="9040464167025094690">Knappen Hitta min enhet: tryck på Retur om du vill hitta din enhet i Google-kontot</translation>
 <translation id="9042617223719777575">Stor kapacitet</translation>
+<translation id="9044359186343685026">Använd Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Du försökte nå <ph name="DOMAIN" /> men servern angav ett ogiltigt certifikat.</translation>
 <translation id="9050666287014529139">Lösenfras</translation>

@@ -1431,7 +1431,6 @@
 <translation id="4798269756263412078">Primește alerte dacă prețul scade pe orice site. Alertele îți vor fi trimise prin e-mail.</translation>
 <translation id="4800132727771399293">Verifică data de expirare și codul CVC și încearcă din nou</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Folosește TouchID</translation>
 <translation id="4809079943450490359">Instrucțiuni de la administratorul dispozitivului:</translation>
 <translation id="4811450222531576619">Află despre sursă și subiect</translation>
 <translation id="4812751092864334025">Tehnologie portabilă</translation>
@@ -1802,7 +1801,6 @@
 <translation id="5765072501007116331">Pentru a vedea metodele de livrare și cerințele, selectează o adresă</translation>
 <translation id="57689295674415555">Numărul de card virtual nu este completat?</translation>
 <translation id="5776313857861697733">Prioritară</translation>
-<translation id="5778389256418062749">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="5781136890105823427">Experimentul a fost activat</translation>
 <translation id="578305955206182703">Chihlimbar</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
@@ -2570,7 +2568,6 @@ Detalii suplimentare:
 <translation id="7880146494886811634">Salvează adresa</translation>
 <translation id="7882421473871500483">Maro</translation>
 <translation id="7882995332186050355">Autocamioane și remorci</translation>
-<translation id="788679692472636252">Gestionează parolele și cheile de acces…</translation>
 <translation id="7887683347370398519">Verifică codul CVC și încearcă din nou</translation>
 <translation id="7887885240995164102">Intră în modul picture-in-picture</translation>
 <translation id="7888575728750733395">Intenția de redare a printării</translation>
@@ -2966,6 +2963,7 @@ Detalii suplimentare:
 <translation id="9039213469156557790">În plus, această pagină include alte resurse care nu sunt securizate. Aceste resurse sunt vizibile pentru alți utilizatori în cursul transferului și pot fi modificate de un atacator pentru a schimba comportamentul paginii.</translation>
 <translation id="9040464167025094690">Butonul Găsește-mi dispozitivul, apasă pe Enter pentru a accesa serviciul Găsește-mi dispozitivul în Contul Google</translation>
 <translation id="9042617223719777575">Capacitate mare</translation>
+<translation id="9044359186343685026">Folosește Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Ai încercat să accesezi <ph name="DOMAIN" />, dar serverul a prezentat un certificat nevalid.</translation>
 <translation id="9050666287014529139">Expresie de acces</translation>

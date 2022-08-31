@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1068168522143272502">Die Liste der Adressen und Zahlungsoptionen, die beim Zahlungsvorgang ausgefüllt werden sollen, ist halb geöffnet.</translation>
+<translation id="2501278716633472235">Zurück</translation>
 <translation id="4401440167302712543">Du kannst Versand- und Zahlungsinformationen an der Kasse automatisch eintragen lassen</translation>
 <translation id="567079066552447069">Die Liste der Adressen und Zahlungsoptionen, die während des Bezahlvorgangs ausgefüllt werden sollen, ist geschlossen.</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
 <translation id="8264703973415044493">Die Liste der Adressen und Zahlungsoptionen, die während des Bezahlvorgangs ausgefüllt werden sollen, ist vollständig geöffnet.</translation>
 <translation id="8315600272591552085">Die Liste der Adressen und Zahlungsoptionen, die beim Zahlungsvorgang ausgefüllt werden sollen.</translation>
+<translation id="884264119367021077">Versandadresse</translation>
 <translation id="8873105120914375071">Schneller bezahlen?</translation>
 <translation id="9032876013752408138">Meine Daten automatisch eintragen</translation>
 </translationbundle>

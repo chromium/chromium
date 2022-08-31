@@ -1431,7 +1431,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4798269756263412078">Kry kennisgewings as die prys op enige werf daal. Opletberigte sal na jou e-pos toe gestuur word.</translation>
 <translation id="4800132727771399293">Gaan jou vervaldatum en CVC na en probeer weer</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Gebruik Raak-ID</translation>
 <translation id="4809079943450490359">Instruksies deur jou toesteladministrateur:</translation>
 <translation id="4811450222531576619">Kom meer te wete oor bron en onderwerp</translation>
 <translation id="4812751092864334025">Drabare tegnologie</translation>
@@ -1802,7 +1801,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5765072501007116331">Kies 'n adres om afleweringmetodes en -vereistes te sien</translation>
 <translation id="57689295674415555">Is virtuelekaartnommer nie ingevul nie?</translation>
 <translation id="5776313857861697733">Prioriteit</translation>
-<translation id="5778389256418062749">Gebruik ’n wagwoordsleutel op ’n ander toestel</translation>
 <translation id="5781136890105823427">Eksperiment is geaktiveer</translation>
 <translation id="578305955206182703">Geelbruin</translation>
 <translation id="57838592816432529">Demp</translation>
@@ -2570,7 +2568,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7880146494886811634">Stoor adres</translation>
 <translation id="7882421473871500483">Bruin</translation>
 <translation id="7882995332186050355">Vragvervoer- en sleepwaens</translation>
-<translation id="788679692472636252">Bestuur wagwoorde en wagwoordsleutels …</translation>
 <translation id="7887683347370398519">Gaan jou CVC na en probeer weer</translation>
 <translation id="7887885240995164102">Gaan na prent-in-prent</translation>
 <translation id="7888575728750733395">Drukleweringvoorneme</translation>
@@ -2965,6 +2962,7 @@ Bykomende besonderhede:
 <translation id="9039213469156557790">Hierdie bladsy sluit verder ander hulpbronne in wat nie veilig is nie. Hierdie hulpbronne kan deur ander mense bekyk word terwyl hulle op pad is, en kan deur 'n aanvaller aangepas word om die bladsy se gedrag te verander.</translation>
 <translation id="9040464167025094690">Knoppie om my toestel te kry. Druk Enter om jou toestel in die Google-rekening te kry</translation>
 <translation id="9042617223719777575">Groot kapasiteit</translation>
+<translation id="9044359186343685026">Gebruik Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Jy het probeer om <ph name="DOMAIN" /> te bereik, maar die bediener het 'n ongeldige sertifikaat voorgehou.</translation>
 <translation id="9050666287014529139">Wagfrase</translation>

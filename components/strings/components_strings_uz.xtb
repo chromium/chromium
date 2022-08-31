@@ -1427,7 +1427,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4798269756263412078">Har qaysi saytda narxi tushganda xabar olish. Ogohlantirishlar emailingizga yuboriladi.</translation>
 <translation id="4800132727771399293">Kartangiz orqasidagi CVC-kod muddatini tekshiring va qaytadan urinib ko‘ring.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Touch ID ishlatish</translation>
 <translation id="4809079943450490359">Administrator korsatmalari:</translation>
 <translation id="4811450222531576619">Manbasi va mavzusi haqida batafsil</translation>
 <translation id="4812751092864334025">Taqiladigan texnologiyalar</translation>
@@ -1798,7 +1797,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5765072501007116331">Yetkazib berish usuli va talablari bilan tanishish uchun manzilni tanlang</translation>
 <translation id="57689295674415555">Virtual karta raqami kiritilmadimi?</translation>
 <translation id="5776313857861697733">Muhimligi</translation>
-<translation id="5778389256418062749">Kodni boshqa qurilmada ishlating</translation>
 <translation id="5781136890105823427">Tajribaviy funksiya yoqildi</translation>
 <translation id="578305955206182703">Qahrabo rang</translation>
 <translation id="57838592816432529">Ovozni o‘chirib qo‘yish</translation>
@@ -2565,7 +2563,6 @@ Batafsil axborot:
 <translation id="7880146494886811634">Manzilni saqlash</translation>
 <translation id="7882421473871500483">Jigarrang</translation>
 <translation id="7882995332186050355">Yuk mashinalari va tirkamalar</translation>
-<translation id="788679692472636252">Parol va kodlarni boshqarish…</translation>
 <translation id="7887683347370398519">CVC-kodni tekshiring va qayta urinib ko‘ring.</translation>
 <translation id="7887885240995164102">Tasvir ustida tasvir rejimiga kirish</translation>
 <translation id="7888575728750733395">Bosma uchun rangli renderlash usuli</translation>
@@ -2960,6 +2957,7 @@ Batafsil axborot:
 <translation id="9039213469156557790">Bundan tashqari, ushbu sahifada xavfli kontent ham aniqlandi. Ma’lumotlarni uzatishda uchinchi tomon resurslarni ko‘rishi mumkin. Yovuz niyatli odamlar esa sahifaga kirishi va uning xatti-harakatini o‘zgartirishi mumkin.</translation>
 <translation id="9040464167025094690">Qurilmamni top tugmasi, Google hisobidagi qurilmani topish xizmatini ochish uchun Enter tugmasini bosing</translation>
 <translation id="9042617223719777575">Koʻp sigʻimli</translation>
+<translation id="9044359186343685026">Touch ID ishlatish</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Siz <ph name="DOMAIN" /> domenini ochmoqchi bo‘ldingiz, lekin server taqdim qilgan sertifikat haqiqiy emas.</translation>
 <translation id="9050666287014529139">Kodli ibora</translation>

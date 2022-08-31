@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">확인</translation>
 <translation id="2742511345840685325">탁구</translation>
 <translation id="2742870351467570537">선택한 항목 삭제</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
 <translation id="2764001903315068341">만화</translation>
 <translation id="2765217105034171413">작게</translation>
 <translation id="277133753123645258">배송 방법</translation>
@@ -1431,7 +1432,6 @@
 <translation id="4798269756263412078">사이트에서 가격이 인하되면 알림을 받게 됩니다. 알림은 사용자의 이메일 주소로 전송됩니다.</translation>
 <translation id="4800132727771399293">유효기간과 CVC를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Touch ID 사용</translation>
 <translation id="4809079943450490359">기기 관리자가 제공하는 지침:</translation>
 <translation id="4811450222531576619">출처와 주제에 관해 자세히 알아보기</translation>
 <translation id="4812751092864334025">웨어러블 기술</translation>
@@ -1802,7 +1802,6 @@
 <translation id="5765072501007116331">배달 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="57689295674415555">가상 카드 번호가 자동 완성되지 않았나요?</translation>
 <translation id="5776313857861697733">우선순위</translation>
-<translation id="5778389256418062749">다른 기기의 패스키 사용</translation>
 <translation id="5781136890105823427">실험 기능 사용 설정됨</translation>
 <translation id="578305955206182703">황색</translation>
 <translation id="57838592816432529">음소거</translation>
@@ -2569,7 +2568,6 @@
 <translation id="7880146494886811634">주소 저장</translation>
 <translation id="7882421473871500483">갈색</translation>
 <translation id="7882995332186050355">화물 트럭 및 트레일러</translation>
-<translation id="788679692472636252">비밀번호 및 패스키 관리…</translation>
 <translation id="7887683347370398519">CVC를 확인한 후 다시 시도하세요.</translation>
 <translation id="7887885240995164102">PIP 모드 시작</translation>
 <translation id="7888575728750733395">인쇄 렌더링 인텐트</translation>
@@ -2964,6 +2962,7 @@
 <translation id="9039213469156557790">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 작동을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
 <translation id="9040464167025094690">내 기기 찾기 버튼, Google 계정에서 내 기기 찾기 페이지를 방문하려면 Enter를 누르세요</translation>
 <translation id="9042617223719777575">대용량</translation>
+<translation id="9044359186343685026">Touch ID 사용</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" />에 접속하려 했지만 서버가 잘못된 인증서를 전달했습니다.</translation>
 <translation id="9050666287014529139">암호</translation>

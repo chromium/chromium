@@ -1433,7 +1433,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4798269756263412078">Dapatkan makluman sekiranya harga jatuh pada mana-mana laman. Makluman akan dihantar ke e-mel anda.</translation>
 <translation id="4800132727771399293">Semak tarikh tamat tempoh serta CVC anda dan cuba lagi</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Gunakan Touch ID</translation>
 <translation id="4809079943450490359">Arahan daripada pentadbir peranti anda:</translation>
 <translation id="4811450222531576619">Ketahui tentang sumber dan topik halaman ini</translation>
 <translation id="4812751092864334025">Teknologi boleh dipakai</translation>
@@ -1804,7 +1803,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5765072501007116331">Pilih alamat untuk melihat kaedah dan syarat penghantaran</translation>
 <translation id="57689295674415555">Nombor kad maya tidak diisikan?</translation>
 <translation id="5776313857861697733">Keutamaan</translation>
-<translation id="5778389256418062749">Gunakan Kunci Laluan Pada Peranti Lain</translation>
 <translation id="5781136890105823427">Percubaan didayakan</translation>
 <translation id="578305955206182703">Kuning jingga</translation>
 <translation id="57838592816432529">Redam</translation>
@@ -2572,7 +2570,6 @@ Butiran tambahan:
 <translation id="7880146494886811634">Simpan Alamat</translation>
 <translation id="7882421473871500483">Coklat</translation>
 <translation id="7882995332186050355">Lori kargo &amp; treler</translation>
-<translation id="788679692472636252">Urus Kata Laluan Dan Kunci Laluan…</translation>
 <translation id="7887683347370398519">Semak CVC anda dan cuba lagi</translation>
 <translation id="7887885240995164102">Akses mod gambar dalam gambar</translation>
 <translation id="7888575728750733395">Niat pemaparan cetakan</translation>
@@ -2968,6 +2965,7 @@ Butiran tambahan:
 <translation id="9039213469156557790">Selain itu, halaman ini mengandungi sumber lain yang tidak selamat. Sumber ini boleh dilihat oleh orang lain semasa dalam transit dan boleh diubah oleh penyerang untuk menukar kelakuan halaman.</translation>
 <translation id="9040464167025094690">Butang cari peranti saya, tekan Enter untuk mencari peranti anda dalam Google Account</translation>
 <translation id="9042617223719777575">Kapasiti Besar</translation>
+<translation id="9044359186343685026">Gunakan Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Anda cuba untuk mencapai <ph name="DOMAIN" />, tetapi pelayan memberikan sijil tidak sah.</translation>
 <translation id="9050666287014529139">Frasa laluan</translation>

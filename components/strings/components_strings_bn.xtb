@@ -1433,7 +1433,6 @@
 <translation id="4798269756263412078">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান। আপনার ইমেলে বিজ্ঞপ্তি পান।</translation>
 <translation id="4800132727771399293">Check your expiration date and CVC and try again</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">টাচ আইডি ব্যবহার করুন</translation>
 <translation id="4809079943450490359">আপনার ডিভাইস অ্যাডমিনিস্ট্রেটরের থেকে পাওয়া নির্দেশাবলী:</translation>
 <translation id="4811450222531576619">এর সোর্স এবং বিষয় সম্পর্কে জানুন</translation>
 <translation id="4812751092864334025">পরে থাকা যায় এমন প্রযুক্তি</translation>
@@ -1804,7 +1803,6 @@
 <translation id="5765072501007116331">ডেলিভারির পদ্ধতি এবং প্রয়োজনীয়তাগুলি দেখতে একটি ঠিকানা বেছে নিন</translation>
 <translation id="57689295674415555">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি?</translation>
 <translation id="5776313857861697733">অগ্রাধিকার</translation>
-<translation id="5778389256418062749">অন্য কোনও ডিভাইসে পাসকী ব্যবহার করুন</translation>
 <translation id="5781136890105823427">এক্সপেরিমেন্ট চালু করা হয়েছে</translation>
 <translation id="578305955206182703">হলুদাভ বাদামি</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
@@ -2571,7 +2569,6 @@
 <translation id="7880146494886811634">ঠিকানা সেভ করুন</translation>
 <translation id="7882421473871500483">খয়েরি</translation>
 <translation id="7882995332186050355">কার্গো ট্রাক ও ট্রেলার</translation>
-<translation id="788679692472636252">পাসওয়ার্ড ও পাসকী ম্যানেজ করুন…</translation>
 <translation id="7887683347370398519">আপনার CVC পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="7887885240995164102">'ছবির-মধ্যে-ছবি' মোডে প্রবেশ করুন</translation>
 <translation id="7888575728750733395">প্রিন্ট রেন্ডারিং ইনটেন্ট</translation>
@@ -2966,6 +2963,7 @@
 <translation id="9039213469156557790">উপরন্তু, এই পৃষ্ঠাতে অন্যান্য সংস্থান অন্তর্ভুক্ত রয়েছে যা নিরাপদ নয়৷ এই সংস্থানগুলি ট্রানজিটের সময় অন্যরা দেখতে পাবে এবং পৃষ্ঠাটির আচরণ পরিবর্তন করার জন্য কোনো আক্রমণকারী এর পরিবর্তন করতে পারেন৷</translation>
 <translation id="9040464167025094690">'Find My Device' বোতাম, Google অ্যাকাউন্টে 'Find My Device'-এ যেতে Enter প্রেস করুন</translation>
 <translation id="9042617223719777575">অধিক ক্ষমতা সম্পন্ন</translation>
+<translation id="9044359186343685026">টাচ আইডি ব্যবহার করুন</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">আপনি <ph name="DOMAIN" />-এ পৌছানোর প্রয়াস করছেন, কিন্তু সার্ভার একটি ভুল সার্টিফিকেট উপস্থাপন করেছে|</translation>
 <translation id="9050666287014529139">পাসফ্রেজ</translation>

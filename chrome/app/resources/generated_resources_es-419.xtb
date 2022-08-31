@@ -3266,6 +3266,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4062561150282203854">Sincroniza las apps, las opciones de configuración y otros elementos de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4065876735068446555">Es posible que la red que estás usando (<ph name="NETWORK_ID" />) requiera que visites la página de acceso.</translation>
 <translation id="4066207411788646768">Revisa la conexión para ver las impresoras disponibles en tu red</translation>
+<translation id="4066945815577305767">Se agotó el tiempo de espera para ingresar contraseñas</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
 <translation id="407173827865827707">Al hacer clic</translation>
 <translation id="4072701974556190758">La contraseña se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />. No deberás recordarla.</translation>
@@ -5103,7 +5104,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5884474295213649357">Esta pestaña está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">Tu organización administrará este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
-<translation id="5888843733007437002">Se visualizan las plantillas. Presiona Tab para navegar.</translation>
 <translation id="5889282057229379085">Cantidad máxima de certificados intermedios: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -5571,7 +5571,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6333170995003625229">No se pudo verificar tu dirección de correo electrónico o contraseña. Inténtalo de nuevo.</translation>
 <translation id="6335920438823100346">Para iniciar Linux, <ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y restablezcas esta Chromebook a la configuración de fábrica.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> inhabilitó la depuración de ADB, por lo que se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que deseas conservar.</translation>
-<translation id="6338402296920404442">Considera borrar <ph name="FILENAME" /> para que otras personas que usan este dispositivo no puedan ver tus contraseñas.</translation>
+<translation id="6338968693068997776">Agregar un dispositivo USB</translation>
 <translation id="6338981933082930623">Permitir que todos los sitios muestren cualquier anuncio</translation>
 <translation id="6339668969738228384">Crear un perfil nuevo para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión por Internet (IPPS)</translation>
@@ -6169,6 +6169,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6903907808598579934">Activar la sincronización</translation>
 <translation id="6904344821472985372">Revocar acceso al archivo</translation>
 <translation id="6904655473976120856">Presionar el botón de la app para salir</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{Para proteger tus contraseñas, el Administrador de contraseñas de Google se bloquea después de 1 minuto de inactividad.}other{Para proteger tus contraseñas, el Administrador de contraseñas de Google se bloquea después de {NUM_MINS} minutos de inactividad.}}</translation>
 <translation id="6909422577741440844">¿Deseas recibir contenido de este dispositivo?</translation>
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="691106080621596509">Esta acción borrará todos los datos y cookies almacenados por <ph name="SITE_GROUP_NAME" />, sus sitios secundarios y su app instalada</translation>
@@ -8010,6 +8011,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="8690129572193755009">Permitir que los sitios soliciten permiso para procesar protocolos</translation>
 <translation id="8692107307702113268">La contraseña tiene más de 1,000 caracteres</translation>
+<translation id="8694596275649352090">Bloquear al cerrar la tapa o en el modo de suspensión</translation>
 <translation id="8695139659682234808">Agrega los controles parentales cuando finalices la configuración</translation>
 <translation id="8695825812785969222">Abrir &amp;ubicación...</translation>
 <translation id="8698269656364382265">Si quieres regresar a la pantalla anterior, desliza el dedo desde el lado izquierdo.</translation>
@@ -8058,6 +8060,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8732844209475700754">Más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos</translation>
 <translation id="8734073480934656039">Al habilitar esta opción, las aplicaciones del kiosco podrán iniciarse automáticamente en el inicio.</translation>
 <translation id="8734674662128056360">Bloqueo de cookies de terceros</translation>
+<translation id="8734755021067981851">No hay dispositivos USB conectados.</translation>
 <translation id="873545264931343897">Cuando <ph name="PLUGIN_NAME" /> termine de actualizarse, vuelve a cargar la página para activarlo</translation>
 <translation id="8736288397686080465">Este sitio se actualizó en segundo plano.</translation>
 <translation id="8737709691285775803">Shill</translation>

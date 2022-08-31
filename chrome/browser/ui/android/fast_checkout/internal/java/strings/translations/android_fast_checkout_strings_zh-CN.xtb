@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1068168522143272502">要在结账流程中填写的地址和付款方式列表已半屏打开。</translation>
+<translation id="2501278716633472235">返回</translation>
 <translation id="4401440167302712543">结账时自动填充送货和付款信息</translation>
 <translation id="567079066552447069">要在结账流程中填充的地址和付款方式的列表已关闭。</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="8264703973415044493">要在结账流程中填充的地址和付款方式的列表已全屏打开。</translation>
 <translation id="8315600272591552085">要在结账流程中填充的地址和付款方式的列表。</translation>
+<translation id="884264119367021077">送货地址</translation>
 <translation id="8873105120914375071">想更快捷地结账？</translation>
 <translation id="9032876013752408138">自动填充我的信息</translation>
 </translationbundle>

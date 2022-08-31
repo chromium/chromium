@@ -227,6 +227,7 @@
 <translation id="2497706219848005458">Πρασινοκίτρινο</translation>
 <translation id="2523609930580546572">Οδηγός ChromeVox</translation>
 <translation id="2525706221823668172">Συντομεύσεις πληκτρολογίου Chromebook</translation>
+<translation id="2543973100702367007">Πατήστε δύο φορές για <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">γραμματικό λάθος</translation>
 <translation id="2556326187583116255">Πατήστε με 2 δάχτυλα για να διακόψετε τυχόν τρέχουσα ομιλία</translation>
 <translation id="2573256689920773241">Βασική πλοήγηση</translation>
@@ -1116,6 +1117,7 @@
 <translation id="8693391540059827073">Η αγαπημένη μου εποχή</translation>
 <translation id="8696284982970258155">Μελίτωμα</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{κάθετη παύλα}other{# κάθετες παύλες}}</translation>
+<translation id="8733397807344284494">Πατήστε Αναζήτηση+πλήκτρο διαστήματος για <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Υπόδειξη: Πιέστε Αναζήτηση + κενό διάστημα για να ενεργοποιήσετε το τρέχον στοιχείο.</translation>
 <translation id="8743786158317878347">εισαγωγή σε δομημένο περιεχόμενο, όπως πίνακες</translation>
 <translation id="8746846427395705317">μετακίνηση στην προηγούμενη λέξη</translation>

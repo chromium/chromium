@@ -1431,7 +1431,6 @@
 <translation id="4798269756263412078">Отримуйте сповіщення, коли на якомусь сайті знизиться ціна. Сповіщення надсилатимуться на вашу електронну пошту.</translation>
 <translation id="4800132727771399293">Перевірте дату закінчення терміну дії та код CVC та повторіть спробу</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Використати Touch ID</translation>
 <translation id="4809079943450490359">Вказівки адміністратора вашого пристрою:</translation>
 <translation id="4811450222531576619">Докладніше про джерело й тему</translation>
 <translation id="4812751092864334025">Гаджети</translation>
@@ -1802,7 +1801,6 @@
 <translation id="5765072501007116331">Укажіть адресу, щоб переглянути способи доставки та вимоги.</translation>
 <translation id="57689295674415555">Номер віртуальної картки не заповнено?</translation>
 <translation id="5776313857861697733">Пріоритет</translation>
-<translation id="5778389256418062749">Використати ключ доступу на іншому пристрої</translation>
 <translation id="5781136890105823427">Експеримент увімкнено</translation>
 <translation id="578305955206182703">Бурштиновий</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
@@ -2570,7 +2568,6 @@
 <translation id="7880146494886811634">Збережіть адресу</translation>
 <translation id="7882421473871500483">Коричневий</translation>
 <translation id="7882995332186050355">Вантажні автомобілі й трейлери</translation>
-<translation id="788679692472636252">Керувати паролями та ключами доступу…</translation>
 <translation id="7887683347370398519">Перевірте код CVC й повторіть спробу</translation>
 <translation id="7887885240995164102">Увімкнути режим "Картинка в картинці"</translation>
 <translation id="7888575728750733395">Команда обробки друку</translation>
@@ -2966,6 +2963,7 @@
 <translation id="9039213469156557790">Окрім цього, сторінка містить незахищені ресурси. Інші особи можуть переглядати їх під час передавання даних, а зловмисники можуть змінювати роботу сторінки.</translation>
 <translation id="9040464167025094690">Кнопка "Знайти пристрій"; натисніть Enter, щоб перейти в розділ "Знайти пристрій" в обліковому записі Google.</translation>
 <translation id="9042617223719777575">Велика місткість</translation>
+<translation id="9044359186343685026">Використовувати Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Ви пробували зв’язатися з доменом <ph name="DOMAIN" />, але сервер надав недійсний сертифікат.</translation>
 <translation id="9050666287014529139">Парольна фраза</translation>

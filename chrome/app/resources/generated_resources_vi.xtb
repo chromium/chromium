@@ -5134,7 +5134,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5884474295213649357">Thẻ này được kết nối với một thiết bị USB.</translation>
 <translation id="5885314688092915589">Tổ chức của bạn sẽ quản lý hồ sơ này</translation>
 <translation id="5886009770935151472">Ngón tay số 1</translation>
-<translation id="5888843733007437002">Đang xem mẫu. Nhấn Tab để di chuyển.</translation>
 <translation id="5889282057229379085">Số CA gián tiếp tối đa: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Các mạng Wi-Fi ưu tiên</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
@@ -5602,7 +5601,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6333170995003625229">Không xác minh được địa chỉ email hoặc mật khẩu của bạn. Hãy thử đăng nhập lại.</translation>
 <translation id="6335920438823100346">Để khởi động Linux, <ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và đặt lại thiết bị Chromebook này về trạng thái cài đặt ban đầu.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> đã tắt tùy chọn gỡ lỗi ADB. Thao tác này sẽ đặt lại <ph name="DEVICE_TYPE" /> của bạn sau 24 giờ nữa. Hãy sao lưu mọi tệp bạn muốn giữ lại.</translation>
-<translation id="6338402296920404442">Bạn nên xoá <ph name="FILENAME" /> để những người khác dùng thiết bị này không xem được mật khẩu của bạn.</translation>
 <translation id="6338968693068997776">Thêm thiết bị USB</translation>
 <translation id="6338981933082930623">Mọi trang web đều có thể hiển thị quảng cáo bất kỳ cho bạn</translation>
 <translation id="6339668969738228384">Tạo hồ sơ mới cho <ph name="USER_EMAIL_ADDRESS" /></translation>

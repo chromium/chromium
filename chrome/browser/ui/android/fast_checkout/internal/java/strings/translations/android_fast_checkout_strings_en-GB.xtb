@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1068168522143272502">List of addresses and payment options to be filled in during checkout flows opened at half height.</translation>
+<translation id="2501278716633472235">Go back</translation>
 <translation id="4401440167302712543">Auto-fill delivery and payment info as you check out</translation>
 <translation id="567079066552447069">List of addresses and payment options to be filled in during checkout flows is closed.</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="8264703973415044493">List of addresses and payment options to be filled in during checkout flows opened at full height.</translation>
 <translation id="8315600272591552085">List of addresses and payment options to be filled in during checkout flows.</translation>
+<translation id="884264119367021077">Delivery address</translation>
 <translation id="8873105120914375071">Check out faster?</translation>
 <translation id="9032876013752408138">Auto-fill my info</translation>
 </translationbundle>

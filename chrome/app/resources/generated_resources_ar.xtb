@@ -46,6 +46,7 @@
 <translation id="1043505821207197890">‏حدث خطأ. قد تتم ترقية نظام التشغيل Linux جزئيًا فقط. لمزيد من المعلومات، يُرجى الاطّلاع على السجلّات. تم حفظ السجلّات في الملفات &gt; ملفاتي &gt; الملف <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">هل تريد محو البيانات من هذه التطبيقات أيضًا؟</translation>
 <translation id="1043824690776631483">يجب الحصول على إذن للدخول إلى هذا الموقع الإلكتروني، وذلك لأنّه قد يتضمّن محتوى غير ملائم.</translation>
+<translation id="104419033123549300">شكل خريطة المفاتيح</translation>
 <translation id="104710386808485638">‏هل تريد إعادة تشغيل نظام التشغيل Linux؟</translation>
 <translation id="1047431265488717055">نسخ ن&amp;ص الرابط</translation>
 <translation id="1048286738600630630">إعدادات العرض</translation>
@@ -775,6 +776,7 @@
 <translation id="1721312023322545264">أنت بحاجة لإذن من <ph name="NAME" /> لزيارة هذا الموقع</translation>
 <translation id="1722460139690167654">تتم <ph name="BEGIN_LINK" />إدارة <ph name="DEVICE_TYPE" /><ph name="END_LINK" /> من خلال <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">نافذة &amp;جديدة</translation>
+<translation id="1724801751621173132">وضع الإدخال</translation>
 <translation id="1725562816265788801">الانتقال بين علامات التبويب</translation>
 <translation id="1729533290416704613">كما أنها تتحكم في الصفحة التي تظهر عند إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="1730917990259790240">‏<ph name="BEGIN_PARAGRAPH1" />لإزالة التطبيقات، يمكنك الانتقال إلى "الإعدادات" &gt; "متجر Google Play" &gt; "إدارة إعدادات Android المفضّلة" &gt; "التطبيقات" أو "مدير التطبيقات". وبعد ذلك، انقر على التطبيق الذي تريد إلغاء تثبيته (قد يجب التمرير سريعًا إلى اليمين أو اليسار للعثور على التطبيق). ثم انقر على "إلغاء التثبيت" أو "إيقاف".<ph name="END_PARAGRAPH1" /></translation>
@@ -1956,6 +1958,7 @@
 <translation id="2796740370559399562">متابعة السماح بتشغيل ملفات تعريف الارتباط</translation>
 <translation id="2798347533012571708">الإبقاء على التحديثات</translation>
 <translation id="2799223571221894425">إعادة تشغيل</translation>
+<translation id="2800309299477632167">خريطة المفاتيح المخصَّصة</translation>
 <translation id="2800760947029405028">تحميل صورة</translation>
 <translation id="2801954693771979815">حجم الشاشة</translation>
 <translation id="2802557211515765772">ما مِن طابعات مُدارة.</translation>
@@ -2017,6 +2020,7 @@
 <translation id="2849767214114481738">تمت إضافة رقم التعريف الشخصي</translation>
 <translation id="2849936225196189499">مهمة</translation>
 <translation id="2850541429955027218">إضافة مظهر</translation>
+<translation id="2850672011315104382">نمط علامات الترقيم</translation>
 <translation id="2851634818064021665">يلزمك الحصول على إذن لزيارة هذا الموقع</translation>
 <translation id="2851728849045278002">حدث خطأ. يمكنك النقر للاطّلاع على مزيد من التفاصيل.</translation>
 <translation id="2852385257476173980">أثناء تصفّحك للويب، قد تظهر هنا قائمة بالمواقع الإلكترونية التي تزورها.</translation>
@@ -2514,6 +2518,7 @@
 <translation id="3359256513598016054">القيود على سياسة الشهادة</translation>
 <translation id="3360297538363969800">تعذّرت الطباعة. يُرجى التحقق من الطابعة وإعادة المحاولة.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرًا واحدًا (<ph name="ATTACHMENTS" />) معك.}zero{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}two{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرَين (<ph name="ATTACHMENTS" />) معك.}few{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عناصر معك.}many{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصرًا معك.}other{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}}</translation>
+<translation id="3361954577771524115">من التطبيق</translation>
 <translation id="3363202073972776113">ستتم إدارة هذا الملف الشخصي الجديد بواسطة مؤسستك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">من مُشرفك: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏يرجى استخدام مفتاح واحد فقط: Ctrl أو Alt.</translation>
@@ -3039,6 +3044,7 @@
 <translation id="3848547754896969219">فتح في نافذة &amp;التصفُّح المتخفي</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3851428669031642514">تحميل النصوص البرمجية غير الآمنة</translation>
+<translation id="3852215160863921508">المساعدة في الإدخال</translation>
 <translation id="3854599674806204102">حدِّد خيارًا</translation>
 <translation id="3854967233147778866">اقتراح ترجمة مواقع إلكترونية بلغات أخرى</translation>
 <translation id="3854976556788175030">درج الإخراج ممتلئ</translation>
@@ -3792,6 +3798,7 @@
 <translation id="4579453506923101210">قطع اتصال الهاتف المتّصل</translation>
 <translation id="4579581181964204535">يتعذّر إرسال <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">‏بالنسبة إلى إشعارات المتصفِّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات متصفِّح Chrome<ph name="LINK_END" />.</translation>
+<translation id="4580587929153007251">‏يجب إعادة تسجيل الدخول إلى "مدير كلمات المرور في Google".</translation>
 <translation id="4580596421317071374">يتم حفظ كلمات المرور في <ph name="GOOGLE_PASSWORD_MANAGER" /> على هذا الجهاز.</translation>
 <translation id="4580626299762849806">يتعذّر استيراد كلمات المرور. يُرجى مراجعة الملف <ph name="FILENAME" /> والتأكد من تنسيقه بشكلٍ صحيح.</translation>
 <translation id="4581774856936278355">‏حدث خطأ أثناء استعادة Linux</translation>
@@ -4473,6 +4480,7 @@
 <translation id="5268373933383932086">اختيار المواضيع التي تهمّك لعرضها على صفحتك</translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
 <translation id="5273806377963980154">‏تعديل عنوان URL للموقع الإلكتروني</translation>
+<translation id="5275084684151588738">قواميس المستخدم</translation>
 <translation id="5275338516105640560">زر مجموعة علامات التبويب المحفوظة</translation>
 <translation id="5275352920323889391">كلب</translation>
 <translation id="527605719918376753">تجاهل علامة التبويب</translation>
@@ -4688,6 +4696,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{يجب ألا يقلّ رقم التعريف الشخصي عن حرف واحد.}zero{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}two{يجب ألا يقلّ رقم التعريف الشخصي عن حرفَين.}few{يجب ألا يقلّ رقم التعريف الشخصي عن # أحرف.}many{يجب ألا يقلّ رقم التعريف الشخصي عن # حرفًا.}other{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}}</translation>
 <translation id="5474859849784484111">‏يتطلّب <ph name="MANAGER" /> الاتصال بشبكة Wi-Fi الآن وتنزيل تحديث أو التنزيل من خلال اتصال يفرض تكلفة استخدام ( قد يتم تحصيل رسوم).</translation>
 <translation id="5481273127572794904">المواقع الإلكترونية التي لا يُسمح لها بتنزيل الملفات المتعدّدة تلقائيًا</translation>
+<translation id="5481755802440890178">لا يمكن ترجمة النص المُحدَّد في الوقت الحالي</translation>
 <translation id="5481941284378890518">إضافة طابعات مجاورة</translation>
 <translation id="5483785310822538350">إبطال الوصول للملف والجهاز</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> اليوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}zero{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}two{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS}). <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}few{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}many{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}other{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}}</translation>
@@ -4920,6 +4929,7 @@
 <translation id="5696143504434933566">الإبلاغ عن إساءة الاستخدام من "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">‏الملف الحالي بتنسيق PPD قيد الاستخدام: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">أداة اختيار الرموز التعبيرية</translation>
+<translation id="5698462638680260399">يجب تسجيل الدخول لاستخدام كلمات المرور</translation>
 <translation id="570043786759263127">‏تطبيقات Google Play وخدماته</translation>
 <translation id="5700836101007545240">تم إيقاف إضافة اتصال بواسطة المشرف</translation>
 <translation id="5701080607174488915">حدث خطأ أثناء جلب السياسة من الخادم.</translation>
@@ -4937,6 +4947,7 @@
 <translation id="5712153969432126546">‏تنشر المواقع الإلكترونية أحيانًا ملفات PDF، مثل مستندات أو عقود أو نماذج.</translation>
 <translation id="571222594670061844">السماح للمواقع الإلكترونية بعرض رسائل المطالبة بتسجيل الدخول من خدمات تقديم الهويات</translation>
 <translation id="5713158217420111469">متّصل بجهاز <ph name="DEVICE" /></translation>
+<translation id="5713960379473463904">نمط إدخال المسافات</translation>
 <translation id="5715711091495208045">وسيط المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">محرّكات البحث التلقائية</translation>
 <translation id="5719854774000914513">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة HID</translation>
@@ -5109,7 +5120,6 @@
 <translation id="5884474295213649357">‏علامة التبويب هذه متصلة بجهاز USB.</translation>
 <translation id="5885314688092915589">ستدير مؤسستك هذا الملف الشخصي</translation>
 <translation id="5886009770935151472">إصبع 1</translation>
-<translation id="5888843733007437002">‏جارٍ عرض النماذج. اضغط على مفتاح التبويب (Tab) للتنقّل بين النماذج.</translation>
 <translation id="5889282057229379085">‏أقصى عدد من المراجع المصدقة المتوسطة (CA): <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">‏شبكات Wi-Fi المفضَّلة</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
@@ -5577,7 +5587,6 @@
 <translation id="6333170995003625229">تعذّر التحقُّق من عنوان بريدك الإلكتروني أو كلمة مرورك. حاوِل تسجيل الدخول مرة أخرى.</translation>
 <translation id="6335920438823100346">‏لبدء تشغيل نظام التشغيل Linux، يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإعادة ضبط جهاز Chromebook هذا على الإعدادات الأصلية.</translation>
 <translation id="6336038146639916978">‏أوقَف <ph name="MANAGER" /> إعداد "تصحيح الأخطاء عبر ADB". وسيؤدي هذا إلى إعادة ضبط الجهاز <ph name="DEVICE_TYPE" /> خلال 24 ساعة. يُرجى الاحتفاظ بنسخة احتياطية من كل الملفات التي تريدها.</translation>
-<translation id="6338402296920404442">ننصحك بحذف الملف "<ph name="FILENAME" />"، حتى لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="6338981933082930623">السماح لجميع المواقع الإلكترونية بعرض أيّ إعلانات لك</translation>
 <translation id="6339668969738228384">إنشاء ملف شخصي جديد لـ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">‏بروتوكول الطباعة على الإنترنت (IPPS)</translation>
@@ -6367,6 +6376,7 @@
 <translation id="7069811530847688087">قد يتطلب <ph name="WEBSITE" /> نوعًا مختلفًا أو أحدث لمفتاح الأمان.</translation>
 <translation id="7070484045139057854">يمكن أن يؤدي ذلك إلى قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
 <translation id="7072010813301522126">اسم الاختصار</translation>
+<translation id="7074066049407662839">يجب تسجيل الدخول لحفظ كلمات المرور</translation>
 <translation id="7075513071073410194">‏PKCS #1 MD5 مع ترميز RSA</translation>
 <translation id="7075625805486468288">‏إدارة إعدادات وشهادات HTTPS/طبقة المقابس الآمنة</translation>
 <translation id="7076875098323397992">يتعذَّر بدء الترقية</translation>
@@ -6899,6 +6909,7 @@
 <translation id="7625568159987162309">عرض الأذونات والبيانات المُخزَّنة على المواقع</translation>
 <translation id="7625823789272218216">إضافة علامة تبويب جديدة على اليسار</translation>
 <translation id="7628201176665550262">معدّل إعادة التحميل</translation>
+<translation id="7628392600831846024">نمط الرموز</translation>
 <translation id="7629827748548208700">علامة التبويب: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">يتولى <ph name="MANAGER" /> إدارة هذا الجهاز ويتطلّب منك تسجيل الدخول في كل مرة.</translation>
 <translation id="7631014249255418691">‏تم الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux بنجاح</translation>
@@ -8202,6 +8213,7 @@
 <translation id="8850251000316748990">عرض المزيد...</translation>
 <translation id="885246833287407341">وسيطات وظيفة واجهة برمجة التطبيقات</translation>
 <translation id="8853586775156634952">سيتم حفظ هذه البطاقة في هذا الجهاز فقط</translation>
+<translation id="8854745870658584490">اختصار الاختيار</translation>
 <translation id="8855977033756560989">‏يأتي جهاز Chromebook Enterprise هذا مزودًا بترقية Chrome Enterprise. للاستفادة من إمكانات المؤسسة، يُرجى تسجيل هذا الجهاز باستخدام حساب مشرف Google.</translation>
 <translation id="8856028055086294840">استعادة التطبيقات والصفحات</translation>
 <translation id="885701979325669005">التخزين</translation>

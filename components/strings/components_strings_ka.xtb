@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2742511345840685325">მაგიდის ჩოგბურთი</translation>
 <translation id="2742870351467570537">არჩეული ელემენტების წაშლა</translation>
+<translation id="2759825833388495838">შეავსეთ თქვენი პაროლი <ph name="APP_NAME" />-ში</translation>
 <translation id="2764001903315068341">კომიქსები</translation>
 <translation id="2765217105034171413">პატარა</translation>
 <translation id="277133753123645258">გაგზავნის მეთოდი</translation>
@@ -1431,7 +1432,6 @@
 <translation id="4798269756263412078">თქვენ მიიღებთ გაფრთხილებებს, როცა ფასი დაიკლებს რომელიმე საიტზე. გაფრთხილებები გამოგეგზავნებათ ელფოსტაზე.</translation>
 <translation id="4800132727771399293">შეამოწმეთ ვადის გასვლის თარიღი, ასევე CVC კოდი და ხელახლა ცადეთ</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Touch ID-ს გამოყენება</translation>
 <translation id="4809079943450490359">ინსტრუქცია თქვენი მოწყობილობის ადმინისტრატორისგან:</translation>
 <translation id="4811450222531576619">შეიტყვეთ მისი წყაროსა და თემის შესახებ</translation>
 <translation id="4812751092864334025">ტარებადი ტექნოლოგია</translation>
@@ -1802,7 +1802,6 @@
 <translation id="5765072501007116331">მიწოდების მეთოდებისა და მოთხოვნების სანახავად აირჩიეთ მისამართი</translation>
 <translation id="57689295674415555">ვირტუალური ბარათის ნომერი არ არის შევსებული?</translation>
 <translation id="5776313857861697733">პრიორიტეტული</translation>
-<translation id="5778389256418062749">წვდომის გასაღების გამოყენება სხვა მოწყობილობაზე</translation>
 <translation id="5781136890105823427">ექსპერიმენტი ჩართულია</translation>
 <translation id="578305955206182703">ქარვისფერი</translation>
 <translation id="57838592816432529">დადუმება</translation>
@@ -2570,7 +2569,6 @@
 <translation id="7880146494886811634">მისამართის შენახვა</translation>
 <translation id="7882421473871500483">ყავისფერი</translation>
 <translation id="7882995332186050355">სატვირთო მანქანები და ტრაილერები</translation>
-<translation id="788679692472636252">პაროლებისა და წვდომის გასაღებების მართვა…</translation>
 <translation id="7887683347370398519">შეამოწმეთ თქვენი CVC და ხელახლა სცადეთ</translation>
 <translation id="7887885240995164102">რეჟიმში „გამოსახულება გამოსახულებაში“ შესვლა</translation>
 <translation id="7888575728750733395">ბეჭდვის რენდერის სქემა</translation>
@@ -2965,6 +2963,7 @@
 <translation id="9039213469156557790">გარდა ამისა, ეს გვერდი შეიცავს სხვა არაუსაფრთხო რესურსებს. ამ რესურსების დათვალიერება გადაცემისას სხვა პირებს შეუძლიათ, ხოლო თავდამსხმელს მათი მოდიფიკაცია გვერდის მუშაობის შეცვლის მიზნით შეუძლია.</translation>
 <translation id="9040464167025094690">ჩემი მოწყობილობის პოვნის ღილაკი, Google ანგარიშში თქვენი მოწყობილობის საპოვნელად დააჭირეთ კლავიშს Enter</translation>
 <translation id="9042617223719777575">დიდი მოცულობის</translation>
+<translation id="9044359186343685026">Touch ID-ს გამოყენება</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">თქვენ სცადეთ <ph name="DOMAIN" />-თან დაკავშირება, მაგრამ სერვერმა წარმოადგინა არასწორი სერტიფიკატი.</translation>
 <translation id="9050666287014529139">საიდუმლო ფრაზა</translation>

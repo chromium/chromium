@@ -1004,6 +1004,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1916502483199172559">Zadani crveni avatar</translation>
 <translation id="1918141783557917887">&amp;Manje</translation>
+<translation id="1919872106782726755">Da biste postavili otisak prsta, neka vaše dijete dodirne senzor otiska prsta u gornjem desnom kutu tipkovnice, pored tipke za uključivanje/isključivanje. Podaci o otisku prsta vašeg djeteta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1920390473494685033">Kontakti</translation>
 <translation id="1921544956190977703">Imate najjaču Chromeovu zaštitu od opasnih web lokacija, preuzimanja i ekstenzija</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -1013,6 +1014,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1925017091976104802">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" /> da zalijepite</translation>
 <translation id="1925021887439448749">Unesite prilagođenu web adresu</translation>
 <translation id="1925124445985510535">Sigurnosna provjera je izvršena u <ph name="TIME" /></translation>
+<translation id="192564025059434655">Stare verzije Chromeovih aplikacija se neće moći otvarati na Windows uređajima nakon decembra 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="1926339101652878330">Ove postavke kontrolira pravilo preduzeća. Obratite se administratoru za više informacija.</translation>
 <translation id="1927632033341042996">Prst <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN za zaključavanje ekrana</translation>
@@ -2520,6 +2522,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3348131053948466246">Predložena je emoji sličica. Pritisnite strelicu nadolje ili nagore za kretanje i tipku enter za umetanje.</translation>
 <translation id="3349933790966648062">Otisak iz memorije</translation>
 <translation id="3353786022389205125">Uključite "Show lock screen when waking from sleep" i pokušajte ponovo</translation>
+<translation id="3354768182971982851">Stare verzije Chromeovih aplikacija se neće moći otvarati na Mac uređajima nakon decembra 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="3354972872297836698">Uparivanje s uređajem <ph name="DEVICE_NAME" /> nije uspjelo. Odaberite uređaj da pokušate ponovo</translation>
 <translation id="3355936511340229503">Greška prilikom povezivanja</translation>
 <translation id="3356469410714175391">(Virtuelna kartica je omogućena)</translation>
@@ -2679,6 +2682,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3494769164076977169">Pitaj kada web lokacija pokuša automatski preuzeti fjalove nakon prvog fajla (preporučeno)</translation>
 <translation id="3495496470825196617">Neaktivnost tokom punjenja</translation>
 <translation id="3495660573538963482">Postavke Google Asistenta</translation>
+<translation id="3495675993466884458">Vaš administrator sistema je dozvolio da <ph name="APP_ORIGIN" /> snima vaš ekran</translation>
 <translation id="3496213124478423963">Umanji</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (nije odabrano)</translation>
 <translation id="3496689104192986836">Nivo napunjenosti baterije je <ph name="PERCENTAGE" />%</translation>
@@ -2798,6 +2802,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3617891479562106823">Pozadine nisu dostupne. Pokušajte ponovo kasnije.</translation>
 <translation id="3619115746895587757">Kapućino</translation>
 <translation id="3619962278978697442">Odaberite bilo koju opciju prilikom svake prijave</translation>
+<translation id="3620136223548713675">Geolokacija</translation>
 <translation id="3621807901162200696">Pomozite nam da poboljšamo funkcije i performanse ChromeOS-a</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikaciju}one{# aplikaciju}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="362333465072914957">Čeka se da CA izda certifikat</translation>
@@ -3127,6 +3132,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3918972485393593704">Prijavite detalje u Google</translation>
 <translation id="3919145445993746351">Da dobijete ekstenzije na svim svojim računarima, uključite sinhronizaciju</translation>
 <translation id="3919229493046408863">Isključite obavještenja kada su uređaji u blizini</translation>
+<translation id="3919262972282962508">Stare verzije Chromeovih aplikacija se neće moći otvarati na Mac uređajima nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
 <translation id="3919798653937160644">Stranice koje prikazujete u ovom prozoru se neće prikazivati u historiji preglednika i neće ostaviti na računaru druge tragove, kao što su kolačići, nakon što zatvorite sve otvorene prozore u načinu rada za gosta. Međutim, zadržat će se svi fajlovi koje preuzmete.</translation>
 <translation id="3920504717067627103">Pravila za potvrde</translation>
 <translation id="3920909973552939961">Nije dozvoljeno instaliranje obrađivača plaćanja</translation>
@@ -3137,6 +3143,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3924487862883651986">Šalje URL-ove Sigurnom pregledanju na provjeru. Također šalje mali uzorak stranica, preuzimanja, aktivnosti ekstenzija i informacija o sistemu radi lakšeg otkrivanja novih prijetnji. Privremeno povezuje ove podatke s vašim Google računom kada ste prijavljeni da vas zaštiti na svim Google aplikacijama.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Telefon za Smart Lock je promijenjen</translation>
+<translation id="392627956579011934">Za instaliranje govornih datoteka potrebno je ponovno pokretanje.</translation>
 <translation id="3927932062596804919">Odbij</translation>
 <translation id="3928570707778085600">Sačuvati izmjene u <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Nizak nivo tinte</translation>
@@ -5133,7 +5140,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5884474295213649357">Ova kartica je povezana na USB uređaj.</translation>
 <translation id="5885314688092915589">Vaša organizacija će upravljati ovim profilom</translation>
 <translation id="5886009770935151472">1. prst</translation>
-<translation id="5888843733007437002">Prikaz šablona. Pritisnite karticu da navigirate.</translation>
 <translation id="5889282057229379085">Maksimalni broj posredničkih CA-ova: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Preferirane WiFi mreže</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
@@ -5601,7 +5607,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6333170995003625229">Potvrđivanje adrese e-pošte ili lozinke nije uspjelo. Pokušajte se ponovo prijaviti.</translation>
 <translation id="6335920438823100346">Da pokrenete Linux, <ph name="MANAGER" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite ovaj Chromebook na fabričke postavke.</translation>
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> je onemogućila otklanjanje grešaka putem ADB-a. Ovim će se <ph name="DEVICE_TYPE" /> vratiti na zadano za 24 sata. Napravite kopiju svih fajlova koje želite sačuvati.</translation>
-<translation id="6338402296920404442">Razmislite o brisanju <ph name="FILENAME" />, tako da drugi koji koriste ovaj uređaj ne mogu vidjeti vaše lozinke.</translation>
 <translation id="6338968693068997776">Dodajte USB uređaj</translation>
 <translation id="6338981933082930623">Sve web lokacije vam mogu prikazivati bilo koje oglase</translation>
 <translation id="6339668969738228384">Kreirajte novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5638,6 +5643,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
 <translation id="6374635887697228982">Primati popuste?</translation>
+<translation id="637642201764944055">Stare verzije Chromeovih aplikacija se neće moći otvarati na Linux uređajima nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
 <translation id="6377268785556383139">1 rezultat za pojam "'<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Otvori samo putem WiFi mreža</translation>
 <translation id="6380143666419481200">Prihvati i nastavi</translation>
@@ -6119,6 +6125,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6826872289184051766">Potvrda pomoću USB-a</translation>
 <translation id="6827121912381363404">Dozvolite svim ekstenzijama da čitaju i mijenjaju web lokaciju <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Vaše aplikacije i postavke će se sinhronizirati na svim ChromeOS uređajima na kojima ste prijavljeni putem Google računa. Za opcije sinhronizacije preglednika, idite u <ph name="LINK_BEGIN" />postavke Chromea<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Stare verzije Chromeovih aplikacija se neće moći otvarati na Windows uređajima nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
 <translation id="6828153365543658583">Ograniči prijavu na sljedeće korisnike:</translation>
 <translation id="6828182567531805778">Unesite pristupni izraz za sinhroniziranje svojih podataka</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -6933,6 +6940,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7634566076839829401">Nešto je pošlo po zlu. Pokušajte ponovo.</translation>
 <translation id="7635048370253485243">Zakačio je vaš administrator</translation>
 <translation id="7636919061354591437">Instaliraj na ovom uređaju</translation>
+<translation id="7637253234491814483">Dodirnite senzor otiska prsta u gornjem desnom kutu tipkovnice, pored tipke za uključivanje/isključivanje. Podaci o otisku prsta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637593984496473097">Nema dovoljno prostora na disku</translation>
 <translation id="7639914187072011620">Dohvatanje URL-a za preusmjeravanje SAML-a sa servera nije uspjelo</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vas automatski prijavljuje na odgovarajuće web lokacije pomoću sačuvanih lozinki.</translation>
@@ -7977,6 +7985,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="863109444997383731">Web lokacijama će biti blokirano slanje upita za prikazivanje obavještenja. Ako web lokacija zatraži prikazivanje obavještenja, na traci za adresu će se prikazati pokazatelj blokiranog obavještenja.</translation>
 <translation id="8632104508818855045">Prethodno ste odabrali ne dozvoliti nijednu ekstenziju na web lokaciji <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>
+<translation id="8633979878370972178">Stare verzije Chromeovih aplikacija se neće moći otvarati na Linux uređajima nakon decembra 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="8634348081024879304">Više nećete moći koristiti virtuelnu karticu s Google Payom. <ph name="BEGIN_LINK" />Saznajte više o virtuelnim karticama<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Ponovno učitavanje...</translation>
 <translation id="8636284842992792762">Pokretanje ekstenzija...</translation>

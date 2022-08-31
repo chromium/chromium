@@ -157,6 +157,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1348198688976932919">The site ahead contains dangerous apps</translation>
 <translation id="1348779747280417563">Confirm name</translation>
 <translation id="1354976809542763843">Home financing</translation>
+<translation id="1355158069018170842">Show price drops on tabs</translation>
 <translation id="1355301061807280185">Jobs</translation>
 <translation id="1355754231781595724">Vehicle and traffic safety</translation>
 <translation id="1357195169723583938">Who has used the device recently and when</translation>
@@ -466,6 +467,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2153609454945889823">Install Google Play Services for AR?</translation>
 <translation id="2154054054215849342">Sync is not available for your domain</translation>
 <translation id="2154484045852737596">Edit card</translation>
+<translation id="2157640075051554492">Price tracking notifications</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162510787844374618">Contacting your bank…</translation>
 <translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3633738897356909127">Update Chrome button; press enter to update Chrome from your Chrome settings</translation>
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3634567936866541746">You just entered your password on a deceptive site. To secure your accounts, Chrome recommends checking your saved passwords.</translation>
+<translation id="3637033245385760976">Chrome notifications must be on. You can turn them on in <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Save to Google Account</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Application:</translation>
@@ -1425,6 +1428,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4785376858512657294">Manage Google Account</translation>
 <translation id="4785689107224900852">Switch to this tab</translation>
 <translation id="4786804728079074733">Volleyball</translation>
+<translation id="4789704664580239421">Price drop alerts will appear on your open tabs</translation>
 <translation id="4791134497475588553">Linux apps installed and when they were last used</translation>
 <translation id="4792686369684665359">The information that you’re about to submit is not secure</translation>
 <translation id="4796594887379589189">Job account ID</translation>
@@ -1432,7 +1436,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4798269756263412078">Get alerts if the price drops on any site. Alerts will be sent to your email.</translation>
 <translation id="4800132727771399293">Check your expiration date and CVC and try again</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Use Touch ID</translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
 <translation id="4811450222531576619">Learn about its source and topic</translation>
 <translation id="4812751092864334025">Wearable technology</translation>
@@ -1791,6 +1794,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5730040223043577876">Chrome recommends resetting your password if you reused it on other sites.</translation>
 <translation id="5736165827969430182">Metals and mining</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Save card in your Google Account}other{Save cards in your Google Account}}</translation>
+<translation id="5738385766833540397">Manage how you receive price drop alerts for products that you track</translation>
 <translation id="5743638595296120378">Vehicle shopping</translation>
 <translation id="5743898850056428078">Motorcycle racing</translation>
 <translation id="5745733273847572235">Can ask for your location</translation>
@@ -1800,10 +1804,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5759751709240058861">Use and move your camera</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5764725887548570807">Invalid origin format.</translation>
+<translation id="5764920692828389743">Send to <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
 <translation id="57689295674415555">Virtual card number not filled in?</translation>
 <translation id="5776313857861697733">Priority</translation>
-<translation id="5778389256418062749">Use a passkey on a different device</translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
 <translation id="578305955206182703">Amber</translation>
 <translation id="57838592816432529">Mute</translation>
@@ -1891,6 +1895,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6017850046339264347">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> could install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synced)</translation>
 <translation id="6027201098523975773">Enter a name</translation>
+<translation id="6028591542479806248">Manage mobile and email notifications</translation>
 <translation id="603068602130820122">Dual staple right</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Bind left</translation>
@@ -2571,7 +2576,6 @@ Additional details:
 <translation id="7880146494886811634">Save Address</translation>
 <translation id="7882421473871500483">Brown</translation>
 <translation id="7882995332186050355">Cargo trucks and trailers</translation>
-<translation id="788679692472636252">Manage passwords and passkeys…</translation>
 <translation id="7887683347370398519">Check your CVC and try again</translation>
 <translation id="7887885240995164102">Enter picture-in-picture</translation>
 <translation id="7888575728750733395">Print rendering intent</translation>
@@ -2812,6 +2816,7 @@ Additional details:
 <translation id="8559762987265718583">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your device's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
 <translation id="8564182942834072828">Separate documents/Uncollated copies</translation>
 <translation id="8564985650692024650">Chromium recommends resetting your <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> password if you reused it on other sites.</translation>
+<translation id="8573969211731659953">Price drop alerts are on. You can change this in <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">Home theater systems</translation>
 <translation id="8577348305244205642">Virtual card not available</translation>
 <translation id="858637041960032120">Add phone no.</translation>
@@ -2966,6 +2971,7 @@ Additional details:
 <translation id="9039213469156557790">Furthermore, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the behaviour of the page.</translation>
 <translation id="9040464167025094690">Find my device button, press Enter to visit find your device in the Google Account</translation>
 <translation id="9042617223719777575">Large capacity</translation>
+<translation id="9044359186343685026">Use Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">You attempted to reach <ph name="DOMAIN" />, but the server presented an invalid certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>

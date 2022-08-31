@@ -692,6 +692,7 @@
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2742511345840685325">ٹیبل ٹینس</translation>
 <translation id="2742870351467570537">منتخب کردہ آئٹمز ہٹائیں</translation>
+<translation id="2759825833388495838"><ph name="APP_NAME" /> پر اپنا پاس ورڈ پُر کریں</translation>
 <translation id="2764001903315068341">کامکس</translation>
 <translation id="2765217105034171413">چھوٹا</translation>
 <translation id="277133753123645258">ترسیل کا طریقہ</translation>
@@ -1433,7 +1434,6 @@
 <translation id="4798269756263412078">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں۔ الرٹس کو آپ کی ای میل پر بھیجا جائے گا۔</translation>
 <translation id="4800132727771399293">‏اپنی اختتامی تاریخ اور CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">‏TouchID استعمال کریں</translation>
 <translation id="4809079943450490359">آپ کے آلہ کے منتظم کی طرف سے ہدایات:</translation>
 <translation id="4811450222531576619">اس کے ماخذ اور موضوع کے بارے میں جانیں</translation>
 <translation id="4812751092864334025">ویئرایبل ٹیکنالوجی</translation>
@@ -1804,7 +1804,6 @@
 <translation id="5765072501007116331">ڈیلیوری کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
 <translation id="57689295674415555">ورچوئل کارڈ نمبر پُر نہیں ہے؟</translation>
 <translation id="5776313857861697733">ترجیح</translation>
-<translation id="5778389256418062749">کسی دوسرے آلے پر پاس کی استعمال کریں</translation>
 <translation id="5781136890105823427">تجربہ فعال کر دیا گیا</translation>
 <translation id="578305955206182703">امبر</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
@@ -2573,7 +2572,6 @@
 <translation id="7880146494886811634">پتہ محفوظ کریں</translation>
 <translation id="7882421473871500483">بھورا</translation>
 <translation id="7882995332186050355">کارگو ٹرکس اور ٹریلرز</translation>
-<translation id="788679692472636252">پاس ورڈز اور پاس کیز کا نظم کریں…</translation>
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7887885240995164102">'تصویر میں تصویر' میں داخل ہوں</translation>
 <translation id="7888575728750733395">پرنٹ رینڈرنگ انٹینٹ</translation>
@@ -2968,6 +2966,7 @@
 <translation id="9039213469156557790">اس کے علاوہ، اس صفحہ میں دیگر ایسے وسائل شامل ہیں جو محفوظ نہیں ہیں۔ ان وسائل کو ٹرانزٹ کے دوران دیگر لوگ دیکھ سکتے ہیں اور صفحہ کا برتاؤ تبدیل کرنے کیلئے حملہ آور اس میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="9040464167025094690">‏میرا آلہ ڈھونڈیں بٹن تلاش کریں، Google اکاؤنٹ میں اپنا آلہ تلاش کرنا ملاحظہ کرنے کیلئے اینٹر دبائیں</translation>
 <translation id="9042617223719777575">بڑی گنجائش</translation>
+<translation id="9044359186343685026">‏Touch ID کا استعمال کریں</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی لیکن سرور نے ایک غلط سرٹیفکیٹ پیش کیا۔</translation>
 <translation id="9050666287014529139">پاس فریز</translation>

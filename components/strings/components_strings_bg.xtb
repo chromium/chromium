@@ -691,6 +691,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Тенис на маса</translation>
 <translation id="2742870351467570537">Премахване на избраните елементи</translation>
+<translation id="2759825833388495838">попълни паролата ви в(ъв) <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Комикси</translation>
 <translation id="2765217105034171413">Малък</translation>
 <translation id="277133753123645258">Начин на доставка</translation>
@@ -1431,7 +1432,6 @@
 <translation id="4798269756263412078">Ще получавате сигнали, когато има понижение на цената в който и да е сайт. Те ще се изпращат на имейл адреса ви.</translation>
 <translation id="4800132727771399293">Прегледайте датата на валидност и кода за проверка и оптитайте отново</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4806051791961048632">Използване на Touch ID</translation>
 <translation id="4809079943450490359">Инструкции от администратора на устройството ви:</translation>
 <translation id="4811450222531576619">Научете за съответния източник и тема</translation>
 <translation id="4812751092864334025">Носими технологии</translation>
@@ -1802,7 +1802,6 @@
 <translation id="5765072501007116331">За да видите начините на бърза доставка и изискванията, изберете адрес</translation>
 <translation id="57689295674415555">Номерът на виртуалната карта не е попълнен?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
-<translation id="5778389256418062749">Използване на код за достъп на друго устройство</translation>
 <translation id="5781136890105823427">Експериментът е активиран</translation>
 <translation id="578305955206182703">кехлибарено</translation>
 <translation id="57838592816432529">Заглушаване</translation>
@@ -2570,7 +2569,6 @@
 <translation id="7880146494886811634">Запазване на адрес</translation>
 <translation id="7882421473871500483">кафяво</translation>
 <translation id="7882995332186050355">Камиони и ремаркета</translation>
-<translation id="788679692472636252">Управление на паролите и кодовете за достъп…</translation>
 <translation id="7887683347370398519">Прегледайте кода за проверка и опитайте отново</translation>
 <translation id="7887885240995164102">Преминаване в режим „Картина в картината“</translation>
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
@@ -2965,6 +2963,7 @@
 <translation id="9039213469156557790">Освен това тази страница включва други ресурси, които не са защитени. Докато се предават, те могат да бъдат видени от други хора и да бъдат модифицирани от извършител на атака, така че да се промени поведението на страницата.</translation>
 <translation id="9040464167025094690">Бутон „Намиране на устройството ми“. Натиснете Enter, за да преминете към „Намиране на устройството ми“ в профила ви Google</translation>
 <translation id="9042617223719777575">Тава с голяма вместимост</translation>
+<translation id="9044359186343685026">Използване на Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Опитахте да отворите <ph name="DOMAIN" />, но сървърът предостави невалиден сертификат.</translation>
 <translation id="9050666287014529139">Парола</translation>

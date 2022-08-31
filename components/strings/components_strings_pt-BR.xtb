@@ -1432,7 +1432,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4798269756263412078">Receba alertas se houver uma redução no preço em algum site. Os alertas vão ser enviados ao seu e-mail.</translation>
 <translation id="4800132727771399293">Verifique sua data de validade e seu CVC e tente novamente</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4806051791961048632">Usar o Touch ID</translation>
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4811450222531576619">Saiba mais sobre a fonte e o tema</translation>
 <translation id="4812751092864334025">Tecnologia de wearables</translation>
@@ -1803,7 +1802,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5765072501007116331">Para ver métodos e requisitos de entrega, selecione um endereço</translation>
 <translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
 <translation id="5776313857861697733">Prioridade</translation>
-<translation id="5778389256418062749">Usar uma senha de acesso em outro dispositivo</translation>
 <translation id="5781136890105823427">Experimento ativado</translation>
 <translation id="578305955206182703">Âmbar</translation>
 <translation id="57838592816432529">Desativar som</translation>
@@ -2571,7 +2569,6 @@ Mais detalhes:
 <translation id="7880146494886811634">Salvar endereço</translation>
 <translation id="7882421473871500483">Marrom</translation>
 <translation id="7882995332186050355">Trailers e caminhões de carga</translation>
-<translation id="788679692472636252">Gerenciar senhas e senhas de acesso…</translation>
 <translation id="7887683347370398519">Verifique seu CVC e tente novamente</translation>
 <translation id="7887885240995164102">Entrar no modo picture-in-picture</translation>
 <translation id="7888575728750733395">Intent de renderização da impressão</translation>
@@ -2967,6 +2964,7 @@ Mais detalhes:
 <translation id="9039213469156557790">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
 <translation id="9040464167025094690">Botão "Encontre meu dispositivo". Pressione Enter para encontrar o dispositivo com a Conta do Google</translation>
 <translation id="9042617223719777575">Grande capacidade</translation>
+<translation id="9044359186343685026">Usar o Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado inválido.</translation>
 <translation id="9050666287014529139">Senha</translation>

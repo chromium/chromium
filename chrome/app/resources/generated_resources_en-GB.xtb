@@ -1005,6 +1005,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1916502483199172559">Default red avatar</translation>
 <translation id="1918141783557917887">&amp;Smaller</translation>
+<translation id="1919872106782726755">To set up fingerprint, get your child to touch the fingerprint sensor at the top-right corner of the keyboard, next to the power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1920390473494685033">Contacts</translation>
 <translation id="1921544956190977703">You have Chrome's strongest security against dangerous websites, downloads and extensions</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -2682,6 +2683,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3494769164076977169">Ask when a site tries to download files automatically after the first file (recommended)</translation>
 <translation id="3495496470825196617">Idle power while charging</translation>
 <translation id="3495660573538963482">Google Assistant settings</translation>
+<translation id="3495675993466884458">Your system administrator has allowed <ph name="APP_ORIGIN" /> to record your screen</translation>
 <translation id="3496213124478423963">Zoom Out</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (not selected)</translation>
 <translation id="3496689104192986836">Battery level <ph name="PERCENTAGE" />%</translation>
@@ -3142,6 +3144,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3924487862883651986">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps.</translation>
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3926002189479431949">Smart Lock phone changed</translation>
+<translation id="392627956579011934">Restart needed to install speech files.</translation>
 <translation id="3927932062596804919">Deny</translation>
 <translation id="3928570707778085600">Save changes to <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Low on ink</translation>
@@ -5138,7 +5141,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5884474295213649357">This tab is connected to a USB device.</translation>
 <translation id="5885314688092915589">Your organisation will manage this profile</translation>
 <translation id="5886009770935151472">Finger 1</translation>
-<translation id="5888843733007437002">Viewing templates. Press tab to navigate.</translation>
 <translation id="5889282057229379085">Maximum number of intermediate CAs: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Preferred Wi-Fi networks</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -5606,7 +5608,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6333170995003625229">Your email address or password couldn't be verified. Try signing in again.</translation>
 <translation id="6335920438823100346">To start Linux, <ph name="MANAGER" /> requires you to back up your data and reset this Chromebook to factory settings.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> has disabled ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
-<translation id="6338402296920404442">Consider deleting <ph name="FILENAME" />, so that others who use this device can't see your passwords.</translation>
 <translation id="6338968693068997776">Add USB device</translation>
 <translation id="6338981933082930623">All sites can show any ads to you</translation>
 <translation id="6339668969738228384">Create a new profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -6936,6 +6937,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7634566076839829401">Something went wrong. Please try again.</translation>
 <translation id="7635048370253485243">Pinned by your Administrator</translation>
 <translation id="7636919061354591437">Install on this Device</translation>
+<translation id="7637253234491814483">Touch the fingerprint sensor at the top-right corner of your keyboard, next to the power button. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637593984496473097">Not enough disk space</translation>
 <translation id="7639914187072011620">Failed to fetch the SAML redirect URL from the server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automatically signs you in to eligible sites with passwords that you saved.</translation>
