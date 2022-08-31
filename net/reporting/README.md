@@ -73,7 +73,7 @@ by non-browser embedders as well as by Chromium.
 
 * The `ReportingService` is set up in a `URLRequestContext` by passing a
   `ReportingPolicy` to the `URLRequestContextBuilder`. This creates a
-  `ReportingService` which is owned by the `URLRequestContextStorage`.
+  `ReportingService` which is owned by the `URLRequestContext`.
 
 * `Report-To:` headers are processed by an `HttpNetworkTransaction` when they
   are received, and passed on to the `ReportingService` to be added to the

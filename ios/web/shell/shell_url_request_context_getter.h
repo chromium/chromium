@@ -49,9 +49,9 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   // SystemCookieStore must be created on UI thread in
   // ShellURLRequestContextGetter's constructor. Later the ownership is passed
-  // to net::URLRequestContextStorage on IO thread. |system_cookie_store_| is
+  // to net::URLRequestContext on IO thread. |system_cookie_store_| is
   // created in constructor and cleared in GetURLRequestContext() where
-  // net::URLRequestContextStorage is lazily created.
+  // net::URLRequestContext is created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
 };
 

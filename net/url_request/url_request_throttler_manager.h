@@ -102,7 +102,9 @@ class NET_EXPORT_PRIVATE URLRequestThrottlerManager
   void OnNetworkChange();
 
   // Used by tests.
-  int GetNumberOfEntriesForTests() const { return url_entries_.size(); }
+  int GetNumberOfEntriesForTests() const {
+    return static_cast<int>(url_entries_.size());
+  }
 
  private:
   // From each URL we generate an ID composed of the scheme, host, port and path
