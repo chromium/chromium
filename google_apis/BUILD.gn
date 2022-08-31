@@ -67,6 +67,13 @@ if (use_official_google_api_keys == "") {
                                   root_build_dir) ],
                     "value")
     use_official_google_api_keys = check_internal_result == 1
+
+    # WebEngine includes google_api_keys.h but does not have
+    # USE_OFFICIAL_GOOGLE_API_KEYS defined, and this breaks some Fuchsia builds.
+    # TODO(crbug.com/1294915): Convert the C define to a BUILDFLAG and remove.
+    if (is_fuchsia) {
+      use_official_google_api_keys = false
+    }
   }
 }
 
