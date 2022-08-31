@@ -73,3 +73,24 @@ TEST_F(ApcScrimManagerImplTest,
   apc_scrim_manager()->OnVisibilityChanged(content::Visibility::VISIBLE);
   ASSERT_TRUE(apc_scrim_manager()->GetVisible());
 }
+
+TEST_F(ApcScrimManagerImplTest,
+       RestoresTheOriginalHiddenStateOnWebcontentsVisibibleTransition) {
+  // If the webcontent is hidden right after construction,
+  // goes back to a invisible scrim when the webcontent is visible.
+  apc_scrim_manager()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  ASSERT_FALSE(apc_scrim_manager()->GetVisible());
+  apc_scrim_manager()->OnVisibilityChanged(content::Visibility::VISIBLE);
+  ASSERT_FALSE(apc_scrim_manager()->GetVisible());
+
+  apc_scrim_manager()->Show();
+  ASSERT_TRUE(apc_scrim_manager()->GetVisible());
+
+  // Make sure that a hidden scrim remains hidden
+  // regardless the webcontent visibility change.
+  apc_scrim_manager()->Hide();
+  apc_scrim_manager()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  ASSERT_FALSE(apc_scrim_manager()->GetVisible());
+  apc_scrim_manager()->OnVisibilityChanged(content::Visibility::VISIBLE);
+  ASSERT_FALSE(apc_scrim_manager()->GetVisible());
+}
