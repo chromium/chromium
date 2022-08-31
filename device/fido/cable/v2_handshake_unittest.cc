@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "device/fido/cable/v2_handshake.h"
+
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -404,8 +406,7 @@ TEST(CableV2Encoding, Digits) {
     if (!bytes.has_value()) {
       continue;
     }
-    EXPECT_TRUE(std::all_of(bytes->begin(), bytes->end(),
-                            [](uint8_t v) -> bool { return v == 0; }));
+    EXPECT_TRUE(base::ranges::all_of(*bytes, [](uint8_t v) { return v == 0; }));
   }
 
   // The encoding is used as part of an external protocol and so should not

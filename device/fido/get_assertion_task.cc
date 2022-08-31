@@ -41,10 +41,8 @@ bool SetResponseCredential(
     const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
   if (response->credential) {
     if (!allow_list.empty() &&
-        std::none_of(allow_list.cbegin(), allow_list.cend(),
-                     [&response](const auto& credential) {
-                       return credential.id == response->credential->id;
-                     })) {
+        !base::Contains(allow_list, response->credential->id,
+                        &PublicKeyCredentialDescriptor::id)) {
       return false;
     }
 

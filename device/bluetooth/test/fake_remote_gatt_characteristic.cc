@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_read_response.h"
@@ -91,8 +92,8 @@ bool FakeRemoteGattCharacteristic::AllResponsesConsumed() {
   // SetNextUnsubscribeFromNotificationsResponse is implemented.
   return !next_read_response_ && !next_write_response_ &&
          !next_subscribe_to_notifications_response_ &&
-         std::all_of(
-             descriptors_.begin(), descriptors_.end(), [](const auto& e) {
+         base::ranges::all_of(
+             descriptors_, [](const auto& e) {
                return static_cast<FakeRemoteGattDescriptor*>(e.second.get())
                    ->AllResponsesConsumed();
              });

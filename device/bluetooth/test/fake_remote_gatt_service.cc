@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -31,8 +32,8 @@ FakeRemoteGattService::FakeRemoteGattService(
 FakeRemoteGattService::~FakeRemoteGattService() = default;
 
 bool FakeRemoteGattService::AllResponsesConsumed() {
-  return std::all_of(
-      characteristics_.begin(), characteristics_.end(), [](const auto& e) {
+  return base::ranges::all_of(
+      characteristics_, [](const auto& e) {
         return static_cast<FakeRemoteGattCharacteristic*>(e.second.get())
             ->AllResponsesConsumed();
       });

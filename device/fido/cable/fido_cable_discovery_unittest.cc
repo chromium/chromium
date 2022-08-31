@@ -4,10 +4,10 @@
 
 #include "device/fido/cable/fido_cable_discovery.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -101,11 +101,8 @@ MATCHER_P2(IsAdvertisementContent,
            expected_uuid_formatted_client_eid,
            "") {
 #if BUILDFLAG(IS_MAC)
-  const auto uuid_list = arg->service_uuids();
-  return std::any_of(uuid_list->begin(), uuid_list->end(),
-                     [this](const auto& uuid) {
-                       return uuid == expected_uuid_formatted_client_eid;
-                     });
+  return base::Contains(*arg->service_uuids(),
+                        expected_uuid_formatted_client_eid);
 
 #elif BUILDFLAG(IS_WIN)
   const auto manufacturer_data = arg->manufacturer_data();
@@ -138,9 +135,9 @@ MATCHER_P2(IsAdvertisementContent,
          std::equal(service_data_value.begin() + 2, service_data_value.end(),
                     expected_client_eid.begin(), expected_client_eid.end());
 
-#endif
-
+#else
   return true;
+#endif
 }
 
 class CableMockBluetoothAdvertisement : public BluetoothAdvertisement {

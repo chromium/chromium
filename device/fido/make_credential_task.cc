@@ -4,11 +4,11 @@
 
 #include "device/fido/make_credential_task.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/ctap_make_credential_request.h"
@@ -89,9 +89,9 @@ absl::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
     const base::flat_set<Ctap2Version>& ctap2_versions =
         device->device_info()->ctap2_versions;
     DCHECK(!ctap2_versions.empty());
-    const bool is_at_least_ctap2_1 =
-        std::any_of(ctap2_versions.begin(), ctap2_versions.end(),
-                    [](Ctap2Version v) { return v > Ctap2Version::kCtap2_0; });
+    const bool is_at_least_ctap2_1 = base::ranges::any_of(
+        ctap2_versions,
+        [](Ctap2Version v) { return v > Ctap2Version::kCtap2_0; });
     if (!resident_key_supported || is_at_least_ctap2_1) {
       response->is_resident_key = false;
     }

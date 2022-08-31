@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -52,8 +53,7 @@ bool IsListOf(const base::Value* v, bool (*predicate)(const base::Value&)) {
     return false;
   }
   auto contents = v->GetListDeprecated();
-  return !contents.empty() &&
-         std::all_of(contents.begin(), contents.end(), predicate);
+  return !contents.empty() && base::ranges::all_of(contents, predicate);
 }
 
 std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
@@ -277,10 +277,10 @@ Action Evaluate(
     if ((!filter.operation ||
          base::MatchPattern(OperationToString(op), *filter.operation)) &&
         (filter.rp_id.empty() ||
-         std::any_of(filter.rp_id.begin(), filter.rp_id.end(),
-                     [rp_id](const std::string& pattern) -> bool {
-                       return base::MatchPattern(rp_id, pattern);
-                     })) &&
+         base::ranges::any_of(filter.rp_id,
+                              [rp_id](const std::string& pattern) {
+                                return base::MatchPattern(rp_id, pattern);
+                              })) &&
         (!filter.device ||
          base::MatchPattern(device.value_or(""), *filter.device)) &&
         (!filter.id_type || (id && base::MatchPattern(IDTypeToString(id->first),
@@ -290,10 +290,10 @@ Action Evaluate(
         (!filter.id_max_size ||
          (id && *filter.id_max_size >= id->second.size())) &&
         (filter.id.empty() ||
-         (id_hex && std::any_of(filter.id.begin(), filter.id.end(),
-                                [&id_hex](const std::string& pattern) -> bool {
-                                  return base::MatchPattern(*id_hex, pattern);
-                                })))) {
+         (id_hex && base::ranges::any_of(
+                        filter.id, [&id_hex](const std::string& pattern) {
+                          return base::MatchPattern(*id_hex, pattern);
+                        })))) {
       return filter.action;
     }
   }

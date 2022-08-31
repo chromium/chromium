@@ -4,6 +4,7 @@
 
 #include "device/fido/fido_discovery_factory.h"
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -77,10 +78,8 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
         std::vector<std::unique_ptr<FidoDiscoveryBase>> ret;
         const bool have_v2_discovery_data =
             cable_data_.has_value() &&
-            std::any_of(cable_data_->begin(), cable_data_->end(),
-                        [](const CableDiscoveryData& v) -> bool {
-                          return v.version == CableDiscoveryData::Version::V2;
-                        });
+            base::Contains(*cable_data_, CableDiscoveryData::Version::V2,
+                           &CableDiscoveryData::version);
         if (qr_generator_key_.has_value() || have_v2_discovery_data) {
           ret.emplace_back(std::make_unique<cablev2::Discovery>(
               request_type_.value(), network_context_, qr_generator_key_,

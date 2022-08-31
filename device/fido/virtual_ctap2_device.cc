@@ -4,7 +4,6 @@
 
 #include "device/fido/virtual_ctap2_device.h"
 
-#include <algorithm>
 #include <array>
 #include <memory>
 #include <set>
@@ -455,9 +454,8 @@ std::vector<uint8_t> GenerateAndEncryptToken(
 
 bool CheckCredentialListForExtraKeys(
     base::span<const PublicKeyCredentialDescriptor> creds) {
-  if (std::any_of(creds.begin(), creds.end(), [](const auto& cred) -> bool {
-        return cred.had_other_keys;
-      })) {
+  if (base::ranges::any_of(
+          creds, [](const auto& cred) { return cred.had_other_keys; })) {
     LOG(ERROR) << "A PublicKeyCredentialDescriptor contained unexpected CBOR "
                   "keys. This is believed to trigger bugs in some security "
                   "keys. See crbug.com/1270757.";
@@ -1150,14 +1148,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   std::unique_ptr<PrivateKey> private_key;
   for (const auto& param :
        request.public_key_credential_params.public_key_credential_params()) {
-    // (Can't use base::Contains because that would mean casting to
-    // |CoseAlgorithmIdentifier|, but we don't know that |param.algorithm| is a
-    // valid enum value.)
-    const bool advertised = std::any_of(
-        config_.advertised_algorithms.begin(),
-        config_.advertised_algorithms.end(), [&](auto algo) -> bool {
-          return static_cast<int32_t>(algo) == param.algorithm;
-        });
+    const bool advertised =
+        base::Contains(config_.advertised_algorithms, param.algorithm,
+                       [](auto algo) { return static_cast<int32_t>(algo); });
     if (!advertised && !config_.advertised_algorithms.empty()) {
       continue;
     }
