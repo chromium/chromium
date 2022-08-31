@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_WORKSPACE_DESK_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_WORKSPACE_DESK_HELPER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/guid.h"
@@ -38,10 +37,10 @@ class DeskUuidChecker : public StatusChangeChecker,
   void DeskModelLoaded() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const ash::DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<std::string>& uuids) override;
+  void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) override;
   void EntriesAddedOrUpdatedLocally(
       const std::vector<const ash::DeskTemplate*>& new_entries) override {}
-  void EntriesRemovedLocally(const std::vector<std::string>& uuids) override {}
+  void EntriesRemovedLocally(const std::vector<base::GUID>& uuids) override {}
 
  private:
   const base::GUID uuid_;
@@ -68,10 +67,10 @@ class DeskUuidDeletedChecker : public StatusChangeChecker,
   void DeskModelLoaded() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const ash::DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<std::string>& uuids) override;
+  void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) override;
   void EntriesAddedOrUpdatedLocally(
       const std::vector<const ash::DeskTemplate*>& new_entries) override {}
-  void EntriesRemovedLocally(const std::vector<std::string>& uuids) override {}
+  void EntriesRemovedLocally(const std::vector<base::GUID>& uuids) override {}
 
  private:
   const base::GUID uuid_;
@@ -96,10 +95,10 @@ class DeskModelReadyChecker : public StatusChangeChecker,
   void DeskModelLoaded() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const ash::DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<std::string>& uuids) override;
+  void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) override;
   void EntriesAddedOrUpdatedLocally(
       const std::vector<const ash::DeskTemplate*>& new_entries) override {}
-  void EntriesRemovedLocally(const std::vector<std::string>& uuids) override {}
+  void EntriesRemovedLocally(const std::vector<base::GUID>& uuids) override {}
 
  private:
   desks_storage::DeskSyncService* const service_;

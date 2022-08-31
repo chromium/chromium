@@ -494,17 +494,8 @@ void SavedDeskPresenter::EntriesAddedOrUpdatedRemotely(
 }
 
 void SavedDeskPresenter::EntriesRemovedRemotely(
-    const std::vector<std::string>& uuids) {
-  // TODO(crbug.com/1352667): We want the backend to provide this as
-  // vector<base::GUID>. Until it does, we'll convert manually here.
-  std::vector<base::GUID> typed_uuids;
-  for (const std::string& uuid_str : uuids) {
-    base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
-    if (uuid.is_valid())
-      typed_uuids.push_back(uuid);
-  }
-
-  RemoveUIEntries(typed_uuids);
+    const std::vector<base::GUID>& uuids) {
+  RemoveUIEntries(uuids);
 }
 
 void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,

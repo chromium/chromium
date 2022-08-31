@@ -962,7 +962,7 @@ absl::optional<syncer::ModelError> DeskSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::vector<const DeskTemplate*> added_or_updated;
-  std::vector<std::string> removed;
+  std::vector<base::GUID> removed;
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
@@ -979,7 +979,7 @@ absl::optional<syncer::ModelError> DeskSyncBridge::ApplySyncChanges(
         if (desk_template_entries_.find(uuid) != desk_template_entries_.end()) {
           desk_template_entries_.erase(uuid);
           batch->DeleteData(uuid.AsLowercaseString());
-          removed.push_back(uuid.AsLowercaseString());
+          removed.push_back(uuid);
         }
         break;
       }
@@ -1318,7 +1318,7 @@ void DeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
 }
 
 void DeskSyncBridge::NotifyRemoteDeskTemplateDeleted(
-    const std::vector<std::string>& uuids) {
+    const std::vector<base::GUID>& uuids) {
   if (uuids.empty()) {
     return;
   }

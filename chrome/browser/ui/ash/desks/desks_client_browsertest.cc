@@ -31,6 +31,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -198,17 +199,10 @@ std::vector<const ash::DeskTemplate*> GetDeskTemplates() {
 // Search `desk_templates` for a template with `uuid` and returns true if found,
 // false if not.
 bool ContainUuidInTemplates(
-    const std::string& uuid,
+    const base::GUID& uuid,
     const std::vector<const ash::DeskTemplate*>& desk_templates) {
-  base::GUID guid = base::GUID::ParseCaseInsensitive(uuid);
-  DCHECK(guid.is_valid());
-
-  for (auto* desk_template : desk_templates) {
-    if (desk_template->uuid() == guid)
-      return true;
-  }
-
-  return false;
+  DCHECK(uuid.is_valid());
+  return base::Contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
 }
 
 std::string GetTemplateJson(const base::GUID& uuid, Profile* profile) {
@@ -2887,19 +2881,20 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
                        SetAndClearAdminTemplates) {
   EXPECT_TRUE(DesksClient::Get());
 
+  base::GUID admin_template_uuid =
+      base::GUID::ParseCaseInsensitive(kTestAdminTemplateUuid);
+
   // Set an admin template policy.
   DesksClient::Get()->SetPolicyPreconfiguredTemplate(
       account_id1_, std::make_unique<std::string>(base::StringPrintf(
                         kTestAdminTemplateFormat, kTestAdminTemplateUuid)));
 
   // Verify that the admin templates is present.
-  EXPECT_TRUE(
-      ContainUuidInTemplates(kTestAdminTemplateUuid, GetDeskTemplates()));
+  EXPECT_TRUE(ContainUuidInTemplates(admin_template_uuid, GetDeskTemplates()));
 
   // Clear admin templates.
   DesksClient::Get()->RemovePolicyPreconfiguredTemplate(account_id1_);
 
   // Verify that the admin templates is removed.
-  EXPECT_FALSE(
-      ContainUuidInTemplates(kTestAdminTemplateUuid, GetDeskTemplates()));
+  EXPECT_FALSE(ContainUuidInTemplates(admin_template_uuid, GetDeskTemplates()));
 }

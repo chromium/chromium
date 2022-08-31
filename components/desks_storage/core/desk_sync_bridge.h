@@ -118,7 +118,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   // Notify all observers when the entries with `uuids` have been removed via
   // sync or disabling sync locally.
-  void NotifyRemoteDeskTemplateDeleted(const std::vector<std::string>& uuids);
+  void NotifyRemoteDeskTemplateDeleted(const std::vector<base::GUID>& uuids);
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const absl::optional<syncer::ModelError>& error,

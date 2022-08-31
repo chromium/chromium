@@ -88,10 +88,10 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<std::string>& uuids) override;
+  void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) override;
   void EntriesAddedOrUpdatedLocally(
       const std::vector<const DeskTemplate*>& new_entries) override {}
-  void EntriesRemovedLocally(const std::vector<std::string>& uuids) override {}
+  void EntriesRemovedLocally(const std::vector<base::GUID>& uuids) override {}
 
  private:
   friend class SavedDeskPresenterTestApi;
