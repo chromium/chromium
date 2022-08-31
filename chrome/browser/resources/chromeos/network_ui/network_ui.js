@@ -48,16 +48,20 @@ Polymer({
     tabNames_: {
       type: Array,
       value: function() {
-        return [
+        const values = [
           this.i18n('generalTab'),
           this.i18n('networkHealthTab'),
           this.i18n('networkLogsTab'),
           this.i18n('networkStateTab'),
           this.i18n('networkSelectTab'),
           this.i18n('TrafficCountersTrafficCounters'),
-          this.i18n('networkHotspotTab'),
           this.i18n('networkMetricsTab'),
         ];
+        if (loadTimeData.valueExists('isHotspotEnabled') &&
+            loadTimeData.getBoolean('isHotspotEnabled')) {
+          values.push(this.i18n('networkHotspotTab'));
+        }
+        return values;
       },
     },
 
@@ -105,15 +109,6 @@ Polymer({
     tetheringChangeInProgress_: {
       type: Boolean,
       value: false,
-    },
-
-    /** @private */
-    isHotspotEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isHotspotEnabled') &&
-            loadTimeData.getBoolean('isHotspotEnabled');
-      },
     },
 
     /** @private */
