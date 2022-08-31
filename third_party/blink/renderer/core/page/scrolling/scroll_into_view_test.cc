@@ -37,7 +37,8 @@ namespace {
 class ScrollIntoViewTest : public SimTest {};
 
 TEST_F(ScrollIntoViewTest, InstantScroll) {
-  v8::HandleScope HandleScope(v8::Isolate::GetCurrent());
+  v8::HandleScope HandleScope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

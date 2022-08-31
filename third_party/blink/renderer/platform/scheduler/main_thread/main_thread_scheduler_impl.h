@@ -181,6 +181,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // MainThreadScheduler implementation:
   [[nodiscard]] std::unique_ptr<MainThreadScheduler::RendererPauseHandle>
   PauseScheduler() override;
+  v8::Isolate* Isolate() override;
 
   // ThreadScheduler implementation:
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;

@@ -51,7 +51,6 @@
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -228,9 +227,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
  public:
   template <typename... Args>
   explicit TestWebFrameWidget(Args&&... args)
-      : WebFrameWidgetImpl(std::forward<Args>(args)...) {
-    agent_group_scheduler_ = fake_thread_scheduler_.CreateAgentGroupScheduler();
-  }
+      : WebFrameWidgetImpl(std::forward<Args>(args)...) {}
   ~TestWebFrameWidget() override = default;
 
   TestWebFrameWidgetHost& WidgetHost() { return *widget_host_; }
@@ -239,14 +236,6 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   const Vector<std::unique_ptr<blink::WebCoalescedInputEvent>>&
   GetInjectedScrollEvents() const {
     return injected_scroll_events_;
-  }
-
-  scheduler::WebThreadScheduler* main_thread_scheduler() {
-    return &fake_thread_scheduler_;
-  }
-
-  blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() {
-    return *agent_group_scheduler_;
   }
 
   // The returned pointer is valid after AllocateNewLayerTreeFrameSink() occurs,
@@ -298,9 +287,6 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
 
  private:
   cc::FakeLayerTreeFrameSink* last_created_frame_sink_ = nullptr;
-  blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler_;
-  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
-      agent_group_scheduler_;
   Vector<std::unique_ptr<blink::WebCoalescedInputEvent>>
       injected_scroll_events_;
   std::unique_ptr<TestWidgetInputHandlerHost> widget_input_handler_host_;

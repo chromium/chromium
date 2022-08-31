@@ -189,40 +189,6 @@ class DummyPageScheduler : public PageScheduler {
   std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
 };
 
-class DummyAgentGroupScheduler : public AgentGroupScheduler {
- public:
-  DummyAgentGroupScheduler()
-      : main_thread_scheduler_(CreateDummyWebMainThreadScheduler()) {}
-  ~DummyAgentGroupScheduler() override = default;
-
-  DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
-  DummyAgentGroupScheduler& operator=(const DummyAgentGroupScheduler&) = delete;
-
-  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
-  std::unique_ptr<PageScheduler> CreatePageScheduler(
-      PageScheduler::Delegate*) override {
-    return CreateDummyPageScheduler();
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-  WebThreadScheduler& GetMainThreadScheduler() override {
-    return *main_thread_scheduler_;
-  }
-  void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
-      override {}
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
-    return GetEmptyBrowserInterfaceBroker();
-  }
-
- private:
-  std::unique_ptr<WebThreadScheduler> main_thread_scheduler_;
-};
-
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
 class SimpleThread : public Thread {
  public:
@@ -270,7 +236,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   void AddTaskObserver(base::TaskObserver*) override {}
   void RemoveTaskObserver(base::TaskObserver*) override {}
   blink::MainThreadScheduler* ToMainThreadScheduler() override { return this; }
-  void SetV8Isolate(v8::Isolate* isolate) override {}
+  void SetV8Isolate(v8::Isolate* isolate) override { isolate_ = isolate; }
 
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override {
@@ -308,6 +274,49 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
     return nullptr;
   }
+
+  v8::Isolate* Isolate() override {
+    DCHECK(isolate_);
+    return isolate_;
+  }
+
+ private:
+  v8::Isolate* isolate_ = nullptr;
+};
+
+class DummyAgentGroupScheduler : public AgentGroupScheduler {
+ public:
+  DummyAgentGroupScheduler()
+      : main_thread_scheduler_(new DummyWebMainThreadScheduler()) {}
+  ~DummyAgentGroupScheduler() override = default;
+
+  DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
+  DummyAgentGroupScheduler& operator=(const DummyAgentGroupScheduler&) = delete;
+
+  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
+  std::unique_ptr<PageScheduler> CreatePageScheduler(
+      PageScheduler::Delegate*) override {
+    return CreateDummyPageScheduler();
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+  WebThreadScheduler& GetMainThreadScheduler() override {
+    return *main_thread_scheduler_;
+  }
+  void BindInterfaceBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
+      override {}
+  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
+    return GetEmptyBrowserInterfaceBroker();
+  }
+  v8::Isolate* Isolate() override { return main_thread_scheduler_->Isolate(); }
+
+ private:
+  std::unique_ptr<DummyWebMainThreadScheduler> main_thread_scheduler_;
 };
 
 }  // namespace

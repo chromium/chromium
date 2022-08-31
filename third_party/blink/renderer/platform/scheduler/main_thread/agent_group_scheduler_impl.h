@@ -39,6 +39,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
   WebThreadScheduler& GetMainThreadScheduler() override;
   AgentGroupScheduler& AsAgentGroupScheduler() override;
+  v8::Isolate* Isolate() override;
 
   void BindInterfaceBroker(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)

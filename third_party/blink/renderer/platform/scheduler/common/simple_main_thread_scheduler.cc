@@ -83,4 +83,12 @@ SimpleMainThreadScheduler::PauseScheduler() {
   return nullptr;
 }
 
+void SimpleMainThreadScheduler::SetV8Isolate(v8::Isolate* isolate) {
+  isolate_ = isolate;
+}
+
+v8::Isolate* SimpleMainThreadScheduler::Isolate() {
+  return isolate_;
+}
+
 }  // namespace blink::scheduler

@@ -182,7 +182,7 @@ const char* const kSetTimeout0ScriptText =
     "setTimeout(setTimeoutCallback, 0);";
 
 TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kSetTimeoutWithoutClamp);
@@ -195,7 +195,7 @@ TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
 }
 
 TEST_F(DOMTimerTest, setTimeout_ZeroIsClampedToOne) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kSetTimeoutWithoutClamp);
@@ -222,7 +222,7 @@ const char* const kSetTimeoutNestedScriptText =
     "setTimeout(nestSetTimeouts, 1);";
 
 TEST_F(DOMTimerTest, setTimeout_ClampsAfter4Nestings) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -236,7 +236,7 @@ TEST_F(DOMTimerTest, setTimeout_ClampsAfter4Nestings) {
 }
 
 TEST_F(DOMTimerTest, setTimeout_ClampsAfter5Nestings) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -270,7 +270,7 @@ const char* const kSetIntervalScriptText =
     "}, 1);";
 
 TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -284,7 +284,7 @@ TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
 }
 
 TEST_F(DOMTimerTest, setInterval_ClampsAfter5Iterations) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -305,7 +305,7 @@ TEST_F(DOMTimerTest, setInterval_ClampsAfter5Iterations) {
 }
 
 TEST_F(DOMTimerTest, setInterval_NestingResetsForLaterCalls) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(

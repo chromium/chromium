@@ -10,6 +10,10 @@
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 
+namespace v8 {
+class Isolate;
+}  // namespace v8
+
 namespace blink {
 class AgentGroupScheduler;
 namespace scheduler {
@@ -47,6 +51,9 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
 
   // The main thread scheduler related to this WebAgentGroupScheduler.
   virtual WebThreadScheduler& GetMainThreadScheduler() = 0;
+
+  // The isolate for this WebAgentGroupScheduler.
+  virtual v8::Isolate* Isolate() = 0;
 };
 
 }  // namespace scheduler

@@ -72,8 +72,16 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   }
 
  private:
-  // For ToWebMainThreadScheduler().
+  // For `ToWebMainThreadScheduler`.
   friend class scheduler::WebThreadScheduler;
+
+  // For `Isolate`.
+  friend class ScopedMainThreadOverrider;
+
+  // Get the isolate previously set with `SetV8Isolate`. This method is scoped
+  // private so only friends can use it. Other users should use
+  // `WebAgentGroupScheduler::Isolate` instead.
+  virtual v8::Isolate* Isolate() = 0;
 
   // Return a reference to an underlying main thread WebThreadScheduler object.
   // Can be null if there is no underlying main thread WebThreadScheduler

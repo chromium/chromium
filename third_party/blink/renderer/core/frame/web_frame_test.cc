@@ -528,7 +528,7 @@ TEST_F(WebFrameTest, FrameForEnteredContext) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "iframes_test.html");
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   EXPECT_EQ(web_view_helper.GetWebView()->MainFrame(),
             WebLocalFrame::FrameForContext(web_view_helper.GetWebView()
                                                ->MainFrameImpl()
@@ -598,7 +598,7 @@ TEST_F(WebFrameTest, RequestExecuteScript) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                            "'hello';", callback_helper.Callback());
@@ -613,7 +613,7 @@ TEST_F(WebFrameTest, SuspendedRequestExecuteScript) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
 
   // Suspend scheduled tasks so the script doesn't run.
@@ -634,7 +634,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithError) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = web_view_helper.GetAgentGroupScheduler().Isolate();
   v8::HandleScope scope(isolate);
   v8::TryCatch try_catch(isolate);
   try_catch.SetVerbose(true);
@@ -658,7 +658,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseWithoutWait) {
 
   constexpr char kScript[] = R"(Promise.resolve('hello');)";
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                            kScript, callback_helper.Callback(),
@@ -681,7 +681,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseFulfilled) {
 
   constexpr char kScript[] = R"(Promise.resolve('hello');)";
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                            kScript, callback_helper.Callback());
@@ -698,7 +698,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseRejected) {
 
   constexpr char kScript[] = R"(Promise.reject('hello');)";
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                            kScript, callback_helper.Callback());
@@ -716,7 +716,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithFrameRemovalBeforePromiseResolves) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "single_iframe.html");
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
 
   constexpr char kScript[] = R"((new Promise((r) => {}));)";
 
@@ -749,7 +749,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromises) {
       "Promise.resolve('world');",
   };
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                             scripts, callback_helper.Callback());
@@ -770,7 +770,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromisesWithDelayedSettlement) {
       "(new Promise((r) => { window.resolveSecond = r; }));",
   };
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                             scripts, callback_helper.Callback());
@@ -803,7 +803,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereFirstIsPromise) {
       "'world';",
   };
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                             scripts, callback_helper.Callback());
@@ -845,7 +845,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlyFirstIsFulfilled) {
       "Promise.reject('world');",
   };
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                             scripts, callback_helper.Callback());
@@ -888,7 +888,7 @@ TEST_F(WebFrameTest, RequestExecuteV8Function) {
     info.GetReturnValue().Set(info[1]);
   };
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = web_view_helper.GetAgentGroupScheduler().Isolate();
   v8::HandleScope scope(isolate);
   v8::Local<v8::Context> context =
       web_view_helper.LocalMainFrame()->MainWorldScriptContext();
@@ -919,7 +919,7 @@ TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspended) {
     info.GetReturnValue().Set(V8String(info.GetIsolate(), "hello"));
   };
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   v8::Local<v8::Context> context =
       web_view_helper.LocalMainFrame()->MainWorldScriptContext();
 
@@ -949,7 +949,7 @@ TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspendedWithUserGesture) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
 
   // Suspend scheduled tasks so the script doesn't run.
   web_view_helper.GetWebView()->GetPage()->SetPaused(true);
@@ -976,7 +976,7 @@ TEST_F(WebFrameTest, IframeScriptRemovesSelf) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "single_iframe.html");
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptInMainWorld(
       web_view_helper.GetWebView()
@@ -1035,7 +1035,7 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   child_frame->GetDocument()->domWindow()->addEventListener(
       event_type_names::kMessage, message_event_listener);
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
 
   {
     String post_message_wo_request(
@@ -1247,7 +1247,7 @@ TEST_F(WebFrameTest, LocationSetEmptyPort) {
 class EvaluateOnLoadWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  EvaluateOnLoadWebFrameClient() : executing_(false), was_executed_(false) {}
+  EvaluateOnLoadWebFrameClient() = default;
   ~EvaluateOnLoadWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
@@ -1255,14 +1255,14 @@ class EvaluateOnLoadWebFrameClient
     EXPECT_FALSE(executing_);
     was_executed_ = true;
     executing_ = true;
-    v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+    v8::HandleScope handle_scope(Frame()->GetAgentGroupScheduler()->Isolate());
     Frame()->ExecuteScriptAndReturnValue(
         WebScriptSource(WebString("window.someProperty = 42;")));
     executing_ = false;
   }
 
-  bool executing_;
-  bool was_executed_;
+  bool executing_ = false;
+  bool was_executed_ = false;
 };
 
 TEST_F(WebFrameTest, DidClearWindowObjectIsNotRecursive) {
@@ -4811,8 +4811,6 @@ class ContextLifetimeTestWebFrameClient
 };
 
 TEST_F(WebFrameTest, ContextNotificationsLoadUnload) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-
   RegisterMockedHttpURLLoad("context_notifications_test.html");
   RegisterMockedHttpURLLoad("context_notifications_test_frame.html");
 
@@ -4825,6 +4823,8 @@ TEST_F(WebFrameTest, ContextNotificationsLoadUnload) {
   ContextLifetimeTestWebFrameClient web_frame_client(create_notifications,
                                                      release_notifications);
   frame_test_helpers::WebViewHelper web_view_helper;
+  v8::HandleScope handle_scope(
+      web_view_helper.GetAgentGroupScheduler().Isolate());
   web_view_helper.InitializeAndLoad(
       base_url_ + "context_notifications_test.html", &web_frame_client);
 
@@ -4862,8 +4862,6 @@ TEST_F(WebFrameTest, ContextNotificationsLoadUnload) {
 }
 
 TEST_F(WebFrameTest, ContextNotificationsReload) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-
   RegisterMockedHttpURLLoad("context_notifications_test.html");
   RegisterMockedHttpURLLoad("context_notifications_test_frame.html");
 
@@ -4874,6 +4872,8 @@ TEST_F(WebFrameTest, ContextNotificationsReload) {
   ContextLifetimeTestWebFrameClient web_frame_client(create_notifications,
                                                      release_notifications);
   frame_test_helpers::WebViewHelper web_view_helper;
+  v8::HandleScope handle_scope(
+      web_view_helper.GetAgentGroupScheduler().Isolate());
   web_view_helper.InitializeAndLoad(
       base_url_ + "context_notifications_test.html", &web_frame_client);
 
@@ -4910,9 +4910,6 @@ TEST_F(WebFrameTest, ContextNotificationsReload) {
 }
 
 TEST_F(WebFrameTest, ContextNotificationsIsolatedWorlds) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  v8::HandleScope handle_scope(isolate);
-
   RegisterMockedHttpURLLoad("context_notifications_test.html");
   RegisterMockedHttpURLLoad("context_notifications_test_frame.html");
 
@@ -4923,6 +4920,8 @@ TEST_F(WebFrameTest, ContextNotificationsIsolatedWorlds) {
   ContextLifetimeTestWebFrameClient web_frame_client(create_notifications,
                                                      release_notifications);
   frame_test_helpers::WebViewHelper web_view_helper;
+  v8::Isolate* isolate = web_view_helper.GetAgentGroupScheduler().Isolate();
+  v8::HandleScope handle_scope(isolate);
   web_view_helper.InitializeAndLoad(
       base_url_ + "context_notifications_test.html", &web_frame_client);
 
@@ -6526,7 +6525,8 @@ class CompositedSelectionBoundsTest
 
     UpdateAllLifecyclePhases(web_view_helper_.GetWebView());
 
-    v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+    v8::HandleScope handle_scope(
+        web_view_helper_.GetAgentGroupScheduler().Isolate());
     v8::Local<v8::Value> result =
         web_view_helper_.GetWebView()
             ->MainFrameImpl()
@@ -6537,8 +6537,9 @@ class CompositedSelectionBoundsTest
     v8::Array& expected_result = *v8::Array::Cast(*result);
     ASSERT_GE(expected_result.Length(), 10u);
 
-    v8::Local<v8::Context> context =
-        v8::Isolate::GetCurrent()->GetCurrentContext();
+    v8::Local<v8::Context> context = web_view_helper_.GetAgentGroupScheduler()
+                                         .Isolate()
+                                         ->GetCurrentContext();
 
     int start_edge_start_in_layer_x = expected_result.Get(context, 1)
                                           .ToLocalChecked()
@@ -6620,7 +6621,7 @@ class CompositedSelectionBoundsTest
     ASSERT_NE(selection.end, cc::LayerSelectionBound());
 
     blink::Node* layer_owner_node_for_start = V8Node::ToImplWithTypeCheck(
-        v8::Isolate::GetCurrent(),
+        web_view_helper_.GetAgentGroupScheduler().Isolate(),
         expected_result.Get(context, 0).ToLocalChecked());
     // Hidden selection does not always have a layer (might be hidden due to not
     // having been painted.
@@ -6649,7 +6650,7 @@ class CompositedSelectionBoundsTest
     EXPECT_NEAR(start_edge_end_in_layer_x, selection.start.edge_end.x(), 1);
 
     blink::Node* layer_owner_node_for_end = V8Node::ToImplWithTypeCheck(
-        v8::Isolate::GetCurrent(),
+        web_view_helper_.GetAgentGroupScheduler().Isolate(),
         expected_result.Get(context, 5).ToLocalChecked());
     // Hidden selection does not always have a layer (might be hidden due to not
     // having been painted.
@@ -9658,7 +9659,7 @@ TEST_F(WebFrameSwapTest, SwapParentShouldDetachChildren) {
 }
 
 TEST_F(WebFrameSwapTest, SwapPreservesGlobalContext) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
   v8::Local<v8::Value> window_top =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("window"));
   ASSERT_TRUE(window_top->IsObject());
@@ -9695,7 +9696,7 @@ TEST_F(WebFrameSwapTest, SwapPreservesGlobalContext) {
 }
 
 TEST_F(WebFrameSwapTest, SetTimeoutAfterSwap) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = web_view_helper_.GetAgentGroupScheduler().Isolate();
   v8::HandleScope scope(isolate);
   MainFrame()->ExecuteScript(
       WebScriptSource("savedSetTimeout = window[0].setTimeout"));
@@ -9726,7 +9727,7 @@ TEST_F(WebFrameSwapTest, SetTimeoutAfterSwap) {
 }
 
 TEST_F(WebFrameSwapTest, SwapInitializesGlobal) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
 
   v8::Local<v8::Value> window_top =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("window"));
@@ -9755,7 +9756,7 @@ TEST_F(WebFrameSwapTest, SwapInitializesGlobal) {
 }
 
 TEST_F(WebFrameSwapTest, RemoteFramesAreIndexable) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(MainFrame()->LastChild(), remote_frame);
@@ -9769,7 +9770,7 @@ TEST_F(WebFrameSwapTest, RemoteFramesAreIndexable) {
 }
 
 TEST_F(WebFrameSwapTest, RemoteFrameLengthAccess) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(MainFrame()->LastChild(), remote_frame);
@@ -9781,7 +9782,7 @@ TEST_F(WebFrameSwapTest, RemoteFrameLengthAccess) {
 }
 
 TEST_F(WebFrameSwapTest, RemoteWindowNamedAccess) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
 
   // TODO(dcheng): Once OOPIF unit test infrastructure is in place, test that
   // named window access on a remote window works. For now, just test that
@@ -9797,7 +9798,7 @@ TEST_F(WebFrameSwapTest, RemoteWindowNamedAccess) {
 }
 
 TEST_F(WebFrameSwapTest, RemoteWindowToString) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = web_view_helper_.GetAgentGroupScheduler().Isolate();
   v8::HandleScope scope(isolate);
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
@@ -9814,7 +9815,7 @@ TEST_F(WebFrameSwapTest, RemoteWindowToString) {
 // very little of the test fixture support in WebFrameSwapTest.  We should
 // clean these tests up.
 TEST_F(WebFrameSwapTest, FramesOfRemoteParentAreIndexable) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
 
   WebRemoteFrame* remote_parent_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_parent_frame);
@@ -9842,7 +9843,7 @@ TEST_F(WebFrameSwapTest, FramesOfRemoteParentAreIndexable) {
 // Check that frames with a remote parent don't crash while accessing
 // window.frameElement.
 TEST_F(WebFrameSwapTest, FrameElementInFramesWithRemoteParent) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
 
   WebRemoteFrame* remote_parent_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(MainFrame(), remote_parent_frame);
@@ -10249,7 +10250,7 @@ class DeviceEmulationTest : public WebFrameTest {
 
   String DumpSize(const String& id) {
     String code = "dumpSize('" + id + "')";
-    v8::HandleScope scope(v8::Isolate::GetCurrent());
+    v8::HandleScope scope(web_view_helper_.GetAgentGroupScheduler().Isolate());
     ScriptExecutionCallbackHelper callback_helper;
     ExecuteScriptInMainWorld(web_view_helper_.GetWebView()->MainFrameImpl(),
                              code, callback_helper.Callback());
@@ -11290,7 +11291,7 @@ TEST(WebFrameGlobalReuseTest, MainFrameWithNoOpener) {
   helper.Initialize();
 
   WebLocalFrame* main_frame = helper.LocalMainFrame();
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(helper.GetAgentGroupScheduler().Isolate());
   main_frame->ExecuteScript(WebScriptSource("hello = 'world';"));
   frame_test_helpers::LoadFrame(main_frame, "data:text/html,new page");
   v8::Local<v8::Value> result =
@@ -11309,7 +11310,7 @@ TEST(WebFrameGlobalReuseTest, ChildFrame) {
   frame_test_helpers::LoadFrame(main_frame, "data:text/html,<iframe></iframe>");
 
   WebLocalFrame* child_frame = main_frame->FirstChild()->ToWebLocalFrame();
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(helper.GetAgentGroupScheduler().Isolate());
   child_frame->ExecuteScript(WebScriptSource("hello = 'world';"));
   frame_test_helpers::LoadFrame(child_frame, "data:text/html,new page");
   v8::Local<v8::Value> result =
@@ -11328,7 +11329,7 @@ TEST(WebFrameGlobalReuseTest, MainFrameWithOpener) {
                               nullptr, EnableGlobalReuseForUnownedMainFrames);
 
   WebLocalFrame* main_frame = helper.LocalMainFrame();
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(helper.GetAgentGroupScheduler().Isolate());
   main_frame->ExecuteScript(WebScriptSource("hello = 'world';"));
   frame_test_helpers::LoadFrame(main_frame, "data:text/html,new page");
   v8::Local<v8::Value> result =
@@ -11346,7 +11347,7 @@ TEST(WebFrameGlobalReuseTest, ReuseForMainFrameIfEnabled) {
   helper.Initialize(nullptr, nullptr, EnableGlobalReuseForUnownedMainFrames);
 
   WebLocalFrame* main_frame = helper.LocalMainFrame();
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(helper.GetAgentGroupScheduler().Isolate());
   main_frame->ExecuteScript(WebScriptSource("hello = 'world';"));
   frame_test_helpers::LoadFrame(main_frame, "data:text/html,new page");
   v8::Local<v8::Value> result =

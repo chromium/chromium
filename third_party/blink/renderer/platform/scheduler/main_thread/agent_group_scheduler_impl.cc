@@ -105,5 +105,12 @@ AgentGroupSchedulerImpl::GetBrowserInterfaceBroker() {
   return broker_;
 }
 
+v8::Isolate* AgentGroupSchedulerImpl::Isolate() {
+  // TODO(dtapuska): crbug.com/1051790 implement an Isolate per scheduler.
+  v8::Isolate* isolate = main_thread_scheduler_.isolate();
+  DCHECK(isolate);
+  return isolate;
+}
+
 }  // namespace scheduler
 }  // namespace blink

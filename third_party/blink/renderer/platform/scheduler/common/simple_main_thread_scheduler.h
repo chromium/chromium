@@ -71,11 +71,15 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   void AddTaskObserver(base::TaskObserver*) override;
   void RemoveTaskObserver(base::TaskObserver*) override;
 
-  // Return nullptr.
+  // Return pointer to this.
   MainThreadScheduler* ToMainThreadScheduler() override;
 
-  void SetV8Isolate(v8::Isolate* isolate) override {}
+  void SetV8Isolate(v8::Isolate* isolate) override;
+  v8::Isolate* Isolate() override;
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override;
+
+ private:
+  v8::Isolate* isolate_ = nullptr;
 };
 
 }  // namespace scheduler

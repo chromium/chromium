@@ -2107,6 +2107,10 @@ void MainThreadSchedulerImpl::SetV8Isolate(v8::Isolate* isolate) {
   ThreadSchedulerBase::SetV8Isolate(isolate);
 }
 
+v8::Isolate* MainThreadSchedulerImpl::Isolate() {
+  return isolate();
+}
+
 base::TimeTicks MainThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
   return GetTickClock()->NowTicks();
 }
