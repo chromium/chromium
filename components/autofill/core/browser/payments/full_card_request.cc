@@ -109,11 +109,9 @@ void FullCardRequest::GetFullCardImpl(
   request_->last_committed_url_origin = last_committed_url_origin;
   if (context_token.has_value())
     request_->context_token = context_token.value();
-  should_unmask_card_ = card.record_type() == CreditCard::MASKED_SERVER_CARD ||
-                        card.record_type() == CreditCard::VIRTUAL_CARD ||
-                        (card.record_type() == CreditCard::FULL_SERVER_CARD &&
-                         card.ShouldUpdateExpiration()) ||
-                        card.record_type() == CreditCard::VIRTUAL_CARD;
+  should_unmask_card_ =
+      card.masked() || (card.record_type() == CreditCard::FULL_SERVER_CARD &&
+                        card.ShouldUpdateExpiration());
   if (should_unmask_card_) {
     payments_client_->Prepare();
     request_->billing_customer_number =
