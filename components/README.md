@@ -34,6 +34,9 @@ consumer; that can be done with strict DEPS or GN visibility rules.
   * Code must be needed in at least 2 places in Chrome that don't have a "higher
     layered" directory that could facilitate sharing (e.g. `//content/common`,
     `//chrome/utility`, etc.).
+  * The CL adding a new component should be substantial enough so that
+    //components/OWNERS can see its basic intended structure and usage before
+    approving the addition (e.g., it should not just be an empty shell).
 
 ## Dependencies of a component
 
