@@ -234,8 +234,6 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/traffic_counters/traffic_counters_adapter.d.ts",
     "cr_components/chromeos/quick_unlock/pin_keyboard.m.d.ts",
     "cr_elements/cr_container_shadow_behavior.d.ts",
-    "js/cr/ui/grid.m.d.ts",
-    "js/cr/ui/list.m.d.ts",
     "js/list_property_update_behavior.d.ts",
   ]
 }
@@ -275,11 +273,6 @@ if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
 
 if (is_chromeos_ash) {
   generate_definitions_js_files += [
-    "js/cr/ui/array_data_model.m.js",
-    "js/cr/ui/list_item.m.js",
-    "js/cr/ui/list_selection_controller.m.js",
-    "js/cr/ui/list_selection_model.m.js",
-    "js/cr/ui/list_single_selection_model.m.js",
     "js/cr/ui/store_client.js",
     "js/cr/ui/store.js",
   ]

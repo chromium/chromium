@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+import {ListSelectionModel} from './list_selection_model.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
 // clang-format on
 
 /**

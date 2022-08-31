@@ -4,7 +4,6 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
 import {getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -26,6 +25,7 @@ import {FileSelectionHandler} from './file_selection.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {DragSelector} from './ui/drag_selector.js';
+import {List} from './ui/list.js';
 import {ListContainer} from './ui/list_container.js';
 import {TreeItem} from './ui/tree.js';
 

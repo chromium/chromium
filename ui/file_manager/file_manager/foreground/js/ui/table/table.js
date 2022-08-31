@@ -7,11 +7,12 @@
  */
 
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+
+import {ArrayDataModel} from '../../../../common/js/array_data_model.js';
+import {List} from '../list.js';
+import {ListItem} from '../list_item.js';
+import {ListSelectionModel} from '../list_selection_model.js';
+import {ListSingleSelectionModel} from '../list_single_selection_model.js';
 
 import {TableColumnModel} from './table_column_model.js';
 import {TableHeader} from './table_header.js';

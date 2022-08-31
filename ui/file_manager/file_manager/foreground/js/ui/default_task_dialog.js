@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+
+import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
+import {List} from './list.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
+
 
 
 /**

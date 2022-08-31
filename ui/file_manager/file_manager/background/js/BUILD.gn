@@ -686,9 +686,9 @@ js_unittest("trash_unittest") {
 
 js_library("volume_info_list_impl") {
   deps = [
+    "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_info_list",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
   ]
 }
 

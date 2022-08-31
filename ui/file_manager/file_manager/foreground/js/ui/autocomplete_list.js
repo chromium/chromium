@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 import {AnchorType, positionPopupAroundElement} from 'chrome://resources/js/cr/ui/position_util.js';
+
+import {ArrayDataModel} from '../../../common/js/array_data_model.js';
+
+import {List} from './list.js';
+import {ListItem} from './list_item.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 
 /**

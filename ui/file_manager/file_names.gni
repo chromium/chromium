@@ -56,6 +56,7 @@ static_js_files = [
   # Files Common:
   "file_manager/common/js/api.js",
   "file_manager/common/js/app_util.js",
+  "file_manager/common/js/array_data_model.js",
   "file_manager/common/js/async_util.js",
   "file_manager/common/js/dialog_type.js",
   "file_manager/common/js/error_counter.js",
@@ -231,9 +232,15 @@ static_js_files = [
   "file_manager/foreground/js/ui/files_confirm_dialog.js",
   "file_manager/foreground/js/ui/files_menu.js",
   "file_manager/foreground/js/ui/gear_menu.js",
+  "file_manager/foreground/js/ui/grid.js",
   "file_manager/foreground/js/ui/import_crostini_image_dialog.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
+  "file_manager/foreground/js/ui/list.js",
   "file_manager/foreground/js/ui/list_container.js",
+  "file_manager/foreground/js/ui/list_item.js",
+  "file_manager/foreground/js/ui/list_selection_controller.js",
+  "file_manager/foreground/js/ui/list_selection_model.js",
+  "file_manager/foreground/js/ui/list_single_selection_model.js",
   "file_manager/foreground/js/ui/multi_menu.js",
   "file_manager/foreground/js/ui/multi_menu_button.js",
   "file_manager/foreground/js/ui/progress_center_panel.js",
@@ -333,6 +340,7 @@ generated_js_files = [
 # Test files:
 unittest_files = [
   # Common:
+  "file_manager/common/js/array_data_model_unittest.js",
   "file_manager/common/js/async_util_unittest.js",
   "file_manager/common/js/util_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
@@ -396,6 +404,11 @@ unittest_files = [
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.js",
   "file_manager/foreground/js/ui/file_table_list_unittest.js",
   "file_manager/foreground/js/ui/file_grid_unittest.js",
+  "file_manager/foreground/js/ui/grid_unittest.js",
+  "file_manager/foreground/js/ui/list_unittest.js",
+  "file_manager/foreground/js/ui/list_selection_model_test_util.js",
+  "file_manager/foreground/js/ui/list_selection_model_unittest.js",
+  "file_manager/foreground/js/ui/list_single_selection_model_unittest.js",
   "file_manager/foreground/js/ui/multi_menu_unittest.js",
   "file_manager/foreground/js/ui/splitter_unittest.js",
   "file_manager/foreground/js/ui/banners/state_banner_unittest.js",

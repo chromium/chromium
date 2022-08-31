@@ -35,7 +35,7 @@ if (is_chromeos_ash) {
 
 js_library("event_target.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/cr/event_target.m.js" ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }
 
 if (is_chromeos_ash) {
@@ -43,18 +43,11 @@ if (is_chromeos_ash) {
   # have opted to drop typechecking.
   js_library("ui.m") {
     sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui.m.js" ]
-    extra_deps = [ ":modulize_local" ]
+    extra_deps = [ ":modulize" ]
   }
 }
 
-group("modulize") {
-  public_deps = [ ":modulize_local" ]
-  if (is_chromeos_ash) {
-    public_deps += [ "ui:modulize" ]
-  }
-}
-
-js_modulizer("modulize_local") {
+js_modulizer("modulize") {
   input_files = [
     "event_target.js",
     "ui.js",

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSelectionModel} from './list_selection_model.js';
 
-import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
+import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {adjust, range} from './list_selection_model_test_util.js';
 // clang-format on
@@ -292,27 +292,3 @@ function testSelectAllOnEmptyList() {
   assertArrayEquals([], sm.selectedIndexes);
   assertEquals(null, changes);
 }
-
-Object.assign(window, {
-  testAdjust1,
-  testAdjust2,
-  testAdjust3,
-  testAdjust4,
-  testAdjust5,
-  testAdjust6,
-  testAdjust7,
-  testAdjust8,
-  testAdjust9,
-  testAdjust10,
-  testAdjust11,
-  testAdjust12,
-  testAdjust13,
-  testAdjust14,
-  testAdjust15,
-  testAdjust16,
-  testAdjust17,
-  testLeadAndAnchor1,
-  testLeadAndAnchor2,
-  testSelectAll,
-  testSelectAllOnEmptyList,
-});

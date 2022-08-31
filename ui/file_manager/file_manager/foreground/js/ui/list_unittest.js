@@ -4,10 +4,12 @@
 
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
-import {assertEquals} from '../../../chai_assert.js';
+import {ArrayDataModel} from '../../../common/js/array_data_model.js';
+
+import {List} from './list.js';
+
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
@@ -66,8 +68,3 @@ function testClickOutsideListItem() {
   assertEquals(item, list.getListItemAncestor(item));
   assertEquals(item, list.getListItemAncestor(span));
 }
-
-Object.assign(window, {
-  testClearPinnedItem,
-  testClickOutsideListItem,
-});

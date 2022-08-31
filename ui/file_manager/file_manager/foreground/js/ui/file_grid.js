@@ -4,10 +4,6 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {Grid, GridSelectionController} from 'chrome://resources/js/cr/ui/grid.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {AsyncUtil} from '../../../common/js/async_util.js';
@@ -25,6 +21,10 @@ import {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
 import {filelist} from './file_table_list.js';
 import {FileTapHandler} from './file_tap_handler.js';
+import {Grid, GridSelectionController} from './grid.js';
+import {List} from './list.js';
+import {ListItem} from './list_item.js';
+import {ListSelectionModel} from './list_selection_model.js';
 
 
 // Align with CSS .grid-title.group-by-modificationTime.

@@ -29,11 +29,11 @@ js_library("table") {
     ":table_column_model",
     ":table_header",
     ":table_list",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
+    "//ui/file_manager/file_manager/foreground/js/ui:list",
+    "//ui/file_manager/file_manager/foreground/js/ui:list_item",
+    "//ui/file_manager/file_manager/foreground/js/ui:list_single_selection_model",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
   ]
 }
 
@@ -54,9 +54,9 @@ js_library("table_header") {
 
 js_library("table_list") {
   deps = [
+    "//ui/file_manager/file_manager/foreground/js/ui:list",
+    "//ui/file_manager/file_manager/foreground/js/ui:list_item",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
   ]
 }
 

@@ -6,23 +6,16 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../../../tools/js_modulizer.gni")
 import("../../cr.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js/cr/ui"
 preprocess_src_manifest = "preprocessed_src_manifest.json"
-if (is_chromeos_ash) {
-  preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-}
 
 generate_grd("build_grdp") {
   grd_prefix = "webui_js_cr_ui"
   out_grd = "$target_gen_dir/resources.grdp"
   public_deps = [ ":preprocess" ]
   manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
-  if (is_chromeos_ash) {
-    manifest_files += [ "$target_gen_dir/$preprocess_gen_manifest" ]
-  }
   resource_path_prefix = "js/cr/ui"
 }
 
@@ -31,9 +24,6 @@ group("preprocess") {
     ":preprocess_src",
     ":preprocess_src_ts",
   ]
-  if (is_chromeos_ash) {
-    public_deps += [ ":preprocess_generated" ]
-  }
 }
 
 # TS files are passed to a separate target so that they are not listed in the
@@ -77,37 +67,9 @@ preprocess_if_expr("preprocess_src") {
 
   if (is_chromeos_ash) {
     in_files += [
-      "array_data_model.js",
       "focus_manager.js",
-      "grid.js",
-      "list_item.js",
-      "list.js",
-      "list_selection_controller.js",
-      "list_selection_model.js",
-      "list_single_selection_model.js",
       "store_client.js",
       "store.js",
-    ]
-  }
-}
-
-# TODO (rbpotter): The files in the following target are all exclusive to file
-# manager. Check them in and move to ui/file_manager/.
-if (is_chromeos_ash) {
-  preprocess_if_expr("preprocess_generated") {
-    deps = [ ":modulize" ]
-    in_folder = target_gen_dir
-    out_folder = "$preprocess_folder"
-    out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-
-    in_files = [
-      "array_data_model.m.js",
-      "grid.m.js",
-      "list_item.m.js",
-      "list.m.js",
-      "list_selection_controller.m.js",
-      "list_selection_model.m.js",
-      "list_single_selection_model.m.js",
     ]
   }
 }
@@ -122,80 +84,11 @@ group("closure_compile") {
 if (is_chromeos_ash) {
   js_type_check("ui_resources") {
     uses_legacy_modules = true
-    deps = [
-      ":array_data_model",
-      ":focus_manager",
-      ":grid",
-      ":list",
-      ":list_item",
-      ":list_selection_controller",
-      ":list_selection_model",
-      ":list_single_selection_model",
-    ]
-  }
-
-  js_library("array_data_model") {
-    deps = [
-      "..:event_target",
-      "../..:cr",
-    ]
+    deps = [ ":focus_manager" ]
   }
 
   js_library("focus_manager") {
     deps = [ "../..:cr" ]
-  }
-
-  js_library("grid") {
-    deps = [ ":list" ]
-  }
-
-  js_library("list") {
-    deps = [
-      ":array_data_model",
-      ":list_item",
-      ":list_selection_controller",
-      ":list_selection_model",
-    ]
-  }
-
-  js_library("list_item") {
-    deps = [ "../..:cr" ]
-  }
-
-  js_library("list_selection_controller") {
-    deps = [
-      ":list_selection_model",
-      "../..:cr",
-    ]
-  }
-
-  js_library("list_selection_model") {
-    deps = [
-      "..:event_target",
-      "../..:cr",
-    ]
-  }
-
-  js_library("list_single_selection_model") {
-    deps = [
-      "..:event_target",
-      "../..:cr",
-    ]
-  }
-}
-
-if (is_chromeos_ash) {
-  js_modulizer("modulize") {
-    input_files = [
-      "array_data_model.js",
-      "grid.js",
-      "list.js",
-      "list_item.js",
-      "list_selection_controller.js",
-      "list_selection_model.js",
-      "list_single_selection_model.js",
-    ]
-    namespace_rewrites = cr_namespace_rewrites
   }
 }
 
@@ -209,16 +102,9 @@ js_type_check("ui_resources_modules") {
   ]
   if (is_chromeos_ash) {
     deps += [
-      ":array_data_model.m",
       ":command",
       ":context_menu_handler",
-      ":grid.m",
       ":keyboard_shortcut_list",
-      ":list.m",
-      ":list_item.m",
-      ":list_selection_controller.m",
-      ":list_selection_model.m",
-      ":list_single_selection_model.m",
       ":menu",
       ":menu_button",
       ":menu_item",
@@ -230,17 +116,6 @@ js_type_check("ui_resources_modules") {
 }
 
 if (is_chromeos_ash) {
-  js_library("array_data_model.m") {
-    sources =
-        [ "$root_gen_dir/ui/webui/resources/js/cr/ui/array_data_model.m.js" ]
-    deps = [
-      "..:event_target.m",
-      "../..:assert.m",
-    ]
-
-    extra_deps = [ ":modulize" ]
-  }
-
   js_library("command") {
     deps = [
       ":keyboard_shortcut_list",
@@ -293,67 +168,7 @@ js_library("focus_without_ink") {
 }
 
 if (is_chromeos_ash) {
-  js_library("grid.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/grid.m.js" ]
-    deps = [
-      ":list.m",
-      ":list_item.m",
-      ":list_selection_controller.m",
-      ":list_selection_model.m",
-      "../:ui.m",
-    ]
-    extra_deps = [ ":modulize" ]
-  }
-
   js_library("keyboard_shortcut_list") {
-  }
-
-  js_library("list.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/list.m.js" ]
-    deps = [
-      ":array_data_model.m",
-      ":list_item.m",
-      ":list_selection_controller.m",
-      ":list_selection_model.m",
-      "../:ui.m",
-      "../..:cr.m",
-    ]
-    extra_deps = [ ":modulize" ]
-  }
-
-  js_library("list_item.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/list_item.m.js" ]
-    deps = [ "../..:cr.m" ]
-    extra_deps = [ ":modulize" ]
-  }
-
-  js_library("list_selection_controller.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/list_selection_controller.m.js" ]
-    deps = [
-      ":list_selection_model.m",
-      "../..:cr.m",
-    ]
-    extra_deps = [ ":modulize" ]
-  }
-
-  js_library("list_selection_model.m") {
-    sources = [
-      "$root_gen_dir/ui/webui/resources/js/cr/ui/list_selection_model.m.js",
-    ]
-    deps = [
-      "..:event_target.m",
-      "../..:cr.m",
-    ]
-    extra_deps = [ ":modulize" ]
-  }
-
-  js_library("list_single_selection_model.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/list_single_selection_model.m.js" ]
-    deps = [
-      "..:event_target.m",
-      "../..:cr.m",
-    ]
-    extra_deps = [ ":modulize" ]
   }
 
   js_library("menu") {

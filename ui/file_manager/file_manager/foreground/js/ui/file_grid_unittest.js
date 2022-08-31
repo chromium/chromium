@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -17,6 +16,7 @@ import {MockMetadataModel} from '../metadata/mock_metadata.js';
 
 import {A11yAnnounce} from './a11y_announce.js';
 import {FileGrid, FileGridSelectionController} from './file_grid.js';
+import {ListSelectionModel} from './list_selection_model.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;

@@ -4,10 +4,6 @@
 
 import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {util} from '../../../common/js/util.js';
@@ -16,6 +12,10 @@ import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 
 import {FileGrid} from './file_grid.js';
 import {FileTable} from './file_table.js';
+import {List} from './list.js';
+import {ListItem} from './list_item.js';
+import {ListSelectionModel} from './list_selection_model.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 class TextSearchState {
   constructor() {

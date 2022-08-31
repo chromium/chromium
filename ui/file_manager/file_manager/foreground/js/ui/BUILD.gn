@@ -44,9 +44,15 @@ group("js_modules") {
     ":files_confirm_dialog",
     ":files_menu",
     ":gear_menu",
+    ":grid",
     ":import_crostini_image_dialog",
     ":install_linux_package_dialog",
+    ":list",
     ":list_container",
+    ":list_item",
+    ":list_selection_controller",
+    ":list_selection_model",
+    ":list_single_selection_model",
     ":multi_menu",
     ":multi_menu_button",
     ":progress_center_panel",
@@ -168,10 +174,10 @@ js_library("commandbutton") {
 js_library("default_task_dialog") {
   deps = [
     ":file_manager_dialog_base",
+    ":list",
+    ":list_single_selection_model",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
   ]
 }
 
@@ -241,7 +247,7 @@ js_unittest("directory_tree_unittest") {
 }
 
 js_library("drag_selector") {
-  deps = [ "//ui/webui/resources/js/cr/ui:list.m" ]
+  deps = [ ":list" ]
   externs_list = [ "//ui/file_manager/file_manager/externs/drag_target.js" ]
 }
 
@@ -251,6 +257,10 @@ js_library("file_grid") {
     ":drag_selector",
     ":file_table_list",
     ":file_tap_handler",
+    ":grid",
+    ":list",
+    ":list_item",
+    ":list_selection_model",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:importer_common",
@@ -264,10 +274,6 @@ js_library("file_grid") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:grid.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
   ]
 }
 
@@ -275,6 +281,7 @@ js_unittest("file_grid_unittest") {
   deps = [
     ":a11y_announce",
     ":file_grid",
+    ":list_selection_model",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -285,14 +292,13 @@ js_unittest("file_grid_unittest") {
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
   ]
 }
 
 js_library("file_list_selection_model") {
   deps = [
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+    ":list_selection_model",
+    ":list_single_selection_model",
   ]
 }
 
@@ -417,6 +423,10 @@ js_library("file_table_list") {
     ":drag_selector",
     ":file_list_selection_model",
     ":file_tap_handler",
+    ":list",
+    ":list_item",
+    ":list_selection_controller",
+    ":list_selection_model",
     "table:table",
     "table:table_list",
     "//ui/file_manager/file_manager/common/js:file_type",
@@ -427,10 +437,6 @@ js_library("file_table_list") {
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_controller.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
   ]
 }
 
@@ -499,6 +505,24 @@ js_library("gear_menu") {
   ]
 }
 
+js_library("grid") {
+  deps = [
+    ":list",
+    ":list_item",
+    ":list_selection_controller",
+    ":list_selection_model",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_unittest("grid_unittest") {
+  deps = [
+    ":grid",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
+  ]
+}
+
 js_library("install_linux_package_dialog") {
   deps = [
     ":file_manager_dialog_base",
@@ -523,20 +547,89 @@ js_library("import_crostini_image_dialog") {
   ]
 }
 
+js_library("list") {
+  deps = [
+    ":list_item",
+    ":list_selection_controller",
+    ":list_selection_model",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_unittest("list_unittest") {
+  deps = [
+    ":list",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
 js_library("list_container") {
   deps = [
     ":file_grid",
     ":file_table",
+    ":list",
+    ":list_item",
+    ":list_selection_model",
+    ":list_single_selection_model",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+  ]
+}
+
+js_library("list_item") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("list_selection_controller") {
+  deps = [
+    ":list_selection_model",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("list_selection_model") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+}
+
+js_library("list_selection_model_test_util") {
+  deps = [
+    ":list_selection_model",
+    ":list_single_selection_model",
+    "//chrome/test/data/webui:chai_assert",
+  ]
+}
+
+js_unittest("list_selection_model_unittest") {
+  deps = [
+    ":list_selection_model",
+    ":list_selection_model_test_util",
+    "//chrome/test/data/webui:chai_assert",
+  ]
+}
+
+js_library("list_single_selection_model") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+}
+
+js_library("list_single_selection_model_unittest") {
+  deps = [
+    ":list_selection_model_test_util",
+    ":list_single_selection_model",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
@@ -600,6 +693,7 @@ js_library("providers_menu") {
 js_library("search_box") {
   deps = [
     ":autocomplete_list",
+    ":list_item",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
@@ -607,7 +701,6 @@ js_library("search_box") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
   ]
   externs_list = [ "//ui/file_manager/file_manager/externs/search_item.js" ]
 }
@@ -634,11 +727,11 @@ js_library("tree") {
 
 js_library("autocomplete_list") {
   deps = [
+    ":list",
+    ":list_item",
+    ":list_single_selection_model",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
     "//ui/webui/resources/js/cr/ui:position_util",
   ]
 }
@@ -653,7 +746,12 @@ js_test_type_check("js_test_type_check") {
     ":file_table_list_unittest",
     ":file_table_unittest",
     ":file_tap_handler_unittest",
+    ":grid_unittest",
     ":install_linux_package_dialog_unittest",
+    ":list_selection_model_test_util",
+    ":list_selection_model_unittest",
+    ":list_single_selection_model_unittest",
+    ":list_unittest",
     ":multi_menu_unittest",
     ":splitter_unittest",
   ]

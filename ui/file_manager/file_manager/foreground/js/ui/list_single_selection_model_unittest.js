@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
-import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
+import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {adjust} from './list_selection_model_test_util.js';
 // clang-format on
@@ -108,14 +108,3 @@ export function testLeadIndex2() {
   assertEquals(-1, sm.anchorIndex, 'anchor');
   assertArrayEquals([], sm.selectedIndexes);
 }
-
-Object.assign(window, {
-  testAdjust1,
-  testAdjust2,
-  testAdjust3,
-  testAdjust4,
-  testAdjust5,
-  testSelectedIndex1,
-  testLeadIndex1,
-  testLeadIndex2,
-});

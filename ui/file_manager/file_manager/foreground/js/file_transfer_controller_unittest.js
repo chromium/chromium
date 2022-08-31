@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
@@ -32,6 +31,7 @@ import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileTable} from './ui/file_table.js';
 import {ListContainer} from './ui/list_container.js';
+import {ListSelectionModel} from './ui/list_selection_model.js';
 
 /** @type {!ListContainer} */
 let listContainer;

@@ -5,7 +5,6 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -13,6 +12,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeInfoList} from '../../externs/volume_info_list.js';
 import {ExternallyUnmountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
+import {ArrayDataModel} from './array_data_model.js';
 import {util} from './util.js';
 import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
 

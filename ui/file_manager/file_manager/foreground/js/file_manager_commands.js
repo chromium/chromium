@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
 import {getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
@@ -34,6 +33,7 @@ import {HoldingSpaceUtil} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
+import {List} from './ui/list.js';
 
 
 /**

@@ -25,6 +25,7 @@ group("js_modules") {
   deps = [
     ":api",
     ":app_util",
+    ":array_data_model",
     ":async_util",
     ":dialog_type",
     ":error_counter",
@@ -56,6 +57,7 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":api",
     ":app_util",
+    ":array_data_model",
     ":async_util",
     ":error_counter",
     ":file_operation_common",
@@ -120,6 +122,20 @@ js_library("app_util") {
   ]
   externs_list =
       [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
+}
+
+js_library("array_data_model") {
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+}
+
+js_unittest("array_data_model_unittest") {
+  deps = [
+    ":array_data_model",
+    "//chrome/test/data/webui:chai_assert",
+  ]
 }
 
 js_library("async_util") {
@@ -195,6 +211,7 @@ js_library("file_operation_common") {
 
 js_library("filtered_volume_manager") {
   deps = [
+    ":array_data_model",
     ":util",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -206,7 +223,6 @@ js_library("filtered_volume_manager") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
   ]
 }
 
@@ -405,6 +421,7 @@ js_library("icon_util") {
 
 js_test_type_check("js_test_type_check") {
   deps = [
+    ":array_data_model_unittest",
     ":file_type_unittest",
     ":files_app_entry_types_unittest",
     ":filtered_volume_manager_unittest",

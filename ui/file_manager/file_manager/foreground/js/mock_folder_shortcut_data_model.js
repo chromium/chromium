@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-
+import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {MockEntry} from '../../common/js/mock_entry.js';
 
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';

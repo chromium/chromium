@@ -4,12 +4,11 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
@@ -83,6 +82,7 @@ import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 import {FileTable} from './ui/file_table.js';
+import {List} from './ui/list.js';
 
 /**
  * FileManager constructor.

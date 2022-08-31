@@ -7,8 +7,9 @@
  */
 
 import {getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+
+import {List} from '../list.js';
+import {ListItem} from '../list_item.js';
 
 import {Table} from './table.js';
 

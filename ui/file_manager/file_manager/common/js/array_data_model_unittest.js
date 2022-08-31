@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
+import {ArrayDataModel} from './array_data_model.js';
+
+import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 function testSlice() {
@@ -102,12 +103,3 @@ function testReplaceItem() {
   assertEquals(null, permutation);
   assertEquals(1, changeIndex);
 }
-
-Object.assign(window, {
-  testSlice,
-  testPush,
-  testSplice,
-  testPermutation,
-  testUpdateIndexes,
-  testReplaceItem,
-});

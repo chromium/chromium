@@ -5,8 +5,6 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
@@ -29,6 +27,8 @@ import {FileListModel} from './file_list_model.js';
 import {FileWatcher} from './file_watcher.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
+import {ListSelectionModel} from './ui/list_selection_model.js';
+import {ListSingleSelectionModel} from './ui/list_single_selection_model.js';
 
 // If directory files changes too often, don't rescan directory more than once
 // per specified interval

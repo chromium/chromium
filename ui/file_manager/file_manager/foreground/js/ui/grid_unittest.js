@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-import {Grid} from 'chrome://resources/js/cr/ui/grid.m.js';
+import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
-import {assertEquals} from '../../../chai_assert.js';
+import {Grid} from './grid.js';
+
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 /**
@@ -88,7 +89,3 @@ function testGetColumnCount() {
   // Can not fit two columns due to bigger horizontal padding.
   assertEquals(1, columns);
 }
-
-Object.assign(window, {
-  testGetColumnCount,
-});
