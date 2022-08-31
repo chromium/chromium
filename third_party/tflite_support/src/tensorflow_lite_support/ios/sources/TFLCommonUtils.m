@@ -16,16 +16,26 @@
 #import "tensorflow_lite_support/ios/sources/TFLCommon.h"
 
 /** Error domain of TensorFlow Lite Support related errors. */
-static NSString *const TFLSupportTaskErrorDomain = @"org.tensorflow.lite.tasks";
+NSString* const TFLSupportTaskErrorDomain = @"org.tensorflow.lite.tasks";
 
 @implementation TFLCommonUtils
 
 + (void)createCustomError:(NSError**)error
-                 withCode:(NSInteger)code
+                 withCode:(NSUInteger)code
+              description:(NSString*)description {
+  [TFLCommonUtils createCustomError:error
+                         withDomain:TFLSupportTaskErrorDomain
+                               code:code
+                        description:description];
+}
+
++ (void)createCustomError:(NSError**)error
+               withDomain:(NSString*)domain
+                     code:(NSUInteger)code
               description:(NSString*)description {
   if (error) {
     *error =
-        [NSError errorWithDomain:TFLSupportTaskErrorDomain
+        [NSError errorWithDomain:domain
                             code:code
                         userInfo:@{NSLocalizedDescriptionKey : description}];
   }
@@ -37,9 +47,9 @@ static NSString *const TFLSupportTaskErrorDomain = @"org.tensorflow.lite.tasks";
   }
   NSString* description = [NSString stringWithCString:supportError->message
                                              encoding:NSUTF8StringEncoding];
-  [self createCustomError:error
-                 withCode:supportError->code
-              description:description];
+  [TFLCommonUtils createCustomError:error
+                           withCode:supportError->code
+                        description:description];
   return NO;
 }
 

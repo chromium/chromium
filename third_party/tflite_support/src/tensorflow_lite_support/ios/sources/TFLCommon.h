@@ -193,11 +193,22 @@ typedef NS_ENUM(NSUInteger, TFLSupportErrorCode) {
    * E.g.: rotate RGBA buffer to Grayscale buffer by 90 degrees.
    */
   TFLSupportErrorCodeImageProcessingInvalidArgumentError,
+
   /**
    * Image processing operation failures.
    * E.g. libyuv rotation failed for an unknown reason.
    */
   TFLSupportErrorCodeImageProcessingBackendError,
+
+  /**
+   * The first error code in TFLSupportErrorCode (for internal use only).
+   */
+  TFLErrorCodeFirst = TFLSupportErrorCodeUnspecifiedError,
+
+  /**
+   * The last error code in TFLSupportErrorCode (for internal use only).
+   */
+  TFLErrorCodeLast = TFLSupportErrorCodeImageProcessingBackendError,
 
   /** kNotFound indicates some requested entity (such as a file or directory)
      was not found. */

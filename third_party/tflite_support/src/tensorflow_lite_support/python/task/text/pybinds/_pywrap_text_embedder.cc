@@ -16,7 +16,7 @@ limitations under the License.
 #include "pybind11/pybind11.h"
 #include "pybind11_protobuf/native_proto_caster.h"  // from @pybind11_protobuf
 #include "tensorflow_lite_support/cc/task/text/text_embedder.h"
-#include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
+#include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 #include "tensorflow_lite_support/python/task/core/pybinds/task_utils.h"
 
 namespace tflite {
@@ -45,7 +45,7 @@ PYBIND11_MODULE(_pywrap_text_embedder, m) {
             options.set_allocated_base_options(cpp_base_options.release());
             options.add_embedding_options()->CopyFrom(embedding_options);
             auto embedder = TextEmbedder::CreateFromOptions(
-                options, CreateQACustomOpResolver());
+                options, CreateTextOpResolver());
             return core::get_value(embedder);
           })
       .def("embed",

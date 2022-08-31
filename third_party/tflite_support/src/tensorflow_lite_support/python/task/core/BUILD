@@ -11,3 +11,12 @@ py_library(
         "optional_dependencies.py",
     ],
 )
+
+py_library(
+    name = "base_options",
+    srcs = ["base_options.py"],
+    deps = [
+        ":optional_dependencies",
+        "//tensorflow_lite_support/python/task/core/proto:base_options_py_pb2",
+    ],
+)

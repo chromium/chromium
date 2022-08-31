@@ -21,7 +21,8 @@ namespace audio {
 
 tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
     const std::string& wav_file_path,
-    int buffer_size,
+    uint32_t* buffer_size,
+    uint32_t* offset,
     std::vector<float>* wav_data) {
   std::string contents = ReadFile(wav_file_path);
 
@@ -30,11 +31,11 @@ tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
   uint32_t decoded_sample_rate;
 
   RETURN_IF_ERROR(DecodeLin16WaveAsFloatVector(
-      contents, wav_data, &decoded_sample_count, &decoded_channel_count,
+      contents, wav_data, offset, &decoded_sample_count, &decoded_channel_count,
       &decoded_sample_rate));
 
-  if (decoded_sample_count > buffer_size) {
-    decoded_sample_count = buffer_size;
+  if (decoded_sample_count > *buffer_size) {
+    decoded_sample_count = *buffer_size;
   }
 
   return AudioBuffer(

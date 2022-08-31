@@ -330,82 +330,95 @@ NLClassifierProtoOptions CreateProtoOptionsFromTensorIndex(
 std::vector<ProtoOptionsTestParam> ClassifyParams() {
   return {
       {
-          .description = "FindTensorByNameQuantizeOutputUseTensorLabel",
-          .options = CreateProtoOptionsFromTensorName(
+          /* description= */ "FindTensorByNameQuantizeOutputUseTensorLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorName(
               kDefaultInputTensorName, kOutputQuantizedTensorName,
               kOutputLabelTensorName, GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByNameQuantizeOutputUseIndexLabel",
-          .options = CreateProtoOptionsFromTensorName(
-              kDefaultInputTensorName, kOutputQuantizedTensorName,
-              kDefaultOutputLabelTensorName,
-              GetFullPath(kTestModelPath).c_str()),
+          /* description= */ "FindTensorByNameQuantizeOutputUseIndexLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorName(kDefaultInputTensorName,
+                                           kOutputQuantizedTensorName,
+                                           kDefaultOutputLabelTensorName,
+                                           GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByNameDequantizeOutputUseTensorLabel",
-          .options = CreateProtoOptionsFromTensorName(
+          /* description= */ "FindTensorByNameDequantizeOutputUseTensorLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorName(
               kDefaultInputTensorName, kOutputDequantizedTensorName,
               kOutputLabelTensorName, GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByNameDequantizeOutputUseIndexLabel",
-          .options = CreateProtoOptionsFromTensorName(
-              kDefaultInputTensorName, kOutputDequantizedTensorName,
-              kDefaultOutputLabelTensorName,
-              GetFullPath(kTestModelPath).c_str()),
+          /* description= */ "FindTensorByNameDequantizeOutputUseIndexLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorName(kDefaultInputTensorName,
+                                           kOutputDequantizedTensorName,
+                                           kDefaultOutputLabelTensorName,
+                                           GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description =
-              "FindTensorByNameDequantizeFloat64OutputUseTensorLabel",
-          .options = CreateProtoOptionsFromTensorName(
+          /* description= */
+          "FindTensorByNameDequantizeFloat64OutputUseTensorLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorName(
               kDefaultInputTensorName, kOutputDequantizedTensorFloat64Name,
               kOutputLabelTensorName, GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByNameDequantizeFloat64OutputUseIndexLabel",
-          .options = CreateProtoOptionsFromTensorName(
-              kDefaultInputTensorName, kOutputDequantizedTensorFloat64Name,
-              kDefaultOutputLabelTensorName,
-              GetFullPath(kTestModelPath).c_str()),
+          /* description= */
+          "FindTensorByNameDequantizeFloat64OutputUseIndexLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorName(kDefaultInputTensorName,
+                                           kOutputDequantizedTensorFloat64Name,
+                                           kDefaultOutputLabelTensorName,
+                                           GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByIndexQuantizeOutputUseTensorLabel",
-          .options = CreateProtoOptionsFromTensorIndex(
+          /* description= */ "FindTensorByIndexQuantizeOutputUseTensorLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorIndex(
               kDefaultInputTensorIndex, kOutputQuantizedTensorIndex,
               kOutputLabelTensorIndex, GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByIndexQuantizeOutputUseIndexLabel",
-          .options = CreateProtoOptionsFromTensorIndex(
+          /* description= */ "FindTensorByIndexQuantizeOutputUseIndexLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorIndex(
               kDefaultInputTensorIndex, kOutputQuantizedTensorIndex,
               kDefaultOutputLabelTensorIndex,
               GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByIndexDequantizeOutputUseTensorLabel",
-          .options = CreateProtoOptionsFromTensorIndex(
+          /* description= */ "FindTensorByIndexDequantizeOutputUseTensorLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorIndex(
               kDefaultInputTensorIndex, kOutputDequantizedTensorIndex,
               kOutputLabelTensorIndex, GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description = "FindTensorByIndexDequantizeOutputUseIndexLabel",
-          .options = CreateProtoOptionsFromTensorIndex(
+          /* description= */ "FindTensorByIndexDequantizeOutputUseIndexLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorIndex(
               kDefaultInputTensorIndex, kOutputDequantizedTensorIndex,
               kDefaultOutputLabelTensorIndex,
               GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description =
-              "FindTensorByIndexDequantizeFloat64OutputUseTensorLabel",
-          .options = CreateProtoOptionsFromTensorIndex(
+          /* description= */
+          "FindTensorByIndexDequantizeFloat64OutputUseTensorLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorIndex(
               kDefaultInputTensorIndex, kOutputDequantizedTensorFloat64Index,
               kOutputLabelTensorIndex, GetFullPath(kTestModelPath).c_str()),
       },
       {
-          .description =
-              "FindTensorByIndexDequantizeFloat64OutputUseIndexLabel",
-          .options = CreateProtoOptionsFromTensorIndex(
+          /* description= */
+          "FindTensorByIndexDequantizeFloat64OutputUseIndexLabel",
+          /* options= */
+          CreateProtoOptionsFromTensorIndex(
               kDefaultInputTensorIndex, kOutputDequantizedTensorFloat64Index,
               kDefaultOutputLabelTensorIndex,
               GetFullPath(kTestModelPath).c_str()),

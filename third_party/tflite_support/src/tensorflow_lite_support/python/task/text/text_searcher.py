@@ -16,21 +16,27 @@
 import dataclasses
 from typing import Optional
 
-from tensorflow_lite_support.python.task.core.proto import base_options_pb2
+from tensorflow_lite_support.python.task.core import base_options as base_options_module
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import search_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import search_result_pb2
 from tensorflow_lite_support.python.task.text.pybinds import _pywrap_text_searcher
 
 _CppTextSearcher = _pywrap_text_searcher.TextSearcher
-_BaseOptions = base_options_pb2.BaseOptions
+_BaseOptions = base_options_module.BaseOptions
 _EmbeddingOptions = embedding_options_pb2.EmbeddingOptions
 _SearchOptions = search_options_pb2.SearchOptions
 
 
 @dataclasses.dataclass
 class TextSearcherOptions:
-  """Options for the text search task."""
+  """Options for the text search task.
+
+  Attributes:
+    base_options: Base options for the text searcher task.
+    embedding_options: Embedding options for the text searcher task.
+    search_options: Search options for the text searcher task.
+  """
   base_options: _BaseOptions
   embedding_options: _EmbeddingOptions = _EmbeddingOptions()
   search_options: _SearchOptions = _SearchOptions()
@@ -90,8 +96,8 @@ class TextSearcher(object):
       RuntimeError: If other types of error occurred.
     """
     searcher = _CppTextSearcher.create_from_options(
-        options.base_options, options.embedding_options.to_pb2(),
-        options.search_options)
+        options.base_options.to_pb2(), options.embedding_options.to_pb2(),
+        options.search_options.to_pb2())
     return cls(options, searcher)
 
   def search(self, text: str) -> search_result_pb2.SearchResult:
@@ -110,7 +116,8 @@ class TextSearcher(object):
       ValueError: If any of the input arguments is invalid.
       RuntimeError: If failed to perform nearest-neighbor search.
     """
-    return self._searcher.search(text)
+    search_result = self._searcher.search(text)
+    return search_result_pb2.SearchResult.create_from_pb2(search_result)
 
   def get_user_info(self) -> str:
     """Gets the user info stored in the index file.

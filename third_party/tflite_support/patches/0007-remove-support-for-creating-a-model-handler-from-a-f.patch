@@ -1,30 +1,17 @@
-From 9488411c0779c22ba93fb03994e90cda25b65bd0 Mon Sep 17 00:00:00 2001
-From: Robert Ogden <robertogden@chromium.org>
-Date: Wed, 25 May 2022 11:03:30 -0700
-Subject: [PATCH 7/9] remove support for creating a model handler from a file
+From 08854a00c145a84d50e010fc6a949fd4d47c3acb Mon Sep 17 00:00:00 2001
+From: Jun Zou <junzou@chromium.org>
+Date: Tue, 30 Aug 2022 18:12:00 +0000
+Subject: [PATCH 07/12] remove support for creating a model handler from a file
 
 ---
- third_party/tflite_support/README.chromium    |   1 +
- .../cc/task/core/external_file_handler.cc     | 137 +-----------------
- .../cc/task/core/external_file_handler.h      |  20 ---
- .../cc/task/core/tflite_engine.cc             |   2 -
- .../cc/task/core/tflite_engine.h              |   2 -
- 5 files changed, 8 insertions(+), 154 deletions(-)
+ .../cc/task/core/external_file_handler.cc     | 136 +-----------------
+ .../cc/task/core/external_file_handler.h      |  21 ---
+ .../cc/task/core/tflite_engine.cc             |   4 -
+ .../cc/task/core/tflite_engine.h              |   4 -
+ 4 files changed, 6 insertions(+), 159 deletions(-)
 
-diff --git a/third_party/tflite_support/README.chromium b/third_party/tflite_support/README.chromium
-index 3d5f5dbf2edf9..c1da2b4e73efe 100644
---- a/third_party/tflite_support/README.chromium
-+++ b/third_party/tflite_support/README.chromium
-@@ -37,6 +37,7 @@ is a no-op in chromium builds and upsets clang.
- Update Process (internal: http://shortn/_nwz8liqimy):
- 1) Run these commands:
- ```
-+
- pushd third_party/tflite_support/
- rm -rf src/
- git clone https://github.com/tensorflow/tflite-support/
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-index 5e17e14dc5f7a..9c4cc2009baea 100644
+index 5e17e14dc5f7a..09d29f7b83eb7 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
 @@ -15,12 +15,6 @@ limitations under the License.
@@ -59,7 +46,7 @@ index 5e17e14dc5f7a..9c4cc2009baea 100644
  }  // namespace
  
  /* static */
-@@ -71,123 +53,18 @@ absl::Status ExternalFileHandler::MapExternalFile() {
+@@ -71,123 +53,17 @@ absl::Status ExternalFileHandler::MapExternalFile() {
    if (!external_file_.file_content().empty()) {
      return absl::OkStatus();
    }
@@ -164,7 +151,6 @@ index 5e17e14dc5f7a..9c4cc2009baea 100644
 +      StatusCode::kInvalidArgument,
 +      "ExternalFile must specify 'file_content' in Chromium.",
 +      TfLiteSupportStatus::kInvalidArgumentError);
-+
  }
  
  absl::string_view ExternalFileHandler::GetFileContent() {
@@ -175,7 +161,7 @@ index 5e17e14dc5f7a..9c4cc2009baea 100644
 -                                 buffer_offset_ - buffer_aligned_offset_,
 -                             buffer_size_);
 -  }
-+ return external_file_.file_content();
++  return external_file_.file_content();
  }
  
 -ExternalFileHandler::~ExternalFileHandler() {
@@ -191,13 +177,14 @@ index 5e17e14dc5f7a..9c4cc2009baea 100644
  }  // namespace core
  }  // namespace task
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
-index e8b6831c6ad69..a7daa175f77f5 100644
+index e8b6831c6ad69..08c3111b4b0ec 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
-@@ -65,26 +65,6 @@ class ExternalFileHandler {
+@@ -64,27 +64,6 @@ class ExternalFileHandler {
+ 
    // Reference to the input ExternalFile.
    const ExternalFile& external_file_;
- 
+-
 -  // The file descriptor of the ExternalFile if provided by path, as it is
 -  // opened and owned by this class. Set to -1 otherwise.
 -  int owned_fd_{-1};
@@ -222,31 +209,35 @@ index e8b6831c6ad69..a7daa175f77f5 100644
  
  }  // namespace core
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-index e0f69cd1c80ac..5999090cab973 100644
+index 0ec88d5bd1846..5999090cab973 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-@@ -15,8 +15,6 @@ limitations under the License.
+@@ -15,10 +15,6 @@ limitations under the License.
  
  #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
  
+-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
 -#include <unistd.h>
+-#endif
 -
  #include <memory>
  
  #include "absl/strings/match.h"  // from @com_google_absl
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
-index 9b44c6e5c022a..53dabdc4841d7 100644
+index e4eed604d676e..53dabdc4841d7 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
-@@ -16,8 +16,6 @@ limitations under the License.
- #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_TFLITE_ENGINE_H_
- #define TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_TFLITE_ENGINE_H_
+@@ -33,10 +33,6 @@ limitations under the License.
+ #include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
+ #include "tensorflow_lite_support/metadata/cc/metadata_extractor.h"
  
+-#ifdef ABSL_HAVE_MMAP
 -#include <sys/mman.h>
+-#endif
 -
- #include <memory>
- 
- #include "absl/memory/memory.h"  // from @com_google_absl
+ namespace tflite {
+ namespace task {
+ namespace core {
 -- 
-2.36.1.124.g0e6072fb45-goog
+2.37.2.672.g94769d06f0-goog
 

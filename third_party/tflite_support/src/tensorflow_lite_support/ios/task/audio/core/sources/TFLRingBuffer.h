@@ -47,12 +47,21 @@ NS_ASSUME_NONNULL_BEGIN
  * longer than ring buffer's capacity, samples with lower indices in the array
  * will be ignored.
  *
+ * @param data A pointer to a float data array whose values are to be loaded
+ * into the ring buffer.
+ * @param size Size of the float data array pointed to by param `data`.
+ * @param offset Offset in array pointed to by `data` from which elements are to
+ * be loaded into the ring buffer.
+ * @param size Number of elements to be copied into the ring buffer, starting
+ * from `offset`.
+ *
  * @return Boolean indicating success or failure of loading operation.
  */
-- (BOOL)loadBuffer:(TFLFloatBuffer*)sourceBuffer
-            offset:(NSUInteger)offset
-              size:(NSUInteger)size
-             error:(NSError**)error;
+- (BOOL)loadFloatData:(float*)data
+             dataSize:(NSUInteger)dataSize
+               offset:(NSUInteger)offset
+                 size:(NSUInteger)size
+                error:(NSError**)error;
 
 /**
  * Returns a `TFLFloatBuffer` with a copy of size number of the ring buffer

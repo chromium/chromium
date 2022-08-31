@@ -16,9 +16,8 @@ limitations under the License.
 #include "pybind11/pybind11.h"
 #include "pybind11_protobuf/native_proto_caster.h"  // from @pybind11_protobuf
 #include "tensorflow_lite_support/cc/task/text/text_searcher.h"
-#include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
+#include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 #include "tensorflow_lite_support/python/task/core/pybinds/task_utils.h"
-#include "tensorflow_lite_support/python/task/processor/proto/search_options.pb.h"
 
 namespace tflite {
 namespace task {
@@ -27,7 +26,6 @@ namespace text {
 namespace {
 namespace py = ::pybind11;
 using PythonBaseOptions = ::tflite::python::task::core::BaseOptions;
-using PythonSearchOptions = ::tflite::python::task::processor::SearchOptions;
 using CppBaseOptions = ::tflite::task::core::BaseOptions;
 using CppEmbeddingOptions = ::tflite::task::processor::EmbeddingOptions;
 using CppSearchOptions = ::tflite::task::processor::SearchOptions;
@@ -43,7 +41,7 @@ PYBIND11_MODULE(_pywrap_text_searcher, m) {
           "create_from_options",
           [](const PythonBaseOptions& base_options,
              const processor::EmbeddingOptions& embedding_options,
-             const PythonSearchOptions& search_options) {
+             const processor::SearchOptions& search_options) {
             TextSearcherOptions options;
             auto cpp_base_options =
                 core::convert_to_cpp_base_options(base_options);
@@ -57,21 +55,11 @@ PYBIND11_MODULE(_pywrap_text_searcher, m) {
 
             std::unique_ptr<CppSearchOptions> cpp_search_options =
                 std::make_unique<CppSearchOptions>();
-            if (search_options.has_index_file_content()) {
-              cpp_search_options->mutable_index_file()->set_file_content(
-                  search_options.index_file_content());
-            }
-            if (search_options.has_index_file_name()) {
-              cpp_search_options->mutable_index_file()->set_file_name(
-                  search_options.index_file_name());
-            }
-            if (search_options.has_max_results()) {
-              cpp_search_options->set_max_results(search_options.max_results());
-            }
-
+            cpp_search_options->CopyFrom(search_options);
             options.set_allocated_search_options(cpp_search_options.release());
+
             auto searcher = TextSearcher::CreateFromOptions(
-                options, CreateQACustomOpResolver());
+                options, CreateTextOpResolver());
             return core::get_value(searcher);
           })
       .def("search",

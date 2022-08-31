@@ -24,17 +24,19 @@ class TensorImage(object):
 
   def __init__(self,
                image_data: image_utils.ImageData,
-               is_from_file: bool = False) -> None:
+               is_from_numpy_array: bool = True) -> None:
     """Initializes the `TensorImage` object.
 
     Args:
       image_data: image_utils.ImageData, contains raw image data, width, height
         and channels info.
-      is_from_file: boolean, whether `image_data` is loaded from the image file,
-        if True, need to free the storage of ImageData in the destructor.
+      is_from_numpy_array: boolean, whether `image_data` is loaded from
+        numpy array. if False, it means that `image_data` is loaded from
+        stbi_load** function in C++ and need to free the storage of ImageData in
+        the destructor.
     """
     self._image_data = image_data
-    self._is_from_file = is_from_file
+    self._is_from_numpy_array = is_from_numpy_array
 
     # Gets the FrameBuffer object.
 
@@ -49,12 +51,10 @@ class TensorImage(object):
       `TensorImage` object.
 
     Raises:
-      status.StatusNotOk if the image file can't be decoded. Need to import
-        the module to catch this error: `from pybind11_abseil import status`,
-        see https://github.com/pybind/pybind11_abseil#abslstatusor.
+      RuntimeError if the image file can't be decoded.
     """
-    image_data = image_utils.DecodeImageFromFile(file_name)
-    return cls(image_data, is_from_file=True)
+    image_data = image_utils.decode_image_from_file(file_name)
+    return cls(image_data, is_from_numpy_array=False)
 
   @classmethod
   def create_from_array(cls, array: np.ndarray) -> "TensorImage":
@@ -78,13 +78,30 @@ class TensorImage(object):
     image_data = image_utils.ImageData(np.squeeze(array))
     return cls(image_data)
 
+  @classmethod
+  def create_from_buffer(cls, buffer: str) -> "TensorImage":
+    """Creates `TensorImage` object from the binary buffer.
+
+    Args:
+      buffer: Binary memory buffer.
+
+    Returns:
+      `TensorImage` object.
+
+    Raises:
+      RuntimeError if the binary buffer can't be decoded into `TensorImage`
+        object.
+    """
+    image_data = image_utils.decode_image_from_buffer(buffer, len(buffer))
+    return cls(image_data, is_from_numpy_array=False)
+
   def __del__(self) -> None:
     """Destructor to free the storage of ImageData if loaded from the file."""
-    if self._is_from_file and image_utils:
+    if not self._is_from_numpy_array and image_utils:
       # __del__ can be executed during interpreter shutdown, therefore
       # image_utils may not be available.
       # See https://docs.python.org/3/reference/datamodel.html#object.__del__
-      image_utils.ImageDataFree(self._image_data)
+      image_utils.image_data_free(self._image_data)
 
   @property
   def buffer(self) -> np.ndarray:

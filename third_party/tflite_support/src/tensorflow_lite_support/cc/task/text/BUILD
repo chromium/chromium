@@ -138,19 +138,21 @@ cc_library_with_tflite(
     ],
 )
 
-cc_library(
+cc_library_with_tflite(
     name = "clu_annotator",
     hdrs = [
         "clu_annotator.h",
     ],
-    deps = [
+    tflite_deps = [
         "//tensorflow_lite_support/cc/task/core:base_task_api",
         "//tensorflow_lite_support/cc/task/core:tflite_engine",
+    ],
+    deps = [
         "//tensorflow_lite_support/cc/task/text/proto:clu_proto_inc",
     ],
 )
 
-cc_library(
+cc_library_with_tflite(
     name = "bert_clu_annotator",
     srcs = [
         "bert_clu_annotator.cc",
@@ -158,12 +160,14 @@ cc_library(
     hdrs = [
         "bert_clu_annotator.h",
     ],
-    deps = [
+    tflite_deps = [
         ":clu_annotator",
-        "//tensorflow_lite_support/cc/port:status_macros",
         "//tensorflow_lite_support/cc/task/core:task_api_factory",
-        "//tensorflow_lite_support/cc/task/core:task_utils",
         "//tensorflow_lite_support/cc/task/text/clu_lib:tflite_modules",
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/task/core:task_utils",
         "//tensorflow_lite_support/cc/task/text/proto:bert_clu_annotator_options_proto_inc",
         "//tensorflow_lite_support/cc/text/tokenizers:bert_tokenizer",
         "//tensorflow_lite_support/cc/text/tokenizers:tokenizer_utils",

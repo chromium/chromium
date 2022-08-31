@@ -16,7 +16,7 @@
 import dataclasses
 from typing import Optional
 
-from tensorflow_lite_support.python.task.core.proto import base_options_pb2
+from tensorflow_lite_support.python.task.core import base_options as base_options_module
 from tensorflow_lite_support.python.task.processor.proto import bounding_box_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_pb2
@@ -25,13 +25,18 @@ from tensorflow_lite_support.python.task.vision.core.pybinds import image_utils
 from tensorflow_lite_support.python.task.vision.pybinds import _pywrap_image_embedder
 
 _CppImageEmbedder = _pywrap_image_embedder.ImageEmbedder
-_BaseOptions = base_options_pb2.BaseOptions
+_BaseOptions = base_options_module.BaseOptions
 _EmbeddingOptions = embedding_options_pb2.EmbeddingOptions
 
 
 @dataclasses.dataclass
 class ImageEmbedderOptions:
-  """Options for the image embedder task."""
+  """Options for the image embedder task.
+
+  Attributes:
+    base_options: Base options for the image embedder task.
+    embedding_options: Embedding options for the image embedder task.
+  """
   base_options: _BaseOptions
   embedding_options: _EmbeddingOptions = _EmbeddingOptions()
 
@@ -82,7 +87,7 @@ class ImageEmbedder(object):
       RuntimeError: If other types of error occurred.
     """
     embedder = _CppImageEmbedder.create_from_options(
-        options.base_options, options.embedding_options.to_pb2())
+        options.base_options.to_pb2(), options.embedding_options.to_pb2())
     return cls(options, embedder)
 
   def embed(

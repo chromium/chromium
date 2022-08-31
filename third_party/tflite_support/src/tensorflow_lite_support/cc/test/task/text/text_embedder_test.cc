@@ -25,8 +25,8 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
 #include "tensorflow_lite_support/cc/task/core/proto/base_options_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/embedding_options.pb.h"
+#include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 #include "tensorflow_lite_support/cc/test/test_utils.h"
-#include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
 
 namespace tflite {
 namespace task {
@@ -195,7 +195,7 @@ TEST(EmbedTest, SucceedsWithUniversalSentenceEncoder) {
   // No Embedding options means all head get a default option.
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       std::unique_ptr<TextEmbedder> text_embedder,
-      TextEmbedder::CreateFromOptions(options, CreateQACustomOpResolver()));
+      TextEmbedder::CreateFromOptions(options, CreateTextOpResolver()));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       auto result0,

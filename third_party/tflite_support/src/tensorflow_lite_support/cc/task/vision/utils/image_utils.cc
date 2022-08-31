@@ -38,11 +38,9 @@ namespace vision {
 
 using ::tflite::support::StatusOr;
 
-StatusOr<ImageData> DecodeImageFromFile(const std::string& file_name) {
-  ImageData image_data;
-  image_data.pixel_data = stbi_load(file_name.c_str(), &image_data.width,
-                                    &image_data.height, &image_data.channels,
-                                    /*desired_channels=*/0);
+namespace {
+
+absl::Status CheckImageData(const ImageData& image_data) {
   if (image_data.pixel_data == nullptr) {
     return absl::InternalError(absl::StrFormat(
         "An error occurred while decoding image: %s", stbi_failure_reason()));
@@ -55,6 +53,28 @@ StatusOr<ImageData> DecodeImageFromFile(const std::string& file_name) {
                         "(RGBA) channels, found %d",
                         image_data.channels));
   }
+  return absl::OkStatus();
+}
+
+}  // namespace
+
+StatusOr<ImageData> DecodeImageFromFile(const std::string& file_name) {
+  ImageData image_data;
+  image_data.pixel_data = stbi_load(file_name.c_str(), &image_data.width,
+                                    &image_data.height, &image_data.channels,
+                                    /*desired_channels=*/0);
+  RETURN_IF_ERROR(CheckImageData(image_data));
+  return image_data;
+}
+
+tflite::support::StatusOr<ImageData> DecodeImageFromBuffer(
+    unsigned char const* buffer,
+    int len) {
+  ImageData image_data;
+  image_data.pixel_data = stbi_load_from_memory(
+      buffer, len, &image_data.width, &image_data.height, &image_data.channels,
+      /*desired_channels=*/0);
+  RETURN_IF_ERROR(CheckImageData(image_data));
   return image_data;
 }
 

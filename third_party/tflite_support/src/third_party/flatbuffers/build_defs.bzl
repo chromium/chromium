@@ -279,6 +279,11 @@ def _gen_flatbuffer_srcs_impl(ctx):
     else:
         no_includes_statement = []
 
+    if ctx.attr.language_flag == "--python":
+        onefile_statement = ["--gen-onefile"]
+    else:
+        onefile_statement = []
+
     # Need to generate all files in a directory.
     if not outputs:
         outputs = [ctx.actions.declare_directory("{}_all".format(ctx.attr.name))]
@@ -314,6 +319,7 @@ def _gen_flatbuffer_srcs_impl(ctx):
                             "-I",
                             ctx.bin_dir.path,
                         ] + no_includes_statement +
+                        onefile_statement +
                         include_paths_cmd_line + [
                 "--no-union-value-namespacing",
                 "--gen-object-api",
@@ -441,6 +447,8 @@ def flatbuffer_py_library(
         no_includes = True,
         include_paths = include_paths,
     )
+
+    # TODO(b/235550563): Remove the concatnation rule with 2.0.6 update.
     concat_py_srcs = "{}_generated".format(name)
     _concat_flatbuffer_py_srcs(
         name = concat_py_srcs,

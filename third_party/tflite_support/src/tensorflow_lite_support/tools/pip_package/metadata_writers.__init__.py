@@ -20,7 +20,7 @@ supported by the task library, such as:
   * Image classification
   * Object detection
   * Image segmentation
-  * Natural language classification
+  * (Bert) Natural language classification
   * Audio classification
 
 It is provided as part of the `tflite-support` package:
@@ -34,6 +34,7 @@ tutorial](https://www.tensorflow.org/lite/convert/metadata_writer_tutorial).
 """
 
 from tensorflow_lite_support.metadata.python.metadata_writers import audio_classifier
+from tensorflow_lite_support.metadata.python.metadata_writers import bert_nl_classifier
 from tensorflow_lite_support.metadata.python.metadata_writers import image_classifier
 from tensorflow_lite_support.metadata.python.metadata_writers import image_segmenter
 from tensorflow_lite_support.metadata.python.metadata_writers import metadata_info

@@ -33,11 +33,10 @@ using ::tflite::task::ParseTextProtoOrDie;
 // If the proto definition changes, please also change this function.
 void ExpectApproximatelyEqual(const CluResponse& actual,
                               const CluResponse& expected) {
-  ASSERT_EQ(actual.noncategorical_slots_size(),
-            expected.noncategorical_slots_size());
-  for (int i = 0; i < actual.noncategorical_slots_size(); ++i) {
-    const auto& a = actual.noncategorical_slots(i);
-    const auto& b = expected.noncategorical_slots(i);
+  ASSERT_EQ(actual.mentioned_slots_size(), expected.mentioned_slots_size());
+  for (int i = 0; i < actual.mentioned_slots_size(); ++i) {
+    const auto& a = actual.mentioned_slots(i);
+    const auto& b = expected.mentioned_slots(i);
     EXPECT_THAT(a, EqualsProto(b));
   }
 }
@@ -61,9 +60,9 @@ TEST(SlotTaggingOutputTest, SlotModulePopulateResponseBasic) {
       reverse_utterance_list_to_encode, &response));
   ExpectApproximatelyEqual(
       response, ParseTextProtoOrDie<CluResponse>(R"pb(
-        noncategorical_slots {
+        mentioned_slots {
           slot: "time"
-          extraction { value: "4 pm" start: 8 end: 12 score: 0.7 }
+          mention { value: "4 pm" start: 8 end: 12 score: 0.7 }
         }
       )pb"));
 }
@@ -108,9 +107,9 @@ TEST(SlotTaggingOutputTest, SlotModulePopulateResponseTruncated) {
       reverse_utterance_list_to_encode, &response));
   ExpectApproximatelyEqual(
       response, ParseTextProtoOrDie<CluResponse>(R"pb(
-        noncategorical_slots {
+        mentioned_slots {
           slot: "time"
-          extraction: { value: "4" start: 8 end: 9 score: 0.6 }
+          mention: { value: "4" start: 8 end: 9 score: 0.6 }
         }
       )pb"));
 }
@@ -235,9 +234,9 @@ TEST(SlotTaggingOutputTest,
       reverse_utterance_list_to_encode, &response));
   ExpectApproximatelyEqual(
       response, ParseTextProtoOrDie<CluResponse>(R"pb(
-        noncategorical_slots {
+        mentioned_slots {
           slot: "time"
-          extraction: { value: "4 pm" start: 8 end: 12 score: 0.7 }
+          mention: { value: "4 pm" start: 8 end: 12 score: 0.7 }
         }
       )pb"));
 }

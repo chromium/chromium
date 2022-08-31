@@ -57,9 +57,30 @@ cc_test(
         "//tensorflow_lite_support/cc/task/core:task_utils",
         "//tensorflow_lite_support/cc/task/text:universal_sentence_encoder_qa",
         "//tensorflow_lite_support/cc/task/text/proto:retrieval_cc_proto",
+        "//tensorflow_lite_support/cc/task/text/utils:text_op_resolver",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "//tensorflow_lite_support/examples/task/text/desktop:universal_sentence_encoder_qa_op_resolver",
         "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+    ],
+)
+
+cc_test(
+    name = "bert_clu_annotator_test",
+    timeout = "long",
+    srcs = ["bert_clu_annotator_test.cc"],
+    data = [
+        "//tensorflow_lite_support/cc/test/testdata/task/text:bert_clu_annotator_with_metadata",
+    ],
+    tags = [
+        "optonly",  # The test takes long, and only run with -c opt.
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc/port:gtest_main",
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/port/default:status_matchers",
+        "//tensorflow_lite_support/cc/task/core:task_utils",
+        "//tensorflow_lite_support/cc/task/text:bert_clu_annotator",
+        "//tensorflow_lite_support/cc/task/text/proto:clu_proto_inc",
+        "//tensorflow_lite_support/cc/test:test_utils",
     ],
 )
 
@@ -76,8 +97,8 @@ cc_test(
         "//tensorflow_lite_support/cc/task/core/proto:base_options_proto_inc",
         "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_cc_proto",
         "//tensorflow_lite_support/cc/task/text:text_embedder",
+        "//tensorflow_lite_support/cc/task/text/utils:text_op_resolver",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "//tensorflow_lite_support/examples/task/text/desktop:universal_sentence_encoder_qa_op_resolver",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
@@ -104,8 +125,8 @@ cc_test(
         "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
         "//tensorflow_lite_support/cc/task/text:text_searcher",
         "//tensorflow_lite_support/cc/task/text/proto:text_searcher_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/text/utils:text_op_resolver",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "//tensorflow_lite_support/examples/task/text/desktop:universal_sentence_encoder_qa_op_resolver",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",

@@ -16,13 +16,20 @@ limitations under the License.
 #define TENSORFLOW_LITE_SUPPORT_C_TASK_CORE_UTILS_BASE_OPTIONS_UTILS_H_
 
 #include "tensorflow_lite_support/c/task/core/base_options.h"
+#include "tensorflow_lite_support/cc/task/core/proto/base_options_proto_inc.h"
 
 // Utils for Creating TfLiteBaseOptions
 namespace tflite {
 namespace task {
 namespace core {
 
+/** Creates a baseline C options struct. */
 TfLiteBaseOptions CreateDefaultBaseOptions();
+
+/** Converts a C options struct to TFLiteSettings proto options to be used for
+ * configuring the C++ API. */
+::tflite::proto::TFLiteSettings TfLiteSettingsProtoFromCOptions(
+    const TfLiteComputeSettings* c_options);
 
 }  // namespace core
 }  // namespace task

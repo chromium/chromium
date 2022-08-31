@@ -41,3 +41,19 @@ cc_library_with_tflite(
         "@com_google_absl//absl/strings:str_format",
     ],
 )
+
+cc_library_with_tflite(
+    name = "text_op_resolver",
+    srcs = ["text_op_resolver.cc"],
+    hdrs = ["text_op_resolver.h"],
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/core/shims:builtin_ops",
+    ],
+    deps = [
+        "//tensorflow_lite_support/custom_ops/kernel/ragged:ragged_tensor_to_tensor_tflite",  # fixdeps: keep
+        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece:sentencepiece_tokenizer_tflite",  # fixdeps: keep
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
+    ],
+)

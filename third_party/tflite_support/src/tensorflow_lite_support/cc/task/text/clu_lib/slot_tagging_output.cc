@@ -121,15 +121,15 @@ absl::Status SlotModulePopulateResponse(
         continue;
       if (chunk.confidence < threshold)
         continue;
-      auto slot = response->mutable_noncategorical_slots()->Add();
+      auto slot = response->mutable_mentioned_slots()->Add();
       slot->set_slot(chunk.repr.Name());
-      auto extraction = slot->mutable_extraction();
-      extraction->set_value(
+      auto mention = slot->mutable_mention();
+      mention->set_value(
           std::string(reverse_utterance_list_to_encode[cur_turn_idx].substr(
               chunk.start, chunk.exclusive_end - chunk.start)));
-      extraction->set_score(chunk.confidence);
-      extraction->set_start(chunk.start);
-      extraction->set_end(chunk.exclusive_end);
+      mention->set_score(chunk.confidence);
+      mention->set_start(chunk.start);
+      mention->set_end(chunk.exclusive_end);
       if (chunk.start >= chunk.exclusive_end) {
         return absl::InternalError(
             absl::StrCat("Empty span: ", slot->DebugString()));

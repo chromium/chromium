@@ -22,90 +22,93 @@ import unittest
 from tensorflow_lite_support.python.task.audio import audio_classifier
 from tensorflow_lite_support.python.task.audio.core import audio_record
 from tensorflow_lite_support.python.task.audio.core import tensor_audio
-from tensorflow_lite_support.python.task.core.proto import base_options_pb2
+from tensorflow_lite_support.python.task.core import base_options as base_options_module
+from tensorflow_lite_support.python.task.processor.proto import class_pb2
 from tensorflow_lite_support.python.task.processor.proto import classification_options_pb2
+from tensorflow_lite_support.python.task.processor.proto import classifications_pb2
 from tensorflow_lite_support.python.test import test_util
 
 _mock = unittest.mock
-_BaseOptions = base_options_pb2.BaseOptions
+_BaseOptions = base_options_module.BaseOptions
+_Category = class_pb2.Category
+_Classifications = classifications_pb2.Classifications
+_ClassificationResult = classifications_pb2.ClassificationResult
 _AudioClassifier = audio_classifier.AudioClassifier
 _AudioClassifierOptions = audio_classifier.AudioClassifierOptions
 
 _FIXED_INPUT_SIZE_MODEL_FILE = 'yamnet_audio_classifier_with_metadata.tflite'
 _SPEECH_AUDIO_FILE = 'speech.wav'
-_FIXED_INPUT_SIZE_MODEL_CLASSIFICATIONS = """
-classifications {
-  classes {
-    index: 0
-    score: 0.917969
-    display_name: ""
-    class_name: "Speech"
-  }
-  classes {
-    index: 500
-    score: 0.058594
-    display_name: ""
-    class_name: "Inside, small room"
-  }
-  classes {
-    index: 494
-    score: 0.011719
-    display_name: ""
-    class_name: "Silence"
-  }
-  head_index: 0
-  head_name: "scores"
-}
-"""
+_FIXED_INPUT_SIZE_MODEL_CLASSIFICATION_RESULT = _ClassificationResult(
+    classifications=[
+        _Classifications(
+            categories=[
+                _Category(
+                    index=0,
+                    score=0.917969,
+                    display_name='',
+                    category_name='Speech'),
+                _Category(
+                    index=500,
+                    # TODO(luwa): Update tflite dep version in github repo once
+                    # cl/453375223 is submitted.
+
+                    score=0.058594,
+                    display_name='',
+                    category_name='Inside, small room'),
+                _Category(
+                    index=494,
+                    score=0.011719,
+                    display_name='',
+                    category_name='Silence')
+            ],
+            head_index=0,
+            head_name='scores')
+    ])
 
 _MULTIHEAD_MODEL_FILE = 'two_heads.tflite'
 _TWO_HEADS_AUDIO_FILE = 'two_heads.wav'
-_MULTIHEAD_MODEL_CLASSIFICATIONS = """
-classifications {
-  classes {
-    index: 508
-    score: 0.548616
-    display_name: ""
-    class_name: "Environmental noise"
-  }
-  classes {
-    index: 507
-    score: 0.380869
-    display_name: ""
-    class_name: "Noise"
-  }
-  classes {
-    index: 106
-    score: 0.256137
-    display_name: ""
-    class_name: "Bird"
-  }
-  head_index: 0
-  head_name: "yamnet_classification"
-}
-classifications {
-  classes {
-    index: 4
-    score: 0.933997
-    display_name: ""
-    class_name: "Chestnut-crowned Antpitta"
-  }
-  classes {
-    index: 1
-    score: 0.065934
-    display_name: ""
-    class_name: "White-breasted Wood-Wren"
-  }
-  classes {
-    index: 0
-    score: 6.1469495e-05
-    display_name: ""
-    class_name: "Red Crossbill"
-  }
-  head_index: 1
-  head_name: "bird_classification"
-}
-"""
+_MULTIHEAD_MODEL_CLASSIFICATION_RESULT = _ClassificationResult(classifications=[
+    _Classifications(
+        categories=[
+            _Category(
+                index=508,
+                score=0.548616,
+                display_name='',
+                category_name='Environmental noise'),
+            _Category(
+                index=507,
+                score=0.380869,
+                display_name='',
+                category_name='Noise'),
+            _Category(
+                index=106,
+                score=0.256137,
+                display_name='',
+                category_name='Bird')
+        ],
+        head_index=0,
+        head_name='yamnet_classification'),
+    _Classifications(
+        categories=[
+            _Category(
+                index=4,
+                score=0.933997,
+                display_name='',
+                category_name='Chestnut-crowned Antpitta'),
+            _Category(
+                index=1,
+                score=0.065934,
+                display_name='',
+                category_name='White-breasted Wood-Wren'),
+            _Category(
+                index=0,
+                score=6.1469495e-05,
+                display_name='',
+                category_name='Red Crossbill')
+        ],
+        head_index=1,
+        head_name='bird_classification')
+])
 
 _ALLOW_LIST = ['Speech', 'Inside, small room']
 _DENY_LIST = ['Speech']
@@ -191,15 +194,15 @@ class AudioClassifierTest(parameterized.TestCase, tf.test.TestCase):
 
   @parameterized.parameters(
       (_FIXED_INPUT_SIZE_MODEL_FILE, ModelFileType.FILE_NAME,
-       _SPEECH_AUDIO_FILE, 3, _FIXED_INPUT_SIZE_MODEL_CLASSIFICATIONS),
+       _SPEECH_AUDIO_FILE, 3, _FIXED_INPUT_SIZE_MODEL_CLASSIFICATION_RESULT),
       (_FIXED_INPUT_SIZE_MODEL_FILE, ModelFileType.FILE_CONTENT,
-       _SPEECH_AUDIO_FILE, 3, _FIXED_INPUT_SIZE_MODEL_CLASSIFICATIONS),
+       _SPEECH_AUDIO_FILE, 3, _FIXED_INPUT_SIZE_MODEL_CLASSIFICATION_RESULT),
       (_MULTIHEAD_MODEL_FILE, ModelFileType.FILE_NAME, _TWO_HEADS_AUDIO_FILE, 3,
-       _MULTIHEAD_MODEL_CLASSIFICATIONS),
+       _MULTIHEAD_MODEL_CLASSIFICATION_RESULT),
       (_MULTIHEAD_MODEL_FILE, ModelFileType.FILE_CONTENT, _TWO_HEADS_AUDIO_FILE,
-       3, _MULTIHEAD_MODEL_CLASSIFICATIONS))
+       3, _MULTIHEAD_MODEL_CLASSIFICATION_RESULT))
   def test_classify_model(self, model_name, model_file_type, audio_file_name,
-                          max_results, expected_result_text_proto):
+                          max_results, expected_classification_result):
     # Creates classifier.
     model_path = test_util.get_test_data_path(model_name)
     if model_file_type is ModelFileType.FILE_NAME:
@@ -224,7 +227,8 @@ class AudioClassifierTest(parameterized.TestCase, tf.test.TestCase):
     audio_result = classifier.classify(tensor)
 
     # Comparing results.
-    self.assertProtoEquals(expected_result_text_proto, audio_result.to_pb2())
+    self.assertProtoEquals(audio_result.to_pb2(),
+                           expected_classification_result.to_pb2())
 
   def test_max_results_option(self):
     # Creates classifier.

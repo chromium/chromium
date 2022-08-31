@@ -16,6 +16,7 @@ limitations under the License.
 
 #include "pybind11/pybind11.h"
 #include "pybind11_abseil/status_casters.h"  // from @pybind11_abseil
+#include "tensorflow_lite_support/python/task/core/pybinds/task_utils.h"
 
 namespace tflite {
 namespace task {
@@ -58,9 +59,18 @@ PYBIND11_MODULE(image_utils, m) {
              sizeof(uint8) * size_t(data.channels), sizeof(uint8)});
       });
 
-  m.def("DecodeImageFromFile", &DecodeImageFromFile);
-  m.def("EncodeImageToPngFile", &EncodeImageToPngFile);
-  m.def("ImageDataFree", &ImageDataFree);
+  m.def("decode_image_from_file",
+        [](const std::string& file_name) {
+          auto image_data = DecodeImageFromFile(file_name);
+          return core::get_value(image_data);
+        })
+      .def("decode_image_from_buffer",
+           [](const char* buffer, int len) {
+             auto image_data = DecodeImageFromBuffer(
+                 reinterpret_cast<unsigned char const*>(buffer), len);
+             return core::get_value(image_data);
+           })
+      .def("image_data_free", &ImageDataFree);
 }
 
 }  // namespace vision

@@ -36,6 +36,9 @@ limitations under the License.
   } else /* NOLINT */                                                  \
     return status_macro_internal_adaptor.Consume()
 
+#define STATUS_MACROS_CONCAT_NAME(x, y) STATUS_MACROS_CONCAT_IMPL(x, y)
+#define STATUS_MACROS_CONCAT_IMPL(x, y) x##y
+
 // Executes an expression `rexpr` that returns a `tflite::support::StatusOr<T>`.
 // On OK, moves its value into the variable defined by `lhs`, otherwise returns
 // from the current function. By default the error status is returned
@@ -81,11 +84,15 @@ limitations under the License.
 // in map, so wrap the statement in parentheses.
 //   ASSIGN_OR_RETURN((const auto& [first, second]), GetPair());
 
+#if defined(_WIN32)
+#define ASSIGN_OR_RETURN(_1, _2, ...) ASSIGN_OR_RETURN_IMPL_2(_1, _2)
+#else
 #define ASSIGN_OR_RETURN(...)                                                \
   STATUS_MACROS_IMPL_GET_VARIADIC_((__VA_ARGS__,                             \
                                     STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_,  \
                                     STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_2_)) \
   (__VA_ARGS__)
+#endif
 
 // =================================================================
 // == Implementation details, do not rely on anything below here. ==
@@ -129,6 +136,19 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
   }                                                                       \
   STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(lhs) =               \
       std::move(statusor).value()
+
+#define ASSIGN_OR_RETURN_IMPL_2(lhs, rexpr) ASSIGN_OR_RETURN_IMPL_3(lhs, rexpr)
+
+#define ASSIGN_OR_RETURN_IMPL_3(lhs, rexpr) \
+  ASSIGN_OR_RETURN_IMPL(                    \
+      STATUS_MACROS_CONCAT_NAME(_status_or_value, __COUNTER__), lhs, rexpr)
+
+#define ASSIGN_OR_RETURN_IMPL(statusor, lhs, rexpr) \
+  auto statusor = (rexpr);                          \
+  if (ABSL_PREDICT_FALSE(!statusor.ok())) {         \
+    return statusor.status();                       \
+  }                                                 \
+  lhs = std::move(statusor).value()
 
 // Internal helpers for macro expansion.
 #define STATUS_MACROS_IMPL_EAT(...)

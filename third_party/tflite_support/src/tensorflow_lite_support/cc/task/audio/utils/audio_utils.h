@@ -35,7 +35,8 @@ namespace audio {
 // returned AudioBuffer object.
 tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
     const std::string& wav_file_path,
-    int buffer_size,
+    uint32_t* buffer_size,
+    uint32_t* offset,
     std::vector<float>* wav_data);
 
 }  // namespace audio

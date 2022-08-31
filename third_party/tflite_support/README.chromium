@@ -1,8 +1,8 @@
 Name: TensorFlow Lite Support
 Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
-Version: be6820a9a617b57defecbd4c766eb0bab707cac0
-Date: 2022/05/25
+Version: e9c16a6c1c6e18f9676129108d350edcd00ecca5
+Date: 2022/08/30
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -29,15 +29,19 @@ is a no-op in chromium builds and upsets clang.
 05) Remove an unneeded static initializer.
 06) Check (instead of resetting) the cancel_flag_ before Invoking the model.
 07) Remove support for creating a model handler from a file.
-08) Run clang-format.
+08) Fix minizip path inclusion. Upstream uses contrib/minizip/, but chromium
+uses third_party/zlib/contrib/minizip/.
+09) Fix unused variable in task_utils.h.
+10) Run clang-format.
   * This patch might not apply cleanly, so run `git cl format` and commit the
   changes.
-09) Remove unbuilt files that cause `git cl presubmit` errors.
+11) Use SysNSStringToUTF8 to convert NSString.
+12) Set executable bit for common_win.bat.
+13) Remove unbuilt files that cause `git cl presubmit` errors.
   * This patch intentionally does not apply because it was made with
   `--irreversible-delete` because it is deleting a large .tflite file causing
   the chromium-presubmit bot to fail.
-10) Fix minizip path inclusion. Upstream uses contrib/minizip/, but chromium
-uses third_party/zlib/contrib/minizip/.
+
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:

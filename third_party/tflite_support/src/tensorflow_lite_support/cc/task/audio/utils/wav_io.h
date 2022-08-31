@@ -56,6 +56,7 @@ constexpr bool kLittleEndian = __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__;
 // The results are output as floats within the range -1 to 1,
 absl::Status DecodeLin16WaveAsFloatVector(const std::string& wav_string,
                                           std::vector<float>* float_values,
+                                          uint32_t* offset,
                                           uint32_t* sample_count,
                                           uint16_t* channel_count,
                                           uint32_t* sample_rate);
@@ -64,17 +65,17 @@ absl::Status DecodeLin16WaveAsFloatVector(const std::string& wav_string,
 
 // Handles moving the data index forward, validating the arguments, and avoiding
 // overflow or underflow.
-absl::Status IncrementOffset(int old_offset,
+absl::Status IncrementOffset(uint32_t old_offset,
                              size_t increment,
                              size_t max_size,
-                             int* new_offset);
+                             uint32_t* new_offset);
 
 // This function is only exposed in the header for testing purposes, as a
 // template that needs to be instantiated. Reads a typed numeric value from a
 // stream of data.
 template <class T>
-absl::Status ReadValue(const std::string& data, T* value, int* offset) {
-  int new_offset;
+absl::Status ReadValue(const std::string& data, T* value, uint32_t* offset) {
+  uint32_t new_offset;
   RETURN_IF_ERROR(
       IncrementOffset(*offset, sizeof(T), data.size(), &new_offset));
   if (port::kLittleEndian) {

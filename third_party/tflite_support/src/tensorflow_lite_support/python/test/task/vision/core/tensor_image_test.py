@@ -34,6 +34,8 @@ class TensorImageTest(tf.test.TestCase, parameterized.TestCase):
     self.assertEqual(image.color_space_type,
                      color_space_type.ColorSpaceType.RGB)
     self.assertIsInstance(image.buffer, np.ndarray)
+    self.assertEqual(image.buffer[0][0][0], 231)
+    self.assertEqual(image.buffer[324][479][2], 68)
 
   @parameterized.parameters(
       (1, color_space_type.ColorSpaceType.GRAYSCALE),
@@ -52,6 +54,20 @@ class TensorImageTest(tf.test.TestCase, parameterized.TestCase):
     self.assertEqual(image.color_space_type, color_type)
     self.assertIsInstance(image.buffer, np.ndarray)
     self.assertAllClose(image.buffer, array)
+
+  def test_from_memory(self):
+    image_file = test_util.get_test_data_path('burger.jpg')
+    with tf.io.gfile.GFile(image_file, 'rb') as f:
+      buffer = f.read()
+    image = tensor_image.TensorImage.create_from_buffer(buffer)
+    self.assertIsInstance(image._image_data, image_utils.ImageData)
+    self.assertEqual(image.height, 325)
+    self.assertEqual(image.width, 480)
+    self.assertEqual(image.color_space_type,
+                     color_space_type.ColorSpaceType.RGB)
+    self.assertIsInstance(image.buffer, np.ndarray)
+    self.assertEqual(image.buffer[0][0][0], 231)
+    self.assertEqual(image.buffer[324][479][2], 68)
 
 
 if __name__ == '__main__':

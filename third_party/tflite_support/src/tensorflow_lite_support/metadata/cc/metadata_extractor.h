@@ -78,6 +78,10 @@ class ModelMetadataExtractor {
   tflite::support::StatusOr<absl::string_view> GetAssociatedFile(
       const std::string& filename) const;
 
+  // Gets the model version from the model metadata.  An error is returned if
+  // either the metadata does not exist or no model version is present in it.
+  tflite::support::StatusOr<std::string> GetModelVersion() const;
+
   // Note: all methods below retrieves metadata of the *first* subgraph as
   // default.
 

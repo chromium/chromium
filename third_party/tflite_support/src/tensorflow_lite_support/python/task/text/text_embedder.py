@@ -15,19 +15,24 @@
 
 import dataclasses
 
-from tensorflow_lite_support.python.task.core.proto import base_options_pb2
+from tensorflow_lite_support.python.task.core import base_options as base_options_module
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_pb2
 from tensorflow_lite_support.python.task.text.pybinds import _pywrap_text_embedder
 
 _CppTextEmbedder = _pywrap_text_embedder.TextEmbedder
-_BaseOptions = base_options_pb2.BaseOptions
+_BaseOptions = base_options_module.BaseOptions
 _EmbeddingOptions = embedding_options_pb2.EmbeddingOptions
 
 
 @dataclasses.dataclass
 class TextEmbedderOptions:
-  """Options for the text embedder task."""
+  """Options for the text embedder task.
+
+  Attributes:
+    base_options: Base options for the text embedder task.
+    embedding_options: Embedding options for the text embedder task.
+  """
   base_options: _BaseOptions
   embedding_options: _EmbeddingOptions = _EmbeddingOptions()
 
@@ -75,7 +80,7 @@ class TextEmbedder(object):
       RuntimeError: If other types of error occurred.
     """
     embedder = _CppTextEmbedder.create_from_options(
-        options.base_options, options.embedding_options.to_pb2())
+        options.base_options.to_pb2(), options.embedding_options.to_pb2())
     return cls(options, embedder)
 
   def embed(self, text: str) -> embedding_pb2.EmbeddingResult:

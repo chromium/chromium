@@ -1,14 +1,14 @@
-From c7a885174c0489e6a6a819b4bae23311226e43ee Mon Sep 17 00:00:00 2001
-From: Robert Ogden <robertogden@chromium.org>
-Date: Wed, 25 May 2022 10:53:34 -0700
-Subject: [PATCH 4/9] do not use absl any
+From fc97a636ba1314027fed742e7e956cad8c354e8e Mon Sep 17 00:00:00 2001
+From: Jun Zou <junzou@chromium.org>
+Date: Tue, 30 Aug 2022 18:01:41 +0000
+Subject: [PATCH 04/12] do not use absl any
 
 ---
  .../cc/task/vision/core/frame_buffer.h        | 27 -------------------
  1 file changed, 27 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
-index c1289673cb82b..1668447393e9e 100644
+index 344879341479f..77a41e081b72b 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
 @@ -27,7 +27,6 @@ limitations under the License.
@@ -19,7 +19,7 @@ index c1289673cb82b..1668447393e9e 100644
  #include "absl/types/optional.h"  // from @com_google_absl
  #include "tensorflow_lite_support/cc/port/integral_types.h"
  #include "tensorflow_lite_support/cc/port/statusor.h"
-@@ -250,31 +249,6 @@ class FrameBuffer {
+@@ -277,31 +276,6 @@ class FrameBuffer {
      return {};
    }
  
@@ -51,7 +51,7 @@ index c1289673cb82b..1668447393e9e 100644
    // Returns FrameBuffer dimension.
    const Dimension dimension() const { return dimension_; }
  
-@@ -289,7 +263,6 @@ class FrameBuffer {
+@@ -316,7 +290,6 @@ class FrameBuffer {
  
   private:
    std::vector<Plane> planes_;
@@ -60,5 +60,5 @@ index c1289673cb82b..1668447393e9e 100644
    Format format_;
    Orientation orientation_;
 -- 
-2.36.1.124.g0e6072fb45-goog
+2.37.2.672.g94769d06f0-goog
 

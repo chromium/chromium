@@ -58,8 +58,8 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node) {
 TfLiteRegistration* Register() {
   // Dummy implementation of custom OP
   // This op takes string as input and outputs float[]
-  static TfLiteRegistration r = {
-      .init = nullptr, .free = nullptr, .prepare = Prepare, .invoke = Invoke};
+  static TfLiteRegistration r = {/* init= */ nullptr, /* free= */ nullptr,
+                                 /* prepare= */ Prepare, /* invoke= */ Invoke};
   return &r;
 }
 };  // namespace string_floats
@@ -96,8 +96,8 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node) {
 TfLiteRegistration* Register() {
   // Dummy implementation of custom OP
   // This op takes string as input and outputs double[]
-  static TfLiteRegistration r = {
-      .init = nullptr, .free = nullptr, .prepare = Prepare, .invoke = Invoke};
+  static TfLiteRegistration r = {/* init= */ nullptr, /* free= */ nullptr,
+                                 /* prepare= */ Prepare, /* invoke= */ Invoke};
   return &r;
 }
 };  // namespace string_doubles
@@ -133,8 +133,8 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node) {
 TfLiteRegistration* Register() {
   // Dummy implementation of custom OP
   // This op takes string as input and outputs bool[]
-  static TfLiteRegistration r = {
-      .init = nullptr, .free = nullptr, .prepare = Prepare, .invoke = Invoke};
+  static TfLiteRegistration r = {/* init= */ nullptr, /* free= */ nullptr,
+                                 /* prepare= */ Prepare, /* invoke= */ Invoke};
   return &r;
 }
 };  // namespace string_bools
@@ -159,10 +159,10 @@ TfLiteStatus GenerateLabelsInvoke(TfLiteContext* context, TfLiteNode* node) {
 // value{"label0", "label1", "label2"}, it's used to mimic a real text
 // classification model that stores Class names inside a tensor.
 TfLiteRegistration* Register_CUSTOM_OP_GENERATE_LABELS() {
-  static TfLiteRegistration r = {.init = nullptr,
-                                 .free = nullptr,
-                                 .prepare = nullptr,
-                                 .invoke = GenerateLabelsInvoke};
+  static TfLiteRegistration r = {/* init= */ nullptr,
+                                 /* free= */ nullptr,
+                                 /* prepare= */ nullptr,
+                                 /* invoke= */ GenerateLabelsInvoke};
   return &r;
 }
 

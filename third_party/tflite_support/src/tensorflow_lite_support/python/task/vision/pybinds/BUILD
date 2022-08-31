@@ -70,7 +70,6 @@ pybind_extension_may_pack_coral(
         "//tensorflow_lite_support/cc/task/vision:image_searcher",
         "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "//tensorflow_lite_support/python/task/core/pybinds:task_utils",
-        "//tensorflow_lite_support/python/task/processor/proto:search_options_cc_proto",
         "@pybind11",
         "@pybind11_protobuf//pybind11_protobuf:native_proto_caster",
     ],

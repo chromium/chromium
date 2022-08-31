@@ -109,18 +109,18 @@ StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
   absl::optional<NormalizationOptions> normalization_options;
   if (mean_values->size() == 1) {
     normalization_options = NormalizationOptions{
-        .mean_values = {mean_values->Get(0), mean_values->Get(0),
-                        mean_values->Get(0)},
-        .std_values = {std_values->Get(0), std_values->Get(0),
-                       std_values->Get(0)},
-        .num_values = 1};
+        /* mean_values= */ {mean_values->Get(0), mean_values->Get(0),
+                            mean_values->Get(0)},
+        /* std_values= */
+        {std_values->Get(0), std_values->Get(0), std_values->Get(0)},
+        /* num_values= */ 1};
   } else if (mean_values->size() == 3) {
     normalization_options = NormalizationOptions{
-        .mean_values = {mean_values->Get(0), mean_values->Get(1),
-                        mean_values->Get(2)},
-        .std_values = {std_values->Get(0), std_values->Get(1),
-                       std_values->Get(2)},
-        .num_values = 3};
+        /* mean_values= */ {mean_values->Get(0), mean_values->Get(1),
+                            mean_values->Get(2)},
+        /* std_values= */
+        {std_values->Get(0), std_values->Get(1), std_values->Get(2)},
+        /* num_values= */ 3};
   } else {
     return CreateStatusWithPayload(
         StatusCode::kInvalidArgument,

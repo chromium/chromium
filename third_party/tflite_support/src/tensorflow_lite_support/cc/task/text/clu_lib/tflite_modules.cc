@@ -46,7 +46,7 @@ absl::Status PopulateInputTextTensorForBERT(
     const tflite::support::text::tokenizer::BertTokenizer* tokenizer,
     size_t max_seq_len,
     int max_history_turns,
-    tflite::Interpreter* interpreter,
+    core::TfLiteEngine::Interpreter* interpreter,
     Artifacts* artifacts) {
   size_t seq_len;
   int64_t* tokens_tensor =
@@ -120,8 +120,9 @@ absl::Status PopulateInputTextTensorForBERT(
   return absl::OkStatus();
 }
 
-absl::StatusOr<int> GetInputSeqDimSize(const size_t input_idx,
-                                       const tflite::Interpreter* interpreter) {
+absl::StatusOr<int> GetInputSeqDimSize(
+    const size_t input_idx,
+    const core::TfLiteEngine::Interpreter* interpreter) {
   if (input_idx >= interpreter->inputs().size()) {
     return absl::InternalError(absl::StrCat(
         "input_idx should be less than interpreter input numbers. ", input_idx,
@@ -136,14 +137,14 @@ absl::StatusOr<int> GetInputSeqDimSize(const size_t input_idx,
   return tflite::SizeOfDimension(tensor, 1);
 }
 
-absl::Status AbstractModule::Init(tflite::Interpreter* interpreter,
+absl::Status AbstractModule::Init(core::TfLiteEngine::Interpreter* interpreter,
                                   const BertCluAnnotatorOptions* options) {
   interpreter_ = interpreter;
   return absl::OkStatus();
 }
 
 absl::StatusOr<std::unique_ptr<AbstractModule>> UtteranceSeqModule::Create(
-    tflite::Interpreter* interpreter,
+    core::TfLiteEngine::Interpreter* interpreter,
     const TensorIndexMap* tensor_index_map,
     const BertCluAnnotatorOptions* options,
     const tflite::support::text::tokenizer::BertTokenizer* tokenizer) {
@@ -192,7 +193,7 @@ AbstractModule::NamesAndConfidencesFromOutput(int names_tensor_idx,
 }
 
 absl::StatusOr<std::unique_ptr<AbstractModule>> DomainModule::Create(
-    tflite::Interpreter* interpreter,
+    core::TfLiteEngine::Interpreter* interpreter,
     const TensorIndexMap* tensor_index_map,
     const BertCluAnnotatorOptions* options) {
   auto out = std::make_unique<DomainModule>();
@@ -222,7 +223,7 @@ absl::Status DomainModule::Postprocess(Artifacts* artifacts,
 }
 
 absl::StatusOr<std::unique_ptr<AbstractModule>> IntentModule::Create(
-    tflite::Interpreter* interpreter,
+    core::TfLiteEngine::Interpreter* interpreter,
     const TensorIndexMap* tensor_index_map,
     const BertCluAnnotatorOptions* options) {
   auto out = std::make_unique<IntentModule>();
@@ -271,13 +272,12 @@ absl::Status IntentModule::Postprocess(Artifacts* artifacts,
 }
 
 absl::StatusOr<std::unique_ptr<AbstractModule>> SlotModule::Create(
-    tflite::Interpreter* interpreter,
+    core::TfLiteEngine::Interpreter* interpreter,
     const TensorIndexMap* tensor_index_map,
     const BertCluAnnotatorOptions* options) {
   auto out = std::make_unique<SlotModule>();
   out->tensor_index_map_ = tensor_index_map;
-  out->noncategorical_slot_threshold_ =
-      options->noncategorical_slot_threshold();
+  out->mentioned_slot_threshold_ = options->mentioned_slot_threshold();
   RETURN_IF_ERROR(out->Init(interpreter, options));
   return out;
 }
@@ -291,7 +291,7 @@ absl::Status SlotModule::Postprocess(Artifacts* artifacts,
   const auto& [tags, confidences] = t_output;
   RETURN_IF_ERROR(SlotModulePopulateResponse(
       tags, confidences, artifacts->token_alignments, artifacts->token_turn_ids,
-      artifacts->first_subword_indicators, noncategorical_slot_threshold_,
+      artifacts->first_subword_indicators, mentioned_slot_threshold_,
       artifacts->reverse_utterance_list_to_encode, response));
   return absl::OkStatus();
 }

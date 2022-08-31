@@ -16,6 +16,7 @@ jni_binary_with_tflite(
     name = "libtask_text_jni.so",
     srcs = [
         "//tensorflow_lite_support/java/src/native/task/core:task_jni_utils.cc",
+        "//tensorflow_lite_support/java/src/native/task/text/bertclu:bert_clu_annotator_jni.cc",
         "//tensorflow_lite_support/java/src/native/task/text/nlclassifier:nl_classifier_jni.cc",
         "//tensorflow_lite_support/java/src/native/task/text/nlclassifier/bert:bert_nl_classifier_jni.cc",
         "//tensorflow_lite_support/java/src/native/task/text/qa:bert_question_answerer_jni.cc",
@@ -24,6 +25,8 @@ jni_binary_with_tflite(
     linkscript = "//tensorflow_lite_support/java:default_version_script.lds",
     tflite_deps = [
         "//tensorflow_lite_support/cc/task/text/nlclassifier:nl_classifier",
+        "//tensorflow_lite_support/cc/task/text:bert_clu_annotator",
+        "//tensorflow_lite_support/cc/task/text:clu_annotator",
         "//tensorflow_lite_support/cc/task/text:bert_nl_classifier",
         "//tensorflow_lite_support/cc/task/text:bert_question_answerer",
         "//tensorflow_lite_support/cc/task/text:text_searcher",
@@ -36,8 +39,11 @@ jni_binary_with_tflite(
     deps = [
         "//tensorflow_lite_support/cc/port:statusor",
         "//tensorflow_lite_support/cc/task/core/proto:base_options_proto_inc",
+        "//tensorflow_lite_support/cc/task/core/proto:class_cc_proto",
         "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
+        "//tensorflow_lite_support/cc/task/text/proto:bert_clu_annotator_options_cc_proto",
         "//tensorflow_lite_support/cc/task/text/proto:bert_nl_classifier_options_proto_inc",
+        "//tensorflow_lite_support/cc/task/text/proto:clu_cc_proto",
         "//tensorflow_lite_support/cc/task/text/proto:text_searcher_options_cc_proto",
         "//tensorflow_lite_support/java/jni",
         "@org_tensorflow//tensorflow/lite:op_resolver",

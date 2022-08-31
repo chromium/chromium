@@ -24,10 +24,9 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "tensorflow_lite_support/cc/task/text/proto/retrieval.pb.h"
+#include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 #include "tensorflow_lite_support/cc/test/message_matchers.h"
 #include "tensorflow_lite_support/cc/test/test_utils.h"
-#include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
-
 namespace tflite {
 namespace task {
 namespace text {
@@ -82,7 +81,7 @@ class UniversalSentenceEncoderQATest : public tflite_shims::testing::Test {
     options.mutable_base_options()->mutable_model_file()->set_file_name(
         filename);
     auto status = UniversalSentenceEncoderQA::CreateFromOption(
-        options, CreateQACustomOpResolver());
+        options, CreateTextOpResolver());
     if (status.ok()) {
       qa_client_ = std::move(status.value());
     }

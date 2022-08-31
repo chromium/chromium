@@ -9,5 +9,6 @@ cc_library(
     hdrs = ["base_options_utils.h"],
     deps = [
         "//tensorflow_lite_support/c/task/core:base_options",
+        "//tensorflow_lite_support/cc/task/core/proto:base_options_proto_inc",
     ],
 )

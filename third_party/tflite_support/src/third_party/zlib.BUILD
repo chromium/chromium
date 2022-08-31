@@ -2,6 +2,21 @@ package(default_visibility = ["//visibility:public"])
 
 licenses(["notice"])
 
+COPTS = select({
+    # Don't pass any of the default flags as the VS Compiler does not support
+    # these settings.
+    "@platforms//os:windows": [],
+    "//conditions:default": [
+        "-Wno-dangling-else",
+        "-Wno-format",
+        "-Wno-implicit-function-declaration",
+        "-Wno-incompatible-pointer-types",
+        "-Wno-incompatible-pointer-types-discards-qualifiers",
+        "-Wno-parentheses",
+        "-DIOAPI_NO_64",
+    ],
+})
+
 cc_library(
     name = "zlib",
     srcs = [
@@ -34,7 +49,7 @@ cc_library(
         "zconf.h",
         "zlib.h",
     ],
-    copts = ["-Wno-implicit-function-declaration"],
+    copts = COPTS,
     includes = ["."],
 )
 
@@ -44,7 +59,13 @@ cc_library(
         "contrib/minizip/ioapi.c",
         "contrib/minizip/unzip.c",
         "contrib/minizip/zip.c",
-    ],
+    ] + select({
+        "@platforms//os:windows": [
+            "contrib/minizip/iowin32.c",
+            "contrib/minizip/iowin32.h",
+        ],
+        "//conditions:default": [],
+    }),
     hdrs = [
         "contrib/minizip/crypt.h",
         "contrib/minizip/ioapi.h",
@@ -52,13 +73,6 @@ cc_library(
         "contrib/minizip/unzip.h",
         "contrib/minizip/zip.h",
     ],
-    copts = [
-        "-Wno-dangling-else",
-        "-Wno-format",
-        "-Wno-incompatible-pointer-types",
-        "-Wno-incompatible-pointer-types-discards-qualifiers",
-        "-Wno-parentheses",
-        "-DIOAPI_NO_64",
-    ],
+    copts = COPTS,
     deps = [":zlib"],
 )

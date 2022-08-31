@@ -17,9 +17,9 @@ limitations under the License.
 
 #include <string>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/memory/memory.h"       // from @com_google_absl
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/schema/schema_generated.h"
@@ -74,7 +74,8 @@ struct ZipFileInfo {
 
 // Returns the ZipFileInfo corresponding to the current file in the provided
 // unzFile object.
-absl::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(const unzFile& zf) {
+tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
+    const unzFile& zf) {
   // Open file in raw mode, as data is expected to be uncompressed.
   int method;
   RETURN_IF_ERROR(UnzipErrorToStatus(
@@ -109,12 +110,14 @@ absl::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(const unzFile& zf) {
         StatusCode::kUnknown, "Unable to read file in zip archive.",
         TfLiteSupportStatus::kMetadataAssociatedFileZipError);
   }
-  ZipFileInfo result = {.name = file_name,
-                        .position = position,
-                        .size = file_info.uncompressed_size};
 
   // Close file and return.
   RETURN_IF_ERROR(UnzipErrorToStatus(unzCloseCurrentFile(zf)));
+
+  ZipFileInfo result{};
+  result.name = file_name;
+  result.position = position;
+  result.size = file_info.uncompressed_size;
   return result;
 }
 }  // namespace
@@ -292,6 +295,21 @@ ModelMetadataExtractor::GetAssociatedFile(const std::string& filename) const {
         TfLiteSupportStatus::kMetadataAssociatedFileNotFoundError);
   }
   return it->second;
+}
+
+tflite::support::StatusOr<std::string> ModelMetadataExtractor::GetModelVersion()
+    const {
+  if (model_metadata_ == nullptr) {
+    return CreateStatusWithPayload(StatusCode::kFailedPrecondition,
+                                   "No model metadata",
+                                   TfLiteSupportStatus::kMetadataNotFoundError);
+  }
+  if (model_metadata_->version() == nullptr) {
+    return CreateStatusWithPayload(StatusCode::kNotFound,
+                                   "No version in model metadata",
+                                   TfLiteSupportStatus::kMetadataNotFoundError);
+  }
+  return model_metadata_->version()->str();
 }
 
 const flatbuffers::Vector<flatbuffers::Offset<tflite::TensorMetadata>>*

@@ -19,14 +19,14 @@ from absl.testing import parameterized
 import numpy as np
 import tensorflow as tf
 
-from tensorflow_lite_support.python.task.core.proto import base_options_pb2
+from tensorflow_lite_support.python.task.core import base_options as base_options_module
 from tensorflow_lite_support.python.task.processor.proto import segmentation_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import segmentations_pb2
 from tensorflow_lite_support.python.task.vision import image_segmenter
 from tensorflow_lite_support.python.task.vision.core import tensor_image
 from tensorflow_lite_support.python.test import test_util
 
-_BaseOptions = base_options_pb2.BaseOptions
+_BaseOptions = base_options_module.BaseOptions
 _ColoredLabel = segmentations_pb2.ColoredLabel
 _OutputType = segmentation_options_pb2.OutputType
 _ImageSegmenter = image_segmenter.ImageSegmenter

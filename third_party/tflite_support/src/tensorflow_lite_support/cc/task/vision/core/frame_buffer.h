@@ -257,6 +257,24 @@ class FrameBuffer {
         orientation_(orientation),
         timestamp_(timestamp) {}
 
+  // Copy constructor.
+  //
+  // FrameBuffer does not take ownership of the backing buffer. The copy
+  // constructor behaves the same way to only copy the buffer pointer and not
+  // take ownership of the backing buffer.
+  FrameBuffer(const FrameBuffer& frame_buffer) {
+    planes_.clear();
+    for (int i = 0; i < frame_buffer.plane_count(); i++) {
+      planes_.push_back(
+          FrameBuffer::Plane{.buffer = frame_buffer.plane(i).buffer,
+                             .stride = frame_buffer.plane(i).stride});
+    }
+    dimension_ = frame_buffer.dimension();
+    format_ = frame_buffer.format();
+    orientation_ = frame_buffer.orientation();
+    timestamp_ = frame_buffer.timestamp();
+  }
+
   // Returns number of planes.
   int plane_count() const { return planes_.size(); }
 

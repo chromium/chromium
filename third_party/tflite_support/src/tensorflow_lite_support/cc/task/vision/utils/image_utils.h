@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "absl/status/status.h"        // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
+#include "stb_image.h"                 // from @stblib
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
@@ -43,6 +44,14 @@ struct ImageData {
 // Supports a wide range of image formats, listed in `stb_image/stb_image.h`.
 tflite::support::StatusOr<ImageData> DecodeImageFromFile(
     const std::string& file_name);
+
+// Decodes image buffer and returns the corresponding image if no error
+// occurred. If decoding succeeded, the caller must manage deletion of the
+// underlying pixel data using `ImageDataFree`.
+// Supports a wide range of image formats, listed in `stb_image/stb_image.h`.
+tflite::support::StatusOr<ImageData> DecodeImageFromBuffer(
+    unsigned char const* buffer,
+    int len);
 
 // Encodes the image provided as an ImageData as lossless PNG to the provided
 // path.

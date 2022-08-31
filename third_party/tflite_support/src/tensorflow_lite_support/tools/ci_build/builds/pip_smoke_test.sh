@@ -23,6 +23,8 @@ set -x
 function run_smoke_test() {
   VENV_TMP_DIR="$(mktemp -d)"
 
+  echo "Running on $OSTYPE"
+
   if [[ "$OSTYPE" == "msys" ]]; then
     VENV_TMP_DIR="$(cygpath -m $VENV_TMP_DIR)"
   fi
@@ -50,9 +52,21 @@ function run_smoke_test() {
     TEST_MODEL=$(cygpath -m $TEST_MODEL)
   fi
 
+  # Download a test image
+  export TEST_IMAGE="$(pwd)/test.jpg"
+  if [[ "$OSTYPE" == "msys" ]]; then
+    TEST_IMAGE=$(cygpath -m $TEST_IMAGE)
+  fi
+  wget https://github.com/tensorflow/tflite-support/raw/master/tensorflow_lite_support/cc/test/testdata/task/vision/burger.jpg -O "$TEST_IMAGE"
+
   test_tfls_imports
 
   test_codegen
+
+  # On Mac and Ubuntu, verify that the task library builds successfully.
+  if [[ "$OSTYPE" != "msys" ]]; then
+    test_tfl_task_lib
+  fi
 
   # Deactivate from virtualenv.
   deactivate || source deactivate || \
@@ -97,6 +111,30 @@ function test_codegen() {
     echo "PIP smoke test on virtualenv FAILED, do not upload ${WHL_NAME}."
     return 1
   fi
+
+  popd
+  return $RESULT
+}
+
+function test_tfl_task_lib() {
+  TMP_DIR=$(mktemp -d)
+  pushd "${TMP_DIR}"
+
+  # test for basic import and metadata display.
+  RET_VAL=$(python -c "from tflite_support.task import vision; \
+classifier = vision.ImageClassifier.create_from_file(\"$TEST_MODEL\"); \
+image = vision.TensorImage.create_from_file(\"$TEST_IMAGE\"); \
+image_result = classifier.classify(image); \
+print(image_result.classifications[0].categories[0].category_name)")
+
+  # just check if the model name is there.
+  if ! [[ ${RET_VAL} == *"cheeseburger"* ]]; then
+    echo "Unexpected return value: ${RET_VAL}"
+    echo "PIP smoke test on virtualenv FAILED, do not upload ${WHL_NAME}."
+    return 1
+  fi
+
+  RESULT=$?
 
   popd
   return $RESULT

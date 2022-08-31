@@ -19,7 +19,7 @@
 
 #define VerifyError(error, expectedErrorDomain, expectedErrorCode, \
                     expectedLocalizedDescription)                  \
-  XCTAssertEqual(error.domain, expectedErrorDomain);               \
+  XCTAssertEqualObjects(error.domain, expectedErrorDomain);        \
   XCTAssertEqual(error.code, expectedErrorCode);                   \
   XCTAssertEqualObjects(error.localizedDescription,                \
                         expectedLocalizedDescription);
@@ -35,17 +35,15 @@ NS_ASSUME_NONNULL_BEGIN
   NSInteger inDataLength = 5;
   float inData[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
 
-  TFLFloatBuffer* inBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(inData[0]) size:inDataLength];
-
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:inBuffer
-                                offset:0
-                                  size:inDataLength
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(inData[0])
+                                 dataSize:inDataLength
+                                   offset:0
+                                     size:inDataLength
+                                    error:nil]);
   // State after load: [1.0, 2.0, 3.0, 4.0, 5.0]
 
   TFLFloatBuffer* outBuffer = ringBuffer.floatBuffer;
@@ -62,17 +60,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)testLoadSucceedsWithPartialLengthBuffer {
   NSInteger inDataSize = 3;
   float inData[] = {1.0f, 2.0f, 3.0f};
-  TFLFloatBuffer* inBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(inData[0]) size:inDataSize];
 
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:inBuffer
-                                offset:0
-                                  size:inDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(inData[0])
+                                 dataSize:inDataSize
+                                   offset:0
+                                     size:inDataSize
+                                    error:nil]);
 
   // State after load: [0.0, 0.0, 1.0, 2.0, 3.0]
 
@@ -92,30 +89,26 @@ NS_ASSUME_NONNULL_BEGIN
   NSInteger initialDataSize = 4;
   float initialArray[] = {1.0f, 2.0f, 3.0f, 4.0f};
 
-  TFLFloatBuffer* initialBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(initialArray[0])
-                                      size:initialDataSize];
-
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:initialBuffer
-                                offset:0
-                                  size:initialDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
+                                 dataSize:initialDataSize
+                                   offset:0
+                                     size:initialDataSize
+                                    error:nil]);
 
   // State after load: [0.0, 1.0, 2.0, 3.0, 4.0]
 
   NSInteger inDataSize = 3;
   float inArray[] = {5, 6, 7};
-  TFLFloatBuffer* inBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(inArray[0]) size:inDataSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:inBuffer
-                                offset:0
-                                  size:inDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(inArray[0])
+                                 dataSize:inDataSize
+                                   offset:0
+                                     size:inDataSize
+                                    error:nil]);
 
   TFLFloatBuffer* outBuffer = ringBuffer.floatBuffer;
   XCTAssertNotNil(outBuffer);
@@ -133,31 +126,25 @@ NS_ASSUME_NONNULL_BEGIN
   NSInteger initialDataSize = 5;
   float initialArray[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
 
-  TFLFloatBuffer* initialBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(initialArray[0])
-                                      size:initialDataSize];
-
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:initialBuffer
-                                offset:0
-                                  size:initialDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
+                                 dataSize:initialDataSize
+                                   offset:0
+                                     size:initialDataSize
+                                    error:nil]);
 
   // State after load: [1.0, 2.0, 3.0, 4.0, 5.0]
 
   NSInteger sourceDataSize = 6;
   float sourceArray[] = {6, 7, 8, 9, 10, 11};
-  TFLFloatBuffer* sourceBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(sourceArray[0])
-                                      size:sourceDataSize];
-
-  XCTAssertTrue([ringBuffer loadBuffer:sourceBuffer
-                                offset:0
-                                  size:sourceDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(sourceArray[0])
+                                 dataSize:sourceDataSize
+                                   offset:0
+                                     size:sourceDataSize
+                                    error:nil]);
 
   TFLFloatBuffer* outBuffer = ringBuffer.floatBuffer;
   XCTAssertNotNil(outBuffer);
@@ -175,32 +162,28 @@ NS_ASSUME_NONNULL_BEGIN
   NSInteger initialDataSize = 5;
   float initialArray[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
 
-  TFLFloatBuffer* initialBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(initialArray[0])
-                                      size:initialDataSize];
-
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:initialBuffer
-                                offset:0
-                                  size:initialDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
+                                 dataSize:initialDataSize
+                                   offset:0
+                                     size:initialDataSize
+                                    error:nil]);
 
   // State after load: [1.0, 2.0, 3.0, 4.0, 5.0]
 
   NSInteger totalInSize = 8;
   float inArray[] = {6, 7, 8, 9, 10, 11, 12, 13};
-  TFLFloatBuffer* inBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(inArray[0]) size:totalInSize];
 
   NSInteger offset = 2;
   NSInteger inDataSize = 6;
-  XCTAssertTrue([ringBuffer loadBuffer:inBuffer
-                                offset:offset
-                                  size:inDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(inArray[0])
+                                 dataSize:totalInSize
+                                   offset:offset
+                                     size:inDataSize
+                                    error:nil]);
 
   TFLFloatBuffer* outBuffer = ringBuffer.floatBuffer;
   XCTAssertNotNil(outBuffer);
@@ -218,32 +201,28 @@ NS_ASSUME_NONNULL_BEGIN
   NSInteger initialDataSize = 2;
   float initialArray[] = {1.0f, 2.0f};
 
-  TFLFloatBuffer* initialBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(initialArray[0])
-                                      size:initialDataSize];
-
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:initialBuffer
-                                offset:0
-                                  size:initialDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
+                                 dataSize:initialDataSize
+                                   offset:0
+                                     size:initialDataSize
+                                    error:nil]);
 
   // State after load: [0.0, 0.0, 0.0, 1.0, 2.0]
 
   NSInteger totalInSize = 4;
   float inArray[] = {6.0f, 7.0f, 8.0f, 9.0f};
-  TFLFloatBuffer* inBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(inArray[0]) size:totalInSize];
 
   NSInteger offset = 2;
   NSInteger inDataSize = 2;
-  XCTAssertTrue([ringBuffer loadBuffer:inBuffer
-                                offset:offset
-                                  size:inDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(inArray[0])
+                                 dataSize:totalInSize
+                                   offset:offset
+                                     size:inDataSize
+                                    error:nil]);
 
   TFLFloatBuffer* outBuffer = ringBuffer.floatBuffer;
   XCTAssertNotNil(outBuffer);
@@ -261,32 +240,28 @@ NS_ASSUME_NONNULL_BEGIN
   NSInteger initialDataSize = 2;
   float initialArray[] = {1.0f, 2.0f};
 
-  TFLFloatBuffer* initialBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(initialArray[0])
-                                      size:initialDataSize];
-
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:initialBuffer
-                                offset:0
-                                  size:initialDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
+                                 dataSize:initialDataSize
+                                   offset:0
+                                     size:initialDataSize
+                                    error:nil]);
 
   NSInteger totalInSize = 4;
   float inArray[] = {6.0f, 7.0f, 8.0f, 9.0f};
-  TFLFloatBuffer* inBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(inArray[0]) size:totalInSize];
 
   NSInteger offset = 2;
   NSInteger inDataSize = 3;
 
   NSError* error = nil;
-  XCTAssertFalse([ringBuffer loadBuffer:inBuffer
-                                 offset:offset
-                                   size:inDataSize
-                                  error:&error]);
+  XCTAssertFalse([ringBuffer loadFloatData:&(inArray[0])
+                                  dataSize:initialDataSize
+                                    offset:offset
+                                      size:inDataSize
+                                     error:&error]);
 
   XCTAssertNotNil(error);
   VerifyError(error, @"org.tensorflow.lite.tasks",
@@ -298,18 +273,15 @@ NS_ASSUME_NONNULL_BEGIN
   NSInteger initialDataSize = 2;
   float initialArray[] = {1.0f, 2.0f};
 
-  TFLFloatBuffer* initialBuffer =
-      [[TFLFloatBuffer alloc] initWithData:&(initialArray[0])
-                                      size:initialDataSize];
-
   NSInteger bufferSize = 5;
   TFLRingBuffer* ringBuffer =
       [[TFLRingBuffer alloc] initWithBufferSize:bufferSize];
 
-  XCTAssertTrue([ringBuffer loadBuffer:initialBuffer
-                                offset:0
-                                  size:initialDataSize
-                                 error:nil]);
+  XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
+                                 dataSize:initialDataSize
+                                   offset:0
+                                     size:initialDataSize
+                                    error:nil]);
 
   [ringBuffer clear];
 

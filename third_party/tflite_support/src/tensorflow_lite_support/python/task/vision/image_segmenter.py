@@ -15,7 +15,7 @@
 
 import dataclasses
 
-from tensorflow_lite_support.python.task.core.proto import base_options_pb2
+from tensorflow_lite_support.python.task.core import base_options as base_options_module
 from tensorflow_lite_support.python.task.processor.proto import segmentation_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import segmentations_pb2
 from tensorflow_lite_support.python.task.vision.core import tensor_image
@@ -24,12 +24,17 @@ from tensorflow_lite_support.python.task.vision.pybinds import _pywrap_image_seg
 
 _CppImageSegmenter = _pywrap_image_segmenter.ImageSegmenter
 _SegmentationOptions = segmentation_options_pb2.SegmentationOptions
-_BaseOptions = base_options_pb2.BaseOptions
+_BaseOptions = base_options_module.BaseOptions
 
 
 @dataclasses.dataclass
 class ImageSegmenterOptions:
-  """Options for the image segmenter task."""
+  """Options for the image segmenter task.
+
+  Attributes:
+    base_options: Base options for the image segmenter task.
+    segmentation_options: Segmentation options for the image segmenter task.
+  """
   base_options: _BaseOptions
   segmentation_options: _SegmentationOptions = _SegmentationOptions()
 
@@ -76,7 +81,7 @@ class ImageSegmenter(object):
       RuntimeError: If other types of error occurred.
     """
     segmenter = _CppImageSegmenter.create_from_options(
-        options.base_options, options.segmentation_options.to_pb2())
+        options.base_options.to_pb2(), options.segmentation_options.to_pb2())
     return cls(options, segmenter)
 
   def segment(

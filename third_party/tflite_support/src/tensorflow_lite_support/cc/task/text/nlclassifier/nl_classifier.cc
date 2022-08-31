@@ -193,12 +193,16 @@ absl::Status NLClassifier::Initialize(
   proto_options_ = std::move(options);
 
   RETURN_IF_ERROR(Initialize(NLClassifierOptions{
-      .input_tensor_index = proto_options_->input_tensor_index(),
-      .output_score_tensor_index = proto_options_->output_score_tensor_index(),
-      .output_label_tensor_index = proto_options_->output_label_tensor_index(),
-      .input_tensor_name = proto_options_->input_tensor_name(),
-      .output_score_tensor_name = proto_options_->output_score_tensor_name(),
-      .output_label_tensor_name = proto_options_->output_label_tensor_name()}));
+      /* input_tensor_index= */ proto_options_->input_tensor_index(),
+      /* output_score_tensor_index= */
+      proto_options_->output_score_tensor_index(),
+      /* output_label_tensor_index= */
+      proto_options_->output_label_tensor_index(),
+      /* input_tensor_name= */ proto_options_->input_tensor_name(),
+      /* output_score_tensor_name= */
+      proto_options_->output_score_tensor_name(),
+      /* output_label_tensor_name= */
+      proto_options_->output_label_tensor_name()}));
   return absl::OkStatus();
 }
 

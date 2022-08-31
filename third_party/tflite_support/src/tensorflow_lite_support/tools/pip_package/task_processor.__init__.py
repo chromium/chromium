@@ -30,6 +30,9 @@ from tensorflow_lite_support.python.task.processor.proto import search_options_p
 from tensorflow_lite_support.python.task.processor.proto import search_result_pb2
 from tensorflow_lite_support.python.task.processor.proto import segmentation_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import segmentations_pb2
+from tensorflow_lite_support.python.task.processor.proto import qa_answers_pb2
+from tensorflow_lite_support.python.task.processor.proto import clu_pb2
+from tensorflow_lite_support.python.task.processor.proto import clu_annotation_options_pb2
 
 BoundingBox = bounding_box_pb2.BoundingBox
 Category = class_pb2.Category
@@ -52,6 +55,15 @@ ColoredLabel = segmentations_pb2.ColoredLabel
 ConfidenceMask = segmentations_pb2.ConfidenceMask
 Segmentation = segmentations_pb2.Segmentation
 SegmentationResult = segmentations_pb2.SegmentationResult
+Pos = qa_answers_pb2.Pos
+QaAnswer = qa_answers_pb2.QaAnswer
+QuestionAnswererResult = qa_answers_pb2.QuestionAnswererResult
+CluRequest = clu_pb2.CluRequest
+CluResponse = clu_pb2.CluResponse
+Mention = clu_pb2.Mention
+CategoricalSlot = clu_pb2.CategoricalSlot
+MentionedSlot = clu_pb2.MentionedSlot
+BertCluAnnotationOptions = clu_annotation_options_pb2.BertCluAnnotationOptions
 
 # Remove unnecessary modules to avoid duplication in API docs.
 del bounding_box_pb2
@@ -66,3 +78,6 @@ del segmentation_options_pb2
 del segmentations_pb2
 del search_options_pb2
 del search_result_pb2
+del qa_answers_pb2
+del clu_pb2
+del clu_annotation_options_pb2

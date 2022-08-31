@@ -429,7 +429,7 @@ TEST(SlotModuleTest, PostProcess) {
          confidences.size() * sizeof(float));
 
   auto options = std::make_unique<BertCluAnnotatorOptions>();
-  options->set_noncategorical_slot_threshold(0.5);
+  options->set_mentioned_slot_threshold(0.5);
   options->set_max_history_turns(2);
   auto tensor_index_map = std::make_unique<TensorIndexMap>();
   tensor_index_map->slot_names_idx = 0;
@@ -507,9 +507,9 @@ TEST(SlotModuleTest, PostProcess) {
   SUPPORT_ASSERT_OK(slot_module->Postprocess(&artifacts, &response));
   // Assertions.
   const auto& expected = ParseTextProtoOrDie<CluResponse>(R"pb(
-    noncategorical_slots {
+    mentioned_slots {
       slot: "time"
-      extraction: { value: "4 pm" start: 8 end: 12 score: 0.7 }
+      mention: { value: "4 pm" start: 8 end: 12 score: 0.7 }
     }
   )pb");
   EXPECT_THAT(response, EqualsProto(expected));

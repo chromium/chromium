@@ -27,7 +27,7 @@ limitations under the License.
 #include "tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
 #include "third_party/zlib/contrib/minizip/ioapi.h"
-#include "third_party/zlib/contrib/minizip/zip.h"
+#include "third_party/zlib/contrib/minizip/unzip.h"
 
 namespace tflite {
 namespace metadata {

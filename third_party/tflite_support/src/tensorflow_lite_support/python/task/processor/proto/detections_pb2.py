@@ -41,7 +41,7 @@ class Detection:
   def to_pb2(self) -> _DetectionProto:
     """Generates a protobuf object to pass to the C++ layer."""
     return _DetectionProto(
-        bounding_box=self.bounding_box,
+        bounding_box=self.bounding_box.to_pb2(),
         classes=[category.to_pb2() for category in self.categories])
 
   @classmethod
@@ -49,7 +49,8 @@ class Detection:
   def create_from_pb2(cls, pb2_obj: _DetectionProto) -> "Detection":
     """Creates a `Detection` object from the given protobuf object."""
     return Detection(
-        bounding_box=pb2_obj.bounding_box,
+        bounding_box=bounding_box_pb2.BoundingBox.create_from_pb2(
+            pb2_obj.bounding_box),
         categories=[
             class_pb2.Category.create_from_pb2(category)
             for category in pb2_obj.classes

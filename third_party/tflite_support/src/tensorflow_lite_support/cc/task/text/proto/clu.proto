@@ -44,9 +44,9 @@ message CluRequest {
 //    slot: "party_size"
 //    prediction: { display_name="2" score: 0.78 }
 // }
-// noncategorical_slots {
+// mentioned_slots {
 //   slot: "restaurant_name"
-//   extraction: { value: "Andes Cafe" confidence: 0.91 start: 42 end: 52 }
+//   mention: { value: "Andes Cafe" confidence: 0.91 start: 42 end: 52 }
 // }
 // ```
 message CluResponse {
@@ -56,8 +56,8 @@ message CluResponse {
   repeated tflite.task.core.Class intents = 2;
   // The list of predicted categorical slots.
   repeated CategoricalSlot categorical_slots = 3;
-  // The list of predicted noncategorical slots.
-  repeated NonCategoricalSlot noncategorical_slots = 4;
+  // The list of predicted mentioned slots.
+  repeated MentionedSlot mentioned_slots = 4;
 }
 
 // Represents a categorical slot whose values are within a finite set.
@@ -68,24 +68,24 @@ message CategoricalSlot {
   optional tflite.task.core.Class prediction = 2;
 }
 
-// A single extraction result.
-message Extraction {
-  // The text value of the extraction.
+// A single mention.
+message Mention {
+  // The text value of the mention.
   optional string value = 2;
-  // The score for this extraction e.g. (but not necessarily) a probability in
+  // The score for this mention e.g. (but not necessarily) a probability in
   // [0,1].
   optional float score = 3;
-  // Start of the bytes of this extraction.
+  // Start of the bytes of this mention.
   optional uint32 start = 4;
-  // Exclusive end of the bytes of this extraction.
+  // Exclusive end of the bytes of this mention.
   optional uint32 end = 5;
 }
 
-// Represents a non-categorical slot whose values are open text extracted from
+// Represents a mentioned slot whose values are open text extracted from
 // the input text.
-message NonCategoricalSlot {
+message MentionedSlot {
   // The name of the slot.
   optional string slot = 1;
-  // The predicted extraction.
-  optional Extraction extraction = 2;
+  // The predicted mention.
+  optional Mention mention = 2;
 }

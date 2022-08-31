@@ -57,8 +57,7 @@ Utils, you need to set up following env variables correctly:
 
 ## How to contribute
 
-Please issue a pull request and assign @xunkai55 or @lu-wang-g for a code
-review.
+Please issue a pull request and assign @lu-wang-g for a code review.
 
 ## Contact us
 

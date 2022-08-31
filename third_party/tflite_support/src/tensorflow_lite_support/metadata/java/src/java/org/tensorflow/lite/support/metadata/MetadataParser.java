@@ -21,7 +21,7 @@ public final class MetadataParser {
      * The version of the metadata parser that this metadata extractor library is depending on. The
      * value should match the value of "Schema Semantic version" in metadata_schema.fbs.
      */
-    public static final String VERSION = "1.4.0";
+    public static final String VERSION = "1.4.1";
 
     private MetadataParser() {}
 }

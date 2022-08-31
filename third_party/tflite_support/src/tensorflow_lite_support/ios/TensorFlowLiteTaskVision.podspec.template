@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name             = 'TensorFlowLiteTaskVision'
   s.version          = '${TFLS_BUILD_VERSION}'
   s.authors          = 'Google Inc.'
-  s.license          = { :type => 'Apache',:file => "LICENSE"}
+  s.license          = { :type => 'Apache',:file => "LICENSE" }
   s.homepage         = 'https://github.com/tensorflow/tflite-support'
   s.source           = { :http => '${TFLS_DOWNLOAD_URL}' }
   s.summary          = 'TensorFlow Lite Task Library - Vision'
@@ -12,51 +12,10 @@ Pod::Spec.new do |s|
 
   s.module_name = 'TensorFlowLiteTaskVision'
   s.static_framework = true
-
-  root_dir_name = "tensorflow_lite_support"
-  objc_dir =  root_dir_name +  '/ios/'
-  objc_task_dir =  objc_dir + 'task/'
-  objc_core_dir = objc_task_dir + 'core/'
-  objc_processor_dir = objc_task_dir + 'processor/'
-  objc_vision_dir = objc_task_dir + 'vision/'
-  gml_image_dir = root_dir_name + '/odml/ios/image/'
-  s.public_header_files = [
-    objc_vision_dir + 'apis/*.h',
-    gml_image_dir + 'apis/*.h',
-    objc_dir + 'sources/TFLCommon.h',
-    objc_core_dir + 'sources/TFLBaseOptions.h',
-    objc_processor_dir + 'sources/{TFLClassificationOptions,TFLCategory,TFLClassificationResult,TFLDetectionResult,TFLSegmentationResult}.h',
-    objc_vision_dir + 'sources/*.h'
-  ]
-
-  c_dir = root_dir_name + '/c/'
-  c_task_dir = c_dir + 'task/'
-  c_core_dir = c_task_dir + 'core/'
-  c_processor_dir = c_task_dir + 'processor/'
-  c_vision_dir = c_task_dir + 'vision/'
-  s.source_files = [
-    c_dir + '*.h',
-    c_core_dir + '*.h',
-    c_processor_dir + '{category,bounding_box,classification_options,classification_result,detection_result,segmentation_result}.h',
-    c_vision_dir + '*.h',
-    c_vision_dir  + 'core/*.h',
-    objc_dir + 'sources/*',
-    objc_core_dir + 'sources/*',
-    objc_processor_dir + 'sources/*',
-    objc_vision_dir + 'apis/',
-    objc_vision_dir + '*/sources/*',
-    objc_vision_dir + 'sources/*',
-    gml_image_dir + 'apis/*.h',
-    gml_image_dir + 'sources/*'
-  ]
-
-  s.module_map = objc_vision_dir + 'apis/framework.modulemap'
   s.pod_target_xcconfig = {
-    'HEADER_SEARCH_PATHS' =>
-      '"${PODS_TARGET_SRCROOT}/' + root_dir_name + '/.."/**',
-    'VALID_ARCHS' => 'x86_64 armv7 arm64',
+    'VALID_ARCHS' => 'x86_64, arm64, armv7',
   }
-
   s.library = 'c++'
-  s.vendored_frameworks = 'Frameworks/TensorFlowLiteTaskVisionC.framework'
+  s.frameworks = 'CoreMedia', 'Accelerate'
+  s.vendored_frameworks = 'Frameworks/TensorFlowLiteTaskVision.framework'
 end

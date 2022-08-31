@@ -70,6 +70,8 @@ objc_library(
     deps = [
         "//tensorflow_lite_support/c/task/vision/utils:frame_buffer_cpp_c_utils",
         "//tensorflow_lite_support/cc/task/vision:image_classifier",
+        "//tensorflow_lite_support/ios/task/core:TFLBaseOptions",
+        "//tensorflow_lite_support/ios/task/vision:TFLImageClassifier",
         "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
         "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:coreml_plugin",
     ],
@@ -77,7 +79,7 @@ objc_library(
 
 ios_unit_test(
     name = "TFLImageClassifierCoreMLDelegateTest",
-    minimum_os_version = TFL_MINIMUM_OS_VERSION,
+    minimum_os_version = "11.0",
     runner = tflite_ios_lab_runner("IOS_LATEST"),
     tags = TFL_DEFAULT_TAGS + TFL_DISABLED_SANITIZER_TAGS,
     deps = [

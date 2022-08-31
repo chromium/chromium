@@ -26,6 +26,8 @@ filegroup(
     ],
 )
 
+tflite_model(name = "bert_clu_annotator_with_metadata")
+
 filegroup(
     name = "mobile_bert_model",
     srcs = [

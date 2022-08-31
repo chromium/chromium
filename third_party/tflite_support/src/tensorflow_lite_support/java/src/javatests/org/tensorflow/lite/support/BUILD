@@ -5,7 +5,7 @@ package(
     default_testonly = 1,
 )
 
-licenses(["notice"])  # Apache License 2.0
+licenses(["notice"])
 
 INSTRUMENTED_TESTS = glob(["**/*InstrumentedTest.java"])
 

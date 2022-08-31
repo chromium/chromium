@@ -19,10 +19,10 @@ limitations under the License.
 #include "absl/status/status.h"      // from @com_google_absl
 #include "absl/strings/str_split.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/task/text/universal_sentence_encoder_qa.h"
-#include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
+#include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 
 namespace {
-using tflite::task::text::CreateQACustomOpResolver;
+using tflite::task::text::CreateTextOpResolver;
 using tflite::task::text::RetrievalInput;
 using tflite::task::text::RetrievalOptions;
 using tflite::task::text::RetrievalOutput;
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       absl::GetFlag(FLAGS_model_path));
   auto status = UniversalSentenceEncoderQA::CreateFromOption(
-      options, CreateQACustomOpResolver());
+      options, CreateTextOpResolver());
   if (!status.ok()) {
     std::cerr << "Retrieve failed: " << status.status().message() << std::endl;
     return 1;

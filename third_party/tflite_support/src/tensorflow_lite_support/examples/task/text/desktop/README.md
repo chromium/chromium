@@ -93,6 +93,8 @@ category[1]: 'Positive' : '0.18687'
 
 #### Prerequisites
 
+TODO(b/163086702): Update the links to models with metadata attached.
+
 You will need:
 
 *   a Bert based TFLite text classification model from model maker. (e.g.

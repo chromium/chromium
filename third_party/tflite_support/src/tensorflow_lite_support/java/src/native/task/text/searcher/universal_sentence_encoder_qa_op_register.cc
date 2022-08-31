@@ -13,13 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
+#include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 
 namespace tflite {
 namespace task {
 // Provides a custom OpResolver for TextSearcher Java API.
 std::unique_ptr<OpResolver> CreateOpResolver() {
-  return tflite::task::text::CreateQACustomOpResolver();
+  return tflite::task::text::CreateTextOpResolver();
 }
 
 }  // namespace task

@@ -2,7 +2,6 @@ load("//tensorflow_lite_support/metadata:build_defs.bzl", "stamp_metadata_parser
 # Placeholder for internal Python strict library compatibility macro.
 
 package(
-    default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
 

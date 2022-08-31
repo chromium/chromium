@@ -16,9 +16,9 @@
 
 This module contains classes used across multiple tasks in the Task Library."""
 
-from tensorflow_lite_support.python.task.core.proto import base_options_pb2
+from tensorflow_lite_support.python.task.core import base_options
 
-BaseOptions = base_options_pb2.BaseOptions
+BaseOptions = base_options.BaseOptions
 
 # Remove unnecessary modules to avoid duplication in API docs.
-del base_options_pb2
+del base_options

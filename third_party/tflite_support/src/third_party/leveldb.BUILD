@@ -1,5 +1,7 @@
 """Builds LevelDB library."""
 
+package(default_visibility = ["//visibility:public"])
+
 licenses(["notice"])
 
 filegroup(
@@ -116,7 +118,6 @@ filegroup(
         "util/coding.h",
         "util/crc32c.h",
         "util/hash.h",
-        "util/env_posix_test_helper.h",
         "util/logging.h",
         "util/mutexlock.h",
         "util/no_destructor.h",
@@ -137,15 +138,21 @@ filegroup(
         "leveldb/table.h",
         "leveldb/table_builder.h",
         "leveldb/write_batch.h",
-    ],
+    ] + select({
+        "@platforms//os:windows": [
+            "util/env_windows_test_helper.h",
+            "util/windows_logger.h",
+        ],
+        "//conditions:default": [
+            "util/env_posix_test_helper.h",
+            "util/posix_logger.h",
+        ],
+    }),
 )
 
 cc_library(
     name = "internal_headers",
-    hdrs = [
-        "util/posix_logger.h",
-        ":internal_headers_group",
-    ],
+    hdrs = [":internal_headers_group"],
     visibility = ["//visibility:private"],
     deps = [":port"],
 )
@@ -233,12 +240,20 @@ filegroup(
 
 cc_library(
     name = "util",
-    srcs = [
-        "util/env_posix.cc",
-        ":util_sources_group",
-    ],
+    srcs = [":util_sources_group"] + select({
+        "@platforms//os:windows": ["util/env_windows.cc"],
+        "//conditions:default": [
+            "util/env_posix.cc",
+        ],
+    }),
     hdrs = [":util_headers_group"],
-    copts = ["-Wno-implicit-fallthrough"],
+    copts = select({
+        # Visual Studio compiler does no support "no-implicit-fallthrough"
+        "@platforms//os:windows": [],
+        "//conditions:default": [
+            "-Wno-implicit-fallthrough",
+        ],
+    }),
     visibility = ["//visibility:public"],
     deps = [
         ":internal_headers",

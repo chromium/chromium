@@ -32,7 +32,7 @@ cc_library_with_tflite(
         "universal_sentence_encoder_qa_op_register.cc",
     ],
     tflite_deps = [
-        "//tensorflow_lite_support/examples/task/text/desktop:universal_sentence_encoder_qa_op_resolver",
+        "//tensorflow_lite_support/cc/task/text/utils:text_op_resolver",
     ],
 )
 

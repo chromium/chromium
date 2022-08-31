@@ -1,12 +1,20 @@
+load(
+    "@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl",
+    "cc_library_with_tflite",
+)
+
 package(
     default_visibility = ["//visibility:public"],
     licenses = ["notice"],  # Apache 2.0
 )
 
-cc_library(
+cc_library_with_tflite(
     name = "tflite_modules",
     srcs = ["tflite_modules.cc"],
     hdrs = ["tflite_modules.h"],
+    tflite_deps = [
+        "//tensorflow_lite_support/cc/task/core:tflite_engine",
+    ],
     deps = [
         ":bert_utils",
         ":constants",

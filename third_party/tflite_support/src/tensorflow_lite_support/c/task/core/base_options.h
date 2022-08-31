@@ -15,6 +15,7 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_C_TASK_CORE_BASE_OPTIONS_H_
 #define TENSORFLOW_LITE_SUPPORT_C_TASK_CORE_BASE_OPTIONS_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 
 // Defines C Structs for Base Options Shared by all tasks.
@@ -32,10 +33,35 @@ typedef struct TfLiteCpuSettings {
   int num_threads;
 } TfLiteCpuSettings;
 
+// The device type for Core ML Delegate.
+typedef enum CoreMLDelegateSettingsEnabledDevices {
+  // Always create Core ML delegate.
+  kDevicesAll = 0,
+  // Create Core ML delegate only on devices with Apple Neural Engine.
+  kDevicesWithNeuralEngine = 1,
+} CoreMLDelegateSettingsEnabledDevices;
+
+// Holds Core ML Delegate settings.
+typedef struct TfLiteCoreMLDelegateSettings {
+  // Enables Core ML Delegate.
+  bool enable_delegate;
+
+  /** The device set to enable Core ML Delegate. */
+  CoreMLDelegateSettingsEnabledDevices enabled_devices;
+
+  /** Specifies target Core ML version for model conversion.
+   * If not set to one of the valid versions (2, 3), the delegate will use the
+   * highest version possible in the platform.
+   */
+  int32_t coreml_version;
+} TfLiteCoreMLDelegateSettings;
+
 // Holds settings for one possible acceleration configuration.
 typedef struct TfLiteComputeSettings {
-  // Holds cpu settings
+  // Holds cpu settings.
   TfLiteCpuSettings cpu_settings;
+  // Holds Core ML Delegate settings.
+  TfLiteCoreMLDelegateSettings coreml_delegate_settings;
 } TfLiteComputeSettings;
 
 // Represents external files used by the Task APIs (e.g. TF Lite Model File).
