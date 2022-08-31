@@ -11,6 +11,10 @@
 #include "ui/aura/window.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+namespace chromeos {
+class MultitaskMenuView;
+}
+
 namespace ash {
 
 class TabletModeMultitaskMenuEventHandler;
@@ -31,13 +35,15 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver {
   void OnWindowDestroying(aura::Window* window) override;
 
   void Show();
-  void Hide();
+  void CloseMultitaskMenu();
 
   aura::Window* window() { return window_; }
 
   views::Widget* multitask_menu_widget_for_testing() {
     return multitask_menu_widget_.get();
   }
+
+  chromeos::MultitaskMenuView* GetMultitaskMenuViewForTesting();
 
  private:
   // The event handler that created this multitask menu. Guaranteed to outlive

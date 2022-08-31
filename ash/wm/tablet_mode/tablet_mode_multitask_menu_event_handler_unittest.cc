@@ -6,10 +6,12 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/wm/features.h"
 
 namespace ash {
@@ -39,6 +41,13 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
     GetEventGenerator()->GestureScrollSequence(gfx::Point(point_x, 1),
                                                gfx::Point(point_x, 10),
                                                base::Milliseconds(100), 3);
+  }
+
+  TabletModeMultitaskMenu* GetMultitaskMenu() {
+    return TabletModeControllerTestApi()
+        .tablet_mode_window_manager()
+        ->tablet_mode_multitask_menu_event_handler_for_testing()
+        ->multitask_menu_for_testing();
   }
 
  private:
@@ -109,6 +118,49 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
   EXPECT_FALSE(event_handler->multitask_menu_for_testing()
                    ->multitask_menu_widget_for_testing()
                    ->IsVisible());
+}
+
+// Tests that the multitask menu gets updated after a button is pressed.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
+  auto window = CreateTestWindow();
+
+  ShowMultitaskMenu(window.get());
+
+  // Press the primary half split button.
+  auto* half_button = GetMultitaskMenu()
+                          ->GetMultitaskMenuViewForTesting()
+                          ->half_button_for_testing();
+  GetEventGenerator()->GestureTapAt(
+      half_button->GetBoundsInScreen().left_center());
+
+  // Verify that the window has been snapped in half.
+  ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+  const gfx::Rect work_area_bounds_in_screen =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  const gfx::Rect divider_bounds =
+      split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
+          /*is_dragging*/ false);
+  ASSERT_NEAR(work_area_bounds_in_screen.width() / 2,
+              window->GetBoundsInScreen().width(), divider_bounds.width());
+
+  // Verify that the multitask menu has been closed.
+  ASSERT_FALSE(GetMultitaskMenu());
+
+  // Swipe down again.
+  ShowMultitaskMenu(window.get());
+
+  // Verify that the multitask menu has been centered on the new window size.
+  auto* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+  EXPECT_EQ(window->GetBoundsInScreen().CenterPoint().x(),
+            multitask_menu->multitask_menu_widget_for_testing()
+                ->GetContentsView()
+                ->GetBoundsInScreen()
+                .CenterPoint()
+                .x());
 }
 
 }  // namespace ash

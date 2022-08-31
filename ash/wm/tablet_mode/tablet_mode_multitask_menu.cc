@@ -42,10 +42,10 @@ class TabletModeMultitaskMenuView : public views::View {
 
     SetUseDefaultFillLayout(true);
 
-    auto* multitask_menu_view = AddChildView(
+    multitask_menu_view_for_testing_ = AddChildView(
         std::make_unique<chromeos::MultitaskMenuView>(window, hide_menu));
 
-    auto* layout = multitask_menu_view->SetLayoutManager(
+    auto* layout = multitask_menu_view_for_testing_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
             kBetweenButtonSpacing));
@@ -60,6 +60,14 @@ class TabletModeMultitaskMenuView : public views::View {
       delete;
 
   ~TabletModeMultitaskMenuView() override = default;
+
+  chromeos::MultitaskMenuView* multitask_menu_view_for_testing() {
+    return multitask_menu_view_for_testing_;
+  }
+
+ private:
+  raw_ptr<chromeos::MultitaskMenuView> multitask_menu_view_for_testing_ =
+      nullptr;
 };
 
 BEGIN_METADATA(TabletModeMultitaskMenuView, View)
@@ -89,8 +97,9 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   multitask_menu_widget_->Init(std::move(params));
   multitask_menu_widget_->SetContentsView(
       std::make_unique<TabletModeMultitaskMenuView>(
-          window_, base::BindRepeating(&TabletModeMultitaskMenu::Hide,
-                                       base::Unretained(this))));
+          window_,
+          base::BindRepeating(&TabletModeMultitaskMenu::CloseMultitaskMenu,
+                              base::Unretained(this))));
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
@@ -114,9 +123,15 @@ void TabletModeMultitaskMenu::Show() {
   multitask_menu_widget_->Show();
 }
 
-void TabletModeMultitaskMenu::Hide() {
-  DCHECK(multitask_menu_widget_);
-  multitask_menu_widget_->Hide();
+void TabletModeMultitaskMenu::CloseMultitaskMenu() {
+  event_handler_->CloseMultitaskMenu();
+}
+
+chromeos::MultitaskMenuView*
+TabletModeMultitaskMenu::GetMultitaskMenuViewForTesting() {
+  return static_cast<TabletModeMultitaskMenuView*>(
+             multitask_menu_widget_->GetContentsView())
+      ->multitask_menu_view_for_testing();  // IN-TEST
 }
 
 }  // namespace ash

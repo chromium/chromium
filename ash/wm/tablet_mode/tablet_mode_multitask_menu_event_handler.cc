@@ -112,10 +112,4 @@ void TabletModeMultitaskMenuEventHandler::CloseMultitaskMenu() {
   multitask_menu_.reset();
 }
 
-void TabletModeMultitaskMenuEventHandler::HideMultitaskMenu() {
-  // TODO(sophiewen): Replace with CloseMultitaskMenu.
-  if (multitask_menu_)
-    multitask_menu_->Hide();
-}
-
 }  // namespace ash

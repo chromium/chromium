@@ -36,7 +36,6 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   // TODO(crbug.com/1349534): Override touch events on windows underneath.
 
   void ShowMultitaskMenu(aura::Window* active_window);
-  void HideMultitaskMenu();
 
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
 
