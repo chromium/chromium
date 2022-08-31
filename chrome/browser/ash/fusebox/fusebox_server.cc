@@ -269,8 +269,10 @@ Server* Server::GetInstance() {
 
 // static
 uint32_t Server::MakeModeBits(bool is_directory, bool read_only) {
-  uint32_t mode_bits = is_directory ? S_IFDIR : S_IFREG;
-  mode_bits |= read_only ? 0550 : 0770;  // "r-xr-x---" versus "rwxrwx---".
+  uint32_t mode_bits = is_directory
+                           ? (S_IFDIR | 0110)  // 0110 are the "--x--x---" bits.
+                           : S_IFREG;
+  mode_bits |= read_only ? 0440 : 0660;  // "r--r-----" versus "rw-rw----".
   return mode_bits;
 }
 
