@@ -671,6 +671,13 @@ bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
 bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url) {
+  return NavigateToURLFromRendererWithoutUserGesture(adapter, url, url);
+}
+
+bool NavigateToURLFromRendererWithoutUserGesture(
+    const ToRenderFrameHost& adapter,
+    const GURL& url,
+    const GURL& expected_commit_url) {
   RenderFrameHost* rfh = adapter.render_frame_host();
   TestFrameNavigationObserver nav_observer(rfh);
   if (!ExecJs(rfh, JsReplace("location = $1", url),
@@ -678,7 +685,7 @@ bool NavigateToURLFromRendererWithoutUserGesture(
     return false;
   }
   nav_observer.Wait();
-  return nav_observer.last_committed_url() == url;
+  return nav_observer.last_committed_url() == expected_commit_url;
 }
 
 bool BeginNavigateToURLFromRenderer(const ToRenderFrameHost& adapter,

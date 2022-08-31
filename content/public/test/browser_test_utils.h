@@ -168,6 +168,13 @@ void NavigateToURLBlockUntilNavigationsComplete(
 [[nodiscard]] bool NavigateToURLFromRendererWithoutUserGesture(
     const ToRenderFrameHost& adapter,
     const GURL& url);
+// Similar to above but takes in an additional URL, |expected_commit_url|, to
+// which the navigation should eventually commit. (See the browser-initiated
+// counterpart for more details).
+[[nodiscard]] bool NavigateToURLFromRendererWithoutUserGesture(
+    const ToRenderFrameHost& adapter,
+    const GURL& url,
+    const GURL& expected_commit_url);
 
 // Perform a renderer-initiated navigation of |window| to |url|. Unlike the
 // previous set of helpers, does not block. The navigation is done by assigning

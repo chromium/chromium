@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_
 
 #include <string>
+#include <variant>
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -103,6 +104,51 @@ struct DIPSRedirectInfo {
   const bool has_sticky_activation;
 };
 
+using DIPSRedirectHandler =
+    base::RepeatingCallback<void(const DIPSRedirectInfo&,
+                                 const DIPSRedirectChainInfo&)>;
+
+// a movable DIPSRedirectInfo, essentially
+using DIPSRedirectInfoPtr = std::unique_ptr<DIPSRedirectInfo>;
+
+// Either the URL navigated away from (starting a new chain), or the client-side
+// redirect connecting the navigation to the currently-committed chain.
+using DIPSNavigationStart = absl::variant<GURL, DIPSRedirectInfoPtr>;
+
+// A redirect-chain-in-progress. It grows by calls to Append() and restarts by
+// calls to EndChain().
+class DIPSRedirectContext {
+ public:
+  DIPSRedirectContext(DIPSRedirectHandler handler, const GURL& initial_url);
+  ~DIPSRedirectContext();
+
+  // If committed=true, appends the client and server redirects to the current
+  // chain. Otherwise, creates a temporary DIPSRedirectContext, appends the
+  // redirects, and immediately calls EndChain() on it.
+  void Append(bool committed,
+              DIPSNavigationStart navigation_start,
+              std::vector<DIPSRedirectInfoPtr>&& server_redirects,
+              GURL final_url);
+  // Terminates the current redirect chain and calls the DIPSRedirectHandler for
+  // each entry. Starts a new chain for later calls to Append() to add to.
+  void EndChain(GURL url);
+
+  size_t size() const { return redirects_.size(); }
+
+  void SetRedirectHandlerForTesting(DIPSRedirectHandler handler) {
+    handler_ = handler;
+  }
+
+ private:
+  // Appends the client and server redirects to the current chain.
+  void Append(DIPSNavigationStart navigation_start,
+              std::vector<DIPSRedirectInfoPtr>&& server_redirects);
+
+  DIPSRedirectHandler handler_;
+  GURL initial_url_;
+  std::vector<DIPSRedirectInfoPtr> redirects_;
+};
+
 class DIPSBounceDetector
     : public content::WebContentsObserver,
       public content::WebContentsUserData<DIPSBounceDetector> {
@@ -111,13 +157,7 @@ class DIPSBounceDetector
   DIPSBounceDetector(const DIPSBounceDetector&) = delete;
   DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
 
-  using RedirectHandler =
-      base::RepeatingCallback<void(const DIPSRedirectInfo&,
-                                   const DIPSRedirectChainInfo&)>;
-
-  void SetRedirectHandlerForTesting(RedirectHandler handler) {
-    redirect_handler_ = handler;
-  }
+  void SetRedirectHandlerForTesting(DIPSRedirectHandler handler);
 
   // This must be called prior to the DIPSBounceDetector being constructed.
   static base::TickClock* SetTickClockForTesting(base::TickClock* clock);
@@ -146,6 +186,7 @@ class DIPSBounceDetector
       content::NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
+  void WebContentsDestroyed() override;
 
   // raw_ptr<> is safe here DIPSService is a KeyedService, associated with the
   // BrowserContext/Profile which will outlive the WebContents that
@@ -154,10 +195,8 @@ class DIPSBounceDetector
   // raw_ptr<> is safe here for the same reasons as above.
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   absl::optional<ClientBounceDetectionState> client_detection_state_;
-  // By default, this just calls this->HandleRedirect(), but it
-  // can be overridden for tests.
-  RedirectHandler redirect_handler_;
   raw_ptr<const base::TickClock> clock_;
+  DIPSRedirectContext redirect_context_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

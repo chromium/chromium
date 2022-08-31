@@ -28,7 +28,9 @@ class CookieAccessFilter {
   // Clear `result` and fill it with the the type of cookie access for each URL.
   // `result` will have the same length as `urls`. Returns true iff every
   // previously-recorded cookie access was successfully matched to a URL in
-  // `urls`. (Note: this depends on the order of previous calls to AddAccess()).
+  // `urls`. Otherwise returns false, and `result` is filled entirely with
+  // kUnknown. (Note: this depends on the order of previous calls to
+  // AddAccess()).
   [[nodiscard]] bool Filter(const std::vector<GURL>& urls,
                             std::vector<CookieAccessType>* result) const;
 

@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -194,6 +195,9 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
     host_resolver()->AddRule("sub.b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
     host_resolver()->AddRule("d.test", "127.0.0.1");
+    host_resolver()->AddRule("e.test", "127.0.0.1");
+    host_resolver()->AddRule("f.test", "127.0.0.1");
+    host_resolver()->AddRule("g.test", "127.0.0.1");
     bounce_detector_ =
         DIPSBounceDetector::FromWebContents(GetActiveWebContents());
   }
@@ -226,6 +230,15 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     // The image must cause a cookie access, or else this will hang.
     observer.Wait();
+  }
+
+  // Perform a browser-based navigation to terminate the current redirect chain.
+  // (NOTE: tests using WCOCallbackLogger must call this *after* checking the
+  // log, since this navigation will be logged.)
+  void EndRedirectChain() {
+    ASSERT_TRUE(content::NavigateToURL(
+        GetActiveWebContents(),
+        embedded_test_server()->GetURL("a.test", "/title1.html")));
   }
 
  private:
@@ -346,6 +359,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Visit the redirect.
   ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url, final_url));
+  EndRedirectChain();
 
   // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
   // was not a redirect.
@@ -419,6 +433,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents, root_url));
   ASSERT_TRUE(
       content::NavigateIframeToURL(web_contents, iframe_id, redirect_url));
+  EndRedirectChain();
 
   // b.test had a stateful redirect, but because it was in an iframe, we ignored
   // it.
@@ -496,6 +511,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                                   "Change: b.test/title1.html)"),
                                  ("DidStartNavigation(c.test/title1.html)"),
                                  ("DidFinishNavigation(c.test/title1.html)")));
+  EndRedirectChain();
 
   EXPECT_THAT(
       redirects,
@@ -531,6 +547,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
   // Visit the redirect.
   ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url, final_url));
+  EndRedirectChain();
 
   // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
   // was not a redirect.
@@ -619,13 +636,14 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                                   "Change: c.test/cross-site-with-cookie/"
                                   "d.test/title1.html)"),
                                  ("DidFinishNavigation(d.test/title1.html)")));
+  EndRedirectChain();
 
   EXPECT_THAT(
       redirects,
       testing::ElementsAre(
           ("a.test/title1.html -> "
            "a.test/cross-site-with-cookie/b.test/title1.html -> "
-           "b.test/title1.html"),
+           "c.test/title1.html"),
           ("a.test/title1.html -> b.test/title1.html -> c.test/title1.html"),
           ("c.test/title1.html -> "
            "c.test/cross-site-with-cookie/d.test/title1.html -> "
@@ -641,6 +659,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   GURL final_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* frame;
+
+  // a.test  -(click)-> b.test -(UA-redir)-> c.test -(redir)-> d.test -(redir)->
+  // a.test
 
   std::vector<std::string> redirects;
   bounce_detector()->SetRedirectHandlerForTesting(
@@ -715,14 +736,15 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to final page (a.test).
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EndRedirectChain();
 
   // c.test and d.test are stateful bounces, but b.test is not counted as a
   // bounce because it received user activation shortly before redirecting away.
   EXPECT_THAT(
       redirects,
       testing::ElementsAre(
-          ("b.test/title1.html -> c.test/title1.html -> d.test/title1.html"),
-          ("c.test/title1.html -> d.test/title1.html -> a.test/title1.html")));
+          ("b.test/title1.html -> c.test/title1.html -> a.test/title1.html"),
+          ("b.test/title1.html -> d.test/title1.html -> a.test/title1.html")));
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
@@ -754,6 +776,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Visit the redirect (note that the user ends up back at initial_url).
   ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url,
                                      /*expected_commit_url=*/initial_url));
+  EndRedirectChain();
 
   // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
   // was not a redirect.
@@ -796,6 +819,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_FALSE(content::NavigateToURL(web_contents, redirect_url));
   ASSERT_TRUE(content::IsLastCommittedEntryOfPageType(
       web_contents, content::PAGE_TYPE_ERROR));
+  EndRedirectChain();
 
   // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
   // was not a redirect.
@@ -845,6 +869,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       web_contents->GetPrimaryMainFrame(),
       embedded_test_server()->GetURL("c.test", "/set-cookie?name=value")));
 
+  // a.test -(click) -> b.test -(redir)-> c.test -(redir) -> d.test
+
   // Visit initial page.
   ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
   // Wait for navigation to finish to initial page.
@@ -892,6 +918,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to final page (d.test).
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EndRedirectChain();
 
   // Verify the correct histogram was used for all samples.
   base::HistogramTester::CountsMap expected_counts;
@@ -934,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                   Pair("InitialAndFinalSitesSame", false),
                   Pair("RedirectAndFinalSiteSame", false),
                   Pair("RedirectAndInitialSiteSame", false),
-                  Pair("RedirectChainIndex", 0), Pair("RedirectChainLength", 1),
+                  Pair("RedirectChainIndex", 0), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kClient),
                   Pair("SiteEngagementLevel", Gt((int)EngagementLevel::NONE))));
 
@@ -952,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                   Pair("InitialAndFinalSitesSame", false),
                   Pair("RedirectAndFinalSiteSame", false),
                   Pair("RedirectAndInitialSiteSame", false),
-                  Pair("RedirectChainIndex", 0), Pair("RedirectChainLength", 1),
+                  Pair("RedirectChainIndex", 1), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kClient),
                   Pair("SiteEngagementLevel", (int)EngagementLevel::NONE)));
 }
@@ -983,6 +1010,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, redirect_url,
                                                  final_url));
+  EndRedirectChain();
 
   // Verify the correct histogram was used for all samples.
   base::HistogramTester::CountsMap expected_counts;
@@ -1125,6 +1153,7 @@ IN_PROC_BROWSER_TEST_F(
                   // Land on c.test
                   ("DidStartNavigation(c.test/title1.html)"),
                   ("DidFinishNavigation(c.test/title1.html)")));
+  EndRedirectChain();
 
   // b.test is not considered a stateful bounce.
   EXPECT_THAT(redirects, testing::IsEmpty());
@@ -1185,6 +1214,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                   // Land on c.test
                   ("DidStartNavigation(c.test/title1.html)"),
                   ("DidFinishNavigation(c.test/title1.html)")));
+  EndRedirectChain();
 
   // b.test IS considered a stateful bounce, even though the cookie was read by
   // an image hosted on sub.b.test.
@@ -1192,4 +1222,173 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       redirects,
       testing::ElementsAre(
           ("a.test/title1.html -> b.test/title1.html -> c.test/title1.html")));
+}
+
+void AppendAnyRedirect(std::vector<std::string>* redirects,
+                       const DIPSRedirectInfo& redirect,
+                       const DIPSRedirectChainInfo& chain) {
+  redirects->push_back(base::StringPrintf(
+      "[%d/%d] %s -> %s (%s) -> %s", redirect.index + 1, chain.length,
+      FormatURL(chain.initial_url).c_str(), FormatURL(redirect.url).c_str(),
+      CookieAccessTypeToString(redirect.access_type).data(),
+      FormatURL(chain.final_url).c_str()));
+}
+
+// This test verifies that consecutive redirect chains are combined into one.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulRedirect_ServerClientClientServer) {
+  WebContents* web_contents = GetActiveWebContents();
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetRedirectHandlerForTesting(
+      base::BindRepeating(&AppendAnyRedirect, &redirects));
+
+  // Visit initial page on a.test
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL("b.test",
+                                     "/cross-site/c.test/title1.html"),
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+
+  // Advance TimeTicks by 1 second
+  AdvanceDIPSTime(base::Seconds(1));
+  // Navigate without a click (i.e. by C-redirecting) to d.test
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, embedded_test_server()->GetURL("d.test", "/title1.html")));
+
+  // Advance TimeTicks by 1 second
+  AdvanceDIPSTime(base::Seconds(1));
+  // Navigate without a click (i.e. by C-redirecting) to e.test, which
+  // S-redirects to f.test
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents,
+      embedded_test_server()->GetURL("e.test",
+                                     "/cross-site/f.test/title1.html"),
+      embedded_test_server()->GetURL("f.test", "/title1.html")));
+  EndRedirectChain();
+
+  EXPECT_THAT(redirects,
+              testing::ElementsAre(
+                  ("[1/4] a.test/title1.html -> "
+                   "b.test/cross-site/c.test/title1.html (None) -> "
+                   "f.test/title1.html"),
+                  ("[2/4] a.test/title1.html -> c.test/title1.html (None) -> "
+                   "f.test/title1.html"),
+                  ("[3/4] a.test/title1.html -> d.test/title1.html (None) -> "
+                   "f.test/title1.html"),
+                  ("[4/4] a.test/title1.html -> "
+                   "e.test/cross-site/f.test/title1.html (None) -> "
+                   "f.test/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulRedirect_UncommittedChain) {
+  WebContents* web_contents = GetActiveWebContents();
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetRedirectHandlerForTesting(
+      base::BindRepeating(&AppendAnyRedirect, &redirects));
+
+  // Visit initial page on a.test
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL("b.test",
+                                     "/cross-site/c.test/title1.html"),
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+
+  // Advance TimeTicks by 1 second
+  AdvanceDIPSTime(base::Seconds(1));
+  // Navigate without a click (i.e. by C-redirecting) to d.test which redirects
+  // to e.test but doesn't commit.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents,
+      embedded_test_server()->GetURL("d.test", "/cross-site/e.test/nocontent"),
+      /* empty URL since the navigation doesn't commit: */ GURL::EmptyGURL()));
+  ASSERT_EQ("c.test/title1.html",
+            FormatURL(web_contents->GetLastCommittedURL()));
+
+  // Advance TimeTicks by 1 second
+  AdvanceDIPSTime(base::Seconds(1));
+  // Navigate with a click (not a redirect) to d.test which redirects
+  // to e.test but doesn't commit.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL("d.test", "/cross-site/e.test/nocontent"),
+      /* empty URL since the navigation doesn't commit: */ GURL::EmptyGURL()));
+  ASSERT_EQ("c.test/title1.html",
+            FormatURL(web_contents->GetLastCommittedURL()));
+
+  // Advance TimeTicks by 1 second
+  AdvanceDIPSTime(base::Seconds(1));
+  // Navigate without a click (i.e. by C-redirecting) to e.test, which
+  // S-redirects to f.test
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents,
+      embedded_test_server()->GetURL("e.test",
+                                     "/cross-site/f.test/title1.html"),
+      embedded_test_server()->GetURL("f.test", "/title1.html")));
+  EndRedirectChain();
+
+  EXPECT_THAT(redirects,
+              testing::ElementsAre(
+                  // First uncommitted chain (with client redirect):
+                  ("[2/3] a.test/title1.html -> "
+                   "c.test/title1.html (None) -> "
+                   "e.test/nocontent"),
+                  ("[3/3] a.test/title1.html -> "
+                   "d.test/cross-site/e.test/nocontent (None) -> "
+                   "e.test/nocontent"),
+                  // Second uncommitted chain (without client redirect):
+                  ("[1/1] c.test/title1.html -> "
+                   "d.test/cross-site/e.test/nocontent (None) -> "
+                   "e.test/nocontent"),
+                  // Finally the committed chain:
+                  ("[1/3] a.test/title1.html -> "
+                   "b.test/cross-site/c.test/title1.html (None) -> "
+                   "f.test/title1.html"),
+                  ("[2/3] a.test/title1.html -> c.test/title1.html (None) -> "
+                   "f.test/title1.html"),
+                  ("[3/3] a.test/title1.html -> "
+                   "e.test/cross-site/f.test/title1.html (None) -> "
+                   "f.test/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulRedirect_ClosingTabEndsChain) {
+  WebContents* web_contents = GetActiveWebContents();
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetRedirectHandlerForTesting(
+      base::BindRepeating(&AppendAnyRedirect, &redirects));
+
+  // Visit initial page on a.test
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL("b.test",
+                                     "/cross-site/c.test/title1.html"),
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+
+  content::WebContentsDestroyedWatcher destruction_watcher(web_contents);
+  web_contents->Close();
+  destruction_watcher.Wait();
+
+  EXPECT_THAT(redirects, testing::ElementsAre(
+                             ("[1/1] a.test/title1.html -> "
+                              "b.test/cross-site/c.test/title1.html (None) -> "
+                              "c.test/title1.html")));
 }
