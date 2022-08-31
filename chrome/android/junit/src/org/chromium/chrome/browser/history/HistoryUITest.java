@@ -48,6 +48,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -543,6 +544,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1358628")
     public void testCopyLink() {
         final ClipboardManager clipboardManager =
                 (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
