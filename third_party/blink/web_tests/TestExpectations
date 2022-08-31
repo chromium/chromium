@@ -6846,3 +6846,6 @@ crbug.com/1358051 external/wpt/longtask-timing/containerTypes.html [ Failure Pas
 
 # TODO(crbug.com/1358147): Re-enable this test
 virtual/plz-dedicated-worker/external/wpt/resource-timing/no-entries-for-cross-origin-css-fetched-memory-cache.sub.html [ Skip ]
+
+# Sheriff 2022-08-31
+crbug.com/1306304 [ Mac ] plugins/multiple-plugins.html [ Failure Pass ]
