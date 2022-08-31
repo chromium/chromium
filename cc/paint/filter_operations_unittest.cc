@@ -330,8 +330,8 @@ TEST(FilterOperationsTest, SaveAndRestore) {
   SAVE_RESTORE_OFFSET_AMOUNT_COLOR(DropShadow, DROP_SHADOW, gfx::Point(3, 4),
                                    0.4f, SkColors::kYellow);
 
-  SkScalar matrix[20] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                         11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+  FilterOperation::Matrix matrix = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
   SAVE_RESTORE_MATRIX(ColorMatrix, COLOR_MATRIX, matrix);
 
   SAVE_RESTORE_AMOUNT_INSET(Zoom, ZOOM, 0.5f, 32);
@@ -988,8 +988,8 @@ TEST(FilterOperationsTest, MaximumPixelMovement) {
   // For filters that don't move pixels. HasFilterThatMovesPixels() = false.
   filters.Clear();
   filters.Append(FilterOperation::CreateOpacityFilter(0.25f));
-  SkScalar matrix[20] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                         11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+  FilterOperation::Matrix matrix = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
   filters.Append(FilterOperation::CreateColorMatrixFilter(matrix));
   filters.Append(FilterOperation::CreateGrayscaleFilter(0.75f));
   filters.Append(FilterOperation::CreateSepiaFilter(0.625f));

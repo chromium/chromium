@@ -207,8 +207,8 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
             std::move(image_filter));
         break;
       case FilterOperation::COLOR_MATRIX:
-        image_filter =
-            CreateMatrixImageFilter(op.matrix(), std::move(image_filter));
+        image_filter = CreateMatrixImageFilter(op.matrix().data(),
+                                               std::move(image_filter));
         break;
       case FilterOperation::ZOOM: {
         // The center point, always the midpoint of the unclipped rectangle.

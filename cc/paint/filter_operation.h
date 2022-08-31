@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_FILTER_OPERATION_H_
 #define CC_PAINT_FILTER_OPERATION_H_
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -29,7 +30,8 @@ namespace cc {
 
 class CC_PAINT_EXPORT FilterOperation {
  public:
-  using Matrix = SkScalar[20];
+  // 4x5 color matrix equivalent to SkColorMatrix.
+  using Matrix = std::array<float, 20>;
   using ShapeRects = std::vector<gfx::Rect>;
   enum FilterType {
     GRAYSCALE,

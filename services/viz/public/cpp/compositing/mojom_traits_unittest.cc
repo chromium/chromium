@@ -153,7 +153,7 @@ void ExpectEqual(const cc::FilterOperation& input,
       EXPECT_EQ(input.drop_shadow_color(), output.drop_shadow_color());
       break;
     case cc::FilterOperation::COLOR_MATRIX:
-      EXPECT_EQ(0, memcmp(input.matrix(), output.matrix(), 20));
+      EXPECT_EQ(input.matrix(), output.matrix());
       break;
     case cc::FilterOperation::ZOOM:
       EXPECT_EQ(input.amount(), output.amount());

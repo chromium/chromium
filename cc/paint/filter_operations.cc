@@ -164,7 +164,7 @@ bool FilterOperations::HasFilterThatAffectsOpacity() const {
       case FilterOperation::ALPHA_THRESHOLD:
         return true;
       case FilterOperation::COLOR_MATRIX: {
-        const SkScalar* matrix = op.matrix();
+        auto& matrix = op.matrix();
         if (matrix[15] || matrix[16] || matrix[17] || matrix[18] != 1 ||
             matrix[19])
           return true;
