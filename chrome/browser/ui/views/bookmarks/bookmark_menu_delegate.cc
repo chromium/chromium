@@ -591,7 +591,6 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
                                      size_t start_child_index,
                                      MenuItemView* menu) {
   DCHECK_LE(start_child_index, parent->children().size());
-  ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
   const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
       chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   for (auto i = parent->children().cbegin() + start_child_index;
@@ -601,8 +600,9 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
     MenuItemView* child_menu_item;
     if (node->is_url()) {
       const gfx::Image& image = GetBookmarkModel()->GetFavicon(node);
-      const gfx::ImageSkia* icon = image.IsEmpty() ?
-          rb->GetImageSkiaNamed(IDR_DEFAULT_FAVICON) : image.ToImageSkia();
+      const gfx::ImageSkia* icon =
+          (image.IsEmpty() ? favicon::GetDefaultFavicon() : image)
+              .ToImageSkia();
       child_menu_item =
           menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
                                ui::ImageModel::FromImageSkia(*icon));
