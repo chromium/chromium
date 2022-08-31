@@ -75,10 +75,11 @@ FakeMediaSource::FakeMediaSource(
     const FrameSenderConfig& video_config,
     bool keep_frames)
     : task_runner_(task_runner),
-      output_audio_params_(AudioParameters::AUDIO_PCM_LINEAR,
-                           media::GuessChannelLayout(audio_config.channels),
-                           audio_config.rtp_timebase,
-                           audio_config.rtp_timebase / kAudioPacketsPerSecond),
+      output_audio_params_(
+          AudioParameters::AUDIO_PCM_LINEAR,
+          media::ChannelLayoutConfig::Guess(audio_config.channels),
+          audio_config.rtp_timebase,
+          audio_config.rtp_timebase / kAudioPacketsPerSecond),
       video_config_(video_config),
       keep_frames_(keep_frames),
       variable_frame_size_mode_(false),
@@ -176,11 +177,9 @@ void FakeMediaSource::SetSourceFile(const base::FilePath& video_file,
       audio_stream_index_ = static_cast<int>(i);
       av_audio_context_ = std::move(av_codec_context);
       source_audio_params_.Reset(
-          AudioParameters::AUDIO_PCM_LINEAR, layout,
-          av_audio_context_->sample_rate,
+          AudioParameters::AUDIO_PCM_LINEAR,
+          {layout, av_audio_context_->channels}, av_audio_context_->sample_rate,
           av_audio_context_->sample_rate / kAudioPacketsPerSecond);
-      source_audio_params_.set_channels_for_discrete(
-          av_audio_context_->channels);
       CHECK(source_audio_params_.IsValid());
       LOG(INFO) << "Source file has audio.";
       audio_decoding_loop_ =
