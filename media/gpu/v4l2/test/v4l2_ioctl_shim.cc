@@ -4,6 +4,7 @@
 
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
+#include <fcntl.h>
 #include <linux/media.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -14,6 +15,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
 
 namespace media {
@@ -25,12 +27,43 @@ constexpr int kIoctlOk = 0;
 // Trogdor when a decode stalls.
 constexpr int kMaxRetryCount = 1 << 24;
 
-// TODO(stevecho): this might need to be changed for other platforms.
-static const base::FilePath kDecodeDevice("/dev/video-dec0");
-static const base::FilePath kMediaDevice("/dev/media-dec0");
-
 #define V4L2_REQUEST_CODE_AND_STRING(x) \
   { x, #x }
+
+constexpr uint32_t kMaximumDeviceNumber = 10;
+
+constexpr std::string_view kDecoderDevicePrefix = "/dev/video-dec";
+constexpr std::string_view kMediaDevicePrefix = "/dev/media-dec";
+
+// Finds first available device of specified type for v4l2
+static base::FilePath FindFirstDeviceOfType(V4L2IoctlShim::DeviceType type) {
+  std::string device_prefix;
+
+  switch (type) {
+    case V4L2IoctlShim::DeviceType::kDecoder:
+      device_prefix = kDecoderDevicePrefix;
+      break;
+    case V4L2IoctlShim::DeviceType::kMedia:
+      device_prefix = kMediaDevicePrefix;
+      break;
+    default:
+      NOTREACHED() << "Invalid device type: " << base::strict_cast<int>(type);
+  }
+
+  for (uint32_t i = 0; i < kMaximumDeviceNumber; ++i) {
+    std::string path = device_prefix + base::NumberToString(i);
+    base::File candidate_device_file_path(open(path.c_str(), O_RDWR, 0));
+
+    if (!candidate_device_file_path.IsValid()) {
+      continue;
+    }
+
+    LOG(INFO) << "Using device: " << path;
+    return base::FilePath(path);
+  }
+  LOG(ERROR) << "Failed to find available device.";
+  return base::FilePath();
+}
 
 // This map maintains a table with pairs of V4L2 request code
 // and corresponding name. New pair has to be added here
@@ -140,14 +173,14 @@ scoped_refptr<MmapedBuffer> V4L2Queue::GetBuffer(const size_t index) const {
 }
 
 V4L2IoctlShim::V4L2IoctlShim()
-    : decode_fd_(kDecodeDevice,
+    : decode_fd_(FindFirstDeviceOfType(V4L2IoctlShim::DeviceType::kDecoder),
                  base::File::FLAG_OPEN | base::File::FLAG_READ |
                      base::File::FLAG_WRITE),
-      media_fd_(kMediaDevice,
+      media_fd_(FindFirstDeviceOfType(V4L2IoctlShim::DeviceType::kMedia),
                 base::File::FLAG_OPEN | base::File::FLAG_READ |
                     base::File::FLAG_WRITE) {
-  PCHECK(decode_fd_.IsValid()) << "Failed to open " << kDecodeDevice;
-  PCHECK(media_fd_.IsValid()) << "Failed to open " << kMediaDevice;
+  PCHECK(decode_fd_.IsValid()) << "Failed to find available decode device.";
+  PCHECK(media_fd_.IsValid()) << "Failed to find available media device.";
 }
 
 V4L2IoctlShim::~V4L2IoctlShim() = default;

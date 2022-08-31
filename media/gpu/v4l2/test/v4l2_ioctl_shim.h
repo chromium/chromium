@@ -213,6 +213,11 @@ class V4L2IoctlShim {
   [[nodiscard]] bool QueryAndMmapQueueBuffers(
       std::unique_ptr<V4L2Queue>& queue) const;
 
+  enum class DeviceType {
+    kDecoder,
+    kMedia,
+  };
+
  private:
   // Queries |v4l_fd| to see if it can use the specified |fourcc| format
   // for the given buffer |type|.
