@@ -348,6 +348,7 @@ TEST_F(AppCommandRunnerTest, LoadAutoRunOnOsUpgradeAppCommands) {
                 [&](const auto& app_command_runner) {
                   base::Process process;
                   EXPECT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
+                  EXPECT_TRUE(process.WaitForExit(/*exit_code=*/nullptr));
                 });
 }
 
