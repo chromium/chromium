@@ -233,7 +233,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   // Used to set ConfirmationDialog behavior.
   raw_ptr<FakeIt2MeDialogFactory> dialog_factory_ = nullptr;
 
-  std::unique_ptr<base::DictionaryValue> policies_;
+  absl::optional<base::Value::Dict> policies_;
 
   scoped_refptr<It2MeHost> it2me_host_;
 
@@ -296,12 +296,12 @@ void It2MeHostTest::OnValidationComplete(base::OnceClosure resume_callback,
 void It2MeHostTest::SetPolicies(
     std::initializer_list<std::pair<base::StringPiece, const base::Value&>>
         policies) {
-  policies_ = std::make_unique<base::DictionaryValue>();
+  policies_.emplace();
   for (const auto& policy : policies) {
-    policies_->SetKey(policy.first, policy.second.Clone());
+    policies_->Set(policy.first, policy.second.Clone());
   }
   if (it2me_host_) {
-    it2me_host_->OnPolicyUpdate(std::move(policies_));
+    it2me_host_->OnPolicyUpdate(std::move(*policies_));
   }
 }
 
@@ -377,7 +377,7 @@ void It2MeHostTest::StartHost() {
         return context;
       },
       std::move(fake_signal_strategy));
-  it2me_host_->Connect(host_context_->Copy(), policies_->CreateDeepCopy(),
+  it2me_host_->Connect(host_context_->Copy(), policies_->Clone(),
                        std::move(dialog_factory), weak_factory_.GetWeakPtr(),
                        std::move(create_connection_context), kTestUserName,
                        ice_config);

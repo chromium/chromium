@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -22,10 +23,6 @@
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace remoting {
 
@@ -115,7 +112,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
       std::unique_ptr<ChromotingHostContext> context,
-      std::unique_ptr<base::DictionaryValue> policies,
+      base::Value::Dict policies,
       std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
       base::WeakPtr<It2MeHost::Observer> observer,
       CreateDeferredConnectContext create_context,
@@ -141,7 +138,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   GetValidationCallbackForTesting();
 
   // Called when initial policies are read and when they change.
-  void OnPolicyUpdate(std::unique_ptr<base::DictionaryValue> policies);
+  void OnPolicyUpdate(base::Value::Dict policies);
 
  protected:
   friend class base::RefCountedThreadSafe<It2MeHost>;

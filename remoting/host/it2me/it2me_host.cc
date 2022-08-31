@@ -120,7 +120,7 @@ void It2MeHost::set_is_enterprise_session(bool is_enterprise_session) {
 
 void It2MeHost::Connect(
     std::unique_ptr<ChromotingHostContext> host_context,
-    std::unique_ptr<base::DictionaryValue> policies,
+    base::Value::Dict policies,
     std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
     base::WeakPtr<It2MeHost::Observer> observer,
     CreateDeferredConnectContext create_context,
@@ -350,8 +350,7 @@ ValidationCallback It2MeHost::GetValidationCallbackForTesting() {
                              base::Unretained(this));
 }
 
-void It2MeHost::OnPolicyUpdate(
-    std::unique_ptr<base::DictionaryValue> policies) {
+void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   // The policy watcher runs on the |ui_task_runner|.
   if (!host_context_->network_task_runner()->BelongsToCurrentThread()) {
     host_context_->network_task_runner()->PostTask(
@@ -366,55 +365,54 @@ void It2MeHost::OnPolicyUpdate(
     // Retrieve the policy value on whether to allow connections but don't apply
     // it until after we've finished reading the rest of the policies and
     // started the connection process.
-    absl::optional<bool> remote_support_connections_allowed =
-        policies->FindBoolKey(
-            policy::key::kRemoteAccessHostAllowRemoteSupportConnections);
+    absl::optional<bool> remote_support_connections_allowed = policies.FindBool(
+        policy::key::kRemoteAccessHostAllowRemoteSupportConnections);
     remote_support_connections_allowed_ =
         remote_support_connections_allowed.value_or(true);
   }
 
   absl::optional<bool> nat_policy_value =
-      policies->FindBoolKey(policy::key::kRemoteAccessHostFirewallTraversal);
+      policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
   if (!nat_policy_value.has_value()) {
     HOST_LOG << "Failed to read kRemoteAccessHostFirewallTraversal policy";
     nat_policy_value = nat_traversal_enabled_;
   }
-  absl::optional<bool> relay_policy_value = policies->FindBoolKey(
-      policy::key::kRemoteAccessHostAllowRelayedConnection);
+  absl::optional<bool> relay_policy_value =
+      policies.FindBool(policy::key::kRemoteAccessHostAllowRelayedConnection);
   if (!relay_policy_value.has_value()) {
     HOST_LOG << "Failed to read kRemoteAccessHostAllowRelayedConnection policy";
     relay_policy_value = relay_connections_allowed_;
   }
   UpdateNatPolicies(nat_policy_value.value(), relay_policy_value.value());
 
-  const base::ListValue* host_domain_list;
-  if (policies->GetList(policy::key::kRemoteAccessHostDomainList,
-                        &host_domain_list)) {
+  const base::Value::List* host_domain_list =
+      policies.FindList(policy::key::kRemoteAccessHostDomainList);
+  if (host_domain_list) {
     std::vector<std::string> host_domain_list_vector;
-    for (const auto& value : host_domain_list->GetList()) {
+    for (const auto& value : *host_domain_list) {
       host_domain_list_vector.push_back(value.GetString());
     }
     UpdateHostDomainListPolicy(std::move(host_domain_list_vector));
   }
 
-  const base::ListValue* client_domain_list;
-  if (policies->GetList(policy::key::kRemoteAccessHostClientDomainList,
-                        &client_domain_list)) {
+  const base::Value::List* client_domain_list =
+      policies.FindList(policy::key::kRemoteAccessHostClientDomainList);
+  if (client_domain_list) {
     std::vector<std::string> client_domain_list_vector;
-    for (const auto& value : client_domain_list->GetList()) {
+    for (const auto& value : *client_domain_list) {
       client_domain_list_vector.push_back(value.GetString());
     }
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
   }
 
   const std::string* port_range_string =
-      policies->FindStringKey(policy::key::kRemoteAccessHostUdpPortRange);
+      policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
   if (port_range_string) {
     UpdateHostUdpPortRangePolicy(*port_range_string);
   }
 
   absl::optional<int> max_clipboard_size =
-      policies->FindIntKey(policy::key::kRemoteAccessHostClipboardSizeBytes);
+      policies.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes);
   if (max_clipboard_size.has_value()) {
     if (max_clipboard_size.value() >= 0) {
       max_clipboard_size_ = max_clipboard_size.value();

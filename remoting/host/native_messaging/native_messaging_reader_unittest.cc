@@ -134,8 +134,7 @@ TEST_F(NativeMessagingReaderTest, SingleGoodMessage) {
   ASSERT_TRUE(message_);
 
   ASSERT_TRUE(message_->is_dict());
-  absl::optional<int> result =
-      base::Value::AsDictionaryValue(*message_).FindIntKey("foo");
+  absl::optional<int> result = message_->GetDict().FindInt("foo");
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(42, result);
 }
@@ -147,7 +146,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_FALSE(on_error_signaled_);
     ASSERT_TRUE(message_);
     ASSERT_TRUE(message_->is_dict());
-    ASSERT_TRUE(base::Value::AsDictionaryValue(*message_).DictEmpty());
+    ASSERT_TRUE(message_->GetDict().empty());
   }
 
   {
@@ -156,8 +155,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_FALSE(on_error_signaled_);
     ASSERT_TRUE(message_);
     ASSERT_TRUE(message_->is_dict());
-    absl::optional<int> result =
-        base::Value::AsDictionaryValue(*message_).FindIntKey("foo");
+    absl::optional<int> result = message_->GetDict().FindInt("foo");
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(42, result);
   }
@@ -168,8 +166,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_FALSE(on_error_signaled_);
     ASSERT_TRUE(message_);
     ASSERT_TRUE(message_->is_dict());
-    absl::optional<int> result =
-        base::Value::AsDictionaryValue(*message_).FindIntKey("bar");
+    absl::optional<int> result = message_->GetDict().FindInt("bar");
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(43, result);
   }
@@ -180,8 +177,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_FALSE(on_error_signaled_);
     ASSERT_TRUE(message_);
     ASSERT_TRUE(message_->is_dict());
-    absl::optional<int> result =
-        base::Value::AsDictionaryValue(*message_).FindIntKey("baz");
+    absl::optional<int> result = message_->GetDict().FindInt("baz");
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(44, result);
   }

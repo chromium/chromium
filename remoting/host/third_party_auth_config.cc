@@ -73,12 +73,12 @@ bool ThirdPartyAuthConfig::ParseStrings(
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
-void ExtractHelper(const base::DictionaryValue& policy_dict,
+void ExtractHelper(const base::Value::Dict& policy_dict,
                    const std::string& policy_name,
                    bool* policy_present,
                    std::string* policy_value) {
   DCHECK(policy_value);
-  if (const std::string* value = policy_dict.FindStringKey(policy_name)) {
+  if (const std::string* value = policy_dict.FindString(policy_name)) {
     *policy_value = *value;
     *policy_present = true;
   } else {
@@ -90,7 +90,7 @@ void ExtractHelper(const base::DictionaryValue& policy_dict,
 }  // namespace
 
 bool ThirdPartyAuthConfig::ExtractStrings(
-    const base::DictionaryValue& policy_dict,
+    const base::Value::Dict& policy_dict,
     std::string* token_url,
     std::string* token_validation_url,
     std::string* token_validation_cert_issuer) {
@@ -108,7 +108,7 @@ bool ThirdPartyAuthConfig::ExtractStrings(
 }
 
 ThirdPartyAuthConfig::ParseStatus ThirdPartyAuthConfig::Parse(
-    const base::DictionaryValue& policy_dict,
+    const base::Value::Dict& policy_dict,
     ThirdPartyAuthConfig* result) {
   // Extract 3 individial policy values.
   std::string token_url;

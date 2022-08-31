@@ -84,7 +84,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   void SendOutgoingIq(const std::string& iq);
 
   // Called when initial policies are read and when they change.
-  void OnPolicyUpdate(std::unique_ptr<base::DictionaryValue> policies);
+  void OnPolicyUpdate(base::Value::Dict policies);
 
   // Called when malformed policies are detected.
   void OnPolicyError();

@@ -70,7 +70,7 @@ constexpr char kAnonymousUserName[] = "anonymous_user";
 void PolicyUpdateCallback(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     remoting::PolicyWatcher::PolicyUpdatedCallback callback,
-    std::unique_ptr<base::DictionaryValue> policies) {
+    base::Value::Dict policies) {
   DCHECK(callback);
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(callback, std::move(policies)));
@@ -326,9 +326,8 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
         base::Value::AsDictionaryValue(ice_config_value));
   }
 
-  std::unique_ptr<base::DictionaryValue> policies =
-      policy_watcher_->GetEffectivePolicies();
-  if (policies->DictSize() == 0) {
+  base::Value::Dict policies = policy_watcher_->GetEffectivePolicies();
+  if (policies.empty()) {
     // At this point policies have been read, so if there are none set then
     // it indicates an error. Since this can be fixed by end users it has a
     // dedicated message type rather than the generic "error" so that the
@@ -533,8 +532,7 @@ It2MeNativeMessagingHost::task_runner() const {
 
 /* static */
 
-void It2MeNativeMessagingHost::OnPolicyUpdate(
-    std::unique_ptr<base::DictionaryValue> policies) {
+void It2MeNativeMessagingHost::OnPolicyUpdate(base::Value::Dict policies) {
   // If an It2MeHost exists, provide it with the updated policies first.
   // That way it won't appear that the policies have changed if the pending
   // connect callback is run. If done the other way around, there is a race
@@ -556,17 +554,14 @@ absl::optional<bool>
 It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   DCHECK(policy_received_);
 #if BUILDFLAG(IS_WIN)
-  std::unique_ptr<base::DictionaryValue> platform_policies =
-      policy_watcher_->GetPlatformPolicies();
-  if (platform_policies) {
-    auto* platform_policy_value = platform_policies->FindPath(
-        policy::key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
-    if (platform_policy_value) {
-      // Use the platform policy value.
-      bool value = platform_policy_value->GetBool();
-      LOG(INFO) << "Allow UiAccess for remote support policy value: " << value;
-      return value;
-    }
+  base::Value::Dict platform_policies = policy_watcher_->GetPlatformPolicies();
+  auto* platform_policy_value = platform_policies.FindByDottedPath(
+      policy::key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
+  if (platform_policy_value) {
+    // Use the platform policy value.
+    bool value = platform_policy_value->GetBool();
+    LOG(INFO) << "Allow UiAccess for remote support policy value: " << value;
+    return value;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
