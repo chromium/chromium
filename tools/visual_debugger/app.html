@@ -250,7 +250,7 @@
       <option>100%</option>
       <option>50%</option>
       <option>200%</option>
-      <option>Free Camera</option>
+      <option disabled>Free Camera</option>
     </select>
   </div>
 
@@ -267,7 +267,11 @@
   </div>
 
   <div class='section'>
-    <canvas id='canvas'></canvas>
+    <!--We need to fix viewer size to avoid scroll position change when 
+      multiple displays are present. crbug.com/1358526-->
+    <div style="height:4000px;  border: 1px dotted gray;">
+        <canvas id='canvas' style="top :0px"></canvas>
+    </div>
   </div>
 
   <div class='modalContainer'></div>

@@ -3,6 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import sys
+
+if (sys.version_info < (3, )):
+  print("FAILURE. Python 3 or greater required. Please run with \"python3\".")
+  sys.exit(7)
+
 from http.server import HTTPServer, SimpleHTTPRequestHandler, test
 from functools import partial
 import sys
