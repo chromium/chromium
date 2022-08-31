@@ -59,11 +59,6 @@ CastWebContents* RuntimeApplicationBase::GetCastWebContents() {
   return cast_web_view_->cast_web_contents();
 }
 
-const std::string& RuntimeApplicationBase::GetCastMediaServiceEndpoint() const {
-  DCHECK(cast_media_service_grpc_endpoint_);
-  return *cast_media_service_grpc_endpoint_;
-}
-
 const cast::common::ApplicationConfig& RuntimeApplicationBase::GetAppConfig()
     const {
   return app_config_;
@@ -169,9 +164,7 @@ void RuntimeApplicationBase::Launch(
   core_app_stub_.emplace(core_channel);
   core_message_port_app_stub_.emplace(core_channel);
 
-  // Initialize MZ data.
-  cast_media_service_grpc_endpoint_.emplace(
-      request.cast_media_service_info().grpc_endpoint());
+  // TODO(b/244455581): Configure multizone.
 
   SetMediaState(request.media_state());
   SetVisibility(request.visibility());

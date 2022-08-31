@@ -18,6 +18,8 @@ CoreBrowserCastService::CoreBrowserCastService(
     cast_receiver::ApplicationClient& application_client)
     : app_dispatcher_(web_service, this, application_client) {}
 
+CoreBrowserCastService::~CoreBrowserCastService() = default;
+
 void CoreBrowserCastService::InitializeInternal() {}
 
 void CoreBrowserCastService::FinalizeInternal() {}
@@ -39,10 +41,6 @@ void CoreBrowserCastService::StopInternal() {
 
 std::unique_ptr<CastEventBuilder> CoreBrowserCastService::CreateEventBuilder() {
   return std::make_unique<CastEventBuilderSimple>();
-}
-
-const std::string& CoreBrowserCastService::GetAudioChannelEndpoint() {
-  return app_dispatcher_.GetCastMediaServiceEndpoint();
 }
 
 WebCryptoServer* CoreBrowserCastService::GetWebCryptoServer() {

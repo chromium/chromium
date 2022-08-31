@@ -47,8 +47,6 @@ class RuntimeApplicationDispatcher final {
              const std::string& runtime_service_endpoint);
   void Stop();
 
-  const std::string& GetCastMediaServiceEndpoint() const;
-
  private:
   // RuntimeService gRPC handlers:
   void HandleLoadApplication(

@@ -411,11 +411,4 @@ void RuntimeApplicationDispatcher::ResetApp(const std::string& session_id) {
   application_client_->OnForegroundApplicationChanged(nullptr);
 }
 
-const std::string& RuntimeApplicationDispatcher::GetCastMediaServiceEndpoint()
-    const {
-  // TODO(b/232140331): Call this only when foreground app changes.
-  DCHECK(!loaded_apps_.empty());
-  return loaded_apps_.begin()->second->GetCastMediaServiceEndpoint();
-}
-
 }  // namespace chromecast

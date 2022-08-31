@@ -36,9 +36,6 @@ class RuntimeApplication {
   // Returns the root instance of CastWebContents.
   virtual CastWebContents* GetCastWebContents() = 0;
 
-  // Returns the Cast media service endpoint for MZ.
-  virtual const std::string& GetCastMediaServiceEndpoint() const = 0;
-
   // Called before Launch() to perform any pre-launch loading that is
   // necessary. The |callback| will be called indicating if the operation
   // succeeded or not. If Load fails, |this| should be destroyed since it's not

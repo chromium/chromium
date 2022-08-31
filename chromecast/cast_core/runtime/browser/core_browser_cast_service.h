@@ -11,7 +11,6 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/core_browser_cast_service.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
-#include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_endpoint_manager.h"
 #include "chromecast/service/cast_service.h"
 
 namespace cast_receiver {
@@ -32,13 +31,13 @@ class MediaManager;
 // implementation.
 class CoreBrowserCastService
     : public CastService,
-      public CastRuntimeMetricsRecorder::EventBuilderFactory,
-      public media::CastRuntimeAudioChannelEndpointManager {
+      public CastRuntimeMetricsRecorder::EventBuilderFactory {
  public:
   // |application_client| is expected to persist for the duration of this
   // instance's lifetime.
   CoreBrowserCastService(CastWebService* web_service,
                          cast_receiver::ApplicationClient& application_client);
+  ~CoreBrowserCastService() override;
 
   // Returns WebCryptoServer.
   virtual WebCryptoServer* GetWebCryptoServer();
@@ -55,9 +54,6 @@ class CoreBrowserCastService
 
   // CastRuntimeMetricsRecorder::EventBuilderFactory implementation:
   std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
-
-  // CastRuntimeAudioChannelEndpointManager implementation:
-  const std::string& GetAudioChannelEndpoint() override;
 
   RuntimeApplicationDispatcher app_dispatcher_;
 };

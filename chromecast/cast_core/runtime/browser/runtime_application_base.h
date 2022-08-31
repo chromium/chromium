@@ -67,7 +67,6 @@ class RuntimeApplicationBase : public RuntimeApplication,
 
   // RuntimeApplication implementation:
   CastWebContents* GetCastWebContents() override;
-  const std::string& GetCastMediaServiceEndpoint() const override;
 
   // Launches the Cast application. The |OnApplicationLaunched| must be called
   // if launch is successful. Otherwise, StopApplication must be called.
@@ -165,7 +164,6 @@ class RuntimeApplicationBase : public RuntimeApplication,
   absl::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;
   absl::optional<cast::v2::CoreMessagePortApplicationServiceStub>
       core_message_port_app_stub_;
-  absl::optional<std::string> cast_media_service_grpc_endpoint_;
 
   // Flags if application is stopped.
   bool is_application_running_ = false;
