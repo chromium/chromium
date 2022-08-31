@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
 
 namespace mojo {
@@ -316,9 +317,27 @@ class ResponderThunk : public MessageReceiverWithStatus {
 
 // ----------------------------------------------------------------------------
 
+InterfaceEndpointClient::PendingAsyncResponse::PendingAsyncResponse(
+    uint32_t request_message_name,
+    std::unique_ptr<MessageReceiver> responder)
+    : request_message_name(request_message_name),
+      responder(std::move(responder)) {}
+
+InterfaceEndpointClient::PendingAsyncResponse::PendingAsyncResponse(
+    PendingAsyncResponse&&) = default;
+
+InterfaceEndpointClient::PendingAsyncResponse&
+InterfaceEndpointClient::PendingAsyncResponse::operator=(
+    PendingAsyncResponse&&) = default;
+
+InterfaceEndpointClient::PendingAsyncResponse::~PendingAsyncResponse() =
+    default;
+
 InterfaceEndpointClient::SyncResponseInfo::SyncResponseInfo(
+    uint32_t request_message_name,
     bool* in_response_received)
-    : response_received(in_response_received) {}
+    : request_message_name(request_message_name),
+      response_received(in_response_received) {}
 
 InterfaceEndpointClient::SyncResponseInfo::~SyncResponseInfo() {}
 
@@ -606,6 +625,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   // message before calling |SendMessage()| below.
 #endif
 
+  const uint32_t message_name = message->name();
   const bool is_sync = message->has_flag(Message::kFlagIsSync);
   const bool exclusive_wait = message->has_flag(Message::kFlagNoInterrupt);
   if (!controller_->SendMessage(message))
@@ -622,7 +642,8 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
       controller_->RegisterExternalSyncWaiter(request_id);
     }
     base::AutoLock lock(async_responders_lock_);
-    async_responders_[request_id] = std::move(responder);
+    async_responders_.emplace(
+        request_id, PendingAsyncResponse{message_name, std::move(responder)});
     return true;
   }
 
@@ -630,7 +651,8 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
   bool response_received = false;
   sync_responses_.insert(std::make_pair(
-      request_id, std::make_unique<SyncResponseInfo>(&response_received)));
+      request_id,
+      std::make_unique<SyncResponseInfo>(message_name, &response_received)));
 
   base::WeakPtr<InterfaceEndpointClient> weak_self =
       weak_ptr_factory_.GetWeakPtr();
@@ -814,13 +836,13 @@ void InterfaceEndpointClient::ResetFromAnotherSequenceUnsafe() {
 }
 
 void InterfaceEndpointClient::ForgetAsyncRequest(uint64_t request_id) {
-  std::unique_ptr<MessageReceiver> responder;
+  absl::optional<PendingAsyncResponse> response;
   {
     base::AutoLock lock(async_responders_lock_);
     auto it = async_responders_.find(request_id);
     if (it == async_responders_.end())
       return;
-    responder = std::move(it->second);
+    response = std::move(it->second);
     async_responders_.erase(it);
   }
 }
@@ -912,6 +934,10 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
         return false;
 
       if (it->second) {
+        if (message->name() != it->second->request_message_name) {
+          return false;
+        }
+
         it->second->response = std::move(*message);
         *it->second->response_received = true;
         return true;
@@ -922,18 +948,22 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       sync_responses_.erase(it);
     }
 
-    std::unique_ptr<MessageReceiver> responder;
+    absl::optional<PendingAsyncResponse> pending_response;
     {
       base::AutoLock lock(async_responders_lock_);
       auto it = async_responders_.find(request_id);
       if (it == async_responders_.end())
         return false;
-      responder = std::move(it->second);
+      pending_response = std::move(it->second);
       async_responders_.erase(it);
     }
 
+    if (message->name() != pending_response->request_message_name) {
+      return false;
+    }
+
     internal::MessageDispatchContext dispatch_context(message);
-    return responder->Accept(message);
+    return pending_response->responder->Accept(message);
   } else {
     if (mojo::internal::ControlMessageHandler::IsControlMessage(message))
       return control_message_handler_.Accept(message);
