@@ -143,24 +143,27 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
                        << static_cast<int>(style->GetTextDecorationLine());
         }
 
-        DCHECK(parent->IsLayoutInline());
+        if (UNLIKELY(!IsA<LayoutInline>(parent))) {
+          NOTREACHED();
+          return 0;
+        }
+
 #if DCHECK_IS_ON()
         // All non-culled inline boxes should have called |SyncDecoratingBox|,
         // so the loop should have stopped before seeing non-culled inline
         // boxes.
-        if (const auto* layout_inline = DynamicTo<LayoutInline>(parent)) {
-          // Except when |AppliedTextDecorations| is duplicated instead of
-          // shared, see above.
-          if (!(parent_decorations.size() == parent->Parent()
-                                                 ->StyleRef()
-                                                 .AppliedTextDecorations()
-                                                 .size() &&
-                parent_style.GetTextDecorationLine() ==
-                    TextDecorationLine::kNone) &&
-              !IsA<LayoutText>(layout_object)) {
-            DCHECK(!layout_inline->ShouldCreateBoxFragment());
-            DCHECK(!layout_inline->HasInlineFragments());
-          }
+        const auto* layout_inline = To<LayoutInline>(parent);
+        // Except when |AppliedTextDecorations| is duplicated instead of
+        // shared, see above.
+        if (!(parent_decorations.size() == parent->Parent()
+                                               ->StyleRef()
+                                               .AppliedTextDecorations()
+                                               .size() &&
+              parent_style.GetTextDecorationLine() ==
+                  TextDecorationLine::kNone) &&
+            !IsA<LayoutText>(layout_object)) {
+          DCHECK(!layout_inline->ShouldCreateBoxFragment());
+          DCHECK(!layout_inline->HasInlineFragments());
         }
 #endif
         item = nullptr;
