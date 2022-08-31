@@ -1359,7 +1359,7 @@ const base::Feature kProjectorUseOAuthForGetVideoInfo(
 // Controls whether to allow viewing screencast with local playback URL when
 // screencast is being transcoded.
 const base::Feature kProjectorLocalPlayback("ProjectorLocalPlayback",
-                                            base::FEATURE_DISABLED_BY_DEFAULT);
+                                            base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable features that are not ready to enable by
 // default but ready for internal testing.
