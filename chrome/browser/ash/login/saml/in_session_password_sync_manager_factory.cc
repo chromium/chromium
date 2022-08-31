@@ -24,9 +24,6 @@ InSessionPasswordSyncManagerFactory::GetInstance() {
 // static
 InSessionPasswordSyncManager*
 InSessionPasswordSyncManagerFactory::GetForProfile(Profile* profile) {
-  if (!features::IsSamlReauthenticationOnLockscreenEnabled())
-    return nullptr;
-
   return static_cast<InSessionPasswordSyncManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

@@ -89,11 +89,7 @@ void SetDisconnected(const std::string& service_path) {
 
 class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
  public:
-  LockscreenWebUiTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kEnableSamlReauthenticationOnLockscreen);
-  }
-
+  LockscreenWebUiTest() = default;
   LockscreenWebUiTest(const LockscreenWebUiTest&) = delete;
   LockscreenWebUiTest& operator=(const LockscreenWebUiTest&) = delete;
 

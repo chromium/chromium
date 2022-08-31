@@ -87,8 +87,6 @@ OfflineSigninLimiterTest::OfflineSigninLimiterTest()
     : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
       user_manager_(new MockUserManager),
       user_manager_enabler_(base::WrapUnique(user_manager_)) {
-  feature_list_.InitAndEnableFeature(
-      features::kEnableSamlReauthenticationOnLockscreen);
   local_state_ = std::make_unique<ScopedTestingLocalState>(
       TestingBrowserProcess::GetGlobal());
 }

@@ -662,11 +662,6 @@ const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
     "EnableSamlNotificationOnPasswordChangeSuccess",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables SAML re-authentication on the lock screen once the sign-in time
-// limit expires.
-const base::Feature kEnableSamlReauthenticationOnLockscreen{
-    "EnableSamlReauthenticationOnLockScreen", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kEnableSavedDesks{"EnableSavedDesks",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -2454,10 +2449,6 @@ bool IsRgbKeyboardEnabled() {
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
   return base::FeatureList::IsEnabled(
       kEnableSamlNotificationOnPasswordChangeSuccess);
-}
-
-bool IsSamlReauthenticationOnLockscreenEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSamlReauthenticationOnLockscreen);
 }
 
 bool IsSavedDesksEnabled() {
