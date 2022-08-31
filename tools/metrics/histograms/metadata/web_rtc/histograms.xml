@@ -1222,8 +1222,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.DesktopCapturerImpl"
-    enum="WebRtcDesktopCapturerImpl" expires_after="2023-01-22">
-  <owner>jamiewalch@chromium.org</owner>
+    enum="WebRtcDesktopCapturerImpl" expires_after="2023-02-12">
+  <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
@@ -1234,7 +1234,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCapturerResult"
     enum="WebRtcWgcCapturerResult" expires_after="2023-02-12">
-  <owner>jamiewalch@chromium.org</owner>
+  <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
@@ -1245,7 +1245,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionGetFrameResult"
     enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2023-02-12">
-  <owner>jamiewalch@chromium.org</owner>
+  <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
@@ -1255,7 +1255,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionStartResult"
     enum="WebRtcWgcCaptureSessionStartResult" expires_after="2023-02-12">
-  <owner>jamiewalch@chromium.org</owner>
+  <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
@@ -1264,8 +1264,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.{Capturer}CapturerFrameTime"
-    units="ms" expires_after="2022-10-09">
-  <owner>jamiewalch@chromium.org</owner>
+    units="ms" expires_after="2023-02-12">
+  <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>This measures the performance of the {Capturer} capturer.</summary>
