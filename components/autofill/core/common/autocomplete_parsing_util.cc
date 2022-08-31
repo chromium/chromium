@@ -182,7 +182,7 @@ absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
 // if there is reason to believe so, by matching `value` against patterns like
 // "address".
 // Ignoring autocomplete="off" and alike is treated separately in
-// `ParseFieldTypesFromAutocompleteAttributes()`.
+// `ParseAutocompleteAttribute()`.
 bool ShouldIgnoreAutocompleteValue(base::StringPiece value) {
   static constexpr char16_t kRegex[] = u"address";
   return MatchesRegex<kRegex>(base::UTF8ToUTF16(value));

@@ -387,6 +387,7 @@ FormStructure::FormStructure(const FormData& form)
   form_signature_ = CalculateFormSignature(form);
   // Do further processing on the fields, as needed.
   ProcessExtractedFields();
+  SetFieldTypesFromAutocompleteAttribute();
 }
 
 FormStructure::FormStructure(
@@ -404,7 +405,6 @@ void FormStructure::DetermineHeuristicTypes(
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
-  ParseFieldTypesFromAutocompleteAttributes();
   ParseFieldTypesWithPatterns(GetActivePatternSource(), log_manager);
   if (!base::FeatureList::IsEnabled(
           features::kAutofillDisableShadowHeuristics)) {
@@ -413,7 +413,7 @@ void FormStructure::DetermineHeuristicTypes(
   }
 
   UpdateAutofillCount();
-  IdentifySections(has_author_specified_sections_);
+  IdentifySections(/*ignore_autocomplete=*/false);
 
   if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection))
     RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
@@ -686,9 +686,9 @@ void FormStructure::ProcessQueryResponse(
     form->UpdateAutofillCount();
     form->RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
     form->RationalizeFieldTypePredictions(log_manager);
-    // TODO(crbug.com/1154080): By calling this with false, autocomplete section
+    // TODO(crbug.com/1154080): By calling this with true, autocomplete section
     // attributes will be ignored.
-    form->IdentifySections(false);
+    form->IdentifySections(/*ignore_autocomplete=*/true);
   }
 
   AutofillMetrics::ServerQueryMetric metric;
@@ -1258,16 +1258,10 @@ void FormStructure::LogDetermineHeuristicTypesMetrics() {
   }
 }
 
-void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
-  if (was_parsed_for_autocomplete_attributes_)
-    return;
-
+void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   has_author_specified_types_ = false;
-  has_author_specified_sections_ = false;
   has_author_specified_upi_vpa_hint_ = false;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
-    field->section = Section();
-
     if (!field->parsed_autocomplete)
       continue;
 
@@ -1285,16 +1279,24 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
       field->parsed_autocomplete->field_type = HtmlFieldType::kUnrecognized;
     }
 
-    // Compute a section name based on the specified hints and apply the result.
-    if (field->section.SetPrefixFromAutocomplete(
-            {.section = field->parsed_autocomplete->section,
-             .mode = field->parsed_autocomplete->mode})) {
-      has_author_specified_sections_ = true;
-    }
     field->SetHtmlType(field->parsed_autocomplete->field_type,
                        field->parsed_autocomplete->mode);
   }
-  was_parsed_for_autocomplete_attributes_ = true;
+}
+
+bool FormStructure::SetSectionsFromAutocompleteAttribute() {
+  bool has_author_specified_section = false;
+  for (const auto& field : fields_) {
+    if (!field->parsed_autocomplete)
+      continue;
+
+    if (field->section.SetPrefixFromAutocomplete(
+            {.section = field->parsed_autocomplete->section,
+             .mode = field->parsed_autocomplete->mode})) {
+      has_author_specified_section = true;
+    }
+  }
+  return has_author_specified_section;
 }
 
 void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
@@ -2043,6 +2045,11 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
+  for (const auto& field : fields_)
+    field->section = Section();
+
+  SetSectionsFromAutocompleteAttribute();
+
   // Create a unique identifier for the section based on the field.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   Section current_section;
@@ -2192,15 +2199,9 @@ void FormStructure::IdentifySectionsWithNewMethod() {
             ? Section::FieldTypeGroupSuffix::kCreditCard
             : Section::FieldTypeGroupSuffix::kDefault);
   }
-
-  // Since this function has changed the sections, subsequent calls to
-  // ParseFieldTypesFromAutocompleteAttributes(), which modifies the
-  // sections, too, should not be no-ops.
-  was_parsed_for_autocomplete_attributes_ = false;
 }
 
-// TODO(crbug/1153539): Make sectioning less stateful, less std::string-based.
-void FormStructure::IdentifySections(bool has_author_specified_sections) {
+void FormStructure::IdentifySections(bool ignore_autocomplete) {
   if (fields_.empty())
     return;
 
@@ -2213,7 +2214,10 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
-  if (!has_author_specified_sections) {
+  for (const auto& field : fields_)
+    field->section = Section();
+
+  if (ignore_autocomplete || !SetSectionsFromAutocompleteAttribute()) {
     // Create a unique identifier based on the field for the section.
     base::flat_map<LocalFrameToken, size_t> frame_token_ids;
     Section current_section;
@@ -2325,11 +2329,6 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
             ? Section::FieldTypeGroupSuffix::kCreditCard
             : Section::FieldTypeGroupSuffix::kDefault);
   }
-
-  // Since this function has changed the sections, subsequent calls to
-  // ParseFieldTypesFromAutocompleteAttributes(), which modifies the
-  // sections, too, should not be no-ops.
-  was_parsed_for_autocomplete_attributes_ = false;
 }
 
 bool FormStructure::ShouldSkipField(const FormFieldData& field) const {

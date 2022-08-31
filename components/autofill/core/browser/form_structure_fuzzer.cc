@@ -37,7 +37,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   form_data.fields.back().autocomplete_attribute.assign(
       reinterpret_cast<const char*>(data), size);
   FormStructure form_structure(form_data);
-  form_structure.ParseFieldTypesFromAutocompleteAttributes();
+  form_structure.SetFieldTypesFromAutocompleteAttribute();
   return 0;
 }
 

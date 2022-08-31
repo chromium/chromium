@@ -128,8 +128,7 @@ bool HTMLFormControlElementWithState::IsWearingAutofillAnchorMantle() const {
 }
 
 String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
-  // TODO(tkent): Share the code with autofill::FormStructure::
-  // ParseFieldTypesFromAutocompleteAttributes().
+  // TODO(tkent): Share the code with `autofill::ParseAutocompleteAttribute()`.
 
   // https://html.spec.whatwg.org/C/#autofill-processing-model
   // 1. If the element has no autocomplete attribute, then jump to the step

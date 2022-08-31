@@ -648,7 +648,6 @@ void AutofillManager::ParseFormsAsync(
     }
 
     auto form_structure = std::make_unique<FormStructure>(form_data);
-    form_structure->ParseFieldTypesFromAutocompleteAttributes();
     if (!form_structure->ShouldBeParsed(log_manager_))
       continue;
 
@@ -742,7 +741,6 @@ void AutofillManager::ParseFormAsync(
   }
 
   auto form_structure = std::make_unique<FormStructure>(form_data);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   if (!form_structure->ShouldBeParsed(log_manager_)) {
     // For Autocomplete, events need to be handled even for forms that cannot be
     // parsed.
@@ -818,7 +816,6 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
   }
 
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   if (!form_structure->ShouldBeParsed(log_manager_))
     return nullptr;
 

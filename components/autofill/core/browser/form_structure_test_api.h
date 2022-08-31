@@ -63,8 +63,8 @@ class FormStructureTestApi {
     return form_structure_->fields_;
   }
 
-  void IdentifySections(bool has_author_specified_sections) {
-    form_structure_->IdentifySections(has_author_specified_sections);
+  void IdentifySections(bool ignore_autocomplete) {
+    form_structure_->IdentifySections(ignore_autocomplete);
   }
 
   bool phone_rationalized(const Section& section) const {

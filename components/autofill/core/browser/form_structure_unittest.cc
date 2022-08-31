@@ -481,7 +481,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   // Baseline, HTTP should work.
   form.url = GURL("http://wwww.foo.com/myform");
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_TRUE(form_structure->ShouldBeParsed());
   EXPECT_TRUE(form_structure->ShouldRunHeuristics());
   EXPECT_TRUE(form_structure->ShouldBeQueried());
@@ -490,7 +489,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   // Baseline, HTTPS should work.
   form.url = GURL("https://wwww.foo.com/myform");
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_TRUE(form_structure->ShouldBeParsed());
   EXPECT_TRUE(form_structure->ShouldRunHeuristics());
   EXPECT_TRUE(form_structure->ShouldBeQueried());
@@ -499,7 +497,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   // Chrome internal urls shouldn't be parsed.
   form.url = GURL("chrome://settings");
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
@@ -508,7 +505,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   // FTP urls shouldn't be parsed.
   form.url = GURL("ftp://ftp.foo.com/form.html");
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
@@ -517,7 +513,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   // Blob urls shouldn't be parsed.
   form.url = GURL("blob://blob.foo.com/form.html");
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
@@ -526,7 +521,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   // About urls shouldn't be parsed.
   form.url = GURL("about://about.foo.com/form.html");
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
@@ -548,7 +542,6 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_TRUE(form_structure->ShouldBeParsed());
 }
 

@@ -222,15 +222,17 @@ class FormStructure {
 
   void LogDetermineHeuristicTypesMetrics();
 
-  // Classifies each field in |fields_| based upon its |autocomplete| attribute,
-  // if the attribute is available.  The association is stored into the field's
-  // |heuristic_type|.
-  // Fills |has_author_specified_types_| with |true| if the attribute is
-  // available and neither empty nor set to the special values "on" or "off" for
-  // at least one field.
-  // Fills |has_author_specified_sections_| with |true| if the attribute
-  // specifies a section for at least one field.
-  void ParseFieldTypesFromAutocompleteAttributes();
+  // Sets each field's `html_type` and `html_mode` based on the field's
+  // `parsed_autocomplete` member.
+  // Sets `has_author_specified_types_` to `true` iff the `parsed_autocomplete`
+  // is available for at least one field.
+  void SetFieldTypesFromAutocompleteAttribute();
+
+  // Sets each field's section based on the `parsed_autocomplete` member when
+  // available.
+  // Returns whether at least one field's `parsed_autocomplete` section is
+  // correctly defined by the web developer.
+  bool SetSectionsFromAutocompleteAttribute();
 
   // Classifies each field in |fields_| using the regular expressions.
   void ParseFieldTypesWithPatterns(PatternSource pattern_source,
@@ -369,8 +371,7 @@ class FormStructure {
 
   // Identify sections for the |fields_| for testing purposes.
   void identify_sections_for_testing() {
-    ParseFieldTypesFromAutocompleteAttributes();
-    IdentifySections(has_author_specified_sections_);
+    IdentifySections(/*ignore_autocomplete=*/false);
   }
 
   // Set the Overall field type for |fields_[field_index]| to |type| for testing
@@ -570,16 +571,18 @@ class FormStructure {
   // Returns true if the form has no fields, or too many.
   bool IsMalformed() const;
 
-  // Classifies each field in |fields_| into a logical section.
-  // Sections are identified by the heuristic (or by the heuristic and the
-  // autocomplete section attribute, if defined when feature flag
-  // kAutofillUseNewSectioningMethod is enabled) that a logical section should
-  // not include multiple fields of the same autofill type (with some
-  // exceptions, as described in the implementation). Credit card fields also,
-  // have a single separate section from address fields.
-  // If |has_author_specified_sections| is true, only the second pass --
-  // distinguishing credit card sections from non-credit card ones -- is made.
-  void IdentifySections(bool has_author_specified_sections);
+  // Classifies each field in `fields_` into a logical section.
+  // The function consists of 2 passes:
+  //   - 1st pass: Performed only when `ignore_autocomplete` is true or none of
+  //               the fields in `fields_` has a valid autocomplete section.
+  //               Sections are identified by the heuristic that a logical
+  //               section should not include multiple fields of the same
+  //               autofill type with some exceptions, as described in the
+  //               implementation.
+  //   - 2nd pass: Separate credit card fields from all other fields.
+  // Note: `ignore_autocomplete` is set to true only when identifying sections
+  // after server response.
+  void IdentifySections(bool ignore_autocomplete);
   void IdentifySectionsWithNewMethod();
 
   // Returns true if field should be skipped when talking to Autofill server.
@@ -650,18 +653,9 @@ class FormStructure {
   // author, via the |autocompletetype| attribute.
   bool has_author_specified_types_ = false;
 
-  // Whether the form includes any sections explicitly specified by the site
-  // author, via the autocomplete attribute.
-  bool has_author_specified_sections_ = false;
-
   // Whether the form includes a field that explicitly sets it autocomplete
   // type to "upi-vpa".
   bool has_author_specified_upi_vpa_hint_ = false;
-
-  // Whether the form was parsed for autocomplete attribute, thus assigning
-  // the real values of |has_author_specified_types_| and
-  // |has_author_specified_sections_|.
-  bool was_parsed_for_autocomplete_attributes_ = false;
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;
