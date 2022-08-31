@@ -33135,6 +33135,28 @@ This policy has no effect if the option to keep existing browsing data is not av
       <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD">EnabledBelowThreshold</ph> (1): Battery Saver Mode will be enabled when the device is on battery power and battery level is low.
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY">EnabledOnBattery</ph> (2): Battery Saver Mode will be enabled when the device is on battery power.
       ''',
+    },
+    {
+      'name': 'TabDiscardingExceptions',
+      'owners': ['anthonyvd@chromium.org', 'file://components/performance_manager/OWNERS'],
+      'caption': 'URL pattern Exceptions to tab discarding',
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' }
+      },
+      'future_on': ['chrome.*' ],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['example.com', 'https://*', '*'],
+      'id': 1010,
+      'tags': [],
+      'desc': '''This policy makes it so that any URL matching one or more of the patterns it specifies (using the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> filter format) will never be discarded by the browser.
+      This applies to memory pressure and high efficiency mode discarding.
+      A discarded page is unloaded and its resources fully reclaimed. The tab its associated with remains in the tabstrip, but making it visible will trigger a full reload.
+      ''',
     }
   ],
   'messages': {
@@ -34144,6 +34166,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1009,
+  'highest_id_currently_used': 1010,
   'highest_atomic_group_id_currently_used': 43
 }

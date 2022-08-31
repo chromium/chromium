@@ -19,6 +19,9 @@ const char kBatterySaverModeState[] =
 const char kTabDiscardingExceptions[] =
     "performance_tuning.tab_discarding.exceptions";
 
+const char kManagedTabDiscardingExceptions[] =
+    "performance_tuning.tab_discarding.exceptions.managed";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHighEfficiencyModeEnabled, false);
   registry->RegisterIntegerPref(
@@ -28,6 +31,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kTabDiscardingExceptions);
+  registry->RegisterListPref(kManagedTabDiscardingExceptions);
 }
 
 BatterySaverModeState GetCurrentBatterySaverModeState(

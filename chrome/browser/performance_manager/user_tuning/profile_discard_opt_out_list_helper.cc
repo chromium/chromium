@@ -20,15 +20,56 @@
 #include "url/gurl.h"
 
 namespace performance_manager::user_tuning {
+namespace {
+
+class ProfileDiscardOptOutListHelperDelegateImpl
+    : public ProfileDiscardOptOutListHelper::Delegate {
+ public:
+  ~ProfileDiscardOptOutListHelperDelegateImpl() override = default;
+
+  void ClearPatterns(const std::string& browser_context_id) override {
+    performance_manager::PerformanceManager::CallOnGraph(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::string browser_context_id,
+               performance_manager::Graph* graph) {
+              policies::PageDiscardingHelper::GetFromGraph(graph)
+                  ->ClearNoDiscardPatternsForProfile(browser_context_id);
+            },
+            browser_context_id));
+  }
+
+  void SetPatterns(const std::string& browser_context_id,
+                   const std::vector<std::string>& patterns) override {
+    performance_manager::PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindOnce(
+                       [](std::string browser_context_id,
+                          std::vector<std::string> patterns,
+                          performance_manager::Graph* graph) {
+                         policies::PageDiscardingHelper::GetFromGraph(graph)
+                             ->SetNoDiscardPatternsForProfile(
+                                 browser_context_id, patterns);
+                       },
+                       browser_context_id, std::move(patterns)));
+  }
+};
+
+}  // namespace
 
 ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
     ProfileDiscardOptOutTracker(const std::string& browser_context_id,
-                                PrefService* pref_service)
-    : browser_context_id_(browser_context_id) {
+                                PrefService* pref_service,
+                                raw_ptr<Delegate> delegate)
+    : browser_context_id_(browser_context_id), delegate_(delegate) {
   pref_change_registrar_.Init(pref_service);
 
   pref_change_registrar_.Add(
       performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
+      base::BindRepeating(&ProfileDiscardOptOutListHelper::
+                              ProfileDiscardOptOutTracker::OnOptOutListChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      performance_manager::user_tuning::prefs::kManagedTabDiscardingExceptions,
       base::BindRepeating(&ProfileDiscardOptOutListHelper::
                               ProfileDiscardOptOutTracker::OnOptOutListChanged,
                           base::Unretained(this)));
@@ -38,50 +79,61 @@ ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
 
 ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
     ~ProfileDiscardOptOutTracker() {
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::string browser_context_id,
-             performance_manager::Graph* graph) {
-            policies::PageDiscardingHelper::GetFromGraph(graph)
-                ->ClearNoDiscardPatternsForProfile(browser_context_id);
-          },
-          browser_context_id_));
+  delegate_->ClearPatterns(browser_context_id_);
 }
 
 void ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
     OnOptOutListChanged() {
-  const base::Value::List& value_list =
+  const base::Value::List& user_value_list =
       pref_change_registrar_.prefs()->GetValueList(
           performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
+  const base::Value::List& managed_value_list =
+      pref_change_registrar_.prefs()->GetValueList(
+          performance_manager::user_tuning::prefs::
+              kManagedTabDiscardingExceptions);
+
   std::vector<std::string> patterns;
-  patterns.reserve(value_list.size());
-  std::transform(value_list.begin(), value_list.end(),
+  patterns.reserve(user_value_list.size() + managed_value_list.size());
+
+  // Merge the two lists so that the PageDiscardingHelper only sees a single
+  // list of patterns to exclude from discarding.
+  std::transform(user_value_list.begin(), user_value_list.end(),
+                 std::back_inserter(patterns),
+                 [](const base::Value& val) { return val.GetString(); });
+  std::transform(managed_value_list.begin(), managed_value_list.end(),
                  std::back_inserter(patterns),
                  [](const base::Value& val) { return val.GetString(); });
 
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::string browser_context_id, std::vector<std::string> patterns,
-             performance_manager::Graph* graph) {
-            policies::PageDiscardingHelper::GetFromGraph(graph)
-                ->SetNoDiscardPatternsForProfile(browser_context_id, patterns);
-          },
-          browser_context_id_, std::move(patterns)));
+  delegate_->SetPatterns(browser_context_id_, patterns);
 }
 
-ProfileDiscardOptOutListHelper::ProfileDiscardOptOutListHelper() = default;
+ProfileDiscardOptOutListHelper::ProfileDiscardOptOutListHelper(
+    std::unique_ptr<Delegate> delegate)
+    : delegate_(delegate ? std::move(delegate)
+                         : std::make_unique<
+                               ProfileDiscardOptOutListHelperDelegateImpl>()) {}
+
 ProfileDiscardOptOutListHelper::~ProfileDiscardOptOutListHelper() = default;
 
 void ProfileDiscardOptOutListHelper::OnProfileAdded(Profile* profile) {
-  discard_opt_out_trackers_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(profile->UniqueId()),
-      std::forward_as_tuple(profile->UniqueId(), profile->GetPrefs()));
+  OnProfileAddedImpl(profile->UniqueId(), profile->GetPrefs());
 }
 
 void ProfileDiscardOptOutListHelper::OnProfileWillBeRemoved(Profile* profile) {
-  auto it = discard_opt_out_trackers_.find(profile->UniqueId());
+  OnProfileWillBeRemovedImpl(profile->UniqueId());
+}
+
+void ProfileDiscardOptOutListHelper::OnProfileAddedImpl(
+    const std::string& browser_context_id,
+    PrefService* pref_service) {
+  discard_opt_out_trackers_.emplace(
+      std::piecewise_construct, std::forward_as_tuple(browser_context_id),
+      std::forward_as_tuple(browser_context_id, pref_service, delegate_.get()));
+}
+
+void ProfileDiscardOptOutListHelper::OnProfileWillBeRemovedImpl(
+    const std::string& browser_context_id) {
+  auto it = discard_opt_out_trackers_.find(browser_context_id);
   DCHECK(it != discard_opt_out_trackers_.end());
   discard_opt_out_trackers_.erase(it);
 }

@@ -19755,5 +19755,28 @@
         }
       }
     ]
+  },
+  "TabDiscardingExceptions": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "TabDiscardingExceptions": [
+            "example.com"
+          ]
+        },
+        "prefs": {
+          "performance_tuning.tab_discarding.exceptions.managed": {
+            "value": [
+              "example.com"
+            ]
+          }
+        }
+      }
+    ]
   }
 }
