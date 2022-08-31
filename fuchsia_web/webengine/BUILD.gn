@@ -739,9 +739,6 @@ source_set("cast_streaming_receiver_browsertests") {
     ":web_engine_core",
     "//components/cast/message_port",
     "//components/cast_streaming/browser:test_sender",
-
-    # TODO(crbug.com/1348698): Remove this when test_sender provides all deps.
-    "//components/openscreen_platform",
     "//content/test:test_support",
     "//fuchsia_web/common/test:test_support",
   ]

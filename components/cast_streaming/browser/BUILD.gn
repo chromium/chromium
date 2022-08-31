@@ -4,196 +4,110 @@
 
 import("//testing/test.gni")
 
-source_set("receiver_session_public") {
-  deps = [
-    "//base",
-    "//mojo/public/cpp/system",
-  ]
-  public_deps = [
-    "//components/cast_streaming/public/mojom",
-    "//third_party/openscreen/src/cast/streaming:receiver",
-  ]
-  visibility = [ ":*" ]
-  sources = [ "public/receiver_session.h" ]
-}
+visibility = [ ":*" ]
 
 # MessagePort cannot be used on Windows due to intersection of its PostMessage
 # method with a macro of the same name, so hide the targets that use it and all
 # that depend on it behind a platform check.
+# TODO(crbug.com/1357085): Resolve this and remove this exception.
 if (!is_win) {
   # TODO(crbug.com/1207718): Remove cast_message_port_impl code from this
   # component and replace with a more general interface.
   # TODO(crbug.com/1208195): Move code to correct place with respect to the
   # /public folder to only expose publicly needed headers.
   source_set("core") {
-    deps = [
-      "//base",
-      "//media",
-    ]
-    public_deps = [
-      "//components/cast/message_port",
-      "//third_party/openscreen/src/cast/common:public",
-      "//third_party/openscreen/src/cast/streaming:common",
-    ]
-    visibility = [ ":*" ]
+    public = [ "cast_message_port_impl.h" ]
     sources = [
       "cast_message_port_impl.cc",
-      "cast_message_port_impl.h",
       "message_serialization.cc",
       "message_serialization.h",
     ]
-  }
-
-  source_set("receiver_session") {
-    deps = [
-      ":core",
-      ":demuxer_stream_data_provider",
-      ":network_context",
-      ":receiver_session_public",
-      ":streaming_initialization_info",
-      ":streaming_session",
-      "//base",
-      "//media",
-      "//media/mojo/common",
-      "//media/mojo/mojom",
-      "//mojo/public/cpp/system",
-    ]
     public_deps = [
-      "//components/cast_streaming/public/mojom",
-      "//third_party/openscreen/src/cast/streaming:receiver",
-    ]
-    visibility = [ ":*" ]
-    sources = [
-      "receiver_session_impl.cc",
-      "receiver_session_impl.h",
-    ]
-  }
-
-  source_set("streaming_session") {
-    deps = [
-      ":core",
-      ":demuxer_stream_data_provider",
-      ":receiver_session_public",
-      ":renderer_controls",
-      ":streaming_initialization_info",
       "//base",
-      "//components/cast_streaming/public",
-      "//components/cast_streaming/public:config_conversions",
-      "//components/cast_streaming/public/mojom",
-
-      # Partial implementation of the platform API used by
-      # //third_party/openscreen/src/cast/streaming:receiver.
-      "//components/openscreen_platform:openscreen_platform_without_sockets",
-      "//media",
-      "//media/mojo/common",
-      "//media/mojo/mojom",
-      "//mojo/public/cpp/system",
+      "//components/cast/message_port",
       "//third_party/openscreen/src/cast/common:public",
-      "//third_party/openscreen/src/cast/streaming:receiver",
     ]
-    public_deps = [ "//components/cast/message_port" ]
-    visibility = [ ":*" ]
-    sources = [
-      "cast_streaming_session.cc",
-      "cast_streaming_session.h",
-      "renderer_controller_config.cc",
-      "renderer_controller_config.h",
-      "stream_consumer.cc",
-      "stream_consumer.h",
+    deps = [ "//third_party/openscreen/src/platform:base" ]
+    friend = [
+      ":test_sender_without_socket_deps",
+      ":unit_tests",
     ]
   }
 
   # TODO(crbug.com/1207715): Move to /tests directory.
   source_set("test_sender") {
     testonly = true
+    visibility += [ "*" ]
+    public_deps = [ ":test_sender_without_socket_deps" ]
+    deps = [
+      # Complete implementation of the platform API used by
+      # :test_sender_without_socket_deps.
+      "//components/openscreen_platform",
+    ]
+  }
+
+  # cast_streaming_shell cannot depend on the Network Service and thus uses
+  # //components/openscreen_platform:openscreen_platform_using_net_sockets.
+  # Because //components/openscreen_platform has a conflicing implementation,
+  # this target, which contains only the needed symbols, is provided.
+  #
+  # TODO(crbug.com/1207715): Move to /tests directory.
+  source_set("test_sender_using_net_sockets") {
+    testonly = true
+    visibility += [ "//fuchsia_web/shell:cast_streaming_shell_exe" ]
+    public_deps = [ ":test_sender_without_socket_deps" ]
+    deps = [
+      # Complete implementation of the platform API used by
+      # :test_sender_without_socket_deps.
+      "//components/openscreen_platform:openscreen_platform_using_net_sockets",
+    ]
+  }
+
+  # TODO(crbug.com/1207715): Move to /tests directory.
+  source_set("test_sender_without_socket_deps") {
+    testonly = true
+    public = [
+      "test/cast_message_port_sender_impl.h",
+      "test/cast_streaming_test_sender.h",
+    ]
+    sources = [
+      "test/cast_message_port_sender_impl.cc",
+      "test/cast_streaming_test_sender.cc",
+    ]
     deps = [
       ":core",
-      ":streaming_initialization_info",
-      "//components/cast_streaming/public",
       "//components/cast_streaming/public:config_conversions",
 
       # Partial implementation of the platform API used by
       # //third_party/openscreen/src/cast/*.
       "//components/openscreen_platform:openscreen_platform_without_sockets",
-      "//media/mojo/common",
-      "//media/mojo/mojom",
-      "//mojo/public/cpp/system",
-      "//third_party/openscreen/src/platform:api",
+      "//third_party/openscreen/src/cast/streaming:common",
+      "//third_party/openscreen/src/platform:base",
     ]
     public_deps = [
       "//base",
-      "//media",
+      "//components/cast/message_port",
+      "//net",
       "//third_party/openscreen/src/cast/common:public",
       "//third_party/openscreen/src/cast/streaming:sender",
-    ]
-    sources = [
-      "test/cast_message_port_sender_impl.cc",
-      "test/cast_message_port_sender_impl.h",
-      "test/cast_streaming_test_sender.cc",
-      "test/cast_streaming_test_sender.h",
     ]
   }
 }
 
-source_set("demuxer_stream_data_provider") {
-  deps = [
-    ":demuxer_stream_client",
-    "//base",
-    "//components/cast_streaming/public:demuxer_stream_traits",
-    "//components/cast_streaming/public/mojom",
-    "//media",
-    "//media/mojo/common",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/system",
-  ]
-  visibility = [ ":*" ]
-  sources = [ "demuxer_stream_data_provider.h" ]
-}
-
 source_set("network_context") {
+  visibility += [ "*" ]
   public = [ "public/network_context_getter.h" ]
-  deps = [
-    "//base",
-    "//components/openscreen_platform",
-  ]
-  visibility = [ ":*" ]
   sources = [ "network_context_getter.cc" ]
-}
-
-source_set("streaming_initialization_info") {
-  public_deps = [
-    ":demuxer_stream_client",
-    "//media",
-    "//third_party/openscreen/src/cast/streaming:receiver",
-  ]
-  visibility = [ ":*" ]
-  sources = [
-    "streaming_initialization_info.cc",
-    "streaming_initialization_info.h",
-  ]
-}
-
-source_set("demuxer_stream_client") {
-  visibility = [ ":*" ]
-  sources = [ "demuxer_stream_client.h" ]
   public_deps = [ "//base" ]
+  deps = [ "//components/openscreen_platform" ]
 }
 
-source_set("renderer_controls") {
-  public_deps = [
-    ":demuxer_stream_client",
-    ":streaming_initialization_info",
-    "//base",
-    "//components/cast_streaming/public:remoting_utils",
-    "//components/cast_streaming/public/mojom",
-    "//media",
-    "//media/mojo/common",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/system",
-    "//third_party/openscreen/src/cast/streaming:receiver",
-  ]
-  visibility = [ ":*" ]
+source_set("browser") {
+  visibility += [ "*" ]
+  public = [ "public/receiver_session.h" ]
   sources = [
+    "demuxer_stream_client.h",
+    "demuxer_stream_data_provider.h",
     "playback_command_dispatcher.cc",
     "playback_command_dispatcher.h",
     "remoting_session_client.h",
@@ -205,42 +119,78 @@ source_set("renderer_controls") {
     "rpc_demuxer_stream_handler.h",
     "rpc_initialization_call_handler_base.cc",
     "rpc_initialization_call_handler_base.h",
+    "streaming_initialization_info.cc",
+    "streaming_initialization_info.h",
   ]
-}
-
-source_set("browser") {
   public_deps = [
     ":network_context",
-    ":receiver_session_public",
+    "//base",
+    "//components/cast_streaming/public/mojom",
+    "//mojo/public/cpp/bindings",
+
+    # TODO(crbug.com/1220176): Move this deps elsewhere once include is removed.
+    "//third_party/openscreen/src/cast/streaming:receiver",
+  ]
+  deps = [
+    "//base",
+    "//components/cast_streaming/public:demuxer_stream_traits",
+    "//components/cast_streaming/public:remoting_utils",
+    "//components/cast_streaming/public/mojom",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/system",
+    "//third_party/openscreen/src/cast/streaming:receiver",
   ]
 
   if (!is_win) {
-    deps = [ ":receiver_session" ]
+    sources += [
+      "cast_streaming_session.cc",
+      "cast_streaming_session.h",
+      "receiver_session_impl.cc",
+      "receiver_session_impl.h",
+      "renderer_controller_config.cc",
+      "renderer_controller_config.h",
+      "stream_consumer.cc",
+      "stream_consumer.h",
+    ]
+    deps += [
+      ":core",
+      ":network_context",
+      "//components/cast/message_port",
+      "//components/cast_streaming/public:config_conversions",
+      "//components/openscreen_platform",
+      "//mojo/public/cpp/bindings",
+    ]
   }
+
+  friend = [ ":unit_tests" ]
 }
 
 # TODO(crbug.com/1207721): Add more unit tests for code in this directory.
 source_set("unit_tests") {
   testonly = true
-  deps = [
-    ":browser",
-    ":demuxer_stream_client",
-    ":demuxer_stream_data_provider",
-    ":renderer_controls",
-    "//base",
-    "//base/test:test_support",
-    "//components/cast_streaming/public:remoting_utils",
-    "//media",
-    "//testing/gtest",
-  ]
+  visibility += [ "//components/cast_streaming:unit_tests" ]
+  public = []
   sources = [
     "demuxer_stream_data_provider_unittest.cc",
     "rpc_demuxer_stream_handler_unittests.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//media",
+    "//media/mojo/common",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:common",
   ]
 
   if (!is_win) {
     deps += [
       ":core",
+      "//components/cast/message_port",
       "//components/cast/message_port:test_message_port_receiver",
     ]
     sources += [ "cast_message_port_impl_unittest.cc" ]

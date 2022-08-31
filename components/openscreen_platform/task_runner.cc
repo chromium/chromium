@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/openscreen_platform/task_runner.h"
+
 #include <chrono>  // NOLINT
 #include <utility>
 
@@ -9,8 +11,6 @@
 #include "base/location.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
-
-#include "components/openscreen_platform/task_runner.h"
 
 namespace openscreen_platform {
 

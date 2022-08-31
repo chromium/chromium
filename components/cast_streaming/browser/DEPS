@@ -6,5 +6,7 @@ include_rules = [
   "+mojo/core",
   "+mojo/public",
   "+net/base",
-  "+third_party/openscreen/src",
+  "+third_party/openscreen/src/cast/common/public",
+  "+third_party/openscreen/src/cast/streaming",
+  "+third_party/openscreen/src/platform",
 ]
