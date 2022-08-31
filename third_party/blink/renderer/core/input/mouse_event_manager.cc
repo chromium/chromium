@@ -281,10 +281,9 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
     std::unique_ptr<EventTiming> event_timing;
     bool should_dispatch =
         !check_for_listener || target->HasEventListeners(mouse_event_type);
-    if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-        (mouse_event_type == event_type_names::kContextmenu ||
-         mouse_event_type == event_type_names::kClick ||
-         mouse_event_type == event_type_names::kAuxclick)) {
+    if (mouse_event_type == event_type_names::kContextmenu ||
+        mouse_event_type == event_type_names::kClick ||
+        mouse_event_type == event_type_names::kAuxclick) {
       PointerEventInit* initializer = PointerEventInit::Create();
       SetMouseEventAttributes(initializer, target_node, mouse_event_type,
                               mouse_event, last_position, related_target,

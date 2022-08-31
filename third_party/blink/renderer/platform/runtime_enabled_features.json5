@@ -352,10 +352,6 @@
       status: "stable",
     },
     {
-      name: "ClickPointerEvent",
-      status: "stable",
-    },
-    {
       name: "ClientHintsMetaEquivDelegateCH",
       status: "stable",
     },

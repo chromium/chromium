@@ -198,8 +198,7 @@ Event* SimulatedEventUtil::CreateEvent(
          event_type == event_type_names::kPointerup);
 
   EventClassType event_class_type = EventClassType::kMouse;
-  if ((RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-       event_type == event_type_names::kClick) ||
+  if (event_type == event_type_names::kClick ||
       event_type == event_type_names::kPointerdown ||
       event_type == event_type_names::kPointerup) {
     event_class_type = EventClassType::kPointer;

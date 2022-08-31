@@ -92,10 +92,9 @@ PointerEvent::PointerEvent(const AtomicString& type,
 }
 
 bool PointerEvent::IsMouseEvent() const {
-  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-      (type() == event_type_names::kClick ||
-       type() == event_type_names::kAuxclick ||
-       type() == event_type_names::kContextmenu)) {
+  if (type() == event_type_names::kClick ||
+      type() == event_type_names::kAuxclick ||
+      type() == event_type_names::kContextmenu) {
     return true;
   }
 
@@ -185,10 +184,7 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (type().IsEmpty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
-  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-      type() == event_type_names::kClick) {
-    // The MouseEvent::DispatchEvent will take care of sending dblclick event if
-    // needed.
+  if (type() == event_type_names::kClick) {
     return MouseEvent::DispatchEvent(dispatcher);
   }
 

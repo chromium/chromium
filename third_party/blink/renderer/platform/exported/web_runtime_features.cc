@@ -49,10 +49,6 @@ void WebRuntimeFeatures::EnableBrowserVerifiedUserActivationMouse(bool enable) {
   RuntimeEnabledFeatures::SetBrowserVerifiedUserActivationMouseEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableClickPointerEvent(bool enable) {
-  RuntimeEnabledFeatures::SetClickPointerEventEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableExperimentalFeatures(bool enable) {
   RuntimeEnabledFeatures::SetExperimentalFeaturesEnabled(enable);
 }
