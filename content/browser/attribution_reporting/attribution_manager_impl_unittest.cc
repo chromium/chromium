@@ -110,7 +110,8 @@ AggregatableReport CreateExampleAggregatableReport() {
       /*api_version=*/"",
       /*api_identifier=*/"attribution-reporting");
 
-  return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson());
+  return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson(),
+                            /*debug_key=*/absl::nullopt);
 }
 
 // Time after impression that a conversion can first be sent. See
