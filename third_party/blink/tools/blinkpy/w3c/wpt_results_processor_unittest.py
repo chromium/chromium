@@ -62,8 +62,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # placements to test nonstandard layouts. That is not a goal of this
         # test case, so we settle on the former for consistency.
         port.web_tests_dir = self.path_finder.web_tests_dir
-        self.wpt_report_path = self.fs.join('out', 'Default',
-                                            'wpt_report.json')
 
         # Create a testing manifest containing any test files that we
         # might interact with.
@@ -105,17 +103,35 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self.path_finder.path_from_blink_tools('blinkpy', 'web_tests',
                                                    'results.html'),
             'results-viewer-body')
-        self.fs.write_text_file(
-            self.wpt_report_path,
-            json.dumps({
-                'run_info': {
-                    'os': 'linux',
-                    'os_version': '18.04',
-                    'product': 'chrome',
-                    'revision': '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431',
-                },
-                'results': [],
-            }))
+        self.wpt_report = {
+            'run_info': {
+                'os': 'linux',
+                'version': '18.04',
+                'product': 'chrome',
+                'revision': '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431',
+                'used_upstream': False,
+            },
+            'results': [{
+                'test':
+                '/a/b.html',
+                'subtests': [{
+                    'name': 'subtest',
+                    'status': 'FAIL',
+                    'message': 'remove this message',
+                    'expected': 'PASS',
+                    'known_intermittent': [],
+                }],
+                'status':
+                'OK',
+                'expected':
+                'OK',
+                'message':
+                'remove this message from the compact version',
+                'duration':
+                1000,
+                'known_intermittent': ['CRASH'],
+            }],
+        }
 
         self.processor = WPTResultsProcessor(
             self.host,
@@ -881,19 +897,47 @@ class WPTResultsProcessorTest(LoggingTestCase):
         ], test_node['artifacts']['expected_text'])
 
     def test_process_wpt_report(self):
-        output_path = self.processor.process_wpt_report(self.wpt_report_path)
-        self.assertEqual(self.fs.dirname(output_path),
-                         self.processor.artifacts_dir)
-        report = json.loads(self.fs.read_text_file(output_path))
-        run_info = report['run_info']
-        self.assertEqual(run_info['os'], 'linux')
-        self.assertEqual(run_info['os_version'], '18.04')
-        self.assertEqual(run_info['product'], 'chrome')
-        self.assertEqual(run_info['revision'],
-                         '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431')
+        report_src = self.fs.join('out', 'Default', 'wpt_report.json')
+        self.fs.write_text_file(report_src, json.dumps(self.wpt_report))
+        self.processor.process_wpt_report(report_src)
         artifacts = self.processor.sink.invocation_level_artifacts
-        artifact_path = self.fs.join(self.processor.artifacts_dir,
-                                     'wpt_report.json')
-        self.assertIn('wpt_report.json', artifacts)
-        self.assertEqual(artifacts['wpt_report.json'],
-                         {'filePath': artifact_path})
+        report_dest = self.fs.join('out', 'Default', 'layout-test-results',
+                                   'wpt_report.json')
+        self.assertEqual(artifacts['wpt_report.json'], {
+            'filePath': report_dest,
+        })
+        report = json.loads(self.fs.read_text_file(report_dest))
+        self.assertEqual(report, self.wpt_report)
+
+    def test_process_wpt_report_compact(self):
+        report_src = self.fs.join('out', 'Default', 'wpt_report.json')
+        self.wpt_report['run_info']['used_upstream'] = True
+        self.fs.write_text_file(report_src, json.dumps(self.wpt_report))
+        self.processor.process_wpt_report(report_src)
+        artifacts = self.processor.sink.invocation_level_artifacts
+        report_dest = self.fs.join('out', 'Default', 'layout-test-results',
+                                   'wpt_report.json')
+        self.assertEqual(artifacts['wpt_report.json'], {
+            'filePath': report_dest,
+        })
+        report = json.loads(self.fs.read_text_file(report_dest))
+        self.assertEqual(
+            report['run_info'], {
+                'os': 'linux',
+                'version': '18.04',
+                'product': 'chrome',
+                'revision': '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431',
+                'used_upstream': True,
+            })
+        self.assertEqual(report['results'], [{
+            'test':
+            '/a/b.html',
+            'subtests': [{
+                'name': 'subtest',
+                'status': 'FAIL',
+                'expected': 'PASS',
+            }],
+            'status':
+            'OK',
+            'known_intermittent': ['CRASH'],
+        }])

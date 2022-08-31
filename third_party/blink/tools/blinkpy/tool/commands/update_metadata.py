@@ -111,18 +111,10 @@ class UpdateMetadata(Command):
             RebaselineCL.dry_run_option,
         ])
         self._tool = tool
-        # This tool's performance bottleneck is the network I/O to ResultDB,
-        # which downloads something in the range of:
-        #   10 try builders * (30 shards / builder) * (10 MB / shard) = 3 GB
-        # Informational messages (e.g., stack traces) and subtest results make
-        # up the bulk of this data.
-        #
-        # A process pool would allow for physical parallelism (i.e., avoid
-        # Python's Global Interpreter Lock) but incur the cost of IPC.
-        #
-        # TODO(crbug.com/1299650): Upload minimal wptreports on the builder side
-        # to reduce download overhead. Expected results should be filtered out
-        # (similar to '{full,failing}_results.json') and messages removed.
+        # This tool's performance bottleneck is the network I/O to ResultDB.
+        # Using `ProcessPoolExecutor` here would allow for physical parallelism
+        # (i.e., avoid Python's Global Interpreter Lock) but incur the cost of
+        # IPC.
         self._io_pool = ThreadPoolExecutor(max_workers=max_io_workers)
         self._path_finder = path_finder.PathFinder(self._tool.filesystem)
         self.git = self._tool.git(path=self._path_finder.web_tests_dir())

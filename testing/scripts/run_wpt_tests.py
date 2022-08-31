@@ -244,6 +244,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             # updater works, even when wptrunner is not running a flag-specific
             # suite.
             'flag_specific': self.options.flag_specific,
+            'used_upstream': self.options.use_upstream_wpt,
         }
         # The filename must be `mozinfo.json` for wptrunner to read it.
         # The `--run-info` parameter passed to wptrunner is the directory

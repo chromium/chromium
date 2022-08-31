@@ -173,51 +173,40 @@ class BuilderTest(LoggingTestCase):
             'https://storage.googleapis.com/foo_bar_')
 
     def test_fetch_wpt_report_urls(self):
-        res = {
+        self.fetcher.web.append_prpc_response({
             'artifacts': [{
                 'name': 'report1',
                 'artifactId': 'wpt_reports_dada.json',
                 'fetchUrl': 'https://a.b.c/report1.json',
-                'sizeBytes': '8472164'
+                'sizeBytes': '8472164',
             }, {
                 'name': 'report2',
                 'artifactId': 'wpt_reports_dada.json',
                 'fetchUrl': 'https://a.b.c/report2.json',
-                'sizeBytes': '8455564'
+                'sizeBytes': '8455564',
             }, {
                 'name': 'other',
                 'artifactId': 'other_dada.json',
                 'fetchUrl': 'https://a.b.c/other.json',
-                'sizeBytes': '9845'
-            }]
-        }
-        self.fetcher.web.responses.append({
-            'status_code': 200,
-            'body': json.dumps(res).encode(),
+                'sizeBytes': '9845',
+            }],
         })
         self.assertEqual(
-            self.fetcher.fetch_wpt_report_urls("31415926535"),
+            self.fetcher.fetch_wpt_report_urls('31415926535'),
             ['https://a.b.c/report1.json', 'https://a.b.c/report2.json'])
 
-        res = {
+        self.fetcher.web.append_prpc_response({
             'artifacts': [{
                 'name': 'other',
                 'artifactId': 'other_dada.json',
                 'fetchUrl': 'https://a.b.c/other.json',
-                'sizeBytes': '9845'
-            }]
-        }
-        self.fetcher.web.responses.append({
-            'status_code': 200,
-            'body': json.dumps(res).encode(),
+                'sizeBytes': '9845',
+            }],
         })
-        self.assertEqual(self.fetcher.fetch_wpt_report_urls("31415926535"), [])
+        self.assertEqual(self.fetcher.fetch_wpt_report_urls('31415926535'), [])
 
-        self.fetcher.web.responses.append({
-            'status_code': 200,
-            'body': b'{}',
-        })
-        self.assertEqual(self.fetcher.fetch_wpt_report_urls("31415926535"), [])
+        self.fetcher.web.append_prpc_response({})
+        self.assertEqual(self.fetcher.fetch_wpt_report_urls('31415926535'), [])
 
 
 class TestResultsFetcherHelperFunctionTest(unittest.TestCase):
