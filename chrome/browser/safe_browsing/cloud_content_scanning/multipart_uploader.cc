@@ -137,8 +137,10 @@ MultipartUploadRequest::~MultipartUploadRequest() {
   if (file) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce([](std::unique_ptr<base::MemoryMappedFile> file) {},
-                       std::move(file)));
+        base::BindOnce(
+            [](std::unique_ptr<
+                MultipartDataPipeGetter::InternalMemoryMappedFile> file) {},
+            std::move(file)));
   }
 }
 
