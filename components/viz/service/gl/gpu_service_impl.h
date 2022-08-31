@@ -237,8 +237,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void ThrowJavaException() override;
 
   // gpu::GpuChannelManagerDelegate:
-  void RegisterDisplayContext(gpu::DisplayContext* display_context) override;
-  void UnregisterDisplayContext(gpu::DisplayContext* display_context) override;
   void LoseAllContexts() override;
   void DidCreateContextSuccessfully() override;
   void DidCreateOffscreenContext(const GURL& active_url) override;
@@ -507,9 +505,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
         // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-
-  // Display compositor contexts that don't have a corresponding GPU channel.
-  base::ObserverList<gpu::DisplayContext>::Unchecked display_contexts_;
 
   VisibilityChangedCallback visibility_changed_callback_;
 

@@ -913,22 +913,12 @@ void GpuServiceImpl::RequestDXGIInfoOnMainThread(
 }
 #endif
 
-void GpuServiceImpl::RegisterDisplayContext(
-    gpu::DisplayContext* display_context) {
-  display_contexts_.AddObserver(display_context);
-}
-
-void GpuServiceImpl::UnregisterDisplayContext(
-    gpu::DisplayContext* display_context) {
-  display_contexts_.RemoveObserver(display_context);
-}
-
 void GpuServiceImpl::LoseAllContexts() {
   if (IsExiting())
     return;
-  for (auto& display_context : display_contexts_)
-    display_context.MarkContextLost();
   gpu_channel_manager_->LoseAllContexts();
+  if (compositor_gpu_thread_)
+    compositor_gpu_thread_->LoseContext();
 }
 
 void GpuServiceImpl::DidCreateContextSuccessfully() {

@@ -297,10 +297,19 @@ void CompositorGpuThread::OnBackgroundedOnCompositorGpuThread() {
 }
 
 void CompositorGpuThread::OnBackgroundCleanup() {
+  LoseContext();
+}
+
+void CompositorGpuThread::OnForegrounded() {
+  if (watchdog_thread_)
+    watchdog_thread_->OnForegrounded();
+}
+
+void CompositorGpuThread::LoseContext() {
   if (!task_runner()->BelongsToCurrentThread()) {
-    task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&CompositorGpuThread::OnBackgroundCleanup,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    task_runner()->PostTask(FROM_HERE,
+                            base::BindOnce(&CompositorGpuThread::LoseContext,
+                                           weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -308,11 +317,6 @@ void CompositorGpuThread::OnBackgroundCleanup() {
     shared_context_state_->MarkContextLost();
     shared_context_state_.reset();
   }
-}
-
-void CompositorGpuThread::OnForegrounded() {
-  if (watchdog_thread_)
-    watchdog_thread_->OnForegrounded();
 }
 
 }  // namespace viz

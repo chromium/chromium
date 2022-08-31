@@ -10,7 +10,6 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "gpu/ipc/service/display_context.h"
 
 class GURL;
 
@@ -20,11 +19,6 @@ namespace gpu {
 // functionality to multiple classes in src/gpu/ so delegate is inaccurate.
 class GpuChannelManagerDelegate {
  public:
-  // Registers/unregistered display compositor contexts that don't have a GPU
-  // channel and aren't tracked by GpuChannelManager.
-  virtual void RegisterDisplayContext(DisplayContext* display_context) = 0;
-  virtual void UnregisterDisplayContext(DisplayContext* display_context) = 0;
-
   // Force the loss of all GL contexts.
   virtual void LoseAllContexts() = 0;
 
