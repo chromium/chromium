@@ -867,7 +867,12 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestWebViewInsideFrame) {
   LaunchApp("web_view/inside_iframe");
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestCaptureVisibleRegion) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestCaptureVisibleRegion DISABLED_TestCaptureVisibleRegion
+#else
+#define MAYBE_TestCaptureVisibleRegion TestCaptureVisibleRegion
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewAPITest, MAYBE_TestCaptureVisibleRegion) {
   RunTest("testCaptureVisibleRegion", "web_view/apitest");
 }
 
