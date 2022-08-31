@@ -6309,7 +6309,7 @@
   {
     "name": "traffic-counters",
     "owners": ["khorimoto", "cros-connectivity@google.com"],
-    "expiry_milestone": 106
+    "expiry_milestone": 120
   },
   {
     "name": "translate-assist-content",
