@@ -150,10 +150,8 @@ bool PepperPlatformAudioInput::Initialize(
   if (!GetMediaDeviceManager())
     return false;
 
-
   params_.Reset(media::AudioParameters::AUDIO_PCM_LINEAR,
-                media::CHANNEL_LAYOUT_MONO,
-                sample_rate,
+                media::ChannelLayoutConfig::Mono(), sample_rate,
                 frames_per_buffer);
 
   // We need to open the device and obtain the label and session ID before
