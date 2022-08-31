@@ -48,8 +48,12 @@ js_type_check("closure_compile") {
 }
 
 js_library("app") {
-  sources = [ "resources/page_handler.js" ]
   deps = [ "//ash/webui/demo_mode_app_ui/mojom:mojom_webui_js" ]
+  externs_list = [ "$externs_path/metrics_private_individual_apis.js" ]
+  sources = [
+    "resources/demo_mode_metrics_service.js",
+    "resources/page_handler.js",
+  ]
 }
 
 grd_prefix = "ash_demo_mode_app"
@@ -70,6 +74,7 @@ generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
     "page_handler.js",
+    "demo_mode_metrics_service.js",
   ]
   grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"

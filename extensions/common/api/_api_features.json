@@ -330,6 +330,7 @@
   "metricsPrivate": [{
     "dependencies": ["permission:metricsPrivate"],
     "contexts": ["blessed_extension"],
+    "alias": "metricsPrivateIndividualApis",
     "default_parent": true
   }, {
     "channel": "stable",
@@ -364,6 +365,11 @@
       "chrome-untrusted://projector/*"
     ]
   }],
+  "metricsPrivateIndividualApis": {
+    "contexts": [],
+    "channel": "stable",
+    "source": "metricsPrivate"
+   },
   "metricsPrivate.getIsCrashReportingEnabled": {
     "allowlist": [
       // This function inherits the extension restrictions of metricsPrivate,
@@ -394,6 +400,14 @@
       "C74B2AF138F9EDECD04D0965AB36CA66C8290466",  // http://crbug.com/957772
       "754A9CB3C8623093180E10CF4C3AB64837179E68",  // https://crbug.com/1201800
       "CF6B19571334F49878327D557597D23B1458AA39"   // https://crbug.com/1201800
+    ]
+  },
+  "metricsPrivateIndividualApis.recordUserAction": {
+    "dependencies": [],
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://demo-mode-app/*"
     ]
   },
   "mimeHandlerPrivate": {

@@ -1,0 +1,21 @@
+// Copyright (c) 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  {
+    "namespace": "metricsPrivateIndividualApis",
+    "description": "An alias of metricsPrivate, which gives individual APIs permission separately in _api_features.json",
+    "functions": [
+      {
+        "name": "recordUserAction",
+        "type": "function",
+        "description": "Records an action performed by the user.",
+        "parameters": [
+          {"name": "name", "type": "string"}
+        ]
+      }
+    ],
+    "events": []
+  }
+]
