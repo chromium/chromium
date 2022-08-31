@@ -9,12 +9,12 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 
@@ -33,6 +33,11 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
     : public FileStreamReader {
  public:
+  LocalFileStreamReader(scoped_refptr<base::TaskRunner> task_runner,
+                        const base::FilePath& file_path,
+                        int64_t initial_offset,
+                        const base::Time& expected_modification_time,
+                        base::PassKey<FileStreamReader> pass_key);
   ~LocalFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -42,13 +47,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   int64_t GetLength(net::Int64CompletionOnceCallback callback) override;
 
  private:
-  friend class FileStreamReader;
-  friend class LocalFileStreamReaderTest;
-
-  LocalFileStreamReader(scoped_refptr<base::TaskRunner> task_runner,
-                        const base::FilePath& file_path,
-                        int64_t initial_offset,
-                        const base::Time& expected_modification_time);
   void Open(net::CompletionOnceCallback callback);
 
   // Callbacks that are chained from Open for Read.

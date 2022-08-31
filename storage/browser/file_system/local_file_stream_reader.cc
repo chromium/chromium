@@ -13,9 +13,9 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_runner_util.h"
+#include "base/types/pass_key.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -45,9 +45,9 @@ std::unique_ptr<FileStreamReader> FileStreamReader::CreateForLocalFile(
     const base::FilePath& file_path,
     int64_t initial_offset,
     const base::Time& expected_modification_time) {
-  return base::WrapUnique(
-      new LocalFileStreamReader(std::move(task_runner), file_path,
-                                initial_offset, expected_modification_time));
+  return std::make_unique<LocalFileStreamReader>(
+      std::move(task_runner), file_path, initial_offset,
+      expected_modification_time, base::PassKey<FileStreamReader>());
 }
 
 LocalFileStreamReader::~LocalFileStreamReader() = default;
@@ -81,7 +81,8 @@ LocalFileStreamReader::LocalFileStreamReader(
     scoped_refptr<base::TaskRunner> task_runner,
     const base::FilePath& file_path,
     int64_t initial_offset,
-    const base::Time& expected_modification_time)
+    const base::Time& expected_modification_time,
+    base::PassKey<FileStreamReader> /*pass_key*/)
     : task_runner_(std::move(task_runner)),
       file_path_(file_path),
       initial_offset_(initial_offset),

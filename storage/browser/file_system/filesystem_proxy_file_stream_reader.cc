@@ -10,12 +10,11 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_runner_util.h"
+#include "base/types/pass_key.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -64,9 +63,10 @@ std::unique_ptr<FileStreamReader> FileStreamReader::CreateForFilesystemProxy(
     const base::Time& expected_modification_time) {
   DCHECK(filesystem_proxy);
   constexpr bool emit_metrics = false;
-  return base::WrapUnique(new FilesystemProxyFileStreamReader(
+  return std::make_unique<FilesystemProxyFileStreamReader>(
       std::move(task_runner), file_path, std::move(filesystem_proxy),
-      initial_offset, expected_modification_time, emit_metrics));
+      initial_offset, expected_modification_time, emit_metrics,
+      base::PassKey<FileStreamReader>());
 }
 
 std::unique_ptr<FileStreamReader>
@@ -78,9 +78,10 @@ FileStreamReader::CreateForIndexedDBDataItemReader(
     const base::Time& expected_modification_time) {
   DCHECK(filesystem_proxy);
   constexpr bool emit_metrics = true;
-  return base::WrapUnique(new FilesystemProxyFileStreamReader(
+  return std::make_unique<FilesystemProxyFileStreamReader>(
       std::move(task_runner), file_path, std::move(filesystem_proxy),
-      initial_offset, expected_modification_time, emit_metrics));
+      initial_offset, expected_modification_time, emit_metrics,
+      base::PassKey<FileStreamReader>());
 }
 
 FilesystemProxyFileStreamReader::~FilesystemProxyFileStreamReader() = default;
@@ -118,7 +119,8 @@ FilesystemProxyFileStreamReader::FilesystemProxyFileStreamReader(
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     int64_t initial_offset,
     const base::Time& expected_modification_time,
-    bool emit_metrics)
+    bool emit_metrics,
+    base::PassKey<FileStreamReader> /*pass_key*/)
     : task_runner_(std::move(task_runner)),
       shared_filesystem_proxy_(base::MakeRefCounted<SharedFilesystemProxy>(
           std::move(filesystem_proxy))),
