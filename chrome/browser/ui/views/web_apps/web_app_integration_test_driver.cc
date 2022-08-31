@@ -1566,6 +1566,8 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 
+  AppRegistrationWaiter app_registration_waiter(
+      profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
@@ -1603,6 +1605,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
 #endif
 
   observer.Wait();
+  app_registration_waiter.Await();
   site_remember_deny_open_file.erase(site);
 
   AfterStateChangeAction();
@@ -1615,7 +1618,9 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
+
+  AppRegistrationWaiter app_registration_waiter(
+      profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver uninstall_observer(profile());
   uninstall_observer.BeginListening({app_id});
 
@@ -1634,6 +1639,7 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
   app_management_page_handler.Uninstall(app_id);
 
   uninstall_observer.Wait();
+  app_registration_waiter.Await();
 
   // Wait for app settings page to be closed.
   destroyed_watcher.Wait();
@@ -1652,7 +1658,9 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
+
+  AppRegistrationWaiter app_registration_waiter(
+      profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
 
@@ -1677,6 +1685,7 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
   // the app_browser.
   app_menu_model.reset();
   observer.Wait();
+  app_registration_waiter.Await();
   site_remember_deny_open_file.erase(site);
   AfterStateChangeAction();
 }
@@ -1725,7 +1734,9 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
+
+  AppRegistrationWaiter app_registration_waiter(
+      profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
 
@@ -1739,6 +1750,7 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
       {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   observer.Wait();
+  app_registration_waiter.Await();
   site_remember_deny_open_file.erase(site);
   AfterStateChangeAction();
 #else
