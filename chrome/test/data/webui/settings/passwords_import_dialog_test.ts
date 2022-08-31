@@ -59,6 +59,9 @@ function assertIntialStatePartsAndClose(
   assertFalse(cancel.disabled);
   assertFalse(chooseFile.disabled);
 
+  assertFalse(isVisible(
+      importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
+
   assertEquals(importDialog.i18n('cancel'), cancel.textContent!.trim());
   assertEquals(
       importDialog.i18n('importPasswordsChooseFile'),
@@ -78,6 +81,9 @@ async function assertErrorStateAndClose(
 
   assertEquals(
       expectedDescription, importDialog.$.descriptionText.textContent!.trim());
+
+  assertFalse(isVisible(
+      importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
   const close =
       importDialog.shadowRoot!.querySelector<CrButtonElement>('#close');
@@ -154,12 +160,12 @@ suite('PasswordsImportDialog', function() {
     // After the import, the dialog should switch to SUCCESS state.
     assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
 
-    const successTip =
-        importDialog.shadowRoot!.querySelector<HTMLElement>('#successTip');
-    assertTrue(!!successTip);
+    assertTrue(isVisible(
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
     assertEquals(
-        importDialog.i18n('importPasswordsSuccessTip', 'test.csv'),
-        successTip.textContent!.trim());
+        importDialog.i18nAdvanced('importPasswordsSuccessTip')
+            .replace('<b></b>', 'test.csv'),
+        importDialog.$.successTip.textContent!.trim());
 
     // Failed imports summary should not be visible.
     assertFalse(!!importDialog.shadowRoot!.querySelector<HTMLElement>(
@@ -185,7 +191,8 @@ suite('PasswordsImportDialog', function() {
 
     await assertErrorStateAndClose(
         importDialog, passwordManager,
-        importDialog.i18n('importPasswordsBadFormatError', 'test.csv'));
+        importDialog.i18nAdvanced('importPasswordsBadFormatError')
+            .replace('<b></b>', 'test.csv'));
   });
 
   test('hasCorrectUnknownErrorState', async function() {
@@ -242,8 +249,8 @@ suite('PasswordsImportDialog', function() {
     assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
 
     // Success tip should not be visible.
-    assertFalse(
-        !!importDialog.shadowRoot!.querySelector<HTMLElement>('#successTip'));
+    assertFalse(isVisible(
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
     const failuresSummary =
         importDialog.shadowRoot!.querySelector<HTMLElement>('#failuresSummary');
@@ -284,6 +291,9 @@ suite('PasswordsImportDialog', function() {
     assertEquals(
         importDialog.i18n('importPasswordsAlreadyActive'),
         importDialog.$.descriptionText.textContent!.trim());
+
+    assertFalse(isVisible(
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
     const close =
         importDialog.shadowRoot!.querySelector<CrButtonElement>('#close');
