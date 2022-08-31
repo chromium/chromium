@@ -167,7 +167,13 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_DeleteExpirationTime) {
   EXPECT_FALSE(Notification().has_value());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_PasswordChanged) {
+// TODO(crbug.com/1358349): re-enable thie test. Flakily times out on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MaybeShow_PasswordChanged DISABLED_MaybeShow_PasswordChanged
+#else
+#define MAYBE_MaybeShow_PasswordChanged MaybeShow_PasswordChanged
+#endif
+TEST_F(InSessionPasswordChangeManagerTest, MAYBE_MaybeShow_PasswordChanged) {
   SetExpirationTime(base::Time::Now() + (kAdvanceWarningTime / 2) - kOneHour);
   manager_->MaybeShowExpiryNotification();
 
