@@ -16,6 +16,7 @@ namespace blink {
 
 class ExceptionState;
 class URLPatternInit;
+class URLPatternOptions;
 class URLPatternResult;
 
 namespace url_pattern {
@@ -29,6 +30,15 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
  public:
   static URLPattern* Create(const V8URLPatternInput* input,
                             const String& base_url,
+                            const URLPatternOptions* options,
+                            ExceptionState& exception_state);
+
+  static URLPattern* Create(const V8URLPatternInput* input,
+                            const String& base_url,
+                            ExceptionState& exception_state);
+
+  static URLPattern* Create(const V8URLPatternInput* input,
+                            const URLPatternOptions* options,
                             ExceptionState& exception_state);
 
   static URLPattern* Create(const V8URLPatternInput* input,
@@ -36,6 +46,7 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
 
   static URLPattern* Create(const URLPatternInit* init,
                             Component* precomputed_protocol_component,
+                            const URLPatternOptions* options,
                             ExceptionState& exception_state);
 
   URLPattern(Component* protocol,

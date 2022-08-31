@@ -744,6 +744,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/url_pattern/url_pattern.idl",
           "//third_party/blink/renderer/modules/url_pattern/url_pattern_component_result.idl",
           "//third_party/blink/renderer/modules/url_pattern/url_pattern_init.idl",
+          "//third_party/blink/renderer/modules/url_pattern/url_pattern_options.idl",
           "//third_party/blink/renderer/modules/url_pattern/url_pattern_result.idl",
           "//third_party/blink/renderer/modules/vibration/navigator_vibration.idl",
           "//third_party/blink/renderer/modules/video_rvfc/html_video_element_request_video_frame_callback.idl",

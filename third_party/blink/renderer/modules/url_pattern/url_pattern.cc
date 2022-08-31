@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_result.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_component.h"
@@ -215,6 +216,7 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
 
 URLPattern* URLPattern::Create(const V8URLPatternInput* input,
                                const String& base_url,
+                               const URLPatternOptions* options,
                                ExceptionState& exception_state) {
   if (input->GetContentType() ==
       V8URLPatternInput::ContentType::kURLPatternInit) {
@@ -227,7 +229,7 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
 
   const auto& input_string = input->GetAsUSVString();
 
-  url_pattern::Parser parser(input_string);
+  url_pattern::Parser parser(input_string, *options);
   parser.Parse(exception_state);
   if (exception_state.HadException())
     return nullptr;
@@ -243,7 +245,25 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
   if (base_url)
     init->setBaseURL(base_url);
 
-  return Create(init, parser.GetProtocolComponent(), exception_state);
+  return Create(init, parser.GetProtocolComponent(), options, exception_state);
+}
+
+URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+                               const String& base_url,
+                               ExceptionState& exception_state) {
+  return Create(input, base_url, MakeGarbageCollected<URLPatternOptions>(),
+                exception_state);
+}
+
+URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+                               const URLPatternOptions* options,
+                               ExceptionState& exception_state) {
+  if (input->IsURLPatternInit()) {
+    return URLPattern::Create(input->GetAsURLPatternInit(),
+                              /*precomputed_protocol_component=*/nullptr,
+                              options, exception_state);
+  }
+  return Create(input, /*base_url=*/String(), options, exception_state);
 }
 
 URLPattern* URLPattern::Create(const V8URLPatternInput* input,
@@ -251,6 +271,7 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
   if (input->IsURLPatternInit()) {
     return URLPattern::Create(input->GetAsURLPatternInit(),
                               /*precomputed_protocol_component=*/nullptr,
+                              MakeGarbageCollected<URLPatternOptions>(),
                               exception_state);
   }
 
@@ -259,6 +280,7 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
 
 URLPattern* URLPattern::Create(const URLPatternInit* init,
                                Component* precomputed_protocol_component,
+                               const URLPatternOptions* options,
                                ExceptionState& exception_state) {
   // Each component defaults to a wildcard matching any input.  We use
   // the null string as a shorthand for the default.
@@ -290,49 +312,52 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
 
   auto* protocol_component = precomputed_protocol_component;
   if (!protocol_component) {
-    protocol_component =
-        Component::Compile(protocol, Component::Type::kProtocol,
-                           /*protocol_component=*/nullptr, exception_state);
+    protocol_component = Component::Compile(
+        protocol, Component::Type::kProtocol,
+        /*protocol_component=*/nullptr, *options, exception_state);
   }
   if (exception_state.HadException())
     return nullptr;
 
   auto* username_component =
       Component::Compile(username, Component::Type::kUsername,
-                         protocol_component, exception_state);
+                         protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* password_component =
       Component::Compile(password, Component::Type::kPassword,
-                         protocol_component, exception_state);
+                         protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* hostname_component =
       Component::Compile(hostname, Component::Type::kHostname,
-                         protocol_component, exception_state);
+                         protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* port_component = Component::Compile(
-      port, Component::Type::kPort, protocol_component, exception_state);
+  auto* port_component =
+      Component::Compile(port, Component::Type::kPort, protocol_component,
+                         *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* pathname_component =
       Component::Compile(pathname, Component::Type::kPathname,
-                         protocol_component, exception_state);
+                         protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* search_component = Component::Compile(
-      search, Component::Type::kSearch, protocol_component, exception_state);
+  auto* search_component =
+      Component::Compile(search, Component::Type::kSearch, protocol_component,
+                         *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* hash_component = Component::Compile(
-      hash, Component::Type::kHash, protocol_component, exception_state);
+  auto* hash_component =
+      Component::Compile(hash, Component::Type::kHash, protocol_component,
+                         *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 

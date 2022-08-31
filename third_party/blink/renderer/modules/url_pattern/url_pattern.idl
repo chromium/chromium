@@ -12,7 +12,10 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
   Exposed=(Window,Worker)
 ] interface URLPattern {
   [RaisesException, Measure]
-  constructor(optional URLPatternInput input = {}, optional USVString baseURL);
+  constructor(optional URLPatternInput input = {}, optional USVString baseURL, optional URLPatternOptions options = {});
+
+  [RaisesException, Measure]
+  constructor(URLPatternInput input, URLPatternOptions options);
 
   [RaisesException, CallWith=ScriptState, Measure]
   boolean test(optional URLPatternInput input = {}, optional USVString baseURL);

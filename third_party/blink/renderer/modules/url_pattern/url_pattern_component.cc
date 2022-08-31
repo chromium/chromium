@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_options.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -118,63 +119,42 @@ liburlpattern::EncodeCallback GetEncodeCallback(base::StringPiece pattern_utf8,
 
 // Utility method to get the correct liburlpattern parse options for a given
 // type.
-const liburlpattern::Options& GetOptions(Component::Type type,
-                                         Component* protocol_component) {
+const liburlpattern::Options GetOptions(
+    Component::Type type,
+    Component* protocol_component,
+    const URLPatternOptions& external_options) {
   using liburlpattern::Options;
 
   // The liburlpattern::Options to use for most component patterns.  We
-  // default to strict mode and case sensitivity.  In addition, most
-  // components have no concept of a delimiter or prefix character.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Options, default_options,
-                                  ({.delimiter_list = "",
-                                    .prefix_list = "",
-                                    .sensitive = true,
-                                    .strict = true}));
+  // default to strict mode and most components have no concept of a delimiter
+  // or prefix character.  Case sensitivity is set via the external options.
+  Options value = {.delimiter_list = "",
+                   .prefix_list = "",
+                   .sensitive = !external_options.ignoreCase(),
+                   .strict = true};
 
-  // The liburlpattern::Options to use for hostname patterns.  This uses a
-  // "." delimiter controlling how far a named group like ":bar" will match
-  // by default.  Note, hostnames are case insensitive but we require case
-  // sensitivity here.  This assumes that the hostname values have already
-  // been normalized to lower case as in URL().
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Options, hostname_options,
-                                  ({.delimiter_list = ".",
-                                    .prefix_list = "",
-                                    .sensitive = true,
-                                    .strict = true}));
+  if (type == Component::Type::kHostname) {
+    // Hostname patterns use a "." delimiter controlling how far a named group
+    // like ":bar" will match.
+    value.delimiter_list = ".";
 
-  // The liburlpattern::Options to use for pathname patterns.  This uses a
-  // "/" delimiter controlling how far a named group like ":bar" will match
-  // by default.  It also configures "/" to be treated as an automatic
-  // prefix before groups.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Options, pathname_options,
-                                  ({.delimiter_list = "/",
-                                    .prefix_list = "/",
-                                    .sensitive = true,
-                                    .strict = true}));
-
-  switch (type) {
-    case Component::Type::kHostname:
-      return hostname_options;
-    case Component::Type::kPathname:
-      // Just like how we select a different encoding callback based on
-      // whether we are treating the pattern string as a standard or
-      // cannot-be-a-base URL, we must also choose the right liburlppatern
-      // options as well.  We should only use use the options that treat
-      // `/` specially if we are treating this a standard URL.
-      DCHECK(protocol_component);
-      if (protocol_component->ShouldTreatAsStandardURL())
-        return pathname_options;
-      else
-        return default_options;
-    case Component::Type::kProtocol:
-    case Component::Type::kUsername:
-    case Component::Type::kPassword:
-    case Component::Type::kPort:
-    case Component::Type::kSearch:
-    case Component::Type::kHash:
-      return default_options;
+  } else if (type == Component::Type::kPathname) {
+    // Just like how we select a different encoding callback based on
+    // whether we are treating the pattern string as a standard or
+    // cannot-be-a-base URL, we must also choose the right liburlppatern
+    // options as well.  We should only use use the options that treat
+    // `/` specially if we are treating this a standard URL.
+    DCHECK(protocol_component);
+    if (protocol_component->ShouldTreatAsStandardURL()) {
+      // Pathname patterns for "standard" URLs use a "/" delimiter controlling
+      // how far a named group like ":bar" will match.  They also use "/" as an
+      // automatic prefix before groups.
+      value.delimiter_list = "/";
+      value.prefix_list = "/";
+    }
   }
-  NOTREACHED();
+
+  return value;
 }
 
 int ComparePart(const liburlpattern::Part& lh, const liburlpattern::Part& rh) {
@@ -221,9 +201,11 @@ int ComparePart(const liburlpattern::Part& lh, const liburlpattern::Part& rh) {
 Component* Component::Compile(StringView pattern,
                               Type type,
                               Component* protocol_component,
+                              const URLPatternOptions& external_options,
                               ExceptionState& exception_state) {
   StringView final_pattern = pattern.IsNull() ? "*" : pattern;
-  const liburlpattern::Options& options = GetOptions(type, protocol_component);
+  const liburlpattern::Options& options =
+      GetOptions(type, protocol_component, external_options);
 
   // Parse the pattern.
   // Lossy UTF8 conversion is fine given the input has come through a

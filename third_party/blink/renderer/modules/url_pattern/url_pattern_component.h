@@ -19,6 +19,7 @@
 namespace blink {
 
 class ExceptionState;
+class URLPatternOptions;
 
 namespace url_pattern {
 
@@ -49,6 +50,7 @@ class Component final : public GarbageCollected<Component> {
   static Component* Compile(StringView pattern,
                             Type type,
                             Component* protocol_component,
+                            const URLPatternOptions& external_options,
                             ExceptionState& exception_state);
 
   // Compare the pattern strings in the two given components.  This provides a

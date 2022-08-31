@@ -2727,5 +2727,72 @@
     "expected_match": {
       "pathname": { "input": "/bazbar", "groups": { "foo": "baz" }}
     }
+  },
+  {
+    "pattern": [{ "pathname": "/foo/bar" }, { "ignoreCase": true }],
+    "inputs": [{ "pathname": "/FOO/BAR" }],
+    "expected_match": {
+      "pathname": { "input": "/FOO/BAR", "groups": {} }
+    }
+  },
+  {
+    "pattern": [{ "ignoreCase": true }],
+    "inputs": [{ "pathname": "/FOO/BAR" }],
+    "expected_match": {
+      "pathname": { "input": "/FOO/BAR", "groups": { "0": "/FOO/BAR" } }
+    }
+  },
+  {
+    "pattern": [ "https://example.com:8080/foo?bar#baz",
+                 { "ignoreCase": true }],
+    "inputs": [{ "pathname": "/FOO", "search": "BAR", "hash": "BAZ",
+                 "baseURL": "https://example.com:8080" }],
+    "exactly_empty_components": [ "username", "password" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "port": "8080",
+      "pathname": "/foo",
+      "search": "bar",
+      "hash": "baz"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "port": { "input": "8080", "groups": {} },
+      "pathname": { "input": "/FOO", "groups": {} },
+      "search": { "input": "BAR", "groups": {} },
+      "hash": { "input": "BAZ", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "/foo?bar#baz", "https://example.com:8080",
+                 { "ignoreCase": true }],
+    "inputs": [{ "pathname": "/FOO", "search": "BAR", "hash": "BAZ",
+                 "baseURL": "https://example.com:8080" }],
+    "exactly_empty_components": [ "username", "password" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "port": "8080",
+      "pathname": "/foo",
+      "search": "bar",
+      "hash": "baz"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "port": { "input": "8080", "groups": {} },
+      "pathname": { "input": "/FOO", "groups": {} },
+      "search": { "input": "BAR", "groups": {} },
+      "hash": { "input": "BAZ", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "/foo?bar#baz", { "ignoreCase": true },
+                 "https://example.com:8080" ],
+    "inputs": [{ "pathname": "/FOO", "search": "BAR", "hash": "BAZ",
+                 "baseURL": "https://example.com:8080" }],
+    "expected_obj": "error"
   }
 ]

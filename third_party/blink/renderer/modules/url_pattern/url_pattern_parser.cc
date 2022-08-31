@@ -14,7 +14,8 @@
 namespace blink {
 namespace url_pattern {
 
-Parser::Parser(const String& input) : input_(input), utf8_(input) {}
+Parser::Parser(const String& input, const URLPatternOptions& external_options)
+    : input_(input), utf8_(input), external_options_(external_options) {}
 
 void Parser::Parse(ExceptionState& exception_state) {
   DCHECK_EQ(state_, StringParseState::kInit);
@@ -457,9 +458,9 @@ String Parser::MakeComponentString() const {
 
 void Parser::ComputeShouldTreatAsStandardURL(ExceptionState& exception_state) {
   DCHECK_EQ(state_, StringParseState::kProtocol);
-  protocol_component_ =
-      Component::Compile(MakeComponentString(), Component::Type::kProtocol,
-                         /*protocol_component=*/nullptr, exception_state);
+  protocol_component_ = Component::Compile(
+      MakeComponentString(), Component::Type::kProtocol,
+      /*protocol_component=*/nullptr, external_options_, exception_state);
   if (protocol_component_ && protocol_component_->ShouldTreatAsStandardURL())
     should_treat_as_standard_url_ = true;
 }

@@ -20,6 +20,7 @@ namespace blink {
 
 class ExceptionState;
 class URLPatternInit;
+class URLPatternOptions;
 
 namespace url_pattern {
 
@@ -37,7 +38,7 @@ class Parser final {
   STACK_ALLOCATED();
 
  public:
-  explicit Parser(const String& input);
+  Parser(const String& input, const URLPatternOptions& external_options);
 
   // Attempt to parse the input string used to construct the Parser object.
   // This method may only be called once.  Any errors will be thrown on the
@@ -153,6 +154,11 @@ class Parser final {
 
   // UTF8 representation of `input_`.
   const StringUTF8Adaptor utf8_;
+
+  // Options passed in to the URLPattern constructor.  The external options is
+  // a garbage collected object.  Since this is a stack allocated object this
+  // reference will keep the options alive.
+  const URLPatternOptions& external_options_;
 
   // As we parse the input string we populate a `URLPatternInit` dictionary
   // with each component pattern.  This is then the final result of the parse.

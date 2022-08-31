@@ -933,6 +933,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component_result.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_result.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_result.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_usb_connection_event_init.cc",
