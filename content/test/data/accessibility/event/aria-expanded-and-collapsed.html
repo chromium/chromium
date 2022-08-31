@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+<a role="link" aria-expanded="false" id="toggle" href="#">Toggle</a>
+<div id="toggleText" style="visibility: hidden;">
+  Loren ipsum dolor sit amet, consectetur adipiscing elit.
+</ul>
+<script>
+  const toggleText = document.getElementById('toggleText');
+  const toggleLink = document.getElementById('toggle');
+
+  function toggle() {
+    if (toggleText.style.visibility == 'visible') {
+      toggleText.style.visibility = 'hidden';
+      toggleLink.setAttribute('aria-expanded', 'false');
+    } else {
+      toggleText.style.visibility = 'visible';
+      toggleLink.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  var go_passes = [
+    () => toggle(),
+    () => toggle(),
+  ];
+
+  let current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

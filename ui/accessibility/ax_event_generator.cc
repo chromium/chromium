@@ -787,7 +787,6 @@ void AXEventGenerator::OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) {
 
 void AXEventGenerator::OnNodeWillBeReparented(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
-  tree_events_.erase(node->id());
 }
 
 void AXEventGenerator::OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) {
