@@ -7,5 +7,5 @@
 #   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 monorail {
-  component: "	Blink>Loader>WebPackaging"
+  component: "Blink>Loader>WebPackaging"
 }
