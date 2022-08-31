@@ -36,7 +36,7 @@ class WebAudioSourceProviderImplTest : public testing::Test,
  public:
   WebAudioSourceProviderImplTest()
       : params_(media::AudioParameters::AUDIO_PCM_LINEAR,
-                media::CHANNEL_LAYOUT_STEREO,
+                media::ChannelLayoutConfig::Stereo(),
                 kTestSampleRate,
                 64),
         fake_callback_(0.1, kTestSampleRate),
@@ -373,8 +373,8 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   // given. Ensure this doesn't crash.
   EXPECT_FALSE(wasp_impl_->IsOptimizedForHardwareParameters());
   auto stream_params = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_MONO,
-      kTestSampleRate * 2, 64);
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Mono(), kTestSampleRate * 2, 64);
 
   EXPECT_CALL(*this,
               SetFormat(stream_params.channels(), stream_params.sample_rate()));
@@ -402,8 +402,8 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
 TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
   // Create a stereo stream
   auto stereo_params = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_STEREO,
-      kTestSampleRate * 2, 64);
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Stereo(), kTestSampleRate * 2, 64);
 
   // When Initialize() is called after setClient(), the params should propagate
   // to the client via setFormat() during the call.
@@ -418,8 +418,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
 
   // Create a mono stream
   auto mono_params = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_MONO,
-      kTestSampleRate * 2, 64);
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Mono(), kTestSampleRate * 2, 64);
 
   auto bus = media::AudioBus::Create(mono_params);
 
