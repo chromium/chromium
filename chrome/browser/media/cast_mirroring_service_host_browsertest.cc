@@ -218,8 +218,8 @@ class CastMirroringServiceHostBrowserTest
     constexpr int kTotalSegments = 1;
     constexpr int kAudioTimebase = 48000;
     media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                  media::CHANNEL_LAYOUT_STEREO, kAudioTimebase,
-                                  kAudioTimebase / 100);
+                                  media::ChannelLayoutConfig::Stereo(),
+                                  kAudioTimebase, kAudioTimebase / 100);
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnAudioStreamCreated())
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
