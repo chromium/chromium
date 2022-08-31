@@ -158,20 +158,20 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
     if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
         format_ == gfx::BufferFormat::YVU_420) {
       // TODO(b/233667677): since https://crrev.com/c/3662252, the only NV12
-      // quads that we allow to be promoted to overlays are those that use
-      // non-BT.2020 primaries with non-full range. Furthermore, since
-      // https://crrev.com/c/2336347, we force the DRM/KMS driver to use BT.601
-      // with limited range. Therefore, for compositing purposes, we need to
-      // a) use EGL_ITU_REC601_EXT for any video frames that might be promoted
-      // to overlays - e.g., we shouldn't use EGL_ITU_REC709_EXT for BT709
-      // frames because we might then see a slight difference in
+      // quads that we allow to be promoted to overlays are those that use the
+      // BT.709 primaries (approximately the same as the BT.601 primaries) with
+      // limited range. Furthermore, since https://crrev.com/c/2336347, we force
+      // the DRM/KMS driver to use BT.601 with limited range. Therefore, for
+      // compositing purposes, we need to a) use EGL_ITU_REC601_EXT for any
+      // video frames that might be promoted to overlays - we shouldn't use
+      // EGL_ITU_REC709_EXT because we might then see a slight difference in
       // compositing vs. overlays (note that the BT.601 and BT.709 primaries are
       // very close to each other, so this shouldn't be a huge correctness
       // issue); b) use EGL_ITU_REC2020_EXT for BT.2020 frames in order to
       // composite them correctly (and we won't need to worry about a difference
       // in compositing vs. overlays in this case since those frames won't be
       // promoted to overlays). We'll need to revisit this once we plumb the
-      // YUV color encoding and range to DRM/KMS.
+      // color space and range to DRM/KMS.
       attrs.push_back(EGL_YUV_COLOR_SPACE_HINT_EXT);
       switch (color_space_.GetPrimaryID()) {
         case gfx::ColorSpace::PrimaryID::BT2020:
