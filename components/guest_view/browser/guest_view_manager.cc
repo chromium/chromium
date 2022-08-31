@@ -240,14 +240,12 @@ void GuestViewManager::AddGuest(int guest_instance_id,
 }
 
 void GuestViewManager::RemoveGuest(int guest_instance_id) {
-  auto it = guest_web_contents_by_instance_id_.find(guest_instance_id);
-  DCHECK(it != guest_web_contents_by_instance_id_.end());
-  guest_web_contents_by_instance_id_.erase(it);
+  guest_web_contents_by_instance_id_.erase(guest_instance_id);
 
   auto id_iter = reverse_instance_id_map_.find(guest_instance_id);
   if (id_iter != reverse_instance_id_map_.end()) {
     const ElementInstanceKey& instance_id_key = id_iter->second;
-    instance_id_map_.erase(instance_id_map_.find(instance_id_key));
+    instance_id_map_.erase(instance_id_key);
     reverse_instance_id_map_.erase(id_iter);
   }
 
@@ -264,13 +262,13 @@ void GuestViewManager::RemoveGuest(int guest_instance_id) {
       int instance_id = *iter;
       // The sparse invalid IDs must not lie within
       // [0, last_instance_id_removed_]
-      DCHECK(instance_id > last_instance_id_removed_);
+      DCHECK_GT(instance_id, last_instance_id_removed_);
       if (instance_id != last_instance_id_removed_ + 1)
         break;
       ++last_instance_id_removed_;
       removed_instance_ids_.erase(iter++);
     }
-  } else {
+  } else if (guest_instance_id > last_instance_id_removed_) {
     removed_instance_ids_.insert(guest_instance_id);
   }
 }

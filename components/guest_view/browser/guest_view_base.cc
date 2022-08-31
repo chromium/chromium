@@ -163,7 +163,11 @@ GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
   SetOwnerHost();
 }
 
-GuestViewBase::~GuestViewBase() = default;
+GuestViewBase::~GuestViewBase() {
+  // This is not necessarily redundant with the removal when the guest contents
+  // is destroyed, since we may never have initialized a guest WebContents.
+  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
+}
 
 void GuestViewBase::Init(const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) {

@@ -127,6 +127,8 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   virtual void AddGuest(int guest_instance_id,
                         content::WebContents* guest_web_contents);
+  // If a GuestView is created but never initialized with a guest WebContents,
+  // this should still be called to invalidate `guest_instance_id`.
   void RemoveGuest(int guest_instance_id);
 
   // This method is called when the embedder process with ID
