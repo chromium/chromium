@@ -57,6 +57,8 @@ class CORE_EXPORT CachedCSSTokenizer {
   CSSParserToken TokenizeSingleWithComments() { return NextToken(); }
   wtf_size_t TokenCount() { return index_; }
 
+  std::unique_ptr<CachedCSSTokenizer> DuplicateForTesting() const;
+
  private:
   CSSParserToken NextToken() {
     if (index_ >= tokens_.size()) {

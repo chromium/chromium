@@ -50,6 +50,13 @@ std::unique_ptr<CachedCSSTokenizer> CSSTokenizer::CreateCachedTokenizer(
       std::move(tokenizer.string_pool_));
 }
 
+std::unique_ptr<CachedCSSTokenizer> CachedCSSTokenizer::DuplicateForTesting()
+    const {
+  return std::make_unique<CachedCSSTokenizer>(
+      input_.RangeAt(0, input_.length()).ToString(), tokens_, offsets_,
+      string_pool_);
+}
+
 CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
     : input_(string) {
   // According to the spec, we should perform preprocessing here.
