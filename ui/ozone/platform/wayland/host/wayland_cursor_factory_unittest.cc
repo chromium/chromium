@@ -93,20 +93,24 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
 
   // The default theme should be loaded right away.  The unloaded theme should
   // not be set.
-  EXPECT_FALSE(cursor_factory->theme_cache_.empty());
+  EXPECT_EQ(cursor_factory->theme_cache_.size(), 1U);
   EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
 
   WaitForThemeLoaded();
 
   // Trigger theme reload and ensure that the theme instance has changed.
   // As we didn't request any buffers, the unloaded theme should not be held.
+  // TODO(crbug.com/1357512): the current method here compares addresses of the
+  // objects before and after the reload, and expects the address to change,
+  // which means that a new object has been allocated.  Technically that is not
+  // guaranteed.  Probably a better way should be invented.
   {
-    auto* const current_theme =
-        cursor_factory->theme_cache_.begin()->second.get();
+    auto* const current_theme_object =
+        cursor_factory->theme_cache_.begin()->second.get()->theme.get();
     cursor_factory->OnCursorThemeNameChanged("Theme1");
-    EXPECT_FALSE(cursor_factory->theme_cache_.empty());
-    EXPECT_NE(cursor_factory->theme_cache_.begin()->second.get(),
-              current_theme);
+    EXPECT_EQ(cursor_factory->theme_cache_.size(), 1U);
+    EXPECT_NE(cursor_factory->theme_cache_.begin()->second.get()->theme.get(),
+              current_theme_object);
     EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
 
     WaitForThemeLoaded();
@@ -167,20 +171,24 @@ TEST_P(WaylandCursorFactoryTest, CachesSizesUntilThemeNameIsChanged) {
 
   // The default theme should be loaded right away.  The unloaded theme should
   // not be set.
-  EXPECT_FALSE(cursor_factory->theme_cache_.empty());
+  EXPECT_EQ(cursor_factory->theme_cache_.size(), 1U);
   EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
 
   WaitForThemeLoaded();
 
   // Trigger theme reload and ensure that the theme instance has changed.
   // As we didn't request any buffers, the unloaded theme should not be held.
+  // TODO(crbug.com/1357512): the current method here compares addresses of the
+  // objects before and after the reload, and expects the address to change,
+  // which means that a new object has been allocated.  Technically that is not
+  // guaranteed.  Probably a better way should be invented.
   {
-    auto* const current_theme =
-        cursor_factory->theme_cache_.begin()->second.get();
+    auto* const current_theme_object =
+        cursor_factory->theme_cache_.begin()->second.get()->theme.get();
     cursor_factory->OnCursorThemeNameChanged("Theme1");
     EXPECT_EQ(cursor_factory->theme_cache_.size(), 1U);
-    EXPECT_NE(cursor_factory->theme_cache_.begin()->second.get(),
-              current_theme);
+    EXPECT_NE(cursor_factory->theme_cache_.begin()->second.get()->theme.get(),
+              current_theme_object);
     EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
 
     WaitForThemeLoaded();
