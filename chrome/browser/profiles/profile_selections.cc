@@ -12,6 +12,10 @@ const base::Feature kSystemProfileSelectionDefaultNone{
     "SystemProfileSlectionDefaultNone",
     base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kGuestProfileSelectionDefaultNone{
+    "GuestProfileSlectionDefaultNone",
+    base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
+
 ProfileSelections::Builder::Builder()
     : selections_(base::WrapUnique(new ProfileSelections())) {}
 
@@ -156,11 +160,20 @@ ProfileSelection ProfileSelections::GetProfileSelection(
     return regular_profile_selection_;
 
   if (profile->IsGuestSession()) {
+    // Default value depends on the experiment
+    // `kGuestProfileSelectionDefaultNone`. If experiment is active default
+    // value is ProfileSelection::kNone, otherwise the behavior is redirected to
+    // the `regular_profile_selection_` value (old default behavior).
+    ProfileSelection guest_profile_default =
+        base::FeatureList::IsEnabled(kGuestProfileSelectionDefaultNone)
+            ? ProfileSelection::kNone
+            : regular_profile_selection_;
+
     // If the default value for GuestProfile is overridden, use it.
     // otherwise, redirect to the old behavior (same as regular profile).
     // This is used for both original guest profile (not user visible) and for
     // the off-the-record guest (user visible, ui guest session).
-    return guest_profile_selection_.value_or(regular_profile_selection_);
+    return guest_profile_selection_.value_or(guest_profile_default);
   }
 
   if (profile->IsSystemProfile()) {

@@ -19,6 +19,10 @@
 // explicitly use `ProfileSelections::Builder::WithSystem()`.
 extern const base::Feature kSystemProfileSelectionDefaultNone;
 
+// Similar experiment to `kSystemProfileSelectionDefaultNone` described above
+// affecting Guest Profile.
+extern const base::Feature kGuestProfileSelectionDefaultNone;
+
 class Profile;
 
 // The class `ProfileSelections` and enum `ProfileSelection` are not coupled

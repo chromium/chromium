@@ -69,18 +69,26 @@ class RefcountedProfileKeyedServiceFactoryTest
 // `kSystemProfileSelectionDefaultNone` experiment.
 class ProfileKeyedServiceFactoryUnittest
     : public testing::Test,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   void SetUp() override {
     testing::Test::SetUp();
     profile_testing_helper_.SetUp();
 
     // TODO(rsult): move the below code to be in the
-    // `ProfileKeyedServiceFactoryUnittest` constructor, once the System Profile
-    // can be created with the experiment activated.
-    bool activate_system_experiment = GetParam();
-    feature_list_.InitWithFeatureState(kSystemProfileSelectionDefaultNone,
-                                       activate_system_experiment);
+    // `ProfileSelectionsTestWithParams` constructor, once the System and Guest
+    // Profiles can be created with the experiment activated.
+    bool activate_system_experiment = std::get<0>(GetParam());
+    bool activate_guest_experiment = std::get<1>(GetParam());
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    activate_system_experiment
+        ? enabled_features.push_back(kSystemProfileSelectionDefaultNone)
+        : disabled_features.push_back(kSystemProfileSelectionDefaultNone);
+    activate_guest_experiment
+        ? enabled_features.push_back(kGuestProfileSelectionDefaultNone)
+        : disabled_features.push_back(kGuestProfileSelectionDefaultNone);
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  protected:
@@ -94,6 +102,10 @@ class ProfileKeyedServiceFactoryUnittest
 
   bool IsSystemExperimentActive() const {
     return base::FeatureList::IsEnabled(kSystemProfileSelectionDefaultNone);
+  }
+
+  bool IsGuestExperimentActive() const {
+    return base::FeatureList::IsEnabled(kGuestProfileSelectionDefaultNone);
   }
 
   TestingProfile* regular_profile() {
@@ -135,7 +147,9 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultFactoryTest) {
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), nullptr);
 
-  TestProfileToUse(factory, guest_profile(), guest_profile());
+  bool guest_experiment = IsGuestExperimentActive();
+  TestProfileToUse(factory, guest_profile(),
+                   guest_experiment ? nullptr : guest_profile());
   TestProfileToUse(factory, guest_profile_otr(), nullptr);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
@@ -162,8 +176,11 @@ TEST_P(ProfileKeyedServiceFactoryUnittest,
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), regular_profile());
 
-  TestProfileToUse(factory, guest_profile(), guest_profile());
-  TestProfileToUse(factory, guest_profile_otr(), guest_profile());
+  bool guest_experiment = IsGuestExperimentActive();
+  TestProfileToUse(factory, guest_profile(),
+                   guest_experiment ? nullptr : guest_profile());
+  TestProfileToUse(factory, guest_profile_otr(),
+                   guest_experiment ? nullptr : guest_profile());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   bool system_experiment = IsSystemExperimentActive();
@@ -218,7 +235,9 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultRefcountedFactoryTest) {
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), nullptr);
 
-  TestProfileToUse(factory, guest_profile(), guest_profile());
+  bool guest_experiment = IsGuestExperimentActive();
+  TestProfileToUse(factory, guest_profile(),
+                   guest_experiment ? nullptr : guest_profile());
   TestProfileToUse(factory, guest_profile_otr(), nullptr);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
@@ -245,8 +264,11 @@ TEST_P(ProfileKeyedServiceFactoryUnittest,
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), incognito_profile());
 
-  TestProfileToUse(factory, guest_profile(), guest_profile());
-  TestProfileToUse(factory, guest_profile_otr(), guest_profile_otr());
+  bool guest_experiment = IsGuestExperimentActive();
+  TestProfileToUse(factory, guest_profile(),
+                   guest_experiment ? nullptr : guest_profile());
+  TestProfileToUse(factory, guest_profile_otr(),
+                   guest_experiment ? nullptr : guest_profile_otr());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   bool system_experiment = IsSystemExperimentActive();
@@ -259,4 +281,5 @@ TEST_P(ProfileKeyedServiceFactoryUnittest,
 
 INSTANTIATE_TEST_SUITE_P(ExperimentalProfileKeyedServiceFactory,
                          ProfileKeyedServiceFactoryUnittest,
-                         ::testing::Bool());
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
