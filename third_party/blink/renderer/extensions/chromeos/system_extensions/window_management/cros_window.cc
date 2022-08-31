@@ -48,6 +48,15 @@ void OnResponse(ScriptPromiseResolver* resolver,
 }
 }  // namespace
 
+// TODO(b/244243505): Write a test for unassigned properties.
+CrosWindow::CrosWindow(CrosWindowManagement* manager,
+                       const base::UnguessableToken id)
+    : window_management_(manager) {
+  auto new_info_ptr = mojom::blink::CrosWindowInfo::New();
+  new_info_ptr->id = id;
+  window_ = std::move(new_info_ptr);
+}
+
 CrosWindow::CrosWindow(CrosWindowManagement* manager,
                        mojom::blink::CrosWindowInfoPtr window)
     : window_management_(manager), window_(std::move(window)) {}

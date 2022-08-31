@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_service_worker_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/instance_update.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
@@ -39,7 +41,8 @@ class CrosWindowManagementContext
     : public KeyedService,
       public ui::EventHandler,
       public SystemExtensionsServiceWorkerManager::Observer,
-      public blink::mojom::CrosWindowManagementFactory {
+      public blink::mojom::CrosWindowManagementFactory,
+      public apps::InstanceRegistry::Observer {
  public:
   // Returns the event dispatcher associated with `profile`. Should only be
   // called if System Extensions is enabled for the profile i.e. if
@@ -65,6 +68,11 @@ class CrosWindowManagementContext
   // ui::EventHandler
   void OnKeyEvent(ui::KeyEvent* event) override;
 
+  // apps::InstanceRegistry::Observer
+  void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
+  void OnInstanceRegistryWillBeDestroyed(
+      apps::InstanceRegistry* instance_registry) override;
+
   // SystemExtensionsServiceWorkerManager::Observer
   void OnRegisterServiceWorker(
       const SystemExtensionId& system_extension_id,
@@ -74,9 +82,8 @@ class CrosWindowManagementContext
   void Create(
       mojo::PendingAssociatedReceiver<blink::mojom::CrosWindowManagement>
           pending_receiver,
-      mojo::PendingAssociatedRemote<
-          blink::mojom::CrosWindowManagementStartObserver> observer_remote)
-      override;
+      mojo::PendingAssociatedRemote<blink::mojom::CrosWindowManagementObserver>
+          observer_remote) override;
 
  private:
   // Starts a Service Worker and gets the CrosWindowManagement for it.
@@ -110,6 +117,10 @@ class CrosWindowManagementContext
   base::ScopedObservation<SystemExtensionsServiceWorkerManager,
                           SystemExtensionsServiceWorkerManager::Observer>
       service_worker_manager_observation_{this};
+
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      instance_registry_observation_{this};
 
   mojo::ReceiverSet<blink::mojom::CrosWindowManagementFactory,
                     content::ServiceWorkerVersionBaseInfo>

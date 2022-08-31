@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context.h"
 
 #include "base/cxx20_to_address.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context_factory.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
@@ -50,6 +53,10 @@ CrosWindowManagementContext::CrosWindowManagementContext(Profile* profile)
 
   service_worker_manager_observation_.Observe(
       base::to_address(system_extensions_service_worker_manager_));
+
+  instance_registry_observation_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile)
+           ->InstanceRegistry());
 
   // Let CrosWindowManagementContext be a PreTargetHandler on aura::Env to
   // ensure that it receives KeyEvents.
@@ -113,6 +120,26 @@ void CrosWindowManagementContext::OnKeyEvent(ui::KeyEvent* event) {
       std::move(event_ptr)));
 }
 
+void CrosWindowManagementContext::OnInstanceUpdate(
+    const apps::InstanceUpdate& update) {
+  if (update.IsDestruction()) {
+    if (update.Window() != update.Window()->GetToplevelWindow()) {
+      return;
+    }
+    GetCrosWindowManagementInstances(base::BindRepeating(
+        [](base::UnguessableToken id,
+           WindowManagementImpl& window_management_impl) {
+          window_management_impl.DispatchWindowClosedEvent(id);
+        },
+        update.InstanceId()));
+  }
+}
+
+void CrosWindowManagementContext::OnInstanceRegistryWillBeDestroyed(
+    apps::InstanceRegistry* instance_registry) {
+  instance_registry_observation_.Reset();
+}
+
 void CrosWindowManagementContext::OnCrosWindowManagementDisconnect() {
   const SystemExtensionsServiceWorkerInfo& info =
       cros_window_management_instances_.current_context();
@@ -127,8 +154,8 @@ void CrosWindowManagementContext::OnCrosWindowManagementDisconnect() {
 void CrosWindowManagementContext::Create(
     mojo::PendingAssociatedReceiver<blink::mojom::CrosWindowManagement>
         pending_receiver,
-    mojo::PendingAssociatedRemote<
-        blink::mojom::CrosWindowManagementStartObserver> observer_remote) {
+    mojo::PendingAssociatedRemote<blink::mojom::CrosWindowManagementObserver>
+        observer_remote) {
   const content::ServiceWorkerVersionBaseInfo& service_worker_version_info =
       factory_receivers_.current_context();
 
