@@ -392,7 +392,7 @@ public class MainActivity
         actionIntent.putExtra(Intent.EXTRA_EMAIL, "example@example.com");
         actionIntent.putExtra(Intent.EXTRA_SUBJECT, "example");
         PendingIntent pi = PendingIntent.getActivity(this, 0, actionIntent, 0);
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_share);
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_send_white);
         builder.setActionButton(icon, "send email", pi, true);
     }
 
