@@ -369,8 +369,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
   PartitionRoot()
-      : flags{.quarantine_mode = QuarantineMode::kAlwaysDisabled,
-              .scan_mode = ScanMode::kDisabled} {}
+      : flags{QuarantineMode::kAlwaysDisabled, ScanMode::kDisabled} {}
   explicit PartitionRoot(PartitionOptions opts) : flags() { Init(opts); }
   ~PartitionRoot();
 
