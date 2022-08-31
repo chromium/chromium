@@ -219,15 +219,17 @@ const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
     }
   }
 
-  LayoutUnit fraction_ascent =
+  const LayoutUnit fraction_ascent =
       std::max(numerator_shift + numerator_ascent,
-               -denominator_shift + denominator_ascent);
-  LayoutUnit fraction_descent =
+               -denominator_shift + denominator_ascent)
+          .ClampNegativeToZero() +
+      BorderScrollbarPadding().block_start;
+  const LayoutUnit fraction_descent =
       std::max(-numerator_shift + numerator_descent,
-               denominator_shift + denominator_descent);
-  fraction_ascent += BorderScrollbarPadding().block_start;
-  fraction_descent += BorderScrollbarPadding().block_end;
-  LayoutUnit total_block_size = fraction_ascent + fraction_descent;
+               denominator_shift + denominator_descent)
+          .ClampNegativeToZero() +
+      BorderScrollbarPadding().block_end;
+  LayoutUnit intrinsic_block_size = fraction_ascent + fraction_descent;
 
   container_builder_.SetBaseline(fraction_ascent);
 
@@ -258,10 +260,10 @@ const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
   denominator.StoreMargins(ConstraintSpace(), denominator_margins);
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), total_block_size,
+      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
-  container_builder_.SetIntrinsicBlockSize(total_block_size);
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();

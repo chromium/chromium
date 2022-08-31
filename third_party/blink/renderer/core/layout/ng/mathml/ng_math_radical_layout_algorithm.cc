@@ -219,7 +219,7 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     sizes.min_size +=
         std::max(-index_result.sizes.min_size, horizontal.kern_after_degree);
     sizes.max_size +=
-        std::max(index_result.sizes.max_size, horizontal.kern_after_degree);
+        std::max(-index_result.sizes.max_size, horizontal.kern_after_degree);
   }
   if (base) {
     if (HasBaseGlyphForRadical(Style())) {

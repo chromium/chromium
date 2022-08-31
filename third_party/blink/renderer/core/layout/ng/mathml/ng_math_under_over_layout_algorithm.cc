@@ -196,7 +196,8 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   const LogicalOffset content_start_offset =
       BorderScrollbarPadding().StartOffset();
 
-  LayoutUnit block_offset = content_start_offset.block_offset;
+  LayoutUnit ascent;
+  LayoutUnit descent;
 
   const auto base_properties = GetMathMLEmbellishedOperatorProperties(base);
   const bool is_base_large_operator =
@@ -307,43 +308,45 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
     NGBoxFragment over_fragment(
         ConstraintSpace().GetWritingDirection(),
         To<NGPhysicalBoxFragment>(over_layout_result->PhysicalFragment()));
-    block_offset += parameters.over_extra_ascender + over_margins.block_start;
+    ascent += parameters.over_extra_ascender + over_margins.block_start;
     LogicalOffset over_offset = {
         content_start_offset.inline_offset + over_margins.inline_start +
             (ChildAvailableSize().inline_size -
              (over_fragment.InlineSize() + over_margins.InlineSum())) /
                 2,
-        block_offset};
+        BorderScrollbarPadding().block_start + ascent};
     container_builder_.AddResult(*over_layout_result, over_offset);
     over.StoreMargins(ConstraintSpace(), over_margins);
     if (parameters.use_under_over_bar_fallback) {
-      block_offset += over_fragment.BlockSize();
+      ascent += over_fragment.BlockSize();
       if (HasAccent(Node(), false)) {
         if (base_ascent < parameters.accent_base_height)
-          block_offset += parameters.accent_base_height - base_ascent;
+          ascent += parameters.accent_base_height - base_ascent;
       } else {
-        block_offset += parameters.over_gap_min;
+        ascent += parameters.over_gap_min;
       }
     } else {
       LayoutUnit over_ascent =
           over_fragment.BaselineOrSynthesize(baseline_type);
-      block_offset +=
-          std::max(over_fragment.BlockSize() + parameters.over_gap_min,
-                   over_ascent + parameters.over_shift_min);
+      ascent += std::max(over_fragment.BlockSize() + parameters.over_gap_min,
+                         over_ascent + parameters.over_shift_min);
     }
-    block_offset += over_margins.block_end;
+    ascent += over_margins.block_end;
   }
 
-  block_offset += base_margins.block_start;
+  ascent += base_margins.block_start;
   LogicalOffset base_offset = {
       content_start_offset.inline_offset + base_margins.inline_start +
           (ChildAvailableSize().inline_size -
            (base_fragment.InlineSize() + base_margins.InlineSum())) /
               2,
-      block_offset};
+      BorderScrollbarPadding().block_start + ascent};
   container_builder_.AddResult(*base_layout_result, base_offset);
   base.StoreMargins(ConstraintSpace(), base_margins);
-  block_offset += base_fragment.BlockSize() + base_margins.block_end;
+  ascent += base_ascent;
+  ascent = ascent.ClampNegativeToZero();
+  ascent += BorderScrollbarPadding().block_start;
+  descent = base_fragment.BlockSize() - base_ascent + base_margins.block_end;
 
   if (under) {
     const auto under_space = CreateConstraintSpaceForUnderOverChild(under);
@@ -353,38 +356,39 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
     NGBoxFragment under_fragment(
         ConstraintSpace().GetWritingDirection(),
         To<NGPhysicalBoxFragment>(under_layout_result->PhysicalFragment()));
-    block_offset += under_margins.block_start;
+    descent += under_margins.block_start;
     if (parameters.use_under_over_bar_fallback) {
       if (!HasAccent(Node(), true))
-        block_offset += parameters.under_gap_min;
+        descent += parameters.under_gap_min;
     } else {
       LayoutUnit under_ascent =
           under_fragment.BaselineOrSynthesize(baseline_type);
-      block_offset += std::max(parameters.under_gap_min,
-                               parameters.under_shift_min - under_ascent);
+      descent += std::max(parameters.under_gap_min,
+                          parameters.under_shift_min - under_ascent);
     }
     LogicalOffset under_offset = {
         content_start_offset.inline_offset + under_margins.inline_start +
             (ChildAvailableSize().inline_size -
              (under_fragment.InlineSize() + under_margins.InlineSum())) /
                 2,
-        block_offset};
-    block_offset += under_fragment.BlockSize();
-    block_offset += parameters.under_extra_descender;
+        ascent + descent};
+    descent += under_fragment.BlockSize();
+    descent += parameters.under_extra_descender;
     container_builder_.AddResult(*under_layout_result, under_offset);
     under.StoreMargins(ConstraintSpace(), under_margins);
-    block_offset += under_margins.block_end;
+    descent += under_margins.block_end;
   }
 
-  container_builder_.SetBaseline(base_offset.block_offset + base_ascent);
+  container_builder_.SetBaseline(ascent);
+  descent = descent.ClampNegativeToZero();
+  descent += BorderScrollbarPadding().block_end;
 
-  block_offset += BorderScrollbarPadding().block_end;
+  LayoutUnit intrinsic_block_size = ascent + descent;
+  LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      border_box_size.inline_size);
 
-  LayoutUnit block_size =
-      ComputeBlockSizeForFragment(ConstraintSpace(), Style(), BorderPadding(),
-                                  block_offset, border_box_size.inline_size);
-
-  container_builder_.SetIntrinsicBlockSize(block_offset);
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
