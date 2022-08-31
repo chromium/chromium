@@ -307,33 +307,6 @@ class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
   }
 
  private:
-  content::WebContents* SetupGuestWebContents(const std::string& host_name) {
-    // Navigate to a page with an <iframe>.
-    GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-    // Initially, no guests are created.
-    EXPECT_EQ(0U, test_guest_view_manager()->num_guests_created());
-
-    // Navigate subframe to a cross-site page with an embedded PDF.
-    content::WebContents* active_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    GURL frame_url = embedded_test_server()->GetURL(
-        host_name, "/page_with_embedded_pdf.html");
-
-    // Ensure the page finishes loading without crashing.
-    EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
-
-    // Wait until the guest for PDF is created.
-    content::WebContents* guest_web_contents =
-        test_guest_view_manager()->DeprecatedWaitForSingleGuestCreated();
-
-    ResetTouchAction(
-        guest_view::GuestViewBase::FromWebContents(guest_web_contents)
-            ->GetOwnerRenderWidgetHost());
-    return guest_web_contents;
-  }
-
   guest_view::TestGuestViewManagerFactory factory_;
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
@@ -360,15 +333,18 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
   EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
 
   // Wait until the guest for PDF is created.
-  content::WebContents* guest_web_contents =
-      test_guest_view_manager()->DeprecatedWaitForSingleGuestCreated();
+  auto* guest_view = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+
+  auto* primary_main_frame = active_web_contents->GetPrimaryMainFrame();
+  ASSERT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
 
   // Now detach the frame and observe that the guest is destroyed.
-  content::WebContentsDestroyedWatcher observer(guest_web_contents);
   EXPECT_TRUE(ExecuteScript(
-      active_web_contents,
+      primary_main_frame,
       "document.body.removeChild(document.querySelector('iframe'));"));
-  observer.Wait();
+  test_guest_view_manager()->WaitForLastGuestDeleted();
+
   EXPECT_EQ(0U, test_guest_view_manager()->GetNumGuestsActive());
 }
 
