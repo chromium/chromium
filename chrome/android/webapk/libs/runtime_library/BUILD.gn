@@ -52,7 +52,11 @@ android_library("runtime_library_for_tests_java") {
 dist_dex("webapk_runtime_library") {
   deps = [ ":runtime_library_for_assets_java" ]
   proguard_enabled = true
-  proguard_configs = [ "runtime_library.proguard.flags" ]
+  proguard_configs = [
+    "runtime_library.proguard.flags",
+    "//base/android/proguard/chromium_code.flags",
+    "//base/android/proguard/chromium_apk.flags",
+  ]
   output = "$target_out_dir/$runtime_library_dex_asset_name"
 }
 
