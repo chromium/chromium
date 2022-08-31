@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -193,9 +193,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   virtual NoStatePrefetchContents* GetNoStatePrefetchContentsForRoute(
       int child_id,
       int route_id) const;
-
-  // Returns a list of all WebContents being prerendered.
-  std::vector<content::WebContents*> GetAllPrerenderingContents() const;
 
   // Returns a list of all WebContents being NoStatePrefetched.
   std::vector<content::WebContents*>
@@ -399,8 +396,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   void StartSchedulingPeriodicCleanups();
   void StopSchedulingPeriodicCleanups();
-
-  void EvictOldestPrerendersIfNecessary();
 
   // Deletes stale and cancelled prerendered NoStatePrefetchContents, as well as
   // WebContents that have been replaced by prerendered WebContents.

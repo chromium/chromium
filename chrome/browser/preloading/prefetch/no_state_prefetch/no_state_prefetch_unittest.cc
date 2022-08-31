@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unit_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -63,38 +64,7 @@ using content::Referrer;
 
 namespace prerender {
 
-class UnitTestNoStatePrefetchManager;
-
 namespace {
-
-class DummyNoStatePrefetchContents : public NoStatePrefetchContents {
- public:
-  DummyNoStatePrefetchContents(
-      UnitTestNoStatePrefetchManager* test_no_state_prefetch_manager,
-      const GURL& url,
-      Origin origin,
-      const absl::optional<url::Origin>& initiator_origin,
-      FinalStatus expected_final_status);
-
-  ~DummyNoStatePrefetchContents() override;
-
-  void StartPrerendering(
-      const gfx::Rect& bounds,
-      content::SessionStorageNamespace* session_storage_namespace) override;
-
-  FinalStatus expected_final_status() const { return expected_final_status_; }
-
-  bool prerendering_has_been_cancelled() const {
-    return NoStatePrefetchContents::prerendering_has_been_cancelled();
-  }
-
- private:
-  static int g_next_route_id_;
-  int route_id_;
-
-  raw_ptr<UnitTestNoStatePrefetchManager> test_no_state_prefetch_manager_;
-  FinalStatus expected_final_status_;
-};
 
 class TestNetworkBytesChangedObserver
     : public prerender::NoStatePrefetchHandle::Observer {
@@ -120,164 +90,9 @@ class TestNetworkBytesChangedObserver
   bool network_bytes_changed_;
 };
 
-int DummyNoStatePrefetchContents::g_next_route_id_ = 0;
-
 const gfx::Size kDefaultViewSize(640, 480);
 
 }  // namespace
-
-class UnitTestNoStatePrefetchManager : public NoStatePrefetchManager {
- public:
-  using NoStatePrefetchManager::kNavigationRecordWindowMs;
-
-  explicit UnitTestNoStatePrefetchManager(Profile* profile)
-      : NoStatePrefetchManager(
-            profile,
-            std::make_unique<ChromeNoStatePrefetchManagerDelegate>(profile)) {
-    set_rate_limit_enabled(false);
-  }
-
-  ~UnitTestNoStatePrefetchManager() override {}
-
-  // From KeyedService, via PrererenderManager:
-  void Shutdown() override {
-    if (next_no_state_prefetch_contents())
-      next_no_state_prefetch_contents_->Destroy(FINAL_STATUS_PROFILE_DESTROYED);
-    NoStatePrefetchManager::Shutdown();
-  }
-
-  // From NoStatePrefetchManager:
-  void MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
-                                FinalStatus final_status) override {
-    if (entry == next_no_state_prefetch_contents_.get())
-      return;
-    NoStatePrefetchManager::MoveEntryToPendingDelete(entry, final_status);
-  }
-
-  NoStatePrefetchContents* FindEntry(const GURL& url) {
-    DeleteOldEntries();
-    to_delete_prefetches_.clear();
-    NoStatePrefetchData* data = FindNoStatePrefetchData(url, nullptr);
-    return data ? data->contents() : nullptr;
-  }
-
-  std::unique_ptr<NoStatePrefetchContents> FindAndUseEntry(const GURL& url) {
-    NoStatePrefetchData* no_state_prefetch_data =
-        FindNoStatePrefetchData(url, nullptr);
-    if (!no_state_prefetch_data)
-      return nullptr;
-    auto to_erase = FindIteratorForNoStatePrefetchContents(
-        no_state_prefetch_data->contents());
-    CHECK(to_erase != active_prefetches_.end());
-    std::unique_ptr<NoStatePrefetchContents> no_state_prefetch_contents =
-        no_state_prefetch_data->ReleaseContents();
-    active_prefetches_.erase(to_erase);
-
-    no_state_prefetch_contents->MarkAsUsedForTesting();
-    return no_state_prefetch_contents;
-  }
-
-  DummyNoStatePrefetchContents* CreateNextNoStatePrefetchContents(
-      const GURL& url,
-      FinalStatus expected_final_status) {
-    return SetNextNoStatePrefetchContents(
-        std::make_unique<DummyNoStatePrefetchContents>(
-            this, url, ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN,
-            url::Origin::Create(GURL("https://uniquedifferentorigin.com")),
-            expected_final_status));
-  }
-
-  DummyNoStatePrefetchContents* CreateNextNoStatePrefetchContents(
-      const GURL& url,
-      const absl::optional<url::Origin>& initiator_origin,
-      Origin origin,
-      FinalStatus expected_final_status) {
-    return SetNextNoStatePrefetchContents(
-        std::make_unique<DummyNoStatePrefetchContents>(
-            this, url, origin, initiator_origin, expected_final_status));
-  }
-
-  DummyNoStatePrefetchContents* CreateNextNoStatePrefetchContents(
-      const GURL& url,
-      const std::vector<GURL>& alias_urls,
-      FinalStatus expected_final_status) {
-    auto no_state_prefetch_contents =
-        std::make_unique<DummyNoStatePrefetchContents>(
-            this, url, ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN,
-            url::Origin::Create(GURL("https://uniquedifferentorigin.com")),
-            expected_final_status);
-    for (const GURL& alias : alias_urls)
-      EXPECT_TRUE(no_state_prefetch_contents->AddAliasURL(alias));
-    return SetNextNoStatePrefetchContents(
-        std::move(no_state_prefetch_contents));
-  }
-
-  void set_rate_limit_enabled(bool enabled) {
-    mutable_config().rate_limit_enabled = enabled;
-  }
-
-  NoStatePrefetchContents* next_no_state_prefetch_contents() {
-    return next_no_state_prefetch_contents_.get();
-  }
-
-  NoStatePrefetchContents* GetNoStatePrefetchContentsForRoute(
-      int child_id,
-      int route_id) const override {
-    // Overridden for the NoStatePrefetchLinkManager's pending prefetch logic.
-    auto it = no_state_prefetch_contents_map_.find(
-        std::make_pair(child_id, route_id));
-    return it != no_state_prefetch_contents_map_.end() ? it->second : nullptr;
-  }
-
-  void DummyNoStatePrefetchContentsStarted(
-      int child_id,
-      int route_id,
-      NoStatePrefetchContents* no_state_prefetch_contents) {
-    no_state_prefetch_contents_map_[std::make_pair(child_id, route_id)] =
-        no_state_prefetch_contents;
-  }
-
-  void DummyNoStatePrefetchContentsDestroyed(int child_id, int route_id) {
-    no_state_prefetch_contents_map_.erase(std::make_pair(child_id, route_id));
-  }
-
-  void SetIsLowEndDevice(bool is_low_end_device) {
-    is_low_end_device_ = is_low_end_device;
-  }
-
- private:
-  bool IsLowEndDevice() const override { return is_low_end_device_; }
-
-  DummyNoStatePrefetchContents* SetNextNoStatePrefetchContents(
-      std::unique_ptr<DummyNoStatePrefetchContents>
-          no_state_prefetch_contents) {
-    CHECK(!next_no_state_prefetch_contents_);
-    DummyNoStatePrefetchContents* contents_ptr =
-        no_state_prefetch_contents.get();
-    next_no_state_prefetch_contents_ = std::move(no_state_prefetch_contents);
-    return contents_ptr;
-  }
-
-  std::unique_ptr<NoStatePrefetchContents> CreateNoStatePrefetchContents(
-      const GURL& url,
-      const Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
-      Origin origin) override {
-    CHECK(next_no_state_prefetch_contents_);
-    EXPECT_EQ(url, next_no_state_prefetch_contents_->prerender_url());
-    EXPECT_EQ(origin, next_no_state_prefetch_contents_->origin());
-    return std::move(next_no_state_prefetch_contents_);
-  }
-
-  // Maintain a map from route pairs to NoStatePrefetchContents for
-  // GetNoStatePrefetchContentsForRoute.
-  using NoStatePrefetchContentsMap =
-      std::map<std::pair<int, int>, NoStatePrefetchContents*>;
-  NoStatePrefetchContentsMap no_state_prefetch_contents_map_;
-
-  std::unique_ptr<NoStatePrefetchContents> next_no_state_prefetch_contents_;
-  bool is_low_end_device_;
-};
 
 class MockNetworkChangeNotifier4GMetered : public net::NetworkChangeNotifier {
  public:
@@ -311,40 +126,6 @@ class MockNetworkChangeNotifierWifiMetered : public net::NetworkChangeNotifier {
     return NetworkChangeNotifier::CONNECTION_COST_METERED;
   }
 };
-
-DummyNoStatePrefetchContents::DummyNoStatePrefetchContents(
-    UnitTestNoStatePrefetchManager* test_no_state_prefetch_manager,
-    const GURL& url,
-    Origin origin,
-    const absl::optional<url::Origin>& initiator_origin,
-    FinalStatus expected_final_status)
-    : NoStatePrefetchContents(
-          std::make_unique<ChromeNoStatePrefetchContentsDelegate>(),
-          test_no_state_prefetch_manager,
-          nullptr,
-          url,
-          Referrer(),
-          initiator_origin,
-          origin),
-      route_id_(g_next_route_id_++),
-      test_no_state_prefetch_manager_(test_no_state_prefetch_manager),
-      expected_final_status_(expected_final_status) {}
-
-DummyNoStatePrefetchContents::~DummyNoStatePrefetchContents() {
-  EXPECT_EQ(expected_final_status_, final_status());
-  test_no_state_prefetch_manager_->DummyNoStatePrefetchContentsDestroyed(
-      -1, route_id_);
-}
-
-void DummyNoStatePrefetchContents::StartPrerendering(
-    const gfx::Rect& bounds,
-    content::SessionStorageNamespace* session_storage_namespace) {
-  load_start_time_ = test_no_state_prefetch_manager_->GetCurrentTimeTicks();
-  prerendering_has_started_ = true;
-  test_no_state_prefetch_manager_->DummyNoStatePrefetchContentsStarted(
-      -1, route_id_, this);
-  NotifyPrefetchStart();
-}
 
 class NoStatePrefetchTest : public testing::Test {
  public:
@@ -655,7 +436,7 @@ TEST_F(NoStatePrefetchTest, FoundTest) {
   no_state_prefetch_manager()->SetTickClockForTesting(tick_clock());
 
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -690,14 +471,14 @@ TEST_F(NoStatePrefetchTest, FoundTest) {
 TEST_F(NoStatePrefetchTest, DISABLED_DuplicateTest_NoStatePrefetch) {
   SetConcurrency(2);
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_FALSE(no_state_prefetch_manager()->next_no_state_prefetch_contents());
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
 
-  DummyNoStatePrefetchContents* no_state_prefetch_contents1 =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents1 =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_PROFILE_DESTROYED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -714,7 +495,7 @@ TEST_F(NoStatePrefetchTest, DISABLED_DuplicateTest_NoStatePrefetch) {
 TEST_F(NoStatePrefetchTest, ExpireTest) {
   no_state_prefetch_manager()->SetTickClockForTesting(tick_clock());
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -729,7 +510,7 @@ TEST_F(NoStatePrefetchTest, ExpireTest) {
 // url)
 TEST_F(NoStatePrefetchTest, BadURLTest) {
   GURL url("mailto:test@gmail.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_UNSUPPORTED_SCHEME);
   EXPECT_FALSE(AddSimpleLinkTrigger(url));
@@ -753,7 +534,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerNavigateAwayExpire) {
       abandon_time_to_live;
 
   GURL url("http://example.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -792,7 +573,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerNavigateAwayNearExpiry) {
       abandon_time_to_live;
 
   GURL url("http://example2.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -839,7 +620,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerNavigateAwayLaunchAnother) {
   tick_clock()->Advance(test_advance);
 
   GURL second_url("http://example2.com");
-  DummyNoStatePrefetchContents* second_no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* second_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           second_url, FINAL_STATUS_PROFILE_DESTROYED);
   EXPECT_TRUE(AddSimpleLinkTrigger(second_url));
@@ -953,7 +734,7 @@ TEST_F(NoStatePrefetchTest, MaxConcurrencyTest) {
 
     GURL url_to_delay(
         base::StringPrintf("http://www.google.com/delayme#%" PRIuS, test_id));
-    DummyNoStatePrefetchContents* no_state_prefetch_contents_to_delay =
+    FakeNoStatePrefetchContents* no_state_prefetch_contents_to_delay =
         no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
             url_to_delay, FINAL_STATUS_USED);
     EXPECT_FALSE(AddSimpleLinkTrigger(url_to_delay));
@@ -990,7 +771,7 @@ TEST_F(NoStatePrefetchTest, DISABLED_AliasURLTest) {
   alias_urls.push_back(alias_url2);
 
   // Test that all of the aliases work, but not_an_alias_url does not.
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, alias_urls, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -1046,7 +827,7 @@ TEST_F(NoStatePrefetchTest, RecentlyVisited) {
 
   no_state_prefetch_manager()->RecordNavigation(url);
 
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_RECENTLY_VISITED);
   EXPECT_FALSE(AddSimpleLinkTrigger(url));
@@ -1061,7 +842,7 @@ TEST_F(NoStatePrefetchTest, NotSoRecentlyVisited) {
   tick_clock()->Advance(base::Milliseconds(
       UnitTestNoStatePrefetchManager::kNavigationRecordWindowMs + 500));
 
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -1075,7 +856,7 @@ TEST_F(NoStatePrefetchTest, NotSoRecentlyVisited) {
 TEST_F(NoStatePrefetchTest, FragmentMatchesTest) {
   GURL fragment_url("http://www.google.com/#test");
 
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           fragment_url, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(fragment_url));
@@ -1091,7 +872,7 @@ TEST_F(NoStatePrefetchTest, FragmentsDifferTest) {
   GURL fragment_url("http://www.google.com/#test");
   GURL other_fragment_url("http://www.google.com/#other_test");
 
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           fragment_url, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(fragment_url));
@@ -1107,7 +888,7 @@ TEST_F(NoStatePrefetchTest, FragmentsDifferTest) {
 // Make sure that clearing works as expected.
 TEST_F(NoStatePrefetchTest, ClearTest) {
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CACHE_OR_HISTORY_CLEARED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -1120,7 +901,7 @@ TEST_F(NoStatePrefetchTest, ClearTest) {
 // Make sure canceling works as expected.
 TEST_F(NoStatePrefetchTest, CancelAllTest) {
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -1132,7 +913,7 @@ TEST_F(NoStatePrefetchTest, CancelAllTest) {
 // Test that when prefetch is enabled, a prefetch initiated by omnibox is
 // successful.
 TEST_F(NoStatePrefetchTest, OmniboxAllowedWhenNotDisabled) {
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           GURL("http://www.example.com"), absl::nullopt, ORIGIN_OMNIBOX,
           FINAL_STATUS_PROFILE_DESTROYED);
@@ -1263,7 +1044,7 @@ TEST_F(PrerenderFallbackToPreconnectEnabledTest,
 TEST_F(NoStatePrefetchTest, LinkRelStillAllowedWhenDisabled) {
   DisablePrerender();
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, url::Origin::Create(GURL("https://www.notgoogle.com")),
           ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_USED);
@@ -1283,7 +1064,7 @@ TEST_F(NoStatePrefetchTest, LinkRelAllowedOnCellular) {
       net::NetworkChangeNotifier::GetConnectionType()));
   EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
             net::NetworkChangeNotifier::GetConnectionCost());
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, url::Origin::Create(GURL("https://www.notexample.com")),
           ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_USED);
@@ -1306,7 +1087,7 @@ TEST_F(NoStatePrefetchTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
   EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
             net::NetworkChangeNotifier::GetConnectionCost());
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
@@ -1331,7 +1112,7 @@ TEST_F(NoStatePrefetchTest,
   EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
             net::NetworkChangeNotifier::GetConnectionCost());
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
@@ -1356,7 +1137,7 @@ TEST_F(NoStatePrefetchTest,
   EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
             net::NetworkChangeNotifier::GetConnectionCost());
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
@@ -1388,7 +1169,7 @@ TEST_F(
   EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
       net::NetworkChangeNotifier::GetConnectionType()));
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST, FINAL_STATUS_USED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
@@ -1409,7 +1190,7 @@ TEST_F(NoStatePrefetchTest, PrerenderAllowedForForcedCellular) {
   EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
       net::NetworkChangeNotifier::GetConnectionType()));
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents = nullptr;
+  FakeNoStatePrefetchContents* no_state_prefetch_contents = nullptr;
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle;
   no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
@@ -1432,7 +1213,7 @@ TEST_F(NoStatePrefetchTest, PrerenderAllowedForForcedCellular) {
 TEST_F(NoStatePrefetchTest, LinkManagerCancel) {
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
 
@@ -1453,7 +1234,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerCancel) {
 TEST_F(NoStatePrefetchTest, LinkManagerAbandon) {
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
 
@@ -1475,7 +1256,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerAbandon) {
 TEST_F(NoStatePrefetchTest, LinkManagerAbandonThenCancel) {
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
 
@@ -1511,7 +1292,7 @@ TEST_F(NoStatePrefetchTest, MAYBE_LinkManagerAddTwiceCancelTwice) {
   SetConcurrency(2);
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
 
@@ -1546,7 +1327,7 @@ TEST_F(NoStatePrefetchTest, DISABLED_LinkManagerAddTwiceAbandonTwiceUseTwice) {
   SetConcurrency(2);
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
 
@@ -1584,7 +1365,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerExpireThenCancel) {
   no_state_prefetch_manager()->SetTickClockForTesting(tick_clock());
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
 
@@ -1610,7 +1391,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerExpireThenAddAgain) {
   no_state_prefetch_manager()->SetTickClockForTesting(tick_clock());
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* first_no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* first_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -1623,7 +1404,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerExpireThenAddAgain) {
                         base::Seconds(1));
 
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(url));
-  DummyNoStatePrefetchContents* second_no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* second_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -1637,7 +1418,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerExpireThenAddAgain) {
 TEST_F(NoStatePrefetchTest, DISABLED_LinkManagerCancelThenAddAgain) {
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* first_no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* first_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
@@ -1669,7 +1450,7 @@ TEST_F(NoStatePrefetchTest, DISABLED_LinkManagerAbandonInactivePrerender) {
   ASSERT_LT(no_state_prefetch_manager()->config().abandon_time_to_live,
             no_state_prefetch_manager()->config().time_to_live);
   GURL first_url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           first_url, FINAL_STATUS_TIMED_OUT);
   EXPECT_TRUE(AddSimpleLinkTrigger(first_url));
@@ -1703,7 +1484,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerWaitToLaunchNotLaunched) {
   ASSERT_LT(no_state_prefetch_manager()->config().max_wait_to_launch,
             no_state_prefetch_manager()->config().time_to_live);
   GURL first_url("http://www.myexample.com");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           first_url, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(first_url));
@@ -1741,7 +1522,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerExpireRevealingLaunch) {
             no_state_prefetch_manager()->config().time_to_live);
 
   GURL first_url("http://www.willexpire.com");
-  DummyNoStatePrefetchContents* first_no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* first_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           first_url, FINAL_STATUS_TIMED_OUT);
   EXPECT_TRUE(AddSimpleLinkTrigger(first_url));
@@ -1766,7 +1547,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerExpireRevealingLaunch) {
 
   tick_clock()->Advance(wait_to_launch_second_prerender);
   GURL second_url("http://www.willlaunch.com");
-  DummyNoStatePrefetchContents* second_no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* second_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           second_url, FINAL_STATUS_USED);
   EXPECT_FALSE(AddSimpleLinkTrigger(second_url));
@@ -1795,7 +1576,7 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchContentsIsValidHttpMethod) {
 
 TEST_F(NoStatePrefetchTest, NoStatePrefetchContentsIncrementsByteCount) {
   GURL url("http://www.google.com/");
-  DummyNoStatePrefetchContents* no_state_prefetch_contents =
+  FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
           FINAL_STATUS_PROFILE_DESTROYED);

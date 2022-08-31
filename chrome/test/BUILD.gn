@@ -5369,6 +5369,8 @@ test("unit_tests") {
     "../browser/prefs/profile_pref_store_manager_unittest.cc",
     "../browser/prefs/proxy_policy_unittest.cc",
     "../browser/prefs/session_startup_pref_unittest.cc",
+    "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unit_test_utils.cc",
+    "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unit_test_utils.h",
     "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unittest.cc",
     "../browser/preloading/prefetch/prefetch_proxy/prefetch_container_unittest.cc",
     "../browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_canary_checker_unittest.cc",
