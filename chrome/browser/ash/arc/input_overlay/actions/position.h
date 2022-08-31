@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -28,6 +31,8 @@ class Position {
   Position& operator=(const Position&);
   ~Position();
 
+  static std::unique_ptr<Position> ConvertFromProto(const PositionProto& proto);
+
   bool ParseFromJson(const base::Value& value);
   // Return the position coords in |content_bounds|. |content_bounds| is bounds
   // excluding caption if the caption shows.
@@ -35,6 +40,7 @@ class Position {
   // Normalize the |point| inside of |content_bounds|. |point| is relative
   // position inside of |content_bounds|.
   void Normalize(const gfx::Point& point, const gfx::RectF& content_bounds);
+  std::unique_ptr<PositionProto> ConvertToProto();
 
   bool operator==(const Position& other) const;
   bool operator!=(const Position& other) const;
@@ -42,6 +48,10 @@ class Position {
   PositionType position_type() const { return position_type_; }
   const gfx::PointF& anchor() const { return anchor_; }
   const gfx::Vector2dF& anchor_to_target() const { return anchor_to_target_; }
+  void set_anchor_to_target(const gfx::Vector2dF& points_vector) {
+    anchor_to_target_ = points_vector;
+  }
+
   absl::optional<float> x_on_y() const { return x_on_y_; }
   absl::optional<float> y_on_x() const { return y_on_x_; }
   absl::optional<float> aspect_ratio() const { return aspect_ratio_; }

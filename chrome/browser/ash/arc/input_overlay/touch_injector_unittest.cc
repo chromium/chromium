@@ -238,6 +238,10 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return injector_->GetRewrittenTouchInfoSizeForTesting();
   }
 
+  std::unique_ptr<AppDataProto> ConvertToProto() {
+    return injector_->ConvertToProto();
+  }
+
   aura::TestScreen* test_screen() {
     return aura::test::AuraTestHelper::GetInstance()->GetTestScreen();
   }
@@ -269,6 +273,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
         widget_->GetNativeWindow(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
+    injector_->set_beta(true);
   }
 
   void TearDown() override {
@@ -306,7 +311,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, kTolerance);
   EXPECT_FALSE(actionA->touch_id());
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
@@ -361,7 +366,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_POINTF_NEAR(expectA2, event->root_location_f(), kTolerance);
   EXPECT_EQ(1, event->pointer_details().id);
 
-  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
+  event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, kTolerance);
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
@@ -802,6 +807,56 @@ TEST_F(TouchInjectorTest, TestEventRewriterTouchToTouch) {
   touchEvent = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, touchEvent->type());
   EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+}
+
+TEST_F(TouchInjectorTest, TestProtoConversion) {
+  // Check whether AppDataProto is serialized correctly.
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(*json_value);
+  // Change input binding on actions[1].
+  auto new_input = InputElement::CreateActionTapKeyElement(ui::DomCode::US_C);
+  auto* expected_input = new_input.get();
+  injector_->OnInputBindingChange(&*injector_->actions()[1],
+                                  std::move(new_input));
+  injector_->OnApplyPendingBinding();
+  // Change position binding on actions[0].
+  auto new_pos = std::make_unique<Position>(PositionType::kDefault);
+  new_pos->Normalize(gfx::Point(20, 20), gfx::RectF(100, 100));
+  auto expected_pos = *new_pos;
+  injector_->OnPositionBingingChange(&*injector_->actions()[0],
+                                     std::move(new_pos));
+  injector_->OnApplyPendingBinding();
+  auto proto = ConvertToProto();
+  // Check whether the actions[1] with new input binding is converted to proto
+  // correctly.
+  auto action_proto = proto->actions()[1];
+  EXPECT_TRUE(action_proto.has_input_element());
+  auto input_element =
+      InputElement::ConvertFromProto(action_proto.input_element());
+  EXPECT_EQ(*input_element, *expected_input);
+  // Check whether the actions[0] with new position is converted to proto
+  // correctly.
+  action_proto = proto->actions()[0];
+  EXPECT_FALSE(action_proto.positions().empty());
+  auto position = Position::ConvertFromProto(action_proto.positions()[0]);
+  EXPECT_EQ(*position, expected_pos);
+
+  // Check whether AppDataProto is deserialized correctly.
+  auto injector = std::make_unique<TouchInjector>(
+      widget_->GetNativeWindow(),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
+  injector->set_beta(true);
+  injector->ParseActions(*json_value);
+  injector->OnProtoDataAvailable(*proto);
+  EXPECT_EQ(injector_->actions().size(), injector->actions().size());
+  for (int i = 0; i < injector_->actions().size(); i++) {
+    const auto* action_a = injector_->actions()[i].get();
+    const auto* action_b = injector->actions()[i].get();
+    EXPECT_EQ(*action_a->current_input(), *action_b->current_input());
+    EXPECT_EQ(action_a->current_positions(), action_b->current_positions());
+  }
 }
 
 }  // namespace input_overlay
