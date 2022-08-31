@@ -4553,6 +4553,20 @@
    },
    "mathml": {
     "crashtests": {
+     "children-with-negative-block-sizes.html": [
+      "c50f9be153f21d232d32d56c89bf7ba602c392f0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "children-with-negative-inline-sizes.html": [
+      "5c41fc896967f317948163d20da605618b9de99c",
+      [
+       null,
+       {}
+      ]
+     ],
      "chrome-bug-1287843.html": [
       "6fc95fc12e11d28ae69ec05bcd8d935103b5bcb1",
       [
@@ -229892,7 +229906,7 @@
       ]
      ],
      "dir-style-01a.html": [
-      "d7a423979a9a9c77d9d5a485b24bbd2e3cb6a5b6",
+      "78729b24647c4f10770d6663449ace3b537640c3",
       [
        null,
        [
@@ -229901,11 +229915,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            155,
+            155
+           ],
+           [
+            10,
+            10
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "dir-style-01b.html": [
-      "3ef501b7882d5e931ab8309ad7c382abc0e89c08",
+      "1be9dbaaaa6cf247ac2d63e965fc68ab4d376a7a",
       [
        null,
        [
@@ -229914,7 +229944,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            155,
+            155
+           ],
+           [
+            10,
+            10
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "dir-style-02a.html": [
@@ -330606,10 +330652,6 @@
       ],
       "mrow-painting-order-ref.html": [
        "72694959a86f1917cbd3db13b7f1a8b71714b711",
-       []
-      ],
-      "no-spacing-expected.txt": [
-       "ae5d7a77047f04d4fbd20889240f405d95bcafd9",
        []
       ]
      },
