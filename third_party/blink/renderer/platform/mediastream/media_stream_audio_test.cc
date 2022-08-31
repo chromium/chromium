@@ -100,7 +100,7 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
       if (!audio_bus_ || audio_bus_->frames() != buffer_size) {
         MediaStreamAudioSource::SetFormat(media::AudioParameters(
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-            media::CHANNEL_LAYOUT_MONO, kSampleRate, buffer_size));
+            media::ChannelLayoutConfig::Mono(), kSampleRate, buffer_size));
         audio_bus_ = media::AudioBus::Create(1, buffer_size);
       }
 
@@ -301,8 +301,8 @@ TEST_F(MediaStreamAudioTest, BasicUsage) {
 
   // Check that the audio parameters propagated to the track and sink.
   const media::AudioParameters expected_params(
-      media::AudioParameters::AUDIO_PCM_LOW_LATENCY, media::CHANNEL_LAYOUT_MONO,
-      kSampleRate, kBufferSize);
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), kSampleRate, kBufferSize);
   EXPECT_TRUE(expected_params.Equals(track()->GetOutputFormat()));
   EXPECT_TRUE(expected_params.Equals(sink.params()));
 
@@ -365,8 +365,8 @@ TEST_F(MediaStreamAudioTest, FormatChangesPropagate) {
   while (!sink.params().IsValid())
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   const media::AudioParameters expected_params(
-      media::AudioParameters::AUDIO_PCM_LOW_LATENCY, media::CHANNEL_LAYOUT_MONO,
-      kSampleRate, kBufferSize);
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), kSampleRate, kBufferSize);
   EXPECT_TRUE(expected_params.Equals(track()->GetOutputFormat()));
   EXPECT_TRUE(expected_params.Equals(sink.params()));
 
