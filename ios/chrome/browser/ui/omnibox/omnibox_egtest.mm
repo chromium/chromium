@@ -545,7 +545,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
 @implementation NewOmniboxPopupLocationBarSteadyStateVariant1TestCase
 
 - (void)setUp {
-  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1);
+  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1UIKit);
 
   // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
@@ -567,7 +567,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
 @implementation NewOmniboxPopupLocationBarSteadyStateVariant2TestCase
 
 - (void)setUp {
-  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2);
+  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2UIKit);
 
   // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
