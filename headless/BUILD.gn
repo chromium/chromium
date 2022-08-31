@@ -351,6 +351,22 @@ source_set("headless_shared_sources") {
 
   configs += [ ":inside_headless_component" ]
   configs += [ ":headless_defines_config" ]
+
+  # TODO(caseq): this is only here because headless_content_main_delegate.cc is here.
+  # Move it to the browser-specific part.
+  if (headless_use_embedded_resources) {
+    defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+    deps += [
+      ":embedded_resource_pack_data",
+      ":embedded_resource_pack_strings",
+    ]
+    sources += [
+      "$root_gen_dir/headless/embedded_resource_pack_data.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_data.h",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.h",
+    ]
+  }
 }
 
 # Code that is not needed in a renderer process.
@@ -676,22 +692,6 @@ if (!is_component_build) {
     configs += [ ":headless_defines_config" ]
     if (is_mac || is_win || is_linux || is_chromeos) {
       deps += [ "//components/crash/core/app" ]
-    }
-
-    # TODO(caseq): this is only here because we build headless_content_main_delegate.cc in renderer.
-    # Move it to the browser-specific part.
-    if (headless_use_embedded_resources) {
-      defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-      deps += [
-        ":embedded_resource_pack_data",
-        ":embedded_resource_pack_strings",
-      ]
-      sources += [
-        "$root_gen_dir/headless/embedded_resource_pack_data.cc",
-        "$root_gen_dir/headless/embedded_resource_pack_data.h",
-        "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
-        "$root_gen_dir/headless/embedded_resource_pack_strings.h",
-      ]
     }
   }
 } else {
