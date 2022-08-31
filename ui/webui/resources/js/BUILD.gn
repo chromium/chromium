@@ -100,7 +100,6 @@ preprocess_if_expr("preprocess_src") {
       "i18n_template_no_process.js",
       "list_property_update_behavior.js",
       "parse_html_subset.js",
-      "polymer_config.js",
       "promise_resolver.js",
       "web_ui_listener_behavior.js",
     ]

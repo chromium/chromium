@@ -5,8 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-include_polymer = !is_android && !is_ios
-
 generate_grd("build_grdp") {
   grd_prefix = "webui_html"
   out_grd = "$target_gen_dir/resources.grdp"
@@ -36,15 +34,11 @@ generate_grd("build_grdp") {
     ]
   }
 
-  if (include_polymer) {
-    input_files += [ "polymer.html" ]
-
-    if (is_chromeos_ash) {
-      input_files += [
-        "i18n_behavior.html",
-        "web_ui_listener_behavior.html",
-      ]
-    }
+  if (is_chromeos_ash) {
+    input_files += [
+      "i18n_behavior.html",
+      "web_ui_listener_behavior.html",
+    ]
   }
   input_files_base_dir = rebase_path(".", "//")
 }

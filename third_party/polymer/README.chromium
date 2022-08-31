@@ -1,8 +1,8 @@
 Name: Polymer
 Short Name: polymer
-URL: http://www.polymer-project.org
-Version: 1.9.1
-Revision: (see v1_0/components_summary.txt)
+URL: https://polymer-library.polymer-project.org
+Version: 3.2.0
+Revision: N/A
 License: BSD
 License File: LICENSE.polymer
 Security Critical: no
@@ -10,7 +10,7 @@ Security Critical: no
 Description:
 This directory contains a copy of the Polymer framework and some elements from
 the Polymer elements catalog (https://elements.polymer-project.org/). See
-v1_0/components_summary.txt for a full list of components.
+v3_0/package.json for a full list of components.
 
 The source git repositories can be found at:
 https://github.com/Polymer/polymer
@@ -26,7 +26,7 @@ becomes smaller and better over time.
 technologies called the Polymer.
 
 Local Modifications:
-- Applied modifications that can be found in v1_0/chromium.patch.
+- Applied modifications that can be found in v3_0/chromium.patch.
 - All inline JavaScript blocks are extracted from Polymer HTML elements to
 external JS files. This version of the Polymer is used in a web UI, where CSP
 forbids an execution of inline scripts. The extraction was made with the help of
@@ -34,29 +34,17 @@ the Crisper tool (https://github.com/PolymerLabs/crisper).
 - Removed executable bit from some files.
 - Resolved encoding issues.
 - Replaced CRLF line endings with LF line endings in text files.
-- Removed files that are not needed by Chromium, see v1_0/rsync_exclude.txt.
+- Removed files that are not needed by Chromium, see v3_0/rsync_exclude.txt.
 - Re-implemented <paper-ripple> using Web Animations API (which, as of
   2/21/2017 does not work in Safari or IE). This is a complete fork from
   Polymer's <paper-ripple>.
 - Removed CSS properties that are not needed in Chromium using
   css_strip_prefixes.py script.
-- Bundled and minified Polymer 2 with minify_polymer.py, since Polymer 2 repo
-  does not distribute minified files (unlike Polymer 1).
-- Note that the Polymer 2 bundle does not include dir-mixin.html which is
+- Bundled and minified Polymer 3 with minify_polymer.py, since Polymer 3 repo
+  does not distribute minified files.
+- Note that the Polymer 3 bundle does not include dir-mixin.js which is
   responsible for polyfylling :dir() CSS rules, because it causes a performance
   regression (and it is unnecessary), see crbug.com/899603 for more context.
 
 To restore a content of the 'components-chromium' directory from scratch, run
-./v1_0/reproduce.sh on a Linux machine.
-
-Note on Bower:
-The directory can be updated by running "bower update". A new component can be
-installed by running "bower install -S PolymerElements/<component>#version".
-Be sure to add the .bower.json file to the repository as it includes the
-revision information of the polymer component.
-Also be sure that you listed all the added packages in bower.json.
-
-Polymer 3 notes
-Polymer 3 resides under v3_0/, and uses NPM instead of Bower. To restore the
-contents of the 'components-chromium' directory from scratch, run
 ./v3_0/reproduce.sh on a Linux machine.
