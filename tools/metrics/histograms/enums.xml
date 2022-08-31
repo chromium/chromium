@@ -46368,6 +46368,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="kUserSelectedThisTab"/>
 </enum>
 
+<enum name="GetDisplayMediaConstraintsDisplaySurface">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="Tab"/>
+  <int value="2" label="Window"/>
+  <int value="3" label="Monitor"/>
+</enum>
+
+<enum name="GetDisplayMediaIncludeExcludeConstraint">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="Include"/>
+  <int value="2" label="Exclude"/>
+</enum>
+
 <enum name="GetDisplayMediaPreferCurrentTabExplicitSelectionUserInteraction">
   <int value="0" label="kDialogDismissed"/>
   <int value="1" label="kUserCancelled"/>

@@ -2776,6 +2776,43 @@ chromium-metrics-reviews@google.com.
   <token key="RendererType" variants="RendererType"/>
 </histogram>
 
+<histogram name="Media.GetDisplayMedia.Constraints.DisplaySurface"
+    enum="GetDisplayMediaConstraintsDisplaySurface" expires_after="2023-05-07">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with displaySurface constraint.
+  </summary>
+</histogram>
+
+<histogram name="Media.GetDisplayMedia.Constraints.SelfBrowserSurface"
+    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2023-05-07">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with selfBrowserSurface
+    constraint.
+  </summary>
+</histogram>
+
+<histogram name="Media.GetDisplayMedia.Constraints.SurfaceSwitching"
+    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2023-05-07">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with surfaceSwitching constraint.
+  </summary>
+</histogram>
+
+<histogram name="Media.GetDisplayMedia.Constraints.SystemAudio"
+    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2023-05-07">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with systemAudio constraint.
+  </summary>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.DeviceSelectorAvailable"
     enum="Boolean" expires_after="2023-02-12">
   <owner>steimel@chromium.org</owner>

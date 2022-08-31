@@ -33,6 +33,7 @@
 
 #include <type_traits>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -64,6 +65,30 @@
 namespace blink {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GetDisplayMediaIncludeExcludeConstraint {
+  kNotSpecified = 0,
+  kInclude = 1,
+  kExclude = 2,
+  kMaxValue = kExclude
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GetDisplayMediaConstraintsDisplaySurface {
+  kNotSpecified = 0,
+  kTab = 1,
+  kWindow = 2,
+  kMonitor = 3,
+  kMaxValue = kMonitor
+};
+
+void RecordUma(GetDisplayMediaConstraintsDisplaySurface value) {
+  base::UmaHistogramEnumeration(
+      "Media.GetDisplayMedia.Constraints.DisplaySurface", value);
+}
 
 template <typename NumericConstraint>
 bool SetUsesNumericConstraint(
@@ -281,6 +306,63 @@ void CountVideoConstraintUses(ExecutionContext* context,
   }
 }
 
+void RecordSystemAudioConstraintUma(const MediaStreamConstraints* options) {
+  const GetDisplayMediaIncludeExcludeConstraint value =
+      (!options->hasSystemAudio()
+           ? GetDisplayMediaIncludeExcludeConstraint::kNotSpecified
+       : options->systemAudio().AsEnum() ==
+               V8SystemAudioPreferenceEnum::Enum::kInclude
+           ? GetDisplayMediaIncludeExcludeConstraint::kInclude
+           : GetDisplayMediaIncludeExcludeConstraint::kExclude);
+  base::UmaHistogramEnumeration("Media.GetDisplayMedia.Constraints.SystemAudio",
+                                value);
+}
+
+void RecordSelfBrowserSurfaceConstraintUma(
+    const MediaStreamConstraints* options) {
+  const GetDisplayMediaIncludeExcludeConstraint value =
+      (!options->hasSelfBrowserSurface()
+           ? GetDisplayMediaIncludeExcludeConstraint::kNotSpecified
+       : options->selfBrowserSurface().AsEnum() ==
+               V8SelfCapturePreferenceEnum::Enum::kInclude
+           ? GetDisplayMediaIncludeExcludeConstraint::kInclude
+           : GetDisplayMediaIncludeExcludeConstraint::kExclude);
+  base::UmaHistogramEnumeration(
+      "Media.GetDisplayMedia.Constraints.SelfBrowserSurface", value);
+}
+
+void RecordPreferredDisplaySurfaceConstraintUma(
+    const mojom::blink::PreferredDisplaySurface preferred_display_surface) {
+  switch (preferred_display_surface) {
+    case mojom::blink::PreferredDisplaySurface::NO_PREFERENCE:
+      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kNotSpecified);
+      return;
+    case mojom::blink::PreferredDisplaySurface::MONITOR:
+      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kMonitor);
+      return;
+    case mojom::blink::PreferredDisplaySurface::WINDOW:
+      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kWindow);
+      return;
+    case mojom::blink::PreferredDisplaySurface::BROWSER:
+      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kTab);
+      return;
+  }
+  NOTREACHED();
+}
+
+void RecordSurfaceSwitchingConstraintUma(
+    const MediaStreamConstraints* options) {
+  const GetDisplayMediaIncludeExcludeConstraint value =
+      (!options->hasSurfaceSwitching()
+           ? GetDisplayMediaIncludeExcludeConstraint::kNotSpecified
+       : options->surfaceSwitching().AsEnum() ==
+               V8SurfaceSwitchingPreferenceEnum::Enum::kInclude
+           ? GetDisplayMediaIncludeExcludeConstraint::kInclude
+           : GetDisplayMediaIncludeExcludeConstraint::kExclude);
+  base::UmaHistogramEnumeration(
+      "Media.GetDisplayMedia.Constraints.SurfaceSwitching", value);
+}
+
 MediaConstraints ParseOptions(
     ExecutionContext* execution_context,
     const V8UnionBooleanOrMediaTrackConstraints* options,
@@ -418,6 +500,8 @@ UserMediaRequest* UserMediaRequest::Create(
       options->hasSystemAudio() &&
       options->systemAudio().AsEnum() ==
           V8SystemAudioPreferenceEnum::Enum::kExclude);
+  if (media_type == UserMediaRequestType::kDisplayMedia)
+    RecordSystemAudioConstraintUma(options);
 
   // The default is to include.
   const bool exclude_self_browser_surface =
@@ -431,6 +515,8 @@ UserMediaRequest* UserMediaRequest::Create(
     return nullptr;
   }
   result->set_exclude_self_browser_surface(exclude_self_browser_surface);
+  if (media_type == UserMediaRequestType::kDisplayMedia)
+    RecordSelfBrowserSurfaceConstraintUma(options);
 
   mojom::blink::PreferredDisplaySurface preferred_display_surface =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
@@ -442,12 +528,16 @@ UserMediaRequest* UserMediaRequest::Create(
     preferred_display_surface = mojom::blink::PreferredDisplaySurface::BROWSER;
   }
   result->set_preferred_display_surface(preferred_display_surface);
+  if (media_type == UserMediaRequestType::kDisplayMedia)
+    RecordPreferredDisplaySurfaceConstraintUma(preferred_display_surface);
 
   // The default is to request dynamic surface switching.
   result->set_dynamic_surface_switching_requested(
       !options->hasSurfaceSwitching() ||
       options->surfaceSwitching().AsEnum() ==
           V8SurfaceSwitchingPreferenceEnum::Enum::kInclude);
+  if (media_type == UserMediaRequestType::kDisplayMedia)
+    RecordSurfaceSwitchingConstraintUma(options);
 
   return result;
 }
