@@ -32,18 +32,6 @@ class SmartPrivacyProtectionScreen extends
   static get properties() {
     return {
       /**
-       * True if snooping protection is enabled.
-       * @private
-       */
-      isSnoopingProtectionEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isSnoopingProtectionEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * True screen lock is enabled.
        * @private
        */

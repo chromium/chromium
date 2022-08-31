@@ -46,8 +46,7 @@ bool SmartPrivacyProtectionScreen::MaybeSkip(WizardContext& context) {
   // SnoopingProtection and QuickDim. The screen should be skipped if none of
   // them is enabled.
   if (!context.skip_post_login_screens_for_tests &&
-      (ash::features::IsSnoopingProtectionEnabled() ||
-       ash::features::IsQuickDimEnabled())) {
+      ash::features::IsQuickDimEnabled()) {
     return false;
   }
   exit_callback_.Run(Result::NOT_APPLICABLE);
@@ -65,15 +64,11 @@ void SmartPrivacyProtectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionFeatureTurnOn) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
-    profile->GetPrefs()->SetBoolean(
-        prefs::kSnoopingProtectionEnabled,
-        ash::features::IsSnoopingProtectionEnabled());
     profile->GetPrefs()->SetBoolean(prefs::kPowerQuickDimEnabled,
                                     ash::features::IsQuickDimEnabled());
     exit_callback_.Run(Result::PROCEED_WITH_FEATURE_ON);
   } else if (action_id == kUserActionFeatureTurnOff) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
-    profile->GetPrefs()->SetBoolean(prefs::kSnoopingProtectionEnabled, false);
     profile->GetPrefs()->SetBoolean(prefs::kPowerQuickDimEnabled, false);
     exit_callback_.Run(Result::PROCEED_WITH_FEATURE_OFF);
   } else if (action_id == kUserActionShowLearnMore) {

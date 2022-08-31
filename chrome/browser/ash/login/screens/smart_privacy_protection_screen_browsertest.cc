@@ -24,32 +24,24 @@ namespace {
 constexpr char kSmartPrivacyProtection[] = "smart-privacy-protection";
 const test::UIPath kQuickDimSection = {kSmartPrivacyProtection,
                                        "quickDimSection"};
-const test::UIPath kSnoopingDetectionSection = {kSmartPrivacyProtection,
-                                                "snoopingDetectionSection"};
 const test::UIPath kNoThanksButton = {kSmartPrivacyProtection,
                                       "noThanksButton"};
 const test::UIPath kTurnOnButton = {kSmartPrivacyProtection, "turnOnButton"};
 
 }  // namespace
 
-// Class to test SmartPrivacyProtection screen in OOBE. Screen promotes two
-// different features and users can either turn both of them on and proceed with
-// a kTurnOnButton or reject them together and proceed with kNoThanksButton.
-// Features are implemented under two separate feature flags. TestMode
-// represents which one of the features is enabled.
+// Class to test SmartPrivacyProtection screen in OOBE. Screen promotes the
+// "lock on leave" feature that users can either turn and proceed with a
+// kTurnOnButton or reject and proceed with a kNoThanksButton. TestMode
+// represents if the feature is enabled.
 class SmartPrivacyProtectionScreenTest
     : public OobeBaseTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   SmartPrivacyProtectionScreenTest() {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
-    if (std::get<0>(GetParam())) {
-      enabled_features.push_back(features::kSnoopingProtection);
-    } else {
-      disabled_features.push_back(features::kSnoopingProtection);
-    }
-    if (std::get<1>(GetParam())) {
+    if (GetParam()) {
       enabled_features.push_back(features::kQuickDim);
     } else {
       disabled_features.push_back(features::kQuickDim);
@@ -106,37 +98,25 @@ class SmartPrivacyProtectionScreenTest
 
 IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOnFeature) {
   ShowSmartPrivacyProtectionScreen();
-  bool snooping_protection_enabled = std::get<0>(GetParam());
-  bool quick_dim_enabled = std::get<1>(GetParam());
-  if (!snooping_protection_enabled && !quick_dim_enabled) {
+  if (!GetParam()) {
+    // Feature not enabled.
     ExitScreenAndExpectResult(
         SmartPrivacyProtectionScreen::Result::NOT_APPLICABLE);
     return;
   }
   OobeScreenWaiter(SmartPrivacyProtectionView::kScreenId).Wait();
-  if (snooping_protection_enabled) {
-    test::OobeJS().ExpectVisiblePath(kSnoopingDetectionSection);
-  } else {
-    test::OobeJS().ExpectHiddenPath(kSnoopingDetectionSection);
-  }
-  if (quick_dim_enabled) {
-    test::OobeJS().ExpectVisiblePath(kQuickDimSection);
-  } else {
-    test::OobeJS().ExpectHiddenPath(kQuickDimSection);
-  }
+  test::OobeJS().ExpectVisiblePath(kQuickDimSection);
   test::OobeJS().ClickOnPath(kTurnOnButton);
   ExitScreenAndExpectResult(
       SmartPrivacyProtectionScreen::Result::PROCEED_WITH_FEATURE_ON);
   EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-                  prefs::kSnoopingProtectionEnabled) ==
-              snooping_protection_enabled);
-  EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-                  prefs::kPowerQuickDimEnabled) == quick_dim_enabled);
+      prefs::kPowerQuickDimEnabled));
 }
 
 IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOffFeature) {
   ShowSmartPrivacyProtectionScreen();
-  if (!std::get<0>(GetParam()) && !std::get<1>(GetParam())) {
+  if (!GetParam()) {
+    // Feature not enabled.
     ExitScreenAndExpectResult(
         SmartPrivacyProtectionScreen::Result::NOT_APPLICABLE);
     return;
@@ -146,14 +126,14 @@ IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOffFeature) {
   ExitScreenAndExpectResult(
       SmartPrivacyProtectionScreen::Result::PROCEED_WITH_FEATURE_OFF);
   EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-      prefs::kSnoopingProtectionEnabled));
-  EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
       prefs::kPowerQuickDimEnabled));
 }
 
+// Note that both tests have essentially the same logic when the feature is
+// disabled. We leave in the redundant logic since it will become needed once we
+// add the UI for snooping protection.
 INSTANTIATE_TEST_SUITE_P(All,
                          SmartPrivacyProtectionScreenTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 }  // namespace ash
