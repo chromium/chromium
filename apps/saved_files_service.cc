@@ -131,13 +131,12 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
       continue;
     bool is_directory =
         file_entry->FindBoolPath(kFileEntryIsDirectory).value_or(false);
-    int sequence_number = 0;
-    if (!file_entry->GetInteger(kFileEntrySequenceNumber, &sequence_number))
+    const absl::optional<int> sequence_number =
+        file_entry->GetDict().FindInt(kFileEntrySequenceNumber);
+    if (!sequence_number || sequence_number.value() == 0)
       continue;
-    if (!sequence_number)
-      continue;
-    result.push_back(
-        SavedFileEntry(it.key(), *file_path, is_directory, sequence_number));
+    result.emplace_back(it.key(), *file_path, is_directory,
+                        sequence_number.value());
   }
   return result;
 }
