@@ -872,7 +872,8 @@ bool IsDolbyVisionHEVCCodecId(const std::string& codec_id) {
 }
 
 // The specification for Dolby Vision codec id strings can be found in Dolby
-// Vision streams within the MPEG-DASH format.
+// Vision streams within the MPEG-DASH format:
+// https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolbyvisioninmpegdashspecification_v2_0_public_20190107.pdf
 bool ParseDolbyVisionCodecId(const std::string& codec_id,
                              VideoCodecProfile* profile,
                              uint8_t* level_idc) {
@@ -954,7 +955,7 @@ bool ParseDolbyVisionCodecId(const std::string& codec_id,
   // Level string should be two digits.
   unsigned level_id = 0;
   if (elem[2].size() != 2 || !base::StringToUint(elem[2], &level_id) ||
-      level_id > 9 || level_id < 1) {
+      level_id > 13 || level_id < 1) {
     DVLOG(4) << __func__ << ": invalid format level_id=" << elem[2];
     return false;
   }

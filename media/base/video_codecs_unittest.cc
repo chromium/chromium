@@ -705,9 +705,17 @@ TEST(ParseDolbyVisionCodecIdTest, InvalidDolbyVisionCodecIds) {
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.03.07", &profile, &level_id));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.06.07", &profile, &level_id));
 
-  // Level should be numbers between 1 and 9.
+  // Level should be two digit number and in the range [01, 13].
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.04.00", &profile, &level_id));
-  EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.04.10", &profile, &level_id));
+  EXPECT_TRUE(ParseDolbyVisionCodecId("dvhe.04.01", &profile, &level_id));
+  EXPECT_EQ(level_id, 1);
+  EXPECT_TRUE(ParseDolbyVisionCodecId("dvhe.04.09", &profile, &level_id));
+  EXPECT_EQ(level_id, 9);
+  EXPECT_TRUE(ParseDolbyVisionCodecId("dvhe.04.10", &profile, &level_id));
+  EXPECT_EQ(level_id, 10);
+  EXPECT_TRUE(ParseDolbyVisionCodecId("dvhe.04.13", &profile, &level_id));
+  EXPECT_EQ(level_id, 13);
+  EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.04.14", &profile, &level_id));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.04.20", &profile, &level_id));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.04.99", &profile, &level_id));
 
@@ -725,6 +733,8 @@ TEST(ParseDolbyVisionCodecIdTest, InvalidDolbyVisionCodecIds) {
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.5.7.", &profile, &level_id));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.5.7..", &profile, &level_id));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.5.7...", &profile, &level_id));
+  EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.05.7", &profile, &level_id));
+  EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.05.007", &profile, &level_id));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe..5", &profile, &level_id));
 #endif
 }
