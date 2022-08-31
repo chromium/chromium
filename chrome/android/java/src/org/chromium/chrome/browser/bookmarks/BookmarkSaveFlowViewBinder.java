@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -42,10 +43,11 @@ public class BookmarkSaveFlowViewBinder
             view.findViewById(R.id.bookmark_select_folder)
                     .setOnClickListener(
                             model.get(BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER));
-        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON) {
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES) {
             ((ImageView) view.findViewById(R.id.notification_switch_start_icon))
-                    .setImageDrawable(
-                            model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON));
+                    .setImageDrawable(AppCompatResources.getDrawable(view.getContext(),
+                            model.get(BookmarkSaveFlowProperties
+                                              .NOTIFICATION_SWITCH_START_ICON_RES)));
         } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE) {
             ((TextView) view.findViewById(R.id.notification_switch_subtitle))
                     .setText(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE));
