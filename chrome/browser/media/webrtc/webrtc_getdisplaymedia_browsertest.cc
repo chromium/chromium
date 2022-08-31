@@ -904,10 +904,8 @@ class GetDisplayMediaChangeSourceBrowserTest
   ~GetDisplayMediaChangeSourceBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    if (feature_enabled_) {
-      feature_list_.InitWithFeatures(
-          {media::kShareThisTabInsteadButtonGetDisplayMedia}, {});
-    }
+    feature_list_.InitWithFeatureState(
+        media::kShareThisTabInsteadButtonGetDisplayMedia, feature_enabled_);
 
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
 
