@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -22,34 +23,24 @@
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
 
-namespace chromecast {
+namespace cast_receiver {
+class ApplicationClient;
+}
 
-namespace media {
-class VideoPlaneController;
-}  // namespace media
+namespace chromecast {
 
 class CastWebService;
 class RuntimeApplication;
 
 class RuntimeApplicationDispatcher final {
  public:
-  // Observer interface for dispatcher notifications.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called with a valid pointer when application is brought to the
-    // foreground. Otherwise a nullptr is passed.
-    virtual void OnForegroundApplicationChanged(RuntimeApplication* app) = 0;
-  };
-
+  // |application_client| is expected to persist for the lifetime of this
+  // instance.
   RuntimeApplicationDispatcher(
       CastWebService* web_service,
       CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
-      cast_streaming::NetworkContextGetter network_context_getter,
-      media::VideoPlaneController* video_plane_controller);
+      cast_receiver::ApplicationClient& application_client);
   ~RuntimeApplicationDispatcher();
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Starts and stops the runtime service, including the gRPC completion queue.
   bool Start(const std::string& runtime_id,
@@ -113,11 +104,9 @@ class RuntimeApplicationDispatcher final {
 
   SEQUENCE_CHECKER(sequence_checker_);
   CastWebService* const web_service_;
-  cast_streaming::NetworkContextGetter network_context_getter_;
   CastRuntimeMetricsRecorder metrics_recorder_;
-  media::VideoPlaneController* const video_plane_controller_;
+  base::raw_ref<cast_receiver::ApplicationClient> const application_client_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::ObserverList<Observer> observers_;
 
   base::flat_map<std::string, std::unique_ptr<RuntimeApplication>> loaded_apps_;
 

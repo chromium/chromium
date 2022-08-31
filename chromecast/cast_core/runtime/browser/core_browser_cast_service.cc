@@ -15,12 +15,8 @@ namespace chromecast {
 
 CoreBrowserCastService::CoreBrowserCastService(
     CastWebService* web_service,
-    NetworkContextGetter network_context_getter,
-    media::VideoPlaneController* video_plane_controller)
-    : app_dispatcher_(web_service,
-                      this,
-                      std::move(network_context_getter),
-                      video_plane_controller) {}
+    cast_receiver::ApplicationClient& application_client)
+    : app_dispatcher_(web_service, this, application_client) {}
 
 void CoreBrowserCastService::InitializeInternal() {}
 

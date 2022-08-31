@@ -1,0 +1,26 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  deps = [ "//base" ]
+  public = [
+    "public/application_client.h",
+    "public/application_state_observer.h",
+    "public/streaming_resolution_observer.h",
+  ]
+  sources = [ "application_client.cc" ]
+  friend = [ ":unit_tests" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":browser",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+  sources = [ "application_client_unittest.cc" ]
+}

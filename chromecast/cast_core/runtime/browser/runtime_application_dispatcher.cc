@@ -15,6 +15,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
+#include "components/cast_receiver/browser/public/application_client.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
@@ -31,12 +32,10 @@ constexpr base::TimeDelta kDefaultMetricsReportInterval = base::Seconds(60);
 RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
     CastWebService* web_service,
     CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
-    cast_streaming::NetworkContextGetter network_context_getter,
-    media::VideoPlaneController* video_plane_controller)
+    cast_receiver::ApplicationClient& application_client)
     : web_service_(web_service),
-      network_context_getter_(std::move(network_context_getter)),
       metrics_recorder_(event_builder_factory),
-      video_plane_controller_(video_plane_controller),
+      application_client_(application_client),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(web_service_);
 
@@ -46,18 +45,6 @@ RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
 RuntimeApplicationDispatcher::~RuntimeApplicationDispatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Stop();
-}
-
-void RuntimeApplicationDispatcher::AddObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  observers_.AddObserver(observer);
-}
-
-void RuntimeApplicationDispatcher::RemoveObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  observers_.RemoveObserver(observer);
 }
 
 bool RuntimeApplicationDispatcher::Start(
@@ -161,11 +148,9 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
   std::unique_ptr<RuntimeApplication> app;
   if (openscreen::cast::IsCastStreamingReceiverAppId(
           request.application_config().app_id())) {
-    DCHECK(video_plane_controller_);
-    // Deliberately copy |network_context_getter_|.
     app = std::make_unique<StreamingRuntimeApplication>(
         request.cast_session_id(), request.application_config(), web_service_,
-        task_runner_, network_context_getter_, video_plane_controller_);
+        task_runner_, *application_client_);
   } else {
     app = std::make_unique<WebRuntimeApplication>(request.cast_session_id(),
                                                   request.application_config(),
@@ -173,9 +158,7 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
   }
 
   // TODO(b/232140331): Call this only when foreground app changes.
-  base::ranges::for_each(observers_, [app = app.get()](auto& observer) {
-    observer.OnForegroundApplicationChanged(app);
-  });
+  application_client_->OnForegroundApplicationChanged(app.get());
 
   // Need to cache session_id as |request| object is moved.
   std::string session_id = request.cast_session_id();
@@ -425,9 +408,7 @@ void RuntimeApplicationDispatcher::ResetApp(const std::string& session_id) {
   loaded_apps_.erase(iter);
 
   // TODO(b/232140331): Call this only when foreground app changes.
-  base::ranges::for_each(observers_, [](auto& observer) {
-    observer.OnForegroundApplicationChanged(nullptr);
-  });
+  application_client_->OnForegroundApplicationChanged(nullptr);
 }
 
 const std::string& RuntimeApplicationDispatcher::GetCastMediaServiceEndpoint()

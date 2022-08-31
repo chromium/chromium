@@ -7,8 +7,18 @@
 
 #include <atomic>
 
+#include "base/memory/raw_ptr.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
+#include "components/cast_receiver/browser/public/application_client.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
+namespace media {
+struct VideoTransformation;
+}  // namespace media
 
 namespace chromecast {
 
@@ -18,7 +28,7 @@ class RuntimeApplication;
 
 class CastRuntimeContentBrowserClient
     : public shell::CastContentBrowserClient,
-      public RuntimeApplicationDispatcher::Observer {
+      public cast_receiver::ApplicationClient {
  public:
   static std::unique_ptr<CastRuntimeContentBrowserClient> Create(
       CastFeatureListCreator* feature_list_creator);
@@ -46,14 +56,44 @@ class CastRuntimeContentBrowserClient
                                       int child_process_id) override;
   bool IsBufferingEnabled() override;
 
-  // RuntimeApplicationDispatcher::Observer implementation:
-  void OnForegroundApplicationChanged(RuntimeApplication* app) override;
+  // cast_receiver::ApplicationClient overrides:
+  NetworkContextGetter GetNetworkContextGetter() override;
 
  private:
+  class ApplicationClientObservers
+      : public cast_receiver::StreamingResolutionObserver,
+        public cast_receiver::ApplicationStateObserver {
+   public:
+    ~ApplicationClientObservers() override;
+
+    void SetVideoPlaneController(
+        media::VideoPlaneController* video_plane_controller);
+
+    bool IsBufferingEnabled() const;
+
+   private:
+    // cast_receiver::ApplicationStateObserver overrides:
+    void OnForegroundApplicationChanged(RuntimeApplication* app) override;
+
+    // cast_receiver::StreamResolutionObserver overrides:
+    void OnStreamingResolutionChanged(
+        const gfx::Rect& size,
+        const ::media::VideoTransformation& transformation) override;
+
+    // Responsible for modifying the resolution of the screen for the embedded
+    // device. Set during the first (and only) call to CreateCastService().
+    base::raw_ptr<media::VideoPlaneController> video_plane_controller_ =
+        nullptr;
+
+    std::atomic_bool is_buffering_enabled_{false};
+  };
+
+  // Wrapper around the observers used with the cast_receiver componnet.
+  ApplicationClientObservers application_client_observers_;
+
   // An instance of |CoreBrowserCastService| created once during the lifetime of
   // the runtime.
   CoreBrowserCastService* core_browser_cast_service_ = nullptr;
-  std::atomic_bool is_buffering_enabled_{false};
 };
 
 }  // namespace chromecast

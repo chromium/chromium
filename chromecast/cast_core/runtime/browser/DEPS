@@ -10,6 +10,7 @@ include_rules = [
   "+chromecast/service",
   "+chromecast/shared",
   "+components/cast",
+  "+components/cast_receiver/browser/public",
   "+components/cast_streaming/browser",
   "+components/cast_streaming/public",
   "+components/guest_view/browser",

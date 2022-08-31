@@ -329,6 +329,7 @@ test("components_unittests") {
       "//components/captive_portal/content:unit_tests",
       "//components/cast_certificate:unit_tests",
       "//components/cast_channel:unit_tests",
+      "//components/cast_receiver:unit_tests",
       "//components/cast_streaming:unit_tests",
       "//components/certificate_transparency:unit_tests",
       "//components/content_capture/browser:unit_tests",

@@ -8,8 +8,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
-#include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast/message_port/platform_message_port.h"
+#include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -40,17 +40,13 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
     cast::common::ApplicationConfig app_config,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    cast_streaming::NetworkContextGetter network_context_getter,
-    media::VideoPlaneController* video_plane_controller)
+    cast_receiver::ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(app_config),
                              mojom::RendererType::MOJO_RENDERER,
                              web_service,
                              std::move(task_runner)),
-      video_plane_controller_(video_plane_controller),
-      network_context_getter_(std::move(network_context_getter)) {
-  DCHECK(video_plane_controller_);
-}
+      application_client_(application_client) {}
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -87,7 +83,7 @@ void StreamingRuntimeApplication::OnResolutionChanged(
     const gfx::Rect& size,
     const ::media::VideoTransformation& transformation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  video_plane_controller_->SetGeometryFromMediaType(size, transformation);
+  application_client_->OnStreamingResolutionChanged(size, transformation);
 }
 
 void StreamingRuntimeApplication::LaunchApplication() {
@@ -105,8 +101,8 @@ void StreamingRuntimeApplication::LaunchApplication() {
 
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
-      task_runner(), network_context_getter_, std::move(server_port),
-      GetCastWebContents()->web_contents(), this,
+      task_runner(), application_client_->GetNetworkContextGetter(),
+      std::move(server_port), GetCastWebContents()->web_contents(), this,
       /* supports_audio= */ GetAppConfig().app_id() !=
           openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
