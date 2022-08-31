@@ -168,6 +168,15 @@ class PrivacySandboxService : public KeyedService {
   // Called when the V2 Privacy Sandbox preference is changed.
   void OnPrivacySandboxV2PrefChanged();
 
+  // Returns whether the FirstPartySets preference is enabled.
+  bool IsFirstPartySetsDataAccessEnabled();
+
+  // Returns whether the FirstPartySets preference is managed.
+  bool IsFirstPartySetsDataAccessManaged();
+
+  // Toggles the FirstPartySets preference.
+  void SetFirstPartySetsDataAccessEnabled(bool enabled);
+
   // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE
   // interest group. Consults with the InterestGroupManager associated with
   // |profile_| and formats the returned data for direct display to the user.

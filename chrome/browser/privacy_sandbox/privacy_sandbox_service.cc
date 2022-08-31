@@ -308,6 +308,21 @@ void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
     browsing_topics_service_->ClearAllTopicsData();
 }
 
+bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() {
+  return pref_service_->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed);
+}
+
+bool PrivacySandboxService::IsFirstPartySetsDataAccessManaged() {
+  return pref_service_->IsManagedPreference(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed);
+}
+
+void PrivacySandboxService::SetFirstPartySetsDataAccessEnabled(bool enabled) {
+  pref_service_->SetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed, enabled);
+}
+
 void PrivacySandboxService::GetFledgeJoiningEtldPlusOneForDisplay(
     base::OnceCallback<void(std::vector<std::string>)> callback) {
   if (!interest_group_manager_) {

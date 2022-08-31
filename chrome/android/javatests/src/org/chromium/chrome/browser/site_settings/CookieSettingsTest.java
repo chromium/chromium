@@ -84,6 +84,7 @@ public class CookieSettingsTest {
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderCookieFPSSubpage() throws IOException {
+        onView(withId(R.id.block_third_party_with_aux)).perform(click());
         onView(allOf(withId(R.id.expand_arrow),
                        isDescendantOfA(withId(R.id.block_third_party_with_aux))))
                 .perform(click());

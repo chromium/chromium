@@ -218,6 +218,21 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isFirstPartySetsDataAccessEnabled() {
+        return PrivacySandboxBridge.isFirstPartySetsDataAccessEnabled();
+    }
+
+    @Override
+    public boolean isFirstPartySetsDataAccessManaged() {
+        return PrivacySandboxBridge.isFirstPartySetsDataAccessManaged();
+    }
+
+    @Override
+    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {
+        PrivacySandboxBridge.setFirstPartySetsDataAccessEnabled(enabled);
+    }
+
+    @Override
     public boolean canLaunchClearBrowsingDataDialog() {
         return true;
     }

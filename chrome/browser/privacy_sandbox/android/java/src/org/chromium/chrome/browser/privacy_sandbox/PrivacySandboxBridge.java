@@ -96,12 +96,27 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().promptActionOccurred(action);
     }
 
+    public static boolean isFirstPartySetsDataAccessEnabled() {
+        return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessEnabled();
+    }
+
+    public static boolean isFirstPartySetsDataAccessManaged() {
+        return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessManaged();
+    }
+
+    public static void setFirstPartySetsDataAccessEnabled(boolean enabled) {
+        PrivacySandboxBridgeJni.get().setFirstPartySetsDataAccessEnabled(enabled);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isPrivacySandboxEnabled();
         boolean isPrivacySandboxManaged();
         boolean isPrivacySandboxRestricted();
+        boolean isFirstPartySetsDataAccessEnabled();
+        boolean isFirstPartySetsDataAccessManaged();
         void setPrivacySandboxEnabled(boolean enabled);
+        void setFirstPartySetsDataAccessEnabled(boolean enabled);
         String getFlocStatusString();
         String getFlocGroupString();
         String getFlocUpdateString();

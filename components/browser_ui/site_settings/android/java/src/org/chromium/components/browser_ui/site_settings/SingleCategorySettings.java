@@ -153,9 +153,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     private Set<String> mSelectedDomains;
 
     @Override
-    public void onCookiesDetailsRequested(CookieSettingsState cookieSettingsState) {
+    public void onCookiesDetailsRequested(CookieSettingsState requestedPageState) {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putSerializable(FPSCookieSettings.EXTRA_COOKIE_STATE, cookieSettingsState);
+        fragmentArgs.putSerializable(FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE, requestedPageState);
+
         mSettingsLauncher.launchSettingsActivity(
                 getActivity(), FPSCookieSettings.class, fragmentArgs);
     }
@@ -587,10 +588,14 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     }
 
     private boolean cookieSettingsExceptionShouldBlock() {
+        return getCookieSettingsState() == CookieSettingsState.ALLOW;
+    }
+
+    private CookieSettingsState getCookieSettingsState() {
         FourStateCookieSettingsPreference fourStateCookieToggle =
                 (FourStateCookieSettingsPreference) getPreferenceScreen().findPreference(
                         FOUR_STATE_COOKIE_TOGGLE_KEY);
-        return fourStateCookieToggle.getState() == CookieSettingsState.ALLOW;
+        return fourStateCookieToggle.getState();
     }
 
     private String getAddExceptionDialogMessage() {

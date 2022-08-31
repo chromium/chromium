@@ -130,6 +130,21 @@ public interface SiteSettingsDelegate {
      */
     void dismissPrivacySandboxSnackbar();
 
+    /***
+     * @return true if First Party Sets data access is enabled.
+     */
+    boolean isFirstPartySetsDataAccessEnabled();
+
+    /***
+     * @return true if First Party Sets data access is managed.
+     */
+    boolean isFirstPartySetsDataAccessManaged();
+
+    /***
+     * @return Enables/disables First Party Sets data access.
+     */
+    void setFirstPartySetsDataAccessEnabled(boolean enabled);
+
     /**
      * Returns whether the current implementation of the delegate is able to launch the Clear
      * Browsing Data dialog in Settings.

@@ -144,6 +144,19 @@ public class WebLayerSiteSettingsDelegate
     public void dismissPrivacySandboxSnackbar() {}
 
     @Override
+    public boolean isFirstPartySetsDataAccessEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean isFirstPartySetsDataAccessManaged() {
+        return false;
+    }
+
+    @Override
+    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
+
+    @Override
     public boolean canLaunchClearBrowsingDataDialog() {
         return false;
     }

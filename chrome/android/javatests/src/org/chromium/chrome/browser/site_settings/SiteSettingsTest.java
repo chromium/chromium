@@ -522,7 +522,7 @@ public class SiteSettingsTest {
 
                 Bundle fragmentArgs = new Bundle();
                 fragmentArgs.putSerializable(
-                        FPSCookieSettings.EXTRA_COOKIE_STATE, cookieSettingsState);
+                        FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
 
                 Mockito.verify(mSettingsLauncher)
                         .launchSettingsActivity(eq(websitePreferences.getContext()),
