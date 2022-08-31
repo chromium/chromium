@@ -21,11 +21,13 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
     private FastCheckoutMediator mMediator = new FastCheckoutMediator();
     private PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
     private FastCheckoutSheetContent mContent;
+    private BottomSheetController mBottomSheetController;
 
     @Override
     public void initialize(Context context, BottomSheetController sheetController,
             FastCheckoutComponent.Delegate delegate) {
-        mMediator.initialize(delegate, mModel, sheetController);
+        mBottomSheetController = sheetController;
+        mMediator.initialize(delegate, mModel, mBottomSheetController);
 
         ViewFlipper rootView = (ViewFlipper) LayoutInflater.from(context).inflate(
                 R.layout.fast_checkout_bottom_sheet, null);
@@ -78,5 +80,10 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
     public void showOptions(
             FastCheckoutAutofillProfile[] profiles, FastCheckoutCreditCard[] creditCards) {
         mMediator.showOptions(profiles, creditCards);
+    }
+
+    @Override
+    public void destroy() {
+        mMediator.destroy();
     }
 }

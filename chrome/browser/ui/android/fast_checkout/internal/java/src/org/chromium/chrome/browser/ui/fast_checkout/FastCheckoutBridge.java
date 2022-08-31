@@ -70,6 +70,7 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
     @CalledByNative
     private void destroy() {
         mNativeFastCheckoutBridge = 0;
+        mFastCheckoutComponent.destroy();
     }
 
     @Override

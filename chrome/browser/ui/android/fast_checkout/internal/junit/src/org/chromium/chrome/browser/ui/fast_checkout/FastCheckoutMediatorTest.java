@@ -285,4 +285,15 @@ public class FastCheckoutMediatorTest {
                 is(model.get(CreditCardItemProperties.CREDIT_CARD)));
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.HOME_SCREEN));
     }
+
+    @Test
+    public void testHidesTheBottomSheetOnDestroy() {
+        mMediator.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+
+        verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean());
+        assertThat(mModel.get(VISIBLE), is(true));
+
+        mMediator.destroy();
+        assertThat(mModel.get(VISIBLE), is(false));
+    }
 }

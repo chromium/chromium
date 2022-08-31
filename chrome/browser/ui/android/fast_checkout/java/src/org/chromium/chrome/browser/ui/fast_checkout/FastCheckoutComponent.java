@@ -58,4 +58,9 @@ public interface FastCheckoutComponent {
      * Displays the given options in a new bottom sheet.
      */
     void showOptions(FastCheckoutAutofillProfile[] profiles, FastCheckoutCreditCard[] creditCards);
+
+    /**
+     * Hides the bottom sheet. No-op if the sheet is already hidden.
+     */
+    void destroy();
 }

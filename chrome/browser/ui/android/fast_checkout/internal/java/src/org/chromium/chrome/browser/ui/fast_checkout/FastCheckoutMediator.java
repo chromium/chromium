@@ -313,7 +313,8 @@ public class FastCheckoutMediator {
      * Releases the resources used by FastCheckoutMediator.
      */
     @MainThread
-    private void destroy() {
-        mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
+    public void destroy() {
+        // TODO(crbug.com/1334642): Record as part of the dismissal metrics.
+        mModel.set(FastCheckoutProperties.VISIBLE, false);
     }
 }
