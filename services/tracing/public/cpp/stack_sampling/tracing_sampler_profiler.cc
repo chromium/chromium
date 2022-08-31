@@ -408,6 +408,22 @@ bool IsStackSamplingSupported() {
 }
 #endif
 
+perfetto::StaticString UnwinderTypeToString(
+    const TracingSamplerProfiler::UnwinderType unwinder_type) {
+  switch (unwinder_type) {
+    case TracingSamplerProfiler::UnwinderType::kUnknown:
+      return "TracingSamplerProfiler (unknown unwinder)";
+    case TracingSamplerProfiler::UnwinderType::kArm64Android:
+      return "TracingSamplerProfiler (default arm64 android unwinder)";
+    case TracingSamplerProfiler::UnwinderType::kCfiAndroid:
+      return "TracingSamplerProfiler (default cfi android unwinder)";
+    case TracingSamplerProfiler::UnwinderType::kCustomAndroid:
+      return "TracingSamplerProfiler (custom android unwinder)";
+    case TracingSamplerProfiler::UnwinderType::kDefault:
+      return "TracingSamplerProfiler (default unwinder)";
+  }
+}
+
 }  // namespace
 
 TracingSamplerProfiler::TracingProfileBuilder::BufferedSample::BufferedSample(
@@ -533,7 +549,8 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
 #else
     update_packet(trace_writer_->NewTracePacket());
 #endif
-    EmitUnwinderTypeTraceEvent();
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
+                        UnwinderTypeToString(unwinder_type_));
     reset_incremental_state_ = false;
   }
 
@@ -564,30 +581,6 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
 #else
   update_packet(trace_writer_->NewTracePacket());
 #endif
-}
-
-void TracingSamplerProfiler::TracingProfileBuilder::EmitUnwinderTypeTraceEvent()
-    const {
-  const char* event_name = "";
-  switch (unwinder_type_) {
-    case TracingSamplerProfiler::UnwinderType::kUnknown:
-      event_name = "TracingSamplerProfiler (unknown unwinder)";
-      break;
-    case TracingSamplerProfiler::UnwinderType::kArm64Android:
-      event_name = "TracingSamplerProfiler (default arm64 android unwinder)";
-      break;
-    case TracingSamplerProfiler::UnwinderType::kCfiAndroid:
-      event_name = "TracingSamplerProfiler (default cfi android unwinder)";
-      break;
-    case TracingSamplerProfiler::UnwinderType::kCustomAndroid:
-      event_name = "TracingSamplerProfiler (custom android unwinder)";
-      break;
-    case TracingSamplerProfiler::UnwinderType::kDefault:
-      event_name = "TracingSamplerProfiler (default unwinder)";
-      break;
-  }
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"), event_name,
-                       TRACE_EVENT_SCOPE_THREAD);
 }
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

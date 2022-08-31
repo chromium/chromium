@@ -148,9 +148,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     };
 
     void WriteSampleToTrace(const BufferedSample& sample);
-    // Emits an instant event capturing information about the kind of unwinder
-    // used for stack sampling.
-    void EmitUnwinderTypeTraceEvent() const;
 
     // TODO(ssid): Consider using an interning scheme to reduce memory usage
     // and increase the sample size.
