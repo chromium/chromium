@@ -3373,7 +3373,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     newPage.frame = self.view.bounds;
     [newPage layoutIfNeeded];
   } else {
-    [self viewForWebState:webState].frame = self.contentArea.bounds;
+    if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
+      [self viewForWebState:webState].frame =
+          [self ntpFrameForWebState:self.currentWebState];
+    } else {
+      [self viewForWebState:webState].frame = self.contentArea.bounds;
+    }
     // Setting the frame here doesn't trigger a layout pass. Trigger it manually
     // if needed. Not triggering it can create problem if the previous frame
     // wasn't the right one, for example in https://crbug.com/852106.
@@ -3433,11 +3438,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   };
   [self.contentArea addSubview:animatedView];
   [animatedView animateFrom:origin withCompletion:completionBlock];
-  // Manually set the NTP frame here in case `-didLayoutSubviews` is not called
-  // to set the incognito NTP frame.
-  if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
-    newPage.frame = [self ntpFrameForWebState:self.currentWebState];
-  }
 }
 
 #pragma mark - IncognitoReauthConsumer
