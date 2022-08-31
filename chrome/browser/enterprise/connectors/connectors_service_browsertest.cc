@@ -358,13 +358,17 @@ class ConnectorsServiceAnalysisProfileBrowserTest
   AnalysisConnector connector() { return std::get<0>(GetParam()); }
   const char* settings_value() { return std::get<2>(GetParam()); }
 
+  bool is_cloud() {
+    return strcmp(settings_value(), kNormalCloudAnalysisSettingsPref) == 0;
+  }
+
   // Returns the Value the "normal" reporting workflow uses to validate that it
   // is in sync with the information sent through analysis-reporting.
-  base::Value::Dict ReportingMetadata(bool include_device_info) {
+  base::Value::Dict ReportingMetadata(bool is_cloud, bool include_device_info) {
     base::Value::Dict output;
     output.Set("browser",
                policy::ReportingJobConfigurationBase::BrowserDictionaryBuilder::
-                   BuildBrowserDictionary(include_device_info));
+                   BuildBrowserDictionary(!is_cloud || include_device_info));
     base::Value::Dict context = reporting::GetContext(browser()->profile());
     output.Merge(std::move(context));
     if (include_device_info) {
@@ -379,15 +383,16 @@ class ConnectorsServiceAnalysisProfileBrowserTest
   }
 
   void ValidateClientMetadata(const ClientMetadata& metadata,
+                              bool is_cloud,
                               bool profile_reporting) {
 #if BUILDFLAG(IS_CHROMEOS)
     bool includes_device_info =
         management_status() == ManagementStatus::AFFILIATED;
 #else
-    bool includes_device_info = !profile_reporting;
+    bool includes_device_info = !profile_reporting && is_cloud;
 #endif
     base::Value::Dict reporting_metadata =
-        ReportingMetadata(includes_device_info);
+        ReportingMetadata(is_cloud, includes_device_info);
 
     ASSERT_TRUE(metadata.has_browser());
 
@@ -406,13 +411,17 @@ class ConnectorsServiceAnalysisProfileBrowserTest
         metadata.browser().chrome_version(),
         *reporting_metadata.FindStringByDottedPath("browser.chromeVersion"));
 
-    ASSERT_EQ(includes_device_info, metadata.browser().has_machine_user());
-    ASSERT_EQ(includes_device_info, !!reporting_metadata.FindStringByDottedPath(
-                                        "browser.machineUser"));
-    if (metadata.browser().has_machine_user()) {
+    if (is_cloud) {
       ASSERT_EQ(
-          metadata.browser().machine_user(),
-          *reporting_metadata.FindStringByDottedPath("browser.machineUser"));
+          includes_device_info,
+          !!reporting_metadata.FindStringByDottedPath("browser.machineUser"));
+      if (metadata.browser().has_machine_user()) {
+        ASSERT_EQ(
+            metadata.browser().machine_user(),
+            *reporting_metadata.FindStringByDottedPath("browser.machineUser"));
+      }
+    } else {
+      ASSERT_TRUE(metadata.browser().has_machine_user());
     }
 
     ASSERT_EQ(includes_device_info, metadata.has_device());
@@ -519,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
       ASSERT_EQ(kFakeBrowserDMToken,
                 settings.value().cloud_or_local_settings.dm_token());
-      ValidateClientMetadata(*settings.value().client_metadata,
+      ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
                              /*profile_reporting*/ false);
     }
     ASSERT_FALSE(settings.value().per_profile);
@@ -564,7 +573,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
       ASSERT_EQ(kFakeBrowserDMToken,
                 settings.value().cloud_or_local_settings.dm_token());
-      ValidateClientMetadata(*settings.value().client_metadata,
+      ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
                              /*profile_reporting*/ false);
     }
     ASSERT_FALSE(settings.value().per_profile);
@@ -592,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
         ASSERT_EQ(kFakeProfileDMToken,
                   settings.value().cloud_or_local_settings.dm_token());
-        ValidateClientMetadata(*settings.value().client_metadata,
+        ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
                                /*profile_reporting*/ true);
       }
       ASSERT_TRUE(settings.value().per_profile);
@@ -604,12 +613,16 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
         ASSERT_EQ(kFakeProfileDMToken,
                   settings.value().cloud_or_local_settings.dm_token());
-        ValidateClientMetadata(*settings.value().client_metadata,
+        ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
                                /*profile_reporting*/ true);
+        ASSERT_TRUE(settings.value().per_profile);
       } else {
-        // TODO(b/238216275): Verify the metadata has the expected values.
+        EXPECT_EQ("path_user",
+                  settings.value().cloud_or_local_settings.local_path());
+        EXPECT_TRUE(settings.value().cloud_or_local_settings.user_specific());
+        ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
+                               /*profile_reporting*/ true);
       }
-      ASSERT_TRUE(settings.value().per_profile);
       ASSERT_EQ(kDomain1, management_domain);
       break;
   }
@@ -633,22 +646,13 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
-    if (settings_value() == kNormalLocalAnalysisSettingsPref) {
-      ASSERT_TRUE(settings.has_value());
-      // TODO(b/238216275): Verify the metadata has the expected values.
-    } else {
-      ASSERT_FALSE(settings.has_value());
-    }
+    ASSERT_FALSE(settings.has_value());
   } else {
     ASSERT_TRUE(settings.has_value());
-    if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
-      ASSERT_EQ(kFakeBrowserDMToken,
-                settings.value().cloud_or_local_settings.dm_token());
-      ASSERT_FALSE(settings.value().client_metadata);
-    } else {
-      ASSERT_TRUE(settings.value().client_metadata);
-      // TODO(b/238216275): Verify the metadata has the expected values.
-    }
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(kFakeBrowserDMToken,
+              settings.value().cloud_or_local_settings.dm_token());
+    ASSERT_FALSE(settings.value().client_metadata);
     ASSERT_FALSE(settings.value().per_profile);
   }
 #else
@@ -676,8 +680,10 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         ASSERT_FALSE(settings.value().client_metadata);
       } else {
+        ASSERT_EQ("path_user",
+                  settings.value().cloud_or_local_settings.local_path());
+        ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
         ASSERT_TRUE(settings.value().client_metadata);
-        // TODO(b/238216275): Verify the metadata has the expected values.
       }
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_EQ(kDomain1, management_domain);
@@ -689,8 +695,10 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         ASSERT_FALSE(settings.value().client_metadata);
       } else {
+        ASSERT_EQ("path_user",
+                  settings.value().cloud_or_local_settings.local_path());
+        ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
         ASSERT_TRUE(settings.value().client_metadata);
-        // TODO(b/238216275): Verify the metadata has the expected values.
       }
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_EQ(kDomain1, management_domain);
