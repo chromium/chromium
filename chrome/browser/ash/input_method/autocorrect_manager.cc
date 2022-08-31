@@ -169,15 +169,6 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   const uint32_t cursor_pos_unsigned
       = base::checked_cast<uint32_t>(cursor_pos);
 
-  // If autocorrect range is not cleared and cursor distance to the pending
-  // autocorrect range is farther than the threshold, then accept the range.
-  if (!range.is_empty() &&
-      (cursor_pos_unsigned + kDistanceUntilUnderlineHides < range.start() ||
-       cursor_pos_unsigned > range.end() + kDistanceUntilUnderlineHides)) {
-    AcceptOrClearPendingAutocorrect();
-    return;
-  }
-
   // If it is the first call of the event after handling autocorrect range,
   // initialize the variables and do not process the empty range as it is
   // potentially stale.

@@ -733,32 +733,19 @@ TEST_F(AutocorrectManagerTest, UndoAutocorrectMultipleWordInComposition) {
   EXPECT_EQ(fake_text_input_client.text(), u"helloworld ");
 }
 
-TEST_F(AutocorrectManagerTest, MovingCursorFarAfterRangeAcceptsAutocorrect) {
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+TEST_F(AutocorrectManagerTest, MovingCursorDoesNotAcceptAutocorrect) {
+  manager_.HandleAutocorrect(gfx::Range(5, 8), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"abcd the efghij", 4, 4);
 
-  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+  // Move cursor to different positions in one session does not
+  // accept or clear the the autocorrect range implicitly.
+  manager_.OnSurroundingTextChanged(u"abcd the efghij", 15, 15);
+  manager_.OnSurroundingTextChanged(u"abcd the efghij", 0, 0);
+  manager_.OnSurroundingTextChanged(u"abcd the efghij", 4, 4);
+  manager_.OnSurroundingTextChanged(u"abcd the efghij", 9, 9);
+
   EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
-            gfx::Range());
-}
-
-TEST_F(AutocorrectManagerTest, MovingCursorFarBeforeRangeAcceptsAutocorrect) {
-  manager_.HandleAutocorrect(gfx::Range(4, 7), u"teh", u"the");
-
-  manager_.OnSurroundingTextChanged(u"abc the", 0, 0);
-  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
-            gfx::Range());
-}
-
-TEST_F(AutocorrectManagerTest,
-       MovingCursorCloseToRangeDoesNotClearAutocorrect) {
-  manager_.HandleAutocorrect(gfx::Range(4, 7), u"teh", u"the");
-
-  manager_.OnSurroundingTextChanged(u"abc the def", 1, 1);
-  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
-            gfx::Range(4, 7));
-  manager_.OnSurroundingTextChanged(u"abc the def", 10, 10);
-  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
-            gfx::Range(4, 7));
+            gfx::Range(5, 8));
 }
 
 TEST_F(AutocorrectManagerTest,
@@ -854,6 +841,7 @@ TEST_F(AutocorrectManagerTest,
   ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
   // Null input context invalidates the previous range even if rules are
   // triggered to accept the range.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
   manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
@@ -862,29 +850,10 @@ TEST_F(AutocorrectManagerTest,
 }
 
 TEST_F(AutocorrectManagerTest,
-       MovingCursorFarAfterRangeRecordsMetricsWhenAcceptingAutocorrect) {
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
-                              /*window_shown=*/0, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/1,
-                              /*cleared_underline=*/0);
-}
-
-TEST_F(AutocorrectManagerTest,
-       MovingCursorFarBeforeRangeRecordsMetricsWhenAcceptingAutocorrect) {
-  manager_.HandleAutocorrect(gfx::Range(4, 7), u"teh", u"the");
-  manager_.OnSurroundingTextChanged(u"abc the", 0, 0);
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
-                              /*window_shown=*/0, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/1,
-                              /*cleared_underline=*/0);
-}
-
-TEST_F(AutocorrectManagerTest,
-       MovingCursorCloseToRangeDoesNotRecordMetricsForPendingAutocorrect) {
+       MovingCursorDoesNotRecordMetricsForPendingAutocorrect) {
   manager_.HandleAutocorrect(gfx::Range(4, 7), u"teh", u"the");
 
+  manager_.OnSurroundingTextChanged(u"abc the def", 8, 8);
   manager_.OnSurroundingTextChanged(u"abc the def", 1, 1);
   manager_.OnSurroundingTextChanged(u"abc the def", 10, 10);
   manager_.OnSurroundingTextChanged(u"abc the def", 3, 3);
@@ -1161,6 +1130,7 @@ TEST_F(AutocorrectManagerTest,
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
   manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
@@ -1205,6 +1175,7 @@ TEST_F(AutocorrectManagerTest,
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
   manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
@@ -1227,6 +1198,7 @@ TEST_F(AutocorrectManagerTest,
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
   manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,

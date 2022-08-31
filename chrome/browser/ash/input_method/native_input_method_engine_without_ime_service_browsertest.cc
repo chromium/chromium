@@ -626,13 +626,15 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
   TextInputTestHelper helper(GetBrowserInputMethod());
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   SetFocus(&text_input_client);
+
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
+
   // Input the corrected word.
   helper.GetTextInputClient()->InsertText(
       u"corrected ",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(u"corrected ");
 
-  engine_->OnAutocorrect(u"typed", u"corrected", 0);
+  helper.WaitForSurroundingTextChanged(u"corrected ");
 
   EXPECT_FALSE(engine_->GetAutocorrectRange().is_empty());
 
