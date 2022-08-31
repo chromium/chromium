@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
+#include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
@@ -107,6 +108,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
@@ -188,6 +190,8 @@ void ModulesInitializer::Initialize() {
   ClipPathPaintImageGenerator::Init(ClipPathPaintImageGeneratorImpl::Create);
   WebDatabaseHost::GetInstance().Init();
   MediaSourceRegistryImpl::Init();
+  if (::features::IsTextBasedAudioDescriptionEnabled())
+    SpeechSynthesisBase::Init(SpeechSynthesis::Create);
 
   CoreInitializer::Initialize();
 

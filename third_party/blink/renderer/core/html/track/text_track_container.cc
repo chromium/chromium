@@ -223,10 +223,7 @@ void TextTrackContainer::UpdateDisplay(HTMLMediaElement& media_element,
     if (!cue->track() || !cue->track()->IsRendered() || !cue->IsActive())
       continue;
 
-    if (features::IsTextBasedAudioDescriptionEnabled() &&
-        cue->track()->IsSpokenKind()) {
-      cue->UpdateSpeech(*this);
-    } else {
+    if (!cue->track()->IsSpokenKind()) {
       cue->UpdateDisplay(*this);
     }
 

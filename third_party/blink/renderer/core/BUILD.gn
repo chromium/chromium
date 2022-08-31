@@ -61,6 +61,7 @@ import(
 import("//third_party/blink/renderer/core/script/build.gni")
 import("//third_party/blink/renderer/core/scroll/build.gni")
 import("//third_party/blink/renderer/core/speculation_rules/build.gni")
+import("//third_party/blink/renderer/core/speech/build.gni")
 import("//third_party/blink/renderer/core/streams/build.gni")
 import("//third_party/blink/renderer/core/style/build.gni")
 import("//third_party/blink/renderer/core/svg/build.gni")
@@ -273,6 +274,7 @@ component("core") {
   sources += rebase_path(blink_core_sources_xml, "", "xml")
   sources +=
       rebase_path(blink_core_sources_xmlhttprequest, "", "xmlhttprequest")
+  sources += rebase_path(blink_core_sources_speech, "", "speech")
 
   configs -= core_config_remove
   configs += core_config_add

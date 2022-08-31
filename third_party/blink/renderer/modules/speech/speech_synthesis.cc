@@ -54,6 +54,10 @@ namespace blink {
 
 const char SpeechSynthesis::kSupplementName[] = "SpeechSynthesis";
 
+SpeechSynthesisBase* SpeechSynthesis::Create(LocalDOMWindow& window) {
+  return MakeGarbageCollected<SpeechSynthesis>(window);
+}
+
 SpeechSynthesis* SpeechSynthesis::speechSynthesis(LocalDOMWindow& window) {
   SpeechSynthesis* synthesis =
       Supplement<LocalDOMWindow>::From<SpeechSynthesis>(window);
@@ -141,6 +145,14 @@ bool SpeechSynthesis::paused() const {
   return is_paused_;
 }
 
+void SpeechSynthesis::Speak(const String& text) {
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  SpeechSynthesisUtterance* utterance =
+      SpeechSynthesisUtterance::Create(GetSupplementable(), text);
+  speak(script_state, utterance);
+}
+
 void SpeechSynthesis::speak(ScriptState* script_state,
                             SpeechSynthesisUtterance* utterance) {
   DCHECK(utterance);
@@ -167,7 +179,7 @@ void SpeechSynthesis::speak(ScriptState* script_state,
     StartSpeakingImmediately();
 }
 
-void SpeechSynthesis::cancel() {
+void SpeechSynthesis::Cancel() {
   // Remove all the items from the utterance queue. The platform
   // may still have references to some of these utterances and may
   // fire events on them asynchronously.
@@ -338,6 +350,7 @@ void SpeechSynthesis::Trace(Visitor* visitor) const {
   visitor->Trace(utterance_queue_);
   Supplement<LocalDOMWindow>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
+  SpeechSynthesisBase::Trace(visitor);
 }
 
 bool SpeechSynthesis::GetElapsedTimeMillis(double* millis) {

@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -135,8 +136,9 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   DocumentFragment* getCueAsHTML();
 
+  void OnEnter(HTMLMediaElement& video) override;
+
   void UpdateDisplay(HTMLDivElement& container) override;
-  void UpdateSpeech(HTMLDivElement& container) override;
 
   void UpdatePastAndFutureNodes(double movie_time) override;
 

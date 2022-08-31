@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue_list.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace blink {
 
@@ -351,11 +352,16 @@ void CueTimeline::TimeMarchesOn() {
       media_element.ScheduleEvent(
           CreateEventWithTarget(event_type_names::kExit, task.second.Get()));
     } else {
+      TextTrackCue* cue = task.second.Get();
       bool is_enter_event = task.first == task.second->startTime();
       AtomicString event_name =
           is_enter_event ? event_type_names::kEnter : event_type_names::kExit;
       media_element.ScheduleEvent(
           CreateEventWithTarget(event_name, task.second.Get()));
+      if (features::IsTextBasedAudioDescriptionEnabled()) {
+        if (is_enter_event)
+          cue->OnEnter(MediaElement());
+      }
     }
   }
 

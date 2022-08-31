@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue_list.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
@@ -746,9 +747,10 @@ void VTTCue::RemoveDisplayTree(RemovalNotification removal_notification) {
   display_tree_->remove(ASSERT_NO_EXCEPTION);
 }
 
-void VTTCue::UpdateSpeech(HTMLDivElement& container) {
-  // TODO: handle vocalization
-  // Text to be vocalized can be accessed through the variable text_
+void VTTCue::OnEnter(HTMLMediaElement& video) {
+  if (!track()->IsSpokenKind())
+    return;
+  video.SpeechSynthesis()->Speak(text_);
 }
 
 void VTTCue::UpdateDisplay(HTMLDivElement& container) {

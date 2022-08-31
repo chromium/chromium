@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_H_
 
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_utterance.h"
@@ -44,6 +45,7 @@ class LocalDOMWindow;
 
 class MODULES_EXPORT SpeechSynthesis final
     : public EventTargetWithInlineData,
+      public SpeechSynthesisBase,
       public Supplement<LocalDOMWindow>,
       public mojom::blink::SpeechSynthesisVoiceListObserver {
   DEFINE_WRAPPERTYPEINFO();
@@ -51,6 +53,7 @@ class MODULES_EXPORT SpeechSynthesis final
  public:
   static const char kSupplementName[];
 
+  static SpeechSynthesisBase* Create(LocalDOMWindow&);
   static SpeechSynthesis* speechSynthesis(LocalDOMWindow&);
   static void CreateForTesting(
       LocalDOMWindow&,
@@ -62,8 +65,12 @@ class MODULES_EXPORT SpeechSynthesis final
   bool speaking() const;
   bool paused() const;
 
+  // SpeechSynthesisBase
+  void Speak(const String&) override;
+  void Cancel() override;
+
   void speak(ScriptState*, SpeechSynthesisUtterance*);
-  void cancel();
+  void cancel() { Cancel(); }
   void pause();
   void resume();
 

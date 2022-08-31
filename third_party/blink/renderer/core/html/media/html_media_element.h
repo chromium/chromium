@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -58,7 +59,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
-
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc_overrides/low_precision_timer.h"
@@ -299,6 +299,10 @@ class CORE_EXPORT HTMLMediaElement
   bool TextTracksAreReady() const;
   void ConfigureTextTrackDisplay();
   void UpdateTextTrackDisplay();
+
+  // Get a SpeechSynthesis interface to use for generating speech for audio
+  // descriptions.
+  SpeechSynthesisBase* SpeechSynthesis();
   double LastSeekTime() const { return last_seek_time_; }
   void TextTrackReadyStateChanged(TextTrack*);
 
@@ -847,6 +851,10 @@ class CORE_EXPORT HTMLMediaElement
   // HTMLMediaElement and its MediaElementAudioSourceNode in case it is provided
   // die together.
   Member<AudioSourceProviderClient> audio_source_node_;
+
+  // Controls browser vocalization within the media element (e.g. to speak cues,
+  // to pause utterance).
+  Member<SpeechSynthesisBase> speech_synthesis_;
 
   // AudioClientImpl wraps an AudioSourceProviderClient.
   // When the audio format is known, Chromium calls setFormat().
