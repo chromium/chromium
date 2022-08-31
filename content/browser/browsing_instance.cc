@@ -26,11 +26,13 @@ int BrowsingInstance::next_browsing_instance_id_ = 1;
 BrowsingInstance::BrowsingInstance(
     BrowserContext* browser_context,
     const WebExposedIsolationInfo& web_exposed_isolation_info,
-    bool is_guest)
+    bool is_guest,
+    bool is_fenced)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
           BrowserOrResourceContext(browser_context),
-          is_guest),
+          is_guest,
+          is_fenced),
       active_contents_count_(0u),
       default_site_instance_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info) {

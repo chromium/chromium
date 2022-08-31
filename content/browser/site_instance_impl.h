@@ -59,11 +59,14 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // newly SiteInstance and BrowsingInstance is for a <webview> guest. This is
   // used in site-isolated guests to support cross-BrowsingInstance navigations
   // within a guest; when true, the guest's StoragePartition information must
-  // also be provided in `url_info`.
+  // also be provided in `url_info`. `is_fenced` specifies if the
+  // BrowsingInstance is for a fenced frame, and is used to isolate them from
+  // non-fenced BrowsingInstances.
   static scoped_refptr<SiteInstanceImpl> CreateForUrlInfo(
       BrowserContext* browser_context,
       const UrlInfo& url_info,
-      bool is_guest);
+      bool is_guest,
+      bool is_fenced);
 
   // Creates a SiteInstance that will be use for a service worker.
   // `url_info` - The UrlInfo for the service worker. It contains the URL and

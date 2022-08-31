@@ -2533,7 +2533,8 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
   // Otherwise return a new SiteInstance in a new BrowsingInstance.
   return SiteInstanceImpl::CreateForUrlInfo(
       GetNavigationController().GetBrowserContext(), dest_url_info,
-      current_instance->IsGuest());
+      current_instance->IsGuest(),
+      current_instance->GetIsolationContext().is_fenced());
 }
 
 bool RenderFrameHostManager::CanUseSourceSiteInstance(

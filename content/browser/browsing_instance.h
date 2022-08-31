@@ -93,12 +93,14 @@ class CONTENT_EXPORT BrowsingInstance final
   // cross-origin-opener-policy set to same-origin and
   // cross-origin-embedder-policy set to require-corp, and if so, from which
   // top level origin. |is_guest| specifies whether this BrowsingInstance will
-  // be used in a <webview> guest; note that this cannot change over the
-  // lifetime of the BrowsingInstance.
+  // be used in a <webview> guest; |is_fenced| specifies whether this
+  // BrowsingInstance is used inside a fenced frame. Note that both |is_guest|
+  // and |is_fenced| cannot change over the lifetime of the BrowsingInstance.
   explicit BrowsingInstance(
       BrowserContext* context,
       const WebExposedIsolationInfo& web_exposed_isolation_info,
-      bool is_guest);
+      bool is_guest,
+      bool is_fenced);
 
   ~BrowsingInstance();
 

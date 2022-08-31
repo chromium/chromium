@@ -93,6 +93,10 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // their cached value.
   static void DisableFlagCachingForTesting();
 
+  // Returns true when process-isolation of fenced frames from their embedders
+  // is enabled.
+  static bool IsProcessIsolationForFencedFramesEnabled();
+
  private:
   SiteIsolationPolicy();  // Not instantiable.
 

@@ -305,7 +305,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
                     .WithStoragePartitionConfig(partition->GetConfig())
                     .WithWebExposedIsolationInfo(
                         WebExposedIsolationInfo::CreateNonIsolated())),
-        partition->is_guest());
+        partition->is_guest(),
+        creator.GetSiteInstance()->GetIsolationContext().is_fenced());
   }
 
   RenderProcessHost* worker_process_host = site_instance->GetProcess();

@@ -27,10 +27,12 @@ class CONTENT_EXPORT IsolationContext {
   // version should be used instead.
   IsolationContext(BrowsingInstanceId browsing_instance_id,
                    BrowserContext* browser_context,
-                   bool is_guest);
+                   bool is_guest,
+                   bool is_fenced);
   IsolationContext(BrowsingInstanceId browsing_instance_id,
                    BrowserOrResourceContext browser_or_resource_context,
-                   bool is_guest);
+                   bool is_guest,
+                   bool is_fenced);
 
   // Also temporarily allow constructing an IsolationContext not associated
   // with a specific BrowsingInstance.  Callers can use this when they don't
@@ -68,6 +70,8 @@ class CONTENT_EXPORT IsolationContext {
   // <webview> guest.
   bool is_guest() const { return is_guest_; }
 
+  bool is_fenced() const { return is_fenced_; }
+
  private:
   // When non-null, associates this context with a particular BrowsingInstance.
   const BrowsingInstanceId browsing_instance_id_;
@@ -77,6 +81,10 @@ class CONTENT_EXPORT IsolationContext {
   // Specifies whether the BrowsingInstance associated with this context is for
   // a <webview> guest.
   const bool is_guest_;
+
+  // Specifies whether the BrowsingInstance associated with this context is for
+  // a <fencedframe>.
+  const bool is_fenced_;
 };
 
 }  // namespace content

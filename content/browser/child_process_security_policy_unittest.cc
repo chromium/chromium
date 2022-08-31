@@ -219,9 +219,10 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
                         const url::Origin& origin) {
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
-    return p->IsIsolatedOrigin(IsolationContext(browsing_instance_id, context,
-                                                /*is_guest=*/false),
-                               origin, false /* origin_requests_isolation */);
+    return p->IsIsolatedOrigin(
+        IsolationContext(browsing_instance_id, context,
+                         /*is_guest=*/false, /*is_fenced=*/false),
+        origin, false /* origin_requests_isolation */);
   }
 
   // Returns the number of isolated origin entries for a particular origin.
@@ -3022,7 +3023,8 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
                          .WithOriginIsolationRequest(origin_isolation_request));
     scoped_refptr<SiteInstanceImpl> foo_instance =
         SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
-                                           /*is_guest=*/false);
+                                           /*is_guest=*/false,
+                                           /*is_fenced=*/false);
 
     p->Add(kRendererID, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
@@ -3079,7 +3081,8 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
     UrlInfo url_info(UrlInfoInit(foo.GetURL()));
     scoped_refptr<SiteInstanceImpl> foo_instance =
         SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
-                                           /*is_guest=*/false);
+                                           /*is_guest=*/false,
+                                           /*is_fenced=*/false);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
                    /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));

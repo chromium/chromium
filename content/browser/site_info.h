@@ -137,7 +137,8 @@ class CONTENT_EXPORT SiteInfo {
            bool is_guest,
            bool does_site_request_dedicated_process_for_coop,
            bool is_jit_disabled,
-           bool is_pdf);
+           bool is_pdf,
+           bool is_fenced);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
@@ -222,6 +223,7 @@ class CONTENT_EXPORT SiteInfo {
   bool is_error_page() const;
   bool is_jit_disabled() const { return is_jit_disabled_; }
   bool is_pdf() const { return is_pdf_; }
+  bool is_fenced() const { return is_fenced_; }
 
   // See comments on `does_site_request_dedicated_process_for_coop_` for more
   // details.
@@ -391,6 +393,13 @@ class CONTENT_EXPORT SiteInfo {
 
   // Indicates that this SiteInfo is for PDF content.
   bool is_pdf_ = false;
+
+  // Indicates that this SiteInfo is for content inside a fenced frame. We use
+  // just a bool as opposed to a GUID here in order to group same-origin fenced
+  // frames together. See more details around fenced frame process isolation
+  // here:
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/process_isolation.md.
+  bool is_fenced_ = false;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,

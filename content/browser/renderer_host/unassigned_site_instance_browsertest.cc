@@ -1118,7 +1118,8 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
           false /* does_site_request_dedicated_process_for_coop */,
-          false /* is_jit_disabled */, false /* is_pdf */)),
+          false /* is_jit_disabled */, false /* is_pdf */,
+          false /*is_fenced */)),
       policy->GetProcessLock(process2->GetID()));
 
   // Ensure also that the regular url process didn't change midway through the

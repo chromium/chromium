@@ -13,12 +13,12 @@ namespace content {
 ProcessLock ProcessLock::CreateAllowAnySite(
     const StoragePartitionConfig& storage_partition_config,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
-  return ProcessLock(
-      SiteInfo(GURL(), GURL(), false, false /* is_sandboxed */,
-               UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
-               web_exposed_isolation_info, /* is_guest */ false,
-               /* does_site_request_dedicated_process_for_coop */ false,
-               /* is_jit_disabled */ false, /* is_pdf */ false));
+  return ProcessLock(SiteInfo(
+      GURL(), GURL(), false, false /* is_sandboxed */,
+      UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
+      web_exposed_isolation_info, /* is_guest */ false,
+      /* does_site_request_dedicated_process_for_coop */ false,
+      /* is_jit_disabled */ false, /* is_pdf */ false, /* is_fenced */ false));
 }
 
 // static
@@ -134,6 +134,9 @@ std::string ProcessLock::ToString() const {
 
     if (is_guest())
       ret += " guest";
+
+    if (is_fenced())
+      ret += " fenced";
 
     if (GetWebExposedIsolationInfo().is_isolated()) {
       ret += " cross-origin-isolated";

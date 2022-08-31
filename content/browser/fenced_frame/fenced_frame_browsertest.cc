@@ -1157,16 +1157,29 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
 
 class FencedFrameWithSiteIsolationDisabledBrowserTest
     : public FencedFrameMPArchBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   FencedFrameWithSiteIsolationDisabledBrowserTest() {
-    std::vector<base::Feature> enabled_features = {
-        GetParam() ? features::kProcessSharingWithDefaultSiteInstances
-                   : features::kProcessSharingWithStrictSiteInstances};
-    std::vector<base::Feature> disabled_features = {
-        GetParam() ? features::kProcessSharingWithStrictSiteInstances
-                   : features::kProcessSharingWithDefaultSiteInstances};
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    if (std::get<0>(GetParam())) {
+      enabled_features.push_back(
+          features::kProcessSharingWithDefaultSiteInstances);
+      disabled_features.push_back(
+          features::kProcessSharingWithStrictSiteInstances);
+    } else {
+      enabled_features.push_back(
+          features::kProcessSharingWithStrictSiteInstances);
+      disabled_features.push_back(
+          features::kProcessSharingWithDefaultSiteInstances);
+    }
+
+    if (std::get<1>(GetParam())) {
+      enabled_features.push_back(features::kIsolateFencedFrames);
+    } else {
+      disabled_features.push_back(features::kIsolateFencedFrames);
+    }
   }
 
   ~FencedFrameWithSiteIsolationDisabledBrowserTest() override = default;
@@ -1180,13 +1193,18 @@ class FencedFrameWithSiteIsolationDisabledBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FencedFrameWithSiteIsolationDisabledBrowserTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DefaultSiteInstances"
-                                             : "StrictSiteInstances";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FencedFrameWithSiteIsolationDisabledBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StringPrintf("%s_%s",
+                                std::get<0>(info.param) ? "DefaultSiteInstances"
+                                                        : "StrictSiteInstances",
+                                std::get<1>(info.param)
+                                    ? "IsolatedFencedFrames"
+                                    : "UnisolatedFencedFrames");
+    });
 
 IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
                        ProcessAllocationWithSiteIsolationDisabled) {
@@ -1353,6 +1371,170 @@ IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
   RenderFrameHost* ff_rfh =
       fenced_frame_test_helper().CreateFencedFrame(popup_rfh, fenced_frame_url);
   ASSERT_EQ(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
+}
+
+class FencedFrameProcessIsolationBrowserTest
+    : public FencedFrameMPArchBrowserTest {
+ public:
+  FencedFrameProcessIsolationBrowserTest() {
+    feature_list_.InitWithFeatures({features::kIsolateFencedFrames}, {});
+  }
+  ~FencedFrameProcessIsolationBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest, BasicTest) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* ff_rfh = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   fenced_frame_url));
+  EXPECT_TRUE(ff_rfh->GetSiteInstance()->GetSiteInfo().is_fenced());
+  EXPECT_NE(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
+}
+
+// Tests that fenced frames that are same-origin with each other are put in
+// the same process.
+IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest,
+                       SameOriginFencedFramesArePutInTheSameProcess) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* ff_rfh_1 = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   fenced_frame_url));
+  RenderFrameHostImpl* ff_rfh_2 = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   fenced_frame_url));
+
+  EXPECT_NE(ff_rfh_1->GetProcess(), primary_main_frame_host()->GetProcess());
+  EXPECT_NE(ff_rfh_1->GetSiteInstance(), ff_rfh_2->GetSiteInstance());
+  EXPECT_EQ(ff_rfh_1->GetProcess(), ff_rfh_2->GetProcess());
+}
+
+// Tests that fenced frames that are cross-origin with each other are put in
+// different processes.
+IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest,
+                       CrossOriginFencedFramesArePutInDifferentProcesses) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL ff_url_1 =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+  const GURL ff_url_2 =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* ff_rfh_1 = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   ff_url_1));
+  RenderFrameHostImpl* ff_rfh_2 = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   ff_url_2));
+
+  EXPECT_NE(ff_rfh_1->GetProcess(), primary_main_frame_host()->GetProcess());
+  EXPECT_NE(ff_rfh_2->GetProcess(), primary_main_frame_host()->GetProcess());
+  EXPECT_NE(ff_rfh_1->GetProcess(), ff_rfh_2->GetProcess());
+}
+
+// Tests that a subframe inside a primary page is allocated to a separate
+// process from a subframe inside a fenced frame.
+IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest,
+                       SubframeIsolation) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL ff_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+  const GURL subframe_url = https_server()->GetURL("c.test", "/title2.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* ff_rfh = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   ff_url));
+
+  // Add iframe in primary main frame.
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
+                     JsReplace(kAddIframeScript, subframe_url)));
+  RenderFrameHost* primary_subframe =
+      ChildFrameAt(primary_main_frame_host(), 0);
+
+  // Add iframe in fenced frame.
+  EXPECT_TRUE(ExecJs(ff_rfh, JsReplace(kAddIframeScript, subframe_url)));
+  RenderFrameHost* ff_subframe = ChildFrameAt(ff_rfh, 0);
+
+  // Both subframes should be in separate processes (despite being same-site).
+  EXPECT_NE(primary_subframe->GetProcess(), ff_subframe->GetProcess());
+  EXPECT_NE(primary_subframe->GetSiteInstance(),
+            ff_subframe->GetSiteInstance());
+  EXPECT_FALSE(static_cast<RenderFrameHostImpl*>(primary_subframe)
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .is_fenced());
+  EXPECT_TRUE(static_cast<RenderFrameHostImpl*>(ff_subframe)
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_fenced());
+}
+
+// Tests process assignment in the following scenario:
+// a.com
+//   <fencedframe src=a.com>
+//     <iframe src=a.com>
+//       <fencedframe src=a.com>
+IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest,
+                       NestedFencedFrames) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL subframe_url = https_server()->GetURL("a.test", "/title2.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create outer fenced frame and add same-origin subframe.
+  RenderFrameHostImpl* outer_ff_rfh = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   fenced_frame_url));
+  EXPECT_TRUE(ExecJs(outer_ff_rfh, JsReplace(kAddIframeScript, subframe_url)));
+  RenderFrameHost* outer_ff_subframe = ChildFrameAt(outer_ff_rfh, 0);
+
+  // Create nested fenced frame.
+  RenderFrameHostImpl* inner_ff_rfh = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(outer_ff_subframe,
+                                                   fenced_frame_url));
+
+  EXPECT_EQ(outer_ff_rfh->GetSiteInstance(),
+            outer_ff_subframe->GetSiteInstance());
+  EXPECT_NE(outer_ff_subframe->GetSiteInstance(),
+            inner_ff_rfh->GetSiteInstance());
+
+  // All frames will share the same process (except the primary main frame).
+  EXPECT_NE(primary_main_frame_host()->GetProcess(),
+            outer_ff_rfh->GetProcess());
+  EXPECT_EQ(outer_ff_rfh->GetProcess(), outer_ff_subframe->GetProcess());
+  EXPECT_EQ(outer_ff_subframe->GetProcess(), inner_ff_rfh->GetProcess());
 }
 
 namespace {

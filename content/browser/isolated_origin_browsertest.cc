@@ -141,7 +141,8 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
         false /* does_site_request_dedicated_process_for_coop */,
-        false /* is_jit_disabled */, false /* is_pdf */));
+        false /* is_jit_disabled */, false /* is_pdf */,
+        false /* is_fenced */));
   }
 
   WebContentsImpl* web_contents() const {
@@ -164,7 +165,8 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
         false /* does_site_request_dedicated_process_for_coop */,
-        false /* is_jit_disabled */, false /* is_pdf */));
+        false /* is_jit_disabled */, false /* is_pdf */,
+        false /* is_fenced */));
   }
 
  protected:
@@ -1064,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       StoragePartitionConfig::CreateDefault(browser_context),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
-      false /* is_jit_disabled */, false /* is_pdf */));
+      false /* is_jit_disabled */, false /* is_pdf */, false /* is_fenced */));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 

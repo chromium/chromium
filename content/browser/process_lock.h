@@ -140,6 +140,12 @@ class CONTENT_EXPORT ProcessLock {
     return site_info_.has_value() && site_info_->is_guest();
   }
 
+  // Returns whether this ProcessLock is used for a process that exclusively
+  // hosts content inside a <fencedframe>.
+  bool is_fenced() const {
+    return site_info_.has_value() && site_info_->is_fenced();
+  }
+
   // Returns the StoragePartitionConfig that corresponds to the SiteInfo the
   // lock is used with.
   StoragePartitionConfig GetStoragePartitionConfig() const;

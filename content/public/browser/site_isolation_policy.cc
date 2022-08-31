@@ -353,4 +353,18 @@ void SiteIsolationPolicy::DisableFlagCachingForTesting() {
   g_disable_flag_caching_for_tests = true;
 }
 
+// static
+bool SiteIsolationPolicy::IsProcessIsolationForFencedFramesEnabled() {
+  // If the user has explicitly enabled process isolation for fenced frames from
+  // the command line, honor this regardless of policies that may disable site
+  // isolation.
+  if (base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kIsolateFencedFrames.name,
+          base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
+    return true;
+  }
+  return UseDedicatedProcessesForAllSites() &&
+         base::FeatureList::IsEnabled(features::kIsolateFencedFrames);
+}
+
 }  // namespace content
