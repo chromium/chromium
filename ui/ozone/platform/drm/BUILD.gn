@@ -90,6 +90,8 @@ source_set("gbm") {
     "gpu/inter_thread_messaging_proxy.h",
     "gpu/page_flip_request.cc",
     "gpu/page_flip_request.h",
+    "gpu/page_flip_watchdog.cc",
+    "gpu/page_flip_watchdog.h",
     "gpu/proxy_helpers.cc",
     "gpu/proxy_helpers.h",
     "gpu/screen_manager.cc",

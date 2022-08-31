@@ -22,6 +22,7 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
+#include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 #include "ui/ozone/public/swap_completion_callback.h"
 
 namespace gfx {
@@ -30,10 +31,6 @@ struct GpuFenceHandle;
 }  // namespace gfx
 
 namespace ui {
-
-// The maximum amount of time we will wait for a new modeset attempt before we
-// crash the GPU process.
-constexpr base::TimeDelta kWaitForModesetTimeout = base::Seconds(15);
 
 class CrtcController;
 class DrmFramebuffer;
@@ -227,10 +224,8 @@ class HardwareDisplayController {
   base::flat_map<uint32_t /*fourcc_format*/, uint64_t /*preferred_modifier*/>
       preferred_format_modifier_;
 
-  // Used to crash the GPU process if a page flip commit fails and no new
-  // modeset attempts come in.
-  base::OneShotTimer crash_gpu_timer_;
-  int16_t failed_page_flip_counter_ = 0;
+  // Used to crash the GPU process when unrecoverable failures occur.
+  PageFlipWatchdog watchdog_;
 
   base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
 };

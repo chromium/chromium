@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/syslog_logging.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -35,6 +34,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
+#include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 
 // Vendor ID for downstream, interim ChromeOS specific modifiers.
 #define DRM_FORMAT_MOD_VENDOR_CHROMEOS 0xf0
@@ -152,15 +152,7 @@ void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
 
 void HardwareDisplayController::UpdateState(
     const CrtcCommitRequest& crtc_request) {
-  if (crash_gpu_timer_.IsRunning()) {
-    crash_gpu_timer_.AbandonAndStop();
-    SYSLOG(INFO)
-        << "Detected a modeset attempt after " << failed_page_flip_counter_
-        << " failed page flips. Aborting GPU process self-destruct with "
-        << crash_gpu_timer_.desired_run_time() - base::TimeTicks::Now()
-        << " to spare.";
-    failed_page_flip_counter_ = 0;
-  }
+  watchdog_.Disarm();
 
   // Verify that the current state matches the requested state.
   if (crtc_request.should_enable() && IsEnabled()) {
@@ -201,21 +193,8 @@ void HardwareDisplayController::SchedulePageFlip(
     }
 
     // No outdated buffers detected which makes this a true page flip failure.
-    // Start the GPU self-destruct timer if needed and report the failure.
-    failed_page_flip_counter_++;
-    if (!crash_gpu_timer_.IsRunning()) {
-      DCHECK_EQ(1, failed_page_flip_counter_);
-      LOG(WARNING) << "Initiating GPU process self-destruct in "
-                   << kWaitForModesetTimeout
-                   << " unless a modeset attempt is detected.";
-
-      crash_gpu_timer_.Start(
-          FROM_HERE, kWaitForModesetTimeout, base::BindOnce([] {
-            LOG(FATAL) << "Failed to modeset within " << kWaitForModesetTimeout
-                       << " of the first page flip failure. Crashing GPU "
-                          "process. Goodbye.";
-          }));
-    }
+    // Alert the watchdog.
+    watchdog_.Arm();
 
     std::move(submission_callback)
         .Run(gfx::SwapResult::SWAP_FAILED,
@@ -486,8 +465,6 @@ void HardwareDisplayController::AsValueInto(
 
   value->SetString("origin", ValueToString(origin_));
   value->SetString("cursor_location", ValueToString(cursor_location_));
-  value->SetInteger("failed_page_flip_counter", failed_page_flip_counter_);
-  value->SetBoolean("is_crash_timer_running", crash_gpu_timer_.IsRunning());
   value->SetBoolean("has_page_flip_request", page_flip_request_ != nullptr);
 
   {
