@@ -1196,15 +1196,20 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
             UserSelectableTypeToCanonicalModelType(type));
         base::UmaHistogramEnumeration("Sync.CustomSync3", canonical_model_type);
       }
+    }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    bool sync_everything_os = sync_prefs_.IsSyncAllOsTypesEnabled();
+    base::UmaHistogramBoolean("Sync.SyncEverythingOS", sync_everything_os);
+    if (!sync_everything_os) {
       for (UserSelectableOsType type : user_settings_->GetSelectedOsTypes()) {
         ModelTypeForHistograms canonical_model_type = ModelTypeHistogramValue(
             UserSelectableOsTypeToCanonicalModelType(type));
         base::UmaHistogramEnumeration("Sync.CustomOSSync",
                                       canonical_model_type);
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
 

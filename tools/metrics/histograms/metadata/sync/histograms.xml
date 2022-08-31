@@ -1145,6 +1145,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncEverythingOS" enum="Boolean"
+    expires_after="2023-02-12">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Analogous to Sync.SyncEverything2 for Chrome OS sync settings. Reflects
+    whether the &quot;Sync Everything&quot; option was selected by the user for
+    OS datatypes. Samples are taken every time the Sync data types are
+    (re)configured, which typically happens during startup and when the user
+    changes any Sync settings.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncStoppedReported" enum="Boolean"
     expires_after="2023-02-12">
   <owner>rushans@google.com</owner>
