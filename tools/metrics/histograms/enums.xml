@@ -10677,7 +10677,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="214" label="RFHI_BEGIN_NAVIGATION_MISSING_INITIATOR_ORIGIN"/>
   <int value="215" label="RFHI_BEGIN_NAVIGATION_NON_WEBBY_TRANSITION"/>
   <int value="216" label="RFH_NO_MATCHING_NAVIGATION_REQUEST_ON_COMMIT"/>
-  <int value="217" label="AUTH_INVALID_ICON_URL"/>
+  <int value="217" label="OBSOLETE_AUTH_INVALID_ICON_URL"/>
   <int value="218" label="MDDH_INVALID_STREAM_SELECTION_INFO"/>
   <int value="219" label="REGISTER_PROTOCOL_HANDLER_INVALID_URL"/>
   <int value="220" label="NC_SAME_DOCUMENT_POST_COMMIT_ERROR"/>

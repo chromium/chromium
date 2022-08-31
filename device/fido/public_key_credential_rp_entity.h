@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "components/cbor/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace device {
 
@@ -26,9 +25,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialRpEntity {
 
   PublicKeyCredentialRpEntity();
   explicit PublicKeyCredentialRpEntity(std::string id);
-  PublicKeyCredentialRpEntity(std::string id,
-                              absl::optional<std::string> name,
-                              absl::optional<GURL> icon_url);
+  PublicKeyCredentialRpEntity(std::string id, absl::optional<std::string> name);
   PublicKeyCredentialRpEntity(const PublicKeyCredentialRpEntity& other);
   PublicKeyCredentialRpEntity(PublicKeyCredentialRpEntity&& other);
   PublicKeyCredentialRpEntity& operator=(
@@ -39,7 +36,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialRpEntity {
 
   std::string id;
   absl::optional<std::string> name;
-  absl::optional<GURL> icon_url;
 };
 
 cbor::Value AsCBOR(const PublicKeyCredentialRpEntity&);

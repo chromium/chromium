@@ -25,12 +25,6 @@
 
 namespace device {
 
-namespace {
-std::u16string OptionalGURLToUTF16(const absl::optional<GURL>& in) {
-  return in ? base::UTF8ToUTF16(in->spec()) : std::u16string();
-}
-}  // namespace
-
 // Time out all Windows API requests after 5 minutes. We maintain our own
 // timeout and cancel the operation when it expires, so this value simply needs
 // to be larger than the largest internal request timeout.
@@ -247,23 +241,21 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
 
   std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
   std::u16string rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));
-  std::u16string rp_icon_url = OptionalGURLToUTF16(request.rp.icon_url);
   WEBAUTHN_RP_ENTITY_INFORMATION rp_info{
       WEBAUTHN_RP_ENTITY_INFORMATION_CURRENT_VERSION, base::as_wcstr(rp_id),
-      base::as_wcstr(rp_name), base::as_wcstr(rp_icon_url)};
+      base::as_wcstr(rp_name),
+      /*pwszIcon=*/base::as_wcstr(base::EmptyString16())};
 
   std::u16string user_name = base::UTF8ToUTF16(request.user.name.value_or(""));
-  std::u16string user_icon_url = OptionalGURLToUTF16(request.user.icon_url);
   std::u16string user_display_name =
       base::UTF8ToUTF16(request.user.display_name.value_or(""));
   std::vector<uint8_t> user_id = request.user.id;
   WEBAUTHN_USER_ENTITY_INFORMATION user_info{
       WEBAUTHN_USER_ENTITY_INFORMATION_CURRENT_VERSION,
       base::checked_cast<DWORD>(user_id.size()),
-      const_cast<unsigned char*>(user_id.data()),
-      base::as_wcstr(user_name),
-      base::as_wcstr(user_icon_url),
-      base::as_wcstr(user_display_name),  // This appears to be ignored.
+      const_cast<unsigned char*>(user_id.data()), base::as_wcstr(user_name),
+      /*pwszIcon=*/base::as_wcstr(base::EmptyString16()),
+      base::as_wcstr(user_display_name),
   };
 
   std::vector<WEBAUTHN_COSE_CREDENTIAL_PARAMETER>

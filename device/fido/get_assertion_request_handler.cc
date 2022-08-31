@@ -178,8 +178,7 @@ bool ResponseValid(bool is_first_response,
   // published.
   const auto& user_entity = response.user_entity;
   const bool has_user_identifying_info =
-      user_entity &&
-      (user_entity->display_name || user_entity->name || user_entity->icon_url);
+      user_entity && (user_entity->display_name || user_entity->name);
   if (!response.authenticator_data.obtained_user_verification() &&
       has_user_identifying_info) {
     return false;

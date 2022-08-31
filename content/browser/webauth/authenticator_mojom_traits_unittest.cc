@@ -16,10 +16,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
-#include "url/gurl.h"
-#include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
 
@@ -41,7 +38,6 @@ using device::UserVerificationRequirement;
 const std::vector<uint8_t> kDescriptorId = {'d', 'e', 's', 'c'};
 constexpr char kRpId[] = "google.com";
 constexpr char kRpName[] = "Google";
-constexpr char kTestURL[] = "https://gstatic.com/fakeurl2.png";
 constexpr CableEidArray kClientEid = {{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
                                        0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13,
                                        0x14, 0x15}};
@@ -132,9 +128,7 @@ TEST(AuthenticatorMojomTraitsTest, SerializePublicKeyCredentialRpEntity) {
   // be corrected at some point. We can't currently test absl::nullopt
   // because it won't serialize.
   success_cases[0].name = std::string(kRpName);
-  success_cases[0].icon_url = absl::nullopt;
   success_cases[1].name = std::string(kRpName);
-  success_cases[1].icon_url = GURL(kTestURL);
 
   AssertSerializeAndDeserializeSucceeds<
       blink::mojom::PublicKeyCredentialRpEntity, PublicKeyCredentialRpEntity>(
@@ -150,10 +144,8 @@ TEST(AuthenticatorMojomTraitsTest, SerializePublicKeyCredentialUserEntity) {
   // PublicKeyCredentialRpEntity::name above.
   success_cases[0].name = std::string(kRpName);
   success_cases[0].display_name = std::string(kRpName);
-  success_cases[0].icon_url = absl::nullopt;
   success_cases[1].name = std::string(kRpName);
   success_cases[1].display_name = std::string(kRpName);
-  success_cases[1].icon_url = GURL(kTestURL);
 
   AssertSerializeAndDeserializeSucceeds<
       blink::mojom::PublicKeyCredentialUserEntity,

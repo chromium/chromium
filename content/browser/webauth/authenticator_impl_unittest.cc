@@ -365,7 +365,6 @@ device::PublicKeyCredentialUserEntity GetTestPublicKeyCredentialUserEntity() {
   std::vector<uint8_t> id(32, 0x0A);
   entity.id = id;
   entity.name = "username@example.com";
-  entity.icon_url = GURL("https://gstatic.com/fakeurl2.png");
   return entity;
 }
 
@@ -850,50 +849,6 @@ TEST_F(AuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
 
     EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
               test_case.expected_status);
-  }
-}
-
-// Test that MakeCredential returns INVALID_ICON_URL in the correct cases.
-TEST_F(AuthenticatorImplTest, MakeCredentialURLs) {
-  constexpr auto ok = AuthenticatorStatus::SUCCESS;
-  constexpr auto bad = AuthenticatorStatus::INVALID_ICON_URL;
-  const std::pair<GURL, AuthenticatorStatus> kTestCases[] = {
-      {GURL(), ok},
-      {GURL("https://secure-origin.com/kitten.png"), ok},
-      {GURL("about:blank"), ok},
-      {GURL("about:srcdoc"), ok},
-      {GURL(
-           "data:image/"
-           "png;base64,"
-           "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAACXBIWXMAAC4jAAAuIwF"
-           "4pT92AAAAB3RJTUUH4wYUETEs5V5U8gAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdG"
-           "ggR0lNUFeBDhcAAABGSURBVCjPY/z//"
-           "z8DKYAJmcPYyICHi0UDyTYMDg2MFIUSnsAZAp5mbGT4X49DBcxLEAUsBMxrRCiFABb8"
-           "gYNpLTXiAT8AAEeHFZvhj9g8AAAAAElFTkSuQmCC"),
-       ok},
-
-      {GURL("http://insecure-origin.com/kitten.png"), bad},
-      {GURL("invalid:/url"), bad},
-  };
-
-  NavigateAndCommit(GURL(kTestOrigin1));
-
-  for (const bool test_user_icon : {false, true}) {
-    for (auto test_case : kTestCases) {
-      SCOPED_TRACE(test_case.first.possibly_invalid_spec());
-      SCOPED_TRACE(test_user_icon);
-
-      PublicKeyCredentialCreationOptionsPtr options =
-          GetTestPublicKeyCredentialCreationOptions();
-      if (test_user_icon) {
-        options->user.icon_url = test_case.first;
-      } else {
-        options->relying_party.icon_url = test_case.first;
-      }
-
-      EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
-                test_case.second);
-    }
   }
 }
 
@@ -7516,7 +7471,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
     EXPECT_EQ(options->user.name, registration.user->name);
     EXPECT_EQ(options->user.display_name, registration.user->display_name);
     EXPECT_EQ(options->user.id, registration.user->id);
-    EXPECT_EQ(options->user.icon_url, registration.user->icon_url);
   }
 }
 
@@ -8792,8 +8746,6 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential) {
   const CredentialMetadata& metadata = credentials.at(0).metadata;
   EXPECT_FALSE(metadata.is_resident);
   auto expected_user = GetTestPublicKeyCredentialUserEntity();
-  expected_user.icon_url =
-      absl::nullopt;  // Authenticator doesn't store icon URL.
   EXPECT_EQ(metadata.ToPublicKeyCredentialUserEntity(), expected_user);
 }
 

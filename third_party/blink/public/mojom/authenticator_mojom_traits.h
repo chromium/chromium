@@ -160,11 +160,6 @@ struct BLINK_COMMON_EXPORT
     return in.name;
   }
 
-  static const absl::optional<GURL>& icon(
-      const device::PublicKeyCredentialRpEntity& in) {
-    return in.icon_url;
-  }
-
   static bool Read(blink::mojom::PublicKeyCredentialRpEntityDataView data,
                    device::PublicKeyCredentialRpEntity* out);
 };
@@ -186,11 +181,6 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<std::string>& display_name(
       const device::PublicKeyCredentialUserEntity& in) {
     return in.display_name;
-  }
-
-  static const absl::optional<GURL>& icon(
-      const device::PublicKeyCredentialUserEntity& in) {
-    return in.icon_url;
   }
 
   static bool Read(blink::mojom::PublicKeyCredentialUserEntityDataView data,

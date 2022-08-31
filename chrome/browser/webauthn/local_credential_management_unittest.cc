@@ -95,8 +95,8 @@ TEST_F(LocalCredentialManagementTest, OneCredential) {
   // With a credential injected, `HasCredentials` should return true and should
   // cache that in the profile. Enumerate should return that credential.
   api_.InjectDiscoverableCredential(
-      kCredId, {kRpId, absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, absl::nullopt, absl::nullopt, absl::nullopt});
+      kCredId, {kRpId, absl::nullopt},
+      {{1, 2, 3, 4}, absl::nullopt, absl::nullopt});
 
   EXPECT_TRUE(HasCredentials());
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(kHasPlatformCredentialsPref));
@@ -135,27 +135,23 @@ TEST_F(LocalCredentialManagementTest, Sorting) {
   constexpr uint8_t kCredId6[] = {6};
   constexpr uint8_t kCredId7[] = {7};
 
-  api_.InjectDiscoverableCredential(
-      kCredId7, {"zzz.de", absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, "username", absl::nullopt, absl::nullopt});
-  api_.InjectDiscoverableCredential(
-      kCredId2, {"zzz.de", absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, "username", absl::nullopt, absl::nullopt});
-  api_.InjectDiscoverableCredential(
-      kCredId3, {"www.example.co.uk", absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, "user1", absl::nullopt, absl::nullopt});
-  api_.InjectDiscoverableCredential(
-      kCredId4, {"foo.www.example.co.uk", absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, "user1", absl::nullopt, absl::nullopt});
-  api_.InjectDiscoverableCredential(
-      kCredId5, {"foo.example.co.uk", absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, "user1", absl::nullopt, absl::nullopt});
-  api_.InjectDiscoverableCredential(
-      kCredId6, {"aardvark.us", absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, "username", absl::nullopt, absl::nullopt});
-  api_.InjectDiscoverableCredential(
-      kCredId1, {"example.co.uk", absl::nullopt, absl::nullopt},
-      {{1, 2, 3, 4}, "user2", absl::nullopt, absl::nullopt});
+  api_.InjectDiscoverableCredential(kCredId7, {"zzz.de", absl::nullopt},
+                                    {{1, 2, 3, 4}, "username", absl::nullopt});
+  api_.InjectDiscoverableCredential(kCredId2, {"zzz.de", absl::nullopt},
+                                    {{1, 2, 3, 4}, "username", absl::nullopt});
+  api_.InjectDiscoverableCredential(kCredId3,
+                                    {"www.example.co.uk", absl::nullopt},
+                                    {{1, 2, 3, 4}, "user1", absl::nullopt});
+  api_.InjectDiscoverableCredential(kCredId4,
+                                    {"foo.www.example.co.uk", absl::nullopt},
+                                    {{1, 2, 3, 4}, "user1", absl::nullopt});
+  api_.InjectDiscoverableCredential(kCredId5,
+                                    {"foo.example.co.uk", absl::nullopt},
+                                    {{1, 2, 3, 4}, "user1", absl::nullopt});
+  api_.InjectDiscoverableCredential(kCredId6, {"aardvark.us", absl::nullopt},
+                                    {{1, 2, 3, 4}, "username", absl::nullopt});
+  api_.InjectDiscoverableCredential(kCredId1, {"example.co.uk", absl::nullopt},
+                                    {{1, 2, 3, 4}, "user2", absl::nullopt});
 
   const std::vector<device::DiscoverableCredentialMetadata> result =
       Enumerate().value();

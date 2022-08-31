@@ -84,9 +84,6 @@ TEST_F(VirtualCtap2DeviceTest, ParseMakeCredentialRequestForVirtualCtapKey) {
   EXPECT_EQ("johnpsmith@example.com", *request->user.name);
   ASSERT_TRUE(request->user.display_name);
   EXPECT_EQ("John P. Smith", *request->user.display_name);
-  ASSERT_TRUE(request->user.icon_url);
-  EXPECT_EQ("https://pics.acme.com/00/p/aBjjjpqPb.png",
-            request->user.icon_url->spec());
   ASSERT_EQ(2u,
             request->public_key_credential_params.public_key_credential_params()
                 .size());

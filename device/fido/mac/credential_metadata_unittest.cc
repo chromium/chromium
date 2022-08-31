@@ -8,7 +8,6 @@
 #include "components/cbor/writer.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace device {
 namespace fido {
@@ -172,7 +171,6 @@ TEST(CredentialMetadata, FromPublicKeyCredentialUserEntity) {
   PublicKeyCredentialUserEntity in(user_id);
   in.name = "username";
   in.display_name = "display name";
-  in.icon_url = GURL("http://rp.foo/user.png");
   CredentialMetadata out =
       CredentialMetadata::FromPublicKeyCredentialUserEntity(
           std::move(in), /*is_resident=*/false);
@@ -193,7 +191,6 @@ TEST(CredentialMetadata, ToPublicKeyCredentialUserEntity) {
   EXPECT_EQ(user_id, out.id);
   EXPECT_EQ("username", out.name.value());
   EXPECT_EQ("display name", out.display_name.value());
-  EXPECT_FALSE(out.icon_url.has_value());
 }
 
 }  // namespace

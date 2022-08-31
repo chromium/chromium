@@ -28,7 +28,6 @@ TEST(CTAPRequestTest, TestConstructMakeCredentialRequestParam) {
       fido_parsing_utils::Materialize(test_data::kUserId));
   user.name = "johnpsmith@example.com";
   user.display_name = "John P. Smith";
-  user.icon_url = GURL("https://pics.acme.com/00/p/aBjjjpqPb.png");
 
   CtapMakeCredentialRequest make_credential_param(
       test_data::kClientDataJson, std::move(rp), std::move(user),

@@ -610,10 +610,6 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
   options->relying_party.name =
       relying_party_name ? *relying_party_name : kGooglePaymentsRpName;
 
-  const auto* icon_url = creation_options.FindStringKey("icon_url");
-  if (icon_url)
-    options->relying_party.icon_url = GURL(*icon_url);
-
   const std::string gaia =
       autofill_client_->GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
@@ -628,9 +624,6 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
           autofill_client_->GetPersonalDataManager()
               ->GetAccountInfoForPaymentsServer());
   options->user.display_name = account_info.given_name;
-  if (!account_info.IsEmpty()) {
-    options->user.icon_url = GURL(account_info.picture_url);
-  }
 
   const auto* challenge = creation_options.FindStringKey("challenge");
   DCHECK(challenge);

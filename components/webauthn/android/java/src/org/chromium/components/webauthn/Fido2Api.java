@@ -182,11 +182,6 @@ public final class Fido2Api {
         parcel.writeString(options.relyingParty.name);
         writeLength(z, parcel);
 
-        z = writeHeader(4, parcel);
-        String rpIcon = options.relyingParty.icon != null ? options.relyingParty.icon.url : null;
-        parcel.writeString(rpIcon);
-        writeLength(z, parcel);
-
         writeLength(c, parcel);
         writeLength(b, parcel);
 
@@ -201,11 +196,6 @@ public final class Fido2Api {
 
         z = writeHeader(3, parcel);
         parcel.writeString(options.user.name);
-        writeLength(z, parcel);
-
-        z = writeHeader(4, parcel);
-        String userIcon = options.user.icon != null ? options.user.icon.url : null;
-        parcel.writeString(userIcon);
         writeLength(z, parcel);
 
         z = writeHeader(5, parcel);

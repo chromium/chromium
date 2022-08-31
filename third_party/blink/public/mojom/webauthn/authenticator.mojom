@@ -26,7 +26,6 @@ enum AuthenticatorStatus {
   PENDING_REQUEST,
   NOT_ALLOWED_ERROR,
   INVALID_DOMAIN,
-  INVALID_ICON_URL,
   CREDENTIAL_EXCLUDED,
   NOT_IMPLEMENTED,
   NOT_FOCUSED,
@@ -222,9 +221,6 @@ struct PublicKeyCredentialRpEntity {
   // Friendly name associated with the relying party intended for display.
   // e.g. "Acme Corporation".
   string name;
-
-  // Image associated with the entity. e.g. a relying party's logo.
-  url.mojom.Url? icon;
 };
 
 // Informatiom about the account held by the user. These fields take
@@ -237,9 +233,6 @@ struct PublicKeyCredentialUserEntity {
   // Friendly name associated with the entity intended for display.
   // e.g."john.p.smith@example.com" or "+14255551234" for a user.
   string name;
-
-  // Image associated with the entity. For example, a user’s avatar.
-  url.mojom.Url? icon;
 
   // Contains a friendly name for the user account (e.g., "John P. Smith").
   string display_name;

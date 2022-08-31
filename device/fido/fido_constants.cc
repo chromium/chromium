@@ -26,7 +26,6 @@ const char kPlatformDeviceMapKey[] = "plat";
 const char kEntityIdMapKey[] = "id";
 const char kEntityNameMapKey[] = "name";
 const char kDisplayNameMapKey[] = "displayName";
-const char kIconUrlMapKey[] = "icon";
 const char kCredentialTypeMapKey[] = "type";
 const char kCredentialAlgorithmMapKey[] = "alg";
 const char kCredentialManagementMapKey[] = "credMgmt";

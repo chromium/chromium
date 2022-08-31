@@ -161,14 +161,12 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
   const std::u16string kPlatformAuthenticatorLabel = l10n_util::GetStringUTF16(
       password_manager::GetPlatformAuthenticatorLabel());
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(
-      kRpId, CredId1(),
-      device::PublicKeyCredentialUserEntity(UserId1(), UserName1(),
-                                            DisplayName1(), absl::nullopt));
-  users.emplace_back(
-      kRpId, CredId2(),
-      device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
-                                            DisplayName2(), absl::nullopt));
+  users.emplace_back(kRpId, CredId1(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId1(), UserName1(), DisplayName1()));
+  users.emplace_back(kRpId, CredId2(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId2(), UserName2(), DisplayName2()));
 
   credentials_delegate_->OnCredentialsReceived(users);
 
@@ -191,14 +189,12 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
   const std::u16string kPlatformAuthenticatorLabel = l10n_util::GetStringUTF16(
       password_manager::GetPlatformAuthenticatorLabel());
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(
-      kRpId, CredId1(),
-      device::PublicKeyCredentialUserEntity(UserId1(), UserName1(),
-                                            DisplayName1(), absl::nullopt));
-  users.emplace_back(
-      kRpId, CredId2(),
-      device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
-                                            DisplayName2(), absl::nullopt));
+  users.emplace_back(kRpId, CredId1(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId1(), UserName1(), DisplayName1()));
+  users.emplace_back(kRpId, CredId2(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId2(), UserName2(), DisplayName2()));
 
   credentials_delegate_->OnCredentialsReceived(users);
 
@@ -232,10 +228,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   const std::u16string kPlatformAuthenticatorLabel = l10n_util::GetStringUTF16(
       password_manager::GetPlatformAuthenticatorLabel());
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(
-      kRpId, CredId1(),
-      device::PublicKeyCredentialUserEntity(UserId1(), absl::nullopt,
-                                            DisplayName1(), absl::nullopt));
+  users.emplace_back(kRpId, CredId1(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId1(), absl::nullopt, DisplayName1()));
 
   credentials_delegate_->OnCredentialsReceived(users);
 
@@ -251,14 +246,12 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 // Testing selection of a credential.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(
-      kRpId, CredId1(),
-      device::PublicKeyCredentialUserEntity(UserId1(), UserName1(),
-                                            DisplayName1(), absl::nullopt));
-  users.emplace_back(
-      kRpId, CredId2(),
-      device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
-                                            DisplayName2(), absl::nullopt));
+  users.emplace_back(kRpId, CredId1(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId1(), UserName1(), DisplayName1()));
+  users.emplace_back(kRpId, CredId2(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId2(), UserName2(), DisplayName2()));
 
   SetCredList(users);
   credentials_delegate_->OnCredentialsReceived(users);

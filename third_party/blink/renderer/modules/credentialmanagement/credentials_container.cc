@@ -408,9 +408,6 @@ DOMException* AuthenticatorStatusToDOMException(
     case AuthenticatorStatus::INVALID_DOMAIN:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, "This is an invalid domain.");
-    case AuthenticatorStatus::INVALID_ICON_URL:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSecurityError, "The icon should be a secure URL");
     case AuthenticatorStatus::CREDENTIAL_EXCLUDED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
@@ -1633,24 +1630,6 @@ ScriptPromise CredentialsContainer::create(
     if (!mojo_options->relying_party->id) {
       mojo_options->relying_party->id =
           resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
-    }
-
-    if (mojo_options->relying_party->icon) {
-      if (!IsIconURLNullOrSecure(mojo_options->relying_party->icon.value())) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSecurityError,
-            "'rp.icon' should be a secure URL"));
-        return promise;
-      }
-    }
-
-    if (mojo_options->user->icon) {
-      if (!IsIconURLNullOrSecure(mojo_options->user->icon.value())) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSecurityError,
-            "'user.icon' should be a secure URL"));
-        return promise;
-      }
     }
 
     auto* authenticator =

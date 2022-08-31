@@ -466,7 +466,7 @@ void SecurityKeysCredentialHandler::HandleUpdateUserInformation(
 
   device::PublicKeyCredentialUserEntity updated_user(
       std::move(user_handle), std::move(new_username),
-      std::move(new_displayname), absl::nullopt);
+      std::move(new_displayname));
 
   credential_management_->UpdateUserInformation(
       std::move(credential_id), std::move(updated_user),

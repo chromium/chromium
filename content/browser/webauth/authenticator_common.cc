@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
@@ -658,18 +657,7 @@ void AuthenticatorCommon::MakeCredential(
       return;
   }
 
-  if (options->user.icon_url) {
-    status = security_checker_->ValidateAPrioriAuthenticatedUrl(
-        *options->user.icon_url);
-  }
-  if (status == blink::mojom::AuthenticatorStatus::SUCCESS &&
-      options->relying_party.icon_url) {
-    status = security_checker_->ValidateAPrioriAuthenticatedUrl(
-        *options->relying_party.icon_url);
-  }
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    bad_message::ReceivedBadMessage(GetRenderFrameHost()->GetProcess(),
-                                    bad_message::AUTH_INVALID_ICON_URL);
     CompleteMakeCredentialRequest(status);
     return;
   }

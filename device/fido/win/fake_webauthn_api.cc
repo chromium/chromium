@@ -43,12 +43,10 @@ struct FakeWinWebAuthnApi::CredentialInfo {
   WEBAUTHN_RP_ENTITY_INFORMATION rp;
   std::u16string rp_id;
   std::u16string rp_name;
-  absl::optional<std::u16string> rp_icon;
 
   WEBAUTHN_USER_ENTITY_INFORMATION user;
   std::vector<uint8_t> user_id;
   std::u16string user_name;
-  absl::optional<std::u16string> user_icon;
   std::u16string user_display_name;
 };
 
@@ -284,28 +282,16 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
         base::UTF8ToUTF16(registration.second.user->name.value_or(""));
     credential.user_display_name =
         base::UTF8ToUTF16(registration.second.user->display_name.value_or(""));
-    if (registration.second.rp->icon_url) {
-      credential.rp_icon =
-          base::UTF8ToUTF16(registration.second.rp->icon_url->spec());
-    }
-    if (registration.second.user->icon_url) {
-      credential.user_icon =
-          base::UTF8ToUTF16(registration.second.user->icon_url->spec());
-    }
     credential.rp = {
         .dwVersion = WEBAUTHN_RP_ENTITY_INFORMATION_CURRENT_VERSION,
         .pwszId = base::as_wcstr(credential.rp_id),
         .pwszName = base::as_wcstr(credential.rp_name),
-        .pwszIcon =
-            credential.rp_icon ? base::as_wcstr(*credential.rp_icon) : nullptr,
     };
     credential.user = {
         .dwVersion = WEBAUTHN_USER_ENTITY_INFORMATION_CURRENT_VERSION,
         .cbId = static_cast<DWORD>(credential.user_id.size()),
         .pbId = credential.user_id.data(),
         .pwszName = base::as_wcstr(credential.user_name),
-        .pwszIcon = credential.user_icon ? base::as_wcstr(*credential.user_icon)
-                                         : nullptr,
         .pwszDisplayName = base::as_wcstr(credential.user_display_name),
     };
     credential.details = {

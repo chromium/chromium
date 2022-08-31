@@ -577,42 +577,6 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testMakeCredential_nullRpIcon() {
-        PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        customOptions.relyingParty.icon = null;
-        mIntentSender.setNextResultIntent(
-                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-
-        mRequest.handleMakeCredentialRequest(customOptions, mFrameHost, mOrigin,
-                (responseStatus, response)
-                        -> mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
-        mCallback.blockUntilCalled();
-        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        Fido2ApiTestHelper.validateMakeCredentialResponse(mCallback.getMakeCredentialResponse());
-        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-    }
-
-    @Test
-    @SmallTest
-    public void testMakeCredential_nullUserIcon() {
-        PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        customOptions.user.icon = null;
-        mIntentSender.setNextResultIntent(
-                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
-
-        mRequest.handleMakeCredentialRequest(customOptions, mFrameHost, mOrigin,
-                (responseStatus, response)
-                        -> mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
-        mCallback.blockUntilCalled();
-        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        Fido2ApiTestHelper.validateMakeCredentialResponse(mCallback.getMakeCredentialResponse());
-        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-    }
-
-    @Test
-    @SmallTest
     public void testMakeCredential_noEligibleParameters() {
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
         PublicKeyCredentialParameters parameters = new PublicKeyCredentialParameters();

@@ -48,12 +48,10 @@ std::vector<uint8_t> ToByteVector(base::StringPiece in) {
 constexpr char kAppId[] = "https://example.test/appid.json";
 static const std::vector<uint8_t> kChallenge = ToByteVector("test challenge");
 constexpr char kOrigin[] = "https://login.example.test/";
-constexpr char kRpIconUrl[] = "https://example.test/favicon.ico";
 constexpr char kRpId[] = "example.test";
 constexpr char kRpName[] = "Example LLC";
 static const base::TimeDelta kTimeout = base::Seconds(30);
 constexpr char kUserDisplayName[] = "Example User";
-constexpr char kUserIconUrl[] = "https://example.test/user.png";
 static const std::vector<uint8_t> kUserId = ToByteVector("test user id");
 constexpr char kUserName[] = "user@example.test";
 
@@ -80,9 +78,9 @@ TEST(WebAuthenticationProxyValueConversionsTest,
      PublicKeyCredentialCreationOptionsToValue) {
   // Exercise all supported fields.
   auto options = PublicKeyCredentialCreationOptions::New(
-      device::PublicKeyCredentialRpEntity(kRpId, kRpName, GURL(kRpIconUrl)),
-      device::PublicKeyCredentialUserEntity(
-          kUserId, kUserName, kUserDisplayName, GURL(kUserIconUrl)),
+      device::PublicKeyCredentialRpEntity(kRpId, kRpName),
+      device::PublicKeyCredentialUserEntity(kUserId, kUserName,
+                                            kUserDisplayName),
       kChallenge, GetPublicKeyCredentialParameters(), kTimeout,
       GetCredentialList(),
       device::AuthenticatorSelectionCriteria(

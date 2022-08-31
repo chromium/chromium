@@ -338,7 +338,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPlatformDeviceMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEntityIdMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEntityNameMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDisplayNameMapKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kIconUrlMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialTypeMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialAlgorithmMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialManagementMapKey[];

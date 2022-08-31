@@ -296,11 +296,6 @@ public class Fido2ApiTestHelper {
     private static final int[] TEST_USER_VERIFICATION_METHOD = new int[] {0x00000002, 0x00000200};
     private static final short[] TEST_KEY_PROTECTION_TYPE = new short[] {0x0002, 0x0001};
     private static final short[] TEST_MATCHER_PROTECTION_TYPE = new short[] {0x0004, 0x0001};
-    private static Url createUrl(String s) {
-        Url url = new Url();
-        url.url = s;
-        return url;
-    }
 
     /**
      * Builds a test intent to be returned by a successful call to makeCredential.
@@ -335,13 +330,11 @@ public class Fido2ApiTestHelper {
         options.relyingParty = new PublicKeyCredentialRpEntity();
         options.relyingParty.id = "subdomain.example.test";
         options.relyingParty.name = "Acme";
-        options.relyingParty.icon = createUrl("https://icon.example.test");
 
         options.user = new PublicKeyCredentialUserEntity();
         options.user.id = "1098237235409872".getBytes("UTF8");
         options.user.name = "avery.a.jones@example.com";
         options.user.displayName = "Avery A. Jones";
-        options.user.icon = createUrl("https://usericon.example.test");
 
         options.timeout = new TimeDelta();
         options.timeout.microseconds = TimeUnit.MILLISECONDS.toMicros(TIMEOUT_MS);

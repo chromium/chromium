@@ -434,8 +434,7 @@ bool VirtualFidoDevice::State::InjectResidentKey(
       credential_id, PublicKeyCredentialRpEntity(std::move(relying_party_id)),
       PublicKeyCredentialUserEntity(fido_parsing_utils::Materialize(user_id),
                                     std::move(user_name),
-                                    std::move(user_display_name),
-                                    /*icon_url=*/absl::nullopt));
+                                    std::move(user_display_name)));
 }
 
 absl::optional<LargeBlob> VirtualFidoDevice::State::GetLargeBlob(

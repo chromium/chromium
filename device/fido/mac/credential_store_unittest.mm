@@ -21,8 +21,7 @@ using testing::UnorderedElementsAreArray;
 
 static const PublicKeyCredentialUserEntity kUser({1, 2, 3},
                                                  "doe@example.com",
-                                                 "John Doe",
-                                                 absl::nullopt);
+                                                 "John Doe");
 constexpr char kRpId[] = "example.com";
 constexpr char kOtherRpId[] = "foobar.com";
 

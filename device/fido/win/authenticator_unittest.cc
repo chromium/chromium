@@ -53,8 +53,7 @@ class WinAuthenticatorTest : public testing::Test {
 TEST_F(WinAuthenticatorTest,
        GetCredentialInformationForRequest_HasCredentials) {
   PublicKeyCredentialRpEntity rp(kRpId);
-  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName,
-                                     /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
@@ -103,8 +102,7 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_UnknownError) {
 // for a version of the Windows API that does not support silent discovery.
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
   PublicKeyCredentialRpEntity rp(kRpId);
-  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName,
-                                     /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
   fake_webauthn_api_->set_supports_silent_discovery(false);
 
@@ -126,8 +124,7 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
 TEST_F(WinAuthenticatorTest,
        GetCredentialInformationForRequest_NonEmptyAllowList) {
   PublicKeyCredentialRpEntity rp(kRpId);
-  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName,
-                                     /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
@@ -146,8 +143,7 @@ TEST_F(WinAuthenticatorTest,
 
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
   PublicKeyCredentialRpEntity rp(kRpId);
-  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName,
-                                     /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
   fake_webauthn_api_->set_supports_silent_discovery(false);
 
@@ -165,8 +161,7 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
 
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   PublicKeyCredentialRpEntity rp(kRpId);
-  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName,
-                                     /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
   fake_webauthn_api_->set_supports_silent_discovery(true);
 

@@ -175,12 +175,10 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   std::vector<uint8_t> credential_id =
       device::fido_parsing_utils::Materialize(kCredentialID);
 
-  device::PublicKeyCredentialRpEntity rp(kRPID, kRPName,
-                                         /*icon_url=*/absl::nullopt);
+  device::PublicKeyCredentialRpEntity rp(kRPID, kRPName);
   device::PublicKeyCredentialUserEntity user(
       device::fido_parsing_utils::Materialize(kUserID), kUserName,
-      kUserDisplayName,
-      /*icon_url=*/absl::nullopt);
+      kUserDisplayName);
 
   ASSERT_TRUE(
       handler_->GetDiscoveryFactory()->mutable_state()->InjectResidentKey(
@@ -217,8 +215,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
 
   device::PublicKeyCredentialUserEntity updated_user(
       device::fido_parsing_utils::Materialize(kUserID), new_username,
-      new_displayname,
-      /*icon_url=*/absl::nullopt);
+      new_displayname);
 
   EXPECT_EQ(handler_->GetDiscoveryFactory()
                 ->mutable_state()

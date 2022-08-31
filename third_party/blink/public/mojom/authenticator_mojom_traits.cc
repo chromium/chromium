@@ -4,8 +4,6 @@
 
 #include "third_party/blink/public/mojom/authenticator_mojom_traits.h"  // nogncheck
 
-#include "url/mojom/url_gurl_mojom_traits.h"
-
 namespace mojo {
 
 // static
@@ -282,8 +280,7 @@ bool StructTraits<blink::mojom::PublicKeyCredentialRpEntityDataView,
                   device::PublicKeyCredentialRpEntity>::
     Read(blink::mojom::PublicKeyCredentialRpEntityDataView data,
          device::PublicKeyCredentialRpEntity* out) {
-  if (!data.ReadId(&out->id) || !data.ReadName(&out->name) ||
-      !data.ReadIcon(&out->icon_url)) {
+  if (!data.ReadId(&out->id) || !data.ReadName(&out->name)) {
     return false;
   }
 
@@ -296,8 +293,7 @@ bool StructTraits<blink::mojom::PublicKeyCredentialUserEntityDataView,
     Read(blink::mojom::PublicKeyCredentialUserEntityDataView data,
          device::PublicKeyCredentialUserEntity* out) {
   if (!data.ReadId(&out->id) || !data.ReadName(&out->name) ||
-      !data.ReadDisplayName(&out->display_name) ||
-      !data.ReadIcon(&out->icon_url)) {
+      !data.ReadDisplayName(&out->display_name)) {
     return false;
   }
 
