@@ -664,25 +664,25 @@ TEST_F(PartitionAllocPCScanTest, StackScanning) {
     [this]() PA_NOINLINE {
       // This writes the pointer to the stack.
       [[maybe_unused]] auto* volatile stack_ref = dangling_reference;
+      // Call the non-inline function that would scan the stack. Don't execute
+      // the rest of the actions inside the function, since otherwise it would
+      // be tail-call optimized and the parent frame's stack with the dangling
+      // pointer would be missed.
       [this]() PA_NOINLINE {
-        // Write 'this' to the stack, lest inlining drops it.
-        [[maybe_unused]] auto* volatile stack_ref = this;
         // Schedule PCScan but don't scan.
         SchedulePCScan();
         // Enter safepoint and scan from mutator. This will scan the stack.
         JoinPCScanAsMutator();
-        // Check that the object is still quarantined since it's referenced by
-        // |dangling_reference|.
-        EXPECT_TRUE(IsInQuarantine(dangling_reference));
-        // Check that value is not in the freelist.
-        EXPECT_FALSE(
-            IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
-        // Run sweeper.
-        FinishPCScanAsScanner();
-        // Check that |dangling_reference| still exists.
-        EXPECT_FALSE(
-            IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
       }();
+      // Check that the object is still quarantined since it's referenced by
+      // |dangling_reference|.
+      EXPECT_TRUE(IsInQuarantine(dangling_reference));
+      // Check that value is not in the freelist.
+      EXPECT_FALSE(IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
+      // Run sweeper.
+      FinishPCScanAsScanner();
+      // Check that |dangling_reference| still exists.
+      EXPECT_FALSE(IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
     }();
   }();
 }
