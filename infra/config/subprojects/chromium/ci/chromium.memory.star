@@ -375,6 +375,8 @@ linux_memory_builder(
         category = "lacros|asan",
         short_name = "asan",
     ),
+    cores = 16,
+    ssd = True,
     # TODO(crbug.com/1324240) Enable when it's stable.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
