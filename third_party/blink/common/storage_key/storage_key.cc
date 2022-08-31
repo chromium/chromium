@@ -319,12 +319,9 @@ std::string StorageKey::SerializeForLocalStorage() const {
   DCHECK(!origin_.opaque());
 
   // If this is a third-party StorageKey we'll use the standard serialization
-  // scheme.
-  if (nonce_.has_value())
-    return Serialize();
-
-  if (IsThirdPartyStoragePartitioningEnabled() &&
-      top_level_site_ != net::SchemefulSite(origin_)) {
+  // scheme when partitioning is enabled or if there is a nonce.
+  if (nonce_.has_value() ||
+      (IsThirdPartyContext() && IsThirdPartyStoragePartitioningEnabled())) {
     return Serialize();
   }
 

@@ -221,25 +221,27 @@ TEST(StorageKeyTest, SerializePartitioned) {
   net::SchemefulSite SiteTest(GURL("https://test.example"));
 
   struct {
-    const std::pair<const char*, const net::SchemefulSite&>
-        origin_and_top_level_site;
+    const char* origin;
+    const net::SchemefulSite& top_level_site;
+    const mojom::AncestorChainBit ancestor_chain_bit;
     const char* expected_serialization;
   } kTestCases[] = {
-      // 3p context case
-      // TODO(https://crbug.com/1287130): Correctly infer the actual ancestor
-      // chain bit value - will currently be serialized as same-site.
-      {{"https://example.com/", SiteTest},
-       "https://example.com/^0https://test.example^30"},
-      {{"https://sub.test.example/", SiteExample},
-       "https://sub.test.example/^0https://example.com^30"},
+      // 3p context cases
+      {"https://example.com/", SiteTest, mojom::AncestorChainBit::kCrossSite,
+       "https://example.com/^0https://test.example^31"},
+      {"https://sub.test.example/", SiteExample,
+       mojom::AncestorChainBit::kCrossSite,
+       "https://sub.test.example/^0https://example.com^31"},
+      {"https://example.com/", SiteExample, mojom::AncestorChainBit::kCrossSite,
+       "https://example.com/^0https://example.com^31"},
   };
 
   for (const auto& test : kTestCases) {
-    SCOPED_TRACE(test.origin_and_top_level_site.first);
-    const url::Origin origin =
-        url::Origin::Create(GURL(test.origin_and_top_level_site.first));
-    const net::SchemefulSite& site = test.origin_and_top_level_site.second;
-    StorageKey key = StorageKey::CreateForTesting(origin, site);
+    SCOPED_TRACE(test.origin);
+    const url::Origin origin = url::Origin::Create(GURL(test.origin));
+    const net::SchemefulSite& site = test.top_level_site;
+    StorageKey key = StorageKey::CreateWithOptionalNonce(
+        origin, site, nullptr, test.ancestor_chain_bit);
     EXPECT_EQ(test.expected_serialization, key.Serialize());
     EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
   }
