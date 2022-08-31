@@ -12,9 +12,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -34,6 +38,11 @@ enum class InstallIsolatedAppCommandResult {
   kUnknownError,
 };
 
+struct InstallIsolatedAppCommandSuccess {};
+struct InstallIsolatedAppCommandError {
+  std::string message;
+};
+
 class InstallIsolatedAppCommand : public WebAppCommand {
  public:
   // TODO(kuragin): Consider to create an instance of |GURL| instead of passing
@@ -49,7 +58,9 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       base::StringPiece application_url,
       WebAppUrlLoader& url_loader,
       WebAppInstallFinalizer& install_finalizer,
-      base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback);
+      base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
+                                             InstallIsolatedAppCommandError>)>
+          callback);
   ~InstallIsolatedAppCommand() override;
 
   Lock& lock() const override;
@@ -64,9 +75,8 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
  private:
-  void ReportFailure();
+  void ReportFailure(absl::optional<std::string> message = absl::nullopt);
   void ReportSuccess();
-  void Report(bool success);
 
   void DownloadIcons(WebAppInstallInfo install_info);
 
@@ -83,6 +93,9 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       const blink::mojom::Manifest& manifest,
       const GURL& manifest_url);
   void FinalizeInstall(const WebAppInstallInfo& info);
+  void OnFinalizeInstall(const AppId& unused_app_id,
+                         webapps::InstallResultCode install_result_code,
+                         OsHooksErrors unused_os_hooks_errors);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -95,7 +108,9 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
-  base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback_;
+  base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
+                                         InstallIsolatedAppCommandError>)>
+      callback_;
 
   base::WeakPtrFactory<InstallIsolatedAppCommand> weak_factory_{this};
 };

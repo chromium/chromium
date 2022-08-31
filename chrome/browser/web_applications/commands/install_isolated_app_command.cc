@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
 
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -14,11 +15,14 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -55,7 +59,9 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     base::StringPiece url,
     WebAppUrlLoader& url_loader,
     WebAppInstallFinalizer& install_finalizer,
-    base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback)
+    base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
+                                           InstallIsolatedAppCommandError>)>
+        callback)
     : lock_(std::make_unique<SharedWebContentsWithAppLock>(
           base::flat_set<AppId>{GenerateAppId("", GURL{url})})),
       url_(url),
@@ -66,11 +72,12 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
 
   DCHECK(!callback.is_null());
 
-  callback_ = base::BindOnce([](InstallIsolatedAppCommandResult result) {
-                webapps::InstallableMetrics::TrackInstallResult(
-                    result == InstallIsolatedAppCommandResult::kOk);
-                return result;
-              }).Then(std::move(callback));
+  callback_ =
+      base::BindOnce([](base::expected<InstallIsolatedAppCommandSuccess,
+                                       InstallIsolatedAppCommandError> result) {
+        webapps::InstallableMetrics::TrackInstallResult(result.has_value());
+        return result;
+      }).Then(std::move(callback));
 }
 
 void InstallIsolatedAppCommand::SetDataRetrieverForTesting(
@@ -109,7 +116,8 @@ void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsUrlLoadingResultSuccess(result)) {
-    ReportFailure();
+    ReportFailure(base::StrCat({"Error during URL loading: ",
+                                ConvertUrlLoaderResultToString(result)}));
     return;
   }
 
@@ -173,7 +181,7 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_installable) {
-    ReportFailure();
+    ReportFailure("App is not installable.");
     return;
   }
 
@@ -183,7 +191,7 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
       << "must be true when |is_installable| is true.";
 
   if (!opt_manifest) {
-    ReportFailure();
+    ReportFailure("Manifest is null.");
     return;
   }
 
@@ -207,23 +215,27 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
 }
 
 void InstallIsolatedAppCommand::FinalizeInstall(const WebAppInstallInfo& info) {
-  auto is_finalize_install_success =
-      [](const AppId& unused_app_id,
-         webapps::InstallResultCode install_result_code,
-         OsHooksErrors unused_os_hooks_errors) {
-        return install_result_code ==
-               webapps::InstallResultCode::kSuccessNewInstall;
-      };
-
   install_finalizer_.FinalizeInstall(
       info,
       WebAppInstallFinalizer::FinalizeOptions{
           /*install_surface=*/webapps::WebappInstallSource::
               ISOLATED_APP_DEV_INSTALL,
       },
-      base::BindOnce(is_finalize_install_success)
-          .Then(base::BindOnce(&InstallIsolatedAppCommand::Report,
-                               weak_factory_.GetWeakPtr())));
+      base::BindOnce(&InstallIsolatedAppCommand::OnFinalizeInstall,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void InstallIsolatedAppCommand::OnFinalizeInstall(
+    const AppId& unused_app_id,
+    webapps::InstallResultCode install_result_code,
+    OsHooksErrors unused_os_hooks_errors) {
+  if (install_result_code == webapps::InstallResultCode::kSuccessNewInstall) {
+    ReportSuccess();
+  } else {
+    std::stringstream os;
+    os << install_result_code;
+    ReportFailure(base::StrCat({"Error during finalization: ", os.str()}));
+  }
 }
 
 void InstallIsolatedAppCommand::DownloadIcons(WebAppInstallInfo install_info) {
@@ -240,23 +252,26 @@ void InstallIsolatedAppCommand::OnShutdown() {
   ReportFailure();
 }
 
-void InstallIsolatedAppCommand::ReportFailure() {
-  Report(/*success=*/false);
-}
-
-void InstallIsolatedAppCommand::ReportSuccess() {
-  Report(/*success=*/true);
-}
-
-void InstallIsolatedAppCommand::Report(bool success) {
+void InstallIsolatedAppCommand::ReportFailure(
+    absl::optional<std::string> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
   SignalCompletionAndSelfDestruct(
-      success ? CommandResult::kSuccess : CommandResult::kFailure,
+      CommandResult::kFailure,
       base::BindOnce(std::move(callback_),
-                     success ? InstallIsolatedAppCommandResult::kOk
-                             : InstallIsolatedAppCommandResult::kUnknownError));
+                     base::unexpected{InstallIsolatedAppCommandError{
+                         .message = message.value_or("<no error message>"),
+                     }}));
+}
+
+void InstallIsolatedAppCommand::ReportSuccess() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!callback_.is_null());
+
+  SignalCompletionAndSelfDestruct(
+      CommandResult::kSuccess,
+      base::BindOnce(std::move(callback_), InstallIsolatedAppCommandSuccess{}));
 }
 
 base::Value InstallIsolatedAppCommand::ToDebugValue() const {

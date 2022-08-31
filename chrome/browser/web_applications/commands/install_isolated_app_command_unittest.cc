@@ -7,6 +7,8 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -52,6 +54,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsNull;
@@ -62,6 +65,7 @@ using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
 
 blink::mojom::ManifestPtr CreateDefaultManifest(
@@ -121,7 +125,9 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
 
   std::unique_ptr<InstallIsolatedAppCommand> CreateCommand(
       base::StringPiece url,
-      base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback) {
+      base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
+                                             InstallIsolatedAppCommandError>)>
+          callback) {
     return std::make_unique<InstallIsolatedAppCommand>(
         url, *url_loader_, *install_finalizer_, std::move(callback));
   }
@@ -143,6 +149,12 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
         GURL{url}, WebAppUrlLoader::Result::kFailedErrorPageLoaded);
   }
 
+  void ExpectFailureForURL(base::StringPiece url,
+                           WebAppUrlLoader::Result result) {
+    DCHECK(GURL{url}.is_valid());
+    url_loader_->SetNextLoadUrlResult(GURL{url}, result);
+  }
+
   WebAppUrlLoader::UrlComparison last_call_url_comparison() const {
     absl::optional<TestWebAppUrlLoader::LoadUrlCall> last_url_load_call =
         url_loader_->last_load_url_call();
@@ -150,10 +162,14 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     return last_url_load_call->url_comparison;
   }
 
-  InstallIsolatedAppCommandResult ExecuteCommand(
+  base::expected<InstallIsolatedAppCommandSuccess,
+                 InstallIsolatedAppCommandError>
+  ExecuteCommand(
       base::StringPiece url,
       std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr) {
-    base::test::TestFuture<InstallIsolatedAppCommandResult> test_future;
+    base::test::TestFuture<base::expected<InstallIsolatedAppCommandSuccess,
+                                          InstallIsolatedAppCommandError>>
+        test_future;
     auto command = CreateCommand(url, test_future.GetCallback());
     command->SetDataRetrieverForTesting(data_retriever != nullptr
                                             ? std::move(data_retriever)
@@ -162,9 +178,10 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     return test_future.Get();
   }
 
-  InstallIsolatedAppCommandResult ExecuteCommandWithManifest(
-      base::StringPiece application_url,
-      const blink::mojom::ManifestPtr& manifest) {
+  base::expected<InstallIsolatedAppCommandSuccess,
+                 InstallIsolatedAppCommandError>
+  ExecuteCommandWithManifest(base::StringPiece application_url,
+                             const blink::mojom::ManifestPtr& manifest) {
     SetPrepareForLoadResultLoaded();
 
     ExpectLoadedForURL(application_url);
@@ -208,9 +225,41 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
   }();
 };
 
+MATCHER_P(IsExpectedValue, value_matcher, "") {
+  if (!arg.has_value()) {
+    *result_listener << "which is not engaged";
+    return false;
+  }
+
+  return ExplainMatchResult(value_matcher, arg.value(), result_listener);
+}
+
+MATCHER_P(IsUnexpectedValue, error_matcher, "") {
+  if (arg.has_value()) {
+    *result_listener << "which is not engaged";
+    return false;
+  }
+
+  return ExplainMatchResult(error_matcher, arg.error(), result_listener);
+}
+
 MATCHER(IsInstallationOk, "") {
-  return ExplainMatchResult(Eq(InstallIsolatedAppCommandResult::kOk), arg,
-                            result_listener);
+  return ExplainMatchResult(IsExpectedValue(_), arg, result_listener);
+}
+
+MATCHER_P(IsInstallationError, message_matcher, "") {
+  return ExplainMatchResult(
+      IsUnexpectedValue(ResultOf(
+          "error.message",
+          [](const InstallIsolatedAppCommandError& error) {
+            return error.message;
+          },
+          message_matcher)),
+      arg, result_listener);
+}
+
+MATCHER(IsInstallationError, "") {
+  return ExplainMatchResult(IsUnexpectedValue(_), arg, result_listener);
 }
 
 TEST_F(InstallIsolatedAppCommandTest, CommandCanBeExecutedSuccesfully) {
@@ -228,7 +277,19 @@ TEST_F(InstallIsolatedAppCommandTest, PropagateErrorWhenURLLoaderFails) {
   ExpectFailureForURL("http://test-url-example.com");
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
-              Not(IsInstallationOk()));
+              IsInstallationError(HasSubstr("Error during URL loading: ")));
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       PropagateErrorWhenURLLoaderFailsWithDestroyedWebContentsError) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectFailureForURL("http://test-url-example.com",
+                      WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
+              IsInstallationError(HasSubstr(
+                  "Error during URL loading: FailedWebContentsDestroyed")));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
@@ -248,7 +309,7 @@ TEST_F(InstallIsolatedAppCommandTest, DISABLED_ReportsErrorWhenURLIsInvalid) {
   SetPrepareForLoadResultLoaded();
 
   EXPECT_THAT(ExecuteCommand("some definetely invalid url"),
-              Not(IsInstallationOk()));
+              IsInstallationError());
 }
 
 TEST_F(InstallIsolatedAppCommandTest, URLLoaderIgnoresQueryParameters) {
@@ -274,7 +335,8 @@ TEST_F(InstallIsolatedAppCommandTest,
       webapps::InstallResultCode::kNotInstallable);
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
-              Not(IsInstallationOk()));
+              IsInstallationError(
+                  HasSubstr("Error during finalization: kNotInstallable")));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
@@ -335,11 +397,13 @@ TEST_F(InstallIsolatedAppCommandTest,
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
-              Not(IsInstallationOk()));
+              IsInstallationError(HasSubstr("App is not installable")));
 }
 
 TEST_F(InstallIsolatedAppCommandTest, CommandLocksOnAppIdAndWebContents) {
-  base::test::TestFuture<InstallIsolatedAppCommandResult> test_future;
+  base::test::TestFuture<base::expected<InstallIsolatedAppCommandSuccess,
+                                        InstallIsolatedAppCommandError>>
+      test_future;
   auto command =
       CreateCommand("http://test-app-id.com/", test_future.GetCallback());
   EXPECT_THAT(command->lock(),
@@ -369,7 +433,7 @@ TEST_F(InstallIsolatedAppCommandTest,
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
-              Not(IsInstallationOk()));
+              IsInstallationError(HasSubstr("Manifest is null")));
 }
 
 using InstallIsolatedAppCommandManifestTest = InstallIsolatedAppCommandTest;
@@ -382,7 +446,7 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
-              Not(IsInstallationOk()));
+              IsInstallationError());
 
   EXPECT_THAT(install_finalizer().web_app_info(), IsNull());
 }
@@ -396,7 +460,7 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
-              Not(IsInstallationOk()));
+              IsInstallationError());
 }
 
 TEST_F(InstallIsolatedAppCommandManifestTest,
@@ -421,7 +485,7 @@ TEST_F(InstallIsolatedAppCommandManifestTest, FailsWhenManifestIdIsNotEmpty) {
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
-              Not(IsInstallationOk()));
+              IsInstallationError());
   EXPECT_THAT(install_finalizer().web_app_info(), IsNull());
 }
 
@@ -434,7 +498,7 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
-              Not(IsInstallationOk()));
+              IsInstallationError());
   EXPECT_THAT(install_finalizer().web_app_info(), IsNull());
 }
 
@@ -540,7 +604,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand("some definetely invalid url"),
-              Not(IsInstallationOk()));
+              IsInstallationError());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
@@ -554,7 +618,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
-              Not(IsInstallationOk()));
+              IsInstallationError());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
@@ -582,7 +646,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
-              Not(IsInstallationOk()));
+              IsInstallationError());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
@@ -609,7 +673,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
-              Not(IsInstallationOk()));
+              IsInstallationError());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
@@ -625,7 +689,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
-              Not(IsInstallationOk()));
+              IsInstallationError());
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
 }

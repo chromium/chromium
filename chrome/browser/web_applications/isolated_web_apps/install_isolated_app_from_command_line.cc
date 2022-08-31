@@ -47,16 +47,17 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
 
                   WebAppUrlLoader& url_loader_ref = *url_loader;
 
-                  base::OnceCallback<void(InstallIsolatedAppCommandResult)>
+                  base::OnceCallback<void(
+                      base::expected<InstallIsolatedAppCommandSuccess,
+                                     InstallIsolatedAppCommandError>)>
                       callback = base::BindOnce(
                           [](std::unique_ptr<WebAppUrlLoader> url_loader,
-                             InstallIsolatedAppCommandResult result) {
-                            switch (result) {
-                              case InstallIsolatedAppCommandResult::kOk:
-                                break;
-                              default:
-                                LOG(ERROR) << "Isolated app auto installation "
-                                              "is failed.";
+                             base::expected<InstallIsolatedAppCommandSuccess,
+                                            InstallIsolatedAppCommandError>
+                                 result) {
+                            if (!result.has_value()) {
+                              LOG(ERROR) << "Isolated app auto installation "
+                                            "is failed.";
                             }
                           },
                           std::move(url_loader));
