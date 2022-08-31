@@ -50,7 +50,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -1137,6 +1139,68 @@ TEST_P(HoldingSpaceTrayTest, PlaceholderHiddenAfterFilesAppChipPressed) {
   test_api()->Show();
   EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
   EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
+}
+
+// User should be able to expand and collapse the suggestions section by
+// pressing the enter key on the suggestions section header.
+TEST_P(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsShown) {
+  StartSession();
+
+  // Add a suggested item.
+  AddItem(HoldingSpaceItem::Type::kLocalSuggestion,
+          base::FilePath("/tmp/fake1"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show the bubble.
+  test_api()->Show();
+  ASSERT_EQ(test_api()->GetSuggestionChips().size(), 1u);
+
+  // Focus the suggestions section header.
+  auto* suggestions_section_header = test_api()->GetSuggestionsSectionHeader();
+  ASSERT_TRUE(suggestions_section_header);
+  EXPECT_TRUE(PressTabUntilFocused(suggestions_section_header));
+
+  // Cache expected icons in preparation for verifying that the section header's
+  // chevron icon flips to indicate the section's expanded state.
+  const auto chevron_expanded_skia =
+      gfx::ImageSkiaOperations::CreateRotatedImage(
+          gfx::CreateVectorIcon(
+              kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
+              AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kIconColorSecondary)),
+          SkBitmapOperations::ROTATION_270_CW);
+
+  const auto chevron_collapsed_skia =
+      gfx::ImageSkiaOperations::CreateRotatedImage(
+          gfx::CreateVectorIcon(
+              kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
+              AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kIconColorSecondary)),
+          SkBitmapOperations::ROTATION_90_CW);
+
+  // Verify that the section starts out in an expanded state.
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
+      *chevron_expanded_skia.bitmap()));
+
+  // Press ENTER and expect an attempt to collapse the suggestions section.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+
+  // Verify that the section is in a collapsed state.
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
+      *chevron_collapsed_skia.bitmap()));
+
+  // Press ENTER and expect an attempt to expand the section.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+
+  // Verify that the section is in an expanded state.
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
+      *chevron_expanded_skia.bitmap()));
+
+  // TODO(crbug/1358331): Verify effect of expanding/collapsing on visibility of
+  // item chips once implemented.
 }
 
 // User should be able to open the Downloads folder in the Files app by pressing

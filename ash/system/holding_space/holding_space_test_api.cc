@@ -130,6 +130,13 @@ std::vector<views::View*> HoldingSpaceTestApi::GetHoldingSpaceItemViews() {
   return item_views;
 }
 
+views::View* HoldingSpaceTestApi::GetSuggestionsSectionHeader() {
+  return holding_space_tray_->GetBubbleView()
+             ? holding_space_tray_->GetBubbleView()->GetViewByID(
+                   kHoldingSpaceSuggestionsSectionHeaderId)
+             : nullptr;
+}
+
 views::View* HoldingSpaceTestApi::GetDownloadsSectionHeader() {
   return holding_space_tray_->GetBubbleView()
              ? holding_space_tray_->GetBubbleView()->GetViewByID(
@@ -196,6 +203,14 @@ views::ImageView* HoldingSpaceTestApi::GetDefaultTrayIcon() {
 
 views::View* HoldingSpaceTestApi::GetPreviewsTrayIcon() {
   return holding_space_tray_->GetViewByID(kHoldingSpaceTrayPreviewsIconId);
+}
+
+views::ImageView* HoldingSpaceTestApi::GetSuggestionsSectionChevronIcon() {
+  return holding_space_tray_->GetBubbleView()
+             ? views::AsViewClass<views::ImageView>(
+                   holding_space_tray_->GetBubbleView()->GetViewByID(
+                       kHoldingSpaceSuggestionsChevronIconId))
+             : nullptr;
 }
 
 views::View* HoldingSpaceTestApi::GetPinnedFilesBubble() {

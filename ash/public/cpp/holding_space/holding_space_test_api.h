@@ -71,6 +71,9 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // mirrored for RTL).
   std::vector<views::View*> GetHoldingSpaceItemViews();
 
+  // Returns the header of the suggestions section in holding space UI.
+  views::View* GetSuggestionsSectionHeader();
+
   // Returns the header of the downloads section in holding space UI.
   views::View* GetDownloadsSectionHeader();
 
@@ -104,6 +107,10 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // Returns the holding space tray icon view for the content forward icon,
   // which displays previews of most recent items added to holding space.
   views::View* GetPreviewsTrayIcon();
+
+  // Returns the view of the icon used for toggling the suggestions section's
+  // expanded state.
+  views::ImageView* GetSuggestionsSectionChevronIcon();
 
   // Returns the pinned files bubble.
   views::View* GetPinnedFilesBubble();

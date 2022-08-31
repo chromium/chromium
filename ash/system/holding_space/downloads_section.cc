@@ -14,16 +14,19 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -31,26 +34,6 @@
 namespace ash {
 
 namespace {
-
-// CallbackPathGenerator -------------------------------------------------------
-
-class CallbackPathGenerator : public views::HighlightPathGenerator {
- public:
-  using Callback = base::RepeatingCallback<gfx::RRectF()>;
-
-  explicit CallbackPathGenerator(Callback callback) : callback_(callback) {}
-  CallbackPathGenerator(const CallbackPathGenerator&) = delete;
-  CallbackPathGenerator& operator=(const CallbackPathGenerator&) = delete;
-  ~CallbackPathGenerator() override = default;
-
- private:
-  // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
-    return callback_.Run();
-  }
-
-  Callback callback_;
-};
 
 // Header ----------------------------------------------------------------------
 
@@ -82,7 +65,7 @@ class Header : public views::Button {
     // Though the entirety of the header is focusable and behaves as a single
     // button, the focus ring is drawn as a circle around just the `chevron_`.
     views::FocusRing::Get(this)->SetPathGenerator(
-        std::make_unique<CallbackPathGenerator>(base::BindRepeating(
+        holding_space_util::CreateHighlightPathGenerator(base::BindRepeating(
             [](const views::View* chevron) {
               const float radius = chevron->width() / 2.f;
               gfx::RRectF path(gfx::RectF(chevron->bounds()), radius);
