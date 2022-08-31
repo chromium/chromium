@@ -8,11 +8,11 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -22,15 +22,15 @@
 #include "third_party/blink/renderer/modules/serial/serial.h"
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_sink.h"
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_source.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
 
 namespace {
 
-using device::mojom::SerialReceiveError;
-using device::mojom::SerialSendError;
+using ::device::mojom::blink::SerialReceiveError;
+using ::device::mojom::blink::SerialSendError;
 
 const char kResourcesExhaustedReadBuffer[] =
     "Resources exhausted allocating read buffer.";
@@ -41,7 +41,6 @@ const char kNoSignals[] =
 const char kPortClosed[] = "The port is closed.";
 const char kOpenError[] = "Failed to open serial port.";
 const char kDeviceLostError[] = "The device has been lost.";
-const char kSystemError[] = "An unknown system error has occurred.";
 const int kMaxBufferSize = 16 * 1024 * 1024; /* 16 MiB */
 
 bool SendErrorIsFatal(SerialSendError error) {
@@ -53,20 +52,6 @@ bool SendErrorIsFatal(SerialSendError error) {
       return false;
     case SerialSendError::DISCONNECTED:
       return true;
-  }
-}
-
-DOMException* DOMExceptionFromSendError(SerialSendError error) {
-  switch (error) {
-    case SerialSendError::NONE:
-      NOTREACHED();
-      return nullptr;
-    case SerialSendError::DISCONNECTED:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kNetworkError,
-                                                kDeviceLostError);
-    case SerialSendError::SYSTEM_ERROR:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
-                                                kSystemError);
   }
 }
 
@@ -85,32 +70,6 @@ bool ReceiveErrorIsFatal(SerialReceiveError error) {
     case SerialReceiveError::DISCONNECTED:
     case SerialReceiveError::DEVICE_LOST:
       return true;
-  }
-}
-
-DOMException* DOMExceptionFromReceiveError(SerialReceiveError error) {
-  switch (error) {
-    case SerialReceiveError::NONE:
-      NOTREACHED();
-      return nullptr;
-    case SerialReceiveError::DISCONNECTED:
-    case SerialReceiveError::DEVICE_LOST:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kNetworkError,
-                                                kDeviceLostError);
-    case SerialReceiveError::BREAK:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kBreakError);
-    case SerialReceiveError::FRAME_ERROR:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kFramingError);
-    case SerialReceiveError::OVERRUN:
-    case SerialReceiveError::BUFFER_OVERFLOW:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kBufferOverrunError);
-    case SerialReceiveError::PARITY_ERROR:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kParityError);
-    case SerialReceiveError::SYSTEM_ERROR:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
-                                                kSystemError);
   }
 }
 
@@ -258,9 +217,11 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
   mojo_options->cts_flow_control = hardware_flow_control_;
 
   mojo::PendingRemote<device::mojom::blink::SerialPortClient> client;
-  open_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto callback = WTF::Bind(&SerialPort::OnOpen, WrapPersistent(this),
-                            client.InitWithNewPipeAndPassReceiver());
+  open_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+  auto callback = open_resolver_->WrapCallbackInScriptScope(
+      WTF::Bind(&SerialPort::OnOpen, WrapPersistent(this),
+                client.InitWithNewPipeAndPassReceiver()));
 
   parent_->OpenPort(info_->token, std::move(mojo_options), std::move(client),
                     std::move(callback));
@@ -333,11 +294,11 @@ ScriptPromise SerialPort::getSignals(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   signal_resolvers_.insert(resolver);
-  port_->GetControlSignals(WTF::Bind(&SerialPort::OnGetSignals,
-                                     WrapPersistent(this),
-                                     WrapPersistent(resolver)));
+  port_->GetControlSignals(resolver->WrapCallbackInScriptScope(
+      WTF::Bind(&SerialPort::OnGetSignals, WrapPersistent(this))));
   return resolver->Promise();
 }
 
@@ -388,12 +349,13 @@ ScriptPromise SerialPort::setSignals(ScriptState* script_state,
     mojo_signals->brk = signals->brk();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   signal_resolvers_.insert(resolver);
   port_->SetControlSignals(
       std::move(mojo_signals),
-      WTF::Bind(&SerialPort::OnSetSignals, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      resolver->WrapCallbackInScriptScope(
+          WTF::Bind(&SerialPort::OnSetSignals, WrapPersistent(this))));
   return resolver->Promise();
 }
 
@@ -424,11 +386,11 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
     }
   }
   if (writable_) {
-    auto* reason = MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kPortClosed);
-    promises.push_back(writable_->abort(script_state,
-                                        ScriptValue::From(script_state, reason),
-                                        exception_state));
+    ScriptValue reason(script_state->GetIsolate(),
+                       V8ThrowDOMException::CreateOrDie(
+                           script_state->GetIsolate(),
+                           DOMExceptionCode::kInvalidStateError, kPortClosed));
+    promises.push_back(writable_->abort(script_state, reason, exception_state));
     if (exception_state.HadException()) {
       AbortClose();
       return ScriptPromise();
@@ -581,14 +543,14 @@ void SerialPort::OnReadError(device::mojom::blink::SerialReceiveError error) {
   if (ReceiveErrorIsFatal(error))
     read_fatal_ = true;
   if (underlying_source_)
-    underlying_source_->SignalErrorOnClose(DOMExceptionFromReceiveError(error));
+    underlying_source_->SignalErrorOnClose(error);
 }
 
 void SerialPort::OnSendError(device::mojom::blink::SerialSendError error) {
   if (SendErrorIsFatal(error))
     write_fatal_ = true;
   if (underlying_sink_)
-    underlying_sink_->SignalError(DOMExceptionFromSendError(error));
+    underlying_sink_->SignalError(error);
 }
 
 bool SerialPort::CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
@@ -614,14 +576,24 @@ void SerialPort::OnConnectionError() {
   client_receiver_.reset();
 
   if (open_resolver_) {
-    open_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, kOpenError));
-    open_resolver_ = nullptr;
+    ScriptState* script_state = open_resolver_->GetScriptState();
+    if (IsInParallelAlgorithmRunnable(open_resolver_->GetExecutionContext(),
+                                      script_state)) {
+      ScriptState::Scope script_state_scope(script_state);
+      open_resolver_->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                             kOpenError);
+      open_resolver_ = nullptr;
+    }
   }
 
   for (ScriptPromiseResolver* resolver : signal_resolvers_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, kDeviceLostError));
+    ScriptState* script_state = resolver->GetScriptState();
+    if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                      script_state)) {
+      ScriptState::Scope script_state_scope(script_state);
+      resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                       kDeviceLostError);
+    }
   }
   signal_resolvers_.clear();
 
@@ -630,28 +602,23 @@ void SerialPort::OnConnectionError() {
     close_resolver_ = nullptr;
   }
 
-  if (underlying_source_) {
-    underlying_source_->SignalErrorOnClose(
-        DOMExceptionFromReceiveError(SerialReceiveError::DISCONNECTED));
-  }
+  if (underlying_source_)
+    underlying_source_->SignalErrorOnClose(SerialReceiveError::DISCONNECTED);
 
-  if (underlying_sink_) {
-    underlying_sink_->SignalError(
-        DOMExceptionFromSendError(SerialSendError::DISCONNECTED));
-  }
+  if (underlying_sink_)
+    underlying_sink_->SignalError(SerialSendError::DISCONNECTED);
 }
 
 void SerialPort::OnOpen(
     mojo::PendingReceiver<device::mojom::blink::SerialPortClient>
         client_receiver,
+    ScriptPromiseResolver* resolver,
     mojo::PendingRemote<device::mojom::blink::SerialPort> port) {
-  ScriptState* script_state = open_resolver_->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
+  DCHECK_EQ(resolver, open_resolver_);
 
   if (!port) {
-    open_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, kOpenError));
+    open_resolver_->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                           kOpenError);
     open_resolver_ = nullptr;
     return;
   }
@@ -675,8 +642,8 @@ void SerialPort::OnGetSignals(
   signal_resolvers_.erase(resolver);
 
   if (!mojo_signals) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Failed to get control signals."));
+    resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                     "Failed to get control signals.");
     return;
   }
 
@@ -693,8 +660,8 @@ void SerialPort::OnSetSignals(ScriptPromiseResolver* resolver, bool success) {
   signal_resolvers_.erase(resolver);
 
   if (!success) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Failed to set control signals."));
+    resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                     "Failed to set control signals.");
     return;
   }
 

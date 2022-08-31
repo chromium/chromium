@@ -7,15 +7,20 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
+namespace {
+using ::device::mojom::blink::SerialSendError;
+}
 
 SerialPortUnderlyingSink::SerialPortUnderlyingSink(
     SerialPort* serial_port,
@@ -121,17 +126,38 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
   return pending_operation_->Promise();
 }
 
-void SerialPortUnderlyingSink::SignalError(DOMException* exception) {
+void SerialPortUnderlyingSink::SignalError(SerialSendError error) {
   watcher_.Cancel();
   data_pipe_.reset();
+
+  ScriptState* script_state = pending_operation_
+                                  ? pending_operation_->GetScriptState()
+                                  : script_state_.Get();
+  ScriptState::Scope script_state_scope(script_state_);
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Value> exception;
+  switch (error) {
+    case SerialSendError::NONE:
+      NOTREACHED();
+      break;
+    case SerialSendError::DISCONNECTED:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kNetworkError,
+          "The device has been lost.");
+      break;
+    case SerialSendError::SYSTEM_ERROR:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kUnknownError,
+          "An unknown system error has occurred.");
+      break;
+  }
 
   if (pending_operation_) {
     pending_operation_->Reject(exception);
     pending_operation_ = nullptr;
   } else {
-    ScriptState::Scope scope(script_state_);
-    controller_->error(script_state_,
-                       ScriptValue::From(script_state_, exception));
+    controller_->error(script_state_, ScriptValue(isolate, exception));
   }
 
   serial_port_->UnderlyingSinkClosed();

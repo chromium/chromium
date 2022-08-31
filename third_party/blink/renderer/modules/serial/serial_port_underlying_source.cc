@@ -6,15 +6,20 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+using ::device::mojom::blink::SerialReceiveError;
+}
 
 SerialPortUnderlyingSource::SerialPortUnderlyingSource(
     ScriptState* script_state,
@@ -82,16 +87,54 @@ void SerialPortUnderlyingSource::ContextDestroyed() {
   Close();
 }
 
-void SerialPortUnderlyingSource::SignalErrorOnClose(DOMException* exception) {
+void SerialPortUnderlyingSource::SignalErrorOnClose(SerialReceiveError error) {
+  ScriptState::Scope script_state_scope(script_state_);
+
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  v8::Local<v8::Value> exception;
+  switch (error) {
+    case SerialReceiveError::NONE:
+      NOTREACHED();
+      break;
+    case SerialReceiveError::DISCONNECTED:
+      [[fallthrough]];
+    case SerialReceiveError::DEVICE_LOST:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kNetworkError,
+          "The device has been lost.");
+      break;
+    case SerialReceiveError::BREAK:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kBreakError, "Break received");
+      break;
+    case SerialReceiveError::FRAME_ERROR:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kFramingError, "Framing error");
+      break;
+    case SerialReceiveError::OVERRUN:
+      [[fallthrough]];
+    case SerialReceiveError::BUFFER_OVERFLOW:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kBufferOverrunError, "Buffer overrun");
+      break;
+    case SerialReceiveError::PARITY_ERROR:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kParityError, "Parity error");
+      break;
+    case SerialReceiveError::SYSTEM_ERROR:
+      exception = V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kUnknownError,
+          "An unknown system error has occurred.");
+      break;
+  }
+
   if (data_pipe_) {
     // Pipe is still open. Wait for PipeClosed() to be called.
-    pending_exception_ = exception;
+    pending_exception_ = ScriptValue(isolate, exception);
     return;
   }
 
-  ScriptState::Scope script_state_scope(script_state_);
-  controller_->error(script_state_,
-                     ScriptValue::From(script_state_, exception));
+  controller_->error(script_state_, ScriptValue(isolate, exception));
   serial_port_->UnderlyingSourceClosed();
 }
 
@@ -168,9 +211,9 @@ void SerialPortUnderlyingSource::OnFlush(ScriptPromiseResolver* resolver) {
 }
 
 void SerialPortUnderlyingSource::PipeClosed() {
-  if (pending_exception_) {
-    controller_->error(script_state_,
-                       ScriptValue::From(script_state_, pending_exception_));
+  if (!pending_exception_.IsEmpty()) {
+    controller_->error(script_state_, pending_exception_);
+    pending_exception_.Clear();
     serial_port_->UnderlyingSourceClosed();
   }
   Close();

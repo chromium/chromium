@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "services/device/public/mojom/serial.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 
@@ -34,7 +35,7 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
                       ScriptValue reason,
                       ExceptionState&) override;
 
-  void SignalError(DOMException*);
+  void SignalError(device::mojom::blink::SerialSendError);
 
   void Trace(Visitor*) const override;
 
