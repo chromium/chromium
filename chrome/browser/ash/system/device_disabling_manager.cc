@@ -128,8 +128,8 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   enrollment_domain_.clear();
   const std::string* maybe_enrollment_domain =
       g_browser_process->local_state()
-          ->GetDictionary(prefs::kServerBackedDeviceState)
-          ->FindStringKey(policy::kDeviceStateManagementDomain);
+          ->GetValueDict(prefs::kServerBackedDeviceState)
+          .FindString(policy::kDeviceStateManagementDomain);
   enrollment_domain_ =
       maybe_enrollment_domain ? *maybe_enrollment_domain : std::string();
 
@@ -140,8 +140,8 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   // Update the disabled message.
   const std::string* maybe_disabled_message =
       g_browser_process->local_state()
-          ->GetDictionary(prefs::kServerBackedDeviceState)
-          ->FindStringKey(policy::kDeviceStateDisabledMessage);
+          ->GetValueDict(prefs::kServerBackedDeviceState)
+          .FindString(policy::kDeviceStateDisabledMessage);
   std::string disabled_message =
       maybe_disabled_message ? *maybe_disabled_message : std::string();
   CacheDisabledMessageAndNotify(disabled_message);
