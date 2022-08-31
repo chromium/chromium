@@ -127,9 +127,19 @@ void ExecuteAndLogShortcutOperation(
     ShellUtil::ShortcutLocation location,
     const ShellUtil::ShortcutProperties& properties,
     ShellUtil::ShortcutOperation operation) {
-  LogShortcutOperation(location, properties, operation, false);
-  if (!ShellUtil::CreateOrUpdateShortcut(location, properties, operation)) {
-    LogShortcutOperation(location, properties, operation, true);
+  LogShortcutOperation(location, properties, operation, /*failed=*/false);
+  bool pinned = false;
+  bool success = ShellUtil::CreateOrUpdateShortcut(location, properties,
+                                                   operation, &pinned);
+  if (!success)
+    LogShortcutOperation(location, properties, operation, /*failed=*/true);
+
+  // For Start Menu shortcut creation on versions of Win10 that support
+  // pinning, record whether or not the installer pinned Chrome.
+  if (location == ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT &&
+      base::win::GetVersion() >= base::win::Version::WIN10 &&
+      CanPinShortcutToTaskbar()) {
+    SetInstallerPinnedChromeToTaskbar(properties.pin_to_taskbar && pinned);
   }
 }
 
@@ -302,7 +312,7 @@ bool ShouldPinChromeToTaskbar() {
   switch (install_static::GetChromeChannel()) {
     case version_info::Channel::BETA: {
       // Increase kBetaRolloutPercentage to roll out to beta channel.
-      constexpr int kBetaRolloutPercentage = 0;
+      constexpr int kBetaRolloutPercentage = 10;
       return base::RandInt(0, 99) < kBetaRolloutPercentage;
     }
     case version_info::Channel::STABLE: {
@@ -408,11 +418,10 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   if (shortcut_operation == ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS ||
       shortcut_operation ==
           ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL) {
-    // ShouldPinChromeToTaskbar will control the rollout of installer pinning to
+    // ShouldPinChromeToTaskbar controls the rollout of installer pinning to
     // the taskbar, for Win10+ beta and stable channels.
     bool pin_to_taskbar =
         !do_not_create_taskbar_shortcut && ShouldPinChromeToTaskbar();
-
     start_menu_properties.set_pin_to_taskbar(pin_to_taskbar);
   }
 

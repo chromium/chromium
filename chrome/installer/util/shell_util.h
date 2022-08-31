@@ -408,17 +408,21 @@ class ShellUtil {
       bool& should_install_shortcut,
       base::FilePath& shortcut_path);
 
-  // Updates shortcut in |location| (or creates it if |options| specify
+  // Updates shortcut in `location` (or creates it if `options` specify
   // SHELL_SHORTCUT_CREATE_ALWAYS).
-  // |properties| and |operation| affect this method as described on their
+  // `properties` and `operation` affect this method as described on their
   // invidividual definitions above.
-  // |location| may be one of SHORTCUT_LOCATION_DESKTOP,
+  // `location` may be one of SHORTCUT_LOCATION_DESKTOP,
   // SHORTCUT_LOCATION_QUICK_LAUNCH, SHORTCUT_LOCATION_START_MENU_ROOT,
   // SHORTCUT_LOCATION_START_MENU_CHROME_DIR, or
   // SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR.
+  // If `pinned` is not null, and `properties` requests that the shortcut be
+  // pinned, and the shortcut creation succeeds, `pinned` will be set to true
+  // if pinning was successful, false otherwise.
   static bool CreateOrUpdateShortcut(ShortcutLocation location,
                                      const ShortcutProperties& properties,
-                                     ShortcutOperation operation);
+                                     ShortcutOperation operation,
+                                     bool* pinned = nullptr);
 
   // Returns the string "|icon_path|,|icon_index|" (see, for example,
   // http://msdn.microsoft.com/library/windows/desktop/dd391573.aspx).

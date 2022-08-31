@@ -2113,7 +2113,8 @@ bool ShellUtil::TranslateShortcutCreationOrUpdateInfo(
 
 bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
                                        const ShortcutProperties& properties,
-                                       ShortcutOperation operation) {
+                                       ShortcutOperation operation,
+                                       bool* pinned) {
   // |pin_to_taskbar| is only acknowledged when first creating the shortcut.
   DCHECK(!properties.pin_to_taskbar ||
          operation == SHELL_SHORTCUT_CREATE_ALWAYS ||
@@ -2136,9 +2137,11 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
 
   if (shortcut_operation == base::win::ShortcutOperation::kCreateAlways &&
       properties.pin_to_taskbar && CanPinShortcutToTaskbar()) {
-    bool pinned = PinShortcutToTaskbar(shortcut_path);
-    LOG_IF(ERROR, !pinned) << "Failed to pin to taskbar "
-                           << shortcut_path.value();
+    bool pin_succeeded = PinShortcutToTaskbar(shortcut_path);
+    LOG_IF(ERROR, !pin_succeeded)
+        << "Failed to pin to taskbar " << shortcut_path.value();
+    if (pinned)
+      *pinned = pin_succeeded;
   }
 
   return true;
