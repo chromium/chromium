@@ -108,14 +108,14 @@
   }
 
   #nameInput {
-    --cr-input-error-display: none;
-    --cr-input-placeholder-color: var(--google-grey-900);
+    --cr-form-field-label-font-size: 11px;
+    --cr-input-placeholder-color: rgba(var(--google-grey-900-rgb), .5);
     --cr-input-padding-bottom: 8px;
     --cr-input-padding-top: 8px;
     flex-grow: 1;
     height: 32px;
     margin: 16px auto;
-    width: 148px;
+    width: 320px;
   }
 
   #pickThemeContainer {
@@ -214,6 +214,10 @@
       background-image:
           url(./images/profile_customization_illustration_dark.svg);
     }
+
+    #nameInput {
+      --cr-input-placeholder-color: rgba(var(--google-grey-200-rgb), .5);
+    }
   }
 </style>
 
@@ -254,6 +258,8 @@
 
       <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
         aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
+        placeholder="$i18n{profileCustomizationInputPlaceholder}"
+        error-message="$i18n{profileCustomizationInputErrorMessage}"
         required spellcheck="false">
       </cr-input>
 

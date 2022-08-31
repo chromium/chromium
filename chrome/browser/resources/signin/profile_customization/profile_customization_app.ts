@@ -113,7 +113,9 @@ export class ProfileCustomizationAppElement extends
 
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
-    this.profileName_ = loadTimeData.getString('profileName');
+    if (!this.isLocalProfileCreation_) {
+      this.profileName_ = loadTimeData.getString('profileName');
+    }
     this.addWebUIListener(
         'on-profile-info-changed',
         (info: ProfileInfo) => this.setProfileInfo_(info));

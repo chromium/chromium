@@ -502,6 +502,12 @@
     <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL" desc="Not displayed. Used by screen readers to describe the input used to rename the profile.">
       Rename your profile
     </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_PLACEHOLDER" desc="Placeholder text for the input used to rename the profile.">
+      Add a name or label, like Work or Personal
+    </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_ERROR_MESSAGE" desc="Error message for the input used to rename the profile.">
+      Enter a profile name
+    </message>
     <message name="IDS_PROFILE_CUSTOMIZATION_SKIP_BUTTON_LABEL" desc="Text for the Skip button on the profile customization dialog">
       Skip
     </message>
