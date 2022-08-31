@@ -310,8 +310,6 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
                  resource.color_space.GetContentColorUsage());
   }
 
-  frame.metadata.may_contain_video = root_surface_->ContainsVideo();
-
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
 }
 

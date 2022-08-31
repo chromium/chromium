@@ -247,12 +247,6 @@ class Surface final : public ui::PropertyHandler {
   void SetClientSurfaceId(const char* client_surface_id);
   std::string GetClientSurfaceId() const;
 
-  // Sets whether the surface contains video.
-  void SetContainsVideo(bool contains_video);
-
-  // Returns whether this surface or any of its subsurfaces contains a video.
-  bool ContainsVideo();
-
   // Enable embedding of an arbitrary viz surface in this exo surface.
   // If the callback is valid, a SurfaceDrawQuad will be emitted targeting
   // the returned SurfaceId each frame.
@@ -456,7 +450,6 @@ class Surface final : public ui::PropertyHandler {
     // Represents optional background color that must be associated with the
     // next buffer commit.
     absl::optional<SkColor4f> background_color;
-    bool contains_video;
   };
   class BufferAttachment {
    public:

@@ -85,7 +85,6 @@ source_set("wayland") {
     "//third_party/libsync",
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
-    "//third_party/wayland-protocols:content_type_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",
     "//third_party/wayland-protocols:gaming_input_protocol",
@@ -150,8 +149,6 @@ source_set("wayland") {
 
   if (is_chromeos_ash) {
     sources += [
-      "content_type.cc",
-      "content_type.h",
       "wayland_keyboard_delegate.cc",
       "wayland_keyboard_delegate.h",
       "wayland_positioner.cc",
@@ -339,7 +336,6 @@ source_set("client_support") {
     "//skia",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
-    "//third_party/wayland-protocols:content_type_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",
     "//third_party/wayland-protocols:fullscreen_shell_protocol",
