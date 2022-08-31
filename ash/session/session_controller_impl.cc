@@ -9,6 +9,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/signout_screenshot_handler.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller_client.h"
@@ -40,7 +43,10 @@ using session_manager::SessionState;
 namespace ash {
 
 SessionControllerImpl::SessionControllerImpl()
-    : fullscreen_controller_(std::make_unique<FullscreenController>(this)) {}
+    : fullscreen_controller_(std::make_unique<FullscreenController>(this)) {
+  if (features::AreGlanceablesEnabled())
+    signout_screenshot_handler_ = std::make_unique<SignoutScreenshotHandler>();
+}
 
 SessionControllerImpl::~SessionControllerImpl() {
   // Abort pending start lock request.
@@ -215,6 +221,18 @@ void SessionControllerImpl::HideLockScreen() {
 }
 
 void SessionControllerImpl::RequestSignOut() {
+  if (features::AreGlanceablesEnabled() &&
+      Shell::Get()->glanceables_controller()->ShouldTakeSignoutScreenshot()) {
+    DCHECK(IsActiveUserSessionStarted());
+    signout_screenshot_handler_->TakeScreenshot(
+        base::BindOnce(&SessionControllerImpl::ProceedWithSignOut,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  ProceedWithSignOut();
+}
+
+void SessionControllerImpl::ProceedWithSignOut() {
   if (client_)
     client_->RequestSignOut();
 }

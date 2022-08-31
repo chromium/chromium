@@ -28,6 +28,7 @@ namespace ash {
 class FullscreenController;
 class SessionControllerClient;
 class SessionObserver;
+class SignoutScreenshotHandler;
 class TestSessionControllerClient;
 
 // Implements mojom::SessionController to cache session related info such as
@@ -259,6 +260,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // window, tries to activate one.
   void EnsureActiveWindowAfterUnblockingUserSession();
 
+  // Proceeds with signout after the (optional) signout screenshot is taken.
+  void ProceedWithSignOut();
+
   // Client interface to session manager code (chrome).
   SessionControllerClient* client_ = nullptr;
 
@@ -320,6 +324,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   // Indicate if the session state is being changed.
   bool session_state_change_in_progress_ = false;
+
+  // May be null if glanceables are not enabled.
+  std::unique_ptr<SignoutScreenshotHandler> signout_screenshot_handler_;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

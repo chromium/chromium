@@ -32,6 +32,7 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate {
   // ash::GlanceablesDelegate:
   void RestoreSession() override;
   void OnGlanceablesClosed() override;
+  bool ShouldTakeSignoutScreenshot() override;
 
  private:
   // Returns true if glanceables should be show for the current login.

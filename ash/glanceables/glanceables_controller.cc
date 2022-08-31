@@ -111,6 +111,10 @@ void GlanceablesController::RestoreSession() {
   delegate_->RestoreSession();
 }
 
+bool GlanceablesController::ShouldTakeSignoutScreenshot() const {
+  return delegate_->ShouldTakeSignoutScreenshot();
+}
+
 void GlanceablesController::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_focus,
