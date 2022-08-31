@@ -163,6 +163,9 @@ void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
                                 bool is_base64_encoded);
 
 void OnResetNavigationRequest(NavigationRequest* navigation_request);
+void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
+                                  const std::string& id,
+                                  network::ResourceRequest& request);
 void OnNavigationRequestWillBeSent(const NavigationRequest& navigation_request);
 void OnNavigationResponseReceived(
     const NavigationRequest& nav_request,

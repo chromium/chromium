@@ -1421,10 +1421,12 @@ void OnServiceWorkerMainScriptFetchingFailed(
   }
 }
 
+namespace {
+
 // Only assign request id if there's an enabled agent host.
-void MaybeAssignRequestId(DevToolsAgentHostImpl* host,
-                          const std::string& id,
-                          network::ResourceRequest& request) {
+void MaybeAssignResourceRequestId(DevToolsAgentHostImpl* host,
+                                  const std::string& id,
+                                  network::ResourceRequest& request) {
   DCHECK(!request.devtools_request_id.has_value());
   for (auto* network_handler : protocol::NetworkHandler::ForAgentHost(host)) {
     if (network_handler->enabled()) {
@@ -1432,6 +1434,15 @@ void MaybeAssignRequestId(DevToolsAgentHostImpl* host,
       return;
     }
   }
+}
+
+}  // namespace
+
+void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
+                                  const std::string& id,
+                                  network::ResourceRequest& request) {
+  if (auto* host = RenderFrameDevToolsAgentHost::GetFor(ftn))
+    MaybeAssignResourceRequestId(host, id, request);
 }
 
 void OnServiceWorkerMainScriptRequestWillBeSent(
@@ -1460,7 +1471,7 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
                                                        version_id);
   DCHECK(agent_host);
   const std::string request_id = agent_host->devtools_worker_token().ToString();
-  MaybeAssignRequestId(agent_host, request_id, request);
+  MaybeAssignResourceRequestId(agent_host, request_id, request);
   for (auto* network_handler :
        protocol::NetworkHandler::ForAgentHost(agent_host)) {
     network_handler->RequestSent(
@@ -1512,7 +1523,7 @@ void OnWorkerMainScriptRequestWillBeSent(
   auto* owner_host = RenderFrameDevToolsAgentHost::GetFor(ftn);
   if (!owner_host)
     return;
-  MaybeAssignRequestId(owner_host, worker_token.ToString(), request);
+  MaybeAssignResourceRequestId(owner_host, worker_token.ToString(), request);
   DispatchToAgents(
       ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
       /*loader_id=*/"", request.headers, *request_info,
