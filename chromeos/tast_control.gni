@@ -9,12 +9,15 @@
 # To disable a specific test in chrome_all_tast_tests, add it the following
 # list and cite a bug.
 tast_disabled_tests_from_chrome_all = [
-  # crbug.com/1356506
+  # crbug.com/1356506, b/244390715
   "inputs.PhysicalKeyboardAutocorrect.en_us_1",
   "inputs.PhysicalKeyboardAutocorrect.en_us_2",
+  "inputs.PhysicalKeyboardJapaneseTyping.us",
+  "inputs.PhysicalKeyboardPinyinTyping.simplified",
   "inputs.VirtualKeyboardAccent",
   "inputs.VirtualKeyboardAccessibility",
   "inputs.VirtualKeyboardAutoShift",
+  "inputs.VirtualKeyboardChangeInput.a11y",
   "inputs.VirtualKeyboardChangeInput.tablet",
   "inputs.VirtualKeyboardDeadKeys.catalan",
   "inputs.VirtualKeyboardDeadKeys.french",
@@ -23,10 +26,16 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_docked",
   "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
   "inputs.VirtualKeyboardGlideTyping.tablet_docked",
+  "inputs.VirtualKeyboardGlideTyping.tablet_floating",
   "inputs.VirtualKeyboardHandwriting.docked",
   "inputs.VirtualKeyboardHandwriting.floating",
+  "inputs.VirtualKeyboardJapaneseInputMode",
+  "inputs.VirtualKeyboardLoginScreen.clamshell",
   "inputs.VirtualKeyboardLoginScreen.tablet",
+  "inputs.VirtualKeyboardMultipaste",
   "inputs.VirtualKeyboardMultipasteSuggestion.lacros",
+  "inputs.VirtualKeyboardOverscroll.clamshell",
+  "inputs.VirtualKeyboardTypingIME",
   "inputs.VirtualKeyboardTypingOmnibox",
   "inputs.VirtualKeyboardTypingOmnibox.guest",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
