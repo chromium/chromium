@@ -19,21 +19,6 @@ config("runtime_library") {
   ldflags = []
   libs = []
 
-  # We set a custom _LIBCPP_ABI_NAMESPACE for the following reasons:
-  #
-  # 1. When libcxx_is_shared is true, symbols from libc++.so are exported for
-  #    all DSOs to use.  If the system libc++ gets loaded (indirectly through
-  #    a system library), then it will conflict with our libc++.so.
-  # 2. The default value of _LIBCPP_ABI_NAMESPACE is the string
-  #    "_LIBCPP_ABI_NAMESPACE". This contributes to an increase in binary size;
-  #    on Windows, the increase is great enough that we go above the 4GB size
-  #    limit for PDBs (https://crbug.com/1327710#c5). To fix this, we set
-  #    _LIBCPP_ABI_NAMESPACE to a shorter value.
-  defines += [
-    "_LIBCPP_ABI_NAMESPACE=Cr",
-    "_LIBCPP_ABI_VERSION=2",
-  ]
-
   if (!libcxx_is_shared) {
     # Don't leak any symbols on a static build.
     defines += [ "_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
