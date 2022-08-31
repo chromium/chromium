@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {
   EXPECT_EQ(native_view_accessible, GetView()
                                         ->host()
                                         ->GetRootBrowserAccessibilityManager()
-                                        ->GetRoot()
+                                        ->GetBrowserAccessibilityRoot()
                                         ->GetNativeViewAccessible());
 
   // Used by LegacyRenderWidgetHostHWND to find the parent of the UIA fragment

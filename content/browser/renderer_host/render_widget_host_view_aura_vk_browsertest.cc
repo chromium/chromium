@@ -153,7 +153,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
 
   BrowserAccessibility* FindNode(ax::mojom::Role role,
                                  const std::string& name_or_value) {
-    BrowserAccessibility* root = GetManager()->GetRoot();
+    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
     return FindNodeInSubtree(*root, role, name_or_value);
   }

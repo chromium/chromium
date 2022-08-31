@@ -43,7 +43,7 @@ class AccessibilityHitTestingWinBrowserTest
   ComPtr<IAccessible> GetWebContentRootIAccessible() {
     ComPtr<IAccessible> content_root;
     GetRootBrowserAccessibilityManager()
-        ->GetRoot()
+        ->GetBrowserAccessibilityRoot()
         ->GetNativeViewAccessible()
         ->QueryInterface(IID_PPV_ARGS(&content_root));
     return content_root;

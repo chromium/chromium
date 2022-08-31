@@ -63,8 +63,8 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> callback) override {
     BrowserAccessibility* result =
-        browser_accessibility_manager_->GetRoot()->ApproximateHitTest(
-            point_in_frame_pixels);
+        browser_accessibility_manager_->GetBrowserAccessibilityRoot()
+            ->ApproximateHitTest(point_in_frame_pixels);
     int hit_node_id = result ? result->GetId() : 0;
     std::move(callback).Run(browser_accessibility_manager_.get(), hit_node_id);
   }

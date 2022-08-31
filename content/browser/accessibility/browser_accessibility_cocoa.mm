@@ -2189,7 +2189,8 @@ bool content::IsNSRange(id value) {
     if (index < 0)
       return nil;
 
-    const BrowserAccessibility* root = _owner->manager()->GetRoot();
+    const BrowserAccessibility* root =
+        _owner->manager()->GetBrowserAccessibilityRoot();
     if (!root)
       return nil;
 

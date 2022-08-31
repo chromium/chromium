@@ -96,11 +96,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
       web_contents->GetRootBrowserAccessibilityManager();
 
   // Initially there are 3 links in the accessibility tree.
-  EXPECT_EQ(3, CountLinks(manager->GetRoot()));
+  EXPECT_EQ(3, CountLinks(manager->GetBrowserAccessibilityRoot()));
 
   // Enter fullscreen by finding the button and performing the default action,
   // which is to click it.
-  BrowserAccessibility* button = FindButton(manager->GetRoot());
+  BrowserAccessibility* button =
+      FindButton(manager->GetBrowserAccessibilityRoot());
   ASSERT_NE(nullptr, button);
   manager->DoDefaultAction(*button);
 
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
   WaitForAccessibilityTreeToContainNodeWithName(web_contents, "Done");
 
   // Now, the two links outside of the fullscreen element are gone.
-  EXPECT_EQ(1, CountLinks(manager->GetRoot()));
+  EXPECT_EQ(1, CountLinks(manager->GetBrowserAccessibilityRoot()));
 }
 
 // Fails flakily on all platforms: crbug.com/825735
@@ -133,11 +134,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
       web_contents->GetRootBrowserAccessibilityManager();
 
   // Initially there's just one link, in the top frame.
-  EXPECT_EQ(1, CountLinks(manager->GetRoot()));
+  EXPECT_EQ(1, CountLinks(manager->GetBrowserAccessibilityRoot()));
 
   // Enter fullscreen by finding the button and performing the default action,
   // which is to click it.
-  BrowserAccessibility* button = FindButton(manager->GetRoot());
+  BrowserAccessibility* button =
+      FindButton(manager->GetBrowserAccessibilityRoot());
   ASSERT_NE(nullptr, button);
   manager->DoDefaultAction(*button);
 
@@ -145,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
   // in the inert part of the page, then exit fullscreen and change the button
   // text to "Done". Then the link inside the iframe should also be exposed.
   WaitForAccessibilityTreeToContainNodeWithName(web_contents, "Done");
-  EXPECT_EQ(2, CountLinks(manager->GetRoot()));
+  EXPECT_EQ(2, CountLinks(manager->GetBrowserAccessibilityRoot()));
 }
 
 }  // namespace content

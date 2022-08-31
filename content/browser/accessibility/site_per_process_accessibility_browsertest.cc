@@ -110,7 +110,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 
   // Assert that we can walk from the main frame down into the child frame
   // directly, getting correct roles and data along the way.
-  BrowserAccessibility* ax_root = main_frame_manager->GetRoot();
+  BrowserAccessibility* ax_root =
+      main_frame_manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_root->GetRole());
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 
@@ -249,7 +250,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Assert that we can walk from the main frame down into the child frame
   // directly, getting correct roles and data along the way.
-  BrowserAccessibility* ax_root = main_frame_manager->GetRoot();
+  BrowserAccessibility* ax_root =
+      main_frame_manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_root->GetRole());
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 

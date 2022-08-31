@@ -25,7 +25,8 @@ class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
   ~TestFragmentRootDelegate() = default;
 
   gfx::NativeViewAccessible GetChildOfAXFragmentRoot() override {
-    return browser_accessibility_manager_->GetRoot()->GetNativeViewAccessible();
+    return browser_accessibility_manager_->GetBrowserAccessibilityRoot()
+        ->GetNativeViewAccessible();
   }
 
   gfx::NativeViewAccessible GetParentOfAXFragmentRoot() override {
@@ -85,7 +86,8 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
 
   ui::AXPlatformNode* root_document_root_node =
       ui::AXPlatformNode::FromNativeViewAccessible(
-          root_manager->GetRoot()->GetNativeViewAccessible());
+          root_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible());
 
   std::unique_ptr<ui::AXPlatformNodeDelegate> fragment_root =
       std::make_unique<ui::AXFragmentRootWin>(gfx::kMockAcceleratedWidget,
@@ -144,7 +146,8 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
 
   ui::AXPlatformNode* root_document_root_node =
       ui::AXPlatformNode::FromNativeViewAccessible(
-          parent_manager->GetRoot()->GetNativeViewAccessible());
+          parent_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible());
 
   std::unique_ptr<ui::AXPlatformNodeDelegate> fragment_root =
       std::make_unique<ui::AXFragmentRootWin>(gfx::kMockAcceleratedWidget,

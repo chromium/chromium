@@ -175,7 +175,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {
             test_browser_accessibility_delegate_.get()));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -208,7 +208,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
             test_browser_accessibility_delegate_.get()));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -235,7 +235,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesLabels) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -267,7 +267,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -292,7 +292,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   // Verify table node translation.
   {
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -353,7 +353,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   // Verify that the list root was translated.
   {
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
     EXPECT_EQ(fuchsia_node_data.role(),
@@ -406,7 +406,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
             test_browser_accessibility_delegate_.get()));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -429,7 +429,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -451,7 +451,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -473,7 +473,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -499,7 +499,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesValue) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -525,7 +525,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -565,7 +565,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -662,7 +662,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -722,8 +722,8 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ChildTree) {
 
     // Get the root of the child tree to verify that it's present in the parent
     // node's children.
-    BrowserAccessibilityFuchsia* child_root =
-        ToBrowserAccessibilityFuchsia(child_manager->GetRoot());
+    BrowserAccessibilityFuchsia* child_root = ToBrowserAccessibilityFuchsia(
+        child_manager->GetBrowserAccessibilityRoot());
 
     ASSERT_EQ(fuchsia_node_data.child_ids().size(), 1u);
     EXPECT_EQ(fuchsia_node_data.child_ids()[0], child_root->GetFuchsiaNodeID());
@@ -779,7 +779,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, GetFuchsiaNodeIDNonRootTree) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();

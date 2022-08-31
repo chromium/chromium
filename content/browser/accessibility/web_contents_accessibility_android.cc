@@ -358,8 +358,8 @@ void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
     BrowserAccessibilityManagerAndroid* root_manager =
         GetRootBrowserAccessibilityManager();
     if (root_manager) {
-      auto* root_node =
-          static_cast<BrowserAccessibilityAndroid*>(root_manager->GetRoot());
+      auto* root_node = static_cast<BrowserAccessibilityAndroid*>(
+          root_manager->GetBrowserAccessibilityRoot());
       if (root_node) {
         Java_WebContentsAccessibilityImpl_handleContentChanged(
             env, obj, root_node->unique_id());
@@ -584,7 +584,8 @@ bool WebContentsAccessibilityAndroid::OnHoverEventNoRenderer(JNIEnv* env,
           GetRootBrowserAccessibilityManager()) {
     auto* hover_node = static_cast<BrowserAccessibilityAndroid*>(
         root_manager->ApproximateHitTest(gfx::ToFlooredPoint(point)));
-    if (hover_node && hover_node != root_manager->GetRoot()) {
+    if (hover_node &&
+        hover_node != root_manager->GetBrowserAccessibilityRoot()) {
       HandleHover(hover_node->unique_id());
       return true;
     }
@@ -642,8 +643,8 @@ WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(JNIEnv* env) {
 jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
   if (BrowserAccessibilityManagerAndroid* root_manager =
           GetRootBrowserAccessibilityManager()) {
-    auto* root =
-        static_cast<BrowserAccessibilityAndroid*>(root_manager->GetRoot());
+    auto* root = static_cast<BrowserAccessibilityAndroid*>(
+        root_manager->GetBrowserAccessibilityRoot());
     if (root)
       return static_cast<jint>(root->unique_id());
   }
@@ -1017,7 +1018,7 @@ void WebContentsAccessibilityAndroid::Focus(JNIEnv* env, jint unique_id) {
 void WebContentsAccessibilityAndroid::Blur(JNIEnv* env) {
   if (BrowserAccessibilityManagerAndroid* root_manager =
           GetRootBrowserAccessibilityManager())
-    root_manager->SetFocus(*root_manager->GetRoot());
+    root_manager->SetFocus(*root_manager->GetBrowserAccessibilityRoot());
 }
 
 void WebContentsAccessibilityAndroid::ScrollToMakeNodeVisible(JNIEnv* env,
@@ -1122,7 +1123,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   if (!root_manager)
     return 0;
 
-  BrowserAccessibility* root = root_manager->GetRoot();
+  BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
   if (!root)
     return 0;
 
@@ -1288,7 +1289,7 @@ void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
   // boxes for that node so that subsequent requests for character bounding
   // boxes will succeed. However, don't do that for the root of the tree,
   // as that will result in loading inline text boxes for the whole tree.
-  if (node != node->manager()->GetRoot())
+  if (node != node->manager()->GetBrowserAccessibilityRoot())
     node->manager()->LoadInlineTextBoxes(*node);
 }
 

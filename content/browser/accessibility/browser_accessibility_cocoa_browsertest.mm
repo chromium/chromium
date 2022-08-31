@@ -34,7 +34,7 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
 
  protected:
   BrowserAccessibility* FindNode(ax::mojom::Role role) {
-    BrowserAccessibility* root = GetManager()->GetRoot();
+    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
     return FindNodeInSubtree(*root, role);
   }
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   for (int child_index = 0; child_index < child_count; child_index++) {
     BrowserAccessibility* child =
-        manager->GetRoot()->PlatformGetChild(child_index);
+        manager->GetBrowserAccessibilityRoot()->PlatformGetChild(child_index);
     base::scoped_nsobject<BrowserAccessibilityCocoa> child_obj(
         [child->GetNativeViewAccessible() retain]);
 
@@ -486,7 +486,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   std::unique_ptr<BrowserAccessibilityManagerMac> manager(
       new BrowserAccessibilityManagerMac(tree, nullptr));
 
-  BrowserAccessibility* table = manager->GetRoot()->PlatformGetChild(0);
+  BrowserAccessibility* table =
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
   base::scoped_nsobject<BrowserAccessibilityCocoa> table_obj(
       [table->GetNativeViewAccessible() retain]);
   NSArray* row_nodes = [table_obj accessibilityRows];
@@ -536,7 +537,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   std::unique_ptr<BrowserAccessibilityManagerMac> manager(
       new BrowserAccessibilityManagerMac(tree, nullptr));
 
-  BrowserAccessibility* column = manager->GetRoot()->PlatformGetChild(0);
+  BrowserAccessibility* column =
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
   base::scoped_nsobject<BrowserAccessibilityCocoa> col_obj(
       [column->GetNativeViewAccessible() retain]);
   EXPECT_NSEQ(@"AXColumn", [col_obj role]);
@@ -726,8 +728,10 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(waiter.WaitForNotification());
 
   base::scoped_nsobject<BrowserAccessibilityCocoa> content_editable(
-      [GetManager()->GetRoot()->PlatformGetChild(0)->GetNativeViewAccessible()
-          retain]);
+      [GetManager()
+              ->GetBrowserAccessibilityRoot()
+              ->PlatformGetChild(0)
+              ->GetNativeViewAccessible() retain]);
   EXPECT_EQ([[content_editable children] count], 5ul);
 
   WebContents* web_contents = shell()->web_contents();

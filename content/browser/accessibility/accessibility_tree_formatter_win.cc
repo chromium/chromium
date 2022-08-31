@@ -103,7 +103,7 @@ GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   LONG root_width, root_height;
-  BrowserAccessibility* root = root_manager->GetRoot();
+  BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
   HRESULT hr = ToBrowserAccessibilityWin(root)->GetCOM()->accLocation(
       &root_x, &root_y, &root_width, &root_height, variant_self);
   DCHECK(SUCCEEDED(hr));

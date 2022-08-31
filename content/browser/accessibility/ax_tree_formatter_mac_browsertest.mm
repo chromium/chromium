@@ -89,7 +89,7 @@ void AXTreeFormatterMacBrowserTest::TestFormat(
                                 ui::AXTreeFormatter::kFiltersEmptySet);
   formatter->SetNodeFilters(node_filters);
 
-  BrowserAccessibility* root = GetManager()->GetRoot();
+  BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root);
 
   std::string actual = formatter->Format(root);
@@ -123,7 +123,7 @@ void AXTreeFormatterMacBrowserTest::TestScript(
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       AXInspectFactory::CreatePlatformFormatter();
 
-  BrowserAccessibility* root = GetManager()->GetRoot();
+  BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root);
 
   std::vector<ui::AXScriptInstruction> instructions;

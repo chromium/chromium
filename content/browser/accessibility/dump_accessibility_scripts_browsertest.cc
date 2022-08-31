@@ -80,7 +80,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   std::vector<std::string> Dump() override {
     std::vector<std::string> dump;
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
-    BrowserAccessibility* root = GetManager()->GetRoot();
+    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
 
     size_t start_index = 0;
     size_t length = scenario_.script_instructions.size();

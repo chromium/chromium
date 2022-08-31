@@ -1597,7 +1597,7 @@ void RenderWidgetHostViewMac::ShowSharePicker(
 
 id RenderWidgetHostViewMac::GetRootBrowserAccessibilityElement() {
   if (auto* manager = host()->GetRootBrowserAccessibilityManager())
-    return manager->GetRoot()->GetNativeViewAccessible();
+    return manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
   return nil;
 }
 

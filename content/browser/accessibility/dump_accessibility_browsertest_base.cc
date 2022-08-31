@@ -450,7 +450,8 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded() {
     BrowserAccessibilityManager* manager =
         main_frame->browser_accessibility_manager();
     if (manager) {
-      BrowserAccessibility* accessibility_root = manager->GetRoot();
+      BrowserAccessibility* accessibility_root =
+          manager->GetBrowserAccessibilityRoot();
 
       // Check to see if all frames have loaded. If not, we invoke
       // WaitForEndOfTest to listen for a kEndOfTest signal which will be
@@ -491,7 +492,7 @@ BrowserAccessibility* DumpAccessibilityTestBase::FindNode(
     const std::string& name,
     BrowserAccessibility* search_root) const {
   if (!search_root)
-    search_root = GetManager()->GetRoot();
+    search_root = GetManager()->GetBrowserAccessibilityRoot();
 
   CHECK(search_root);
   BrowserAccessibility* node = FindNodeInSubtree(*search_root, name);
@@ -515,8 +516,8 @@ std::pair<base::Value, std::vector<std::string>>
 DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   // Create a new Event Recorder for the run.
   BrowserAccessibilityManager* manager = GetManager();
-  ui::AXTreeSelector selector(
-      manager->GetRoot()->GetTargetForNativeAccessibilityEvent());
+  ui::AXTreeSelector selector(manager->GetBrowserAccessibilityRoot()
+                                  ->GetTargetForNativeAccessibilityEvent());
   std::unique_ptr<ui::AXEventRecorder> event_recorder =
       AXInspectFactory::CreateRecorder(GetParam(), manager,
                                        base::GetCurrentProcId(), selector);
@@ -605,7 +606,7 @@ bool DumpAccessibilityTestBase::HasHtmlAttribute(
 BrowserAccessibility* DumpAccessibilityTestBase::FindNodeByHTMLAttribute(
     const char* attr,
     const std::string& value) const {
-  BrowserAccessibility* root = GetManager()->GetRoot();
+  BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
 
   CHECK(root);
   return FindNodeByHTMLAttributeInSubtree(*root, attr, value);

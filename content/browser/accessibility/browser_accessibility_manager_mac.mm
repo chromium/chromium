@@ -193,7 +193,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       BrowserAccessibilityManager* root_manager = GetRootManager();
       if (!root_manager)
         return;
-      BrowserAccessibility* root = root_manager->GetRoot();
+      BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
       if (!root)
         return;
 
@@ -264,7 +264,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       // AXMenuClosed on the document itself when an accessible menu is being
       // detached. See WebKit's AccessibilityObject::detachRemoteParts
       if (BrowserAccessibilityManager* root_manager = GetRootManager()) {
-        if (BrowserAccessibility* root = root_manager->GetRoot())
+        if (BrowserAccessibility* root =
+                root_manager->GetBrowserAccessibilityRoot())
           FireNativeMacNotification((NSString*)kAXMenuClosedNotification, root);
       }
       return;
@@ -336,7 +337,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         NSDictionary* user_info = GetUserInfoForValueChangedNotification(
             native_node, deleted_text, inserted_text, edit_text_marker);
 
-        BrowserAccessibility* root = GetRoot();
+        BrowserAccessibility* root = GetBrowserAccessibilityRoot();
         if (!root)
           return;
 

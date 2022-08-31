@@ -355,7 +355,8 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
   }
 }
 
-BrowserAccessibility* BrowserAccessibilityManager::GetRoot() const {
+BrowserAccessibility* BrowserAccessibilityManager::GetBrowserAccessibilityRoot()
+    const {
   ui::AXNode* root = GetRootAsAXNode();
   return root ? GetFromID(root->id()) : nullptr;
 }
@@ -605,7 +606,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   if (defer_load_complete_event_) {
     received_load_complete_event = true;
     defer_load_complete_event_ = false;
-    FireBlinkEvent(ax::mojom::Event::kLoadComplete, GetRoot(), -1);
+    FireBlinkEvent(ax::mojom::Event::kLoadComplete,
+                   GetBrowserAccessibilityRoot(), -1);
   }
 
   // Fire any events related to changes to the tree that come from ancestors of
@@ -681,7 +683,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
       root_manager->CacheHitTestResult(event_target);
 
     if (event.event_type == ax::mojom::Event::kLoadComplete) {
-      DCHECK_EQ(event_target, GetRoot());
+      DCHECK_EQ(event_target, GetBrowserAccessibilityRoot());
       DCHECK(event_target->IsPlatformDocument());
 
       // Don't fire multiple load-complete events. One may have been added by
@@ -695,7 +697,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     }
 
     if (event.event_type == ax::mojom::Event::kLoadStart) {
-      DCHECK_EQ(event_target, GetRoot());
+      DCHECK_EQ(event_target, GetBrowserAccessibilityRoot());
       DCHECK(event_target->IsPlatformDocument());
       // If we already have a load-complete event, the load-start event is no
       // longer relevant. In addition, some code checks for the presence of
@@ -738,15 +740,17 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // as for some clusterfuzz runs.
   static int g_max_ax_tree_exercise_iterations = 3;  // Avoid timeouts.
   static int count = 0;
-  if (GetRoot()->GetChildCount() > 0 &&
-      !GetRoot()->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
+  if (GetBrowserAccessibilityRoot()->GetChildCount() > 0 &&
+      !GetBrowserAccessibilityRoot()->GetBoolAttribute(
+          ax::mojom::BoolAttribute::kBusy) &&
       ++count <= g_max_ax_tree_exercise_iterations) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(::switches::kForceRendererAccessibility)) {
       std::unique_ptr<ui::AXTreeFormatter> formatter(
           AXInspectFactory::CreatePlatformFormatter());
       formatter->SetPropertyFilters({{"*", ui::AXPropertyFilter::ALLOW}});
-      std::string formatted_tree = formatter->Format(GetRoot());
+      std::string formatted_tree =
+          formatter->Format(GetBrowserAccessibilityRoot());
       VLOG(1) << "\n\n******** Formatted tree ********\n\n"
               << formatted_tree << "\n*********************************\n\n";
     }
@@ -912,7 +916,7 @@ BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
   BrowserAccessibility* obj = GetFromID(focus_id);
   // If nothing is focused, then the top document has the focus.
   if (!obj)
-    return GetRoot();
+    return GetBrowserAccessibilityRoot();
 
   if (obj->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
     ui::AXTreeID child_tree_id = ui::AXTreeID::FromString(
@@ -1277,7 +1281,8 @@ BrowserAccessibility* BrowserAccessibilityManager::PreviousInTreeOrder(
 
   // For android, this needs to be handled carefully. If not, there is a chance
   // of getting into infinite loop.
-  if (can_wrap_to_last_element && object->manager()->GetRoot() == object &&
+  if (can_wrap_to_last_element &&
+      object->manager()->GetBrowserAccessibilityRoot() == object &&
       object->PlatformChildCount() != 0) {
     return object->PlatformDeepestLastChild();
   }
@@ -1920,7 +1925,7 @@ BrowserAccessibility* BrowserAccessibilityManager::ApproximateHitTest(
   if (cached_node_rtree_)
     return AXTreeHitTest(blink_screen_point);
 
-  return GetRoot()->ApproximateHitTest(blink_screen_point);
+  return GetBrowserAccessibilityRoot()->ApproximateHitTest(blink_screen_point);
 }
 
 void BrowserAccessibilityManager::DetachFromParentManager() {
@@ -1929,7 +1934,7 @@ void BrowserAccessibilityManager::DetachFromParentManager() {
 }
 
 void BrowserAccessibilityManager::BuildAXTreeHitTestCache() {
-  auto* root = GetRoot();
+  auto* root = GetBrowserAccessibilityRoot();
   if (!root)
     return;
 
@@ -2008,7 +2013,7 @@ void BrowserAccessibilityManager::DidActivatePortal(
     base::TimeTicks activation_time) {
   if (GetTreeData().loaded) {
     FireGeneratedEvent(ui::AXEventGenerator::Event::PORTAL_ACTIVATED,
-                       GetRoot());
+                       GetBrowserAccessibilityRoot());
   }
 }
 

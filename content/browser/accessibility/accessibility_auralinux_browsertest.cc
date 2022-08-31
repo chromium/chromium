@@ -2124,7 +2124,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   // Find a node to hit test. Note that this is a really simple page,
   // so synchronous hit testing will work fine.
-  BrowserAccessibility* node = manager->GetRoot();
+  BrowserAccessibility* node = manager->GetBrowserAccessibilityRoot();
   while (node && node->GetRole() != ax::mojom::Role::kButton)
     node = manager->NextInTreeOrder(node);
   DCHECK(node);
@@ -2137,7 +2137,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   ui::AXPlatformNodeAuraLinux* root_platform_node =
       static_cast<ui::AXPlatformNodeAuraLinux*>(
           ui::AXPlatformNode::FromNativeViewAccessible(
-              manager->GetRoot()->GetNativeViewAccessible()));
+              manager->GetBrowserAccessibilityRoot()
+                  ->GetNativeViewAccessible()));
 
   // First test that calling accHitTest on the root node returns the button.
   {

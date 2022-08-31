@@ -182,7 +182,7 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
       // This needs to be handled carefully. If not, there is a chance of
       // getting into infinite loop.
       if (can_wrap_to_last_element_ && !stop_node &&
-          node->manager()->GetRoot() == node) {
+          node->manager()->GetBrowserAccessibilityRoot() == node) {
         stop_node = node;
       }
       node = tree_->PreviousInTreeOrder(node, can_wrap_to_last_element_);

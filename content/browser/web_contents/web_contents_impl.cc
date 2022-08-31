@@ -4496,7 +4496,7 @@ std::string WebContentsImpl::DumpAccessibilityTree(
                : AXInspectFactory::CreatePlatformFormatter();
 
   formatter->SetPropertyFilters(property_filters);
-  return formatter->Format(ax_mgr->GetRoot());
+  return formatter->Format(ax_mgr->GetBrowserAccessibilityRoot());
 }
 
 void WebContentsImpl::RecordAccessibilityEvents(
@@ -4513,7 +4513,8 @@ void WebContentsImpl::RecordAccessibilityEvents(
     DCHECK(ax_mgr);
     base::ProcessId pid = base::Process::Current().Pid();
     gfx::AcceleratedWidget widget =
-        ax_mgr->GetRoot()->GetTargetForNativeAccessibilityEvent();
+        ax_mgr->GetBrowserAccessibilityRoot()
+            ->GetTargetForNativeAccessibilityEvent();
     event_recorder_ = content::AXInspectFactory::CreatePlatformRecorder(
         ax_mgr, pid, ui::AXTreeSelector(widget));
     event_recorder_->ListenToEvents(*callback);

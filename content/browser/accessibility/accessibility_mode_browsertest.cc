@@ -36,7 +36,8 @@ class AccessibilityModeTest : public ContentBrowserTest {
  protected:
   const BrowserAccessibility* FindNode(ax::mojom::Role role,
                                        const std::string& name) {
-    const BrowserAccessibility* root = GetManager()->GetRoot();
+    const BrowserAccessibility* root =
+        GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
     return FindNodeInSubtree(*root, role, name);
   }

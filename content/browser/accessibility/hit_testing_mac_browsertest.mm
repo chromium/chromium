@@ -23,7 +23,7 @@ class AccessibilityHitTestingMacBrowserTest
  public:
   BrowserAccessibilityCocoa* GetWebContentRoot() {
     return GetRootBrowserAccessibilityManager()
-        ->GetRoot()
+        ->GetBrowserAccessibilityRoot()
         ->GetNativeViewAccessible();
   }
 };

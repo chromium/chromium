@@ -63,7 +63,8 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestSimpleAtkText) {
           test_browser_accessibility_delegate_.get()));
 
   ui::AXPlatformNodeAuraLinux* root_obj =
-      ToBrowserAccessibilityAuraLinux(manager->GetRoot())->GetNode();
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot())
+          ->GetNode();
   AtkObject* root_atk_object(root_obj->GetNativeViewAccessible());
   ASSERT_TRUE(ATK_IS_OBJECT(root_atk_object));
   ASSERT_TRUE(ATK_IS_TEXT(root_atk_object));
@@ -116,7 +117,8 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestCompositeAtkText) {
           test_browser_accessibility_delegate_.get()));
 
   ui::AXPlatformNodeAuraLinux* root_obj =
-      ToBrowserAccessibilityAuraLinux(manager->GetRoot())->GetNode();
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot())
+          ->GetNode();
   AtkObject* root_atk_object(root_obj->GetNativeViewAccessible());
 
   ASSERT_TRUE(ATK_IS_OBJECT(root_atk_object));
@@ -224,7 +226,8 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestComplexHypertext) {
           test_browser_accessibility_delegate_.get()));
 
   ui::AXPlatformNodeAuraLinux* root_obj =
-      ToBrowserAccessibilityAuraLinux(manager->GetRoot())->GetNode();
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot())
+          ->GetNode();
   AtkObject* root_atk_object(root_obj->GetNativeViewAccessible());
 
   ASSERT_TRUE(ATK_IS_OBJECT(root_atk_object));
@@ -349,7 +352,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestTextAttributesInButtons) {
           update, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityAuraLinux* ax_root =
-      ToBrowserAccessibilityAuraLinux(manager->GetRoot());
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot());
 
   BrowserAccessibilityAuraLinux* ax_button =
       ToBrowserAccessibilityAuraLinux(ax_root->PlatformGetChild(0));
@@ -462,9 +465,9 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
       BrowserAccessibilityManager::Create(
           update, test_browser_accessibility_delegate_.get()));
 
-  ASSERT_NE(nullptr, manager->GetRoot());
+  ASSERT_NE(nullptr, manager->GetBrowserAccessibilityRoot());
   BrowserAccessibilityAuraLinux* ax_root =
-      ToBrowserAccessibilityAuraLinux(manager->GetRoot());
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot());
   ASSERT_NE(nullptr, ax_root);
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 
@@ -734,9 +737,9 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
                                      static_text1, static_text2),
           test_browser_accessibility_delegate_.get()));
 
-  ASSERT_NE(nullptr, manager->GetRoot());
+  ASSERT_NE(nullptr, manager->GetBrowserAccessibilityRoot());
   BrowserAccessibilityAuraLinux* ax_root =
-      ToBrowserAccessibilityAuraLinux(manager->GetRoot());
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot());
   ASSERT_NE(nullptr, ax_root);
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 
@@ -862,9 +865,9 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestAtkTextGetOffesetAtPoint) {
           MakeAXTreeUpdateForTesting(static_text1, inline_box1),
           test_browser_accessibility_delegate_.get()));
 
-  ASSERT_NE(nullptr, manager->GetRoot());
+  ASSERT_NE(nullptr, manager->GetBrowserAccessibilityRoot());
   BrowserAccessibilityAuraLinux* ax_root =
-      ToBrowserAccessibilityAuraLinux(manager->GetRoot());
+      ToBrowserAccessibilityAuraLinux(manager->GetBrowserAccessibilityRoot());
   ASSERT_NE(nullptr, ax_root);
 
   AtkObject* root_atk_object = ax_root->GetNode()->GetNativeViewAccessible();

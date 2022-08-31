@@ -139,7 +139,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     unsigned int n_params,
     const GValue* params) {
   // If we don't have a root object, it means the tree is being destroyed.
-  if (!manager_->GetRoot()) {
+  if (!manager_->GetBrowserAccessibilityRoot()) {
     RemoveATKEventListeners();
     return;
   }

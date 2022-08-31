@@ -104,8 +104,9 @@ HWND BrowserAccessibilityManagerWin::GetParentHWND() {
 }
 
 void BrowserAccessibilityManagerWin::UserIsReloading() {
-  if (GetRoot())
-    FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_RELOAD, GetRoot());
+  if (GetBrowserAccessibilityRoot())
+    FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_RELOAD,
+                              GetBrowserAccessibilityRoot());
 }
 
 BrowserAccessibility* BrowserAccessibilityManagerWin::GetFocus() const {

@@ -196,7 +196,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   virtual bool CanFireEvents() const;
 
   // Return a pointer to the root of the tree.
-  BrowserAccessibility* GetRoot() const;
+  BrowserAccessibility* GetBrowserAccessibilityRoot() const;
 
   // Returns a pointer to the BrowserAccessibility object for a given AXNode.
   BrowserAccessibility* GetFromAXNode(const ui::AXNode* node) const;

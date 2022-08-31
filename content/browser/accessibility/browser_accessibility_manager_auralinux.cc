@@ -428,7 +428,7 @@ void BrowserAccessibilityManagerAuraLinux::OnFindInPageResult(int request_id,
 }
 
 void BrowserAccessibilityManagerAuraLinux::OnFindInPageTermination() {
-  static_cast<BrowserAccessibilityAuraLinux*>(GetRoot())
+  static_cast<BrowserAccessibilityAuraLinux*>(GetBrowserAccessibilityRoot())
       ->GetNode()
       ->TerminateFindInPage();
 }

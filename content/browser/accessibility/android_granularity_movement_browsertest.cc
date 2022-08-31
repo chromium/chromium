@@ -48,7 +48,8 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
     // Get the BrowserAccessibilityManager.
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
-    return web_contents->GetRootBrowserAccessibilityManager()->GetRoot();
+    return web_contents->GetRootBrowserAccessibilityManager()
+        ->GetBrowserAccessibilityRoot();
   }
 
   // First, set accessibility focus to a node and wait for the update that

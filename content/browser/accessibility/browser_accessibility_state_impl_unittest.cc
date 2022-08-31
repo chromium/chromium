@@ -159,7 +159,8 @@ TEST_F(BrowserAccessibilityStateImplTest,
           MakeAXTreeUpdateForTesting(root),
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* ax_root = browser_accessibility_manager->GetRoot();
+  BrowserAccessibility* ax_root =
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, ax_root);
 
   // Initially, accessibility should be disabled.

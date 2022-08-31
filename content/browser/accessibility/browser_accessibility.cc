@@ -814,7 +814,7 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     if (coordinate_system == ui::AXCoordinateSystem::kFrame)
       break;
 
-    const BrowserAccessibility* root = manager->GetRoot();
+    const BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
     node = root->PlatformGetParent();
   }
 
@@ -1468,7 +1468,8 @@ ui::AXPlatformNode* BrowserAccessibility::GetFromTreeIDAndNodeID(
 }
 
 absl::optional<size_t> BrowserAccessibility::GetIndexInParent() {
-  if (manager()->GetRoot() == this && PlatformGetParent() == nullptr) {
+  if (manager()->GetBrowserAccessibilityRoot() == this &&
+      PlatformGetParent() == nullptr) {
     // If it is a root node of WebContent, it doesn't have a parent and a
     // valid index in parent. So it returns -1 in order to compute its
     // index at AXPlatformNodeBase.
@@ -1616,7 +1617,7 @@ bool BrowserAccessibility::AccessibilityPerformAction(
     case ax::mojom::Action::kScrollToPoint: {
       // Convert the target point from screen coordinates to frame coordinates.
       gfx::Point target =
-          data.target_point - manager_->GetRoot()
+          data.target_point - manager_->GetBrowserAccessibilityRoot()
                                   ->GetUnclippedScreenBoundsRect()
                                   .OffsetFromOrigin();
       manager_->ScrollToPoint(*this, target);
@@ -2287,8 +2288,9 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetRootOfChildTree() const {
   BrowserAccessibilityManager* child_manager =
       BrowserAccessibilityManager::FromID(
           ui::AXTreeID::FromString(child_tree_id));
-  if (child_manager && child_manager->GetRoot()->PlatformGetParent() == this)
-    return child_manager->GetRoot();
+  if (child_manager &&
+      child_manager->GetBrowserAccessibilityRoot()->PlatformGetParent() == this)
+    return child_manager->GetBrowserAccessibilityRoot();
   return nullptr;
 }
 

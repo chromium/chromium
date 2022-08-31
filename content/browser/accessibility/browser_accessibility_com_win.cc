@@ -845,7 +845,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_URL(BSTR* url) {
   if (!url)
     return E_INVALIDARG;
 
-  if (owner() != manager->GetRoot())
+  if (owner() != manager->GetBrowserAccessibilityRoot())
     return E_FAIL;
 
   std::string str = manager->GetTreeData().url;
@@ -1408,7 +1408,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::QueryService(REFGUID guid_service,
     // on the root document vs on an iframe.
     BrowserAccessibility* node = owner();
     while (node->PlatformGetParent())
-      node = node->PlatformGetParent()->manager()->GetRoot();
+      node =
+          node->PlatformGetParent()->manager()->GetBrowserAccessibilityRoot();
     return ToBrowserAccessibilityComWin(node)->QueryInterface(IID_IAccessible2,
                                                               object);
   }

@@ -70,7 +70,8 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
       BrowserAccessibilityManager::Create(
           initial_state, test_browser_accessibility_delegate_.get()));
 
-  AtkObject* atk_root = manager->GetRoot()->GetNativeViewAccessible();
+  AtkObject* atk_root =
+      manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
   ui::AXPlatformNodeAuraLinux* root_document_root_node =
       static_cast<ui::AXPlatformNodeAuraLinux*>(
           ui::AXPlatformNode::FromNativeViewAccessible(atk_root));
@@ -87,7 +88,7 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
                    }),
                    nullptr);
   BrowserAccessibility* static_text_accessible =
-      manager->GetRoot()->PlatformGetChild(0);
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
   // StaticText node triggers 'children-changed' event to the parent,
   // ATK_ROLE_DOCUMENT_WEB, when subtree is changed.
   BrowserAccessibilityManagerAuraLinux* aura_linux_manager =

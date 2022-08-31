@@ -65,7 +65,7 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
           MakeAXTreeUpdateForTesting(root, para1, text1),
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetRoot();
+  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
 
@@ -186,7 +186,8 @@ TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
       BrowserAccessibilityManager::Create(child_tree_update, nullptr));
 
-  BrowserAccessibility* root_obj = parent_manager->GetRoot();
+  BrowserAccessibility* root_obj =
+      parent_manager->GetBrowserAccessibilityRoot();
   // Test traversal
   // PlatformChildren(root_obj) = {5, 6, 13, 15, 11, 3, 4}
   BrowserAccessibility::PlatformChildIterator platform_iterator =
@@ -329,7 +330,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
@@ -446,7 +447,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectPlainTextField) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* textarea_accessible =
       root_accessible->PlatformGetChild(0);
@@ -507,7 +508,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectMultiElement) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
@@ -634,7 +635,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectBiDi) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
@@ -723,7 +724,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectScrolledWindow) {
       ->SetUseRootScrollOffsetsWhenComputingBoundsForTesting(true);
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
@@ -760,7 +761,7 @@ TEST_F(BrowserAccessibilityTest, GetAuthorUniqueId) {
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
 
   ASSERT_EQ(u"my_html_id", root_accessible->GetAuthorUniqueId());
@@ -809,7 +810,7 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   ASSERT_NE(0u, root_accessible->InternalChildCount());
   BrowserAccessibility* input_accessible = root_accessible->InternalGetChild(0);
@@ -891,8 +892,8 @@ TEST_F(BrowserAccessibilityTest, PortalName) {
       BrowserAccessibilityManager::Create(child_tree_update, nullptr));
 
   // Portal node should use name from root of child tree.
-  EXPECT_EQ("name", child_manager->GetRoot()->GetName());
-  EXPECT_EQ("name", parent_manager->GetRoot()->GetName());
+  EXPECT_EQ("name", child_manager->GetBrowserAccessibilityRoot()->GetName());
+  EXPECT_EQ("name", parent_manager->GetBrowserAccessibilityRoot()->GetName());
 
   // Explicitly add name to portal node.
   parent_tree_update.nodes[0].AddStringAttribute(
@@ -901,8 +902,8 @@ TEST_F(BrowserAccessibilityTest, PortalName) {
   parent_manager->Initialize(parent_tree_update);
 
   // Portal node should now use name from attribute.
-  EXPECT_EQ("name", child_manager->GetRoot()->GetName());
-  EXPECT_EQ("name2", parent_manager->GetRoot()->GetName());
+  EXPECT_EQ("name", child_manager->GetBrowserAccessibilityRoot()->GetName());
+  EXPECT_EQ("name2", parent_manager->GetBrowserAccessibilityRoot()->GetName());
 }
 
 TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
@@ -923,7 +924,7 @@ TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   // Should be nullopt for kRootWebArea since it doesn't have a calculated
   // index.
@@ -957,7 +958,8 @@ TEST_F(BrowserAccessibilityTest, CreatePositionAt) {
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* gc_accessible =
-      browser_accessibility_manager->GetRoot()->PlatformGetChild(0);
+      browser_accessibility_manager->GetBrowserAccessibilityRoot()
+          ->PlatformGetChild(0);
   ASSERT_NE(nullptr, gc_accessible);
 
   BrowserAccessibility::AXPosition pos = gc_accessible->CreatePositionAt(0);

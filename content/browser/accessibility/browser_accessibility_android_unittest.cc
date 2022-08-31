@@ -103,7 +103,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
           MakeAXTreeUpdateForTesting(root, para1, text1),
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetRoot();
+  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
@@ -142,7 +142,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetHeading) {
           MakeAXTreeUpdateForTesting(root, heading1, text1),
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetRoot();
+  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* heading_obj = root_obj->PlatformGetChild(0);
@@ -182,7 +182,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
           MakeAXTreeUpdateForTesting(root, para1, text1),
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetRoot();
+  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
@@ -271,7 +271,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
                                      button, button_text),
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetRoot();
+  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* label_obj = manager->GetFromID(label.id);
@@ -368,7 +368,8 @@ TEST_F(BrowserAccessibilityAndroidTest,
        ++child_index) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(
-            manager->GetRoot()->PlatformGetChild(child_index));
+            manager->GetBrowserAccessibilityRoot()->PlatformGetChild(
+                child_index));
 
     EXPECT_EQ(u"Unlabeled image", child->GetRoleDescription());
   }
@@ -420,7 +421,8 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
        ++child_index) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(
-            manager->GetRoot()->PlatformGetChild(child_index));
+            manager->GetBrowserAccessibilityRoot()->PlatformGetChild(
+                child_index));
 
     EXPECT_EQ(std::u16string(), child->GetRoleDescription());
   }
@@ -460,7 +462,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
 
   BrowserAccessibilityAndroid* image_ltr =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(0));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
 
   EXPECT_EQ(
       u"This image isn't labeled. Open the More Options menu "
@@ -469,7 +471,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
 
   BrowserAccessibilityAndroid* image_rtl =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(1));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
   EXPECT_EQ(
       u"image_name, This image isn't labeled. Open the More Options "
@@ -515,19 +517,19 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   BrowserAccessibilityAndroid* image_pending =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(0));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
 
   BrowserAccessibilityAndroid* image_empty =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(1));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
   BrowserAccessibilityAndroid* image_adult =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(2));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(2));
 
   BrowserAccessibilityAndroid* image_failed =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(3));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(3));
 
   EXPECT_EQ(u"Getting description...", image_pending->GetTextContentUTF16());
   EXPECT_EQ(u"No description available.", image_empty->GetTextContentUTF16());
@@ -574,19 +576,19 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
 
   BrowserAccessibilityAndroid* image_none =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(0));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
 
   BrowserAccessibilityAndroid* image_scheme =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(1));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
   BrowserAccessibilityAndroid* image_ineligible =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(2));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(2));
 
   BrowserAccessibilityAndroid* image_silent =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(3));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(3));
 
   EXPECT_EQ(std::u16string(), image_none->GetTextContentUTF16());
   EXPECT_EQ(u"image_name", image_scheme->GetTextContentUTF16());
@@ -627,11 +629,11 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   BrowserAccessibilityAndroid* image_succeeded =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(0));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
 
   BrowserAccessibilityAndroid* image_succeeded_with_name =
       static_cast<BrowserAccessibilityAndroid*>(
-          manager->GetRoot()->PlatformGetChild(1));
+          manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
   EXPECT_EQ(u"test_annotation", image_succeeded->GetTextContentUTF16());
   EXPECT_EQ(u"test_annotation",

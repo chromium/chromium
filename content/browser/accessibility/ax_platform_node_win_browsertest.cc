@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   ASSERT_EQ(ax::mojom::Role::kStaticText, browser_accessibility->GetRole());
 
   BrowserAccessibility* iframe_browser_accessibility =
-      browser_accessibility->manager()->GetRoot();
+      browser_accessibility->manager()->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, iframe_browser_accessibility);
   ASSERT_EQ(ax::mojom::Role::kRootWebArea,
             iframe_browser_accessibility->GetRole());
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
 
   // Find a node to hit test. Note that this is a really simple page,
   // so synchronous hit testing will work fine.
-  BrowserAccessibility* node = manager->GetRoot();
+  BrowserAccessibility* node = manager->GetBrowserAccessibilityRoot();
   while (node && node->GetRole() != ax::mojom::Role::kButton)
     node = manager->NextInTreeOrder(node);
   DCHECK(node);
@@ -675,7 +675,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   ui::AXPlatformNodeWin* root_platform_node =
       static_cast<ui::AXPlatformNodeWin*>(
           ui::AXPlatformNode::FromNativeViewAccessible(
-              manager->GetRoot()->GetNativeViewAccessible()));
+              manager->GetBrowserAccessibilityRoot()
+                  ->GetNativeViewAccessible()));
 
   // First test that calling accHitTest on the root node returns the button.
   {

@@ -91,7 +91,7 @@ BrowserAccessibility* AccessibilityContentBrowserTest::GetRootAndAssertNonNull()
   // return type.
   auto GetRootAndAssertNonNull = [this](BrowserAccessibility** result) {
     BrowserAccessibility* root_browser_accessibility =
-        GetManagerAndAssertNonNull()->GetRoot();
+        GetManagerAndAssertNonNull()->GetBrowserAccessibilityRoot();
     ASSERT_NE(nullptr, result);
     *result = root_browser_accessibility;
   };

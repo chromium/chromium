@@ -161,8 +161,8 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
   void GetDocumentRangeForMarkup(const std::string& html_markup,
                                  ITextRangeProvider** text_range_provider) {
     LoadInitialAccessibilityTreeFromHtml(html_markup);
-    GetTextRangeProviderFromTextNode(*GetManager()->GetRoot(),
-                                     text_range_provider);
+    GetTextRangeProviderFromTextNode(
+        *GetManager()->GetBrowserAccessibilityRoot(), text_range_provider);
   }
 
   // Run through ITextRangeProvider::ScrollIntoView top tests. It's assumed that
@@ -270,7 +270,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
         BrowserAccessibilityManager::FromID(iframe_tree_id);
     ASSERT_NE(nullptr, iframe_browser_accessibility_manager);
     BrowserAccessibility* root_iframe_browser_accessibility =
-        iframe_browser_accessibility_manager->GetRoot();
+        iframe_browser_accessibility_manager->GetBrowserAccessibilityRoot();
     ASSERT_NE(nullptr, root_iframe_browser_accessibility);
     ASSERT_EQ(ax::mojom::Role::kRootWebArea,
               root_iframe_browser_accessibility->GetRole());

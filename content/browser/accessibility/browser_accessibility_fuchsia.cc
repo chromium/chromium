@@ -72,7 +72,8 @@ void BrowserAccessibilityFuchsia::OnDataChanged() {
 
   // Declare this node as the fuchsia tree root if it's the root of the main
   // frame's tree.
-  if (manager()->IsRootTree() && manager()->GetRoot() == this) {
+  if (manager()->IsRootTree() &&
+      manager()->GetBrowserAccessibilityRoot() == this) {
     ui::AccessibilityBridgeFuchsia* accessibility_bridge =
         GetAccessibilityBridge();
     if (accessibility_bridge)
@@ -382,7 +383,7 @@ uint32_t BrowserAccessibilityFuchsia::GetOffsetContainerOrRootNodeID() const {
   int offset_container_id = GetData().relative_bounds.offset_container_id;
 
   BrowserAccessibility* offset_container =
-      offset_container_id == -1 ? manager()->GetRoot()
+      offset_container_id == -1 ? manager()->GetBrowserAccessibilityRoot()
                                 : manager()->GetFromID(offset_container_id);
 
   BrowserAccessibilityFuchsia* fuchsia_container =

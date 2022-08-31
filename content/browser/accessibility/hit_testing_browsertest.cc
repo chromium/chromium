@@ -213,10 +213,11 @@ BrowserAccessibility* AccessibilityHitTestingBrowserTest::CallNearestLeafNode(
   AccessibilityNotificationWaiter hover_waiter(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kHover);
   ui::AXPlatformNodeBase* platform_node = nullptr;
-  if (manager->GetRoot()->GetAXPlatformNode()) {
-    platform_node = static_cast<ui::AXPlatformNodeBase*>(
-                        manager->GetRoot()->GetAXPlatformNode())
-                        ->NearestLeafToPoint(screen_point);
+  if (manager->GetBrowserAccessibilityRoot()->GetAXPlatformNode()) {
+    platform_node =
+        static_cast<ui::AXPlatformNodeBase*>(
+            manager->GetBrowserAccessibilityRoot()->GetAXPlatformNode())
+            ->NearestLeafToPoint(screen_point);
   }
   EXPECT_TRUE(hover_waiter.WaitForNotification());
   if (platform_node) {

@@ -2255,8 +2255,9 @@ void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
       web_contents_impl->GetPrimaryMainFrame());
   BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
-  while (!main_frame_manager || !AccessibilityTreeContainsNodeWithName(
-             main_frame_manager->GetRoot(), name)) {
+  while (!main_frame_manager ||
+         !AccessibilityTreeContainsNodeWithName(
+             main_frame_manager->GetBrowserAccessibilityRoot(), name)) {
     WaitForAccessibilityTreeToChange(web_contents);
     main_frame_manager = main_frame->browser_accessibility_manager();
   }
@@ -2285,7 +2286,7 @@ ui::AXPlatformNodeDelegate* GetRootAccessibilityNode(
       static_cast<WebContentsImpl*>(web_contents);
   BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
-  return manager ? manager->GetRoot() : nullptr;
+  return manager ? manager->GetBrowserAccessibilityRoot() : nullptr;
 }
 
 FindAccessibilityNodeCriteria::FindAccessibilityNodeCriteria() = default;

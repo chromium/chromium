@@ -439,13 +439,14 @@ gfx::NativeViewAccessible RenderWidgetHostViewAura::GetNativeViewAccessible() {
   BrowserAccessibilityManager* manager =
       host()->GetOrCreateRootBrowserAccessibilityManager();
   if (manager)
-    return ToBrowserAccessibilityWin(manager->GetRoot())->GetCOM();
+    return ToBrowserAccessibilityWin(manager->GetBrowserAccessibilityRoot())
+        ->GetCOM();
 
 #elif BUILDFLAG(IS_LINUX)
   BrowserAccessibilityManager* manager =
       host()->GetOrCreateRootBrowserAccessibilityManager();
-  if (manager && manager->GetRoot())
-    return manager->GetRoot()->GetNativeViewAccessible();
+  if (manager && manager->GetBrowserAccessibilityRoot())
+    return manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
 #endif
 
   NOTIMPLEMENTED_LOG_ONCE();

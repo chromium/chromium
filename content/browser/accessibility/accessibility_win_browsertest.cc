@@ -458,7 +458,7 @@ void AccessibilityWinBrowserTest::SetUpSampleParagraphHelper(
 BrowserAccessibility* AccessibilityWinBrowserTest::FindNode(
     ax::mojom::Role role,
     const std::string& name_or_value) {
-  BrowserAccessibility* root = GetManager()->GetRoot();
+  BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
   CHECK(root);
   return FindNodeInSubtree(*root, role, name_or_value);
 }
@@ -852,8 +852,8 @@ class NativeWinEventWaiter {
             type,
             manager,
             base::GetCurrentProcId(),
-            ui::AXTreeSelector(
-                manager->GetRoot()->GetTargetForNativeAccessibilityEvent()))),
+            ui::AXTreeSelector(manager->GetBrowserAccessibilityRoot()
+                                   ->GetTargetForNativeAccessibilityEvent()))),
         match_pattern_(match_pattern),
         browser_accessibility_manager_(manager) {
     event_recorder_->ListenToEvents(base::BindRepeating(
@@ -4914,9 +4914,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
 
   // Content root node's parent's child should still be the content root node.
   Microsoft::WRL::ComPtr<IRawElementProviderFragment> content_root;
-  ASSERT_HRESULT_SUCCEEDED(
-      GetManager()->GetRoot()->GetNativeViewAccessible()->QueryInterface(
-          IID_PPV_ARGS(&content_root)));
+  ASSERT_HRESULT_SUCCEEDED(GetManager()
+                               ->GetBrowserAccessibilityRoot()
+                               ->GetNativeViewAccessible()
+                               ->QueryInterface(IID_PPV_ARGS(&content_root)));
 
   Microsoft::WRL::ComPtr<IRawElementProviderFragment> parent;
   ASSERT_HRESULT_SUCCEEDED(
@@ -4938,9 +4939,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, TestGetFragmentRoot) {
       </html>)HTML");
 
   Microsoft::WRL::ComPtr<IRawElementProviderFragment> content_root;
-  ASSERT_HRESULT_SUCCEEDED(
-      GetManager()->GetRoot()->GetNativeViewAccessible()->QueryInterface(
-          IID_PPV_ARGS(&content_root)));
+  ASSERT_HRESULT_SUCCEEDED(GetManager()
+                               ->GetBrowserAccessibilityRoot()
+                               ->GetNativeViewAccessible()
+                               ->QueryInterface(IID_PPV_ARGS(&content_root)));
 
   Microsoft::WRL::ComPtr<IRawElementProviderFragmentRoot> fragment_root;
   ASSERT_HRESULT_SUCCEEDED(content_root->get_FragmentRoot(&fragment_root));
@@ -5262,7 +5264,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   // Start by getting the root element for the HWND hosting the web content.
   HWND hwnd = view->host()
                   ->GetRootBrowserAccessibilityManager()
-                  ->GetRoot()
+                  ->GetBrowserAccessibilityRoot()
                   ->GetTargetForNativeAccessibilityEvent();
   ASSERT_NE(gfx::kNullAcceleratedWidget, hwnd);
   Microsoft::WRL::ComPtr<IUIAutomationElement> root;

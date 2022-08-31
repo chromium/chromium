@@ -562,10 +562,10 @@ LegacyRenderWidgetHostHWND::GetOrCreateBrowserAccessibilityRoot() {
   BrowserAccessibilityManagerWin* manager =
       static_cast<BrowserAccessibilityManagerWin*>(
           rwhi->GetOrCreateRootBrowserAccessibilityManager());
-  if (!manager || !manager->GetRoot())
+  if (!manager || !manager->GetBrowserAccessibilityRoot())
     return nullptr;
 
-  BrowserAccessibility* root_node = manager->GetRoot();
+  BrowserAccessibility* root_node = manager->GetBrowserAccessibilityRoot();
 
   // Popups with HTML content (such as <input type="date">) will create a new
   // HWND with its own fragment root, but will also inject accessible nodes into
