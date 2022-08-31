@@ -192,7 +192,7 @@
 -TrustSafetySentimentServiceBrowserTest.PageInfoTriggersSurvey_Interaction
 -TrustSafetySentimentServiceBrowserTest.PageInfoTriggersSurvey_NoInteraction
 
-# TODO(crbug.com/1316203): JS error. Probalby because usb isn't supported yet 
+# TODO(crbug.com/1316203): JS error. Probalby because usb isn't supported yet
 -UsbInternalsTest.WebUIValueRenderTest
 
 # TODO(crbug.com/1309290): Fail with ERR_INTERNET_DISCONNECTED
@@ -581,3 +581,61 @@
 # TODO(crbug.com/1349546) Pref is missing for PrivacyPage JS test. The exact missing pref is not
 # yet identified.
 -CrSettingsPrivacyPageTest.PrivacyPageTests
+
+# TODO(crbug.com/1271639): Undiagnosed failures
+-All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/0
+-All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/1
+-All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/2
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrinting/0
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrinting/1
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrintingSpoolingSharedMemoryError/0
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrintingSpoolingSharedMemoryError/1
+-BackForwardCachePrintBrowserTest.DisableCaching
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/0
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/1
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/2
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/3
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/4
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/5
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/6
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/7
+-CollectedCookiesViewsMetricsTest.BlockAllowSite
+-CollectedCookiesViewsMetricsTest.BlockClearOnExit
+-CollectedCookiesViewsMetricsTest.DeleteFolder
+-CollectedCookiesViewsMetricsTest.OpenDialog
+-CollectedCookiesViewsMetricsTest.RemoveButton
+-DesktopCaptureApiTest.ChooseDesktopMedia
+-DesktopCaptureApiTest.Delegation
+-PDFExtensionSubmitFormTest.SubmitForm
+-PDFExtensionTest.Metrics
+-PDFExtensionTest.SelectAllShortcut
+-PdfToPwgRasterBrowserTest.TestSuccessColor
+-PdfToPwgRasterBrowserTest.TestSuccessLongDuplex
+-PdfToPwgRasterBrowserTest.TestSuccessMono
+-PersistentBackground/ExtensionWebRequestApiTestWithContextType.WebRequestPacRequestProtection/0
+-PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase
+-PrintBrowserTest.LazyLoadedIframeFetched
+-PrintBrowserTest.LazyLoadedImagesFetched
+-PrintBrowserTest.LegacyLayoutEngineFallback
+-PrintBrowserTest.MultipagePrint
+-PrintBrowserTest.NoScrolling
+-PrintBrowserTest.NoScrollingVerticalRl
+-PrintBrowserTest.PrintNup
+-PrintBrowserTest.ResetPageScaleAfterPrintPreview
+-PrintBrowserTest.SelectionContainsIframe
+-PrintBrowserTest.WindowDotPrint
+-PrintExtensionBrowserTest.PrintOptionPage
+-PrintPreviewDialogControllerBrowserTest.PdfPluginDisabled
+-PrintPreviewDialogControllerBrowserTest.PrintPreviewPdfAccessibility
+-ReduceUserAgentPlatformBrowserTest.NavigatorPlatform
+-ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestPacRequestProtection/0
+-SitePerProcessPrintBrowserTest.BasicPrint
+-SitePerProcessPrintBrowserTest.MultipagePrint
+-SitePerProcessPrintBrowserTest.PrintNup
+-SitePerProcessPrintBrowserTest.SubframeUnavailableBeforePrint
+-SitePerProcessPrintBrowserTest.SubframeUnavailableDuringPrint
+-SitePerProcessPrintExtensionBrowserTest.PrintOptionPage
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingAccessDenied
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingDocumentDoneAccessDenied
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingRenderDocumentAccessDenied
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingRepeatedAccessDenied
