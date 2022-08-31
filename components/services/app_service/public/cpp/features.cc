@@ -22,6 +22,6 @@ const base::Feature kAppServiceWithoutMojom{"AppServiceWithoutMojom",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAppServiceGetMenuWithoutMojom{
-    "AppServiceGetMenuWithoutMojom", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AppServiceGetMenuWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace apps
