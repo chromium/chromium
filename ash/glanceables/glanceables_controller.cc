@@ -18,7 +18,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/wm/desks/desks_util.h"
-#include "base/bind.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
@@ -135,13 +134,8 @@ void GlanceablesController::FetchData() {
       ->ambient_weather_controller()
       ->FetchWeather();
 
-  // GlanceablesUpNextView observes the calendar model for updates.
-  // TODO(crbug.com/1353495): remove timer.
-  timer_.Start(
-      FROM_HERE, base::Milliseconds(1000), base::BindOnce([]() {
-        Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(
-            calendar_utils::GetStartOfMonthUTC(base::Time::Now()));
-      }));
+  Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(
+      calendar_utils::GetStartOfMonthUTC(base::Time::Now()));
 }
 
 void GlanceablesController::ApplyBackdrop() const {

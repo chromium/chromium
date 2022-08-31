@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_GLANCEABLES_CHROME_GLANCEABLES_DELEGATE_H_
 
 #include "ash/glanceables/glanceables_delegate.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
 
@@ -15,7 +16,8 @@ class GlanceablesController;
 
 // Implements the GlanceablesDelegate interface, allowing access to
 // functionality in the //chrome/browser layer.
-class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate {
+class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate,
+                                  public signin::IdentityManager::Observer {
  public:
   explicit ChromeGlanceablesDelegate(ash::GlanceablesController* controller);
   ChromeGlanceablesDelegate(const ChromeGlanceablesDelegate&) = delete;
@@ -34,6 +36,10 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate {
   void OnGlanceablesClosed() override;
   bool ShouldTakeSignoutScreenshot() override;
 
+  // signin::IdentityManager::Observer:
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
+
  private:
   // Returns true if glanceables should be show for the current login.
   bool ShouldShowOnLogin() const;
@@ -42,6 +48,9 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate {
 
   // The profile for the primary user in the session.
   Profile* primary_profile_ = nullptr;
+
+  // The identity manager for the primary profile.
+  signin::IdentityManager* identity_manager_ = nullptr;
 
   // Whether the user triggered session restore on login.
   bool did_restore_ = false;
