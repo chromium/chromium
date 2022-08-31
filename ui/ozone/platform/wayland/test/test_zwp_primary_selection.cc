@@ -86,6 +86,10 @@ struct ZwpPrimarySelectionSource : public TestSelectionSource::Delegate {
     zwp_primary_selection_source_v1_send_cancelled(source->resource());
   }
 
+  void SendDndAction(uint32_t action) override {
+    NOTREACHED() << "The interface does not support this method.";
+  }
+
   void OnDestroying() override { delete this; }
 
   TestSelectionSource* source = nullptr;

@@ -246,6 +246,13 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
         base::Unretained(this)));
   }
 
+  void ScheduleDataDeviceAction(uint32_t action) {
+    ScheduleTestTask(base::BindLambdaForTesting([&]() {
+      SendDndAction(action);
+      Sync();
+    }));
+  }
+
   void FocusAndPressLeftPointerButton(WaylandWindow* window,
                                       MockPlatformWindowDelegate* delegate) {
     SendPointerEnter(window, delegate);
@@ -676,6 +683,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
 TEST_P(WaylandDataDragControllerTest, StartAndCancel) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
+  ScheduleDataDeviceAction(WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE);
   // Schedule a wl_data_source::cancelled event to be sent asynchronously
   // once the drag session gets started.
   ScheduleDragCancel();

@@ -122,6 +122,10 @@ void TestSelectionSource::OnCancelled() {
   mime_types_.clear();
 }
 
+void TestSelectionSource::OnDndAction(uint32_t action) {
+  delegate_->SendDndAction(action);
+}
+
 void TestSelectionSource::Offer(struct wl_client* client,
                                 struct wl_resource* resource,
                                 const char* mime_type) {

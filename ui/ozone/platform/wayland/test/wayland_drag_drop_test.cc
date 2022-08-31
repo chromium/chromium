@@ -57,6 +57,11 @@ void WaylandDragDropTest::SendDndCancelled() {
   data_source_->OnCancelled();
 }
 
+void WaylandDragDropTest::SendDndAction(uint32_t action) {
+  EXPECT_TRUE(data_source_);
+  data_source_->OnDndAction(action);
+}
+
 void WaylandDragDropTest::ReadData(
     const std::string& mime_type,
     wl::TestDataSource::ReadDataCallback callback) {

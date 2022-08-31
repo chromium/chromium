@@ -339,7 +339,8 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
 
   if (origin_window_) {
     origin_window_->OnDragSessionClose(
-        DndActionToDragOperation(data_source_->dnd_action()));
+        completed ? DndActionToDragOperation(data_source_->dnd_action())
+                  : DragOperation::kNone);
     // DnD handlers expect DragLeave to be sent for drag sessions that end up
     // with no data transfer (wl_data_source::cancelled event).
     if (!completed)

@@ -86,6 +86,10 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
     gtk_primary_selection_source_send_cancelled(source->resource());
   }
 
+  void SendDndAction(uint32_t action) override {
+    NOTREACHED() << "The interface does not support this method.";
+  }
+
   void OnDestroying() override { delete this; }
 
   TestSelectionSource* source = nullptr;
