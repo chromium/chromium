@@ -86,12 +86,8 @@ media::AudioParameters GetMixerOutputParams(
   DCHECK_NE(output_buffer_size, 0);
 
   media::AudioParameters params(input_params.format(),
-                                input_params.channel_layout(),
+                                input_params.channel_layout_config(),
                                 output_sample_rate, output_buffer_size);
-
-  // Use the actual channel count when the channel layout is "DISCRETE".
-  if (input_params.channel_layout() == media::CHANNEL_LAYOUT_DISCRETE)
-    params.set_channels_for_discrete(input_params.channels());
 
   // Specify the effects info the passed to the browser side.
   params.set_effects(input_params.effects());
