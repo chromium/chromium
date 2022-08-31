@@ -537,7 +537,7 @@ const base::Feature kCCTIncognitoAvailableToThirdParty{
     "CCTIncognitoAvailableToThirdParty", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCCTPackageNameRecording{"CCTPackageNameRecording",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCCTPostMessageAPI{"CCTPostMessageAPI",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
