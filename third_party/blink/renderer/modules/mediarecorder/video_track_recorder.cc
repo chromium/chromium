@@ -243,20 +243,22 @@ VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
 
 VideoTrackRecorderImpl::CodecEnumerator::~CodecEnumerator() = default;
 
-media::VideoCodecProfile
+std::pair<media::VideoCodecProfile, bool>
 VideoTrackRecorderImpl::CodecEnumerator::FindSupportedVideoCodecProfile(
     CodecId codec,
     media::VideoCodecProfile profile) const {
   const auto profiles = supported_profiles_.find(codec);
   if (profiles == supported_profiles_.end()) {
-    return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+    return {media::VIDEO_CODEC_PROFILE_UNKNOWN, false};
   }
   for (const auto& p : profiles->value) {
     if (p.profile == profile) {
-      return profile;
+      const bool vbr_support =
+          p.rate_control_modes & media::VideoEncodeAccelerator::kVariableMode;
+      return {profile, vbr_support};
     }
   }
-  return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+  return {media::VIDEO_CODEC_PROFILE_UNKNOWN, false};
 }
 
 VideoTrackRecorderImpl::CodecId
@@ -267,13 +269,17 @@ VideoTrackRecorderImpl::CodecEnumerator::GetPreferredCodecId() const {
   return preferred_codec_id_;
 }
 
-media::VideoCodecProfile
+std::pair<media::VideoCodecProfile, bool>
 VideoTrackRecorderImpl::CodecEnumerator::GetFirstSupportedVideoCodecProfile(
     CodecId codec) const {
   const auto profile = supported_profiles_.find(codec);
-  return profile == supported_profiles_.end()
-             ? media::VIDEO_CODEC_PROFILE_UNKNOWN
-             : profile->value.front().profile;
+  if (profile == supported_profiles_.end())
+    return {media::VIDEO_CODEC_PROFILE_UNKNOWN, false};
+
+  const auto& supported_profile = profile->value.front();
+  const bool vbr_support = supported_profile.rate_control_modes &
+                           media::VideoEncodeAccelerator::kVariableMode;
+  return {supported_profile.profile, vbr_support};
 }
 
 media::VideoEncodeAccelerator::SupportedProfiles
@@ -722,7 +728,7 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", true);
     UmaHistogramForCodec(true, codec_profile.codec_id);
 
-    const auto vea_profile =
+    const auto [vea_profile, vbr_supported] =
         codec_profile.profile
             ? GetCodecEnumerator()->FindSupportedVideoCodecProfile(
                   codec_profile.codec_id, *codec_profile.profile)
@@ -731,12 +737,16 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
 
     bool use_import_mode =
         frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+    // VBR encoding is preferred.
+    media::Bitrate::Mode bitrate_mode = vbr_supported
+                                            ? media::Bitrate::Mode::kVariable
+                                            : media::Bitrate::Mode::kConstant;
     encoder_ = VEAEncoder::Create(
         on_encoded_video_cb,
         media::BindToCurrentLoop(WTF::BindRepeating(
             &VideoTrackRecorderImpl::OnError, weak_factory_.GetWeakPtr())),
-        bits_per_second, vea_profile, codec_profile.level, input_size,
-        use_import_mode, main_task_runner_);
+        bitrate_mode, bits_per_second, vea_profile, codec_profile.level,
+        input_size, use_import_mode, main_task_runner_);
   } else {
     // TODO(b/227350897): remove once codec histogram is verified working
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", false);

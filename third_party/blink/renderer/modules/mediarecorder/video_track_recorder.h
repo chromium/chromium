@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <memory>
+#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -263,15 +264,16 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     CodecId GetPreferredCodecId() const;
 
     // Returns supported VEA VideoCodecProfile which matches |codec| and
-    // |profile|.
-    media::VideoCodecProfile FindSupportedVideoCodecProfile(
+    // |profile| and whether VEA supports VBR encoding for the profile.
+    std::pair<media::VideoCodecProfile, bool> FindSupportedVideoCodecProfile(
         CodecId codec,
         media::VideoCodecProfile profile) const;
 
-    // Returns VEA's first supported VideoCodedProfile for a given CodecId, or
+    // Returns VEA's first supported VideoCodedProfile for a given CodecId and
+    // whether VBR encoding is supported by VEA for the profile, or
     // VIDEO_CODEC_PROFILE_UNKNOWN otherwise.
-    media::VideoCodecProfile GetFirstSupportedVideoCodecProfile(
-        CodecId codec) const;
+    std::pair<media::VideoCodecProfile, bool>
+    GetFirstSupportedVideoCodecProfile(CodecId codec) const;
 
     // Returns a list of supported media::VEA::SupportedProfile for a given
     // CodecId, or empty vector if CodecId is unsupported.

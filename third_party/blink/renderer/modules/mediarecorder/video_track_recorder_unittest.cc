@@ -731,12 +731,20 @@ class CodecEnumeratorTest : public ::testing::Test {
     return profiles;
   }
 
-  media::VideoEncodeAccelerator::SupportedProfiles MakeVp9Profiles() {
+  media::VideoEncodeAccelerator::SupportedProfiles MakeVp9Profiles(
+      bool vbr_support = false) {
     media::VideoEncodeAccelerator::SupportedProfiles profiles;
+    auto rc_mode =
+        media::VideoEncodeAccelerator::SupportedRateControlMode::kConstantMode;
+    if (vbr_support) {
+      rc_mode |= media::VideoEncodeAccelerator::SupportedRateControlMode::
+          kVariableMode;
+    }
+
     profiles.emplace_back(media::VP9PROFILE_PROFILE1, gfx::Size(1920, 1080), 60,
-                          1);
+                          1, rc_mode);
     profiles.emplace_back(media::VP9PROFILE_PROFILE2, gfx::Size(1920, 1080), 30,
-                          1);
+                          1, rc_mode);
     return profiles;
   }
 
@@ -749,14 +757,22 @@ class CodecEnumeratorTest : public ::testing::Test {
     return profiles;
   }
 
-  media::VideoEncodeAccelerator::SupportedProfiles MakeH264Profiles() {
+  media::VideoEncodeAccelerator::SupportedProfiles MakeH264Profiles(
+      bool vbr_support = false) {
     media::VideoEncodeAccelerator::SupportedProfiles profiles;
+    auto rc_mode =
+        media::VideoEncodeAccelerator::SupportedRateControlMode::kConstantMode;
+    if (vbr_support) {
+      rc_mode |= media::VideoEncodeAccelerator::SupportedRateControlMode::
+          kVariableMode;
+    }
+
     profiles.emplace_back(media::H264PROFILE_BASELINE, gfx::Size(1920, 1080),
-                          24, 1);
-    profiles.emplace_back(media::H264PROFILE_MAIN, gfx::Size(1920, 1080), 30,
-                          1);
-    profiles.emplace_back(media::H264PROFILE_HIGH, gfx::Size(1920, 1080), 60,
-                          1);
+                          24, 1, rc_mode);
+    profiles.emplace_back(media::H264PROFILE_MAIN, gfx::Size(1920, 1080), 30, 1,
+                          rc_mode);
+    profiles.emplace_back(media::H264PROFILE_HIGH, gfx::Size(1920, 1080), 60, 1,
+                          rc_mode);
     return profiles;
   }
 };
@@ -801,30 +817,61 @@ TEST_F(CodecEnumeratorTest, MakeSupportedProfilesNoVp8) {
 
 TEST_F(CodecEnumeratorTest, GetFirstSupportedVideoCodecProfileVp9) {
   const CodecEnumerator emulator(MakeVp9Profiles());
-  EXPECT_EQ(media::VP9PROFILE_PROFILE1,
+  EXPECT_EQ(std::make_pair(media::VP9PROFILE_PROFILE1, /*vbr_support=*/false),
             emulator.GetFirstSupportedVideoCodecProfile(CodecId::kVp9));
 }
 
 TEST_F(CodecEnumeratorTest, GetFirstSupportedVideoCodecProfileNoVp8) {
   const CodecEnumerator emulator(MakeVp9Profiles());
-  EXPECT_EQ(media::VIDEO_CODEC_PROFILE_UNKNOWN,
-            emulator.GetFirstSupportedVideoCodecProfile(CodecId::kVp8));
+  EXPECT_EQ(
+      std::make_pair(media::VIDEO_CODEC_PROFILE_UNKNOWN, /*vbr_support=*/false),
+      emulator.GetFirstSupportedVideoCodecProfile(CodecId::kVp8));
+}
+
+TEST_F(CodecEnumeratorTest, GetFirstSupportedVideoCodecProfileVp9VBR) {
+  const CodecEnumerator emulator(MakeVp9Profiles(/*vbr_support=*/true));
+  EXPECT_EQ(std::make_pair(media::VP9PROFILE_PROFILE1, /*vbr_support=*/true),
+            emulator.GetFirstSupportedVideoCodecProfile(CodecId::kVp9));
+}
+
+TEST_F(CodecEnumeratorTest, GetFirstSupportedVideoCodecProfileNoVp8VBR) {
+  const CodecEnumerator emulator(MakeVp9Profiles(/*vbr_support=*/true));
+  EXPECT_EQ(
+      std::make_pair(media::VIDEO_CODEC_PROFILE_UNKNOWN, /*vbr_support=*/false),
+      emulator.GetFirstSupportedVideoCodecProfile(CodecId::kVp8));
 }
 
 #if BUILDFLAG(RTC_USE_H264)
 TEST_F(CodecEnumeratorTest, FindSupportedVideoCodecProfileH264) {
   const CodecEnumerator emulator(MakeH264Profiles());
-  EXPECT_EQ(media::H264PROFILE_HIGH,
+  EXPECT_EQ(std::make_pair(media::H264PROFILE_HIGH, /*vbr_support=*/false),
+            emulator.FindSupportedVideoCodecProfile(CodecId::kH264,
+                                                    media::H264PROFILE_HIGH));
+}
+
+TEST_F(CodecEnumeratorTest, FindSupportedVideoCodecProfileH264VBR) {
+  const CodecEnumerator emulator(MakeH264Profiles(/*vbr_support=*/true));
+  EXPECT_EQ(std::make_pair(media::H264PROFILE_HIGH, /*vbr_support=*/true),
             emulator.FindSupportedVideoCodecProfile(CodecId::kH264,
                                                     media::H264PROFILE_HIGH));
 }
 
 TEST_F(CodecEnumeratorTest, FindSupportedVideoCodecProfileNoProfileH264) {
   const CodecEnumerator emulator(MakeH264Profiles());
-  EXPECT_EQ(media::VIDEO_CODEC_PROFILE_UNKNOWN,
-            emulator.FindSupportedVideoCodecProfile(
-                CodecId::kH264, media::H264PROFILE_HIGH422PROFILE));
+  EXPECT_EQ(
+      std::make_pair(media::VIDEO_CODEC_PROFILE_UNKNOWN, /*vbr_support=*/false),
+      emulator.FindSupportedVideoCodecProfile(
+          CodecId::kH264, media::H264PROFILE_HIGH422PROFILE));
 }
+
+TEST_F(CodecEnumeratorTest, FindSupportedVideoCodecProfileNoProfileH264VBR) {
+  const CodecEnumerator emulator(MakeH264Profiles(/*vbr_support=*/true));
+  EXPECT_EQ(
+      std::make_pair(media::VIDEO_CODEC_PROFILE_UNKNOWN, /*vbr_support=*/false),
+      emulator.FindSupportedVideoCodecProfile(
+          CodecId::kH264, media::H264PROFILE_HIGH422PROFILE));
+}
+
 #endif
 
 }  // namespace blink

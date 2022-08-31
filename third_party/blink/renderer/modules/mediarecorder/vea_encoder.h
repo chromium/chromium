@@ -10,6 +10,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
+#include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -35,6 +36,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
   static scoped_refptr<VEAEncoder> Create(
       const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
       const VideoTrackRecorder::OnErrorCB& on_error_cb,
+      media::Bitrate::Mode bitrate_mode,
       uint32_t bits_per_second,
       media::VideoCodecProfile codec,
       absl::optional<uint8_t> level,
@@ -66,6 +68,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
 
   VEAEncoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
              const VideoTrackRecorder::OnErrorCB& on_error_cb,
+             media::Bitrate::Mode bitrate_mode,
              uint32_t bits_per_second,
              media::VideoCodecProfile codec,
              absl::optional<uint8_t> level,
@@ -90,6 +93,8 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
   const media::VideoCodecProfile codec_;
 
   const absl::optional<uint8_t> level_;
+
+  const media::Bitrate::Mode bitrate_mode_;
 
   // The underlying VEA to perform encoding on.
   std::unique_ptr<media::VideoEncodeAccelerator> video_encoder_;

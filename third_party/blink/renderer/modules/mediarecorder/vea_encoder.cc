@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -49,15 +50,16 @@ const uint32_t kMaxKeyframeInterval = 100;
 scoped_refptr<VEAEncoder> VEAEncoder::Create(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
+    media::Bitrate::Mode bitrate_mode,
     uint32_t bits_per_second,
     media::VideoCodecProfile codec,
     absl::optional<uint8_t> level,
     const gfx::Size& size,
     bool use_native_input,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  auto encoder = base::AdoptRef(new VEAEncoder(on_encoded_video_cb, on_error_cb,
-                                               bits_per_second, codec, level,
-                                               size, std::move(task_runner)));
+  auto encoder = base::AdoptRef(new VEAEncoder(
+      on_encoded_video_cb, on_error_cb, bitrate_mode, bits_per_second, codec,
+      level, size, std::move(task_runner)));
   PostCrossThreadTask(
       *encoder->encoding_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&VEAEncoder::ConfigureEncoderOnEncodingTaskRunner,
@@ -72,6 +74,7 @@ bool VEAEncoder::OutputBuffer::IsValid() {
 VEAEncoder::VEAEncoder(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
+    media::Bitrate::Mode bitrate_mode,
     uint32_t bits_per_second,
     media::VideoCodecProfile codec,
     absl::optional<uint8_t> level,
@@ -85,6 +88,7 @@ VEAEncoder::VEAEncoder(
       gpu_factories_(Platform::Current()->GetGpuFactories()),
       codec_(codec),
       level_(level),
+      bitrate_mode_(bitrate_mode),
       error_notified_(false),
       num_frames_after_keyframe_(0),
       force_next_frame_to_be_keyframe_(false),
@@ -327,12 +331,27 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
         media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
 
+  auto bitrate = media::Bitrate::ConstantBitrate(bits_per_second_);
+  if (bitrate_mode_ == media::Bitrate::Mode::kVariable) {
+    constexpr uint32_t kNumPixelsIn4KResolution = 3840 * 2160;
+    constexpr uint32_t kMaxAllowedBitrate =
+        kNumPixelsIn4KResolution * kVEADefaultBitratePerPixel;
+    const uint32_t max_peak_bps =
+        std::max(bits_per_second_, kMaxAllowedBitrate);
+    // This magnification is determined in crbug.com/1342850.
+    constexpr uint32_t kPeakBpsMagnification = 2;
+    base::CheckedNumeric<uint32_t> peak_bps = bits_per_second_;
+    peak_bps *= kPeakBpsMagnification;
+    bitrate = media::Bitrate::VariableBitrate(
+        bits_per_second_,
+        base::strict_cast<uint32_t>(peak_bps.ValueOrDefault(max_peak_bps)));
+  }
+
   // TODO(b/181797390): Use VBR bitrate mode.
   // TODO(crbug.com/1289907): remove the cast to uint32_t once
   // |bits_per_second_| is stored as uint32_t.
   const media::VideoEncodeAccelerator::Config config(
-      pixel_format, input_visible_size_, codec_,
-      media::Bitrate::ConstantBitrate(bits_per_second_), absl::nullopt,
+      pixel_format, input_visible_size_, codec_, bitrate, absl::nullopt,
       absl::nullopt, level_, false, storage_type,
       media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ ||
