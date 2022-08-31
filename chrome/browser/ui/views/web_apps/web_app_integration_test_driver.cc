@@ -674,7 +674,6 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
     SyncTurnOff();
   for (auto* profile : delegate_->GetAllProfiles()) {
     auto* provider = GetProviderForProfile(profile);
-    base::RunLoop run_loop;
     std::vector<AppId> app_ids = provider->registrar().GetAppIds();
     for (auto& app_id : app_ids) {
       LOG(INFO) << "TearDownOnMainThread: Uninstalling " << app_id << ".";
@@ -683,6 +682,9 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         UninstallPolicyAppById(app_id);
       if (provider->registrar().IsInstalled(app_id)) {
         DCHECK(app->CanUserUninstallWebApp());
+        AppRegistrationWaiter app_registration_waiter(
+            profile, app_id, apps::Readiness::kUninstalledByUser);
+        base::RunLoop run_loop;
         provider->install_finalizer().UninstallWebApp(
             app_id, webapps::WebappUninstallSource::kAppsPage,
             base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
@@ -690,6 +692,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
               run_loop.Quit();
             }));
         run_loop.Run();
+        app_registration_waiter.Await();
       }
       LOG(INFO) << "TearDownOnMainThread: Uninstall complete.";
     }

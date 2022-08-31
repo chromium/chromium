@@ -314,7 +314,11 @@ bool WebAppRegistrar::IsUrlInAppScope(const GURL& url,
 size_t WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
                                               const AppId& app_id) const {
   std::string app_scope = GetAppScope(app_id).spec();
-  DCHECK(!app_scope.empty());
+
+  // The app may have been uninstalled.
+  if (app_scope.empty())
+    return 0;
+
   return base::StartsWith(url_spec, app_scope, base::CompareCase::SENSITIVE)
              ? app_scope.size()
              : 0;
