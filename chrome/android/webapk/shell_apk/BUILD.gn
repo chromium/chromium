@@ -285,8 +285,6 @@ template("webapk_tmpl") {
       proguard_configs = [
         "//chrome/android/webapk/shell_apk/proguard.flags",
         "//chrome/android/proguard/main.flags",
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
       ]
     }
   }

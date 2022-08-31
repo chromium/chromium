@@ -4315,6 +4315,11 @@ if (is_android) {
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     resources_package = "org.chromium.base"
+
+    proguard_configs = [
+      "android/proguard/chromium_apk.flags",
+      "android/proguard/chromium_code.flags",
+    ]
   }
 
   android_aidl("base_java_aidl") {
