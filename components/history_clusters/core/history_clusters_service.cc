@@ -24,6 +24,7 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/file_clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -68,9 +69,12 @@ HistoryClustersService::HistoryClustersService(
 
   visit_deletion_observer_.AttachToHistoryService(history_service);
 
-  backend_ = std::make_unique<OnDeviceClusteringBackend>(
-      entity_metadata_provider, engagement_score_provider,
-      optimization_guide_decider, JourneysMidBlocklist());
+  backend_ = FileClusteringBackend::CreateIfEnabled();
+  if (!backend_) {
+    backend_ = std::make_unique<OnDeviceClusteringBackend>(
+        entity_metadata_provider, engagement_score_provider,
+        optimization_guide_decider, JourneysMidBlocklist());
+  }
 
   RepeatedlyUpdateClusters();
 }
