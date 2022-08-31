@@ -26,7 +26,6 @@ group("polymer3_elements") {
     ":gaia_signin_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
-    ":marketing_opt_in_module",
     ":multidevice_setup_module",
     ":offline_ad_login_module",
     ":oobe_eula_module",
@@ -72,7 +71,7 @@ js_type_check("closure_compile_local") {
     ":guest_tos.m",
     ":hw_data_collection.m",
     ":managed_terms_of_service",
-    ":marketing_opt_in.m",
+    ":marketing_opt_in",
     ":offline_ad_login.m",
     ":oobe_eula.m",
     ":oobe_reset",
@@ -352,8 +351,8 @@ js_library("managed_terms_of_service") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("marketing_opt_in.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.m.js" ]
+js_library("marketing_opt_in") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.js" ]
   deps = [
     "../../components:display_manager_types.m",
     "../../components:oobe_a11y_option.m",
@@ -366,7 +365,7 @@ js_library("marketing_opt_in.m") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
-  extra_deps = [ ":marketing_opt_in_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("multidevice_setup.m") {
@@ -762,15 +761,6 @@ polymer_modulizer("hw_data_collection") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("marketing_opt_in") {
-  js_file = "marketing_opt_in.js"
-  html_file = "marketing_opt_in.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("multidevice_setup") {
   js_file = "multidevice_setup.js"
   html_file = "multidevice_setup.html"
@@ -894,6 +884,7 @@ html_to_js("web_components") {
     "arc_terms_of_service.js",
     "gesture_navigation.js",
     "managed_terms_of_service.js",
+    "marketing_opt_in.js",
     "oobe_reset.js",
     "parental_handoff.js",
     "pin_setup.js",
