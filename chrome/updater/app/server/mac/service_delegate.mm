@@ -298,7 +298,7 @@
 
   auto sccb = base::BindRepeating(base::RetainBlock(^(
       const updater::UpdateService::UpdateState& state) {
-    NSString* version = base::SysUTF8ToNSString(
+    NSString* version_string = base::SysUTF8ToNSString(
         state.next_version.IsValid() ? state.next_version.GetString() : "");
 
     base::scoped_nsobject<CRUUpdateStateStateWrapper> updateStateStateWrapper(
@@ -312,7 +312,7 @@
         [[CRUUpdateStateWrapper alloc]
               initWithAppId:base::SysUTF8ToNSString(state.app_id)
                       state:updateStateStateWrapper.get()
-                    version:version
+                    version:version_string
             downloadedBytes:state.downloaded_bytes
                  totalBytes:state.total_bytes
             installProgress:state.install_progress

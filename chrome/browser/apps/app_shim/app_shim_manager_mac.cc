@@ -519,8 +519,8 @@ void AppShimManager::LoadAndLaunchApp(
   // attempt to launch, starting with the profile specified in |bootstrap|,
   // at the front of the list.
   std::vector<base::FilePath> profile_paths_to_launch = {profile_path};
-  for (const auto& profile_path : last_active_profile_paths)
-    profile_paths_to_launch.push_back(profile_path);
+  for (const auto& last_active_profile_path : last_active_profile_paths)
+    profile_paths_to_launch.push_back(last_active_profile_path);
 
   // Attempt load all of the profiles in |profile_paths_to_launch|, and once
   // they're loaded (or have failed to load), call
@@ -535,16 +535,16 @@ void AppShimManager::LoadAndLaunchApp(
     // LoadProfileAndApp, and then finally call the initial |callback|. This
     // may end up being async (if some profiles aren't loaded), or may be
     // synchronous (if all profiles happen to already be loaded).
-    for (const auto& profile_path : profile_paths_to_launch) {
-      if (profile_path.empty())
+    for (const auto& profile_path_to_launch : profile_paths_to_launch) {
+      if (profile_path_to_launch.empty())
         continue;
       LoadProfileAndAppCallback callback_wrapped =
           base::BindOnce([](base::OnceClosure callback_to_wrap,
                             Profile*) { std::move(callback_to_wrap).Run(); },
                          std::move(callback));
-      callback = base::BindOnce(&AppShimManager::LoadProfileAndApp,
-                                weak_factory_.GetWeakPtr(), profile_path,
-                                params.app_id, std::move(callback_wrapped));
+      callback = base::BindOnce(
+          &AppShimManager::LoadProfileAndApp, weak_factory_.GetWeakPtr(),
+          profile_path_to_launch, params.app_id, std::move(callback_wrapped));
     }
   }
   std::move(callback).Run();
@@ -1080,9 +1080,9 @@ void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
   // TODO(crbug.com/1302722): Remove this once we're confident this never
   // happens.
   std::string inconsistent_app_ids;
-  for (const auto& [app_id, app_state] : apps_) {
-    if (app_state->ShouldDeleteAppState())
-      inconsistent_app_ids += app_id + " ";
+  for (const auto& [id, state] : apps_) {
+    if (state->ShouldDeleteAppState())
+      inconsistent_app_ids += id + " ";
   }
   if (!inconsistent_app_ids.empty())
     DumpError(inconsistent_app_ids);

@@ -153,18 +153,20 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     stream_.reset([[SCStream alloc] initWithFilter:filter
                                      configuration:config
                                           delegate:helper_]);
-    NSError* error = nil;
-    bool add_stream_output_result =
-        [stream_ addStreamOutput:helper_
-                            type:SCStreamOutputTypeScreen
-              sampleHandlerQueue:dispatch_get_main_queue()
-                           error:&error];
-    if (!add_stream_output_result) {
-      stream_.reset();
-      client()->OnError(
-          media::VideoCaptureError::kScreenCaptureKitFailedAddStreamOutput,
-          FROM_HERE, "Failed addStreamOutput");
-      return;
+    {
+      NSError* error = nil;
+      bool add_stream_output_result =
+          [stream_ addStreamOutput:helper_
+                              type:SCStreamOutputTypeScreen
+                sampleHandlerQueue:dispatch_get_main_queue()
+                             error:&error];
+      if (!add_stream_output_result) {
+        stream_.reset();
+        client()->OnError(
+            media::VideoCaptureError::kScreenCaptureKitFailedAddStreamOutput,
+            FROM_HERE, "Failed addStreamOutput");
+        return;
+      }
     }
 
     auto stream_started_callback = base::BindPostTask(

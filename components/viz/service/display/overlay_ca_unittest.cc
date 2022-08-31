@@ -452,30 +452,33 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
 }
 
 TEST_F(CALayerOverlayTest, OverlayErrorCode) {
-  // Frame #1
-  auto pass = CreateRenderPass();
-  CreateFullscreenCandidateQuad(
-      resource_provider_.get(), child_resource_provider_.get(),
-      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-  CALayerOverlayList ca_layer_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  AggregatedRenderPassList pass_list;
-  pass_list.push_back(std::move(pass));
-  SurfaceDamageRectList surface_damage_rect_list;
 
-  overlay_processor_->ProcessForOverlays(
-      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-      render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
-      &damage_rect_, &content_bounds_);
+  // Frame #1
+  {
+    auto pass = CreateRenderPass();
+    CreateFullscreenCandidateQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
 
-  // There should be no error.
-  gfx::CALayerResult error_code = overlay_processor_->GetCALayerErrorCode();
-  EXPECT_EQ(1U, ca_layer_list.size());
-  // kCALayerSuccess = 0,
-  EXPECT_EQ(0, error_code);
+    CALayerOverlayList ca_layer_list;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
+        &damage_rect_, &content_bounds_);
+
+    // There should be no error.
+    gfx::CALayerResult error_code = overlay_processor_->GetCALayerErrorCode();
+    EXPECT_EQ(1U, ca_layer_list.size());
+    // kCALayerSuccess = 0,
+    EXPECT_EQ(0, error_code);
+  }
 
   // Frame #2
   {

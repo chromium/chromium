@@ -75,16 +75,16 @@ CreateSecCertificateArrayForX509Certificate(
     return base::ScopedCFTypeRef<CFMutableArrayRef>();
   CFArrayAppendValue(cert_list, sec_cert);
   for (const auto& intermediate : cert->intermediate_buffers()) {
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert(
+    base::ScopedCFTypeRef<SecCertificateRef> intermediate_cert(
         CreateSecCertificateFromBytes(CRYPTO_BUFFER_data(intermediate.get()),
                                       CRYPTO_BUFFER_len(intermediate.get())));
-    if (!sec_cert) {
+    if (!intermediate_cert) {
       if (invalid_intermediate_behavior == InvalidIntermediateBehavior::kFail)
         return base::ScopedCFTypeRef<CFMutableArrayRef>();
       LOG(WARNING) << "error parsing intermediate";
       continue;
     }
-    CFArrayAppendValue(cert_list, sec_cert);
+    CFArrayAppendValue(cert_list, intermediate_cert);
   }
   return cert_list;
 }
