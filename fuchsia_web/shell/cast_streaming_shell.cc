@@ -7,7 +7,6 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
@@ -18,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
@@ -29,6 +29,7 @@
 #include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "media/base/media_util.h"
+#include "media/gpu/test/video_test_helpers.h"
 
 namespace {
 
@@ -47,7 +48,7 @@ void PrintUsage() {
 }
 
 media::VideoDecoderConfig GetDefaultVideoConfig() {
-  constexpr gfx::Size kVideoSize = {640, 240};
+  constexpr gfx::Size kVideoSize = {1280, 720};
   constexpr gfx::Rect kVideoRect(kVideoSize);
 
   return media::VideoDecoderConfig(
@@ -239,17 +240,20 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  // Send first and only video frame.
+  // Load video.
   base::FilePath video_file(
-      pkg_path.AppendASCII("media/test/data/vp8-I-frame-640x240"));
-  std::string video_buffer_string;
-  CHECK(base::ReadFileToString(video_file, &video_buffer_string));
-  scoped_refptr<media::DecoderBuffer> video_buffer =
-      media::DecoderBuffer::CopyFrom(
-          base::as_bytes(base::make_span(video_buffer_string)).data(),
-          video_buffer_string.size());
-  video_buffer->set_is_key_frame(true);
-  sender.SendVideoBuffer(video_buffer);
+      pkg_path.AppendASCII("media/test/data/bear-1280x720.ivf"));
+  absl::optional<std::vector<uint8_t>> video_stream =
+      base::ReadFileToBytes(video_file);
+  CHECK(video_stream.has_value());
+  media::test::EncodedDataHelper video_helper(video_stream.value(),
+                                              media::VideoCodec::kVP8);
+
+  // Send first key frame.
+  scoped_refptr<media::DecoderBuffer> video_decoder_buffer =
+      video_helper.GetNextBuffer();
+  video_decoder_buffer->set_timestamp(base::TimeDelta());
+  sender.SendVideoBuffer(video_decoder_buffer);
 
   run_loop.Run();
 
