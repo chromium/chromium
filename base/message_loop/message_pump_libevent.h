@@ -72,6 +72,22 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     bool active() const { return active_; }
     void set_active(bool active) { active_ = active; }
 
+    // Only meaningful between WatchForControllerDestruction() and
+    // StopWatchingForControllerDestruction().
+    bool was_controller_destroyed() const { return was_controller_destroyed_; }
+
+    void WatchForControllerDestruction() {
+      DCHECK(!controller_->was_destroyed_);
+      controller_->was_destroyed_ = &was_controller_destroyed_;
+    }
+
+    void StopWatchingForControllerDestruction() {
+      if (!was_controller_destroyed_) {
+        DCHECK_EQ(controller_->was_destroyed_, &was_controller_destroyed_);
+        controller_->was_destroyed_ = nullptr;
+      }
+    }
+
    private:
     friend class RefCounted<EpollInterest>;
     ~EpollInterest();
@@ -79,6 +95,7 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     FdWatchController* const controller_;
     const EpollInterestParams params_;
     bool active_ = true;
+    bool was_controller_destroyed_ = false;
   };
 
   // Note that this class is used as the FdWatchController for both

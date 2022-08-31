@@ -237,6 +237,14 @@ void MessagePumpEpoll::OnEpollEvent(const epoll_event& e) {
   // `entry` during the loop below. This copy is inexpensive in practice
   // because the size of this vector is expected to be very small (<= 2).
   auto interests = entry.interests;
+
+  // Any of these interests' event handlers may destroy any of the others'
+  // controllers. Start all of them watching for destruction before we actually
+  // dispatch any events.
+  for (const auto& interest : interests.container()) {
+    interest->WatchForControllerDestruction();
+  }
+
   for (const auto& interest : interests.container()) {
     if (!interest->active()) {
       continue;
@@ -260,7 +268,13 @@ void MessagePumpEpoll::OnEpollEvent(const epoll_event& e) {
       UpdateEpollEvent(entry);
     }
 
-    HandleEvent(entry.fd, can_read, can_write, interest->controller());
+    if (!interest->was_controller_destroyed()) {
+      HandleEvent(entry.fd, can_read, can_write, interest->controller());
+    }
+  }
+
+  for (const auto& interest : interests.container()) {
+    interest->StopWatchingForControllerDestruction();
   }
 }
 
@@ -286,13 +300,17 @@ void MessagePumpEpoll::HandleEvent(int fd,
       controller->created_from_location().file_name());
   if (can_read && can_write) {
     bool controller_was_destroyed = false;
-    controller->was_destroyed_ = &controller_was_destroyed;
+    bool* previous_was_destroyed_flag =
+        std::exchange(controller->was_destroyed_, &controller_was_destroyed);
+
     controller->OnFdWritable();
     if (!controller_was_destroyed) {
       controller->OnFdReadable();
     }
     if (!controller_was_destroyed) {
-      controller->was_destroyed_ = nullptr;
+      controller->was_destroyed_ = previous_was_destroyed_flag;
+    } else if (previous_was_destroyed_flag) {
+      *previous_was_destroyed_flag = true;
     }
   } else if (can_write) {
     controller->OnFdWritable();
