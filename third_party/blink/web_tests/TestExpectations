@@ -5547,6 +5547,7 @@ css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 # TODO(https://crbug.com/1274220): Rebaseline all images once new tone mapping
 # lands.
 crbug.com/1210658 virtual/jxl-enabled/images/jxl/jxl-images.html [ Skip ]
+crbug.com/1358616 virtual/jxl-enabled/images/jxl/progressive.html [ Skip ]
 
 # Temporarily disabled to unblock https://crrev.com/c/3099011
 crbug.com/1199701 http/tests/devtools/console/console-big-array.js [ Skip ]
