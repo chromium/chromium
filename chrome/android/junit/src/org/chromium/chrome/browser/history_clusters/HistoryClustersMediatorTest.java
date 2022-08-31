@@ -151,6 +151,7 @@ public class HistoryClustersMediatorTest {
     private HistoryCluster mCluster1;
     private HistoryCluster mCluster2;
     private HistoryCluster mCluster3;
+    private HistoryCluster mClusterSingle;
     private HistoryClustersResult mHistoryClustersResultWithQuery;
     private HistoryClustersResult mHistoryClustersFollowupResultWithQuery;
     private HistoryClustersResult mHistoryClustersResultEmptyQuery;
@@ -269,9 +270,11 @@ public class HistoryClustersMediatorTest {
                 new ArrayList<>(), mGurl3, 123L, new ArrayList<>());
         mCluster1 = new HistoryCluster(Arrays.asList(mVisit1, mVisit2), "\"label1\"", "label1",
                 new ArrayList<>(), 456L, Arrays.asList("search 1", "search 2"));
-        mCluster2 = new HistoryCluster(Arrays.asList(mVisit3), "hostname.com", "hostname.com",
-                new ArrayList<>(), 123L, Collections.emptyList());
-        mCluster3 = new HistoryCluster(Arrays.asList(mVisit4), "\"label3\"", "label3",
+        mCluster2 = new HistoryCluster(Arrays.asList(mVisit3, mVisit4), "hostname.com",
+                "hostname.com", new ArrayList<>(), 123L, Collections.emptyList());
+        mCluster3 = new HistoryCluster(Arrays.asList(mVisit1, mVisit4), "\"label3\"", "label3",
+                new ArrayList<>(), 789L, Collections.EMPTY_LIST);
+        mClusterSingle = new HistoryCluster(Arrays.asList(mVisit1), "\"label1\"", "label1",
                 new ArrayList<>(), 789L, Collections.EMPTY_LIST);
         mHistoryClustersResultWithQuery =
                 new HistoryClustersResult(Arrays.asList(mCluster1, mCluster2),
@@ -305,7 +308,7 @@ public class HistoryClustersMediatorTest {
 
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
-        assertEquals(6, mModelList.size());
+        assertEquals(7, mModelList.size());
         ListItem clusterItem = mModelList.get(0);
         assertEquals(clusterItem.type, ItemType.CLUSTER);
         PropertyModel clusterModel = clusterItem.model;
@@ -685,14 +688,14 @@ public class HistoryClustersMediatorTest {
                 .when(mResources)
                 .getString(eq(R.string.delete_message), anyString());
 
-        mMediator.deleteVisits(Arrays.asList(mVisit1, mVisit3));
-        assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit3));
+        mMediator.deleteVisits(Arrays.asList(mVisit1, mVisit2));
+        assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit2));
         verify(mMetricsLogger).recordVisitAction(VisitAction.DELETED, mVisit1);
-        verify(mMetricsLogger).recordVisitAction(VisitAction.DELETED, mVisit3);
+        verify(mMetricsLogger).recordVisitAction(VisitAction.DELETED, mVisit2);
         verify(mAnnounceCallback).onResult("multiple");
         // Deleting all of the visits in a cluster should also delete the ModelList entry for the
         // cluster itself.
-        assertEquals(initialSize - 3, mModelList.size());
+        assertEquals(initialSize - 4, mModelList.size());
 
         ListItem clusterItem = mModelList.get(0);
         assertEquals(clusterItem.type, ItemType.CLUSTER);
@@ -700,20 +703,16 @@ public class HistoryClustersMediatorTest {
         ListItem visitItem = mModelList.get(1);
         assertEquals(visitItem.type, ItemType.VISIT);
         PropertyModel visitModel = visitItem.model;
-        assertEquals(mMediator.applyBolding(mVisit2.getTitle(), mVisit2.getTitleMatchPositions()),
+        assertEquals(mMediator.applyBolding(mVisit3.getTitle(), mVisit3.getTitleMatchPositions()),
                 visitModel.get(HistoryClustersItemProperties.TITLE));
         assertEquals(
-                mMediator.applyBolding(mVisit2.getUrlForDisplay(), mVisit2.getUrlMatchPositions()),
+                mMediator.applyBolding(mVisit3.getUrlForDisplay(), mVisit3.getUrlMatchPositions()),
                 visitModel.get(HistoryClustersItemProperties.URL));
 
-        ListItem relatedSearchesItem = mModelList.get(2);
-        assertEquals(relatedSearchesItem.type, ItemType.RELATED_SEARCHES);
-        PropertyModel relatedSearchesModel = relatedSearchesItem.model;
-        assertEquals(mCluster1.getRelatedSearches(),
-                relatedSearchesModel.get(HistoryClustersItemProperties.RELATED_SEARCHES));
+        mMediator.deleteVisits(Arrays.asList(mVisit3));
+        verify(mAnnounceCallback).onResult("single " + mVisit3.getTitle());
 
-        mMediator.deleteVisits(Arrays.asList(mVisit2));
-        verify(mAnnounceCallback).onResult("single " + mVisit2.getTitle());
+        mMediator.deleteVisits(Arrays.asList(mVisit4));
         // Deleting the final visit should result in an entirely empty list.
         assertEquals(0, mModelList.size());
     }
@@ -882,9 +881,9 @@ public class HistoryClustersMediatorTest {
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
         // The last cluster shouldn't have a divider.
-        PropertyModel clusterModel = mModelList.get(4).model;
+        PropertyModel clusterModel = mModelList.get(5).model;
         assertFalse(clusterModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
-        PropertyModel visitModel = mModelList.get(5).model;
+        PropertyModel visitModel = mModelList.get(6).model;
         assertFalse(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
 
         Promise<HistoryClustersResult> secondPromise = new Promise();
@@ -920,6 +919,19 @@ public class HistoryClustersMediatorTest {
         assertEquals(mModelList.get(2).type, ItemType.VISIT);
         assertFalse(mModelList.get(1).model.get(HistoryClustersItemProperties.END_BUTTON_VISIBLE));
         assertFalse(mModelList.get(2).model.get(HistoryClustersItemProperties.END_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testSingleVisitCluster() {
+        HistoryClustersResult singletonVisitResult = new HistoryClustersResult(
+                Arrays.asList(mClusterSingle), new LinkedHashMap<>(), "query", false, false);
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        mMediator.startQuery("query");
+        fulfillPromise(promise, singletonVisitResult);
+        assertEquals(0, mModelList.size());
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {
