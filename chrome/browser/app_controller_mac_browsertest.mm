@@ -836,40 +836,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                                            ServiceAccessType::EXPLICIT_ACCESS));
 }
 
-IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
-                       HistoryAndBookmarksMenusResetAfterAllProfilesDestroyed) {
-  AppController* ac =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  ASSERT_TRUE(ac);
-
-  Profile* profile = browser()->profile();
-
-  // Load profile's History Service backend so it will be assigned to the
-  // HistoryMenuBridge when setLastProfile is called, or else this test will
-  // fail flaky.
-  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS));
-  // Ditto for the Bookmark Model.
-  bookmarks::test::WaitForBookmarkModelToLoad(
-      BookmarkModelFactory::GetForBrowserContext(profile));
-  // Switch the controller to |profile|.
-  [ac setLastProfile:profile];
-  base::RunLoop().RunUntilIdle();
-
-  // Verify there are History and Bookmarks menus controllers.
-  EXPECT_NE(nullptr, [ac historyMenuBridge]);
-  EXPECT_NE(nullptr, [ac bookmarkMenuBridge]);
-
-  // Trigger Profile* destruction. Note that this event (destruction from
-  // memory) is a separate event from profile deletion (from disk).
-  chrome::CloseAllBrowsers();
-  ProfileDestructionWaiter(profile).Wait();
-
-  // Verify the History and Bookmarks menus' controllers have been reset.
-  EXPECT_EQ(nullptr, [ac historyMenuBridge]);
-  EXPECT_EQ(nullptr, [ac bookmarkMenuBridge]);
-}
-
 // Disabled because of flakiness. See crbug.com/1278031.
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                        DISABLED_ReloadingDestroyedProfileDoesNotCrash) {

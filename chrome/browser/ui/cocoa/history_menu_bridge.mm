@@ -16,8 +16,11 @@
 #include "chrome/app/chrome_command_ids.h"  // IDC_HISTORY_MENU
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/app_controller_mac.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -71,6 +74,11 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     : controller_([[HistoryMenuCocoaController alloc] initWithBridge:this]),
       profile_(profile) {
   DCHECK(profile_);
+  profile_dir_ = profile_->GetPath();
+
+  if (auto* profile_manager = g_browser_process->profile_manager())
+    profile_manager_observation_.Observe(profile_manager);
+
   // Set the static icons in the menu.
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   NSMenuItem* full_history_item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
@@ -95,6 +103,8 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   if (hs) {
     history_service_observation_.Observe(hs);
+    history_service_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kHistoryMenuBridge);
     if (hs->BackendLoaded()) {
       history_service_ = hs;
       Init();
@@ -107,10 +117,14 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     // If the tab entries are already loaded, invoke the observer method to
     // build the "Recently Closed" section. Otherwise it will be when the
     // backend loads.
-    if (!tab_restore_service_->IsLoaded())
+    if (!tab_restore_service_->IsLoaded()) {
+      tab_restore_service_keep_alive_ =
+          std::make_unique<ScopedProfileKeepAlive>(
+              profile_, ProfileKeepAliveOrigin::kHistoryMenuBridge);
       tab_restore_service_->LoadTabsFromLastSession();
-    else
+    } else {
       TabRestoreServiceChanged(tab_restore_service_);
+    }
   }
 
   default_favicon_.reset(
@@ -164,6 +178,8 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
       }
     }
   }
+
+  tab_restore_service_keep_alive_.reset();
 }
 
 void HistoryMenuBridge::TabRestoreServiceDestroyed(
@@ -200,8 +216,8 @@ void HistoryMenuBridge::SetIsMenuOpen(bool flag) {
   is_menu_open_ = flag;
   if (!is_menu_open_ && need_recreate_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HistoryMenuBridge::CreateMenu, base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&HistoryMenuBridge::CreateMenu,
+                                  weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -211,6 +227,10 @@ history::HistoryService* HistoryMenuBridge::service() {
 
 Profile* HistoryMenuBridge::profile() {
   return profile_;
+}
+
+const base::FilePath& HistoryMenuBridge::profile_dir() const {
+  return profile_dir_;
 }
 
 NSMenu* HistoryMenuBridge::HistoryMenu() {
@@ -409,6 +429,8 @@ int HistoryMenuBridge::AddTabsToSubmenu(
 
 void HistoryMenuBridge::Init() {
   DCHECK(history_service_);
+  need_recreate_ = true;
+  CreateMenu();
 }
 
 void HistoryMenuBridge::CreateMenu() {
@@ -475,6 +497,8 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   // We are already invalid by the time we finished, darn.
   if (need_recreate_)
     CreateMenu();
+  else
+    history_service_keep_alive_.reset();
 
   create_in_progress_ = false;
 }
@@ -600,4 +624,18 @@ bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
   // above.
   NOTREACHED();
   return false;
+}
+
+void HistoryMenuBridge::OnProfileMarkedForPermanentDeletion(Profile* profile) {
+  if (profile != profile_)
+    return;
+  ResetMenu();
+}
+
+void HistoryMenuBridge::OnProfileWillBeDestroyed() {
+  profile_ = nullptr;
+  history_service_observation_.Reset();
+  history_service_ = nullptr;
+  tab_restore_service_observation_.Reset();
+  tab_restore_service_ = nullptr;
 }

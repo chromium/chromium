@@ -118,7 +118,11 @@ enum class ProfileKeepAliveOrigin {
   // UI bubble that may outlive the Browser, especially on Mac.
   kDiceWebSigninInterceptionBubble = 27,
 
-  kMaxValue = kDiceWebSigninInterceptionBubble,
+  // Waiting for History menu entries to populate, so we have
+  // something to show after the profile is destroyed. macOS-specific.
+  kHistoryMenuBridge = 28,
+
+  kMaxValue = kHistoryMenuBridge,
 };
 
 std::ostream& operator<<(std::ostream& out,

@@ -50,6 +50,8 @@ class HistoryMenuCocoaControllerTest : public BrowserWithTestWindowTest {
     [controller() initTest];
   }
 
+  void TearDown() override { bridge_.reset(); }
+
   void CreateItems(NSMenu* menu) {
     auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
     item->url = GURL("http://google.com");
