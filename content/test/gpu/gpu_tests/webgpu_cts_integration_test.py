@@ -37,6 +37,7 @@ DEFAULT_TEST_TIMEOUT = 10
 SLOW_MULTIPLIER = 5
 ASAN_MULTIPLIER = 4
 BACKEND_VALIDATION_MULTIPLIER = 6
+FIRST_LOAD_TEST_STARTED_MULTIPLER = 3
 
 # In most cases, this should be very fast, but the first test run after a page
 # load can be slow.
@@ -280,14 +281,14 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       del self.additionalTags[JAVASCRIPT_DURATION]
 
     try:
-      self._NavigateIfNecessary(test_path)
+      first_load = self._NavigateIfNecessary(test_path)
       asyncio.run_coroutine_threadsafe(
           WebGpuCtsIntegrationTest.websocket.send(
               json.dumps({
                   'q': self._query,
                   'w': self._run_in_worker
               })), WebGpuCtsIntegrationTest.event_loop)
-      result = self.HandleMessageLoop()
+      result = self.HandleMessageLoop(first_load=first_load)
 
       log_str = ''.join(result.log_pieces)
       status = result.status
@@ -302,11 +303,48 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     finally:
       WebGpuCtsIntegrationTest.total_tests_run += 1
 
-  def HandleMessageLoop(self) -> WebGpuTestResult:
+  def GetBrowserTimeoutMultipler(self) -> float:
+    """Compute the timeout multiplier to account for overall browser slowness.
+
+    Returns:
+      A float.
+    """
+    # Parallel jobs can cause heavier tests to flakily time out, so increase the
+    # timeout based on the number of parallel jobs. 2x the timeout with 4 jobs
+    # seemed to work well, so target that.
+    # This multiplier will be applied for all message events.
+    browser_timeout_multiplier = 1 + (self.child.jobs - 1) / 3.0
+    # Scale up all timeouts with ASAN.
+    if self._is_asan:
+      browser_timeout_multiplier *= ASAN_MULTIPLIER
+
+    return browser_timeout_multiplier
+
+  def GetTestExecutionTimeoutMultiplier(self) -> float:
+    """Compute the timeout multiplier to account for slow test execution.
+
+    Returns:
+      A float.
+    """
+    # Scale the test timeout if test execution is expected to be slow: the test
+    # is explicitly marked as slow, or we're running with backend validation.
+    test_execution_timeout_multiplier = 1
+    if self._IsSlowTest():
+      test_execution_timeout_multiplier *= SLOW_MULTIPLIER
+    if self._enable_dawn_backend_validation:
+      test_execution_timeout_multiplier *= BACKEND_VALIDATION_MULTIPLIER
+
+    return test_execution_timeout_multiplier
+
+  def HandleMessageLoop(self, first_load) -> WebGpuTestResult:
     """Helper function to handle the loop for the message protocol.
 
     See //docs/gpu/webgpu_cts_harness_message_protocol.md for more information
     on the message format.
+
+    Args:
+      first_load: A bool denoting whether this is the first test run after a
+          page load. Increases the timeout for the TEST_STARTED step.
 
     Returns:
       A filled WebGpuTestResult instance.
@@ -318,23 +356,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         MESSAGE_TYPE_TEST_LOG: False,
     }
     step_timeout = MESSAGE_TIMEOUT_TEST_STARTED
+    if first_load:
+      step_timeout *= FIRST_LOAD_TEST_STARTED_MULTIPLER
 
-    # Parallel jobs can cause heavier tests to flakily time out, so increase the
-    # timeout based on the number of parallel jobs. 2x the timeout with 4 jobs
-    # seemed to work well, so target that.
-    # This multiplier will be applied for all message events.
-    browser_timeout_multiplier = 1 + (self.child.jobs - 1) / 3.0
-    # Scale up all timeouts with ASAN.
-    if self._is_asan:
-      browser_timeout_multiplier *= ASAN_MULTIPLIER
-
-    # Scale the test timeout if test execution is expected to be slow: the test
-    # is explicitly marked as slow, or we're running with backend validation.
-    test_execution_timeout_multiplier = 1
-    if self._IsSlowTest():
-      test_execution_timeout_multiplier *= SLOW_MULTIPLIER
-    if self._enable_dawn_backend_validation:
-      test_execution_timeout_multiplier *= BACKEND_VALIDATION_MULTIPLIER
+    browser_timeout_multiplier = self.GetBrowserTimeoutMultipler()
+    test_execution_timeout_multiplier = self.GetTestExecutionTimeoutMultiplier()
 
     global_timeout = (self._test_timeout * test_execution_timeout_multiplier *
                       browser_timeout_multiplier)
@@ -435,9 +461,9 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.websocket = None
     cls.connection_received_event.clear()
 
-  def _NavigateIfNecessary(self, path: str) -> None:
+  def _NavigateIfNecessary(self, path: str) -> bool:
     if WebGpuCtsIntegrationTest._page_loaded:
-      return
+      return False
     WebGpuCtsIntegrationTest.CleanUpExistingWebsocket()
     url = self.UrlOfStaticFilePath(path)
     self.tab.Navigate(url)
@@ -450,6 +476,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not WebGpuCtsIntegrationTest.websocket:
       raise RuntimeError('Websocket connection was not established.')
     WebGpuCtsIntegrationTest._page_loaded = True
+    return True
 
   def _IsSlowTest(self) -> bool:
     # We access the expectations directly instead of using
