@@ -337116,7 +337116,7 @@
       []
      ],
      "generic_sensor_mocks.js": [
-      "3d7e854c832428dd3dade34893971b1310394b16",
+      "b70b1135a858e016d729ecbabf4b4741c0b88080",
       []
      ],
      "generic_sensor_mocks.js.headers": [
@@ -341364,6 +341364,10 @@
       ],
       "exec.py": [
        "835a3f07aafa9664f763c5ebd9f10209dc8579d9",
+       []
+      ],
+      "file-picker.html": [
+       "22245a49bcb0cca5fac8f3484ff142989bcfe318",
        []
       ],
       "generic-sensor.https.html": [
@@ -417318,6 +417322,13 @@
       ],
       [
        "dom/events/AddEventListenerOptions-signal.any.worker.html",
+       {}
+      ]
+     ],
+     "Body-FrameSet-Event-Handlers.html": [
+      "3a891158d5f8637c24b5efd270e5c920e6c7c1dd",
+      [
+       null,
        {}
       ]
      ],
@@ -543934,6 +543945,15 @@
      ],
      "restriction-idle-detection.https.html": [
       "688ae00ba743a226dbff486915c53cea8769d716",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-local-file-system-access.https.html": [
+      "78aa2da84d5065e3b19bdbe759cd2ab496cd3452",
       [
        null,
        {
