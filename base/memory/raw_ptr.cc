@@ -104,6 +104,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
 #elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #include <sanitizer/asan_interface.h>
+#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
 
@@ -140,7 +141,9 @@ bool IsFreedHeapPointer(void const volatile* ptr) {
 }
 
 // Force a non-optimizable memory load operation to trigger an ASan crash.
-void ForceRead(void const volatile* ptr) {
+NOINLINE NOT_TAIL_CALLED void CrashImmediatelyOnUseAfterFree(
+    void const volatile* ptr) {
+  NO_CODE_FOLDING();
   auto unused = *reinterpret_cast<char const volatile*>(ptr);
   asm volatile("" : "+r"(unused));
 }
@@ -153,7 +156,7 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(
       IsFreedHeapPointer(ptr)) {
     RawPtrAsanService::SetPendingReport(
         RawPtrAsanService::ReportType::kDereference, ptr);
-    ForceRead(ptr);
+    CrashImmediatelyOnUseAfterFree(ptr);
   }
 }
 
@@ -199,7 +202,7 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidInstantiation(
       IsFreedHeapPointer(ptr)) {
     RawPtrAsanService::SetPendingReport(
         RawPtrAsanService::ReportType::kInstantiation, ptr);
-    ForceRead(ptr);
+    CrashImmediatelyOnUseAfterFree(ptr);
   }
 }
 
