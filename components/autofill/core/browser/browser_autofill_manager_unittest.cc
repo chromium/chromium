@@ -192,7 +192,7 @@ class MockFastCheckoutDelegate : public FastCheckoutDelegate {
 
   MOCK_METHOD(bool,
               TryToShowFastCheckout,
-              (const FormFieldData& field),
+              (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
   MOCK_METHOD(void, HideFastCheckoutUI, (), (override));

@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/android/save_update_address_profile_flow_manager.h"
+#include "chrome/browser/fast_checkout/fast_checkout_client.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_controller_android.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
@@ -170,6 +171,11 @@ class ChromeAutofillClient
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
+  bool IsFastCheckoutSupported() override;
+  bool IsFastCheckoutTriggerForm(const FormData& form,
+                                 const FormFieldData& field) override;
+  bool ShowFastCheckout(base::WeakPtr<FastCheckoutDelegate> delegate) override;
+  void HideFastCheckout() override;
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate) override;

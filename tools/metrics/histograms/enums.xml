@@ -7407,6 +7407,9 @@ others/histograms.xml -->
              suggestions."/>
   <int value="19"
       label="The context menu is shown instead of the autofill suggestions."/>
+  <int value="20"
+      label="The Fast Checkout surface is shown instead of autofill
+             suggestions."/>
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">

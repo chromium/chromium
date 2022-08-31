@@ -250,8 +250,16 @@ class CreditCard : public AutofillDataModel {
   // Returns whether the card is expired based on |current_time|.
   bool IsExpired(const base::Time& current_time) const;
 
+  // Returns whether the card is a masked card. Such cards will only have
+  // the last 4 digits of the card number.
+  bool masked() const;
+
   // Whether the card expiration date should be updated.
   bool ShouldUpdateExpiration() const;
+
+  // Complete = contains number, expiration date and name on card.
+  // Valid = unexpired with valid number format.
+  bool IsCompleteValidCard() const;
 
   const std::string& billing_address_id() const { return billing_address_id_; }
   void set_billing_address_id(const std::string& id) {

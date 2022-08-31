@@ -1146,8 +1146,18 @@ bool CreditCard::IsExpired(const base::Time& current_time) const {
                                           current_time);
 }
 
+bool CreditCard::masked() const {
+  return record_type() == CreditCard::MASKED_SERVER_CARD ||
+         record_type() == CreditCard::VIRTUAL_CARD;
+}
+
 bool CreditCard::ShouldUpdateExpiration() const {
   return IsExpired(AutofillClock::Now());
+}
+
+bool CreditCard::IsCompleteValidCard() const {
+  return !IsExpired(AutofillClock::Now()) && HasNameOnCard() &&
+         (masked() || HasValidCardNumber());
 }
 
 // So we can compare CreditCards with EXPECT_EQ().

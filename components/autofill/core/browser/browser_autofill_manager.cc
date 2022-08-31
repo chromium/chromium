@@ -1121,7 +1121,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   if (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
       (form_element_was_clicked &&
-       fast_checkout_delegate_->TryToShowFastCheckout(field))) {
+       fast_checkout_delegate_->TryToShowFastCheckout(form, field))) {
     // The Fast Checkout surface is shown, so abort showing regular Autofill UI.
     // Now the flow is controlled by the `fast_checkout_delegate_` instead
     // of `external_delegate_`.

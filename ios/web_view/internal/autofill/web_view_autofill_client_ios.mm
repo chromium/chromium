@@ -240,6 +240,26 @@ void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
+bool WebViewAutofillClientIOS::IsFastCheckoutSupported() {
+  return false;
+}
+
+bool WebViewAutofillClientIOS::IsFastCheckoutTriggerForm(
+    const FormData& form,
+    const FormFieldData& field) {
+  return false;
+}
+
+bool WebViewAutofillClientIOS::ShowFastCheckout(
+    base::WeakPtr<FastCheckoutDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void WebViewAutofillClientIOS::HideFastCheckout() {
+  NOTREACHED();
+}
+
 bool WebViewAutofillClientIOS::IsTouchToFillCreditCardSupported() {
   return false;
 }

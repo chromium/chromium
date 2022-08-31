@@ -41,12 +41,9 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(int query_id,
   DCHECK(pdm);
   std::vector<CreditCard*> cards_to_suggest = pdm->GetCreditCardsToSuggest(
       manager_->client()->AreServerCardsSupported());
-  auto NotACompleteValidCard = [](const CreditCard* card) {
-    return card->IsExpired(AutofillClock::Now()) || !card->HasNameOnCard() ||
-           (card->record_type() != autofill::CreditCard::MASKED_SERVER_CARD &&
-            !card->HasValidCardNumber());
-  };
-  base::EraseIf(cards_to_suggest, NotACompleteValidCard);
+
+  base::EraseIf(cards_to_suggest,
+                base::not_fn(&CreditCard::IsCompleteValidCard));
   if (cards_to_suggest.empty())
     return false;
   // Trigger only if the UI is available.

@@ -346,6 +346,26 @@ void ChromeAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
+bool ChromeAutofillClientIOS::IsFastCheckoutSupported() {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::IsFastCheckoutTriggerForm(
+    const FormData& form,
+    const FormFieldData& field) {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::ShowFastCheckout(
+    base::WeakPtr<FastCheckoutDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void ChromeAutofillClientIOS::HideFastCheckout() {
+  NOTREACHED();
+}
+
 bool ChromeAutofillClientIOS::IsTouchToFillCreditCardSupported() {
   return false;
 }

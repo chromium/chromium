@@ -22,7 +22,8 @@ class FastCheckoutDelegate {
 
   // Checks whether FastCheckout is eligible for the given web form data. On
   // success triggers the corresponding surface and returns `true`.
-  virtual bool TryToShowFastCheckout(const FormFieldData& field) = 0;
+  virtual bool TryToShowFastCheckout(const FormData& form,
+                                     const FormFieldData& field) = 0;
 
   // Returns whether the FC surface is currently being shown.
   virtual bool IsShowingFastCheckoutUI() const = 0;

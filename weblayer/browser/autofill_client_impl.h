@@ -109,6 +109,12 @@ class AutofillClientImpl
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
+  bool IsFastCheckoutSupported() override;
+  bool IsFastCheckoutTriggerForm(const autofill::FormData& form,
+                                 const autofill::FormFieldData& field) override;
+  bool ShowFastCheckout(
+      base::WeakPtr<autofill::FastCheckoutDelegate> delegate) override;
+  void HideFastCheckout() override;
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<autofill::TouchToFillDelegate> delegate) override;

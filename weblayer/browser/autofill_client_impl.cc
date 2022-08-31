@@ -237,6 +237,26 @@ void AutofillClientImpl::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
+bool AutofillClientImpl::IsFastCheckoutSupported() {
+  return false;
+}
+
+bool AutofillClientImpl::IsFastCheckoutTriggerForm(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& field) {
+  return false;
+}
+
+bool AutofillClientImpl::ShowFastCheckout(
+    base::WeakPtr<autofill::FastCheckoutDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void AutofillClientImpl::HideFastCheckout() {
+  NOTREACHED();
+}
+
 bool AutofillClientImpl::IsTouchToFillCreditCardSupported() {
   return false;
 }

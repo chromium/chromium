@@ -19,7 +19,8 @@ class FastCheckoutDelegateImpl : public FastCheckoutDelegate {
   ~FastCheckoutDelegateImpl() override;
 
   // FastCheckoutDelegate:
-  bool TryToShowFastCheckout(const FormFieldData& field) override;
+  bool TryToShowFastCheckout(const FormData& form,
+                             const FormFieldData& field) override;
   bool IsShowingFastCheckoutUI() const override;
   void HideFastCheckoutUI() override;
   void OnFastCheckoutUIHidden() override;

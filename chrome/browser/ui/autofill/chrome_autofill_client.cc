@@ -677,6 +677,32 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
+bool ChromeAutofillClient::IsFastCheckoutSupported() {
+  // TODO(crbug.com/1334642): Implement.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool ChromeAutofillClient::IsFastCheckoutTriggerForm(
+    const FormData& form,
+    const FormFieldData& field) {
+  // TODO(crbug.com/1334642): Implement.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool ChromeAutofillClient::ShowFastCheckout(
+    base::WeakPtr<FastCheckoutDelegate> delegate) {
+  // TODO(crbug.com/1334642): Implement.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void ChromeAutofillClient::HideFastCheckout() {
+  // TODO(crbug.com/1334642): Implement.
+  NOTIMPLEMENTED();
+}
+
 bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
