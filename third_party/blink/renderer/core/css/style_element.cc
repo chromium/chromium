@@ -215,6 +215,8 @@ bool StyleElement::SheetLoaded(Document& document) {
     document.GetStyleEngine().RemovePendingBlockingSheet(*sheet_->ownerNode(),
                                                          pending_sheet_type_);
   }
+  document.GetStyleEngine().SetNeedsActiveStyleUpdate(
+      sheet_->ownerNode()->GetTreeScope());
   pending_sheet_type_ = PendingSheetType::kNone;
   return true;
 }

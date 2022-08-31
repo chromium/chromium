@@ -6113,4 +6113,24 @@ TEST_F(StyleEngineTest, UsesCachedTokenizer) {
   EXPECT_EQ(style_element.sheet()->length(), 2u);
 }
 
+TEST_F(StyleEngineTest, StyleElementTypeAttrChange) {
+  Element* style = GetDocument().CreateElementForBinding("style");
+  style->setAttribute("type", "invalid");
+  style->setInnerHTML("body { color: red }");
+  GetDocument().body()->appendChild(style);
+
+  // <style> has no effect due to invalid type attribute value
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  // <style> should now be effective with a valid type attribute value
+  style->setAttribute("type", "text/css");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
 }  // namespace blink
