@@ -141,7 +141,7 @@ class ConfigBase final : public TargetConfig {
   // Freeze() is called.
   std::unique_ptr<LowLevelPolicy> policy_maker_;
   // Memory structure that stores the low level policy rules for proxied calls.
-  raw_ptr<PolicyGlobal> policy_;
+  raw_ptr<PolicyGlobal, DanglingUntriaged> policy_;
   // This is a map of handle-types to names that we need to close in the
   // target process. A null set for a given type means we need to close all
   // handles of the given type. If no entries are added this will be nullptr and

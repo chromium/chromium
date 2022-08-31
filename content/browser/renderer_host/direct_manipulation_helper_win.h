@@ -98,7 +98,7 @@ class CONTENT_EXPORT DirectManipulationHelper
   Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport_;
   Microsoft::WRL::ComPtr<DirectManipulationEventHandler> event_handler_;
   HWND window_;
-  raw_ptr<ui::Compositor> compositor_ = nullptr;
+  raw_ptr<ui::Compositor, DanglingUntriaged> compositor_ = nullptr;
   DWORD view_port_handler_cookie_;
   bool has_animation_observer_ = false;
 };

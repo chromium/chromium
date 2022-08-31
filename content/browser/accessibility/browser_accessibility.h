@@ -253,8 +253,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
     }
 
    private:
-    const raw_ptr<const BrowserAccessibility> parent_;
-    const raw_ptr<const BrowserAccessibility> child_tree_root_;
+    const raw_ptr<const BrowserAccessibility, DanglingUntriaged> parent_;
+    const raw_ptr<const BrowserAccessibility, DanglingUntriaged>
+        child_tree_root_;
   };
 
   // Returns a range for all children including ignored children, which can be

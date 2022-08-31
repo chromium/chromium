@@ -107,7 +107,7 @@ class LowLevelPolicy {
     IpcTag service;
   };
   std::list<RuleNode> rules_;
-  raw_ptr<PolicyGlobal> policy_store_;
+  raw_ptr<PolicyGlobal, DanglingUntriaged> policy_store_;
 };
 
 // There are 'if' rules and 'if not' comparisons
@@ -182,8 +182,8 @@ class PolicyRule {
                   size_t opcode_size,
                   char* data_start,
                   size_t* data_size) const;
-  raw_ptr<PolicyBuffer> buffer_;
-  raw_ptr<OpcodeFactory> opcode_factory_;
+  raw_ptr<PolicyBuffer, DanglingUntriaged> buffer_;
+  raw_ptr<OpcodeFactory, DanglingUntriaged> opcode_factory_;
   EvalResult action_;
   bool done_;
 };

@@ -66,7 +66,7 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   // |this| will get deleted DesktopNativeWidgetAura is notified that the
   // DesktopWindowTreeHost is being destroyed. So desktop_host_ should outlive
   // |this|.
-  raw_ptr<DesktopWindowTreeHostWin> desktop_host_ = nullptr;
+  raw_ptr<DesktopWindowTreeHostWin, DanglingUntriaged> desktop_host_ = nullptr;
 
   base::WeakPtrFactory<DesktopDragDropClientWin> weak_factory_{this};
 };

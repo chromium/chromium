@@ -668,10 +668,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool in_bounds_changed_;
 
   // Our parent host view, if this is a popup.  NULL otherwise.
-  raw_ptr<RenderWidgetHostViewAura> popup_parent_host_view_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> popup_parent_host_view_;
 
   // Our child popup host. NULL if we do not have a child popup.
-  raw_ptr<RenderWidgetHostViewAura> popup_child_host_view_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> popup_child_host_view_;
 
   class EventObserverForPopupExit;
   std::unique_ptr<EventObserverForPopupExit> event_observer_for_popup_exit_;
