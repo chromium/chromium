@@ -47,6 +47,34 @@
 
 namespace blink {
 
+namespace {
+
+String TechnologyToString(CSSFontFaceSrcValue::FontTechnology font_technology) {
+  switch (font_technology) {
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyVariations:
+      return "variations";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyFeaturesAAT:
+      return "features-aat";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyFeaturesOT:
+      return "features-opentype";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyPalettes:
+      return "palettes";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyCOLRv0:
+      return "color-COLRv0";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyCOLRv1:
+      return "color-COLRv1";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyCDBT:
+      return "color-CBDT";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX:
+      return "color-sbix";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyUnknown:
+      NOTREACHED();
+      return String();
+  }
+}
+
+}  // namespace
+
 bool CSSFontFaceSrcValue::IsSupportedFormat() const {
   // format() syntax is already checked at parse time, see
   // AtRuleDescriptorParser.
@@ -59,6 +87,11 @@ bool CSSFontFaceSrcValue::IsSupportedFormat() const {
   // it.
   return absolute_resource_.StartsWithIgnoringASCIICase("data:") ||
          !absolute_resource_.EndsWithIgnoringASCIICase(".eot");
+}
+
+void CSSFontFaceSrcValue::AppendTechnology(FontTechnology technology) {
+  if (!technologies_.Contains(technology))
+    technologies_.push_back(technology);
 }
 
 String CSSFontFaceSrcValue::CustomCSSText() const {
@@ -78,6 +111,19 @@ String CSSFontFaceSrcValue::CustomCSSText() const {
     result.Append(SerializeString(format_));
     result.Append(')');
   }
+
+  if (RuntimeEnabledFeatures::CSSFontFaceSrcTechParsingEnabled() &&
+      !technologies_.IsEmpty()) {
+    result.Append(" tech(");
+    for (wtf_size_t i = 0; i < technologies_.size(); ++i) {
+      result.Append(TechnologyToString(technologies_[i]));
+      if (i < technologies_.size() - 1) {
+        result.Append(", ");
+      }
+    }
+    result.Append(")");
+  }
+
   return result.ReleaseString();
 }
 

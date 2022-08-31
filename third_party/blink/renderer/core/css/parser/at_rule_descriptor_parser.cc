@@ -101,6 +101,48 @@ bool IsValidKeywordFormat(CSSValueID keyword) {
   return false;
 }
 
+bool IsSupportedKeywordTech(CSSValueID keyword) {
+  switch (keyword) {
+    case CSSValueID::kFeaturesOpentype:
+    case CSSValueID::kFeaturesAat:
+    case CSSValueID::kColorCOLRv0:
+    case CSSValueID::kColorCOLRv1:
+    case CSSValueID::kColorSbix:
+    case CSSValueID::kColorCBDT:
+    case CSSValueID::kVariations:
+    case CSSValueID::kPalettes:
+      return true;
+    default:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
+  switch (valueID) {
+    case CSSValueID::kFeaturesAat:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyFeaturesAAT;
+    case CSSValueID::kFeaturesOpentype:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyFeaturesOT;
+    case CSSValueID::kVariations:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyVariations;
+    case CSSValueID::kPalettes:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyPalettes;
+    case CSSValueID::kColorCOLRv0:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyCOLRv0;
+    case CSSValueID::kColorCOLRv1:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyCOLRv1;
+    case CSSValueID::kColorCBDT:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyCDBT;
+    case CSSValueID::kColorSbix:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX;
+    default:
+      NOTREACHED();
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyUnknown;
+  }
+}
+
 // Returns nullptr for hard parsing errors: CSSUnsetValue for unsupprted
 // formats. This distinction is needed as the caller of the function needs to
 // decide whether to continue parsing or not.
@@ -124,7 +166,9 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
   if (!range.AtEnd() &&
       range.Peek().GetType() != CSSParserTokenType::kCommaToken &&
       (range.Peek().GetType() != CSSParserTokenType::kFunctionToken ||
-       (range.Peek().FunctionId() != CSSValueID::kFormat)))
+       (range.Peek().FunctionId() != CSSValueID::kFormat &&
+        (range.Peek().FunctionId() != CSSValueID::kTech ||
+         !RuntimeEnabledFeatures::CSSFontFaceSrcTechParsingEnabled()))))
     return nullptr;
 
   if (range.Peek().FunctionId() == CSSValueID::kFormat) {
@@ -154,6 +198,38 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
     if (!format_args.AtEnd())
       return nullptr;
   }
+
+  if (RuntimeEnabledFeatures::CSSFontFaceSrcTechParsingEnabled() &&
+      range.Peek().FunctionId() == CSSValueID::kTech) {
+    CSSParserTokenRange tech_args = css_parsing_utils::ConsumeFunction(range);
+
+    // One or more tech args expected.
+    if (tech_args.AtEnd())
+      return nullptr;
+
+    do {
+      CSSIdentifierValue* technology_value = css_parsing_utils::ConsumeIdent<
+          CSSValueID::kFeaturesOpentype, CSSValueID::kFeaturesAat,
+          CSSValueID::kFeaturesGraphite, CSSValueID::kColorCOLRv0,
+          CSSValueID::kColorCOLRv1, CSSValueID::kColorSVG,
+          CSSValueID::kColorSbix, CSSValueID::kColorCBDT,
+          CSSValueID::kVariations, CSSValueID::kPalettes,
+          CSSValueID::kIncremental>(tech_args);
+      if (!technology_value) {
+        return nullptr;
+      }
+      tech_format_unsupported |=
+          !IsSupportedKeywordTech(technology_value->GetValueID());
+      if (!tech_args.AtEnd() &&
+          tech_args.Peek().GetType() != CSSParserTokenType::kCommaToken)
+        return nullptr;
+      if (!tech_format_unsupported) {
+        uri_value->AppendTechnology(
+            ValueIDToTechnology(technology_value->GetValueID()));
+      }
+    } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(tech_args));
+  }
+
   return uri_value;
 }
 

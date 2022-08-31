@@ -1258,6 +1258,18 @@
     "truetype",
     "woff",
     "woff2",
+    "tech",
+    "features-opentype",
+    "features-aat",
+    "features-graphite",
+    "variations",
+    "palettes",
+    "incremental",
+    "color-COLRv0",
+    "color-COLRv1",
+    "color-SVG",
+    "color-sbix",
+    "color-CBDT",
 
     // (-webkit-)filter
     "invert",

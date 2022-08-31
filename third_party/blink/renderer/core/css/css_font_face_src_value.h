@@ -88,6 +88,22 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
    * the same way whatsoever, if the format is supported. */
   void SetFormat(const String& format) { format_ = format; }
 
+  /* Only supported technologies need to be listed here, as we can reject other
+   * font face source component values, hence remove SVG and incremental for
+   * now, compare https://drafts.csswg.org/css-fonts-4/#font-face-src-parsing */
+  enum class FontTechnology {
+    kTechnologyFeaturesAAT,
+    kTechnologyFeaturesOT,
+    kTechnologyCOLRv0,
+    kTechnologyCOLRv1,
+    kTechnologySBIX,
+    kTechnologyCDBT,
+    kTechnologyVariations,
+    kTechnologyPalettes,
+    kTechnologyUnknown
+  };
+  void AppendTechnology(FontTechnology technology);
+
   bool IsSupportedFormat() const;
 
   String CustomCSSText() const;
@@ -114,6 +130,8 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   const scoped_refptr<const DOMWrapperWorld> world_;
   const OriginClean origin_clean_;
   bool is_ad_related_;
+
+  Vector<FontTechnology> technologies_;
 
   class FontResourceHelper : public GarbageCollected<FontResourceHelper>,
                              public FontResourceClient {

@@ -549,6 +549,10 @@
       status: "test",
     },
     {
+      name: "CSSFontFaceSrcTechParsing",
+      status: "experimental"
+    },
+    {
       name: "CSSFontFamilyMath",
       status: "experimental",
       implied_by: ["MathMLCore"],
