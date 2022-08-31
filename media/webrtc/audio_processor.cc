@@ -556,14 +556,14 @@ absl::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
   }
 
   AudioParameters params(
-      device_format.format(), channel_layout, device_format.sample_rate(),
+      device_format.format(), device_format.channel_layout_config(),
+      device_format.sample_rate(),
       GetCaptureBufferSize(
           audio_processing_settings.NeedWebrtcAudioProcessing(),
           device_format));
   params.set_effects(device_format.effects());
   if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
     DCHECK_LE(device_format.channels(), 2);
-    params.set_channels_for_discrete(device_format.channels());
   }
   DVLOG(1) << params.AsHumanReadableString();
   CHECK(params.IsValid());
@@ -591,9 +591,9 @@ AudioParameters AudioProcessor::GetDefaultOutputFormat(
 #endif
                                    : input_format.sample_rate();
 
-  media::ChannelLayout output_channel_layout;
+  media::ChannelLayoutConfig output_channel_layout_config;
   if (!need_webrtc_audio_processing) {
-    output_channel_layout = input_format.channel_layout();
+    output_channel_layout_config = input_format.channel_layout_config();
   } else if (settings.multi_channel_capture_processing) {
     // The number of output channels is equal to the number of input channels.
     // If the media stream audio processor receives stereo input it will
@@ -607,9 +607,9 @@ AudioParameters AudioProcessor::GetDefaultOutputFormat(
     // performing true stereo processing. There will be no need to change the
     // output format.
 
-    output_channel_layout = input_format.channel_layout();
+    output_channel_layout_config = input_format.channel_layout_config();
   } else {
-    output_channel_layout = media::CHANNEL_LAYOUT_MONO;
+    output_channel_layout_config = ChannelLayoutConfig::Mono();
   }
 
   // webrtc::AudioProcessing requires a 10 ms chunk size. We use this native
@@ -628,13 +628,9 @@ AudioParameters AudioProcessor::GetDefaultOutputFormat(
     output_frames = input_format.frames_per_buffer();
   }
 
-  media::AudioParameters output_format =
-      media::AudioParameters(input_format.format(), output_channel_layout,
-                             output_sample_rate, output_frames);
-  if (output_channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
-    // Explicitly set number of channels for discrete channel layouts.
-    output_format.set_channels_for_discrete(input_format.channels());
-  }
+  media::AudioParameters output_format = media::AudioParameters(
+      input_format.format(), output_channel_layout_config, output_sample_rate,
+      output_frames);
   return output_format;
 }
 }  // namespace media
