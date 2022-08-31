@@ -370,6 +370,9 @@ DlpRulesManagerImpl::GetAggregatedDestinations(const GURL& source,
   // to the `source`. There can be many matching rules, but we want to keep only
   // the highest enforced level for each destination.
   std::map<std::string, Level> destination_level_map;
+  // If there's a wildcard for a level, we should ignore all destinations for
+  // lower levels.
+  Level wildcard_level = Level::kNotSet;
   for (auto dst_map_itr : dst_url_rules_mapping_) {
     auto src_map_itr = src_rules_map.find(dst_map_itr.second);
     if (src_map_itr == src_rules_map.end()) {
@@ -388,17 +391,22 @@ DlpRulesManagerImpl::GetAggregatedDestinations(const GURL& source,
     if (it == destination_level_map.end() || level > it->second) {
       destination_level_map[destination_pattern] = restriction_rule_itr->second;
     }
+    if (destination_pattern == kWildCardMatching && level > wildcard_level) {
+      wildcard_level = level;
+    }
   }
 
   std::map<Level, std::set<std::string>> result;
   for (auto it : destination_level_map) {
     if (it.first == kWildCardMatching) {
       result[it.second] = {it.first};
-    } else if (result[it.second].find(kWildCardMatching) ==
-               result[it.second].end()) {
+    } else if (it.second >= wildcard_level &&
+               result[it.second].find(kWildCardMatching) ==
+                   result[it.second].end()) {
       result[it.second].insert(it.first);
     }
   }
+
   return result;
 }
 
