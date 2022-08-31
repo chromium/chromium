@@ -1194,4 +1194,38 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedComponents) {
   chromeos::DlpClient::Shutdown();
 }
 
+// This is a test for the crash on the login screen for files policy rule with
+// no url destinations crbug.com/1358504.
+TEST_F(DlpRulesManagerImplTest, SetFilesPolicyWithOnlyComponents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDataLeakPreventionFilesRestriction);
+  chromeos::DlpClient::InitializeFake();
+
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+  base::Value dst_components(base::Value::Type::LIST);
+  dst_components.Append("ARC");
+  dst_components.Append("CROSTINI");
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kFilesRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block Files", std::move(src_urls), absl::nullopt,
+      std::move(dst_components), std::move(restrictions)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+  EXPECT_EQ(chromeos::DlpClient::Get()
+                ->GetTestInterface()
+                ->GetSetDlpFilesPolicyCount(),
+            1);
+
+  chromeos::DlpClient::Shutdown();
+}
+
 }  // namespace policy

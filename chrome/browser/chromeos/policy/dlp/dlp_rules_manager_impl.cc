@@ -596,10 +596,14 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
           DCHECK(url.is_string());
           files_rule.add_source_urls(url.GetString());
         }
-        for (const auto& url : destinations_urls->GetList()) {
-          DCHECK(url.is_string());
-          files_rule.add_destination_urls(url.GetString());
+
+        if (rule_has_destinations) {
+          for (const auto& url : destinations_urls->GetList()) {
+            DCHECK(url.is_string());
+            files_rule.add_destination_urls(url.GetString());
+          }
         }
+
         // TODO(crbug.com/1321088): Add components to SetDlpFilesPolicyRequest.
 
         files_rule.set_level(GetLevelProtoEnum(rule_level));
