@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -451,10 +452,9 @@ void CloudBinaryUploadService::OnGetResponse(
 void CloudBinaryUploadService::MaybeFinishRequest(Request* request) {
   for (const std::string& tag : request->content_analysis_request().tags()) {
     const auto& results = received_connector_results_[request];
-    if (std::none_of(results.begin(), results.end(),
-                     [&tag](const auto& tag_and_result) {
-                       return tag_and_result.first == tag;
-                     })) {
+    if (base::ranges::none_of(results, [&tag](const auto& tag_and_result) {
+          return tag_and_result.first == tag;
+        })) {
       VLOG(1) << "Request " << request->request_token() << " is waiting for <"
               << tag << "> scanning to complete.";
       return;

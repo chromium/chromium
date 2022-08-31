@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
@@ -239,10 +240,9 @@ void FileAnalysisRequest::OnGotFileData(
 void FileAnalysisRequest::OnCheckedForEncryption(
     Data data,
     const ArchiveAnalyzerResults& analyzer_result) {
-  bool encrypted =
-      std::any_of(analyzer_result.archived_binary.begin(),
-                  analyzer_result.archived_binary.end(),
-                  [](const auto& binary) { return binary.is_encrypted(); });
+  bool encrypted = base::ranges::any_of(
+      analyzer_result.archived_binary,
+      [](const auto& binary) { return binary.is_encrypted(); });
 
   BinaryUploadService::Result result =
       encrypted ? BinaryUploadService::Result::FILE_ENCRYPTED

@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -145,11 +146,7 @@ void MaybeReportDeepScanningVerdict(
     BinaryUploadService::Result result,
     const enterprise_connectors::ContentAnalysisResponse& response,
     EventResult event_result) {
-  DCHECK(std::all_of(download_digest_sha256.begin(),
-                     download_digest_sha256.end(), [](const char& c) {
-                       return (c >= '0' && c <= '9') ||
-                              (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
-                     }));
+  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)
@@ -198,11 +195,7 @@ void ReportAnalysisConnectorWarningBypass(
     const int64_t content_size,
     const enterprise_connectors::ContentAnalysisResponse& response,
     absl::optional<std::u16string> user_justification) {
-  DCHECK(std::all_of(download_digest_sha256.begin(),
-                     download_digest_sha256.end(), [](const char& c) {
-                       return (c >= '0' && c <= '9') ||
-                              (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
-                     }));
+  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)

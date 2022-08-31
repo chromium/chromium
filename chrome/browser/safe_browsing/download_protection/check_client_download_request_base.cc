@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -289,9 +290,8 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
        client_download_request_->download_type() ==
            ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE) &&
       client_download_request_->archive_valid() &&
-      std::all_of(
-          client_download_request_->archived_binary().begin(),
-          client_download_request_->archived_binary().end(),
+      base::ranges::all_of(
+          client_download_request_->archived_binary(),
           [](const ClientDownloadRequest::ArchivedBinary& archived_binary) {
             return !archived_binary.is_executable() &&
                    !archived_binary.is_archive();
