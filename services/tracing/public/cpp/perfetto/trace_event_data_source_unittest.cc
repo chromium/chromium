@@ -511,7 +511,26 @@ class TraceEventDataSourceTest
   size_t ExpectStandardPreamble(size_t packet_index = 0,
                                 bool privacy_filtering_enabled = false) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    auto* clock_packet = GetFinalizedPacket(packet_index++);
+    // With the client library, the first packet on a sequence is a metadata
+    // packet, with first_packet_on_sequence = true. It may also contain the
+    // clock information, or it could be a separate packet with no other
+    // payload.
+    // base::RunLoop().RunUntilIdle() in StartTraceEventDataSource() emits an
+    // empty packet first, but only if no other events are emitted by the
+    // runloop beforehand -- which would be the case if "toplevel" is enabled.
+    const perfetto::protos::TracePacket* clock_packet = nullptr;
+    if (packet_index == 0) {
+      auto* first_metadata_packet = GetFinalizedPacket(packet_index++);
+      EXPECT_TRUE(first_metadata_packet->first_packet_on_sequence());
+      if (first_metadata_packet->has_clock_snapshot()) {
+        clock_packet = first_metadata_packet;
+      } else {
+        clock_packet = GetFinalizedPacket(packet_index++);
+      }
+    } else {
+      clock_packet = GetFinalizedPacket(packet_index++);
+    }
+
     auto* tt_packet = GetFinalizedPacket(packet_index++);
     auto* pt_packet = GetFinalizedPacket(packet_index++);
 #else
