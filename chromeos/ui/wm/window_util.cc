@@ -22,6 +22,11 @@ bool CanFloatWindowInClamshell(aura::Window* window) {
   DCHECK(window);
   DCHECK(features::IsFloatWindowEnabled());
 
+  if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
+       aura::client::kResizeBehaviorCanResize) == 0) {
+    return false;
+  }
+
   const gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
   const gfx::Size minimum_size = window->delegate()->GetMinimumSize();

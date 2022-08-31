@@ -21,6 +21,7 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -132,7 +133,9 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_CUSTOM:
         return true;
       case views::CAPTION_BUTTON_ICON_FLOAT:
-        return chromeos::wm::features::IsFloatWindowEnabled();
+        return chromeos::wm::features::IsFloatWindowEnabled() &&
+               frame_->IsNativeWidgetInitialized() &&
+               chromeos::wm::CanFloatWindow(frame_->GetNativeWindow());
       // No back or menu button by default.
       case views::CAPTION_BUTTON_ICON_BACK:
       case views::CAPTION_BUTTON_ICON_MENU:
@@ -220,7 +223,15 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   AddChildView(close_button_.get());
 
-  UpdateCaptionButtonState(false /* animate */);
+  // The float button relies on minimum size to know if it can be floated, which
+  // can only be checked after the widget has been initialized.
+  if (frame->IsNativeWidgetInitialized()) {
+    UpdateCaptionButtonState(/*animate=*/false);
+  } else {
+    frame->widget_delegate()->RegisterWidgetInitializedCallback(base::BindOnce(
+        &FrameCaptionButtonContainerView::UpdateCaptionButtonState,
+        base::Unretained(this), /*animate=*/false));
+  }
 }
 
 FrameCaptionButtonContainerView::~FrameCaptionButtonContainerView() = default;

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -24,8 +25,10 @@ constexpr int kRowPadding = 16;
 
 }  // namespace
 
-MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
-  DCHECK(parent_window);
+MultitaskMenu::MultitaskMenu(views::View* anchor,
+                             views::Widget* parent_widget) {
+  DCHECK(parent_widget);
+  aura::Window* parent_window = parent_widget->GetNativeWindow();
 
   set_corner_radius(kMultitaskMenuBubbleCornerRadius);
   set_close_on_deactivate(true);
@@ -38,13 +41,33 @@ MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
   // window has no space for `MultitaskMenu` to arrow at `TOP_CENTER`.
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-
   SetUseDefaultFillLayout(true);
+
+  // Check the model to see which buttons we should show. Since this menu is
+  // triggered from the maximize button on the frame, it should have a frame
+  // header, and can be maximized and therefore fullscreened. The exception is
+  // in tests, where we show all the buttons.
+  uint8_t buttons = MultitaskMenuView::kFullscreen;
+  auto* frame_header = FrameHeader::Get(parent_widget);
+  const CaptionButtonModel* caption_button_model =
+      frame_header ? frame_header->GetCaptionButtonModel() : nullptr;
+
+  if (!caption_button_model ||
+      caption_button_model->IsVisible(
+          views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED)) {
+    buttons |= MultitaskMenuView::kHalfSplit;
+    buttons |= MultitaskMenuView::kPartialSplit;
+  }
+  if (!caption_button_model ||
+      caption_button_model->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT)) {
+    buttons |= MultitaskMenuView::kFloat;
+  }
 
   // Must be initialized after setting bounds.
   multitask_menu_view_ = AddChildView(std::make_unique<MultitaskMenuView>(
       parent_window,
-      base::BindRepeating(&MultitaskMenu::HideBubble, base::Unretained(this))));
+      base::BindRepeating(&MultitaskMenu::HideBubble, base::Unretained(this)),
+      buttons));
 
   multitask_menu_view_->SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddPaddingColumn(views::TableLayout::kFixedSize, kRowPadding)
@@ -57,10 +80,12 @@ MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
                  views::LayoutAlignment::kCenter,
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, kRowPadding)
       .AddPaddingRow(views::TableLayout::kFixedSize, kRowPadding)
       .AddRows(1, views::TableLayout::kFixedSize, 0)
       .AddPaddingRow(views::TableLayout::kFixedSize, kRowPadding)
-      .AddRows(1, views::TableLayout::kFixedSize, 0);
+      .AddRows(1, views::TableLayout::kFixedSize, 0)
+      .AddPaddingRow(views::TableLayout::kFixedSize, kRowPadding);
 
   display_observer_.emplace(this);
 }
@@ -91,7 +116,7 @@ void MultitaskMenu::OnDisplayMetricsChanged(const display::Display& display,
   }
   // TODO(shidi): Will do the rotate transition on a separate cl. Close the
   // bubble at rotation for now.
-  if (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION))
+  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
     HideBubble();
 }
 

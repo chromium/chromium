@@ -147,32 +147,30 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
 // Test when float a window in clamshell mode, window will change to default
 // float bounds in certain conditions.
 TEST_F(WindowFloatTest, WindowFloatingResize) {
-  UpdateDisplay("800x600");
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
-  widget->SetBounds(gfx::Rect(0, 0, 200, 200));
-  FloatController* controller = Shell::Get()->float_controller();
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(200, 200));
 
-  // Float Maximized window.
-  widget->Maximize();
+  // Float maximized window.
+  auto* window_state = WindowState::Get(window.get());
+  window_state->Maximize();
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  EXPECT_TRUE(window_state->IsFloated());
   gfx::Rect default_float_bounds =
-      controller->GetPreferredFloatWindowClamshellBounds(
-          widget->GetNativeWindow());
-  EXPECT_EQ(widget->GetWindowBoundsInScreen(), default_float_bounds);
+      FloatController::GetPreferredFloatWindowClamshellBounds(window.get());
+  EXPECT_EQ(default_float_bounds, window->GetBoundsInScreen());
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
-  EXPECT_TRUE(widget->IsMaximized());
+  EXPECT_FALSE(window_state->IsFloated());
+  EXPECT_TRUE(window_state->IsMaximized());
 
-  // Float Full screen window.
-  widget->SetFullscreen(true);
+  // Float full screen window.
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
-  EXPECT_EQ(widget->GetWindowBoundsInScreen(), default_float_bounds);
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_EQ(default_float_bounds, window->GetBoundsInScreen());
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  EXPECT_FALSE(window_state->IsFloated());
   // TODO(crbug.com/1330999): This should return to Fullscreen state after
   // the change.
 
@@ -180,44 +178,45 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
   // Minimized window can't be floated, but when a floated window enter/exit
   // minimized state, it remains floated.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
-  gfx::Rect curr_bounds = widget->GetWindowBoundsInScreen();
-  widget->Minimize();
-  widget->Restore();
-  EXPECT_EQ(widget->GetWindowBoundsInScreen(), curr_bounds);
-  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  EXPECT_TRUE(window_state->IsFloated());
+  const gfx::Rect curr_bounds = window->GetBoundsInScreen();
+  window_state->Minimize();
+  window_state->Restore();
+  EXPECT_EQ(curr_bounds, window->GetBoundsInScreen());
+  EXPECT_TRUE(window_state->IsFloated());
 
   // Float Snapped window.
   // Create a snap enabled window.
-  auto window = CreateAppWindow(default_float_bounds, AppType::BROWSER);
+  auto window2 = CreateAppWindow(default_float_bounds);
+  auto* window_state2 = WindowState::Get(window2.get());
   AcceleratorControllerImpl* acc_controller =
       Shell::Get()->accelerator_controller();
 
   // Snap Left.
   acc_controller->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
-            WindowState::Get(window.get())->GetStateType());
+            window_state2->GetStateType());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(window.get()));
-  EXPECT_EQ(window->bounds(), default_float_bounds);
+  EXPECT_EQ(default_float_bounds, window2->GetBoundsInScreen());
+
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   // Window back to snapped state.
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
-            WindowState::Get(window.get())->GetStateType());
+            window_state2->GetStateType());
 
   // Snap Right.
   acc_controller->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_RIGHT, {});
   ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
-            WindowState::Get(window.get())->GetStateType());
+            WindowState::Get(window2.get())->GetStateType());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(window.get()));
-  EXPECT_EQ(window->bounds(), default_float_bounds);
+  EXPECT_EQ(default_float_bounds, window2->GetBoundsInScreen());
+
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   // Window back to snapped state.
-  ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
-            WindowState::Get(window.get())->GetStateType());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            window_state2->GetStateType());
 }
 
 using TabletWindowFloatTest = WindowFloatTest;

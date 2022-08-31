@@ -237,8 +237,7 @@ void FrameSizeButton::ShowMultitaskMenu() {
   if (chromeos::wm::features::IsFloatWindowEnabled()) {
     // Owned by the bubble which contains this view. If there is an existing
     // bubble, it will be deactivated and then close and destroy itself.
-    auto* multitask_menu = new MultitaskMenu(
-        /*anchor=*/this, GetWidget()->GetNativeWindow());
+    auto* multitask_menu = new MultitaskMenu(/*anchor=*/this, GetWidget());
     multitask_menu->ShowBubble();
   }
 }

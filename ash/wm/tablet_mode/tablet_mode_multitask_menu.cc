@@ -5,10 +5,14 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 
 #include "ash/style/ash_color_id.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
+#include "chromeos/ui/wm/window_util.h"
+#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
@@ -19,11 +23,10 @@ namespace ash {
 namespace {
 
 constexpr int kMultitaskMenuVerticalPadding = 8;
-constexpr int kMultitaskMenuWidth = 510;
-constexpr int kMultitaskMenuLandscapeHeight = 133;
 constexpr int kBetweenButtonSpacing = 12;
 constexpr int kCornerRadius = 8;
 constexpr int kShadowElevation = 3;
+constexpr gfx::Insets kInsideBorderInsets(16);
 
 }  // namespace
 
@@ -42,12 +45,28 @@ class TabletModeMultitaskMenuView : public views::View {
 
     SetUseDefaultFillLayout(true);
 
-    multitask_menu_view_for_testing_ = AddChildView(
-        std::make_unique<chromeos::MultitaskMenuView>(window, hide_menu));
+    // Since this menu is only shown for maximizable windows, it can be
+    // fullscreened.
+    // TODO(sophiewen): Ensure that there is always 2 buttons or more if this
+    // view is created.
+    auto* window_state = WindowState::Get(window);
+    DCHECK(window_state);
+    DCHECK(window_state->CanMaximize());
+    uint8_t buttons = chromeos::MultitaskMenuView::kFullscreen;
+    if (SplitViewController::Get(window)->CanSnapWindow(window)) {
+      buttons |= chromeos::MultitaskMenuView::kHalfSplit;
+      buttons |= chromeos::MultitaskMenuView::kPartialSplit;
+    }
+    if (chromeos::wm::CanFloatWindow(window))
+      buttons |= chromeos::MultitaskMenuView::kFloat;
+
+    multitask_menu_view_for_testing_ =
+        AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
+            window, hide_menu, buttons));
 
     auto* layout = multitask_menu_view_for_testing_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+            views::BoxLayout::Orientation::kHorizontal, kInsideBorderInsets,
             kBetweenButtonSpacing));
     layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kCenter);
@@ -85,21 +104,22 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.parent = window->parent();
-  params.bounds =
-      gfx::Rect(window->bounds().CenterPoint().x() - kMultitaskMenuWidth / 2,
-                kMultitaskMenuVerticalPadding, kMultitaskMenuWidth,
-                kMultitaskMenuLandscapeHeight);
   params.name = "TabletModeMultitaskMenuWidget";
   params.corner_radius = kCornerRadius;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.shadow_elevation = kShadowElevation;
 
   multitask_menu_widget_->Init(std::move(params));
-  multitask_menu_widget_->SetContentsView(
+  auto* view = multitask_menu_widget_->SetContentsView(
       std::make_unique<TabletModeMultitaskMenuView>(
           window_,
           base::BindRepeating(&TabletModeMultitaskMenu::CloseMultitaskMenu,
                               base::Unretained(this))));
+  const gfx::Size widget_size = view->GetPreferredSize();
+  const gfx::Rect widget_bounds(
+      window_->bounds().CenterPoint().x() - widget_size.width() / 2,
+      kMultitaskMenuVerticalPadding, widget_size.width(), widget_size.height());
+  multitask_menu_widget_->SetBounds(widget_bounds);
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;

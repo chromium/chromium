@@ -11,6 +11,8 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_button.h"
+#include "chromeos/ui/frame/multitask_menu/split_button.h"
 #include "ui/aura/window.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,10 +29,6 @@ namespace {
 
 constexpr int kCenterPadding = 4;
 constexpr int kLabelFontSize = 13;
-constexpr int kMultitaskMenuLandscapeWidth = 270;
-constexpr int kMultitaskMenuLandscapeHeight = 248;
-constexpr int kMultitaskMenuPortraitWidth = 200;
-constexpr int kMultitaskMenuPortraitHeight = 320;
 
 // Creates multitask button with label.
 std::unique_ptr<views::View> CreateButtonContainer(
@@ -53,7 +51,8 @@ std::unique_ptr<views::View> CreateButtonContainer(
 
 MultitaskMenuView::MultitaskMenuView(
     aura::Window* window,
-    base::RepeatingClosure on_any_button_pressed)
+    base::RepeatingClosure on_any_button_pressed,
+    uint8_t buttons)
     : window_(window),
       on_any_button_pressed_(std::move(on_any_button_pressed)) {
   DCHECK(window);
@@ -65,53 +64,57 @@ MultitaskMenuView::MultitaskMenuView(
   const bool is_portrait_mode = !chromeos::IsDisplayLayoutHorizontal(
       display::Screen::GetScreen()->GetDisplayNearestWindow(window));
 
-  SetPreferredSize(is_portrait_mode ? gfx::Size(kMultitaskMenuPortraitWidth,
-                                                kMultitaskMenuPortraitHeight)
-                                    : gfx::Size(kMultitaskMenuLandscapeWidth,
-                                                kMultitaskMenuLandscapeHeight));
   // Half button.
-  auto half_button = std::make_unique<SplitButtonView>(
-      SplitButton::SplitButtonType::kHalfButtons,
-      base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
-                          base::Unretained(this), SnapDirection::kPrimary),
-      base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
-                          base::Unretained(this), SnapDirection::kSecondary),
-      is_portrait_mode);
-  half_button_ = half_button.get();
-  AddChildView(
-      CreateButtonContainer(std::move(half_button), IDS_APP_ACCNAME_HALF));
+  if (buttons & kHalfSplit) {
+    auto half_button = std::make_unique<SplitButtonView>(
+        SplitButton::SplitButtonType::kHalfButtons,
+        base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
+                            base::Unretained(this), SnapDirection::kPrimary),
+        base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
+                            base::Unretained(this), SnapDirection::kSecondary),
+        is_portrait_mode);
+    half_button_ = half_button.get();
+    AddChildView(
+        CreateButtonContainer(std::move(half_button), IDS_APP_ACCNAME_HALF));
+  }
 
   // Partial button.
-  auto partial_button = std::make_unique<SplitButtonView>(
-      SplitButton::SplitButtonType::kPartialButtons,
-      base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
-                          base::Unretained(this), SnapDirection::kPrimary),
-      base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
-                          base::Unretained(this), SnapDirection::kSecondary),
-      is_portrait_mode);
-  partial_button_ = partial_button.get();
-  AddChildView(CreateButtonContainer(std::move(partial_button),
-                                     IDS_APP_ACCNAME_PARTIAL));
+  if (buttons & kPartialSplit) {
+    auto partial_button = std::make_unique<SplitButtonView>(
+        SplitButton::SplitButtonType::kPartialButtons,
+        base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
+                            base::Unretained(this), SnapDirection::kPrimary),
+        base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
+                            base::Unretained(this), SnapDirection::kSecondary),
+        is_portrait_mode);
+    partial_button_ = partial_button.get();
+    AddChildView(CreateButtonContainer(std::move(partial_button),
+                                       IDS_APP_ACCNAME_PARTIAL));
+  }
 
   // Full screen button.
-  auto full_button = std::make_unique<MultitaskBaseButton>(
-      base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
-                          base::Unretained(this)),
-      MultitaskBaseButton::Type::kFull, is_portrait_mode,
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FULL));
-  full_button_ = full_button.get();
-  AddChildView(
-      CreateButtonContainer(std::move(full_button), IDS_APP_ACCNAME_FULL));
+  if (buttons & kFullscreen) {
+    auto full_button = std::make_unique<MultitaskBaseButton>(
+        base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
+                            base::Unretained(this)),
+        MultitaskBaseButton::Type::kFull, is_portrait_mode,
+        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FULL));
+    full_button_ = full_button.get();
+    AddChildView(
+        CreateButtonContainer(std::move(full_button), IDS_APP_ACCNAME_FULL));
+  }
 
   // Float on top button.
-  auto float_button = std::make_unique<MultitaskBaseButton>(
-      base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
-                          base::Unretained(this)),
-      MultitaskBaseButton::Type::kFloat, is_portrait_mode,
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT_ON_TOP));
-  float_button_ = float_button.get();
-  AddChildView(CreateButtonContainer(std::move(float_button),
-                                     IDS_APP_ACCNAME_FLOAT_ON_TOP));
+  if (buttons & kFloat) {
+    auto float_button = std::make_unique<MultitaskBaseButton>(
+        base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
+                            base::Unretained(this)),
+        MultitaskBaseButton::Type::kFloat, is_portrait_mode,
+        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT_ON_TOP));
+    float_button_ = float_button.get();
+    AddChildView(CreateButtonContainer(std::move(float_button),
+                                       IDS_APP_ACCNAME_FLOAT_ON_TOP));
+  }
 }
 
 MultitaskMenuView::~MultitaskMenuView() = default;

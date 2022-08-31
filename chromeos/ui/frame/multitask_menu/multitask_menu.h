@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
  public:
   METADATA_HEADER(MultitaskMenu);
 
-  MultitaskMenu(views::View* anchor, aura::Window* parent_window);
+  MultitaskMenu(views::View* anchor, views::Widget* parent_widget);
 
   MultitaskMenu(const MultitaskMenu&) = delete;
   MultitaskMenu& operator=(const MultitaskMenu&) = delete;
