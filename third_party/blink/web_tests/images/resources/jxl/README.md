@@ -14,6 +14,7 @@ dice.png
 animated.gif
 jxl/3x3.png
 jxl/3x3a.png
+cat.jpg
 ```
 Then we run:
 ```
@@ -72,4 +73,7 @@ cjxl animated.gif animated.jxl
 for i in $(seq 0 9); do J=$(printf '%03d' $i); convert -fill black -size 500x500 -font 'Courier' -pointsize 72 -gravity center label:$J $J.png; done
 convert -delay 20 *.png count.gif
 cjxl count.gif count.jxl
+
+cjxl --lossless_jpeg 0 --group_order 1 --distance 1 cat.jpg cat.jxl
+dd bs=1 count=30000 if=cat.jxl of=partial_cat.jxl
 ```

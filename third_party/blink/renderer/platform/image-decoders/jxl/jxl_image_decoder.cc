@@ -153,23 +153,25 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
   }
 
   DCHECK_LE(num_decoded_frames_, frame_buffer_cache_.size());
-
   if (num_decoded_frames_ > index &&
       frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete) {
     // Frame already complete
     return;
   }
-
   if ((index < num_decoded_frames_) && dec_) {
     // An animation frame that already has been decoded, but does not have
-    // status ImageFrame::kFrameComplete, was requested. This means an earlier
-    // animation frame was purged but is to be re-decoded now. Rewind the
-    // decoder and skip to the requested frame.
+    // status ImageFrame::kFrameComplete, was requested.
+    // This can mean two things:
+    // (1) an earlier animation frame was purged but is to be re-decoded now.
+    // Rewind the decoder and skip to the requested frame.
+    // (2) During progressive decoding the frame has the status
+    // ImageFrame::kFramePartial.
     JxlDecoderRewind(dec_.get());
     offset_ = 0;
     // No longer subscribe to JXL_DEC_BASIC_INFO or JXL_DEC_COLOR_ENCODING.
     if (JXL_DEC_SUCCESS !=
-        JxlDecoderSubscribeEvents(dec_.get(), JXL_DEC_FULL_IMAGE)) {
+        JxlDecoderSubscribeEvents(
+            dec_.get(), JXL_DEC_FULL_IMAGE | JXL_DEC_FRAME_PROGRESSION)) {
       SetFailed();
       return;
     }
@@ -181,10 +183,15 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
     dec_ = JxlDecoderMake(nullptr);
     // Subscribe to color encoding event even when only getting size, because
     // SetSize must be called after SetEmbeddedColorProfile
-    const int events =
-        JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING | JXL_DEC_FULL_IMAGE;
+    const int events = JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING |
+                       JXL_DEC_FULL_IMAGE | JXL_DEC_FRAME_PROGRESSION;
 
     if (JXL_DEC_SUCCESS != JxlDecoderSubscribeEvents(dec_.get(), events)) {
+      SetFailed();
+      return;
+    }
+    if (JXL_DEC_SUCCESS !=
+        JxlDecoderSetProgressiveDetail(dec_.get(), JxlProgressiveDetail::kDC)) {
       SetFailed();
       return;
     }
@@ -223,6 +230,23 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
         size_t jxl_size = 0;
         if (!ReadBytes(remaining, &offset_, &segment_, &reader, &jxl_data,
                        &jxl_size)) {
+          if (IsAllDataReceived()) {
+            // Happens only if a partial image file was transferred, otherwise
+            // status will be JXL_DEC_FULL_IMAGE or JXL_DEC_SUCCESS. In
+            // this case we flush one more time in order to get the progressive
+            // image plus everything known so far. The progressive image was not
+            // flushed when status was JXL_DEC_FRAME_PROGRESSION because all
+            // data seemed to have been received (not knowing then that it was
+            // only a partial file).
+            if (JXL_DEC_SUCCESS != JxlDecoderFlushImage(dec_.get())) {
+              DVLOG(1) << "JxlDecoderSetImageOutCallback failed";
+              SetFailed();
+              return;
+            }
+            ImageFrame& frame = frame_buffer_cache_[num_decoded_frames_ - 1];
+            frame.SetPixelsChanged(true);
+            frame.SetStatus(ImageFrame::kFramePartial);
+          }
           return;
         }
 
@@ -467,6 +491,21 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
           return;
         }
         break;
+      }
+      case JXL_DEC_FRAME_PROGRESSION: {
+        if (IsAllDataReceived()) {
+          break;
+        } else {
+          if (JXL_DEC_SUCCESS != JxlDecoderFlushImage(dec_.get())) {
+            DVLOG(1) << "JxlDecoderSetImageOutCallback failed";
+            SetFailed();
+            return;
+          }
+          ImageFrame& frame = frame_buffer_cache_[num_decoded_frames_ - 1];
+          frame.SetPixelsChanged(true);
+          frame.SetStatus(ImageFrame::kFramePartial);
+          break;
+        }
       }
       case JXL_DEC_FULL_IMAGE: {
         ImageFrame& frame = frame_buffer_cache_[num_decoded_frames_ - 1];
