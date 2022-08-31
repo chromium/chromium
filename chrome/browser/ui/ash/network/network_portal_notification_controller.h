@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 class NetworkPortalWebDialog;
-class NetworkState;
 }  // namespace ash
 
 namespace chromeos {
@@ -24,7 +24,7 @@ class NetworkPortalNotificationControllerTest;
 // Shows a message center notification when the networking stack detects a
 // captive portal.
 class NetworkPortalNotificationController
-    : public NetworkPortalDetector::Observer,
+    : public NetworkStateHandlerObserver,
       public session_manager::SessionManagerObserver {
  public:
   // The values of these metrics are being used for UMA gathering, so it is
@@ -38,8 +38,7 @@ class NetworkPortalNotificationController
 
   static const char kNotificationId[];
 
-  explicit NetworkPortalNotificationController(
-      NetworkPortalDetector* network_portal_dectector);
+  NetworkPortalNotificationController();
 
   NetworkPortalNotificationController(
       const NetworkPortalNotificationController&) = delete;
@@ -73,20 +72,16 @@ class NetworkPortalNotificationController
   std::unique_ptr<message_center::Notification>
   CreateDefaultCaptivePortalNotification(const ash::NetworkState* network);
 
-  // NetworkPortalDetector::Observer:
-  void OnPortalDetectionCompleted(
-      const ash::NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalStatus status) override;
-  void OnShutdown() override;
+  // NetworkStateHandlerObserver:
+  void PortalStateChanged(const NetworkState* network,
+                          NetworkState::PortalState portal_state) override;
+  void OnShuttingDown() override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
   // Last network guid for which notification was displayed.
   std::string last_network_guid_;
-
-  // Backpointer to owner.
-  NetworkPortalDetector* network_portal_detector_ = nullptr;
 
   // Currently displayed authorization dialog, or NULL if none.
   ash::NetworkPortalWebDialog* dialog_ = nullptr;

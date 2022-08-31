@@ -114,37 +114,34 @@ void NetworkPortalNotificationControllerDelegate::Click(
 const char NetworkPortalNotificationController::kNotificationId[] =
     "chrome://net/network_portal_detector";
 
-NetworkPortalNotificationController::NetworkPortalNotificationController(
-    NetworkPortalDetector* network_portal_detector)
-    : network_portal_detector_(network_portal_detector) {
-  if (network_portal_detector_) {  // May be null in tests.
-    network_portal_detector_->AddObserver(this);
-    DCHECK(session_manager::SessionManager::Get());
-    session_manager::SessionManager::Get()->AddObserver(this);
-  }
+NetworkPortalNotificationController::NetworkPortalNotificationController() {
+  if (NetworkHandler::IsInitialized()) // May be null in tests.
+    NetworkHandler::Get()->network_state_handler()->AddObserver(this);
+  DCHECK(session_manager::SessionManager::Get());
+  session_manager::SessionManager::Get()->AddObserver(this);
 }
 
 NetworkPortalNotificationController::~NetworkPortalNotificationController() {
-  if (network_portal_detector_) {
-    if (session_manager::SessionManager::Get())
-      session_manager::SessionManager::Get()->RemoveObserver(this);
-    network_portal_detector_->RemoveObserver(this);
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   }
+  if (session_manager::SessionManager::Get())
+    session_manager::SessionManager::Get()->RemoveObserver(this);
 }
 
-void NetworkPortalNotificationController::OnPortalDetectionCompleted(
-    const ash::NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalStatus status) {
+void NetworkPortalNotificationController::PortalStateChanged(
+    const NetworkState* network,
+    NetworkState::PortalState portal_state) {
   if (!network ||
-      status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL) {
+      (portal_state != NetworkState::PortalState::kPortal &&
+       portal_state != NetworkState::PortalState::kPortalSuspected)) {
     last_network_guid_.clear();
 
     // In browser tests we initiate fake network portal detection, but network
     // state usually stays connected. This way, after dialog is shown, it is
     // immediately closed. The testing check below prevents dialog from closing.
-    if (dialog_ &&
-        (!ignore_no_network_for_testing_ ||
-         status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE)) {
+    if (dialog_ && (!ignore_no_network_for_testing_ ||
+                    portal_state == NetworkState::PortalState::kOnline)) {
       dialog_->Close();
     }
 
@@ -167,10 +164,9 @@ void NetworkPortalNotificationController::OnPortalDetectionCompleted(
   SystemNotificationHelper::GetInstance()->Display(*notification);
 }
 
-void NetworkPortalNotificationController::OnShutdown() {
+void NetworkPortalNotificationController::OnShuttingDown() {
   CloseDialog();
-  network_portal_detector_->RemoveObserver(this);
-  network_portal_detector_ = nullptr;
+  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 }
 
 void NetworkPortalNotificationController::OnSessionStateChanged() {

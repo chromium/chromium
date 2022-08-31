@@ -289,12 +289,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   // NetworkPortalDetector instance may be replaced.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kTestType)) {
-    ash::NetworkPortalDetector* detector =
-        ash::network_portal_detector::GetInstance();
-    CHECK(detector);
     network_portal_notification_controller_ =
-        std::make_unique<chromeos::NetworkPortalNotificationController>(
-            detector);
+        std::make_unique<chromeos::NetworkPortalNotificationController>();
   }
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();

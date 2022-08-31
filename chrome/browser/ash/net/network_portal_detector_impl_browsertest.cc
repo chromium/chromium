@@ -112,8 +112,7 @@ class NetworkPortalDetectorImplBrowserTest
     network_portal_detector_->enabled_ = true;
     set_detector(network_portal_detector_->captive_portal_detector_.get());
     network_portal_notification_controller_ =
-        std::make_unique<NetworkPortalNotificationController>(
-            network_portal_detector_);
+        std::make_unique<NetworkPortalNotificationController>();
     base::RunLoop().RunUntilIdle();
   }
 
