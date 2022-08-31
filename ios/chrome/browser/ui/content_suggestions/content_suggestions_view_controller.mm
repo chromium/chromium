@@ -281,7 +281,7 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
             initWithContentView:self.trendingQueriesContainingView
                      moduleType:ContentSuggestionsModuleTypeTrendingQueries];
     if (!self.trendingQueryViews) {
-      self.mostVisitedModuleContainer.isPlaceholder = YES;
+      self.trendingQueriesModuleContainer.isPlaceholder = YES;
       self.trendingQueryViews = [NSMutableArray array];
       // Add placeholder tiles if Most Visited Tiles are not ready yet.
       for (int i = 0; i < 4; i++) {
