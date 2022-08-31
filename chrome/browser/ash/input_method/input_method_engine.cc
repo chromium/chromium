@@ -709,8 +709,7 @@ void InputMethodEngine::SetCompositionBounds(
   observer_->OnCompositionBoundsChanged(bounds);
 }
 
-void InputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds)
-{
+void InputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds) {
   observer_->OnCaretBoundsChanged(caret_bounds);
 }
 

@@ -449,9 +449,9 @@ class ImeObserverChromeOS
     caret_bounds_arg.h = caret_bounds.height();
 
     DispatchEventToExtension(
-      extensions::events::INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED,
-      input_method_private::OnCaretBoundsChanged::kEventName,
-      input_method_private::OnCaretBoundsChanged::Create(caret_bounds_arg));
+        extensions::events::INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED,
+        input_method_private::OnCaretBoundsChanged::kEventName,
+        input_method_private::OnCaretBoundsChanged::Create(caret_bounds_arg));
   }
 
   void OnFocus(
