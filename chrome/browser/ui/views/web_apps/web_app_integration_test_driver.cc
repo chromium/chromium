@@ -1700,6 +1700,8 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
                                      profile(), site);
   DCHECK(policy_app);
   base::RunLoop run_loop;
+  AppRegistrationWaiter app_registration_waiter(
+      profile(), policy_app->id, apps::Readiness::kUninstalledByUser);
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
@@ -1725,6 +1727,11 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
     ASSERT_GT(removed_count, 0U);
   }
   run_loop.Run();
+  const WebApp* app = provider()->registrar().GetAppById(policy_app->id);
+  // If the app was fully uninstalled, wait for the change to propagate through
+  // App Service.
+  if (app == nullptr)
+    app_registration_waiter.Await();
   site_remember_deny_open_file.erase(site);
   AfterStateChangeAction();
 }
@@ -2639,6 +2646,8 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
 
 void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
   base::RunLoop run_loop;
+  AppRegistrationWaiter app_registration_waiter(
+      profile(), id, apps::Readiness::kUninstalledByUser);
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
@@ -2666,6 +2675,10 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
   }
   run_loop.Run();
   const WebApp* app = provider()->registrar().GetAppById(id);
+  // If the app was fully uninstalled, wait for the change to propagate through
+  // App Service.
+  if (app == nullptr)
+    app_registration_waiter.Await();
   if (app == nullptr && active_app_id_ == id)
     active_app_id_.clear();
 }
