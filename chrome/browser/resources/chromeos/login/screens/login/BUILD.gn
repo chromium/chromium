@@ -12,7 +12,6 @@ group("polymer3_elements") {
   public_deps = [
     ":active_directory_password_change_module",
     ":checking_downloading_update_module",
-    ":gaia_password_changed_module",
     ":offline_login_module",
     ":update_required_card_module",
   ]
@@ -25,7 +24,7 @@ js_type_check("closure_compile") {
     ":active_directory_password_change.m",
     ":checking_downloading_update.m",
     ":encryption_migration",
-    ":gaia_password_changed.m",
+    ":gaia_password_changed",
     ":lacros_data_migration",
     ":management_transition",
     ":offline_login.m",
@@ -65,8 +64,8 @@ js_library("encryption_migration") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("gaia_password_changed.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/gaia_password_changed.m.js" ]
+js_library("gaia_password_changed") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/gaia_password_changed.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -78,7 +77,7 @@ js_library("gaia_password_changed.m") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
-  extra_deps = [ ":gaia_password_changed_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("lacros_data_migration") {
@@ -159,15 +158,6 @@ polymer_modulizer("active_directory_password_change") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("gaia_password_changed") {
-  js_file = "gaia_password_changed.js"
-  html_file = "gaia_password_changed.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("offline_login") {
   js_file = "offline_login.js"
   html_file = "offline_login.html"
@@ -196,6 +186,7 @@ polymer_modulizer("checking_downloading_update") {
 html_to_js("web_components") {
   js_files = [
     "encryption_migration.js",
+    "gaia_password_changed.js",
     "lacros_data_migration.js",
     "management_transition.js",
   ]

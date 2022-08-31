@@ -44,7 +44,7 @@ import './screens/common/wrong_hwid.m.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/active_directory_password_change.m.js';
 import './screens/login/encryption_migration.js';
-import './screens/login/gaia_password_changed.m.js';
+import './screens/login/gaia_password_changed.js';
 import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
 import './screens/login/offline_login.m.js';

@@ -6,7 +6,25 @@
  * @fileoverview Polymer element for GAIA password changed screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {addSubmitListener} from '../../login_ui_tools.m.js';
+
 
 /**
  * UI mode for the dialog.
@@ -25,9 +43,8 @@ const GaiaPasswordChangedUIState = {
  * @implements {OobeI18nBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
-const GaiaPasswordChangedBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    Polymer.Element);
+const GaiaPasswordChangedBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @typedef {{
@@ -48,17 +65,31 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     return 'gaia-password-changed-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
-      email: String,
+      email: {
+        type: String,
+        value: '',
+      },
 
-      password_: String,
+      password_: {
+        type: String,
+        value: '',
+      },
 
-      passwordInvalid_: Boolean,
+      passwordInvalid_: {
+        type: Boolean,
+        value: false,
+      },
 
-      disabled: Boolean,
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
 
       passwordInput_: Object,
 
@@ -67,14 +98,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
         value: loadTimeData.getBoolean('isCryptohomeRecoveryUIFlowEnabled'),
       },
     };
-  }
-
-  constructor() {
-    super();
-    this.email = '';
-    this.password_ = '';
-    this.passwordInvalid_ = false;
-    this.disabled = false;
   }
 
   defaultUIStep() {
@@ -95,8 +118,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     this.passwordInput_ = this.isCryptohomeRecoveryUIFlowEnabled_ ?
         this.$.oldPasswordInput2 :
         this.$.oldPasswordInput;
-    cr.ui.LoginUITools.addSubmitListener(
-        this.passwordInput_, this.submit_.bind(this));
+    addSubmitListener(this.passwordInput_, this.submit_.bind(this));
   }
 
   /** Initial UI State for screen */
