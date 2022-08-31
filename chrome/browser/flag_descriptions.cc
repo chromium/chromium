@@ -119,11 +119,6 @@ const char kClipboardUnsanitizedContentDescription[] =
     "Allows reading/writing unsanitized content from/to the clipboard. "
     "Currently, it is only applicable to HTML format. See crbug.com/1268679.";
 
-const char kCSSContainerQueriesName[] = "Enable CSS Container Queries";
-const char kCSSContainerQueriesDescription[] =
-    "Enables support for @container, inline-size and block-size values for the "
-    "contain property, and the LayoutNG Grid implementation.";
-
 const char kConditionalTabStripAndroidName[] = "Conditional Tab Strip";
 const char kConditionalTabStripAndroidDescription[] =
     "Allows users to access conditional tab strip.";

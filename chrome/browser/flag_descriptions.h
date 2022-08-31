@@ -92,9 +92,6 @@ extern const char kCOLRV1FontsDescription[];
 extern const char kClipboardUnsanitizedContentName[];
 extern const char kClipboardUnsanitizedContentDescription[];
 
-extern const char kCSSContainerQueriesName[];
-extern const char kCSSContainerQueriesDescription[];
-
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 

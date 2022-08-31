@@ -107,10 +107,6 @@ const base::Feature kBlockingDownloadsInAdFrameWithoutUserActivation{
     "BlockingDownloadsInAdFrameWithoutUserActivation",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable CSS Container Queries. Also implies LayoutNGGrid and CSSContainSize1D.
-const base::Feature kCSSContainerQueries{"CSSContainerQueries",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether the Conversion Measurement API infrastructure is enabled.
 const base::Feature kConversionMeasurement{"ConversionMeasurement",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

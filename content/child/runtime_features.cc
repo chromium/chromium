@@ -339,7 +339,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kAndroidDownloadableFontsMatching},
           {"BatchFetchRequests", blink::features::kBatchFetchRequests},
           {"ClipboardCustomFormats", blink::features::kClipboardCustomFormats},
-          {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"CSSOverflowForReplacedElements",
            blink::features::kCSSOverflowForReplacedElements,
            kSetOnlyIfOverridden},

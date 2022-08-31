@@ -3430,9 +3430,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsOnChromeUrlsDescription, kOsAll,
      SINGLE_VALUE_TYPE(extensions::switches::kExtensionsOnChromeURLs)},
 #endif  // ENABLE_EXTENSIONS
-    {"enable-container-queries", flag_descriptions::kCSSContainerQueriesName,
-     flag_descriptions::kCSSContainerQueriesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kCSSContainerQueries)},
 #if BUILDFLAG(IS_ANDROID)
     {"osk-resizes-visual-viewport",
      flag_descriptions::kEnableOskResizesVisualViewportName,
