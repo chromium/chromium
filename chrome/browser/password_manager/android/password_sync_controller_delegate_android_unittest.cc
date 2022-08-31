@@ -11,9 +11,9 @@
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

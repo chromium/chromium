@@ -1,9 +1,15 @@
 include_rules = [
-  # Test files can include anything from sync.
+  "+ash/constants",
+  "+chromeos/crosapi/mojom",
   "+components/bookmarks",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/signin/public",
   "+components/sync",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+services/network/public/cpp",
+  "+services/network/test",
   "+third_party/protobuf/src/google/protobuf",
   "+ui/gfx/image",
 ]

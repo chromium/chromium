@@ -9,7 +9,7 @@
 #import "base/mac/foundation_util.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/mock_sync_service.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"

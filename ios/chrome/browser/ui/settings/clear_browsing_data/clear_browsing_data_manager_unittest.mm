@@ -13,7 +13,7 @@
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/sync/driver/sync_service.h"
-#import "components/sync/driver/test_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/application_context/application_context.h"

@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/run_loop.h"
-#include "components/sync/base/model_type_test_util.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "components/sync/test/mock_invalidation_tracker.h"
+#include "components/sync/test/model_type_test_util.h"
 #include "components/sync/test/trackable_mock_invalidation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

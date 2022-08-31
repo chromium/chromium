@@ -38,7 +38,7 @@
 #include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"

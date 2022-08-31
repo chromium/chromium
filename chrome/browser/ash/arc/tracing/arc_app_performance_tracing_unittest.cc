@@ -23,7 +23,7 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
 

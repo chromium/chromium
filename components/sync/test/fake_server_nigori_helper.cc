@@ -7,11 +7,11 @@
 #include <string>
 #include <vector>
 
-#include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server.h"
+#include "components/sync/test/nigori_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace fake_server {

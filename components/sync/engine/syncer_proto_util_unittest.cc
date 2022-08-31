@@ -9,13 +9,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/mock_connection_manager.h"
+#include "components/sync/test/model_type_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;

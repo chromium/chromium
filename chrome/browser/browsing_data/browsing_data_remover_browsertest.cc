@@ -37,7 +37,7 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/storage_partition.h"

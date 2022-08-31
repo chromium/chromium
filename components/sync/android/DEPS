@@ -1,4 +1,4 @@
 include_rules = [
   "+components/sync/base",
-  "+components/sync/test/android", # For sync test tools
+  "+components/sync/test", # For sync test tools
 ]

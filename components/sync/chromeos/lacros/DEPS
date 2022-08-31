@@ -1,4 +1,0 @@
-include_rules = [
-  "+chromeos/crosapi/mojom",
-  "+mojo/public/cpp/bindings",
-]

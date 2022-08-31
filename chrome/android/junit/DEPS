@@ -36,7 +36,7 @@ include_rules = [
   "+components/search_engines/android/java/src/org/chromium/components/search_engines",
   "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
   "+components/sync/android/java/src/org/chromium/components/sync",
-  "+components/sync/test/android/javatests/src/org/chromium/components/sync/test/util",
+  "+components/sync/test",
   "+components/ukm/android",
 
   "-content/public/android/java",

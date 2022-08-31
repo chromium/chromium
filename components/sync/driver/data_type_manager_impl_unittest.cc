@@ -17,9 +17,9 @@
 #include "components/sync/driver/data_type_encryption_handler.h"
 #include "components/sync/driver/data_type_manager_observer.h"
 #include "components/sync/driver/data_type_status_table.h"
-#include "components/sync/driver/fake_data_type_controller.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/test/fake_data_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

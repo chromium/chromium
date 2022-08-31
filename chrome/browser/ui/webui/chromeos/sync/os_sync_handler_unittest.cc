@@ -18,7 +18,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"

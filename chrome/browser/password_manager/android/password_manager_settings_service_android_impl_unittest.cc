@@ -17,7 +17,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

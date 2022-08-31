@@ -6,7 +6,7 @@
 
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

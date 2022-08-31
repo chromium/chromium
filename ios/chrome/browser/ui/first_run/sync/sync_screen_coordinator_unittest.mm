@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 
-#import "components/sync/driver/mock_sync_service.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"

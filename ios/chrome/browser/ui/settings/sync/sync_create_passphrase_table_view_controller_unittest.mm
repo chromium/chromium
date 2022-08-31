@@ -9,7 +9,7 @@
 #include "base/compiler_specific.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/mock_sync_service.h"
+#import "components/sync/test/mock_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"

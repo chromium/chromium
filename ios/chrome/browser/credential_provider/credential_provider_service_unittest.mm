@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #import "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/test_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"

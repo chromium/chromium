@@ -17,8 +17,8 @@
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_storage.h"
-#include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/test/nigori_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

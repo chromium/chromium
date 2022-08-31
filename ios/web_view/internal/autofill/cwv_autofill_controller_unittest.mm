@@ -30,7 +30,7 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/driver/test_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"

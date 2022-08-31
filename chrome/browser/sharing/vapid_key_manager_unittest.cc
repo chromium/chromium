@@ -6,7 +6,7 @@
 
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "crypto/ec_private_key.h"

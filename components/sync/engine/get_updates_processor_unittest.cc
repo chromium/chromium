@@ -13,16 +13,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
-#include "components/sync/engine/cycle/mock_debug_info_getter.h"
 #include "components/sync/engine/cycle/nudge_tracker.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/test/mock_debug_info_getter.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "components/sync/test/mock_update_handler.h"
+#include "components/sync/test/model_type_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

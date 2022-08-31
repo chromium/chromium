@@ -10,6 +10,7 @@ include_rules = [
   "+components/strings/grit/components_strings.h",
   "+components/sync/base",
   "+components/sync/driver",
+  "+components/sync/test",
   "+components/sync_preferences",
   "+components/version_info",
   "+components/webdata/common",

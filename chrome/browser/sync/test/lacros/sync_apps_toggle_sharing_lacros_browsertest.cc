@@ -11,9 +11,9 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/chromeos/lacros/fake_sync_mojo_service.h"
-#include "components/sync/chromeos/lacros/fake_sync_user_settings_client_ash.h"
 #include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/test/fake_sync_mojo_service.h"
+#include "components/sync/test/fake_sync_user_settings_client_ash.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

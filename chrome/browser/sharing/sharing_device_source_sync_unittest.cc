@@ -19,7 +19,7 @@
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"

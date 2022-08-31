@@ -6,8 +6,8 @@
 
 #include "base/observer_list.h"
 #include "components/sync/driver/sync_token_status.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"

@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/sync/driver/mock_sync_service.h"
+#import "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"

@@ -6,7 +6,7 @@
 
 #import "components/consent_auditor/fake_consent_auditor.h"
 #include "components/prefs/pref_service.h"
-#import "components/sync/driver/mock_sync_service.h"
+#import "components/sync/test/mock_sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"

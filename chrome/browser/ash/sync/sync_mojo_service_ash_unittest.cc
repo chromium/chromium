@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/features.h"
-#include "components/sync/driver/mock_sync_service.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

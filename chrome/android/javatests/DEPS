@@ -50,10 +50,7 @@ include_rules = [
   "+components/search_engines",
   "+components/security_state/content/android/java",
   "+components/sync/android/java/src/org/chromium/components/sync",
-  "+components/sync/test/fake_server/android",
-  # We should only depend on the util package of something that lives in
-  # javatests.
-  "+components/sync/test/android/javatests/src/org/chromium/components/sync/test/util",
+  "+components/sync/test",
   "+components/webauthn/android/java",
 
   "-content/public/android/java",

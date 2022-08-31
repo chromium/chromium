@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/test_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
