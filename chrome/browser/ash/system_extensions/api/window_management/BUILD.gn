@@ -46,6 +46,8 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":test_helper",
+    ":test_helper_js_data_deps",
     ":window_management",
     "//chrome/browser/ash/system_extensions",
     "//chrome/browser/ash/system_extensions/api/test_support",
@@ -61,4 +63,11 @@ source_set("browser_tests") {
     "//third_party/blink/web_tests/resources/testharness-helpers.js",
     "//chrome/browser/ash/system_extensions/api/window_management/test/",
   ]
+}
+
+mojom("test_helper") {
+  testonly = true
+  sources = [ "cros_window_management_test_helper.test-mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
 }

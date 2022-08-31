@@ -1,0 +1,16 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module system_extensions_test.mojom;
+
+// Interface that allows tests to perform browser-side actions on behalf of
+// them e.g. get the size of the shelf, open new windows, etc.
+interface CrosWindowManagementTestHelper {
+  // Sets the displays and their properties based on `displays`. See
+  // ManagedDisplayInfo::CreateFromSpec() for documentation and examples.
+  SetDisplays(string displays) => ();
+
+  // Returns the height of the shelf.
+  GetShelfHeight() => (int32 shelf_height);
+};

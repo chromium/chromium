@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// If we are running using SystemExtensionsApiBrowserTest then import the
+// test interface.
+// TODO(b/242264794): Remove once all tests use ApiBrowserTest.
+if (typeof systemExtensionsTest !== 'undefined') {
+  importScripts('cros_window_management_test_helper.test-mojom-lite.js');
+
+  globalThis.testHelper =
+      new systemExtensionsTest.mojom.CrosWindowManagementTestHelperRemote;
+  testHelper.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
+}
+
 // We assume a single window only and apply cros_window API methods at index 0.
 async function assertSingleWindow() {
   let windows = await chromeos.windowManagement.getWindows();

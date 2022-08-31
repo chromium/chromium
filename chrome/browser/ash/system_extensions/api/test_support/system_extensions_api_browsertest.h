@@ -5,13 +5,54 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_TEST_SUPPORT_SYSTEM_EXTENSIONS_API_BROWSERTEST_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_TEST_SUPPORT_SYSTEM_EXTENSIONS_API_BROWSERTEST_H_
 
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "services/service_manager/public/cpp/binder_registry.h"
+
+namespace content {
+class ScopedContentBrowserClientSetting;
+};
 
 namespace ash {
 
 namespace {
 class TestRunner;
 }
+
+namespace internal {
+// ContentBrowserClient that allows to register extra RenderProcessHost
+// Mojo interfaces.
+class TestChromeContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  TestChromeContentBrowserClient();
+
+  ~TestChromeContentBrowserClient() override;
+
+  // Should be called on SetUpOnMainThread() to replace the existing
+  // ContentBrowserClient.
+  void Init();
+
+  // Used to register extra RenderProcessHost interfaces needed for tests.
+  template <typename Interface>
+  void AddRendererInterface(
+      const base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>&
+          callback) {
+    binder_registry_.AddInterface(callback);
+  }
+
+  // ChromeContentBrowserClient
+  void BindHostReceiverForRenderer(
+      content::RenderProcessHost* render_process_host,
+      mojo::GenericPendingReceiver receiver) override;
+
+ private:
+  std::unique_ptr<content::ScopedContentBrowserClientSetting>
+      scoped_content_browser_client_setting_;
+
+  service_manager::BinderRegistry binder_registry_;
+};
+
+}  // namespace internal
 
 // Base test class that can be used to write Testharness.js based System
 // Extensions API tests.
@@ -73,6 +114,7 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
     const base::StringPiece tests_dir;
     const base::StringPiece manifest_template;
     const std::vector<std::string>& additional_src_files;
+    const std::vector<std::string>& additional_gen_files;
   };
 
   explicit SystemExtensionsApiBrowserTest(const Args& args);
@@ -81,6 +123,15 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
  protected:
   // Runs `test_file_name`.
   void RunTest(base::StringPiece test_file_name);
+
+  // Allows subclasses to register RenderProcessHost interfaces they need for
+  // tests.
+  template <typename Interface>
+  void AddRendererInterface(
+      const base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>&
+          callback) {
+    test_chrome_content_browser_client_->AddRendererInterface(callback);
+  }
 
   // InProcessBrowserTest
   void SetUpOnMainThread() override;
@@ -94,7 +145,10 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
   const base::FilePath tests_dir_;
   const std::string manifest_template_;
   const std::vector<std::string> additional_src_files_;
+  const std::vector<std::string> additional_gen_files_;
 
+  std::unique_ptr<internal::TestChromeContentBrowserClient>
+      test_chrome_content_browser_client_;
   std::unique_ptr<TestRunner> test_runner_;
   base::test::ScopedFeatureList feature_list_;
 };

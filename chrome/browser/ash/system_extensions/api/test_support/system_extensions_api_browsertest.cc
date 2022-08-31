@@ -13,32 +13,54 @@
 #include "chrome/browser/ash/system_extensions/api/test_support/system_extensions_test_runner.test-mojom.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/test_utils.h"
 
 namespace ash {
+
+namespace internal {
+
+TestChromeContentBrowserClient::TestChromeContentBrowserClient() = default;
+
+TestChromeContentBrowserClient::~TestChromeContentBrowserClient() = default;
+
+void TestChromeContentBrowserClient::Init() {
+  scoped_content_browser_client_setting_ =
+      std::make_unique<content::ScopedContentBrowserClientSetting>(this);
+}
+
+void TestChromeContentBrowserClient::BindHostReceiverForRenderer(
+    content::RenderProcessHost* render_process_host,
+    mojo::GenericPendingReceiver receiver) {
+  // Copy the name here instead of using a const reference because `PassPipe()`
+  // below will reset the interface name.
+  const std::string interface_name = *receiver.interface_name();
+  if (binder_registry_.CanBindInterface(interface_name)) {
+    binder_registry_.BindInterface(interface_name, receiver.PassPipe());
+    return;
+  }
+
+  ChromeContentBrowserClient::BindHostReceiverForRenderer(render_process_host,
+                                                          std::move(receiver));
+}
+
+}  // namespace internal
 
 namespace {
 
 constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
 
 // Class that receives events from the running test.
-class TestRunner : public system_extensions_test::mojom::TestRunner,
-                   public ChromeContentBrowserClient {
+class TestRunner : public system_extensions_test::mojom::TestRunner {
  public:
-  TestRunner() {
-    original_content_browser_client_ =
-        content::SetBrowserClientForTesting(this);
-  }
+  TestRunner() = default;
 
-  ~TestRunner() override {
-    content::SetBrowserClientForTesting(original_content_browser_client_);
-  }
+  ~TestRunner() override = default;
 
   // Returns once the test calls `OnCompletion` i.e. when the test finishes
   // running.
@@ -49,6 +71,11 @@ class TestRunner : public system_extensions_test::mojom::TestRunner,
       return testing::AssertionFailure() << "Test timed out.";
 
     return result_.value();
+  }
+
+  void Bind(mojo::PendingReceiver<system_extensions_test::mojom::TestRunner>
+                pending_receiver) {
+    receiver_.Bind(std::move(pending_receiver));
   }
 
   // system_extensions_test::mojom::TestRunner
@@ -87,23 +114,7 @@ class TestRunner : public system_extensions_test::mojom::TestRunner,
     result_ = testing::AssertionSuccess();
   }
 
-  // ChromeContentBrowserClient
-  void BindHostReceiverForRenderer(
-      content::RenderProcessHost* render_process_host,
-      mojo::GenericPendingReceiver receiver) override {
-    if (auto host_receiver =
-            receiver.As<system_extensions_test::mojom::TestRunner>()) {
-      CHECK(!receiver_.is_bound());
-      receiver_.Bind(std::move(host_receiver));
-      return;
-    }
-
-    ChromeContentBrowserClient::BindHostReceiverForRenderer(
-        render_process_host, std::move(receiver));
-  }
-
  private:
-  content::ContentBrowserClient* original_content_browser_client_;
   mojo::Receiver<system_extensions_test::mojom::TestRunner> receiver_{this};
 
   absl::optional<testing::AssertionResult> result_;
@@ -122,18 +133,31 @@ base::FilePath GetAbsolutePathFromSrcRelative(base::StringPiece dir) {
 SystemExtensionsApiBrowserTest::SystemExtensionsApiBrowserTest(const Args& args)
     : tests_dir_(GetAbsolutePathFromSrcRelative(args.tests_dir)),
       manifest_template_(args.manifest_template),
-      additional_src_files_(args.additional_src_files) {
+      additional_src_files_(args.additional_src_files),
+      additional_gen_files_(args.additional_gen_files),
+      test_chrome_content_browser_client_(
+          std::make_unique<internal::TestChromeContentBrowserClient>()) {
   feature_list_.InitWithFeatures(
       {features::kSystemExtensions,
        ::features::kEnableServiceWorkersForChromeUntrusted},
       {});
+
+  test_chrome_content_browser_client_->AddRendererInterface(
+      base::BindLambdaForTesting(
+          [this](
+              mojo::PendingReceiver<system_extensions_test::mojom::TestRunner>
+                  receiver) {
+            this->test_runner_->Bind(std::move(receiver));
+          }));
 }
 
 SystemExtensionsApiBrowserTest::~SystemExtensionsApiBrowserTest() = default;
 
 void SystemExtensionsApiBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
+
   test_runner_ = std::make_unique<TestRunner>();
+  test_chrome_content_browser_client_->Init();
 }
 
 void SystemExtensionsApiBrowserTest::SetUpCommandLine(
@@ -201,6 +225,14 @@ testing::AssertionResult SystemExtensionsApiBrowserTest::RunTestImpl(
         gen_dir.AppendASCII(mojom_file.path).AppendASCII(mojom_file.name),
         system_extension_path.AppendASCII(mojom_file.name)))
         << "Failed to copy mojo resource: " << mojom_file.name;
+  }
+
+  // Copy additional files in the output directory.
+  for (const std::string& file_path : additional_gen_files_) {
+    base::FilePath absolute_path = gen_dir.AppendASCII(file_path);
+    CHECK(base::CopyFile(
+        absolute_path, system_extension_path.Append(absolute_path.BaseName())))
+        << "Failed to copy additional gen file: " << absolute_path.BaseName();
   }
 
   // Copy additional files.

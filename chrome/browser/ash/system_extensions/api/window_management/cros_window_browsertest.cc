@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/system_extensions/api/test_support/system_extensions_api_browsertest.h"
+#include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_test_helper.test-mojom.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
@@ -41,6 +42,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/aura/window.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -155,6 +157,28 @@ static constexpr const char kManifestTemplate[] = R"(
   "type": "echo"
 })";
 
+class CrosWindowManagementTestHelper
+    : public system_extensions_test::mojom::CrosWindowManagementTestHelper {
+ public:
+  CrosWindowManagementTestHelper() = default;
+  ~CrosWindowManagementTestHelper() override = default;
+
+  void SetDisplays(const std::string& displays,
+                   SetDisplaysCallback callback) override {
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay(displays);
+
+    std::move(callback).Run();
+  }
+
+  void GetShelfHeight(GetShelfHeightCallback callback) override {
+    gfx::Rect shelf_bounds =
+        AshTestBase::GetPrimaryShelf()->shelf_widget()->GetVisibleShelfBounds();
+
+    std::move(callback).Run(shelf_bounds.height());
+  }
+};
+
 class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
  public:
   CrosWindowManagementBrowserTest()
@@ -163,7 +187,20 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
             .manifest_template = kManifestTemplate,
             .additional_src_files = {"chrome/test/data/system_extensions/"
                                      "cros_window_test_utils.js"},
-        }) {}
+            .additional_gen_files =
+                {"gen/chrome/browser/ash/system_extensions/api/"
+                 "window_management/"
+                 "cros_window_management_test_helper.test-mojom-lite.js"},
+        }) {
+    AddRendererInterface(base::BindLambdaForTesting(
+        [](mojo::PendingReceiver<
+            system_extensions_test::mojom::CrosWindowManagementTestHelper>
+               pending_receiver) {
+          mojo::MakeSelfOwnedReceiver(
+              std::make_unique<CrosWindowManagementTestHelper>(),
+              std::move(pending_receiver));
+        }));
+  }
 };
 
 // Deprecated. Use CrosWindowManagementBrowserTest instead.
@@ -290,40 +327,8 @@ class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosScreenPropertiesTest) {
-  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("0+0-1280x720,1280+600-1920x1080");
-
-  gfx::Rect shelf_bounds =
-      AshTestBase::GetPrimaryShelf()->shelf_widget()->GetVisibleShelfBounds();
-
-  std::string test_code = content::JsReplace(R"(
-async function cros_test() {
-  let screens = await chromeos.windowManagement.getScreens();
-
-  assert_equals(screens.length, 2);
-
-  assert_equals(screens[0].width, 1280);
-  assert_equals(screens[0].availWidth, 1280);
-  assert_equals(screens[0].height, 720);
-  assert_equals(screens[0].availHeight, 720 - $1);
-  assert_equals(screens[0].left, 0);
-  assert_equals(screens[0].top, 0);
-
-  assert_equals(screens[1].width, 1920);
-  assert_equals(screens[1].availWidth, 1920);
-  assert_equals(screens[1].height, 1080);
-  assert_equals(screens[1].availHeight, 1080 - $1);
-  assert_equals(screens[1].left, 1280);
-
-  // TODO(b/236793342): Uncomment when DisplayManagerTestApi::UpdateDisplay
-  // correctly updates y bounds of display.
-  // assert_equals(screens[1].top, 600);
-}
-  )",
-                                             shelf_bounds.height());
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosScreenProperties) {
+  RunTest("cros_screen_properties.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMoveTo) {
