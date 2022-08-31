@@ -307,8 +307,6 @@ static_library("common_lib") {
       "extensions/extension_metrics.h",
       "extensions/manifest_handlers/app_launch_info.cc",
       "extensions/manifest_handlers/app_launch_info.h",
-      "extensions/manifest_handlers/linked_app_icons.cc",
-      "extensions/manifest_handlers/linked_app_icons.h",
       "extensions/manifest_handlers/minimum_chrome_version_checker.cc",
       "extensions/manifest_handlers/minimum_chrome_version_checker.h",
       "extensions/manifest_handlers/natively_connectable_handler.cc",
