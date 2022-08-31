@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FeedUserSegment"/>
   <variant name="FrequentFeatureUser"/>
   <variant name="IntentionalUser"/>
-  <variant name="PowerUserSegment"/>
+  <variant name="PowerUser"/>
   <variant name="QueryTiles"/>
   <variant name="ResumeHeavyUser"/>
   <variant name="ShoppingUser"/>
