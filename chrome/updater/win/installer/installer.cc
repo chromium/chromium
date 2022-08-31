@@ -27,6 +27,8 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/constants.h"
@@ -374,8 +376,23 @@ ProcessExitResult WMain(HMODULE module) {
     exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
   }
 
-  if (exit_code.IsSuccess())
+  if (exit_code.IsSuccess()) {
     exit_code = RunSetup(setup_path.get(), cmd_line_args.get());
+
+    // Because there is a race condition between the exit of the setup process
+    // and deleting its program file, the scoped temporary directory may fail
+    // to clean up the directory because the directory is not empty. To avoid
+    // this race condition, delete the program file before returning from the
+    // function.
+    base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(5);
+    while (base::TimeTicks::Now() < deadline) {
+      if (base::DeleteFile(base::FilePath(setup_path.get()))) {
+        return exit_code;
+      }
+      base::PlatformThread::Sleep(base::Milliseconds(100));
+    }
+    VLOG(1) << "Setup file can leak on file system: " << setup_path.get();
+  }
 
   return exit_code;
 }
