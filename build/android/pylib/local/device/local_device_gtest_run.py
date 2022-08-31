@@ -272,8 +272,8 @@ class _ApkDelegate:
           reinstall=True,
           permissions=self._permissions)
 
-  def ResultsDirectory(self, device):
-    return device.GetApplicationDataDirectory(self._package)
+  def ResultsDirectory(self, device):  # pylint: disable=no-self-use
+    return device.GetExternalStoragePath()
 
   def Run(self, test, device, flags=None, **kwargs):
     extras = dict(self._extras)
@@ -545,15 +545,6 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
       def bind_crash_handler(step, dev):
         return lambda: crash_handler.RetryOnSystemCrash(step, dev)
-
-      # Explicitly enable root to ensure that tests run under deterministic
-      # conditions. Without this explicit call, EnableRoot() is called from
-      # push_test_data() when PushChangedFiles() determines that it should use
-      # _PushChangedFilesZipped(), which is only most of the time.
-      # Root is required (amongst maybe other reasons) to pull the results file
-      # from the device, since it lives within the application's data directory
-      # (via GetApplicationDataDirectory()).
-      device.EnableRoot()
 
       steps = [
           bind_crash_handler(s, device)
