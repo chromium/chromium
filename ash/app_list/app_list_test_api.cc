@@ -39,6 +39,7 @@
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -186,7 +187,10 @@ views::MenuItemView* ShowRootMenuAndReturn(
       if (is_folder_item) {
         root_menu = item_view->context_menu_for_folder()->root_menu_item_view();
       } else {
-        WaitUntilItemMenuShown(item_view);
+        if (!base::FeatureList::IsEnabled(
+                apps::kAppServiceGetMenuWithoutMojom)) {
+          WaitUntilItemMenuShown(item_view);
+        }
         ash::AppListMenuModelAdapter* menu_model_adapter =
             item_view->item_menu_model_adapter();
         root_menu = menu_model_adapter->root_for_testing();
