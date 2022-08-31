@@ -137,12 +137,32 @@ uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
   }
 }
 
+bool MapsUnitIntervalToUnitInterval(const gfx::ColorSpace& color_space) {
+  switch (color_space.GetTransferID()) {
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
+      return true;
+    case gfx::ColorSpace::TransferID::PQ:
+    case gfx::ColorSpace::TransferID::HLG:
+      return false;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return false;
+}
+
 // Convert from an IOSurface's pixel format to a MTLPixelFormat. Crash on any
-// unsupported formats.
-MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer) {
+// unsupported formats. Return true in `is_unorm` if the format, when sampled,
+// can produce values outside of [0, 1].
+MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer,
+                                          bool* is_unorm = nullptr) {
   uint32_t format = IOSurfaceGetPixelFormat(buffer);
+  if (is_unorm)
+    *is_unorm = true;
   switch (format) {
     case kCVPixelFormatType_64RGBAHalf:
+      if (is_unorm)
+        *is_unorm = false;
       return MTLPixelFormatRGBA16Float;
     case kCVPixelFormatType_ARGB2101010LEPacked:
       return MTLPixelFormatBGR10A2Unorm;
@@ -402,8 +422,21 @@ void UpdateHDRCopierLayer(CALayer* layer,
 bool ShouldUseHDRCopier(IOSurfaceRef buffer,
                         const gfx::ColorSpace& color_space) {
   if (@available(macos 10.15, *)) {
-    return GetTransferFunctionIndex(color_space) &&
-           IOSurfaceGetMTLPixelFormat(buffer) != MTLPixelFormatInvalid;
+    // Only some transfer functions are supported.
+    if (!GetTransferFunctionIndex(color_space))
+      return false;
+
+    // Only some pixel formats are supported.
+    bool is_unorm = false;
+    if (IOSurfaceGetMTLPixelFormat(buffer, &is_unorm) == MTLPixelFormatInvalid)
+      return false;
+
+    // Unorm formats will only be in the [0, 1] range, so only copy them if
+    // their transfer function will actually go outside of [0, 1].
+    if (is_unorm && MapsUnitIntervalToUnitInterval(color_space))
+      return false;
+
+    return true;
   }
   return false;
 }
