@@ -246,6 +246,12 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             'flag_specific': self.options.flag_specific,
             'used_upstream': self.options.use_upstream_wpt,
         }
+        if self.options.use_upstream_wpt:
+            # `run_wpt_tests` does not run in the upstream checkout's git
+            # context, so wptrunner cannot infer the latest revision. Manually
+            # add the revision here.
+            run_info['revision'] = self.host.git(
+                path=self.wpt_root_dir).current_revision()
         # The filename must be `mozinfo.json` for wptrunner to read it.
         # The `--run-info` parameter passed to wptrunner is the directory
         # containing `mozinfo.json`.

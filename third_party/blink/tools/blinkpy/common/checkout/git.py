@@ -201,6 +201,10 @@ class Git(object):
             return ''
         return self._branch_from_ref(ref)
 
+    def current_revision(self):
+        """Return the commit hash of HEAD."""
+        return self.run(['rev-parse', 'HEAD']).strip()
+
     def _upstream_branch(self):
         current_branch = self.current_branch()
         return self._branch_from_ref(
