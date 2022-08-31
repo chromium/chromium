@@ -153,6 +153,9 @@ bool CookiePartitionKey::IsSerializeable() const {
 
 std::ostream& operator<<(std::ostream& os, const CookiePartitionKey& cpk) {
   os << cpk.site();
+  if (cpk.nonce().has_value()) {
+    os << ",nonced";
+  }
   return os;
 }
 
