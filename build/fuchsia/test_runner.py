@@ -135,12 +135,14 @@ class CustomArtifactsTestOutputs(TestOutputs):
     shutil.copy(os.path.join(directory, glob), destination)
 
   def GetCoverageProfiles(self, destination):
-    # Copy all the files in the profile directory.
-    # TODO(https://fxbug.dev/77634): Switch to ffx-based extraction once it is
-    # implemented.
-    self._target.GetFile(
-        '/tmp/test_manager:0/children/debug_data:0/data/' +
-        TEST_LLVM_PROFILE_DIR + '/*', destination)
+    directory = self._ffx_session.get_debug_data_directory()
+    if not directory:
+      logging.error(
+          'Failed to parse debug data directory from test summary output '
+          'files. Not copying coverage profiles from the device')
+      return
+    coverage_dir = os.path.join(directory, TEST_LLVM_PROFILE_DIR)
+    shutil.copytree(coverage_dir, destination, dirs_exist_ok=True)
 
 
 def MakeTestOutputs(component_version, target, package_name, test_realms):
