@@ -35,7 +35,10 @@ base::FilePath GetProcessImagePath(base::ProcessId pid) {
       base::StringPrintf("/proc/%" CrPRIdPid "/exe", pid));
   base::FilePath process_image_path;
   base::ReadSymbolicLink(process_exe_path, &process_image_path);
-  if (!base::PathExists(process_image_path)) {
+  // TODO(yuweih): See if we can run this method on a worker thread that allows
+  // blocking and use base::PathExists() instead.
+  bool path_exists = access(process_image_path.value().c_str(), F_OK) == 0;
+  if (!path_exists) {
     std::string process_base_name = process_image_path.BaseName().value();
     if (!base::EndsWith(process_base_name, kExeDeletedSuffix,
                         base::CompareCase::INSENSITIVE_ASCII)) {
