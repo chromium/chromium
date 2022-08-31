@@ -227,6 +227,11 @@ struct Config {
   // show on prominent UI surfaces.
   float content_visibility_threshold = 0.7;
 
+  // Whether to show all clusters on prominent UI surfaces unconditionally. This
+  // should only be set to true via command line.
+  bool should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
+      false;
+
   // Whether to hide single-visit clusters on prominent UI surfaces.
   bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
 

@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/config.h"
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -21,6 +22,9 @@
 namespace history_clusters {
 
 namespace {
+
+const char kShouldShowAllClustersOnProminentUiSurfaces[] =
+    "history-clusters-should-show-all-clusters-on-prominent-ui-surfaces";
 
 Config& GetConfigInternal() {
   static base::NoDestructor<Config> s_config;
@@ -219,6 +223,10 @@ Config::Config() {
   // Ensure that the value is [0.0 and 1.0].
   DCHECK_GE(content_visibility_threshold, 0.0f);
   DCHECK_LE(content_visibility_threshold, 1.0f);
+
+  should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kShouldShowAllClustersOnProminentUiSurfaces);
 
   should_hide_single_visit_clusters_on_prominent_ui_surfaces =
       GetFieldTrialParamByFeatureAsBool(
