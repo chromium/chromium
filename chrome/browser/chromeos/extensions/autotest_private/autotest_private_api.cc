@@ -554,6 +554,8 @@ std::string SetAllowedPref(Profile* profile,
       return "Invalid value type.";
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     DCHECK(value.is_bool());
+  } else if (pref_name == ash::prefs::kEnableAutoScreenLock) {
+    DCHECK(value.is_bool());
   } else if (pref_name == prefs::kLanguagePreloadEngines) {
     DCHECK(value.is_string());
   } else if (pref_name == plugin_vm::prefs::kPluginVmCameraAllowed) {
