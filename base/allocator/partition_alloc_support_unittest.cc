@@ -73,11 +73,21 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
       brp_expectation = "Unavailable";
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
       brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn"
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+                                       : "EnabledPrevSlot_NonRenderer";
+#else
+                                       : "EnabledBeforeAlloc_NonRenderer";
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+#else
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                                        : "EnabledPrevSlot_BrowserOnly";
 #else
                                        : "EnabledBeforeAlloc_BrowserOnly";
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||
+        // (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
       pcscan_expectation = "Unavailable";
 #if defined(PA_ALLOW_PCSCAN)
