@@ -2473,6 +2473,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-lens-instruction-chip-improvements",
+    "owners": [ "schechter@google.com", "juanmojica@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-lens-standalone",
     "owners": [ "stanfield@google.com", "benwgold@google.com", "juanmojica@google.com" ],
     "expiry_milestone": 107

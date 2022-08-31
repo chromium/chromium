@@ -3182,6 +3182,18 @@ constexpr FeatureEntry::FeatureVariation kLensStandaloneVariations[] = {
      std::size(kLensStandaloneWithSidePanel), nullptr},
 };
 
+constexpr FeatureEntry::FeatureParam
+    kLensInstructionChipWithImageSelectionIcon[] = {
+        {"use-selection-icon-with-image", "true"}};
+constexpr FeatureEntry::FeatureParam kLensInstructionChipWithAltString[] = {
+    {"use-alt-chip-string", "true"}};
+constexpr FeatureEntry::FeatureVariation kLensInstructionChipVariations[] = {
+    {"With Image Selection Icon", kLensInstructionChipWithImageSelectionIcon,
+     std::size(kLensInstructionChipWithImageSelectionIcon), nullptr},
+    {"With Alt Text", kLensInstructionChipWithAltString,
+     std::size(kLensInstructionChipWithAltString), nullptr},
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kAlwaysEnableHdcpChoices[] = {
     {flag_descriptions::kAlwaysEnableHdcpDefault, "", ""},
@@ -8116,12 +8128,22 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableLensFullscreenSearchName,
      flag_descriptions::kEnableLensFullscreenSearchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensSearchOptimizations)},
+
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensStandalone,
                                     kLensStandaloneVariations,
                                     "GoogleLensDesktopContextMenuSearch")},
+
+    {"enable-lens-instruction-chip-improvements",
+     flag_descriptions::kEnableLensInstructionChipImprovementsName,
+     flag_descriptions::kEnableLensInstructionChipImprovementsDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         lens::features::kLensInstructionChipImprovements,
+         kLensInstructionChipVariations,
+         "LensInstructionChipImprovements")},
 
     {"enable-region-search-on-pdf-viewer",
      flag_descriptions::kEnableRegionSearchOnPdfViewerName,
