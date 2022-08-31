@@ -81,6 +81,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -580,6 +581,50 @@ public class SyncConsentFragmentTest {
         });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testClickingSettingsThenCancelForChildIsNoOp() {
+        CoreAccountInfo accountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
+        // Check the user is not consented to sync.
+        CriteriaHelper.pollUiThread(() -> {
+            return !IdentityServicesProvider.get()
+                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            accountInfo.getEmail());
+                });
+        onView(withId(R.id.signin_details_description)).perform(clickOnClickableSpan());
+        // Wait for the sync consent to be set.
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                    .getIdentityManager()
+                    .hasPrimaryAccount(ConsentLevel.SYNC);
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(SyncService.get().isSyncRequested());
+            assertFalse(SyncService.get().isFirstSetupComplete());
+        });
+        // Click the cancel button to exit the activity.
+        onView(withId(R.id.cancel_button)).perform(click());
+        // Check that the sync consent has been cleared (but the user is still signed in), and that
+        // the sync service state changes have been undone.
+        CriteriaHelper.pollUiThread(() -> {
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get()
+                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager();
+            return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                    && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
+        });
     }
 
     @Test

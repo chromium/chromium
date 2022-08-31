@@ -738,10 +738,24 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     private void cancelSync() {
         RecordUserAction.record("Signin_Signin_CancelAdvancedSyncSettings");
-        IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
-                .signOut(org.chromium.components.signin.metrics.SignoutReason
-                                 .USER_CLICKED_SIGNOUT_SETTINGS);
+        Profile profile = Profile.getLastUsedRegularProfile();
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        if (profile.isChild()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+                // Child users cannot sign out, so we revoke the sync consent to return to the
+                // previous state. This user won't have started syncing data yet, so there's need
+                // need to wipe data before revoking consent.
+                signinManager.revokeSyncConsent(
+                        SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS, null, false);
+            } else {
+                // This child users cannot sign out, and is not allowed to revoke sync consent.
+                // We leave the user in the partially-enabled sync state here (sync consent granted,
+                // but first setup complete is false); SigninChecker will later complete the sync
+                // setup flow.
+            }
+        } else {
+            signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
+        }
         getActivity().finish();
     }
 
