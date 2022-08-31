@@ -59,10 +59,6 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
   // The maximum number of icons that can be displayed.
   static constexpr int kMaxIcons = 4;
 
-  const ui::ColorProvider* incognito_window_color_provider() const {
-    return incognito_window_color_provider_;
-  }
-
   // Given a saved desk, determine which icons to show in this and create
   // the according SavedDeskIconView's.
   void PopulateIconContainerFromTemplate(const DeskTemplate* desk_template);

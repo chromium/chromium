@@ -18,7 +18,6 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
-#include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -276,19 +275,10 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
     if (children().size() < kMaxIcons &&
         (icon_identifier == DeskTemplate::kIncognitoWindowIdentifier ||
          delegate->IsAppAvailable(icon_info.app_id))) {
-      SavedDeskIconView* icon_view = AddChildView(
-          views::Builder<SavedDeskIconView>()
-              .SetBackground(views::CreateRoundedRectBackground(
-                  icon_info.count == 1
-                      ? SK_ColorTRANSPARENT
-                      : AshColorProvider::Get()->GetControlsLayerColor(
-                            AshColorProvider::ControlsLayerType::
-                                kControlBackgroundColorInactive),
-                  SavedDeskIconView::kIconViewSize / 2))
-              .Build());
-      icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
-                                           icon_info.app_title, icon_info.count,
-                                           /*show_plus=*/true);
+      AddChildView(std::make_unique<SavedDeskIconView>(
+          incognito_window_color_provider_, icon_identifier,
+          icon_info.app_title, icon_info.count,
+          /*show_plus=*/true));
     } else {
       num_hidden_icons += icon_info.count;
     }
@@ -300,21 +290,8 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
 
   // Always add a `SavedDeskIconView` overflow counter in case the width
   // of the view changes. It will be hidden if not needed.
-  SavedDeskIconView* overflow_icon_view =
-      AddChildView(views::Builder<SavedDeskIconView>()
-                       .SetBackground(views::CreateRoundedRectBackground(
-                           AshColorProvider::Get()->GetControlsLayerColor(
-                               AshColorProvider::ControlsLayerType::
-                                   kControlBackgroundColorInactive),
-                           SavedDeskIconView::kIconViewSize / 2))
-                       .Build());
-
-  // Set `icon_identifier`, `app_id` and `app_title` to be empty strings for
-  // overflow icon views, since only the count should matter.
-  overflow_icon_view->SetIconIdentifierAndCount(
-      /*icon_identifier=*/std::string(), /*app_id=*/std::string(),
-      /*app_title=*/std::string(),
-      /*count=*/num_hidden_icons, show_plus);
+  AddChildView(std::make_unique<SavedDeskIconView>(
+      /*count=*/num_hidden_icons, show_plus));
 }
 
 BEGIN_METADATA(SavedDeskIconContainer, views::BoxLayoutView)

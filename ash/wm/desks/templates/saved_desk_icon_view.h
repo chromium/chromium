@@ -31,28 +31,28 @@ class SavedDeskIconView : public views::View {
  public:
   METADATA_HEADER(SavedDeskIconView);
 
-  SavedDeskIconView();
+  // Create an icon view for an app. Sets `icon_identifier_` to
+  // `icon_identifier` and `count_` to `count` then based on their values
+  // determines what views need to be created and starts loading the icon
+  // specified by `icon_identifier`. `show_plus` indicates whether to show "+"
+  // before the count for normal overflow icons, or none for all unavailable
+  // icons.
+  SavedDeskIconView(const ui::ColorProvider* incognito_window_color_provider,
+                    const std::string& icon_identifier,
+                    const std::string& app_title,
+                    int count,
+                    bool show_plus);
+
+  // Create an icon view that only has a count and an optional plus.
+  SavedDeskIconView(int count, bool show_plus);
+
   SavedDeskIconView(const SavedDeskIconView&) = delete;
   SavedDeskIconView& operator=(const SavedDeskIconView&) = delete;
   ~SavedDeskIconView() override;
 
-  // The size of the background the icon sits inside of.
-  static constexpr int kIconViewSize = 28;
-
   const std::string& icon_identifier() const { return icon_identifier_; }
 
   int count() const { return count_; }
-
-  // Sets `icon_identifier_` to `icon_identifier` and `count_` to `count` then
-  // based on their values determines what views need to be created and starts
-  // loading the icon specified by `icon_identifier`. `show_plus` indicates
-  // whether to show "+" before the count for normal overflow icons, or none for
-  // all unavailable icons.
-  void SetIconIdentifierAndCount(const std::string& icon_identifier,
-                                 const std::string& app_id,
-                                 const std::string& app_title,
-                                 int count,
-                                 bool show_plus);
 
   // Sets `count_` to `count` and updates the `count_label_`.
   void UpdateCount(int count);
@@ -60,9 +60,17 @@ class SavedDeskIconView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
+  void OnThemeChanged() override;
 
  private:
   friend class SavedDeskIconViewTestApi;
+
+  // Creates the child views for this icon view. Will start the asynchronous
+  // task of loading icons if necessary.
+  void CreateChildViews(
+      const ui::ColorProvider* incognito_window_color_provider,
+      const std::string& app_title,
+      bool show_plus);
 
   // Callbacks for when the app icon/favicon has been fetched. If the result is
   // non-null/empty then we'll set this's image to the result. Otherwise, we'll
