@@ -961,7 +961,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 }
 
-// Records histogram metrics for Discover feed user actions. If |isInteraction|,
+// Records histogram metrics for Discover feed user actions. If `isInteraction`,
 // also logs an interaction to the visible feed.
 - (void)recordDiscoverFeedUserActionHistogram:(FeedUserActionType)actionType
                                 asInteraction:(BOOL)isInteraction {

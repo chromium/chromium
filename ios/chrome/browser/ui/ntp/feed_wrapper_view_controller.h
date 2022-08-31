@@ -17,7 +17,7 @@
 @end
 
 // View controller wrapping feed view controller
-// (|self.feedViewController|) originating from the provider.
+// (`self.feedViewController`) originating from the provider.
 @interface FeedWrapperViewController : UIViewController
 
 // Feed view controller being contained by this view controller. This is the
