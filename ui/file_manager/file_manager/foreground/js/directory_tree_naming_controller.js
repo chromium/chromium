@@ -184,6 +184,9 @@ export class DirectoryTreeNamingController {
 
       this.currentDirectoryItem_.entry = newEntry;
       this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
+      if (window.IN_TEST) {
+        this.currentDirectoryItem_.setAttribute('entry-label', newName);
+      }
 
       // If renamed directory was current directory, change it to new one.
       if (renamingCurrentDirectory) {

@@ -693,8 +693,7 @@ testcase.openQuickViewAndroid = async () => {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Navigate to the Android files '/Documents' directory.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Documents', 'My files/Play files', 'android_files');
+  await navigateWithDirectoryTree(appId, '/My files/Play files/Documents');
 
   // Check: the 'android.txt' file should appear in the file list.
   files = [ENTRIES.documentsText.getExpectedRow()];

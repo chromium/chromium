@@ -868,38 +868,6 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
-   * Navigates to specified directory on the specified volume by using directory
-   * tree.
-   * DEPRECATED: Use background.js:navigateWithDirectoryTree instead
-   * crbug.com/996626.
-   */
-  async navigateWithDirectoryTree(
-      appId, path, rootLabel, volumeType = 'downloads') {
-    await this.expandDirectoryTreeFor(appId, path, volumeType);
-
-    // Select target path.
-    await this.callRemoteTestUtil(
-        'fakeMouseClick', appId, [`[full-path-for-testing="${path}"]`]);
-
-    // Entries within Drive starts with /root/ but it isn't displayed in the
-    // breadcrubms used by waitUntilCurrentDirectoryIsChanged.
-    path = path.replace(/^\/root/, '')
-               .replace(/^\/team_drives/, '')
-               .replace(/^\/Computers/, '');
-
-    // TODO(lucmult): Remove this once MyFilesVolume is rolled out.
-    // Remove /Downloads duplication when MyFilesVolume is enabled.
-    if (volumeType == 'downloads' && path.startsWith('/Downloads') &&
-        rootLabel.endsWith('/Downloads')) {
-      rootLabel = rootLabel.replace('/Downloads', '');
-    }
-
-    // Wait until the Files app is navigated to the path.
-    return this.waitUntilCurrentDirectoryIsChanged(
-        appId, `/${rootLabel}${path}`);
-  }
-
-  /**
    * Wait until the expected number of volumes is mounted.
    * @param {number} expectedVolumesCount Expected number of mounted volumes.
    * @return {Promise} promise Promise to be fulfilled.

@@ -590,8 +590,7 @@ testcase.driveBackupPhotos = async () => {
     await navigateWithDirectoryTree(appId, '/FAKEUSB/fake-usb/DCIM');
   } else {
     // Navigate to the DCIM directory.
-    await remoteCall.navigateWithDirectoryTree(
-        appId, '/DCIM', 'fake-usb', 'removable');
+    await navigateWithDirectoryTree(appId, '/fake-usb/DCIM');
   }
 
   // Wait for the import button to be ready.
@@ -609,9 +608,8 @@ testcase.driveBackupPhotos = async () => {
 
   // Navigate to today's backup directory in Drive.
   const formattedDate = formatDate(date);
-  await remoteCall.navigateWithDirectoryTree(
-      appId, `/root/Chrome OS Cloud backup/${formattedDate}`, 'My Drive',
-      'drive');
+  await navigateWithDirectoryTree(
+      appId, `/My Drive/Chrome OS Cloud backup/${formattedDate}`);
 
   // Verify the backed-up file list contains only a copy of the image within
   // DCIM in the removable storage.

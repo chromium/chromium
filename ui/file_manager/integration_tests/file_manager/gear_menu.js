@@ -220,8 +220,7 @@ testcase.hideCurrentDirectoryByTogglingHiddenAndroidFolders = async () => {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Navigate to "/My files/Play files/A".
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/A', 'My files/Play files', 'android_files');
+  await navigateWithDirectoryTree(appId, '/My files/Play files/A');
 
   // Wait until current directory is changed to "/My files/Play files/A".
   await remoteCall.waitUntilCurrentDirectoryIsChanged(

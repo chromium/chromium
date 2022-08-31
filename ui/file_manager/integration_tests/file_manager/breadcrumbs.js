@@ -21,8 +21,7 @@ testcase.breadcrumbsNavigate = async () => {
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to Downloads/photos.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
 
   // Use the breadcrumbs to navigate back to Downloads.
   await remoteCall.waitAndClickElement(

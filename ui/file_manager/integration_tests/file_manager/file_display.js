@@ -5,7 +5,7 @@
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {IGNORE_APP_ERRORS, isSinglePartitionFormat, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {IGNORE_APP_ERRORS, isSinglePartitionFormat, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPUTERS_ENTRY_SET} from './test_data.js';
 
 /**
@@ -223,16 +223,13 @@ testcase.fileDisplayComputers = async () => {
       await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
 
   // Navigate to Comuter Grand Root.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Computers', 'Computers', 'drive');
+  await navigateWithDirectoryTree(appId, '/Computers');
 
   // Navigiate to a Computer Root.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Computers/Computer A', 'Computers', 'drive');
+  await navigateWithDirectoryTree(appId, '/Computers/Computer A');
 
   // Navigiate to a subdirectory under a Computer Root.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Computers/Computer A/A', 'Computers', 'drive');
+  await navigateWithDirectoryTree(appId, '/Computers/Computer A/A');
 };
 
 

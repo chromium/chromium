@@ -236,8 +236,8 @@ testcase.directoryTreeExpandHorizontalScroll = async () => {
 
   // Expand the tree Downloads > nested-folder1 > nested-folder2 ...
   const lastFolderPath = nestedFolderTestEntries.pop().targetPath;
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/' + lastFolderPath, 'My files');
+  await navigateWithDirectoryTree(
+      appId, `/My files/Downloads/${lastFolderPath}`);
 
   // Check: the directory tree should be showing the last test entry.
   await remoteCall.waitForElement(
@@ -304,8 +304,8 @@ testcase.directoryTreeExpandHorizontalScrollRTL = async () => {
 
   // Expand the tree Downloads > nested-folder1 > nested-folder2 ...
   const lastFolderPath = nestedFolderTestEntries.pop().targetPath;
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/' + lastFolderPath, 'My files');
+  await navigateWithDirectoryTree(
+      appId, `/My files/Downloads/${lastFolderPath}`);
 
   // Check: the directory tree should be showing the last test entry.
   await remoteCall.waitForElement(
