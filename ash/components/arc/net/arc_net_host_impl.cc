@@ -633,6 +633,8 @@ void ArcNetHostImpl::OnConnectionClosed() {
   GetStateHandler()->RemoveObserver(this, FROM_HERE);
   GetNetworkConnectionHandler()->RemoveObserver(this);
   observing_network_state_ = false;
+
+  ash::PatchPanelClient::Get()->RemoveObserver(this);
 }
 
 void ArcNetHostImpl::NetworkConfigurationChanged() {
