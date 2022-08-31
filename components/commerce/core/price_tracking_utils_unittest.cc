@@ -11,6 +11,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
@@ -27,29 +28,8 @@ class PriceTrackingUtilsTest : public testing::Test {
     shopping_service_ = std::make_unique<MockShoppingService>();
   }
 
-  // Create a product bookmark with the specified cluster ID and place it in the
-  // "other" bookmarks folder.
-  const bookmarks::BookmarkNode* AddProductBookmark(const std::u16string& title,
-                                                    const GURL& url,
-                                                    uint64_t cluster_id,
-                                                    bool is_price_tracked) {
-    const bookmarks::BookmarkNode* node =
-        bookmark_model_->AddURL(bookmark_model_->other_node(), 0, title, url);
-    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-        std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-    power_bookmarks::ShoppingSpecifics* specifics =
-        meta->mutable_shopping_specifics();
-    specifics->set_product_cluster_id(cluster_id);
-    specifics->set_is_price_tracked(is_price_tracked);
-
-    power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_.get(), node,
-                                              std::move(meta));
-    return node;
-  }
-
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockShoppingService> shopping_service_;
-
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -59,10 +39,12 @@ class PriceTrackingUtilsTest : public testing::Test {
 TEST_F(PriceTrackingUtilsTest,
        SetPriceTrackingStateUpdatesAll_UnsubscribeSuccess) {
   const uint64_t cluster_id = 12345L;
-  const bookmarks::BookmarkNode* product1 = AddProductBookmark(
-      u"product 1", GURL("http://example.com/1"), cluster_id, true);
-  const bookmarks::BookmarkNode* product2 = AddProductBookmark(
-      u"product 2", GURL("http://example.com/2"), cluster_id, true);
+  const bookmarks::BookmarkNode* product1 =
+      AddProductBookmark(bookmark_model_.get(), u"product 1",
+                         GURL("http://example.com/1"), cluster_id, true);
+  const bookmarks::BookmarkNode* product2 =
+      AddProductBookmark(bookmark_model_.get(), u"product 2",
+                         GURL("http://example.com/2"), cluster_id, true);
 
   // Simulate successful calls in the subscriptions manager.
   shopping_service_->SetSubscribeCallbackValue(true);
@@ -88,10 +70,12 @@ TEST_F(PriceTrackingUtilsTest,
 TEST_F(PriceTrackingUtilsTest,
        SetPriceTrackingStateUpdatesAll_UnsubscribeFailed) {
   const uint64_t cluster_id = 12345L;
-  const bookmarks::BookmarkNode* product1 = AddProductBookmark(
-      u"product 1", GURL("http://example.com/1"), cluster_id, true);
-  const bookmarks::BookmarkNode* product2 = AddProductBookmark(
-      u"product 2", GURL("http://example.com/2"), cluster_id, true);
+  const bookmarks::BookmarkNode* product1 =
+      AddProductBookmark(bookmark_model_.get(), u"product 1",
+                         GURL("http://example.com/1"), cluster_id, true);
+  const bookmarks::BookmarkNode* product2 =
+      AddProductBookmark(bookmark_model_.get(), u"product 2",
+                         GURL("http://example.com/2"), cluster_id, true);
 
   // Simulate failed calls in the subscriptions manager.
   shopping_service_->SetSubscribeCallbackValue(false);
@@ -114,16 +98,33 @@ TEST_F(PriceTrackingUtilsTest,
 
 TEST_F(PriceTrackingUtilsTest, GetBookmarksWithClusterId) {
   const uint64_t cluster_id = 12345L;
-  AddProductBookmark(u"product 1", GURL("http://example.com/1"), cluster_id,
-                     true);
-  AddProductBookmark(u"product 2", GURL("http://example.com/2"), cluster_id,
-                     true);
+  AddProductBookmark(bookmark_model_.get(), u"product 1",
+                     GURL("http://example.com/1"), cluster_id, true);
+  AddProductBookmark(bookmark_model_.get(), u"product 2",
+                     GURL("http://example.com/2"), cluster_id, true);
   bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"non-product",
                           GURL("http://www.example.com"));
 
   ASSERT_EQ(3U, bookmark_model_->other_node()->children().size());
   ASSERT_EQ(
       2U, GetBookmarksWithClusterId(bookmark_model_.get(), cluster_id).size());
+}
+
+TEST_F(PriceTrackingUtilsTest, GetAllPriceTrackedBookmarks) {
+  const uint64_t cluster_id = 12345L;
+  const bookmarks::BookmarkNode* tracked_product =
+      AddProductBookmark(bookmark_model_.get(), u"product 1",
+                         GURL("http://example.com/1"), cluster_id, true);
+  AddProductBookmark(bookmark_model_.get(), u"product 2",
+                     GURL("http://example.com/2"), cluster_id, false);
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"non-product",
+                          GURL("http://www.example.com"));
+
+  std::vector<const bookmarks::BookmarkNode*> price_tracked_bookmarks =
+      GetAllPriceTrackedBookmarks(bookmark_model_.get());
+  ASSERT_EQ(3U, bookmark_model_->other_node()->children().size());
+  ASSERT_EQ(1U, price_tracked_bookmarks.size());
+  ASSERT_EQ(price_tracked_bookmarks[0]->id(), tracked_product->id());
 }
 
 TEST_F(PriceTrackingUtilsTest, GetBookmarksWithClusterId_NoProducts) {
@@ -137,15 +138,17 @@ TEST_F(PriceTrackingUtilsTest, GetBookmarksWithClusterId_NoProducts) {
 }
 
 TEST_F(PriceTrackingUtilsTest, IsBookmarkPriceTracked_Tracked) {
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      u"product 1", GURL("http://example.com/1"), 12345L, true);
+  const bookmarks::BookmarkNode* product =
+      AddProductBookmark(bookmark_model_.get(), u"product 1",
+                         GURL("http://example.com/1"), 12345L, true);
 
   EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 }
 
 TEST_F(PriceTrackingUtilsTest, IsBookmarkPriceTracked_NotTracked) {
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      u"product 1", GURL("http://example.com/1"), 12345L, false);
+  const bookmarks::BookmarkNode* product =
+      AddProductBookmark(bookmark_model_.get(), u"product 1",
+                         GURL("http://example.com/1"), 12345L, false);
 
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 }

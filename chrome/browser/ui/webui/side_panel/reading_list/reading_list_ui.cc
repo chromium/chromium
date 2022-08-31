@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
@@ -166,7 +167,8 @@ void ReadingListUI::CreateShoppingListHandler(
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
-      std::move(receiver), bookmark_model, shopping_service);
+      std::move(receiver), bookmark_model, shopping_service,
+      g_browser_process->GetApplicationLocale());
 }
 
 void ReadingListUI::SetActiveTabURL(const GURL& url) {

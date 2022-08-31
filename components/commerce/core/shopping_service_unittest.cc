@@ -11,6 +11,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service_test_base.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -42,28 +43,6 @@ const uint32_t kCountRating = 1000;
 const char kDetailsPageUrl[] = "http://example.com/merchant_details_page";
 const bool kHasReturnPolicy = true;
 const bool kContainsSensitiveContent = false;
-
-// Create a product bookmark with the specified cluster ID and place it in the
-// "other" bookmarks folder.
-const bookmarks::BookmarkNode* AddProductBookmark(
-    bookmarks::BookmarkModel* bookmark_model,
-    const std::u16string& title,
-    const GURL& url,
-    uint64_t cluster_id,
-    bool is_price_tracked) {
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url);
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-  power_bookmarks::ShoppingSpecifics* specifics =
-      meta->mutable_shopping_specifics();
-  specifics->set_product_cluster_id(cluster_id);
-  specifics->set_is_price_tracked(is_price_tracked);
-
-  power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model, node,
-                                            std::move(meta));
-  return node;
-}
 
 }  // namespace
 

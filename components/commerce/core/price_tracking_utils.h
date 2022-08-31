@@ -44,6 +44,21 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
     bookmarks::BookmarkModel* model,
     uint64_t cluster_id);
 
+// Get all bookmarks that are price tracked. This only checks the bit in the
+// bookmark metadata and does not make a call to the backend. The returned
+// vector of BookmarkNodes is owned by the caller, but the nodes pointed to
+// are not -- those live for as long as the BookmarkModel (|model|) is alive
+// which has the same lifetime as the current BrowserContext.
+std::vector<const bookmarks::BookmarkNode*> GetAllPriceTrackedBookmarks(
+    bookmarks::BookmarkModel* model);
+
+// Get all shopping bookmarks. The returned vector of BookmarkNodes is owned by
+// the caller, but the nodes pointed to are not -- those live for as long as
+// the BookmarkModel (|model|) is alive which has the same lifetime as the
+// current BrowserContext.
+std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
+    bookmarks::BookmarkModel* model);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_PRICE_TRACKING_UTILS_H_

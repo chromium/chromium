@@ -124,7 +124,7 @@ export class BookmarksListElement extends PolymerElement {
       this.bookmarksDragManager_.startObserving();
     });
 
-    this.shoppingListApi_.getAllBookmarkProductInfo().then(res => {
+    this.shoppingListApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
       this.productInfos_ = res.productInfos;
     });
   }

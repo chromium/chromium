@@ -111,10 +111,8 @@ void SetPriceTrackingStateForBookmark(ShoppingService* service,
 std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
     bookmarks::BookmarkModel* model,
     uint64_t cluster_id) {
-  std::vector<const bookmarks::BookmarkNode*> results;
-  power_bookmarks::PowerBookmarkQueryFields query;
-  query.type = power_bookmarks::PowerBookmarkType::SHOPPING;
-  power_bookmarks::GetBookmarksMatchingProperties(model, query, -1, &results);
+  std::vector<const bookmarks::BookmarkNode*> results =
+      GetAllShoppingBookmarks(model);
 
   std::vector<const bookmarks::BookmarkNode*> bookmarks_with_cluster;
   for (const auto* node : results) {
@@ -134,6 +132,43 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
   }
 
   return bookmarks_with_cluster;
+}
+
+std::vector<const bookmarks::BookmarkNode*> GetAllPriceTrackedBookmarks(
+    bookmarks::BookmarkModel* model) {
+  std::vector<const bookmarks::BookmarkNode*> results =
+      GetAllShoppingBookmarks(model);
+
+  std::vector<const bookmarks::BookmarkNode*> bookmarks_with_cluster;
+  for (const auto* node : results) {
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+
+    if (!meta)
+      continue;
+
+    const power_bookmarks::ShoppingSpecifics specifics =
+        meta->shopping_specifics();
+
+    if (!specifics.is_price_tracked())
+      continue;
+
+    bookmarks_with_cluster.push_back(node);
+  }
+
+  return bookmarks_with_cluster;
+}
+
+std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
+    bookmarks::BookmarkModel* model) {
+  CHECK(model);
+
+  std::vector<const bookmarks::BookmarkNode*> results;
+  power_bookmarks::PowerBookmarkQueryFields query;
+  query.type = power_bookmarks::PowerBookmarkType::SHOPPING;
+  power_bookmarks::GetBookmarksMatchingProperties(model, query, -1, &results);
+
+  return results;
 }
 
 }  // namespace commerce

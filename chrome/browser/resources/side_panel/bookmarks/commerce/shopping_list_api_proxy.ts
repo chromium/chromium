@@ -7,7 +7,8 @@ import {BookmarkProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemo
 let instance: ShoppingListApiProxy|null = null;
 
 export interface ShoppingListApiProxy {
-  getAllBookmarkProductInfo(): Promise<{productInfos: BookmarkProductInfo[]}>;
+  getAllPriceTrackedBookmarkProductInfo():
+      Promise<{productInfos: BookmarkProductInfo[]}>;
   trackPriceForBookmark(bookmarkId: bigint): void;
   untrackPriceForBookmark(bookmarkId: bigint): void;
 }
@@ -23,8 +24,8 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  getAllBookmarkProductInfo() {
-    return this.handler.getAllBookmarkProductInfo();
+  getAllPriceTrackedBookmarkProductInfo() {
+    return this.handler.getAllPriceTrackedBookmarkProductInfo();
   }
 
   trackPriceForBookmark(bookmarkId: bigint) {
