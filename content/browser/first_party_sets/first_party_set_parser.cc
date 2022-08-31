@@ -23,7 +23,7 @@
 #include "base/types/expected.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"

@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "net/cookies/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {

@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"

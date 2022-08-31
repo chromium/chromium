@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 
 namespace content {
 

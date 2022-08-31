@@ -7,18 +7,18 @@ module network.mojom;
 import "services/network/public/mojom/schemeful_site.mojom";
 
 // This struct should match net::FirstPartySetEntry::SiteIndex in
-// //net/cookies/first_party_set_entry.h
+// //net/first_party_sets/first_party_set_entry.h
 struct SiteIndex {
   uint32 value;
 };
 
-// This enum should match //net/cookies/first_party_set_entry.h.
+// This enum should match //net/first_party_sets/first_party_set_entry.h.
 enum SiteType {
   kPrimary,
   kAssociated,
 };
 
-// This struct should match //net/cookies/first_party_set_entry.h.
+// This struct should match //net/first_party_sets/first_party_set_entry.h.
 struct FirstPartySetEntry {
   SchemefulSite primary;
   SiteType site_type;

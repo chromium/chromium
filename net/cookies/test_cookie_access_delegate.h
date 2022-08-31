@@ -15,8 +15,8 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {

@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"

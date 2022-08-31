@@ -6,8 +6,8 @@
 #define NET_COOKIES_FIRST_PARTY_SET_METADATA_H_
 
 #include "net/base/net_export.h"
-#include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/same_party_context.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {

@@ -9,7 +9,7 @@
 
 #include "content/browser/first_party_sets/test/first_party_set_parser_map_fuzzer.pb.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

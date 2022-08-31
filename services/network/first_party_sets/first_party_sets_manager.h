@@ -18,9 +18,9 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/first_party_sets_context_config.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
