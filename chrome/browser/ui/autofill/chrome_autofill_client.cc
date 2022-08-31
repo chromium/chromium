@@ -23,6 +23,9 @@
 #include "chrome/browser/autofill/risk_util.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
+#include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
+#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -62,6 +65,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -678,29 +682,68 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
 }
 
 bool ChromeAutofillClient::IsFastCheckoutSupported() {
-  // TODO(crbug.com/1334642): Implement.
-  NOTIMPLEMENTED();
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(::features::kFastCheckout)) {
+    return false;
+  }
+
+  if (!GetPersonalDataManager()->IsAutofillProfileEnabled() ||
+      !GetPersonalDataManager()->IsAutofillCreditCardEnabled()) {
+    return false;
+  }
+
+  // TODO(crbug.com/1334642): Check that the assistant settings flag is on.
+
+  return base::FeatureList::IsEnabled(
+      autofill_assistant::features::kAutofillAssistant);
+
+#else
   return false;
+#endif
 }
 
 bool ChromeAutofillClient::IsFastCheckoutTriggerForm(
     const FormData& form,
     const FormFieldData& field) {
-  // TODO(crbug.com/1334642): Implement.
-  NOTIMPLEMENTED();
+#if BUILDFLAG(IS_ANDROID)
+  FastCheckoutCapabilitiesFetcher* fetcher =
+      FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
+          GetProfile());
+
+  // TODO(crbug.com/1356498): Stop calculating the signature once the form
+  // signature has been moved to `form_data`.
+  // Check browser form's signature and renderer form's signature.
+  return fetcher->IsTriggerFormSupported(form.main_frame_origin,
+                                         CalculateFormSignature(form)) ||
+         fetcher->IsTriggerFormSupported(form.main_frame_origin,
+                                         field.host_form_signature);
+#else
+  NOTREACHED();
   return false;
+#endif
 }
 
 bool ChromeAutofillClient::ShowFastCheckout(
     base::WeakPtr<FastCheckoutDelegate> delegate) {
-  // TODO(crbug.com/1334642): Implement.
-  NOTIMPLEMENTED();
+#if BUILDFLAG(IS_ANDROID)
+  if (delegate->IsShowingFastCheckoutUI()) {
+    return false;
+  }
+
+  return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
+      ->Start(delegate, web_contents()->GetLastCommittedURL());
+#else
+  NOTREACHED();
   return false;
+#endif
 }
 
 void ChromeAutofillClient::HideFastCheckout() {
-  // TODO(crbug.com/1334642): Implement.
-  NOTIMPLEMENTED();
+#if BUILDFLAG(IS_ANDROID)
+  FastCheckoutClient::GetOrCreateForWebContents(web_contents())->Stop();
+#else
+  NOTREACHED();
+#endif
 }
 
 bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {

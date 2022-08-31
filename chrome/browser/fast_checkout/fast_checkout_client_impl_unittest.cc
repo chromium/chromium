@@ -12,6 +12,8 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/fast_checkout_delegate.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -36,6 +38,28 @@ class MockFastCheckoutController : public FastCheckoutController {
   MOCK_METHOD(void, OpenAutofillProfileSettings, (), (override));
   MOCK_METHOD(void, OpenCreditCardSettings, (), (override));
   MOCK_METHOD(gfx::NativeView, GetNativeView, (), (override));
+};
+
+class MockFastCheckoutDelegate : public autofill::FastCheckoutDelegate {
+ public:
+  MockFastCheckoutDelegate() = default;
+  ~MockFastCheckoutDelegate() override = default;
+
+  MOCK_METHOD(bool,
+              TryToShowFastCheckout,
+              (const autofill::FormData&, const autofill::FormFieldData&),
+              (override));
+  MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
+  MOCK_METHOD(void, HideFastCheckoutUI, (), (override));
+  MOCK_METHOD(void, OnFastCheckoutUIHidden, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
+
+  base::WeakPtr<MockFastCheckoutDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockFastCheckoutDelegate> weak_factory_{this};
 };
 
 class MockFastCheckoutExternalActionDelegate
@@ -140,6 +164,9 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     external_action_delegate_ = external_action_delegate.get();
     test_client_->InjectFastCheckoutExternalActionDelegate(
         std::move(external_action_delegate));
+
+    // Prepare the FastCheckoutDelegate.
+    fast_checkout_delegate_ = std::make_unique<MockFastCheckoutDelegate>();
   }
 
   TestFastCheckoutClientImpl* fast_checkout_client() { return test_client_; }
@@ -153,11 +180,15 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     return fast_checkout_controller_;
   }
 
-  MockFastCheckoutExternalActionDelegate* delegate() {
+  MockFastCheckoutExternalActionDelegate* external_action_delegate() {
     return external_action_delegate_;
   }
 
- private:
+  base::WeakPtr<MockFastCheckoutDelegate> delegate() {
+    return fast_checkout_delegate_->GetWeakPtr();
+  }
+
+ protected:
   base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<TestFastCheckoutClientImpl> test_client_;
@@ -165,6 +196,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
       external_script_controller_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
   raw_ptr<MockFastCheckoutExternalActionDelegate> external_action_delegate_;
+  std::unique_ptr<MockFastCheckoutDelegate> fast_checkout_delegate_;
 };
 
 TEST_F(
@@ -188,8 +220,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureDisabled_NoRuns) {
   // Do not expect bottomsheet to show up.
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
 
+  EXPECT_CALL(*delegate(), OnFastCheckoutUIHidden).Times(0);
+
   // Starting is not successful which is also represented by the internal state.
-  EXPECT_FALSE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 }
 
@@ -222,13 +256,13 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureEnabled_RunsSuccessfully) {
   EXPECT_CALL(*fast_checkout_controller(), Show);
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
 
   // Cannot start another run.
-  EXPECT_FALSE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // Successful run.
   std::move(onboarding_successful_callback).Run();
@@ -258,13 +292,13 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
 
   // Cannot start another run.
-  EXPECT_FALSE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   // Failed run.
   autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
@@ -280,7 +314,7 @@ TEST_F(FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
 
   fast_checkout_client()->Stop();
 
@@ -293,7 +327,9 @@ TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
+
+  EXPECT_CALL(*delegate(), OnFastCheckoutUIHidden);
 
   fast_checkout_client()->OnDismiss();
 
@@ -303,13 +339,28 @@ TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
 
 TEST_F(FastCheckoutClientImplTest,
        OnOptionsSelected_MovesSelectionsToExternalActionDelegate) {
-  EXPECT_CALL(*delegate(), SetOptionsSelected);
+  EXPECT_CALL(*external_action_delegate(), SetOptionsSelected);
 
   // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(GURL(kUrl)));
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
+
+  EXPECT_CALL(*delegate(), OnFastCheckoutUIHidden);
 
   // User selected profile and card in bottomsheet.
   fast_checkout_client()->OnOptionsSelected(
       std::make_unique<autofill::AutofillProfile>(),
       std::make_unique<autofill::CreditCard>());
+}
+
+TEST_F(FastCheckoutClientImplTest, RunsSuccessfullyIfDelegateIsDestroyed) {
+  // `FastCheckoutClient` is not running initially.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  // Starting the run successfully.
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
+
+  fast_checkout_delegate_.reset();
+  fast_checkout_client()->OnDismiss();
+
+  // `FastCheckoutClient` is not running anymore.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
 }

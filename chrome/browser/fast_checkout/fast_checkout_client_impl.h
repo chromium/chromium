@@ -25,7 +25,8 @@ class FastCheckoutClientImpl
   FastCheckoutClientImpl& operator=(const FastCheckoutClientImpl&) = delete;
 
   // FastCheckoutClient:
-  bool Start(const GURL& url) override;
+  bool Start(base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
+             const GURL& url) override;
   void Stop() override;
   bool IsRunning() const override;
 
@@ -53,6 +54,10 @@ class FastCheckoutClientImpl
  private:
   friend class content::WebContentsUserData<FastCheckoutClientImpl>;
 
+  // Called whenever the surface gets hidden (regardless of the cause). Informs
+  // the Delegate that the surface is now hidden.
+  void OnHidden();
+
   // Registers when a run is complete. Used in callbacks.
   void OnRunComplete(
       autofill_assistant::HeadlessScriptController::ScriptResult result);
@@ -60,6 +65,9 @@ class FastCheckoutClientImpl
   // Registers when onboarding was completed successfully and the scripts are
   // ready to run.
   void OnOnboardingCompletedSuccessfully();
+
+  // Delegate for the surface being shown.
+  base::WeakPtr<autofill::FastCheckoutDelegate> delegate_;
 
   // The delegate is responsible for handling protos received from backend DSL
   // actions.

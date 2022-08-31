@@ -9,6 +9,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/fast_checkout_delegate.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -27,7 +28,9 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
 
 FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
 
-bool FastCheckoutClientImpl::Start(const GURL& url) {
+bool FastCheckoutClientImpl::Start(
+    base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
+    const GURL& url) {
   if (!base::FeatureList::IsEnabled(features::kFastCheckout))
     return false;
 
@@ -36,6 +39,7 @@ bool FastCheckoutClientImpl::Start(const GURL& url) {
 
   is_running_ = true;
   url_ = url;
+  delegate_ = std::move(delegate);
 
   base::flat_map<std::string, std::string> params_map{
       {autofill_assistant::public_script_parameters::kIntentParameterName,
@@ -57,6 +61,9 @@ bool FastCheckoutClientImpl::Start(const GURL& url) {
   fast_checkout_external_action_delegate_ =
       CreateFastCheckoutExternalActionDelegate();
   external_script_controller_ = CreateHeadlessScriptController();
+
+  // TODO(crbug.com/1334642): Stop keyboard and autofill suggestions from
+  // showing.
 
   external_script_controller_->StartScript(
       params_map,
@@ -110,14 +117,24 @@ FastCheckoutClientImpl::CreateHeadlessScriptController() {
       &GetWebContents(), fast_checkout_external_action_delegate_.get());
 }
 
+void FastCheckoutClientImpl::OnHidden() {
+  // TODO(crbug.com/1334642): Allow keyboard and autofill suggestions from
+  // showing.
+  if (delegate_) {
+    delegate_->OnFastCheckoutUIHidden();
+  }
+}
+
 void FastCheckoutClientImpl::OnOptionsSelected(
     std::unique_ptr<autofill::AutofillProfile> selected_profile,
     std::unique_ptr<autofill::CreditCard> selected_credit_card) {
   fast_checkout_external_action_delegate_->SetOptionsSelected(
       *selected_profile, *selected_credit_card);
+  OnHidden();
 }
 
 void FastCheckoutClientImpl::OnDismiss() {
+  OnHidden();
   Stop();
 }
 
