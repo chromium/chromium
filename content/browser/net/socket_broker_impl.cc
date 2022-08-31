@@ -13,6 +13,7 @@
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/tcp_socket.h"
+#include "services/network/public/cpp/transferable_socket.h"
 
 #if !BUILDFLAG(IS_WIN)
 #include <netinet/in.h>
@@ -29,7 +30,7 @@ void SocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
                                        CreateTcpSocketCallback callback) {
 // TODO(https://crbug.com/1311014): Open and release raw socket on Windows.
 #if BUILDFLAG(IS_WIN)
-  std::move(callback).Run(mojo::PlatformHandle(), net::ERR_FAILED);
+  std::move(callback).Run(network::TransferableSocket(), net::ERR_FAILED);
 #else
   base::ScopedFD socket(net::CreatePlatformSocket(
       net::ConvertAddressFamily(address_family), SOCK_STREAM,
@@ -41,7 +42,9 @@ void SocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
     rv = net::MapSystemError(errno);
     socket.reset();
   }
-  std::move(callback).Run(mojo::PlatformHandle(std::move(socket)), rv);
+  std::move(callback).Run(
+      network::TransferableSocket(base::kNullProcessHandle, socket.release()),
+      rv);
 #endif
 }
 

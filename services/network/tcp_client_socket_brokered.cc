@@ -12,6 +12,7 @@
 #include "net/socket/tcp_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/brokered_client_socket_factory.h"
+#include "services/network/public/cpp/transferable_socket.h"
 
 namespace network {
 
@@ -104,7 +105,7 @@ void TCPClientSocketBrokered::DidCompleteConnect(
 
 void TCPClientSocketBrokered ::DidCompleteCreate(
     net::CompletionOnceCallback callback,
-    mojo::PlatformHandle fd,
+    network::TransferableSocket socket,
     int result) {
   if (result != net::OK) {
     std::move(callback).Run(result);
@@ -119,7 +120,7 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
 #if BUILDFLAG(IS_WIN)
   tcp_socket->Open(addresses_.begin()->GetFamily());
 #else
-  tcp_socket->AdoptUnconnectedSocket(fd.ReleaseFD());
+  tcp_socket->AdoptUnconnectedSocket(socket.TakeSocket());
 #endif
 
   // TODO(liza): Pass through the NetworkHandle.

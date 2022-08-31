@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "services/network/public/mojom/address_family.mojom";
+import "services/network/public/mojom/transferable_socket.mojom";
 
 // Interface to broker socket creation in the browser.
 // Used on Windows and Android as a sandboxed network service
@@ -13,5 +14,5 @@ interface SocketBroker {
   // Creates an unconnected TCP socket. Returns the
   // SocketDescriptor and the net::Error.
   CreateTcpSocket(AddressFamily address_family)
-      => (handle<platform>? created_socket, int32 rv);
+      => (TransferableSocket created_socket, int32 rv);
 };
