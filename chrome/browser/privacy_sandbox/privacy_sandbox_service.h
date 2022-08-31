@@ -217,23 +217,26 @@ class PrivacySandboxService : public KeyedService {
 
   // Returns the first party sets recognised by the current profile. If FPS is
   // disabled, or if sets have not been loaded yet, an empty map is returned.
+  // Encapsulates logic about whether FPS information should be shown, if it
+  // should not, an empty map is always returned.
   // Virtual for mocking in tests.
   // TODO (crbug.com/1350062): Reconsider whether ignoring async FPS information
   // is appropriate.
   virtual base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetFirstPartySets();
+  GetFirstPartySets() const;
 
   // Returns the owner domain of the first party set that `site_url` is a member
   // of, or absl::nullopt if `site_url` is not recognised as a member of an FPS.
+  // Encapsulates logic about whether FPS information should be shown, if it
+  // should not, absl::nullopt is always returned.
   // Virtual for mocking in tests.
-  virtual absl::optional<std::u16string> GetFpsOwnerForDisplay(
-      const GURL& site_url);
+  virtual absl::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+      const GURL& site_url) const;
 
-  // Returns whether detailed FPS controls should be shown based on the current
-  // profile state. Detailed FPS controls are only shown when the user has FPS
-  // enabled, and is blocking 3PC.
+  // Returns true if `site`'s membership in an FPS is being managed by policy.
   // Virtual for mocking in tests.
-  virtual bool ShouldShowDetailedFpsControls();
+  virtual bool IsPartOfManagedFirstPartySet(
+      const net::SchemefulSite& site) const;
 
  protected:
   friend class PrivacySandboxServiceTest;

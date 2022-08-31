@@ -1980,13 +1980,22 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
       {{"use-sample-sets", "true"}});
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
+                      true);
 
-  EXPECT_EQ(u"google.com", privacy_sandbox_service()->GetFpsOwnerForDisplay(
-                               GURL("https://mail.google.com.au")));
-  EXPECT_EQ(u"google.com", privacy_sandbox_service()->GetFpsOwnerForDisplay(
-                               GURL("https://youtube.com")));
-  EXPECT_EQ(absl::nullopt, privacy_sandbox_service()->GetFpsOwnerForDisplay(
-                               GURL("https://example.com")));
+  EXPECT_EQ(u"google.com",
+            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://mail.google.com.au")));
+  EXPECT_EQ(u"google.com",
+            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://youtube.com")));
+  EXPECT_EQ(absl::nullopt,
+            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://example.com")));
 }
 
 TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
@@ -2055,6 +2064,56 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+}
+
+TEST_F(PrivacySandboxServiceTest, NoFpsWhileNotAffected) {
+  // Confirm that when FPS is not involved in access decisions, that the set
+  // of returned First Party Sets is empty.
+  // TODO(crbug.com/1332513): Move away from this demo parameter.
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+      {{"use-sample-sets", "true"}});
+
+  // When 3PC are blocked, and FPS is enabled, sets should be returned.
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
+  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
+                      true);
+  EXPECT_GT(privacy_sandbox_service()->GetFirstPartySets().size(), 0u);
+
+  // When 3PC are enabled, no sets should be returned.
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
+
+  // When all cookies are blocked, no sets should be returned.
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+
+  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
+
+  // When FPS is disabled, no sets should be returned.
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
+  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
+                      false);
+
+  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
+
+  // When the UI feature is disabled, no sets should be returned.
+  feature_list()->Reset();
+  feature_list()->InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
+  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
+                      true);
+
+  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
 }
 
 class PrivacySandboxServiceTestNonRegularProfile

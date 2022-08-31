@@ -30,12 +30,11 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MOCK_METHOD((base::flat_map<net::SchemefulSite, net::SchemefulSite>),
               GetFirstPartySets,
               (),
-              (override));
+              (override, const));
   MOCK_METHOD(absl::optional<std::u16string>,
-              GetFpsOwnerForDisplay,
+              GetFirstPartySetOwnerForDisplay,
               (const GURL& site_url),
-              (override));
-  MOCK_METHOD(bool, ShouldShowDetailedFpsControls, (), (override));
+              (override, const));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

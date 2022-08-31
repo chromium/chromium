@@ -87,7 +87,6 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #endif
 
  private:
-  bool IsFpsAllowed() const;
   Profile* GetProfile() const;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

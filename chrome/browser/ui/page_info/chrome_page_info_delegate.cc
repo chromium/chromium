@@ -82,11 +82,6 @@ Profile* ChromePageInfoDelegate::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
 
-bool ChromePageInfoDelegate::IsFpsAllowed() const {
-  return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
-      ->ShouldShowDetailedFpsControls();
-}
-
 permissions::ObjectPermissionContextBase*
 ChromePageInfoDelegate::GetChooserContext(ContentSettingsType type) {
   switch (type) {
@@ -176,10 +171,8 @@ void ChromePageInfoDelegate::FocusWebContents() {
 
 absl::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
     const GURL& site_url) {
-  return IsFpsAllowed()
-             ? PrivacySandboxServiceFactory::GetForProfile(GetProfile())
-                   ->GetFpsOwnerForDisplay(site_url)
-             : absl::nullopt;
+  return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
+      ->GetFirstPartySetOwnerForDisplay(site_url);
 }
 
 bool ChromePageInfoDelegate::CreateInfoBarDelegate() {

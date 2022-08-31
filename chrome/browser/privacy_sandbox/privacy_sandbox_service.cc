@@ -617,7 +617,19 @@ void PrivacySandboxService::SetTopicAllowed(
 }
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
-PrivacySandboxService::GetFirstPartySets() {
+PrivacySandboxService::GetFirstPartySets() const {
+  // If FPS is not affecting cookie access, then there are effectively no
+  // first party sets.
+  if (!(cookie_settings_->ShouldBlockThirdPartyCookies() &&
+        cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr) !=
+            CONTENT_SETTING_BLOCK &&
+        pref_service_->GetBoolean(
+            prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed) &&
+        base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
+    return {};
+  }
+
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
     return {{net::SchemefulSite(GURL("https://youtube.com")),
              net::SchemefulSite(GURL("https://google.com"))},
@@ -626,15 +638,20 @@ PrivacySandboxService::GetFirstPartySets() {
             {net::SchemefulSite(GURL("https://google.com.au")),
              net::SchemefulSite(GURL("https://google.com"))},
             {net::SchemefulSite(GURL("https://google.de")),
-             net::SchemefulSite(GURL("https://google.com"))}};
+             net::SchemefulSite(GURL("https://google.com"))},
+            {net::SchemefulSite(GURL("https://chromium.org")),
+             net::SchemefulSite(GURL("https://chromium.org"))},
+            {net::SchemefulSite(GURL("https://googlesource.org")),
+             net::SchemefulSite(GURL("https://chromium.org"))}};
   }
 
   // TODO(crbug.com/1332513): Retrieve set information from FPS delegate.
   return {};
 }
 
-absl::optional<std::u16string> PrivacySandboxService::GetFpsOwnerForDisplay(
-    const GURL& site_url) {
+absl::optional<std::u16string>
+PrivacySandboxService::GetFirstPartySetOwnerForDisplay(
+    const GURL& site_url) const {
   auto sets = GetFirstPartySets();
   auto schemeful_site = net::SchemefulSite(site_url);
 
@@ -646,10 +663,14 @@ absl::optional<std::u16string> PrivacySandboxService::GetFpsOwnerForDisplay(
   return base::UTF8ToUTF16(sets[schemeful_site].GetURL().host());
 }
 
-bool PrivacySandboxService::ShouldShowDetailedFpsControls() {
-  // TODO(crbug.com/1332513): Consult the preference state to determine whether
-  // detailed controls should be shown.
-  return privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get();
+bool PrivacySandboxService::IsPartOfManagedFirstPartySet(
+    const net::SchemefulSite& site) const {
+  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
+    return GetFirstPartySets()[site] ==
+           net::SchemefulSite(GURL("https://chromium.org"));
+  }
+  // TODO(crbug.com/1332513): Retrieve set information from FPS delegate.
+  return false;
 }
 
 /*static*/ PrivacySandboxService::PromptType
