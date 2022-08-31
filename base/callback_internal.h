@@ -33,7 +33,7 @@ struct BindState;
 class CallbackBase;
 class CallbackBaseCopyable;
 
-struct BindStateBaseRefCountTraits {
+struct BASE_EXPORT BindStateBaseRefCountTraits {
   static void Destruct(const BindStateBase*);
 };
 

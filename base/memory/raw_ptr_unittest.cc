@@ -1535,6 +1535,68 @@ TEST(BackupRefPtrImpl, Advance) {
   RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
 }
 
+bool IsQuarantineEmpty(partition_alloc::PartitionAllocator& allocator) {
+  return allocator.root()->total_size_of_brp_quarantined_bytes.load(
+             std::memory_order_relaxed) == 0;
+}
+
+struct BoundRawPtrTestHelper {
+  static BoundRawPtrTestHelper* Create(
+      partition_alloc::PartitionAllocator& allocator) {
+    return new (allocator.root()->Alloc(sizeof(BoundRawPtrTestHelper), ""))
+        BoundRawPtrTestHelper(allocator);
+  }
+
+  explicit BoundRawPtrTestHelper(partition_alloc::PartitionAllocator& allocator)
+      : owning_allocator(allocator),
+        once_callback(
+            BindOnce(&BoundRawPtrTestHelper::DeleteItselfAndCheckIfInQuarantine,
+                     Unretained(this))),
+        repeating_callback(BindRepeating(
+            &BoundRawPtrTestHelper::DeleteItselfAndCheckIfInQuarantine,
+            Unretained(this))) {}
+
+  void DeleteItselfAndCheckIfInQuarantine() {
+    auto& allocator = owning_allocator;
+    EXPECT_TRUE(IsQuarantineEmpty(allocator));
+
+    // Since we use a non-default partition, `delete` has to be simulated.
+    this->~BoundRawPtrTestHelper();
+    allocator.root()->Free(this);
+
+    EXPECT_FALSE(IsQuarantineEmpty(allocator));
+  }
+
+  partition_alloc::PartitionAllocator& owning_allocator;
+  OnceClosure once_callback;
+  RepeatingClosure repeating_callback;
+};
+
+// Check that bound callback arguments remain protected by BRP for the
+// entire duration of a callback invocation.
+TEST(BackupRefPtrImpl, Bind) {
+  // This test requires a separate partition; otherwise, unrelated allocations
+  // might interfere with `IsQuarantineEmpty`.
+  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+  partition_alloc::PartitionAllocator allocator;
+  allocator.init(kOpts);
+
+  auto* object_for_once_callback1 = BoundRawPtrTestHelper::Create(allocator);
+  std::move(object_for_once_callback1->once_callback).Run();
+  EXPECT_TRUE(IsQuarantineEmpty(allocator));
+
+  auto* object_for_repeating_callback1 =
+      BoundRawPtrTestHelper::Create(allocator);
+  std::move(object_for_repeating_callback1->repeating_callback).Run();
+  EXPECT_TRUE(IsQuarantineEmpty(allocator));
+
+  // `RepeatingCallback` has both lvalue and rvalue versions of `Run`.
+  auto* object_for_repeating_callback2 =
+      BoundRawPtrTestHelper::Create(allocator);
+  object_for_repeating_callback2->repeating_callback.Run();
+  EXPECT_TRUE(IsQuarantineEmpty(allocator));
+}
+
 #if defined(PA_REF_COUNT_CHECK_COOKIE)
 TEST(BackupRefPtrImpl, ReinterpretCast) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to

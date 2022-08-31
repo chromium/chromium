@@ -258,6 +258,10 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
   }
 
   R Run(Args... args) const & {
+    // Keep `bind_state_` alive at least until after the invocation to ensure
+    // all bound `Unretained` arguments remain protected by MiraclePtr.
+    auto bind_state_protector = this->bind_state_;
+
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(this->polymorphic_invoke());
     return f(this->bind_state_.get(), std::forward<Args>(args)...);
