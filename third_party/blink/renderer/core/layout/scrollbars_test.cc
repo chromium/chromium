@@ -325,7 +325,8 @@ INSTANTIATE_PAINT_TEST_SUITE_P(ScrollbarsTestWithVirtualTimer);
   } while (false)
 
 TEST_P(ScrollbarsTest, DocumentStyleRecalcPreservesScrollbars) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -509,7 +510,8 @@ TEST_P(ScrollbarsTest, BodyBackgroundChangesOverlayColorTheme) {
   // are enabled.
   ENABLE_OVERLAY_SCROLLBARS(true);
 
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1718,7 +1720,8 @@ TEST_P(ScrollbarAppearanceTest, ThemeEngineDefinesMinimumThumbLength) {
   ScopedStubThemeEngine scoped_theme;
   ENABLE_OVERLAY_SCROLLBARS(UsesOverlayScrollbars());
 
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1744,7 +1747,8 @@ TEST_P(ScrollbarAppearanceTest, HugeScrollingThumbPosition) {
   ScopedStubThemeEngine scoped_theme;
   ENABLE_OVERLAY_SCROLLBARS(UsesOverlayScrollbars());
 
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

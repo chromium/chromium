@@ -577,7 +577,8 @@ struct TestCase {
 };
 
 TEST_P(ScrollInfacesUseCounterSimTest, ScrollTestAll) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   const Vector<TestCase> test_cases = {
       {"ltr", "horizontal-tb", false, false},

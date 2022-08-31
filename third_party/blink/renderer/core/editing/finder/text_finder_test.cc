@@ -674,13 +674,14 @@ TEST_F(TextFinderTest, BeforeMatchEvent) {
       EvalJs("window.beforematchFiredOnFoo");
   ASSERT_TRUE(beforematch_fired_on_foo->IsBoolean());
   EXPECT_FALSE(
-      beforematch_fired_on_foo->ToBoolean(v8::Isolate::GetCurrent())->Value());
+      beforematch_fired_on_foo->ToBoolean(v8_testing_scope.GetIsolate())
+          ->Value());
 
   v8::Local<v8::Value> beforematch_fired_on_bar =
       EvalJs("window.beforematchFiredOnBar");
   ASSERT_TRUE(beforematch_fired_on_bar->IsBoolean());
-  EXPECT_TRUE(
-      beforematch_fired_on_bar->ToBoolean(v8::Isolate::GetCurrent())->Value());
+  EXPECT_TRUE(beforematch_fired_on_bar->ToBoolean(v8_testing_scope.GetIsolate())
+                  ->Value());
 
   // Scrolling should occur after the beforematch event.
   v8::Local<v8::Context> context =
@@ -720,8 +721,8 @@ TEST_F(TextFinderTest, BeforeMatchEventRemoveElement) {
   v8::Local<v8::Value> beforematch_fired_on_foo =
       EvalJs("window.beforematchFiredOnFoo");
   ASSERT_TRUE(beforematch_fired_on_foo->IsBoolean());
-  EXPECT_TRUE(
-      beforematch_fired_on_foo->ToBoolean(v8::Isolate::GetCurrent())->Value());
+  EXPECT_TRUE(beforematch_fired_on_foo->ToBoolean(v8_testing_scope.GetIsolate())
+                  ->Value());
 
   // TODO(jarhar): Update this test to include checks for scrolling behavior
   // once we decide what the behavior should be. Right now it is just here to

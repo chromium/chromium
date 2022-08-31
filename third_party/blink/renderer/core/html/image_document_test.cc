@@ -349,7 +349,8 @@ class ImageDocumentViewportTest : public SimTest {
 // Tests that hiding the URL bar doesn't cause a "jump" when viewing an image
 // much wider than the viewport.
 TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
 
   // Initialize with the URL bar showing. Make the viewport very thin so that
   // we load an image much wider than the viewport but fits vertically. The
@@ -391,7 +392,8 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
 }
 
 TEST_F(ImageDocumentViewportTest, ScaleImage) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 
@@ -431,7 +433,8 @@ TEST_F(ImageDocumentViewportTest, ScaleImage) {
 // Tests that with zoom factor for device scale factor, image with different
 // size fit in the viewport correctly.
 TEST_F(ImageDocumentViewportTest, DivWidth) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 

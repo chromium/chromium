@@ -824,7 +824,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereLastIsPromise) {
       "Promise.resolve('world');",
   };
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                             scripts, callback_helper.Callback());
@@ -867,7 +867,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlyLastIsFulfilled) {
       "Promise.resolve('world');",
   };
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(web_view_helper.GetAgentGroupScheduler().Isolate());
   ScriptExecutionCallbackHelper callback_helper;
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                             scripts, callback_helper.Callback());
