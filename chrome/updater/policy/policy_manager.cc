@@ -18,11 +18,11 @@ namespace updater {
 namespace {
 
 // Preferences Category.
-const char kAutoUpdateCheckPeriodOverrideMinutes[] =
+constexpr char kAutoUpdateCheckPeriodOverrideMinutes[] =
     "AutoUpdateCheckPeriodMinutes";
-const char kUpdatesSuppressedStartHour[] = "UpdatesSuppressedStartHour";
-const char kUpdatesSuppressedStartMin[] = "UpdatesSuppressedStartMin";
-const char kUpdatesSuppressedDurationMin[] = "UpdatesSuppressedDurationMin";
+constexpr char kUpdatesSuppressedStartHour[] = "UpdatesSuppressedStartHour";
+constexpr char kUpdatesSuppressedStartMin[] = "UpdatesSuppressedStartMin";
+constexpr char kUpdatesSuppressedDurationMin[] = "UpdatesSuppressedDurationMin";
 
 // This policy specifies what kind of download URLs could be returned to the
 // client in the update response and in which order of priority. The client
@@ -30,39 +30,39 @@ const char kUpdatesSuppressedDurationMin[] = "UpdatesSuppressedDurationMin";
 // The server may decide to ignore the hint. As a general idea, some urls are
 // cacheable, some urls have higher bandwidth, and some urls are slightly more
 // secure since they are https.
-const char kDownloadPreference[] = "DownloadPreference";
+constexpr char kDownloadPreference[] = "DownloadPreference";
 
 // Proxy Server Category.  (The keys used, and the values of ProxyMode,
 // directly mirror that of Chrome.  However, we omit ProxyBypassList, as the
 // domains that Omaha uses are largely fixed.)
-const char kProxyMode[] = "ProxyMode";
-const char kProxyServer[] = "ProxyServer";
-const char kProxyPacUrl[] = "ProxyPacUrl";
+constexpr char kProxyMode[] = "ProxyMode";
+constexpr char kProxyServer[] = "ProxyServer";
+constexpr char kProxyPacUrl[] = "ProxyPacUrl";
 
 // Package cache constants.
-const char kCacheSizeLimitMBytes[] = "PackageCacheSizeLimit";
-const char kCacheLifeLimitDays[] = "PackageCacheLifeLimit";
+constexpr char kCacheSizeLimitMBytes[] = "PackageCacheSizeLimit";
+constexpr char kCacheLifeLimitDays[] = "PackageCacheLifeLimit";
 
 // Applications Category.
 // The prefix strings have the app's GUID appended to them.
-const char kInstallAppsDefault[] = "InstallDefault";
-const char kInstallAppPrefix[] = "Install";
-const char kUpdateAppsDefault[] = "UpdateDefault";
-const char kUpdateAppPrefix[] = "Update";
-const char kTargetVersionPrefix[] = "TargetVersionPrefix";
-const char kTargetChannel[] = "TargetChannel";
-const char kRollbackToTargetVersion[] = "RollbackToTargetVersion";
+constexpr char kInstallAppsDefault[] = "InstallDefault";
+constexpr char kInstallAppPrefix[] = "Install";
+constexpr char kUpdateAppsDefault[] = "UpdateDefault";
+constexpr char kUpdateAppPrefix[] = "Update";
+constexpr char kTargetVersionPrefix[] = "TargetVersionPrefix";
+constexpr char kTargetChannel[] = "TargetChannel";
+constexpr char kRollbackToTargetVersion[] = "RollbackToTargetVersion";
 
 }  // namespace
 
 PolicyManager::PolicyManager(base::Value::Dict policies)
     : policies_(std::move(policies)) {
+  constexpr size_t kInstallAppPrefixLength =
+      base::StringPiece(kInstallAppPrefix).length();
   std::for_each(std::begin(policies_), std::end(policies_),
                 [&](const auto& policy) {
                   const std::string policy_name = policy.first;
-                  const size_t install_app_prefix_length =
-                      std::string(kInstallAppPrefix).length();
-                  if (policy_name.length() <= install_app_prefix_length ||
+                  if (policy_name.length() <= kInstallAppPrefixLength ||
                       !base::StartsWith(policy_name, kInstallAppPrefix) ||
                       base::StartsWith(policy_name, kInstallAppsDefault) ||
                       !policy.second.is_int()) {
@@ -77,7 +77,7 @@ PolicyManager::PolicyManager(base::Value::Dict policies)
                   }
 
                   force_install_apps_.push_back(
-                      policy_name.substr(install_app_prefix_length));
+                      policy_name.substr(kInstallAppPrefixLength));
                 });
 }
 
