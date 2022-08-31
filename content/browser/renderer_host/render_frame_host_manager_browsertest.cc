@@ -4490,7 +4490,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // SiteInstance, unless we do a proactive BrowsingInstance swap due to
   // back/forward cache.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  if (IsSameSiteBackForwardCacheEnabled()) {
+  if (IsBackForwardCacheEnabled()) {
     site_instance = shell()->web_contents()->GetSiteInstance();
   } else {
     EXPECT_EQ(site_instance, shell()->web_contents()->GetSiteInstance());

@@ -96,8 +96,7 @@ void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
                                  bool enable_back_forward_cache) {
   if (enable_back_forward_cache) {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> features;
-    features.push_back(
-        {features::kBackForwardCache, {{"enable_same_site", "true"}}});
+    features.push_back({features::kBackForwardCache, {}});
     features.push_back({kBackForwardCacheNoTimeEviction, {}});
     features.push_back({features::kBackForwardCacheMemoryControls, {}});
     feature_list->InitWithFeaturesAndParameters(features, {});
@@ -268,12 +267,12 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   scoped_refptr<SiteInstanceImpl> unassigned_si =
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
-  if (!BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
+  if (!BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     // Normally we reuse the SiteInstance.
     EXPECT_TRUE(unassigned_si->HasSite());
     EXPECT_EQ(unassigned_si, initial_si);
   } else {
-    // With same-site BFCache, we will swap browsing instance for same-site
+    // With back/forward cache, we will swap browsing instance for same-site
     // navigations, not reusing the previous SiteInstance.
     EXPECT_FALSE(unassigned_si->HasSite());
     EXPECT_FALSE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));
@@ -293,12 +292,12 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   scoped_refptr<SiteInstanceImpl> unassigned_si =
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
-  if (!BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
+  if (!BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     // Normally we reuse the SiteInstance.
     EXPECT_TRUE(unassigned_si->HasSite());
     EXPECT_EQ(unassigned_si, initial_si);
   } else {
-    // With same-site BFCache, we will swap browsing instance for same-site
+    // With back/forward cache, we will swap browsing instance for same-site
     // navigations, not reusing the previous SiteInstance.
     EXPECT_FALSE(unassigned_si->HasSite());
     EXPECT_FALSE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));

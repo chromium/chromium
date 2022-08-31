@@ -100,8 +100,7 @@ class DocumentServiceBFCacheBrowserTest : public DocumentServiceBrowserTest {
  public:
   DocumentServiceBFCacheBrowserTest() {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        additional_features = {
-            {features::kBackForwardCache, {{"enable_same_site", "true"}}}};
+        additional_features = {{features::kBackForwardCache, {}}};
     feature_list_.InitWithFeaturesAndParameters(
         DefaultEnabledBackForwardCacheParametersForTests(additional_features),
         DefaultDisabledBackForwardCacheParametersForTests());

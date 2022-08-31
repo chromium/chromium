@@ -747,8 +747,6 @@ class AppBannerManagerBrowserTestWithChromeBFCache
     EnableFeatureAndSetParams(::features::kBackForwardCache,
                               "ignore_outstanding_network_request_for_testing",
                               "true");
-    EnableFeatureAndSetParams(::features::kBackForwardCache, "enable_same_site",
-                              "true");
     // Allow BackForwardCache for all devices regardless of their memory.
     DisableFeature(::features::kBackForwardCacheMemoryControls);
 

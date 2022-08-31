@@ -36,7 +36,9 @@ enum class ShouldSwapBrowsingInstance {
   kNo_Reload = 17,
   kNo_Guest = 18,
   kNo_HasNotComittedAnyNavigation = 19,
-  kNo_UnloadHandlerExistsOnSameSiteNavigation = 20,
+  // 20: kNo_UnloadHandlerExistsOnSameSiteNavigation was removed as it's not
+  // triggering BrowsingInstance swap anymore. See
+  // https://groups.google.com/a/google.com/g/chrome-bfcache/c/L-ZreZDY4n0
   kNo_NotPrimaryMainFrame = 21,
 
   kMaxValue = kNo_NotPrimaryMainFrame

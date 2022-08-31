@@ -30,8 +30,6 @@ CONTENT_EXPORT extern const base::Feature kBackForwardCache_NoMemoryLimit_Trial;
 namespace content {
 
 CONTENT_EXPORT bool IsBackForwardCacheEnabled();
-CONTENT_EXPORT bool IsSameSiteBackForwardCacheEnabled();
-CONTENT_EXPORT bool ShouldSkipSameSiteBackForwardCacheForPageWithUnload();
 CONTENT_EXPORT bool IsBackForwardCacheDisabledByCommandLine();
 CONTENT_EXPORT bool DeviceHasEnoughMemoryForBackForwardCache();
 
@@ -78,7 +76,7 @@ CONTENT_EXPORT bool IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled();
 // or not. Will return true if the value is set to kSameSite.
 // Note that even if this returns false, we might still trigger proactive
 // BrowsingInstance swaps on same-site navigations if
-// IsSameSiteBackForwardCacheEnabled() is true.
+// IsBackForwardCacheEnabled() is true.
 CONTENT_EXPORT bool
 IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
 

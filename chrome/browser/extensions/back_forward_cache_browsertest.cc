@@ -48,7 +48,6 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
            {"extension_message_supported",
             extension_message_support ? "true" : "false"},
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-           {"enable_same_site", "true"},
            {"all_extensions_allowed",
             all_extensions_allowed ? "true" : "false"},
            {"blocked_extensions", blocked_extensions},
