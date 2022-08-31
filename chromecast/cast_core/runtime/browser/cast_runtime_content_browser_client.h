@@ -76,6 +76,8 @@ class CastRuntimeContentBrowserClient
     void OnForegroundApplicationChanged(RuntimeApplication* app) override;
 
     // cast_receiver::StreamResolutionObserver overrides:
+    //
+    // TODO(crbug.com/1358690): Remove this observer.
     void OnStreamingResolutionChanged(
         const gfx::Rect& size,
         const ::media::VideoTransformation& transformation) override;
@@ -88,7 +90,7 @@ class CastRuntimeContentBrowserClient
     std::atomic_bool is_buffering_enabled_{false};
   };
 
-  // Wrapper around the observers used with the cast_receiver componnet.
+  // Wrapper around the observers used with the cast_receiver component.
   ApplicationClientObservers application_client_observers_;
 
   // An instance of |CoreBrowserCastService| created once during the lifetime of

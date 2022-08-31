@@ -19,6 +19,7 @@ namespace cast_receiver {
 
 // Observer to be informed when the resolution of an ongoing Cast mirroring or
 // remoting stream (as supported by the cast_streaming component) is changed.
+// TODO(crbug.com/1358690): Remove this class.
 class StreamingResolutionObserver : public base::CheckedObserver {
  public:
   ~StreamingResolutionObserver() override = default;
