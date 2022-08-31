@@ -682,6 +682,24 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.DiagnosticsUi.Error.{ErrorSource}"
+    enum="CrosDiagnosticsDataError" expires_after="2023-06-15">
+  <owner>ashleydp@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records error type such as no data error, not a number error and expectation
+    not met error when receiving system information including battery info,
+    network info and system info. All errors are recorded.
+  </summary>
+  <token key="ErrorSource">
+    <variant name="Battery"/>
+    <variant name="Network"/>
+    <variant name="System"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
     units="CrosDiagnosticsNavigationView" expires_after="2022-12-04">
   <owner>ashleydp@google.com</owner>

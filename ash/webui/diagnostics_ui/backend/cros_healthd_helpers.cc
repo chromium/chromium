@@ -4,6 +4,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/cros_healthd_helpers.h"
 
+#include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
@@ -68,6 +69,7 @@ const BatteryInfo* GetBatteryInfo(const TelemetryInfo& info) {
 const CpuInfo* GetCpuInfo(const TelemetryInfo& info) {
   const CpuResultPtr& cpu_result = info.cpu_result;
   if (!CheckResponse(cpu_result, CpuResult::Tag::kCpuInfo, "cpu info")) {
+    EmitSystemDataError(metrics::DataError::kNoData);
     return nullptr;
   }
 
@@ -88,6 +90,7 @@ const SystemInfo* GetSystemInfo(const TelemetryInfo& info) {
   const SystemResultPtr& system_result = info.system_result;
   if (!CheckResponse(system_result, SystemResult::Tag::kSystemInfo,
                      "system info")) {
+    EmitSystemDataError(metrics::DataError::kNoData);
     return nullptr;
   }
 

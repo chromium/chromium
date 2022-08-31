@@ -10,6 +10,7 @@
 
 #include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/webui/diagnostics_ui/backend/cpu_usage_data.h"
+#include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/power_manager_client_conversions.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -18,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -33,6 +35,8 @@ namespace diagnostics {
 namespace {
 
 namespace healthd_mojom = ::chromeos::cros_healthd::mojom;
+
+constexpr char kSystemDataError[] = "ChromeOS.DiagnosticsUi.Error.System";
 
 void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
                                    healthd_mojom::CpuInfoPtr cpu_info,
@@ -340,6 +344,18 @@ void SetPowerManagerProperties(
   chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
 }
 
+healthd_mojom::SystemInfoPtr GetDefaultSystemInfoPtr() {
+  auto os_info = healthd_mojom::OsInfo::New();
+  os_info->code_name = "board_name";
+  os_info->marketing_name = "marketing_name";
+  os_info->os_version =
+      healthd_mojom::OsVersion::New("M99", "1234", "5.6", "unittest-channel");
+  auto system_info = healthd_mojom::SystemInfo::New();
+  system_info->os_info = std::move(os_info);
+
+  return system_info;
+}
+
 void VerifyChargeStatusResult(
     const mojom::BatteryChargeStatusPtr& update,
     double charge_now,
@@ -425,6 +441,20 @@ void VerifyCpuTempResult(const mojom::CpuUsagePtr& update,
 void VerifyCpuScalingResult(const mojom::CpuUsagePtr& update,
                             uint32_t expected_scaled_speed) {
   EXPECT_EQ(expected_scaled_speed, update->scaling_current_frequency_khz);
+}
+
+void VerifySystemDataErrorBucketCounts(
+    const base::HistogramTester& tester,
+    size_t expected_no_data_error,
+    size_t expected_not_a_number_error,
+    size_t expected_expectation_not_met_error) {
+  tester.ExpectBucketCount(kSystemDataError, metrics::DataError::kNoData,
+                           expected_no_data_error);
+  tester.ExpectBucketCount(kSystemDataError, metrics::DataError::kNotANumber,
+                           expected_not_a_number_error);
+  tester.ExpectBucketCount(kSystemDataError,
+                           metrics::DataError::kExpectationNotMet,
+                           expected_expectation_not_met_error);
 }
 
 }  // namespace
@@ -1149,6 +1179,71 @@ TEST_F(SystemDataProviderTest, CpuUsagePtrDataValidation) {
   EXPECT_EQ(3u, cpu_usage_observer.updates.size());
   EXPECT_EQ(0u, cpu_usage_observer.updates[2]->average_cpu_temp_celsius);
   EXPECT_EQ(0u, cpu_usage_observer.updates[2]->scaling_current_frequency_khz);
+}
+
+// Validate expected metric NoData error triggered when request for SystemInfo
+// returns no system info data.
+TEST_F(SystemDataProviderTest, RecordSystemDataError_NoSystemInfo) {
+  base::HistogramTester histogram_tester;
+  VerifySystemDataErrorBucketCounts(histogram_tester,
+                                    /*expected_no_data_error=*/0,
+                                    /*expected_not_a_number_error=*/0,
+                                    /*expected_expectation_not_met_error=*/0);
+
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr,
+                                /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetSystemInfo(
+      base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
+        EXPECT_TRUE(ptr);
+        VerifySystemDataErrorBucketCounts(
+            histogram_tester,
+            /*expected_no_data_error=*/1,
+            /*expected_not_a_number_error=*/0,
+            /*expected_expectation_not_met_error=*/0);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Validate expected metric NoData error triggered when request for SystemInfo
+// returns no cpu info data.
+TEST_F(SystemDataProviderTest, RecordSystemDataError_NoCpuInfo) {
+  base::HistogramTester histogram_tester;
+  VerifySystemDataErrorBucketCounts(histogram_tester,
+                                    /*expected_no_data_error=*/0,
+                                    /*expected_not_a_number_error=*/0,
+                                    /*expected_expectation_not_met_error=*/0);
+
+  // System info.
+  auto system_info = GetDefaultSystemInfoPtr();
+
+  // Battery info.
+  auto battery_info = healthd_mojom::BatteryInfo::New();
+
+  // Memory info.
+  auto memory_info = healthd_mojom::MemoryInfo::New();
+  memory_info->total_memory_kib = 1234;
+
+  SetProbeTelemetryInfoResponse(std::move(battery_info),
+                                /*cpu_info=*/nullptr, std::move(memory_info),
+                                std::move(system_info));
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetSystemInfo(
+      base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
+        EXPECT_TRUE(ptr);
+        VerifySystemDataErrorBucketCounts(
+            histogram_tester,
+            /*expected_no_data_error=*/1,
+            /*expected_not_a_number_error=*/0,
+            /*expected_expectation_not_met_error=*/0);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace diagnostics

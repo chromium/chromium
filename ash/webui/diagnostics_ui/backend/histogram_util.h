@@ -18,6 +18,20 @@ namespace ash {
 namespace diagnostics {
 namespace metrics {
 
+// The enums below are used in histograms, do not remove/renumber entries. If
+// you're adding to any of these enums, update the corresponding enum listing in
+// tools/metrics/histograms/enums.xml: CrosDiagnosticsDataError.
+enum class DataError {
+  // Null or nullptr value.
+  kNoData = 0,
+  // For numeric values that are NaN.
+  kNotANumber = 1,
+  // Expectation about data not met. Ex. routing prefix is between zero and
+  // thirty-two.
+  kExpectationNotMet = 2,
+  kMaxValue = kExpectationNotMet,
+};
+
 void EmitAppOpenDuration(const base::TimeDelta& time_elapsed);
 
 void EmitMemoryRoutineDuration(const base::TimeDelta& memory_routine_duration);
@@ -26,6 +40,8 @@ void EmitRoutineRunCount(uint16_t routine_count);
 
 void EmitRoutineResult(mojom::RoutineType routine_type,
                        mojom::StandardRoutineResult result);
+
+void EmitSystemDataError(DataError error);
 
 }  // namespace metrics
 }  // namespace diagnostics

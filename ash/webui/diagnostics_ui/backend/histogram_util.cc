@@ -35,6 +35,10 @@ void EmitRoutineResult(mojom::RoutineType routine_type,
   return;
 }
 
+void EmitSystemDataError(DataError error) {
+  base::UmaHistogramEnumeration("ChromeOS.DiagnosticsUi.Error.System", error);
+}
+
 }  // namespace metrics
 }  // namespace diagnostics
 }  // namespace ash
