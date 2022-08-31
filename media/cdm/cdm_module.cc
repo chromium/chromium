@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -172,6 +173,7 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
   // In case of crashes, provide CDM version to facilitate investigation.
   std::string cdm_version = get_cdm_version_func_();
   DVLOG(2) << __func__ << ": cdm_version = " << cdm_version;
+  TRACE_EVENT1("media", "CdmModule::Initialize", "cdm_version", cdm_version);
 
   static crash_reporter::CrashKeyString<32> cdm_version_key("cdm-version");
   cdm_version_key.Set(cdm_version);
