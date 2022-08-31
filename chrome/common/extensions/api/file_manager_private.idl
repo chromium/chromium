@@ -692,6 +692,9 @@ dictionary FileTransferStatus {
   // Total number of jobs.
   long numTotalJobs;
 
+  // Indicates whether a notification should be shown for the transfer update.
+  boolean showNotification;
+
   // If true, hide when a job is completed when there are zero jobs in
   // progress. Otherwise, hide when one job is in progress.
   boolean hideWhenZeroJobs;

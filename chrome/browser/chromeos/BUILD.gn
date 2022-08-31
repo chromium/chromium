@@ -2267,6 +2267,8 @@ source_set("chromeos") {
     "extensions/file_manager/private_api_thumbnail.h",
     "extensions/file_manager/private_api_util.cc",
     "extensions/file_manager/private_api_util.h",
+    "extensions/file_manager/scoped_suppress_drive_notifications_for_path.cc",
+    "extensions/file_manager/scoped_suppress_drive_notifications_for_path.h",
     "extensions/file_manager/select_file_dialog_extension_user_data.cc",
     "extensions/file_manager/select_file_dialog_extension_user_data.h",
     "extensions/file_manager/system_notification_manager.cc",

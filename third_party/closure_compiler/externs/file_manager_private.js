@@ -492,6 +492,7 @@ chrome.fileManagerPrivate.MountCompletedEvent;
  *   processed: number,
  *   total: number,
  *   numTotalJobs: number,
+ *   showNotification: boolean,
  *   hideWhenZeroJobs: boolean
  * }}
  */
@@ -500,7 +501,8 @@ chrome.fileManagerPrivate.FileTransferStatus;
 /**
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.DriveSyncErrorType,
- *   fileUrl: string
+ *   fileUrl: string,
+ *   showNotification: boolean
  * }}
  */
 chrome.fileManagerPrivate.DriveSyncErrorEvent;

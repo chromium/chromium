@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_HANDLER_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -52,6 +55,9 @@ class CloudUploadHandler
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
   void Run(UploadCallback callback);
 
+  // Ends upload and runs Upload callback.
+  void OnEndUpload(GURL hosted_url);
+
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const file_manager::io_task::ProgressStatus& status) override;
@@ -77,6 +83,8 @@ class CloudUploadHandler
   bool error_found_;
   bool upload_done_;
   UploadCallback callback_;
+  std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>
+      scoped_suppress_drive_notifications_for_path_ = nullptr;
   base::WeakPtrFactory<CloudUploadHandler> weak_ptr_factory_{this};
 };
 

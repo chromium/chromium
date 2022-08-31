@@ -241,6 +241,7 @@ export async function testOffline() {
     processed: 50.0,
     total: 100.0,
     numTotalJobs: 1,
+    showNotification: true,
     hideWhenZeroJobs: true,
   });
 
@@ -272,6 +273,7 @@ export async function testTransferUpdate() {
     processed: 50.0,
     total: 100.0,
     numTotalJobs: 1,
+    showNotification: true,
     hideWhenZeroJobs: true,
   });
 
@@ -289,6 +291,7 @@ export async function testTransferUpdate() {
     processed: 25.0,
     total: 100.0,
     numTotalJobs: 1,
+    showNotification: true,
     hideWhenZeroJobs: true,
   });
 
@@ -304,6 +307,7 @@ export async function testTransferUpdate() {
     processed: 100.0,
     total: 100.0,
     numTotalJobs: 0,
+    showNotification: true,
     hideWhenZeroJobs: true,
   });
 
@@ -321,6 +325,7 @@ export async function testTransferUpdate() {
     processed: 40.0,
     total: 100.0,
     numTotalJobs: 0,
+    showNotification: true,
     hideWhenZeroJobs: true,
   });
 
@@ -330,4 +335,42 @@ export async function testTransferUpdate() {
   assertEquals(ProgressItemState.CANCELED, syncItem.state);
   pinItem = progressCenter.items['drive-pin'];
   assertEquals(ProgressItemState.COMPLETED, pinItem.state);
+}
+
+// Test transfer status updates when notifications should be hidden.
+export async function
+testTransferUpdateNoNotificationPartiallyIgnoredTransferUpdates() {
+  // Start a sync transfer.
+  await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
+    fileUrl: asFileURL('name'),
+    transferState: 'in_progress',
+    processed: 50.0,
+    total: 100.0,
+    numTotalJobs: 2,
+    showNotification: true,
+    hideWhenZeroJobs: true,
+  });
+
+  // There should be one progressing sync item and one canceled pin item.
+  assertEquals(2, progressCenter.getItemCount());
+  let syncItem = progressCenter.items['drive-sync'];
+  assertEquals(ProgressItemState.PROGRESSING, syncItem.state);
+  const pinItem = progressCenter.items['drive-pin'];
+  assertEquals(ProgressItemState.CANCELED, pinItem.state);
+
+  // In the event where the syncing paths are ignored, the following transfer
+  // status is received with `show_notification = false`.
+  await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
+    fileUrl: asFileURL('name'),
+    transferState: 'in_progress',
+    processed: 0.0,
+    total: 0.0,
+    numTotalJobs: 0,
+    showNotification: false,
+    hideWhenZeroJobs: true,
+  });
+
+  // The progressing item should be hidden.
+  syncItem = progressCenter.items['drive-sync'];
+  assertEquals(ProgressItemState.CANCELED, syncItem.state);
 }

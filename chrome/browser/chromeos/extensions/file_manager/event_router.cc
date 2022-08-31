@@ -1285,6 +1285,16 @@ void EventRouter::OnDriveDialogResult(drivefs::mojom::DialogResult result) {
   drivefs_event_router_->OnDialogResult(result);
 }
 
+void EventRouter::SuppressDriveNotificationsForFilePath(
+    const base::FilePath& relative_drive_path) {
+  drivefs_event_router_->SuppressNotificationsForFilePath(relative_drive_path);
+}
+
+void EventRouter::RestoreDriveNotificationsForFilePath(
+    const base::FilePath& relative_drive_path) {
+  drivefs_event_router_->RestoreNotificationsForFilePath(relative_drive_path);
+}
+
 base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

@@ -233,6 +233,12 @@ export class DriveSyncHandlerImpl extends EventTarget {
     if (!this.isProcessableEvent(status)) {
       return;
     }
+    if (!status.showNotification) {
+      // Hide the notification by settings its state to Canceled.
+      item.state = ProgressItemState.CANCELED;
+      this.progressCenter_.updateItem(item);
+      return;
+    }
     switch (status.transferState) {
       case 'in_progress':
         await this.updateItem_(item, status);

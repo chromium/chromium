@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 
 namespace chromeos::cloud_upload {
 namespace {
@@ -118,8 +120,7 @@ void CloudUploadHandler::Run(UploadCallback callback) {
   callback_ = std::move(callback);
 
   if (error_found_) {
-    // TODO (b/243095484) Define error behavior.
-    std::move(callback_).Run(GURL());
+    OnEndUpload(GURL());
     return;
   }
 
@@ -131,11 +132,10 @@ void CloudUploadHandler::Run(UploadCallback callback) {
   // Source and destination urls.
   std::vector<storage::FileSystemURL> source_urls{source_url_};
   base::FilePath destination_folder_path = GenerateUploadFolderPath(profile_);
-  // TODO (b/243095484) Define error behavior.
   if (destination_folder_path.empty()) {
     LOG(ERROR) << "Unable to generate destination folder, the drive "
                   "integration service might not be available.";
-    std::move(callback_).Run(GURL());
+    OnEndUpload(GURL());
     return;
   }
   storage::FileSystemURL destination_folder_url = FilePathToFileSystemURL(
@@ -149,6 +149,16 @@ void CloudUploadHandler::Run(UploadCallback callback) {
           /*show_notifications=*/false);
 
   observed_task_id_ = io_task_controller_->Add(std::move(task));
+}
+
+void CloudUploadHandler::OnEndUpload(GURL hosted_url) {
+  // TODO (b/243095484) Define error behavior on invalid hosted URL.
+  observed_relative_drive_path_.clear();
+  // Stop suppressing Drive events for the observed file.
+  scoped_suppress_drive_notifications_for_path_.reset();
+  if (callback_) {
+    std::move(callback_).Run(hosted_url);
+  }
 }
 
 void CloudUploadHandler::OnIOTaskStatus(
@@ -166,9 +176,7 @@ void CloudUploadHandler::OnIOTaskStatus(
 
     if (!drive_integration_service_) {
       LOG(ERROR) << "No drive integration service";
-      if (callback_) {
-        std::move(callback_).Run(GURL());
-      }
+      OnEndUpload(GURL());
       return;
     }
 
@@ -177,6 +185,9 @@ void CloudUploadHandler::OnIOTaskStatus(
     // from the IOTaskController which resolves potential name clashes.
     drive_integration_service_->GetRelativeDrivePath(
         status.outputs[0].url.path(), &observed_relative_drive_path_);
+    scoped_suppress_drive_notifications_for_path_ =
+        std::make_unique<file_manager::ScopedSuppressDriveNotificationsForPath>(
+            profile_, observed_relative_drive_path_);
   }
 }
 
@@ -204,15 +215,11 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
       case drivefs::mojom::ItemEvent::State::kFailed:
         // TODO (b/243095484) Define error behavior.
         LOG(ERROR) << "Drive -- FAILED";
-        if (callback_) {
-          std::move(callback_).Run(GURL());
-        }
+        OnEndUpload(GURL());
         return;
       default:
         LOG(ERROR) << "Drive -- Invalid state";
-        if (callback_) {
-          std::move(callback_).Run(GURL());
-        }
+        OnEndUpload(GURL());
         return;
     }
   }
@@ -236,9 +243,7 @@ void CloudUploadHandler::OnFilesChanged(
 
     if (!drive_integration_service_) {
       LOG(ERROR) << "No drive integration service";
-      if (callback_) {
-        std::move(callback_).Run(GURL());
-      }
+      OnEndUpload(GURL());
       return;
     }
     drive_integration_service_->GetDriveFsInterface()->GetMetadata(
@@ -264,11 +269,7 @@ void CloudUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
     default:
       LOG(ERROR) << "Invalid type";
   }
-  observed_relative_drive_path_ = base::FilePath();
-
-  if (callback_) {
-    std::move(callback_).Run(GURL());
-  }
+  OnEndUpload(GURL());
 }
 
 void CloudUploadHandler::OnGetDriveMetadata(
@@ -282,10 +283,7 @@ void CloudUploadHandler::OnGetDriveMetadata(
     return;
   }
   upload_done_ = true;
-  observed_relative_drive_path_ = base::FilePath();
-  if (callback_) {
-    std::move(callback_).Run(hosted_url);
-  }
+  OnEndUpload(hosted_url);
 }
 
 }  // namespace chromeos::cloud_upload

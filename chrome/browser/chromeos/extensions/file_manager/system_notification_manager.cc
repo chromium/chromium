@@ -492,6 +492,15 @@ SystemNotificationManager::UpdateDriveSyncNotification(
   bool is_sync_operation =
       (event.histogram_value ==
        extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED);
+
+  // Close if notifications are disabled for this transfer.
+  if (!transfer_status.show_notification) {
+    GetNotificationDisplayService()->Close(
+        NotificationHandler::Type::TRANSIENT,
+        is_sync_operation ? kDriveSyncId : kDrivePinId);
+    return notification;
+  }
+
   if (transfer_status.transfer_state ==
           file_manager_private::TRANSFER_STATE_COMPLETED ||
       transfer_status.transfer_state ==

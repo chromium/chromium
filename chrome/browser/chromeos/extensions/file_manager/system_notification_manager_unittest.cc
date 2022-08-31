@@ -1484,6 +1484,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
   transfer_status.processed = 0;
   transfer_status.total = 100;
+  transfer_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
@@ -1561,6 +1562,57 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
   ASSERT_EQ(0u, notification_count);
 }
 
+TEST_F(SystemNotificationManagerTest, SyncProgressIgnoreNotification) {
+  // Setup a sync progress status.
+  file_manager_private::FileTransferStatus transfer_status;
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_IN_PROGRESS;
+  transfer_status.num_total_jobs = 1;
+  transfer_status.file_url =
+      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
+  transfer_status.processed = 25;
+  transfer_status.total = 100;
+  transfer_status.show_notification = true;
+  std::unique_ptr<extensions::Event> event =
+      std::make_unique<extensions::Event>(
+          extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+          file_manager_private::OnFileTransfersUpdated::kEventName,
+          file_manager_private::OnFileTransfersUpdated::Create(
+              transfer_status));
+
+  // Send the transfers updated event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1u, notification_count);
+
+  // Update the transfer event to hide the notification.
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_COMPLETED;
+  transfer_status.num_total_jobs = 0;
+  transfer_status.processed = 0;
+  transfer_status.total = 0;
+  transfer_status.show_notification = false;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+      file_manager_private::OnFileTransfersUpdated::kEventName,
+      file_manager_private::OnFileTransfersUpdated::Create(transfer_status));
+
+  // Send the transfers updated event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have no notification.
+  ASSERT_EQ(0u, notification_count);
+}
+
 TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
   // Setup a sync progress status object.
   file_manager_private::FileTransferStatus transfer_status;
@@ -1571,6 +1623,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
   transfer_status.processed = 0;
   transfer_status.total = 100;
+  transfer_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
@@ -1605,6 +1658,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
   pin_status.processed = 0;
   pin_status.total = 100;
+  pin_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
@@ -1688,6 +1742,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
   pin_status.processed = 0;
   pin_status.total = 100;
+  pin_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,

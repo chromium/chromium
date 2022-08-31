@@ -50,6 +50,12 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   // dialog's result.
   void OnDialogResult(drivefs::mojom::DialogResult result);
 
+  // In some cases, we might want to disable Drive notifications for a file
+  // identified by its relative Drive path. These methods help control when to
+  // suppress and restore these notifications.
+  void SuppressNotificationsForFilePath(const base::FilePath& path);
+  void RestoreNotificationsForFilePath(const base::FilePath& path);
+
  protected:
   SystemNotificationManager* system_notification_manager() {
     return notification_manager_;
@@ -98,7 +104,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
       const std::string& event_name,
       base::Value::List event_args) = 0;
 
-  static extensions::api::file_manager_private::FileTransferStatus
+  extensions::api::file_manager_private::FileTransferStatus
   CreateFileTransferStatus(
       const std::vector<drivefs::mojom::ItemEvent*>& item_events,
       SyncingStatusState* state);
@@ -108,6 +114,8 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
 
   SyncingStatusState sync_status_state_;
   SyncingStatusState pin_status_state_;
+  // Set of paths for which Drive transfer events are ignored.
+  std::set<base::FilePath> ignored_file_paths_;
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
 };
 

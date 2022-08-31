@@ -220,6 +220,7 @@ class EventRouter
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
+  friend class ScopedSuppressDriveNotificationsForPath;
 
   // Starts observing file system change events.
   void ObserveEvents();
@@ -284,6 +285,13 @@ class EventRouter
   void DisplayDriveConfirmDialog(
       const drivefs::mojom::DialogReason& reason,
       base::OnceCallback<void(drivefs::mojom::DialogResult)> callback);
+
+  // Used by `file_manager::ScopedSuppressDriveNotificationsForPath` to prevent
+  // Drive notifications for a given file identified by its relative Drive path.
+  void SuppressDriveNotificationsForFilePath(
+      const base::FilePath& relative_drive_path);
+  void RestoreDriveNotificationsForFilePath(
+      const base::FilePath& relative_drive_path);
 
   // Called to refresh the list of guests and broadcast it.
   void OnMountableGuestsChanged();
