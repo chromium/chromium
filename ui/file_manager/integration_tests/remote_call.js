@@ -510,8 +510,7 @@ export class RemoteCallFilesApp extends RemoteCall {
       return this.callRemoteTestUtil('getWindows', null, []);
     }
 
-    return JSON.parse(
-        await sendTestMessage({name: 'getWindowsSWA', isSWA: true}));
+    return JSON.parse(await sendTestMessage({name: 'getWindowsSWA'}));
   }
 
   /**

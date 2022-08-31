@@ -570,54 +570,6 @@ function formatDate(date) {
 }
 
 /**
- * Test that a images within a DCIM directory on removable media is backed up to
- * Drive, in the Chrome OS Cloud backup/<current date> directory.
- */
-testcase.driveBackupPhotos = async () => {
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
-
-  // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-
-  // Mount USB volume in the Downloads window.
-  await sendTestMessage({name: 'mountFakeUsbDcim'});
-
-  // Wait for the USB mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  if (await isSinglePartitionFormat(appId)) {
-    // Navigate to the DCIM directory.
-    await navigateWithDirectoryTree(appId, '/FAKEUSB/fake-usb/DCIM');
-  } else {
-    // Navigate to the DCIM directory.
-    await navigateWithDirectoryTree(appId, '/fake-usb/DCIM');
-  }
-
-  // Wait for the import button to be ready.
-  await remoteCall.waitForElement(
-      appId, '#cloud-import-button [icon="files:cloud-upload"]');
-
-  // Start the import.
-  const date = new Date();
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['#cloud-import-button']));
-
-  // Wait for the image to be marked as imported.
-  await remoteCall.waitForElement(
-      appId, '.status-icon[file-status-icon="imported"]');
-
-  // Navigate to today's backup directory in Drive.
-  const formattedDate = formatDate(date);
-  await navigateWithDirectoryTree(
-      appId, `/My Drive/Chrome OS Cloud backup/${formattedDate}`);
-
-  // Verify the backed-up file list contains only a copy of the image within
-  // DCIM in the removable storage.
-  const files = TestEntryInfo.getExpectedRows([ENTRIES.image3]);
-  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-};
-
-/**
  * Verify that "Available Offline" is not available from the gear menu for a
  * drive file.
  */

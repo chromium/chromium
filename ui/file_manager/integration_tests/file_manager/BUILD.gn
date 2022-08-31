@@ -42,7 +42,6 @@ js_type_check("closure_compile") {
     ":providers",
     ":quick_view",
     ":recents",
-    ":restore_geometry",
     ":restore_prefs",
     ":search",
     ":share_and_manage_dialog",
@@ -317,11 +316,6 @@ js_library("recents") {
     "//ui/file_manager/integration_tests:test_util",
     "//ui/file_manager/integration_tests:testcase",
   ]
-}
-
-js_library("restore_geometry") {
-  testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("restore_prefs") {

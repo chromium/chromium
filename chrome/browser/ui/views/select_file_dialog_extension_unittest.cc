@@ -21,23 +21,12 @@ const SelectFileDialogExtension::RoutingID kDefaultRoutingID =
 
 }  // namespace
 
-// Enumerates possible version of tests. We support extension mode (Chrome App)
-// and System App (SWA) mode.
-enum TestMode {
-  EXTENSION_FILES_APP_MODE,
-  SYSTEM_FILES_APP_MODE,
-};
-
 // Must be a class so it can be a friend of SelectFileDialogExtension.
-class SelectFileDialogExtensionTest
-    : public ::testing::TestWithParam<TestMode> {
+class SelectFileDialogExtensionTest : public ::testing::Test {
  public:
   SelectFileDialogExtensionTest() {
-    if (GetParam() == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
-    }
+    feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
   }
-
   SelectFileDialogExtensionTest(const SelectFileDialogExtensionTest&) = delete;
   SelectFileDialogExtensionTest& operator=(
       const SelectFileDialogExtensionTest&) = delete;
@@ -109,7 +98,7 @@ class SelfDeletingClient : public ui::SelectFileDialog::Listener {
   scoped_refptr<SelectFileDialogExtension> dialog_;
 };
 
-TEST_P(SelectFileDialogExtensionTest, FileSelected) {
+TEST_F(SelectFileDialogExtensionTest, FileSelected) {
   const int kFileIndex = 5;
   auto listener = std::make_unique<TestListener>();
   scoped_refptr<SelectFileDialogExtension> dialog =
@@ -124,7 +113,7 @@ TEST_P(SelectFileDialogExtensionTest, FileSelected) {
   EXPECT_EQ(kFileIndex, listener->file_index());
 }
 
-TEST_P(SelectFileDialogExtensionTest, FileSelectionCanceled) {
+TEST_F(SelectFileDialogExtensionTest, FileSelectionCanceled) {
   auto listener = std::make_unique<TestListener>();
   scoped_refptr<SelectFileDialogExtension> dialog =
       CreateDialog(listener.get());
@@ -136,7 +125,7 @@ TEST_P(SelectFileDialogExtensionTest, FileSelectionCanceled) {
   EXPECT_EQ(-1, listener->file_index());
 }
 
-TEST_P(SelectFileDialogExtensionTest, SelfDeleting) {
+TEST_F(SelectFileDialogExtensionTest, SelfDeleting) {
   SelfDeletingClient* client = new SelfDeletingClient();
   // Ensure we don't crash or trip an Address Sanitizer warning about
   // use-after-free.
@@ -145,8 +134,3 @@ TEST_P(SelectFileDialogExtensionTest, SelfDeleting) {
   // Simulate closing the dialog so the listener gets invoked.
   client->dialog()->ExtensionDialogClosing(nullptr);
 }
-
-INSTANTIATE_TEST_SUITE_P(SelectFileDialogExtension,
-                         SelectFileDialogExtensionTest,
-                         ::testing::Values(EXTENSION_FILES_APP_MODE,
-                                           SYSTEM_FILES_APP_MODE));

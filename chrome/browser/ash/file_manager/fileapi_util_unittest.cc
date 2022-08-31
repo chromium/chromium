@@ -102,20 +102,10 @@ class TempFileSystem {
   base::ScopedTempDir temp_dir_;
 };
 
-// Parameter for the unit test to allow us to test both System Files App case
-// and Extension Files app.
-enum FilesAppMode {
-  EXTENSION_FILES_APP,
-  SYSTEM_FILES_APP,
-};
-
-class FileManagerFileAPIUtilTest
-    : public ::testing::TestWithParam<FilesAppMode> {
+class FileManagerFileAPIUtilTest : public ::testing::Test {
  public:
   FileManagerFileAPIUtilTest() {
-    if (GetParam() == SYSTEM_FILES_APP) {
-      feature_list_.InitAndEnableFeature(chromeos::features::kFilesSWA);
-    }
+    feature_list_.InitAndEnableFeature(chromeos::features::kFilesSWA);
   }
 
   // Carries information on how to create a FileSystemURL for a given file name.
@@ -214,7 +204,7 @@ void PassFileChooserFileInfoList(FileChooserFileInfoList* output,
     output->push_back(file->Clone());
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertSelectedFileInfoListToFileChooserFileInfoList) {
   Profile* const profile = GetProfile();
   const std::string extension_id = "abc";
@@ -294,7 +284,7 @@ TEST_P(FileManagerFileAPIUtilTest,
   EXPECT_EQ(55u, result[2]->get_file_system()->length);
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionListExtension) {
   std::vector<FileSystemURLOrder> orders = {
       {.file_name = "x.txt", .valid = true},
@@ -309,7 +299,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       "chrome-extension://abc/efg", orders);
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionListApp) {
   std::vector<FileSystemURLOrder> orders = {
       {.file_name = "a.txt", .valid = false},
@@ -324,7 +314,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       "chrome://file-manager/abc", orders);
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionNullContext) {
   Profile* const profile = GetProfile();
   const GURL appURL("chrome-extension://abc/");
@@ -354,7 +344,7 @@ TEST_P(FileManagerFileAPIUtilTest,
   run_loop.Run();
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionContextReset) {
   Profile* const profile = GetProfile();
   const GURL appURL("chrome-extension://abc/");
@@ -390,7 +380,7 @@ TEST_P(FileManagerFileAPIUtilTest,
   run_loop.Run();
 }
 
-TEST_P(FileManagerFileAPIUtilTest, IsFileManagerURL) {
+TEST_F(FileManagerFileAPIUtilTest, IsFileManagerURL) {
   EXPECT_TRUE(IsFileManagerURL(GetFileManagerURL()));
   EXPECT_TRUE(IsFileManagerURL(GetFileManagerURL().Resolve("/some/path")));
   EXPECT_TRUE(IsFileManagerURL(
@@ -449,7 +439,7 @@ void FileManagerFileAPIUtilTest::TestGenerateUnusedFilename(
   run_loop.Run();
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
   TestGenerateUnusedFilename({}, "foo.bar", {"foo.bar"});
   TestGenerateUnusedFilename({"foo.bar"}, "foo.bar", {"foo (1).bar"});
   TestGenerateUnusedFilename({"foo.bar/"}, "foo.bar", {"foo (1).bar"});
@@ -473,13 +463,13 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
   TestGenerateUnusedFilename({"foo.bar"}, " foo.bar", {" foo.bar"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameUnicode) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameUnicode) {
   TestGenerateUnusedFilename({}, "é è ê ô œ.txt€", {"é è ê ô œ.txt€"});
   TestGenerateUnusedFilename({"é è ê ô œ.txt€"}, "é è ê ô œ.txt€",
                              {"é è ê ô œ (1).txt€"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNoExtension) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNoExtension) {
   TestGenerateUnusedFilename({}, "no-ext", {"no-ext"});
   TestGenerateUnusedFilename({"no-ext"}, "no-ext", {"no-ext (1)"});
   TestGenerateUnusedFilename({"no-ext/"}, "no-ext", {"no-ext (1)"});
@@ -490,7 +480,7 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNoExtension) {
   TestGenerateUnusedFilename({"a/"}, "a", {"a (1)"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
   TestGenerateUnusedFilename({}, "double.ext.10.13.txt",
                              {"double.ext.10.13.txt"});
   TestGenerateUnusedFilename({"double.ext.10.13.txt"}, "double.ext.10.13.txt",
@@ -503,13 +493,13 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
                              {"archive (1).tar.gz"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameInvalidFilename) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameInvalidFilename) {
   TestGenerateUnusedFilename({}, "", base::File::FILE_ERROR_INVALID_OPERATION);
   TestGenerateUnusedFilename({}, "path/with/slashes",
                              base::File::FILE_ERROR_INVALID_OPERATION);
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameFileSystemProvider) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameFileSystemProvider) {
   Profile* const profile = GetProfile();
   const std::string extension_id = "abc";
 
@@ -564,11 +554,6 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameFileSystemProvider) {
           }));
   run_loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(FilesAppMode,
-                         FileManagerFileAPIUtilTest,
-                         ::testing::Values(EXTENSION_FILES_APP,
-                                           SYSTEM_FILES_APP));
 
 }  // namespace
 }  // namespace util

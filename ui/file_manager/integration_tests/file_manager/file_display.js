@@ -986,30 +986,3 @@ testcase.fileDisplayCheckNoReadOnlyIconOnLinuxFiles = async () => {
   // Check: the toolbar read-only indicator should not be visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
 };
-
-/**
- * Tests that a failure opening one window won't block opening other windows.
- */
-testcase.fileDisplayStartupError = async () => {
-  // Fake chrome.app.window.create to return undefined.
-  const fakeData = {
-    'chrome.app.window.create': ['static_fake', [undefined]],
-  };
-  await remoteCall.callRemoteTestUtil('backgroundFake', null, [fakeData]);
-
-  // Check: opening a Files app window should fail and return null.
-  const failedAppId = await openNewWindow(RootPath.DOWNLOADS);
-  chrome.test.assertEq(null, failedAppId);
-
-  // Remove fakes.
-  const removedCount =
-      await remoteCall.callRemoteTestUtil('removeAllBackgroundFakes', null, []);
-  chrome.test.assertEq(1, removedCount);
-
-  // Check: opening a Files app window should succeed.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
-  chrome.test.assertTrue(null !== appId);
-
-  // The failed attempt logs the error.
-  return IGNORE_APP_ERRORS;
-};

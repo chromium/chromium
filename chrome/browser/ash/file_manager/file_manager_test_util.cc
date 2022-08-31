@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -119,20 +118,6 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   // for the duration of the test. Note this may result in immediately
   // uninstalling an extension just installed above.
   service->UninstallMigratedExtensionsForTest();
-
-  if (!ash::features::IsFileManagerSwaEnabled()) {
-    // The File Manager component extension should have been added for loading
-    // into the user profile, but not into the sign-in profile.
-    CHECK(extensions::ExtensionSystem::Get(profile)
-              ->extension_service()
-              ->component_loader()
-              ->Exists(kFileManagerAppId));
-    CHECK(!extensions::ExtensionSystem::Get(
-               ash::ProfileHelper::GetSigninProfile())
-               ->extension_service()
-               ->component_loader()
-               ->Exists(kFileManagerAppId));
-  }
 }
 
 namespace {

@@ -201,24 +201,6 @@ export async function sendBrowserTestCommand(command, callback, opt_debug) {
 }
 
 /**
- * Waits for an app window with the URL |windowUrl|.
- * @param {string} windowUrl URL of the app window to wait for.
- * @return {Promise} Promise to be fulfilled with the window ID of the
- *     app window.
- */
-export function waitForAppWindow(windowUrl) {
-  const caller = getCaller();
-  const command = {'name': 'getAppWindowId', 'windowUrl': windowUrl};
-  return repeatUntil(async () => {
-    const result = await sendTestMessage(command);
-    if (result == 'none') {
-      return pending(caller, 'getAppWindowId ' + windowUrl);
-    }
-    return result;
-  });
-}
-
-/**
  * Get all the browser windows.
  * @param {number} expectedInitialCount The number of windows expected before
  *     opening a new one.

@@ -136,36 +136,17 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
-// Enumerates possible app modes. We support extension mode (Chrome App)
-// and System App (SWA) mode.
-enum AppMode {
-  EXTENSION_FILES_APP_MODE,
-  SYSTEM_FILES_APP_MODE,
-};
-
-// Parametrization of tests. We run tests with various app modes, with and
+// Parametrization of tests. We run tests with and
 // without filt type filter enabled, and in tablet mode and in regular mode.
 struct TestMode {
-  TestMode(AppMode app_mode, bool file_type_filter, bool tablet_mode)
-      : app_mode(app_mode),
-        file_type_filter(file_type_filter),
-        tablet_mode(tablet_mode) {}
+  TestMode(bool file_type_filter, bool tablet_mode)
+      : file_type_filter(file_type_filter), tablet_mode(tablet_mode) {}
 
   static testing::internal::ParamGenerator<TestMode> SystemWebAppValues() {
-    return ::testing::Values(TestMode(SYSTEM_FILES_APP_MODE, false, false),
-                             TestMode(SYSTEM_FILES_APP_MODE, false, true),
-                             TestMode(SYSTEM_FILES_APP_MODE, true, false),
-                             TestMode(SYSTEM_FILES_APP_MODE, true, true));
+    return ::testing::Values(TestMode(false, false), TestMode(false, true),
+                             TestMode(true, false), TestMode(true, true));
   }
 
-  static testing::internal::ParamGenerator<TestMode> LegacyValues() {
-    return ::testing::Values(TestMode(EXTENSION_FILES_APP_MODE, false, false),
-                             TestMode(EXTENSION_FILES_APP_MODE, false, true),
-                             TestMode(EXTENSION_FILES_APP_MODE, true, false),
-                             TestMode(EXTENSION_FILES_APP_MODE, true, true));
-  }
-
-  AppMode app_mode;
   bool file_type_filter;
   bool tablet_mode;
 };
@@ -203,11 +184,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitWithFeatures({chromeos::features::kFilesSWA}, {});
-    } else {
-      feature_list_.InitWithFeatures({}, {chromeos::features::kFilesSWA});
-    }
+    feature_list_.InitWithFeatures({chromeos::features::kFilesSWA}, {});
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -225,19 +202,6 @@ class BaseSelectFileDialogExtensionBrowserTest
     // The test resources are setup: enable and add default ChromeOS component
     // extensions now and not before: crbug.com/831074, crbug.com/804413.
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
-
-    if (GetParam().app_mode == EXTENSION_FILES_APP_MODE) {
-      // Ensure the Files app background page has shut down. These tests should
-      // ensure launching without the background page functions correctly.
-      extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
-      extensions::ProcessManager::SetEventPageSuspendingTimeForTesting(1);
-      const auto* extension =
-          extensions::ExtensionRegistryFactory::GetForBrowserContext(profile())
-              ->GetExtensionById(extension_misc::kFilesManagerAppId,
-                                 extensions::ExtensionRegistry::ENABLED);
-      extensions::ExtensionBackgroundPageWaiter(profile(), *extension)
-          .WaitForBackgroundClosed();
-    }
   }
 
   void TearDown() override {
@@ -649,9 +613,6 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, MultipleOpenFile) {
   browser()->OpenFile();
 }
 
-INSTANTIATE_TEST_SUITE_P(Legacy,
-                         SelectFileDialogExtensionBrowserTest,
-                         TestMode::LegacyValues());
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,
                          SelectFileDialogExtensionBrowserTest,
                          TestMode::SystemWebAppValues());
@@ -709,9 +670,6 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest,
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
 
-INSTANTIATE_TEST_SUITE_P(Legacy,
-                         SelectFileDialogExtensionFlagTest,
-                         TestMode::LegacyValues());
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,
                          SelectFileDialogExtensionFlagTest,
                          TestMode::SystemWebAppValues());
@@ -719,14 +677,9 @@ INSTANTIATE_TEST_SUITE_P(SystemWebApp,
 class SelectFileDialogExtensionDarkLightModeEnabledTest
     : public BaseSelectFileDialogExtensionBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitWithFeatures(
-          {chromeos::features::kFilesSWA, chromeos::features::kDarkLightMode},
-          {});
-    } else {
-      feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
-                                     {chromeos::features::kFilesSWA});
-    }
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kFilesSWA, chromeos::features::kDarkLightMode},
+        {});
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
 };
@@ -757,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
   EXPECT_EQ(!dark_mode_enabled,
             dark_light_mode_controller->IsDarkModeEnabled());
 
-  // Active and invactive colors in the other mode should be different from the
+  // Active and inactive colors in the other mode should be different from the
   // initial mode.
   EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
             initial_active_color);
@@ -767,9 +720,6 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
 
-INSTANTIATE_TEST_SUITE_P(Legacy,
-                         SelectFileDialogExtensionDarkLightModeEnabledTest,
-                         TestMode::LegacyValues());
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,
                          SelectFileDialogExtensionDarkLightModeEnabledTest,
                          TestMode::SystemWebAppValues());

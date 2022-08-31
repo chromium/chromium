@@ -92,7 +92,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -166,8 +165,8 @@ class SelectFileDialogExtensionTestFactory
     return last_select_.get();
   }
 
-  views::Widget* GetLastWidget() {
-    return last_select_->extension_dialog_->GetWidget();
+  content::RenderFrameHost* GetFrameHost() {
+    return last_select_->GetPrimaryMainFrame();
   }
 
  private:
@@ -839,10 +838,8 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(arc)
   PRINT_IF_NOT_DEFAULT(browser)
   PRINT_IF_NOT_DEFAULT(drive_dss_pin)
-  PRINT_IF_NOT_DEFAULT(files_swa)
   PRINT_IF_NOT_DEFAULT(files_experimental)
   PRINT_IF_NOT_DEFAULT(generic_documents_provider)
-  PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
   PRINT_IF_NOT_DEFAULT(native_smb)
   PRINT_IF_NOT_DEFAULT(offline)
@@ -1890,12 +1887,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   // Make sure to run the ARC storage UI toast tests.
   enabled_features.push_back(arc::kUsbStorageUIFeature);
 
-  if (options.files_swa) {
-    enabled_features.push_back(chromeos::features::kFilesSWA);
-  } else {
-    disabled_features.push_back(chromeos::features::kFilesSWA);
-  }
-
   if (options.files_experimental) {
     enabled_features.push_back(chromeos::features::kFilesAppExperimental);
   } else {
@@ -2149,12 +2140,6 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   // extensions now and not before: crbug.com/831074, crbug.com/804413
   test::AddDefaultComponentExtensionsOnMainThread(profile());
 
-  // Enable System Web Apps if needed.
-  if (options.media_swa) {
-    ash::SystemWebAppManager::GetForTest(profile())
-        ->InstallSystemAppsForTesting();
-  }
-
   // For tablet mode tests, enable the Ash virtual keyboard.
   if (options.tablet_mode) {
     EnableVirtualKeyboard();
@@ -2178,10 +2163,8 @@ void FileManagerBrowserTestBase::TearDown() {
 }
 
 void FileManagerBrowserTestBase::StartTest() {
-  if (GetOptions().files_swa) {
-    ash::SystemWebAppManager::GetForTest(profile())
-        ->InstallSystemAppsForTesting();
-  }
+  ash::SystemWebAppManager::GetForTest(profile())
+      ->InstallSystemAppsForTesting();
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
   static const base::FilePath test_extension_dir =
@@ -2278,12 +2261,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  if (name == "isFilesAppSwa") {
-    // Return whether or not the test is run in Files SWA mode.
-    *output = options.files_swa ? "true" : "false";
-    return;
-  }
-
   if (name == "isFilesAppExperimental") {
     // Return whether the flag Files Experimental is enabled.
     *output =
@@ -2373,19 +2350,16 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "findSwaWindow") {
-    const Options& options = GetOptions();
-    if (options.files_swa) {
-      // Only search for unknown windows.
-      content::WebContents* web_contents = GetLastOpenWindowWebContents();
-      if (web_contents) {
-        const std::string app_id = GetSwaAppId(web_contents);
-        swa_web_contents_.insert({app_id, web_contents});
-        *output = app_id;
-      } else {
-        *output = "none";
-      }
-      return;
+    // Only search for unknown windows.
+    content::WebContents* web_contents = GetLastOpenWindowWebContents();
+    if (web_contents) {
+      const std::string app_id = GetSwaAppId(web_contents);
+      swa_web_contents_.insert({app_id, web_contents});
+      *output = app_id;
+    } else {
+      *output = "none";
     }
+    return;
   }
 
   if (name == "getLastActiveTabURL") {
@@ -2449,10 +2423,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "getWindowsSWA") {
-    absl::optional<bool> is_swa = value.FindBool("isSWA");
-    ASSERT_TRUE(is_swa.has_value());
-    ASSERT_TRUE(is_swa.value());
-
     base::Value::Dict dictionary;
 
     int counter = 0;
@@ -2936,38 +2906,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     const std::string* app_id = value.FindString("appId");
     ASSERT_TRUE(app_id);
 
-    const Options& options = GetOptions();
     content::WebContents* web_contents;
-    if (options.files_swa) {
-      CHECK(base::Contains(swa_web_contents_, *app_id))
-          << "Couldn't find the SWA WebContents for appId: " << *app_id;
-      web_contents = swa_web_contents_[*app_id];
-    } else {
-      web_contents = GetLastOpenWindowWebContents();
-    }
+    CHECK(base::Contains(swa_web_contents_, *app_id))
+        << "Couldn't find the SWA WebContents for appId: " << *app_id;
+    web_contents = swa_web_contents_[*app_id];
     SimulateMouseClickAt(web_contents, 0 /* modifiers */,
                          blink::WebMouseEvent::Button::kLeft,
                          gfx::Point(*click_x, *click_y));
-    return;
-  }
-
-  if (name == "getAppWindowId") {
-    const std::string* window_url = value.FindString("windowUrl");
-    ASSERT_TRUE(window_url);
-
-    const auto& app_windows =
-        extensions::AppWindowRegistry::Get(profile())->app_windows();
-    ASSERT_FALSE(app_windows.empty());
-    *output = "none";
-    for (auto* window : app_windows) {
-      if (!window->web_contents())
-        continue;
-
-      if (window->web_contents()->GetLastCommittedURL() == *window_url) {
-        *output = base::NumberToString(window->session_id().id());
-        break;
-      }
-    }
     return;
   }
 
@@ -2994,51 +2939,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     *output = base::NumberToString(base::ranges::count_if(
         volume_manager->GetVolumeList(),
         [](const auto& volume) { return !volume->hidden(); }));
-    return;
-  }
-
-  if (name == "countAppWindows") {
-    const std::string* app_id = value.FindString("appId");
-    ASSERT_TRUE(app_id);
-
-    const auto& app_windows =
-        extensions::AppWindowRegistry::Get(profile())->app_windows();
-    ASSERT_FALSE(app_windows.empty());
-    int window_count = 0;
-    for (auto* window : app_windows) {
-      if (window->extension_id() == *app_id)
-        window_count++;
-    }
-    *output = base::NumberToString(window_count);
-    return;
-  }
-
-  if (name == "runJsInAppWindow") {
-    const std::string* window_id_str = value.FindString("windowId");
-    ASSERT_TRUE(window_id_str);
-    int window_id = 0;
-    ASSERT_TRUE(base::StringToInt(*window_id_str, &window_id));
-    const std::string* script = value.FindString("script");
-    ASSERT_TRUE(script);
-
-    const auto& app_windows =
-        extensions::AppWindowRegistry::Get(profile())->app_windows();
-    ASSERT_FALSE(app_windows.empty());
-    for (auto* window : app_windows) {
-      CHECK(window);
-      if (window->session_id().id() != window_id) {
-        continue;
-      }
-
-      if (!window->web_contents())
-        break;
-
-      CHECK(window->web_contents()->GetPrimaryMainFrame());
-      window->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-          base::UTF8ToUTF16(*script), base::NullCallback());
-
-      break;
-    }
     return;
   }
 
@@ -3405,38 +3305,28 @@ FileManagerBrowserTestBase::GetAllWebContents() {
 
 content::WebContents*
 FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
-  const Options& options = GetOptions();
-  if (options.files_swa) {
-    for (auto* web_contents : GetAllWebContents()) {
-      const std::string& url = web_contents->GetVisibleURL().spec();
-      if (base::StartsWith(url, ash::file_manager::kChromeUIFileManagerURL) &&
-          !web_contents->IsLoading()) {
-        if (swa_web_contents_.size() == 0) {
-          return web_contents;
-        }
+  for (auto* web_contents : GetAllWebContents()) {
+    const std::string& url = web_contents->GetVisibleURL().spec();
+    if (base::StartsWith(url, ash::file_manager::kChromeUIFileManagerURL) &&
+        !web_contents->IsLoading()) {
+      if (swa_web_contents_.size() == 0) {
+        return web_contents;
+      }
 
-        // Ignore known WebContents.
-        bool found =
-            std::find_if(swa_web_contents_.begin(), swa_web_contents_.end(),
-                         [web_contents](const auto& pair) {
-                           return pair.second == web_contents;
-                         }) != swa_web_contents_.end();
+      // Ignore known WebContents.
+      bool found =
+          std::find_if(swa_web_contents_.begin(), swa_web_contents_.end(),
+                       [web_contents](const auto& pair) {
+                         return pair.second == web_contents;
+                       }) != swa_web_contents_.end();
 
-        if (!found) {
-          return web_contents;
-        }
+      if (!found) {
+        return web_contents;
       }
     }
   }
 
-  // Assuming legacy Chrome App.
-  const auto& app_windows =
-      extensions::AppWindowRegistry::Get(profile())->app_windows();
-  if (!app_windows.empty()) {
-    return app_windows.front()->web_contents();
-  }
-  LOG(WARNING) << "Failed to retrieve WebContents in mode "
-               << (options.files_swa ? "swa" : "legacy");
+  LOG(WARNING) << "Failed to retrieve WebContents in swa mode";
   return nullptr;
 }
 
@@ -3458,18 +3348,12 @@ bool FileManagerBrowserTestBase::PostKeyEvent(ui::KeyEvent* key_event) {
     }
   }
   if (!native_window) {
-    const auto& app_windows =
-        extensions::AppWindowRegistry::Get(profile())->app_windows();
-    if (app_windows.empty()) {
-      // Try to get the save as/open with dialog.
-      if (select_factory_) {
-        views::Widget* widget = select_factory_->GetLastWidget();
-        if (widget) {
-          native_window = widget->GetNativeWindow();
-        }
+    // Try to get the save as/open with dialog.
+    if (select_factory_) {
+      content::RenderFrameHost* frame_host = select_factory_->GetFrameHost();
+      if (frame_host) {
+        native_window = frame_host->GetNativeView()->GetToplevelWindow();
       }
-    } else {
-      native_window = app_windows.front()->GetNativeWindow();
     }
   }
   if (native_window) {

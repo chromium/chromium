@@ -177,33 +177,13 @@ test.util.sync.getErrorCount = () => {
 /**
  * Resizes the window to the specified dimensions.
  *
- * @param {Window} contentWindow Window to be tested.
  * @param {number} width Window width.
  * @param {number} height Window height.
  * @return {boolean} True for success.
  */
-test.util.sync.resizeWindow = (contentWindow, width, height) => {
-  window.appWindows[contentWindow.appID].resizeTo(width, height);
+test.util.sync.resizeWindow = (width, height) => {
+  window.resizeTo(width, height);
   return true;
-};
-
-/**
- * Maximizes the window.
- * @param {Window} contentWindow Window to be tested.
- * @return {boolean} True for success.
- */
-test.util.sync.maximizeWindow = contentWindow => {
-  window.appWindows[contentWindow.appID].maximize();
-  return true;
-};
-
-/**
- * Returns whether the window is miximized or not.
- * @param {Window} contentWindow Window to be tested.
- * @return {boolean} True if the window is maximized now.
- */
-test.util.sync.isWindowMaximized = contentWindow => {
-  return window.appWindows[contentWindow.appID].isMaximized();
 };
 
 /**
@@ -1269,21 +1249,6 @@ test.util.sync.setPreferences = preferences => {
  */
 test.util.sync.recordEnumMetric = (name, value, validValues) => {
   metrics.recordEnum(name, value, validValues);
-  return true;
-};
-
-/**
- * Reloads the Files app (Background & Foreground).
- * NOTE: Any foreground window opened before the reload will be killed, so any
- * appId/windowId won't be usable after the reload.
- */
-test.util.sync.reload = () => {
-  // TODO(b/198106171): Remove chrome.runtime.reload.
-  if (chrome && chrome.runtime && chrome.runtime.reload) {
-    chrome.runtime.reload();
-  } else {
-    window.location.reload();
-  }
   return true;
 };
 

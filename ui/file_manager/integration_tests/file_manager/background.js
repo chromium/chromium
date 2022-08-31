@@ -36,7 +36,6 @@ import './open_video_media_app.js';
 import './providers.js';
 import './quick_view.js';
 import './recents.js';
-import './restore_geometry.js';
 import './restore_prefs.js';
 import './search.js';
 import './share_and_manage_dialog.js';
@@ -310,22 +309,14 @@ export async function awaitAsyncTestResult(resultPromise) {
 /**
  * When the FileManagerBrowserTest harness loads this test extension, request
  * configuration and other details from that harness, including the test case
- * name to run. Use the configuration/details to setup the test ennvironment,
+ * name to run. Use the configuration/details to setup the test environment,
  * then run the test case using chrome.test.RunTests.
  */
 window.addEventListener('load', () => {
   const steps = [
-    // Check if we are running in Files SWA mode.
-    () => {
-      sendBrowserTestCommand({name: 'isFilesAppSwa'}, steps.shift());
-    },
     // Request the guest mode state.
-    (swaMode) => {
-      if (swaMode === 'true') {
-        remoteCall = new RemoteCallFilesApp(FILE_MANAGER_SWA_ID);
-      } else {
-        remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
-      }
+    () => {
+      remoteCall = new RemoteCallFilesApp(FILE_MANAGER_SWA_ID);
       sendBrowserTestCommand({name: 'isInGuestMode'}, steps.shift());
     },
     // Request the root entry paths.
