@@ -341,7 +341,7 @@ function cloneObject(o) {
 
 function extendObject(dst, src) {
     Object.keys(src).forEach(function(key) {
-        if (isSimpleObject(src[key])) {
+        if (isSimpleObject(src[key]) && !isAbortSignal(src[key])) {
             dst[key] ||= {};
             extendObject(dst[key], src[key]);
         } else {
@@ -354,6 +354,10 @@ function isSimpleObject(o) {
     return (typeof o === "object" &&
         !Array.isArray(o) &&
         !(o instanceof ArrayBuffer));
+}
+
+function isAbortSignal(o) {
+    return (o instanceof AbortSignal);
 }
 
 /**
