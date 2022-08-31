@@ -4,12 +4,12 @@
 
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 
-#include <algorithm>
 #include <iterator>
 #include <tuple>
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -192,10 +192,8 @@ bool RulesetManager::HasExtraHeadersMatcherForRequest(
                 "Modify this method to ensure HasExtraHeadersMatcherForRequest "
                 "is updated as new actions are added.");
 
-  return std::any_of(
-      actions.begin(), actions.end(), [](const RequestAction& action) {
-        return action.type == RequestAction::Type::MODIFY_HEADERS;
-      });
+  return base::Contains(actions, RequestAction::Type::MODIFY_HEADERS,
+                        &RequestAction::type);
 }
 
 void RulesetManager::OnRenderFrameCreated(content::RenderFrameHost* host) {

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <initializer_list>
 #include <iterator>
 #include <set>
@@ -18,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -543,8 +543,7 @@ Directive::Directive(base::StringPiece directive_string,
   // |directive_name| should be lower cased.
   // Note: Using |this->directive_name|, because |directive_name| refers to the
   // already-moved-from input parameter.
-  DCHECK(std::none_of(this->directive_name.begin(), this->directive_name.end(),
-                      base::IsAsciiUpper<char>));
+  DCHECK(base::ranges::none_of(this->directive_name, base::IsAsciiUpper<char>));
 }
 
 CSPParser::Directive::~Directive() = default;

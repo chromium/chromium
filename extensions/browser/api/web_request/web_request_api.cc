@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -21,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -1190,11 +1190,10 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
         // Unlike other actions, allow web request extensions to intercept the
         // request here. The headers will be modified during subsequent request
         // stages.
-        DCHECK(std::all_of(request->dnr_actions->begin(),
-                           request->dnr_actions->end(), [](const auto& action) {
-                             return action.type ==
-                                    DNRRequestAction::Type::MODIFY_HEADERS;
-                           }));
+        DCHECK(
+            base::ranges::all_of(*request->dnr_actions, [](const auto& action) {
+              return action.type == DNRRequestAction::Type::MODIFY_HEADERS;
+            }));
         break;
     }
   }
@@ -1232,9 +1231,8 @@ int ExtensionWebRequestEventRouter::OnBeforeSendHeaders(
                               request, ON_BEFORE_SEND_HEADERS, nullptr);
 
   DCHECK(request->dnr_actions);
-  initialize_blocked_requests |= std::any_of(
-      request->dnr_actions->begin(), request->dnr_actions->end(),
-      [](const DNRRequestAction& action) {
+  initialize_blocked_requests |= base::ranges::any_of(
+      *request->dnr_actions, [](const DNRRequestAction& action) {
         return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
                !action.request_headers_to_modify.empty();
       });
@@ -1314,9 +1312,8 @@ int ExtensionWebRequestEventRouter::OnHeadersReceived(
   bool initialize_blocked_requests = false;
 
   DCHECK(request->dnr_actions);
-  initialize_blocked_requests |= std::any_of(
-      request->dnr_actions->begin(), request->dnr_actions->end(),
-      [](const DNRRequestAction& action) {
+  initialize_blocked_requests |= base::ranges::any_of(
+      *request->dnr_actions, [](const DNRRequestAction& action) {
         return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
                !action.response_headers_to_modify.empty();
       });

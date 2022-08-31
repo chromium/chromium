@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -719,12 +720,9 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
            {HttpRequestHeaders::kConnectMethod,
             flat_rule::RequestMethod_CONNECT}});
 
-  DCHECK(std::all_of(kRequestMethods->begin(), kRequestMethods->end(),
-                     [](const auto& key_value) {
-                       auto method = key_value.first;
-                       return std::none_of(method.begin(), method.end(),
-                                           base::IsAsciiLower<char>);
-                     }));
+  DCHECK(base::ranges::all_of(*kRequestMethods, [](const auto& key_value) {
+    return base::ranges::none_of(key_value.first, base::IsAsciiLower<char>);
+  }));
 
   std::string normalized_method = base::ToUpperASCII(method);
   auto it = kRequestMethods->find(normalized_method);

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
@@ -750,20 +749,20 @@ bool EventRouter::HasLazyEventListenerForTesting(
     const std::string& event_name) {
   const EventListenerMap::ListenerList& listeners =
       listeners_.GetEventListenersByName(event_name);
-  return std::any_of(listeners.begin(), listeners.end(),
-                     [](const std::unique_ptr<EventListener>& listener) {
-                       return listener->IsLazy();
-                     });
+  return base::ranges::any_of(
+      listeners, [](const std::unique_ptr<EventListener>& listener) {
+        return listener->IsLazy();
+      });
 }
 
 bool EventRouter::HasNonLazyEventListenerForTesting(
     const std::string& event_name) {
   const EventListenerMap::ListenerList& listeners =
       listeners_.GetEventListenersByName(event_name);
-  return std::any_of(listeners.begin(), listeners.end(),
-                     [](const std::unique_ptr<EventListener>& listener) {
-                       return !listener->IsLazy();
-                     });
+  return base::ranges::any_of(
+      listeners, [](const std::unique_ptr<EventListener>& listener) {
+        return !listener->IsLazy();
+      });
 }
 
 void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
