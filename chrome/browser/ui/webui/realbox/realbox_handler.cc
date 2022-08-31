@@ -215,8 +215,8 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                                                      description_class.style));
     }
     mojom_match->destination_url = match.destination_url;
-    mojom_match->suggestion_group_id = static_cast<int>(
-        match.suggestion_group_id.value_or(omnibox::GroupId::INVALID));
+    mojom_match->suggestion_group_id =
+        match.suggestion_group_id.value_or(omnibox::GroupId::INVALID);
     const bool is_bookmarked =
         bookmark_model->IsBookmarked(match.destination_url);
     mojom_match->icon_url =

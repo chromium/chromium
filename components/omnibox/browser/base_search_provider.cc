@@ -194,8 +194,9 @@ AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
     const SearchTermsData& search_terms_data,
     int accepted_suggestion) {
   SearchSuggestionParser::SuggestResult suggest_result(
-      suggestion, AutocompleteMatchType::SEARCH_SUGGEST, /*subtypes=*/{271},
-      /*from_keyword_provider=*/false, relevance,
+      suggestion, AutocompleteMatchType::SEARCH_SUGGEST,
+      /*subtypes=*/{omnibox::SUBTYPE_SUGGEST_2G_LITE},
+      /*from_keyword=*/false, relevance,
       /*relevance_from_server=*/false,
       base::CollapseWhitespace(input.text(), false));
   // On device providers are asynchronous.
@@ -398,7 +399,9 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.contents_class = suggestion.match_contents_class();
   match.suggestion_group_id = suggestion.suggestion_group_id();
   match.answer = suggestion.answer();
-  match.subtypes = suggestion.subtypes();
+  for (const int subtype : suggestion.subtypes()) {
+    match.subtypes.insert(SuggestSubtypeForNumber(subtype));
+  }
   if (suggestion.type() == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
     match.RecordAdditionalInfo(kACMatchPropertySuggestionText,
                                suggestion.suggestion());

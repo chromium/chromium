@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/open_tab_provider.h"
+#include "third_party/omnibox_proto/types.pb.h"
 
 class ClipboardProvider;
 class DocumentProvider;
@@ -84,13 +85,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   };
 
   // Given a match, returns the appropriate type and zero or more subtypes
-  // corresponding to the SuggestType and SuggestSubtype enums in suggest.proto.
+  // corresponding to the SuggestType and SuggestSubtype enums in types.proto.
   // This is needed to update Chrome's native types/subtypes to those expected
   // by the server. For more details, see go/chrome-suggest-logging.
   // Note: `subtypes` may be prepopulated with server-reported subtypes.
-  static void GetMatchTypeAndExtendSubtypes(const AutocompleteMatch& match,
-                                            size_t* type,
-                                            base::flat_set<int>* subtypes);
+  static void GetMatchTypeAndExtendSubtypes(
+      const AutocompleteMatch& match,
+      omnibox::SuggestType* type,
+      base::flat_set<omnibox::SuggestSubtype>* subtypes);
 
   // |provider_types| is a bitmap containing AutocompleteProvider::Type values
   // that will (potentially, depending on platform, flags, etc.) be

@@ -640,8 +640,9 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
       AutocompleteMatch::SanitizeString(navigation.description());
   match.description_class = ClassifyTermMatches({}, match.description.length(),
                                                 0, ACMatchClassification::NONE);
-
-  match.subtypes = navigation.subtypes();
+  for (const int subtype : navigation.subtypes()) {
+    match.subtypes.insert(SuggestSubtypeForNumber(subtype));
+  }
   return match;
 }
 

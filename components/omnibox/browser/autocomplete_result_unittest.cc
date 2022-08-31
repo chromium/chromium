@@ -41,6 +41,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 
 using metrics::OmniboxEventProto;
 
@@ -1231,8 +1232,10 @@ TEST_F(AutocompleteResultTest, DemoteOnDeviceSearchSuggestions) {
   matches[4].type = AutocompleteMatchType::SEARCH_SUGGEST;
 
   // match1, match2 are set as on device head suggestion.
-  matches[1].subtypes = {64, 271, 123};
-  matches[2].subtypes = {64, 124, 271};
+  matches[1].subtypes = {omnibox::SUBTYPE_OMNIBOX_OTHER,
+                         omnibox::SUBTYPE_SUGGEST_2G_LITE};
+  matches[2].subtypes = {omnibox::SUBTYPE_OMNIBOX_OTHER,
+                         omnibox::SUBTYPE_SUGGEST_2G_LITE};
   matches[0].provider->type_ = AutocompleteProvider::TYPE_SEARCH;
   matches[1].provider->type_ = AutocompleteProvider::TYPE_ON_DEVICE_HEAD;
 

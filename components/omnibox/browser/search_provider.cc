@@ -1573,7 +1573,9 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
   AutocompleteMatch match(this, navigation.relevance(), false,
                           navigation.type());
   match.destination_url = navigation.url();
-  match.subtypes = navigation.subtypes();
+  for (const int subtype : navigation.subtypes()) {
+    match.subtypes.insert(SuggestSubtypeForNumber(subtype));
+  }
   BaseSearchProvider::SetDeletionURL(navigation.deletion_url(), &match);
   // First look for the user's input inside the formatted url as it would be
   // without trimming the scheme, so we can find matches at the beginning of the

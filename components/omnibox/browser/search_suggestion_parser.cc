@@ -132,8 +132,7 @@ constexpr auto kReservedGroupIdsMap =
 // in the server response.
 omnibox::GroupId ChromeGroupIdForRemoteGroupIdAndIndex(const int group_id,
                                                        const int group_index) {
-  if (group_id ==
-      static_cast<int>(omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST)) {
+  if (group_id == omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST) {
     // The group ID for personalized zero-suggest is already known to Chrome.
     return omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST;
   } else if (base::Contains(kReservedGroupIdsMap, group_index)) {
@@ -170,6 +169,17 @@ SuggestionGroupPriority ChromeGroupPriorityForRemoteGroupIndex(
 }
 
 }  // namespace
+
+omnibox::SuggestSubtype SuggestSubtypeForNumber(int value) {
+  // Note that ideally this should first check if `value` is valid by calling
+  // omnibox::SuggestSubtype_IsValid and return omnibox::SUBTYPE_NONE when there
+  // is no corresponding enum object. However, that is not possible because the
+  // current list of subtypes in omnibox::SuggestSubtype is not exhaustive.
+  // However, casting int values into omnibox::SuggestSubtype without testing
+  // membership is expected to be safe as omnibox::SuggestSubtype has a fixed
+  // int underlying type.
+  return static_cast<omnibox::SuggestSubtype>(value);
+}
 
 // SearchSuggestionParser::Result ----------------------------------------------
 

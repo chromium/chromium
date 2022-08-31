@@ -11,6 +11,7 @@ if (is_android) {
 _proto_files = [
   "group_config_info.proto",
   "group_id.proto",
+  "types.proto",
 ]
 
 proto_library("omnibox_proto") {

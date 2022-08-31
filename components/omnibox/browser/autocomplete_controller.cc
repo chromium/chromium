@@ -75,13 +75,14 @@ namespace {
 // Appends available autocompletion of the given type, subtype, and number to
 // the existing available autocompletions string, encoding according to the
 // spec.
-void AppendAvailableAutocompletion(size_t type,
-                                   const base::flat_set<int>& subtypes,
-                                   int count,
-                                   std::string* autocompletions) {
+void AppendAvailableAutocompletion(
+    omnibox::SuggestType type,
+    const base::flat_set<omnibox::SuggestSubtype>& subtypes,
+    int count,
+    std::string* autocompletions) {
   if (!autocompletions->empty())
     autocompletions->append("j");
-  base::StringAppendF(autocompletions, "%" PRIuS, type);
+  base::StringAppendF(autocompletions, "%d", type);
 
   std::ostringstream subtype_str;
   for (auto subtype : subtypes) {
@@ -168,11 +169,8 @@ bool ShouldPreserveDefault(bool in_start, size_t input_length) {
 // static
 void AutocompleteController::GetMatchTypeAndExtendSubtypes(
     const AutocompleteMatch& match,
-    size_t* type,
-    base::flat_set<int>* subtypes) {
-  // This type indicates a native chrome suggestion.
-  *type = 69;
-
+    omnibox::SuggestType* type,
+    base::flat_set<omnibox::SuggestSubtype>* subtypes) {
   // If provider is TYPE_ZERO_SUGGEST_LOCAL_HISTORY, TYPE_ZERO_SUGGEST, or
   // TYPE_ON_DEVICE_HEAD, set the subtype accordingly. The type will be set in
   // the switch statement below for SEARCH_SUGGEST or NAVSUGGEST types.
@@ -183,114 +181,115 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
       // Make sure changes here are reflected in UpdateAssistedQueryStats()
       // below in which the zero-prefix suggestions are counted.
       if (match.type == AutocompleteMatchType::NAVSUGGEST) {
-        subtypes->emplace(/*SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS=*/451);
+        subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
       }
       // We abuse this subtype and use it to for zero-suggest suggestions that
       // aren't personalized by the server. That is, it indicates either
       // client-side most-likely URL suggestions or server-side suggestions
       // that depend only on the URL as context.
-      subtypes->emplace(/*SUBTYPE_URL_BASED=*/66);
+      subtypes->emplace(omnibox::SUBTYPE_URL_BASED);
     } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
       // This subtype indicates a match from an on-device head provider.
-      subtypes->emplace(/*SUBTYPE_SUGGEST_2G_LITE=*/271);
+      subtypes->emplace(omnibox::SUBTYPE_SUGGEST_2G_LITE);
       // Make sure changes here are reflected in UpdateAssistedQueryStats()
       // below in which the zero-prefix suggestions are counted.
     } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
-      subtypes->emplace(/*SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY=*/450);
+      subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY);
     }
   }
 
   switch (match.type) {
     case AutocompleteMatchType::SEARCH_SUGGEST: {
       // Do not set subtype here; subtype may have been set above.
-      *type = 0;
+      *type = omnibox::TYPE_QUERY;
       return;
     }
     case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY: {
-      *type = 46;
+      *type = omnibox::TYPE_ENTITY;
       return;
     }
     case AutocompleteMatchType::SEARCH_SUGGEST_TAIL: {
-      *type = 33;
+      *type = omnibox::TYPE_TAIL;
       return;
     }
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED: {
-      *type = 35;
-      subtypes->emplace(/*SUBTYPE_PERSONAL=*/39);
+      *type = omnibox::TYPE_PERSONALIZED_QUERY;
+      ;
+      subtypes->emplace(omnibox::SUBTYPE_PERSONAL);
       return;
     }
     case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE: {
-      *type = 44;
+      *type = omnibox::TYPE_ENTITY;
       return;
     }
     case AutocompleteMatchType::NAVSUGGEST: {
       // Do not set subtype here; subtype may have been set above.
-      *type = 5;
+      *type = omnibox::TYPE_NAVIGATION;
       return;
     }
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_ECHO_SEARCH=*/57);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_ECHO_SEARCH);
       return;
     }
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_ECHO_URL=*/58);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_ECHO_URL);
       return;
     }
     case AutocompleteMatchType::SEARCH_HISTORY: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_HISTORY_SEARCH=*/59);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_SEARCH);
       return;
     }
     case AutocompleteMatchType::HISTORY_URL: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_HISTORY_URL=*/60);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_URL);
       return;
     }
     case AutocompleteMatchType::HISTORY_TITLE: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_HISTORY_TITLE=*/61);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_TITLE);
       return;
     }
     case AutocompleteMatchType::HISTORY_BODY: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_HISTORY_BODY=*/62);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_BODY);
       return;
     }
     case AutocompleteMatchType::HISTORY_KEYWORD: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_HISTORY_KEYWORD=*/63);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_HISTORY_KEYWORD);
       return;
     }
     case AutocompleteMatchType::BOOKMARK_TITLE: {
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_BOOKMARK_TITLE=*/65);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_BOOKMARK_TITLE);
       return;
     }
     case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED: {
-      *type = 5;
-      subtypes->emplace(/*SUBTYPE_PERSONAL=*/39);
+      *type = omnibox::TYPE_NAVIGATION;
+      subtypes->emplace(omnibox::SUBTYPE_PERSONAL);
       return;
     }
     case AutocompleteMatchType::CALCULATOR: {
-      *type = 6;
+      *type = omnibox::TYPE_CALCULATOR;
       return;
     }
     case AutocompleteMatchType::CLIPBOARD_URL: {
-      subtypes->emplace(/*SUBTYPE_CLIPBOARD_URL=*/177);
+      subtypes->emplace(omnibox::SUBTYPE_CLIPBOARD_URL);
       return;
     }
     case AutocompleteMatchType::CLIPBOARD_TEXT: {
-      subtypes->emplace(/*SUBTYPE_CLIPBOARD_TEXT=*/176);
+      subtypes->emplace(omnibox::SUBTYPE_CLIPBOARD_TEXT);
       return;
     }
     case AutocompleteMatchType::CLIPBOARD_IMAGE: {
-      subtypes->emplace(/*SUBTYPE_CLIPBOARD_IMAGE=*/327);
+      subtypes->emplace(omnibox::SUBTYPE_CLIPBOARD_IMAGE);
       return;
     }
     case AutocompleteMatchType::TILE_SUGGESTION: {
-      *type = 171;
+      *type = omnibox::TYPE_CHROME_QUERY_TILES;
       return;
     }
     default: {
       // This value indicates a native chrome suggestion with no named subtype
       // (yet).
-      subtypes->emplace(/*SUBTYPE_OMNIBOX_OTHER=*/64);
+      subtypes->emplace(omnibox::SUBTYPE_OMNIBOX_OTHER);
     }
   }
 }
@@ -1126,19 +1125,18 @@ void AutocompleteController::UpdateAssistedQueryStats(
   std::string autocompletions;
   int count = 0;
   int num_zero_prefix_suggestions_shown = 0;
-  size_t last_type = std::u16string::npos;
-  base::flat_set<int> last_subtypes = {};
+  absl::optional<omnibox::SuggestType> last_type;
+  base::flat_set<omnibox::SuggestSubtype> last_subtypes = {};
   for (size_t index = 0; index < result->size(); ++index) {
     AutocompleteMatch* match = result->match_at(index);
     auto subtypes = match->subtypes;
-    size_t type = std::u16string::npos;
+    omnibox::SuggestType type = omnibox::TYPE_NATIVE_CHROME;
     GetMatchTypeAndExtendSubtypes(*match, &type, &subtypes);
 
     // Count any suggestions that constitute zero-prefix suggestions.
-    if (subtypes.contains(/*SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY*/ 450) ||
-        subtypes.contains(
-            /*SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS*/ 451) ||
-        subtypes.contains(/*SUBTYPE_ZERO_PREFIX*/ 362)) {
+    if (subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY) ||
+        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS) ||
+        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX)) {
       num_zero_prefix_suggestions_shown++;
     }
 
@@ -1149,9 +1147,9 @@ void AutocompleteController::UpdateAssistedQueryStats(
       available_suggestion->add_subtypes(subtype);
     }
 
-    if (last_type != std::u16string::npos &&
+    if (last_type.has_value() &&
         (type != last_type || subtypes != last_subtypes)) {
-      AppendAvailableAutocompletion(last_type, last_subtypes, count,
+      AppendAvailableAutocompletion(*last_type, last_subtypes, count,
                                     &autocompletions);
       count = 1;
     } else {
@@ -1160,8 +1158,10 @@ void AutocompleteController::UpdateAssistedQueryStats(
     last_type = type;
     last_subtypes = subtypes;
   }
-  AppendAvailableAutocompletion(last_type, last_subtypes, count,
-                                &autocompletions);
+  if (last_type.has_value()) {
+    AppendAvailableAutocompletion(*last_type, last_subtypes, count,
+                                  &autocompletions);
+  }
 
   // TODO(crbug.com/1307142): These two fields should take into account all the
   // zero-prefix suggestions shown during the session and not only the ones

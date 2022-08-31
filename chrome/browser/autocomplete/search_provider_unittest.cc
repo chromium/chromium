@@ -2564,7 +2564,7 @@ TEST_P(SearchProviderTest, FieldTrialTriggeredParsing) {
 TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
   struct Match {
     std::string contents;
-    base::flat_set<int> subtypes;
+    base::flat_set<omnibox::SuggestSubtype> subtypes;
   };
 
   struct {
@@ -2587,7 +2587,14 @@ TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
          "google:suggesttype":     ["QUERY", "NAVIGATION"],
          "google:suggestsubtypes": [[1,7,12], [3,22,49]]
        }])",
-       {{"cd", {1, 7, 12}}, {"d.com", {3, 22, 49}}}},
+       {{"cd",
+         {static_cast<omnibox::SuggestSubtype>(1),
+          static_cast<omnibox::SuggestSubtype>(7),
+          static_cast<omnibox::SuggestSubtype>(12)}},
+        {"d.com",
+         {static_cast<omnibox::SuggestSubtype>(3),
+          static_cast<omnibox::SuggestSubtype>(22),
+          static_cast<omnibox::SuggestSubtype>(49)}}}},
 
       // Check that legacy subtypeid is populated alongside the suggestsubtypes.
       {"c",
@@ -2596,7 +2603,14 @@ TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
          "google:suggestsubtypes": [[1,7], [3,49]],
          "google:subtypeid":       [9, 11]
        }])",
-       {{"cd", {1, 7, 9}}, {"d.com", {3, 11, 49}}}},
+       {{"cd",
+         {static_cast<omnibox::SuggestSubtype>(1),
+          static_cast<omnibox::SuggestSubtype>(7),
+          static_cast<omnibox::SuggestSubtype>(9)}},
+        {"d.com",
+         {static_cast<omnibox::SuggestSubtype>(3),
+          static_cast<omnibox::SuggestSubtype>(11),
+          static_cast<omnibox::SuggestSubtype>(49)}}}},
 
       // Check that the specific type is set to zero when the number of
       // suggestions is smaller than the number of id's provided.
@@ -2606,7 +2620,8 @@ TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
          "google:suggestsubtypes": [[17], [26]],
          "google:subtypeid":       [1, 2, 3]
        }])",
-       {{"foo bar", {17}}, {"foo baz", {26}}}},
+       {{"foo bar", {static_cast<omnibox::SuggestSubtype>(17)}},
+        {"foo baz", {static_cast<omnibox::SuggestSubtype>(26)}}}},
 
       // Check that the specific type is set to zero when the number of
       // suggestions is larger than the number of id's provided.
@@ -2616,7 +2631,8 @@ TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
          "google:suggestsubtypes": [[19], [31]],
          "google:subtypeid":       [1]
        }])",
-       {{"bar foo", {19}}, {"bar foz", {31}}}},
+       {{"bar foo", {static_cast<omnibox::SuggestSubtype>(19)}},
+        {"bar foz", {static_cast<omnibox::SuggestSubtype>(31)}}}},
 
       // Check that in the event of receiving both suggestsubtypes and subtypeid
       // we try to preserve both, deduplicating repetitive numbers.
@@ -2626,7 +2642,10 @@ TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
          "google:suggestsubtypes": [[19], [31]],
          "google:subtypeid":       [1, 31]
        }])",
-       {{"bar foo", {1, 19}}, {"bar foz", {31}}}},
+       {{"bar foo",
+         {static_cast<omnibox::SuggestSubtype>(1),
+          static_cast<omnibox::SuggestSubtype>(19)}},
+        {"bar foz", {static_cast<omnibox::SuggestSubtype>(31)}}}},
 
       // Check that in the event of receiving partially invalid subtypes we
       // extract as much information as reasonably possible.
@@ -2636,7 +2655,12 @@ TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
          "google:suggestsubtypes": [22, 0, [99, 10.3, "abc", 1]],
          "google:subtypeid":       [19, 11, 27]
        }])",
-       {{"barbados", {19}}, {"barn", {11}}, {"barry", {27, 99, 1}}}},
+       {{"barbados", {static_cast<omnibox::SuggestSubtype>(19)}},
+        {"barn", {static_cast<omnibox::SuggestSubtype>(11)}},
+        {"barry",
+         {static_cast<omnibox::SuggestSubtype>(27),
+          static_cast<omnibox::SuggestSubtype>(99),
+          static_cast<omnibox::SuggestSubtype>(1)}}}},
 
       // Check that ids stick to their suggestions when these are reordered
       // based on suggestion relevance values.
@@ -2647,7 +2671,12 @@ TEST_P(SearchProviderTest, SpecificTypeIdentifierParsing) {
          "google:suggestsubtypes":  [[99], [100]],
          "google:subtypeid":        [2, 4]
        }])",
-       {{"ef", {2, 99}}, {"e.com", {4, 100}}}}};
+       {{"ef",
+         {static_cast<omnibox::SuggestSubtype>(2),
+          static_cast<omnibox::SuggestSubtype>(99)}},
+        {"e.com",
+         {static_cast<omnibox::SuggestSubtype>(4),
+          static_cast<omnibox::SuggestSubtype>(100)}}}}};
 
   for (const auto& test : cases) {
     QueryForInputAndWaitForFetcherResponses(ASCIIToUTF16(test.input_text),

@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/suggestion_group.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
 
 class AutocompleteInput;
@@ -30,6 +31,9 @@ class Value;
 namespace network {
 class SimpleURLLoader;
 }
+
+// Returns the omnibox::SuggestSubtype enum object corresponding to `value`.
+omnibox::SuggestSubtype SuggestSubtypeForNumber(int value);
 
 class SearchSuggestionParser {
  public:

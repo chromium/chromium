@@ -443,7 +443,7 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
     if (suggestion_groups_map_.find(group_id) != suggestion_groups_map_.end()) {
       // Record suggestion group information into the additional_info field
       // for chrome://omnibox.
-      match.RecordAdditionalInfo("group id", static_cast<int>(group_id));
+      match.RecordAdditionalInfo("group id", group_id);
       match.RecordAdditionalInfo("group header",
                                  GetHeaderForSuggestionGroup(group_id));
       match.RecordAdditionalInfo(
