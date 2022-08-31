@@ -123,6 +123,9 @@ constexpr size_t kMaxRecentFormSignaturesToRemember = 3;
 // This is used for sites that change multiple things consecutively.
 constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
 
+// Characters to be removed from the string before comparisons.
+constexpr char16_t kCharsToBeRemoved[] = u"-_/\\.";
+
 // Returns whether the |field| is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
   return field.Type().group() == FieldTypeGroup::kName ||
@@ -407,6 +410,15 @@ size_t TypeValueFormFillingLimit(ServerFieldType field_type) {
     default:
       return kTypeValueFormFillingLimit;
   }
+}
+
+// Removes whitespace and `kCharsToBeRemoved` from the `value` and returns it.
+std::u16string RemoveWhiteSpaceAndConjugatingCharacters(
+    const std::u16string& value) {
+  std::u16string sanitized_value;
+  base::TrimWhitespace(value, base::TRIM_ALL, &sanitized_value);
+  base::RemoveChars(sanitized_value, kCharsToBeRemoved, &sanitized_value);
+  return sanitized_value;
 }
 
 }  // namespace
@@ -745,12 +757,14 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         (submitted_form->field(i)->properties_mask & kUserTyped)) {
       // Compare and record if the currently filled value is same as the
       // non-empty value that was to be autofilled in the field.
+      std::u16string sanitized_submitted_value =
+          RemoveWhiteSpaceAndConjugatingCharacters(
+              submitted_form->field(i)->value);
       AutofillMetrics::
           LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(
               *submitted_form->field(i)
                    ->value_not_autofilled_over_existing_value_hash() ==
-              base::FastHash(
-                  base::UTF16ToUTF8(submitted_form->field(i)->value)));
+              base::FastHash(base::UTF16ToUTF8(sanitized_submitted_value)));
     }
   }
   single_field_form_fill_router_->OnWillSubmitForm(
@@ -2172,6 +2186,12 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     const std::u16string* optional_cvc) {
+  // Keeping the credit card fields out of the experiment group.
+  // The default behaviour would be to override the credit card pre-filled
+  // fields.
+  if (cached_field->Type().group() == FieldTypeGroup::kCreditCard)
+    return false;
+
   if (!base::FeatureList::IsEnabled(
           features::kAutofillPreventOverridingPrefilledValues)) {
     return false;
@@ -2180,8 +2200,12 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
   cached_field->set_value_not_autofilled_over_existing_value_hash(
       absl::nullopt);
 
+  // Some sites have empty values in the fields, for example.
+  std::u16string sanitized_field_value =
+      RemoveWhiteSpaceAndConjugatingCharacters(to_be_filled_field.value);
+
   if (to_be_filled_field.form_control_type != "select-one" &&
-      !to_be_filled_field.value.empty() &&
+      !sanitized_field_value.empty() &&
       !FormFieldData::DeepEqual(to_be_filled_field, initiating_field)) {
     std::string unused_failure_to_fill;
     const std::u16string kEmptyCvc{};
@@ -2189,14 +2213,18 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
         *cached_field, profile_or_credit_card, field_data,
         optional_cvc ? *optional_cvc : kEmptyCvc, action,
         &unused_failure_to_fill);
+    std::u16string sanitized_fill_value =
+        RemoveWhiteSpaceAndConjugatingCharacters(fill_value);
 
-    if (action == mojom::RendererFormDataAction::kFill && !fill_value.empty() &&
-        fill_value != to_be_filled_field.value &&
+    if (action == mojom::RendererFormDataAction::kFill &&
+        !sanitized_fill_value.empty() &&
+        !base::EqualsCaseInsensitiveASCII(sanitized_field_value,
+                                          sanitized_fill_value) &&
         !cached_field->value.empty()) {
       // Save the value that was supposed to be autofilled for this
       // field if the field contained an initial value.
       cached_field->set_value_not_autofilled_over_existing_value_hash(
-          base::FastHash(base::UTF16ToUTF8(fill_value)));
+          base::FastHash(base::UTF16ToUTF8(sanitized_fill_value)));
     }
     return true;
   }

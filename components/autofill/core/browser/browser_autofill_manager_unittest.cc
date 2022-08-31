@@ -9372,6 +9372,8 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   test::CreateTestFormField("Phone Number", "phonenumber", "12345678901", "tel",
                             &field);
   form.fields.push_back(field);
+  test::CreateTestFormField("Zip Code", "zipcode", "_____", "text", &field);
+  form.fields.push_back(field);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
@@ -9386,12 +9388,13 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
   EXPECT_EQ(response_data.fields[3].value, u"Test Country");
   EXPECT_EQ(response_data.fields[4].value, u"12345678901");
+  EXPECT_EQ(response_data.fields[5].value, u"38116");
 
   {
     FormStructure* form_structure;
     AutofillField* autofill_field;
-    std::vector<std::string> expected_values = {"", "Memphis", "",
-                                                "United States", ""};
+    std::vector<std::string> expected_values = {
+        "", "Memphis", "", "United States", "", ""};
     bool found = browser_autofill_manager_->GetCachedFormAndField(
         form, form.fields[0], &form_structure, &autofill_field);
     ASSERT_TRUE(found);
@@ -9411,11 +9414,14 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
     EXPECT_TRUE(form_structure->field(0)->is_autofilled);  // No prefilled value
     EXPECT_TRUE(form_structure->field(2)->is_autofilled);  // Selection field.
 
-    // Prefilled value is same as the value to be autofilled so
-    // |value_not_autofilled_over_existing_value_hash| is not set for the field.
+    // Prefilled value is same as the value to be autofilled so the field is
+    // overridden.
     EXPECT_FALSE(form_structure->field(4)->is_autofilled);
     EXPECT_FALSE(form_structure->field(4)
                      ->value_not_autofilled_over_existing_value_hash());
+
+    // Field contained placeholder "______" value.
+    EXPECT_TRUE(form_structure->field(5)->is_autofilled);
   }
 
   features.Reset();
@@ -9430,6 +9436,7 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
   EXPECT_EQ(response_data.fields[3].value, u"United States");
   EXPECT_EQ(response_data.fields[4].value, u"12345678901");
+  EXPECT_EQ(response_data.fields[5].value, u"38116");
 }
 
 // Tests that the Autofill does override the prefilled field value since the
@@ -9439,6 +9446,7 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(
       autofill::features::kAutofillPreventOverridingPrefilledValues);
+
   // Set up our form data.
   FormData form;
   form.name = u"MyForm";
