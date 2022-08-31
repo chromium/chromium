@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!--
-This file cannot be upstreamed to WPT until:
-* 'speaker-selection' is used with a WebDriver API
--->
 <title>Access to the setSinkId of the Audio API is deferred</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
@@ -11,6 +7,7 @@ This file cannot be upstreamed to WPT until:
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   const uid = token();
@@ -43,6 +40,8 @@ promise_test(async t => {
       prerendering: false
     },
   ];
+  // The spec, https://wicg.github.io/nav-speculation/prerendering.html#audio-output-patch,
+  // mentions selectAudioOutput() but this test uses setSinkId() function.
   assert_equals(result.length, expected.length);
   for (let i = 0; i < result.length; i++) {
     assert_equals(result[i].event, expected[i].event, `event${i}`);

@@ -344,6 +344,8 @@ SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
 SET TIMEOUT: speculation-rules/prerender/resources/deferred-promise-utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/request-picture-in-picture.html
+SET TIMEOUT: speculation-rules/prerender/resources/media-autoplay-attribute.html
+SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
 
