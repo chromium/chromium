@@ -255,42 +255,57 @@ int PromosManager::TotalImpressionCount(
   return std::accumulate(counts.begin(), counts.end(), 0);
 }
 
-absl::optional<promos_manager::Promo> PromosManager::LeastRecentlyShown(
+std::vector<promos_manager::Promo> PromosManager::LeastRecentlyShown(
     const std::set<promos_manager::Promo>& active_promos,
     const std::vector<promos_manager::Impression>& sorted_impressions) const {
-  // If there are no active promos, return absl::nullopt.
+  std::vector<promos_manager::Promo>
+      active_promos_sorted_by_least_recently_shown;
+
+  // If there are no active promos or impression history, return an empty array.
   // (This is seldom expected to happen, if ever, as Promos Manager will launch
   // with promos_manager::Promo::DefaultBrowser continuously running.)
-  if (active_promos.empty())
-    return absl::nullopt;
-
-  // When the impression history is empty, no "least recently shown" promo
-  // exists—because no promo has ever been shown. In this case,
-  // return the first promo in `active_promos`.
-  if (sorted_impressions.empty())
-    return *active_promos.begin();
-
-  // Loop over the impression history, `sorted_impressions`, and remove promos
-  // from `shown` as they are found. Given `sorted_impressions` is sorted from
-  // most recent -> least recent, the most recently shown promos will be removed
-  // from `shown` first. When `shown` contains just one promo, it must be the
-  // least recently shown promo.
-  std::set<promos_manager::Promo> shown(active_promos);
+  if (active_promos.empty() || sorted_impressions.empty())
+    return active_promos_sorted_by_least_recently_shown;
 
   for (promos_manager::Impression impression : sorted_impressions) {
-    if (shown.size() == 1)
-      return *shown.begin();
+    // The resulting, sorted array only needs to contain the active promos. Once
+    // all active promos are accounted for in
+    // `active_promos_sorted_by_least_recently_shown`, we can short-circuit and
+    // return `active_promos_sorted_by_least_recently_shown`.
+    if (active_promos_sorted_by_least_recently_shown.size() ==
+        active_promos.size())
+      break;
 
-    // Given `shown` only contains active promos, impression history for
-    // inactive promos will be ignored/skipped; impression history for
-    // inactive promos won't affect this method's execution or correctness.
-    shown.erase(impression.promo);
+    // If the current impression's promo already exists in
+    // `active_promos_sorted_by_least_recently_shown`, move onto the next
+    // impression.
+    if (std::find(active_promos_sorted_by_least_recently_shown.begin(),
+                  active_promos_sorted_by_least_recently_shown.end(),
+                  impression.promo) !=
+        active_promos_sorted_by_least_recently_shown.end())
+      continue;
+
+    if (active_promos.count(impression.promo))
+      active_promos_sorted_by_least_recently_shown.push_back(impression.promo);
   }
 
-  // At this point in method execution, there's been more than one promo that's
-  // never been shown. In this case, In this case, return the first unshown
-  // promo (a bit awkwardly, these unshown promos are still left in the variable
-  // `shown`.)
-  DCHECK(!shown.empty());
-  return *shown.begin();
+  // It's possible some active promos have never been seen (so no impressions
+  // exist for the promo). In that case, add them to the end of the resulting
+  // array, before the array is reversed. Those never-before-seen promos will
+  // end up at the front of the resulting array after reversal.
+  //
+  // Never-before-seen promos are considered less recently seen than previously
+  // seen promos.
+  for (promos_manager::Promo unseen_promo : active_promos) {
+    if (std::find(active_promos_sorted_by_least_recently_shown.begin(),
+                  active_promos_sorted_by_least_recently_shown.end(),
+                  unseen_promo) ==
+        active_promos_sorted_by_least_recently_shown.end())
+      active_promos_sorted_by_least_recently_shown.push_back(unseen_promo);
+  }
+
+  std::reverse(active_promos_sorted_by_least_recently_shown.begin(),
+               active_promos_sorted_by_least_recently_shown.end());
+
+  return active_promos_sorted_by_least_recently_shown;
 }

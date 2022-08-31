@@ -301,9 +301,8 @@ TEST_F(PromosManagerTest, DecidesCannotShowPromo) {
       false);
 }
 
-// Tests PromosManager::LeastRecentlyShown() correctly returns the least
-// recently shown promo given a list of impressions and set of active promos to
-// choose from.
+// Tests PromosManager::LeastRecentlyShown() correctly returns a list of active
+// promos sorted by least recently shown.
 TEST_F(PromosManagerTest, ReturnsLeastRecentlyShown) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
@@ -324,15 +323,20 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShown) {
           promos_manager::Promo::CredentialProviderExtension, today - 180),
   };
 
-  EXPECT_EQ(
-      promos_manager_->LeastRecentlyShown(active_promos, impressions).value(),
-      promos_manager::Promo::CredentialProviderExtension);
+  std::vector<promos_manager::Promo> expected = {
+      promos_manager::Promo::CredentialProviderExtension,
+      promos_manager::Promo::AppStoreRating,
+      promos_manager::Promo::DefaultBrowser,
+      promos_manager::Promo::Test,
+  };
+
+  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
+            expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() correctly returns the least
-// recently shown promo given a list of impressions (with some impressions
-// belonging to inactive promo campaigns) and set of active promos to choose
-// from.
+// Tests PromosManager::LeastRecentlyShown() correctly returns a list of
+// active / promos sorted by least recently shown (with some impressions /
+// belonging to inactive promo campaigns).
 TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithSomeInactivePromos) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
@@ -351,29 +355,17 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithSomeInactivePromos) {
           promos_manager::Promo::CredentialProviderExtension, today - 180),
   };
 
-  EXPECT_EQ(
-      promos_manager_->LeastRecentlyShown(active_promos, impressions).value(),
-      promos_manager::Promo::AppStoreRating);
-}
-
-// Tests PromosManager::LeastRecentlyShown() gracefully returns the first
-// impression in `active_promos` when no impression history exists (i.e. there's
-// no 'least recently shown' promo because empty impression history means no
-// promo has ever been shown.)
-TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithoutImpressionHistory) {
-  const std::set<promos_manager::Promo> active_promos = {
-      promos_manager::Promo::CredentialProviderExtension,
+  const std::vector<promos_manager::Promo> expected = {
+      promos_manager::Promo::AppStoreRating,
+      promos_manager::Promo::Test,
   };
 
-  const std::vector<promos_manager::Impression> impressions;
-
-  EXPECT_EQ(
-      promos_manager_->LeastRecentlyShown(active_promos, impressions).value(),
-      promos_manager::Promo::CredentialProviderExtension);
+  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
+            expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns a promo when
-// multiple promos are tied for least recently shown.
+// Tests PromosManager::LeastRecentlyShown() gracefully returns a list of
+// active / promos when multiple promos are tied for least recently shown.
 TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownBreakingTies) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
@@ -392,13 +384,20 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownBreakingTies) {
           promos_manager::Promo::CredentialProviderExtension, today),
   };
 
-  EXPECT_EQ(
-      promos_manager_->LeastRecentlyShown(active_promos, impressions).value(),
-      promos_manager::Promo::CredentialProviderExtension);
+  const std::vector<promos_manager::Promo> expected = {
+      promos_manager::Promo::CredentialProviderExtension,
+      promos_manager::Promo::AppStoreRating,
+      promos_manager::Promo::DefaultBrowser,
+      promos_manager::Promo::Test,
+  };
+
+  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
+            expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns a promo when the
-// impression history contains only one active promo campaign.
+// Tests PromosManager::LeastRecentlyShown() gracefully returns a single promo
+// in a list when the impression history contains only one active promo
+// campaign.
 TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithOnlyOnePromoActive) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
@@ -416,15 +415,18 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithOnlyOnePromoActive) {
           promos_manager::Promo::CredentialProviderExtension, today - 180),
   };
 
-  EXPECT_EQ(
-      promos_manager_->LeastRecentlyShown(active_promos, impressions).value(),
-      promos_manager::Promo::Test);
+  const std::vector<promos_manager::Promo> expected = {
+      promos_manager::Promo::Test,
+  };
+
+  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
+            expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns
-// promos_manager::Promo::Test when there are no active promo campaigns.
+// Tests PromosManager::LeastRecentlyShown() gracefully returns an empty array
+// when there are no active promo campaigns.
 TEST_F(PromosManagerTest,
-       ReturnsNulloptWhenLeastRecentlyShownHasNoActivePromoCampaigns) {
+       ReturnsEmptyListWhenLeastRecentlyShownHasNoActivePromoCampaigns) {
   const std::set<promos_manager::Promo> active_promos;
 
   int today = TodaysDay();
@@ -439,14 +441,33 @@ TEST_F(PromosManagerTest,
           promos_manager::Promo::CredentialProviderExtension, today - 180),
   };
 
+  const std::vector<promos_manager::Promo> expected;
+
   EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            absl::nullopt);
+            expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns
-// the first unshown promo when there are multiple active promo campaigns for
-// unshown promos.
-TEST_F(PromosManagerTest, ReturnsFirstUnshownPromoForLeastRecentlyShown) {
+// Tests PromosManager::LeastRecentlyShown() gracefully returns an empty array
+// when no impression history exists (i.e. there's no 'least recently
+// shown' promo because empty impression history means no promo has ever been
+// shown.)
+TEST_F(PromosManagerTest,
+       ReturnsEmptyListWhenLeastRecentlyShownHasNoImpressionHistory) {
+  const std::set<promos_manager::Promo> active_promos = {
+      promos_manager::Promo::CredentialProviderExtension,
+  };
+
+  const std::vector<promos_manager::Impression> impressions;
+  const std::vector<promos_manager::Promo> expected;
+
+  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
+            expected);
+}
+
+// Tests PromosManager::LeastRecentlyShown() sorts unshown promos before shown
+// promos.
+TEST_F(PromosManagerTest,
+       SortsUnshownPromosBeforeShownPromosForLeastRecentlyShown) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
       promos_manager::Promo::CredentialProviderExtension,
@@ -462,8 +483,15 @@ TEST_F(PromosManagerTest, ReturnsFirstUnshownPromoForLeastRecentlyShown) {
                                  today - 7),
   };
 
+  const std::vector<promos_manager::Promo> expected = {
+      promos_manager::Promo::CredentialProviderExtension,
+      promos_manager::Promo::AppStoreRating,
+      promos_manager::Promo::DefaultBrowser,
+      promos_manager::Promo::Test,
+  };
+
   EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            promos_manager::Promo::AppStoreRating);
+            expected);
 }
 
 // Tests PromosManager::ImpressionHistory() correctly ingests impression history
