@@ -47,6 +47,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -4175,7 +4176,7 @@ void RenderFrameImpl::WillSendRequestInternal(
           : absl::optional<url::Origin>(request.RequestorOrigin());
   GetContentClient()->renderer()->WillSendRequest(
       frame_, transition_type, request.Url(), request.SiteForCookies(),
-      base::OptionalOrNullptr(initiator_origin), &new_url);
+      base::OptionalToPtr(initiator_origin), &new_url);
   if (!new_url.is_empty())
     request.SetUrl(WebURL(new_url));
 
