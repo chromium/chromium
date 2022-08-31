@@ -76,12 +76,24 @@ class PublishPackageTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 publish_package.main()
 
-    def test_main(self) -> None:
-        """Tests |main| function."""
+    def test_main_no_out_dir_flag(self) -> None:
+        """Tests |main| with `out_dir` omitted."""
 
         with mock.patch('sys.argv', [
                 'publish_package.py', '--packages', _PACKAGES[0], '--repo',
                 _REPO
+        ]):
+            publish_package.main()
+            self.assertEqual(self._subprocess_mock.call_count, 1)
+
+    @mock.patch('publish_package.read_package_paths')
+    def test_main(self, read_mock) -> None:
+        """Tests |main|."""
+
+        read_mock.return_value = ['out/test/package/path']
+        with mock.patch('sys.argv', [
+                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
+                _REPO, '--out-dir', 'out/test'
         ]):
             publish_package.main()
             self.assertEqual(self._subprocess_mock.call_count, 1)

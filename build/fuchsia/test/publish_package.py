@@ -11,7 +11,7 @@ import sys
 
 from typing import Iterable
 
-from common import SDK_TOOLS_DIR
+from common import SDK_TOOLS_DIR, read_package_paths, register_common_args
 
 _pm_tool = os.path.join(SDK_TOOLS_DIR, 'pm')
 
@@ -49,12 +49,19 @@ def main():
     """Stand-alone function for publishing packages."""
     parser = argparse.ArgumentParser()
     register_package_args(parser)
+    register_common_args(parser)
     args = parser.parse_args()
     if not args.repo:
         raise ValueError('Must specify directory to publish packages.')
     if not args.packages:
         raise ValueError('Must specify packages to publish.')
-    publish_packages(args.packages, args.repo)
+    if args.out_dir:
+        package_paths = []
+        for package in args.packages:
+            package_paths.extend(read_package_paths(args.out_dir, package))
+    else:
+        package_paths = args.packages
+    publish_packages(package_paths, args.repo)
 
 
 if __name__ == '__main__':
