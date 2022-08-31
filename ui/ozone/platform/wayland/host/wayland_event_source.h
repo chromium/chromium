@@ -19,6 +19,7 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
@@ -32,15 +33,6 @@ struct wl_display;
 namespace gfx {
 class Vector2dF;
 }
-
-namespace wl {
-
-enum class EventDispatchPolicy {
-  kImmediate,
-  kOnFrame,
-};
-
-}  // namespace wl
 
 namespace ui {
 

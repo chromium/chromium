@@ -41,6 +41,13 @@ using OnRequestBufferCallback =
 using BufferFormatsWithModifiersMap =
     base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>;
 
+// Constants used to determine how pointer/touch events are processed and
+// dispatched.
+enum class EventDispatchPolicy {
+  kImmediate,
+  kOnFrame,
+};
+
 // Identifies the direction of the "hittest" for Wayland. |connection|
 // is used to identify whether values from shell v5 or v6 must be used.
 uint32_t IdentifyDirection(const ui::WaylandConnection& connection,
