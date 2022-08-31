@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/win_network_fetcher.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/win_network_fetcher_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/util.h"
 #include "net/base/backoff_entry.h"
 #include "url/gurl.h"
@@ -34,8 +35,18 @@ constexpr int kMaxRetryCount = 10;
 
 }  // namespace
 
+WinKeyNetworkDelegate::WinKeyNetworkDelegate(
+    std::unique_ptr<WinNetworkFetcherFactory> factory)
+    : win_network_fetcher_factory_(std::move(factory)),
+      backoff_entry_(&kBackoffPolicy) {
+  DCHECK(win_network_fetcher_factory_);
+}
+
 WinKeyNetworkDelegate::WinKeyNetworkDelegate()
-    : backoff_entry_(&kBackoffPolicy) {}
+    : win_network_fetcher_factory_(WinNetworkFetcherFactory::Create()),
+      backoff_entry_(&kBackoffPolicy) {
+  DCHECK(win_network_fetcher_factory_);
+}
 
 WinKeyNetworkDelegate::~WinKeyNetworkDelegate() = default;
 
@@ -48,7 +59,8 @@ void WinKeyNetworkDelegate::SendPublicKeyToDmServer(
   DCHECK_EQ(backoff_entry_.failure_count(), 0);
   base::flat_map<std::string, std::string> headers;
   headers.emplace("Authorization", "GoogleDMToken token=" + dm_token);
-  win_network_fetcher_ = WinNetworkFetcher::Create(url, body, headers);
+  win_network_fetcher_ =
+      win_network_fetcher_factory_->CreateNetworkFetcher(url, body, headers);
   UploadKey(std::move(upload_key_completed_callback));
 }
 

@@ -4,10 +4,13 @@
 
 if (is_win) {
   source_set("fetcher") {
-    public = [ "win_network_fetcher.h" ]
+    public = [
+      "win_network_fetcher.h",
+      "win_network_fetcher_factory.h",
+    ]
 
     sources = [
-      "win_network_fetcher.cc",
+      "win_network_fetcher_factory.cc",
       "win_network_fetcher_impl.cc",
       "win_network_fetcher_impl.h",
     ]
@@ -23,9 +26,15 @@ if (is_win) {
 
   source_set("test_support") {
     testonly = true
-    public = [ "mock_win_network_fetcher.h" ]
+    public = [
+      "mock_win_network_fetcher.h",
+      "mock_win_network_fetcher_factory.h",
+    ]
 
-    sources = [ "mock_win_network_fetcher.cc" ]
+    sources = [
+      "mock_win_network_fetcher.cc",
+      "mock_win_network_fetcher_factory.cc",
+    ]
 
     public_deps = [
       ":fetcher",

@@ -17,6 +17,7 @@
 namespace enterprise_connectors {
 
 class WinNetworkFetcher;
+class WinNetworkFetcherFactory;
 
 // Windows implementation of the KeyNetworkDelegate interface.
 class WinKeyNetworkDelegate : public KeyNetworkDelegate {
@@ -34,6 +35,9 @@ class WinKeyNetworkDelegate : public KeyNetworkDelegate {
  private:
   friend class WinKeyNetworkDelegateTest;
 
+  explicit WinKeyNetworkDelegate(
+      std::unique_ptr<WinNetworkFetcherFactory> factory);
+
   // Makes an upload key request to the windows network fetcher. The
   // `upload_key_completed_callback` will be invoked after the upload request,
   // in the FetchCompleted method.
@@ -42,6 +46,9 @@ class WinKeyNetworkDelegate : public KeyNetworkDelegate {
   // Invokes `upload_key_completed_callback` with the HTTP `response_code`.
   void FetchCompleted(UploadKeyCompletedCallback upload_key_completed_callback,
                       HttpResponseCode response_code);
+
+  // Used for creating the WinNetworkFetcher object.
+  std::unique_ptr<WinNetworkFetcherFactory> win_network_fetcher_factory_;
 
   // Used for issuing network requests via the winhttp network fetcher.
   std::unique_ptr<WinNetworkFetcher> win_network_fetcher_;

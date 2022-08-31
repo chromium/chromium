@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/mock_win_network_fetcher.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/mock_win_network_fetcher_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher/win_network_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,17 +25,29 @@ using testing::_;
 namespace enterprise_connectors {
 
 using test::MockWinNetworkFetcher;
+using test::MockWinNetworkFetcherFactory;
+
 using HttpResponseCode = KeyNetworkDelegate::HttpResponseCode;
 
 namespace {
 
-constexpr char kFakeBody[] = "fake-body";
-constexpr char kFakeDMServerUrl[] =
+constexpr char kFakeBody1[] = "fake-body-1";
+constexpr char kFakeBody2[] = "fake-body-2";
+
+constexpr char kFakeDMServerUrl1[] =
     "https://example.com/"
     "management_service?retry=false&agent=Chrome+1.2.3(456)&apptype=Chrome&"
     "critical=true&deviceid=fake-client-id&devicetype=2&platform=Test%7CUnit%"
     "7C1.2.3&request=browser_public_key_upload";
-constexpr char kFakeDMToken[] = "fake-browser-dm-token";
+constexpr char kFakeDMServerUrl2[] =
+    "https://google.com/"
+    "management_service?retry=false&agent=Chrome+1.2.3(456)&apptype=Chrome&"
+    "critical=true&deviceid=fake-client-id&devicetype=2&platform=Test%7CUnit%"
+    "7C1.2.3&request=browser_public_key_upload";
+
+constexpr char kFakeDMToken1[] = "fake-browser-dm-token-1";
+constexpr char kFakeDMToken2[] = "fake-browser-dm-token-2";
+
 constexpr char kUmaHistogramName[] =
     "Enterprise.DeviceTrust.RotateSigningKey.Tries";
 
@@ -46,43 +59,64 @@ constexpr HttpResponseCode kTransientFailureCode = 500;
 
 class WinKeyNetworkDelegateTest : public testing::Test {
  protected:
-  void SetNewTestFetcherInstance() {
-    auto mock_win_network_fetcher = std::make_unique<MockWinNetworkFetcher>();
-    mock_win_network_fetcher_ = mock_win_network_fetcher.get();
-    WinNetworkFetcher::SetInstanceForTesting(
-        std::move(mock_win_network_fetcher));
+  void SetUp() override {
+    auto mock_network_fetcher_factory =
+        std::make_unique<MockWinNetworkFetcherFactory>();
+    mock_network_fetcher_factory_ = mock_network_fetcher_factory.get();
+
+    network_delegate_ = absl::WrapUnique(
+        new WinKeyNetworkDelegate(std::move(mock_network_fetcher_factory)));
   }
 
-  // Calls the SendPublicKeyToDmServer function and triggers a number
-  // of retry attempts given by the param `max_retries`.
-  void TestRequest(const HttpResponseCode& response_code, int max_retries) {
-    SetNewTestFetcherInstance();
-
+  // Calls the SendPublicKeyToDmServer function using the test `body`,
+  // `dm_token`, and `dm_server_url`; and triggers a number of retry attempts
+  // given by the param `max_retries`.
+  void TestRequest(const HttpResponseCode& response_code,
+                   int max_retries,
+                   const std::string& test_body,
+                   const std::string& dm_token,
+                   const GURL& dm_server_url) {
     ::testing::InSequence sequence;
-    DCHECK(mock_win_network_fetcher_);
 
-    EXPECT_CALL(*mock_win_network_fetcher_, Fetch(_))
+    auto mock_win_network_fetcher = std::make_unique<MockWinNetworkFetcher>();
+
+    base::flat_map<std::string, std::string> test_headers;
+    test_headers.emplace("Authorization", "GoogleDMToken token=" + dm_token);
+
+    EXPECT_CALL(*mock_network_fetcher_factory_,
+                CreateNetworkFetcher(dm_server_url, test_body, _))
+        .WillOnce([&dm_server_url, &test_body, &test_headers,
+                   &mock_win_network_fetcher](
+                      const GURL& url, const std::string& body,
+                      base::flat_map<std::string, std::string> headers) {
+          EXPECT_EQ(dm_server_url, url);
+          EXPECT_EQ(test_body, body);
+          EXPECT_EQ(test_headers, headers);
+          return std::move(mock_win_network_fetcher);
+        });
+
+    EXPECT_CALL(*mock_win_network_fetcher, Fetch(_))
         .Times(max_retries)
         .WillRepeatedly(
             [this](WinNetworkFetcher::FetchCompletedCallback callback) {
               task_environment_.FastForwardBy(
-                  network_delegate_.backoff_entry_.GetTimeUntilRelease());
+                  network_delegate_->backoff_entry_.GetTimeUntilRelease());
               std::move(callback).Run(kTransientFailureCode);
             });
 
-    EXPECT_CALL(*mock_win_network_fetcher_, Fetch(_))
+    EXPECT_CALL(*mock_win_network_fetcher, Fetch(_))
         .WillOnce([response_code](
                       WinNetworkFetcher::FetchCompletedCallback callback) {
           std::move(callback).Run(response_code);
         });
     base::test::TestFuture<HttpResponseCode> future;
-    network_delegate_.SendPublicKeyToDmServer(
-        GURL(kFakeDMServerUrl), kFakeDMToken, kFakeBody, future.GetCallback());
+    network_delegate_->SendPublicKeyToDmServer(dm_server_url, dm_token,
+                                               test_body, future.GetCallback());
     EXPECT_EQ(response_code, future.Get());
   }
 
-  WinKeyNetworkDelegate network_delegate_;
-  MockWinNetworkFetcher* mock_win_network_fetcher_ = nullptr;
+  MockWinNetworkFetcherFactory* mock_network_fetcher_factory_ = nullptr;
+  std::unique_ptr<WinKeyNetworkDelegate> network_delegate_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
@@ -91,7 +125,8 @@ class WinKeyNetworkDelegateTest : public testing::Test {
 // before a success. 200 error codes are treated as success.
 TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_Success) {
   base::HistogramTester histogram_tester;
-  TestRequest(kSuccessCode, 3);
+  TestRequest(kSuccessCode, 3, kFakeBody1, kFakeDMToken1,
+              GURL(kFakeDMServerUrl1));
   histogram_tester.ExpectUniqueSample(kUmaHistogramName, 3, 1);
 }
 
@@ -100,7 +135,8 @@ TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_Success) {
 // failures.
 TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_PermanentFailure) {
   base::HistogramTester histogram_tester;
-  TestRequest(kHardFailureCode, 3);
+  TestRequest(kHardFailureCode, 3, kFakeBody1, kFakeDMToken1,
+              GURL(kFakeDMServerUrl1));
   histogram_tester.ExpectUniqueSample(kUmaHistogramName, 3, 1);
 }
 
@@ -108,7 +144,8 @@ TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_PermanentFailure) {
 // 500 error codes are treated as transient failures.
 TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_TransientFailure) {
   base::HistogramTester histogram_tester;
-  TestRequest(kTransientFailureCode, 10);
+  TestRequest(kTransientFailureCode, 10, kFakeBody1, kFakeDMToken1,
+              GURL(kFakeDMServerUrl1));
   histogram_tester.ExpectUniqueSample(kUmaHistogramName, 10, 1);
 }
 
@@ -116,11 +153,12 @@ TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_TransientFailure) {
 // instance is set per request.
 TEST_F(WinKeyNetworkDelegateTest, SendPublicKeyRequest_MulitpleRequests) {
   base::HistogramTester histogram_tester;
-
-  TestRequest(kSuccessCode, 1);
+  TestRequest(kSuccessCode, 1, kFakeBody1, kFakeDMToken1,
+              GURL(kFakeDMServerUrl1));
   histogram_tester.ExpectUniqueSample(kUmaHistogramName, 1, 1);
 
-  TestRequest(kHardFailureCode, 1);
+  TestRequest(kHardFailureCode, 1, kFakeBody2, kFakeDMToken2,
+              GURL(kFakeDMServerUrl2));
   histogram_tester.ExpectUniqueSample(kUmaHistogramName, 1, 2);
 }
 
