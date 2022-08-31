@@ -5015,7 +5015,26 @@ AutotestPrivateGetDeskCountFunction::~AutotestPrivateGetDeskCountFunction() =
     default;
 
 ExtensionFunction::ResponseAction AutotestPrivateGetDeskCountFunction::Run() {
-  return RespondNow(WithArguments(ash::AutotestDesksApi().GetDeskCount()));
+  return RespondNow(
+      WithArguments(ash::AutotestDesksApi().GetDesksInfo().num_desks));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetDesksInfoFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetDesksInfoFunction::AutotestPrivateGetDesksInfoFunction() =
+    default;
+AutotestPrivateGetDesksInfoFunction::~AutotestPrivateGetDesksInfoFunction() =
+    default;
+
+ExtensionFunction::ResponseAction AutotestPrivateGetDesksInfoFunction::Run() {
+  ash::AutotestDesksApi::DesksInfo desks_info =
+      ash::AutotestDesksApi().GetDesksInfo();
+  base::Value::Dict result;
+  result.Set("activeDeskIndex", desks_info.active_desk_index);
+  result.Set("numDesks", desks_info.num_desks);
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1762,6 +1762,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_GETDLCCONTENTS = 1699,
   FILEMANAGERPRIVATEINTERNAL_PARSETRASHINFOFILES = 1700,
   PASSWORDSPRIVATE_EXTENDAUTHVALIDITY = 1701,
+  AUTOTESTPRIVATE_GETDESKSINFO = 1702,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

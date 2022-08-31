@@ -20,6 +20,11 @@ class ASH_EXPORT AutotestDesksApi {
   AutotestDesksApi& operator=(const AutotestDesksApi& rhs) = delete;
   ~AutotestDesksApi();
 
+  struct DesksInfo {
+    int active_desk_index;
+    int num_desks;
+  };
+
   // Creates a new desk if the maximum number of desks has not been reached, and
   // returns true if succeeded, false otherwise.
   bool CreateNewDesk();
@@ -47,8 +52,9 @@ class ASH_EXPORT AutotestDesksApi {
   // Check whether a window belongs to a desk at |desk_index| or not.
   bool IsWindowInDesk(aura::Window* window, int desk_index);
 
-  // Returns the number of currently created desks.
-  int GetDeskCount() const;
+  // Gets overall desks info, which includes the total number of desks
+  // and the active desk index.
+  DesksInfo GetDesksInfo() const;
 };
 
 }  // namespace ash

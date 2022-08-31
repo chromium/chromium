@@ -611,6 +611,12 @@ namespace autotestPrivate {
     ScrollableShelfInfo scrollableShelfInfo;
   };
 
+  // Information about all desks.
+  dictionary DesksInfo {
+    long activeDeskIndex;
+    long numDesks;
+  };
+
   callback GetShelfItemsCallback = void (ShelfItem[] items);
 
   callback GetDefaultPinnedAppIdsCallback = void (DOMString[] items);
@@ -632,6 +638,8 @@ namespace autotestPrivate {
   callback DesksCallback = void (boolean success);
 
   callback GetDeskCountCallback = void (long count);
+
+  callback GetDesksInfoCallback = void (DesksInfo desks);
 
   callback GetScrollableShelfInfoForStateCallback = void (
       ScrollableShelfInfo info);
@@ -1316,6 +1324,12 @@ namespace autotestPrivate {
     // `callback`: callback that is passed the number of open desks.
     [supportsPromises] static void getDeskCount(
         GetDeskCountCallback callback
+    );
+
+    // Fetches info about the open desks at the time of the call.
+    // `callback`: callback that is passed desks information.
+    [supportsPromises] static void getDesksInfo(
+        GetDesksInfoCallback callback
     );
 
     // Create mouse events to cause a mouse click.

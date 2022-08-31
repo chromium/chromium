@@ -1333,6 +1333,17 @@ class AutotestPrivateGetDeskCountFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateGetDesksInfoFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetDesksInfoFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getDesksInfo",
+                             AUTOTESTPRIVATE_GETDESKSINFO)
+
+ private:
+  ~AutotestPrivateGetDesksInfoFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateMouseClickFunction : public ExtensionFunction {
  public:
   AutotestPrivateMouseClickFunction();
