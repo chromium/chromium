@@ -201,43 +201,6 @@ class DesktopMediaPickerViewsTest : public DesktopMediaPickerViewsTestBase,
 
 INSTANTIATE_TEST_SUITE_P(All, DesktopMediaPickerViewsTest, ::testing::Bool());
 
-class DesktopMediaPickerDoubleClickTest
-    : public DesktopMediaPickerViewsTestBase,
-      public testing::WithParamInterface<
-          std::pair<DesktopMediaList::Type, DesktopMediaID::Type>> {
- public:
-  DesktopMediaPickerDoubleClickTest()
-      : DesktopMediaPickerViewsTestBase(GetSourceTypes(false)) {}
-};
-
-// Regression test for https://crbug.com/1102153 and https://crbug.com/1127496
-TEST_P(DesktopMediaPickerDoubleClickTest, DoneCallbackNotCalledOnDoubleClick) {
-  const DesktopMediaList::Type media_list_type = std::get<0>(GetParam());
-  const DesktopMediaID::Type media_type = std::get<1>(GetParam());
-
-  const DesktopMediaID kFakeId(media_type, 222);
-
-  media_lists_[media_list_type]->AddSourceByFullMediaID(kFakeId);
-  test_api_.SelectTabForSourceType(media_list_type);
-  test_api_.PressMouseOnSourceAtIndex(0, true);
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop_.QuitClosure());
-  run_loop_.Run();
-
-  EXPECT_FALSE(picked_id().has_value());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DesktopMediaPickerDoubleClickTest,
-    testing::Values(std::make_pair(DesktopMediaList::Type::kWindow,
-                                   DesktopMediaID::TYPE_WINDOW),
-                    std::make_pair(DesktopMediaList::Type::kScreen,
-                                   DesktopMediaID::TYPE_SCREEN),
-                    std::make_pair(DesktopMediaList::Type::kWebContents,
-                                   DesktopMediaID::TYPE_WEB_CONTENTS)));
-
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledWhenWindowClosed) {
   GetPickerDialogView()->GetWidget()->Close();
   EXPECT_EQ(content::DesktopMediaID(), WaitForPickerDone());
@@ -666,6 +629,16 @@ class DesktopMediaPickerPreferredDisplaySurfaceTest
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DesktopMediaPickerPreferredDisplaySurfaceTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(blink::mojom::PreferredDisplaySurface::NO_PREFERENCE,
+                        blink::mojom::PreferredDisplaySurface::MONITOR,
+                        blink::mojom::PreferredDisplaySurface::WINDOW,
+                        blink::mojom::PreferredDisplaySurface::BROWSER)));
+
 TEST_P(DesktopMediaPickerPreferredDisplaySurfaceTest,
        SelectedTabMatchesPreferredDisplaySurface) {
   switch (PreferredDisplaySurface()) {
@@ -690,14 +663,41 @@ TEST_P(DesktopMediaPickerPreferredDisplaySurfaceTest,
   }
 }
 
+class DesktopMediaPickerDoubleClickTest
+    : public DesktopMediaPickerViewsTestBase,
+      public testing::WithParamInterface<
+          std::pair<DesktopMediaList::Type, DesktopMediaID::Type>> {
+ public:
+  DesktopMediaPickerDoubleClickTest()
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(false)) {}
+};
+
 INSTANTIATE_TEST_SUITE_P(
     All,
-    DesktopMediaPickerPreferredDisplaySurfaceTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Values(blink::mojom::PreferredDisplaySurface::NO_PREFERENCE,
-                        blink::mojom::PreferredDisplaySurface::MONITOR,
-                        blink::mojom::PreferredDisplaySurface::WINDOW,
-                        blink::mojom::PreferredDisplaySurface::BROWSER)));
+    DesktopMediaPickerDoubleClickTest,
+    testing::Values(std::make_pair(DesktopMediaList::Type::kWindow,
+                                   DesktopMediaID::TYPE_WINDOW),
+                    std::make_pair(DesktopMediaList::Type::kScreen,
+                                   DesktopMediaID::TYPE_SCREEN),
+                    std::make_pair(DesktopMediaList::Type::kWebContents,
+                                   DesktopMediaID::TYPE_WEB_CONTENTS)));
+
+// Regression test for https://crbug.com/1102153 and https://crbug.com/1127496
+TEST_P(DesktopMediaPickerDoubleClickTest, DoneCallbackNotCalledOnDoubleClick) {
+  const DesktopMediaList::Type media_list_type = std::get<0>(GetParam());
+  const DesktopMediaID::Type media_type = std::get<1>(GetParam());
+
+  const DesktopMediaID kFakeId(media_type, 222);
+
+  media_lists_[media_list_type]->AddSourceByFullMediaID(kFakeId);
+  test_api_.SelectTabForSourceType(media_list_type);
+  test_api_.PressMouseOnSourceAtIndex(0, true);
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(picked_id().has_value());
+}
 
 }  // namespace views
