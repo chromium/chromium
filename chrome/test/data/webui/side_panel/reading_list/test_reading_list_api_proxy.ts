@@ -19,6 +19,7 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
       'openURL',
       'updateReadStatus',
       'addCurrentTab',
+      'markCurrentTabAsRead',
       'removeEntry',
       'showContextMenuForURL',
       'updateCurrentPageActionButtonState',
@@ -47,6 +48,10 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
 
   addCurrentTab() {
     this.methodCalled('addCurrentTab');
+  }
+
+  markCurrentTabAsRead() {
+    this.methodCalled('markCurrentTabAsRead');
   }
 
   removeEntry(url: Url) {

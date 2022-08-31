@@ -346,9 +346,17 @@ TEST_F(TestReadingListPageHandlerTest, OpenURLAndReadd) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
   handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
+  // Expect CurrentPageActionButtonState to be add, due to the current
+  // tab not being on the reading list.
+  EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
+            reading_list::mojom::CurrentPageActionButtonState::kAdd);
   model()->AddEntry(GURL(kTabUrl3), kTabName3,
                     reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
 
+  // Expect CurrentPageActionButtonState to be mark as read, due to the current
+  // tab being unread on the reading list.
+  EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
+            reading_list::mojom::CurrentPageActionButtonState::kMarkAsRead);
   // Expect ItemsChanged to be called 6 times.
   // Four times for the two AddEntry calls in SetUp().
   // Twice for the AddEntry call above.

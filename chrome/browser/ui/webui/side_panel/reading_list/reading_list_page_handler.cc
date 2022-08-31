@@ -202,6 +202,15 @@ void ReadingListPageHandler::UpdateReadStatus(const GURL& url, bool read) {
                                    : "DesktopReadingList.MarkAsUnread"));
 }
 
+void ReadingListPageHandler::MarkCurrentTabAsRead() {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+
+  chrome::MarkCurrentTabAsReadInReadLater(browser);
+  base::RecordAction(base::UserMetricsAction("DesktopReadingList.MarkAsRead"));
+}
+
 void ReadingListPageHandler::AddCurrentTab() {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
@@ -362,10 +371,11 @@ void ReadingListPageHandler::UpdateCurrentPageActionButton() {
     return;
 
   reading_list::mojom::CurrentPageActionButtonState new_state;
-  if (!reading_list_model_->IsUrlSupported(url.value()) ||
-      (reading_list_model_->GetEntryByURL(url.value()) &&
-       !reading_list_model_->GetEntryByURL(url.value())->IsRead())) {
+  if (!reading_list_model_->IsUrlSupported(url.value())) {
     new_state = reading_list::mojom::CurrentPageActionButtonState::kDisabled;
+  } else if ((reading_list_model_->GetEntryByURL(url.value()) &&
+              !reading_list_model_->GetEntryByURL(url.value())->IsRead())) {
+    new_state = reading_list::mojom::CurrentPageActionButtonState::kMarkAsRead;
   } else {
     new_state = reading_list::mojom::CurrentPageActionButtonState::kAdd;
   }

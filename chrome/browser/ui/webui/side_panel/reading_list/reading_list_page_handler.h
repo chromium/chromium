@@ -48,6 +48,7 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
                bool mark_as_read,
                ui::mojom::ClickModifiersPtr click_modifiers) override;
   void UpdateReadStatus(const GURL& url, bool read) override;
+  void MarkCurrentTabAsRead() override;
   void AddCurrentTab() override;
   void RemoveEntry(const GURL& url) override;
   void ShowContextMenuForURL(const GURL& url, int32_t x, int32_t y) override;

@@ -129,16 +129,17 @@
     <div id="empty-state-subheader">[[getEmptyStateSubheaderText_()]]</div>
   </div>
   <cr-button id="currentPageActionButton"
-      hidden$="[[!shouldShowCurrentPageActionButton_()]]"
-      aria-label="$i18n{addCurrentTab}"
+      aria-label="[[getCurrentPageActionButtonText_(
+          currentPageActionButtonState_)]]"
       on-click="onCurrentPageActionButtonClick_"
       disabled="[[getCurrentPageActionButtonDisabled_(
           currentPageActionButtonState_)]]">
     <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
-        icon="cr:add">
+      icon="[[getCurrentPageActionButtonIcon_(
+          currentPageActionButtonState_)]]">
     </iron-icon>
     <div id="currentPageActionButtonText" aria-hidden="true">
-      $i18n{addCurrentTab}
+      [[getCurrentPageActionButtonText_(currentPageActionButtonState_)]]
     </div>
   </cr-button>
   <div id="readingListList">

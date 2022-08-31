@@ -15,6 +15,8 @@ export interface ReadingListApiProxy {
 
   updateReadStatus(url: Url, read: boolean): void;
 
+  markCurrentTabAsRead(): void;
+
   addCurrentTab(): void;
 
   removeEntry(url: Url): void;
@@ -55,6 +57,10 @@ export class ReadingListApiProxyImpl implements ReadingListApiProxy {
 
   updateReadStatus(url: Url, read: boolean) {
     this.handler.updateReadStatus(url, read);
+  }
+
+  markCurrentTabAsRead() {
+    this.handler.markCurrentTabAsRead();
   }
 
   addCurrentTab() {

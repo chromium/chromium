@@ -45,6 +45,9 @@ interface PageHandler {
   // Updates a read later entry's read status.
   UpdateReadStatus(url.mojom.Url url, bool read);
 
+  // Marks the current tab as read in the reading list.
+  MarkCurrentTabAsRead();
+
   // Adds the current tab to the reading list.
   AddCurrentTab();
 
@@ -67,6 +70,7 @@ interface PageHandler {
 enum CurrentPageActionButtonState {
   kAdd,
   kDisabled,
+  kMarkAsRead,
 };
 
 // WebUI-side handler for requests from the browser.

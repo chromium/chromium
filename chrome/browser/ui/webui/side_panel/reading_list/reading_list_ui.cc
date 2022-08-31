@@ -55,6 +55,7 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
        IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
+      {"markCurrentTabAsRead", IDS_READ_LATER_MARK_CURRENT_TAB_READ},
       {"readAnythingTabTitle", IDS_READ_ANYTHING_TITLE},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
