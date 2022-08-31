@@ -67,7 +67,6 @@ preprocess_if_expr("preprocess_src") {
 
   if (is_chromeos_ash) {
     in_files += [
-      "focus_manager.js",
       "store_client.js",
       "store.js",
     ]
@@ -76,20 +75,6 @@ preprocess_if_expr("preprocess_src") {
 
 group("closure_compile") {
   deps = [ ":ui_resources_modules" ]
-  if (is_chromeos_ash) {
-    deps += [ ":ui_resources" ]
-  }
-}
-
-if (is_chromeos_ash) {
-  js_type_check("ui_resources") {
-    uses_legacy_modules = true
-    deps = [ ":focus_manager" ]
-  }
-
-  js_library("focus_manager") {
-    deps = [ "../..:cr" ]
-  }
 }
 
 js_type_check("ui_resources_modules") {

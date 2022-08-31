@@ -22,7 +22,6 @@ generate_grd("build_grdp") {
       "cr.html",
       "cr/event_target.html",
       "cr/ui.html",
-      "cr/ui/focus_manager.html",
       "event_tracker.html",
       "promise_resolver.html",
       "util.html",
