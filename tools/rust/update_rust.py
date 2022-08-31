@@ -27,7 +27,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = '55f46419'
+RUST_REVISION = 'e0dc8d78'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-08-26.
@@ -51,7 +51,7 @@ FALLBACK_CLANG_VERSION = 'llvmorg-16-init-907-g8b740747-4'
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    'fd23038d8e54263d0284b513c5b242d2fabc70103e6afdbfb3cb27da889d6e21')
+    'd1b934c411fd4f94cc73d4ce3c191d2a7f66a13e0a52f30109c2f4e1d6874c45')
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
