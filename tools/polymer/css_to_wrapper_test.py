@@ -82,6 +82,11 @@ class CssToWrapperTest(unittest.TestCase):
                    'css_to_wrapper/foo_style_expected.css.ts',
                    use_js=True)
 
+  def testCssToWrapperSchemeRelative(self):
+    self._run_test('css_to_wrapper/foo_relative_style.css',
+                   'css_to_wrapper/foo_relative_style.css.ts',
+                   'css_to_wrapper/foo_relative_style_expected.css.ts')
+
 
 if __name__ == '__main__':
   unittest.main()
