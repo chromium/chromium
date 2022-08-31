@@ -46,5 +46,8 @@ public class DetailScreenCoordinator {
                 new DetailScreenViewBinder.ViewHolder(context, view);
 
         PropertyModelChangeProcessor.create(model, viewHolder, DetailScreenViewBinder::bind);
+
+        // TODO(crbug.com/1355310): Add decorator that separates the individual items.
+        // TODO(crbug.com/1355310): Make sure that scrolling works as expected.
     }
 }

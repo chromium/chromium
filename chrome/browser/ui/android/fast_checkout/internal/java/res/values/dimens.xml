@@ -24,4 +24,6 @@
 
     <!-- Detail sheet dimensions. -->
     <dimen name="fast_checkout_detail_sheet_padding_vertical">16dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_selected_icon_margin_start">8dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_selected_icon_margin_end">16dp</dimen>
 </resources>

@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
 import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties.AUTOFILL_PROFILE;
+import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties.ON_CLICK_LISTENER;
 
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
@@ -43,9 +45,29 @@ public class AutofillProfileItemViewBinder {
             PropertyModel model, AutofillProfileItemViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == AUTOFILL_PROFILE) {
             FastCheckoutAutofillProfile profile = model.get(AUTOFILL_PROFILE);
-            // TODO(crbug.com/1355310): Update the view.
+
+            view.name.setText(profile.getFullName());
+            view.streetAddress.setText(profile.getStreetAddress());
+            view.cityAndPostalCode.setText(getCityAndPostalCode(profile));
+            view.country.setText(profile.getCountryName());
+            view.email.setText(profile.getEmailAddress());
+            view.phoneNumber.setText(profile.getPhoneNumber());
         } else if (propertyKey == ON_CLICK_LISTENER) {
             view.itemView.setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());
+        } else if (propertyKey == IS_SELECTED) {
+            view.selectedIcon.setVisibility(model.get(IS_SELECTED) ? View.VISIBLE : View.GONE);
         }
+    }
+
+    /**
+     * Returns the properly formatted combination of city and postal code. For now,
+     * that means adhering to US formatting.
+     */
+    private static String getCityAndPostalCode(FastCheckoutAutofillProfile profile) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(profile.getLocality());
+        builder.append(", ");
+        builder.append(profile.getPostalCode());
+        return builder.toString();
     }
 }
