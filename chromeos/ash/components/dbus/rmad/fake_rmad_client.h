@@ -76,6 +76,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
       rmad::ProvisionStatus::Error error);
   void TriggerHardwareWriteProtectionStateObservation(bool enabled);
   void TriggerPowerCableStateObservation(bool plugged_in);
+  void TriggerExternalDiskStateObservation(bool detected_);
   void TriggerHardwareVerificationResultObservation(
       bool is_compliant,
       const std::string& error_str);

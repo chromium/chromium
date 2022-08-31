@@ -3621,6 +3621,38 @@ TEST_F(ShimlessRmaServiceTest, ObservePowerCableStateAfterSignal) {
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
+class FakeExternalDiskStateObserver : public mojom::ExternalDiskStateObserver {
+ public:
+  void OnExternalDiskStateChanged(bool detected) override {
+    observations.push_back(detected);
+  }
+
+  std::vector<bool> observations;
+  mojo::Receiver<mojom::ExternalDiskStateObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObserveExternalDiskState) {
+  FakeExternalDiskStateObserver fake_observer;
+  shimless_rma_provider_->ObserveExternalDiskState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerExternalDiskStateObservation(true);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0], true);
+}
+
+TEST_F(ShimlessRmaServiceTest, ObserveExternalDiskStateAfterSignal) {
+  FakeExternalDiskStateObserver fake_observer;
+  fake_rmad_client_()->TriggerExternalDiskStateObservation(true);
+  shimless_rma_provider_->ObserveExternalDiskState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0], true);
+}
+
 class FakeHardwareVerificationStatusObserver
     : public mojom::HardwareVerificationStatusObserver {
  public:

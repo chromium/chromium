@@ -144,10 +144,18 @@ class RmadClientTest : public testing::Test {
     EmitSignal(&signal);
   }
 
-  // Passes a provisioning progress signal to |client_|.
+  // Passes a power cable state signal to |client_|.
   void EmitPowerCableStateSignal(bool plugged_in) {
     dbus::Signal signal(rmad::kRmadInterfaceName, rmad::kPowerCableStateSignal);
     dbus::MessageWriter(&signal).AppendBool(plugged_in);
+    EmitSignal(&signal);
+  }
+
+  // Passes an external disk signal to |client_|.
+  void EmitExternalDiskStateSignal(bool detected) {
+    dbus::Signal signal(rmad::kRmadInterfaceName,
+                        rmad::kExternalDiskDetectedSignal);
+    dbus::MessageWriter(&signal).AppendBool(detected);
     EmitSignal(&signal);
   }
 
@@ -271,6 +279,8 @@ class TestObserver : public RmadClient::Observer {
   }
   int num_power_cable_state() const { return num_power_cable_state_; }
   bool last_power_cable_state() const { return last_power_cable_state_; }
+  int num_external_disk_state() const { return num_external_disk_state_; }
+  bool last_external_disk_state() const { return last_external_disk_state_; }
   int num_hardware_verification_result() const {
     return num_hardware_verification_result_;
   }
@@ -328,6 +338,12 @@ class TestObserver : public RmadClient::Observer {
     last_power_cable_state_ = plugged_in;
   }
 
+  // Called when power cable is plugged in or removed.
+  void ExternalDiskState(bool detected) override {
+    num_external_disk_state_++;
+    last_external_disk_state_ = detected;
+  }
+
   // Called when hardware verification completes.
   void HardwareVerificationResult(
       const rmad::HardwareVerificationResult& result) override {
@@ -362,6 +378,8 @@ class TestObserver : public RmadClient::Observer {
   bool last_hardware_write_protection_state_ = true;
   int num_power_cable_state_ = 0;
   bool last_power_cable_state_ = true;
+  int num_external_disk_state_ = 0;
+  bool last_external_disk_state_ = true;
   int num_hardware_verification_result_ = 0;
   rmad::HardwareVerificationResult last_hardware_verification_result_;
   int num_finalization_progress_ = 0;
@@ -909,7 +927,7 @@ TEST_F(RmadClientTest, HardwareWriteProtectionState) {
   EXPECT_TRUE(observer_1.last_hardware_write_protection_state());
 }
 
-// Tests that synchronous observers are notified about provisioning progress.
+// Tests that synchronous observers are notified about power cable state.
 TEST_F(RmadClientTest, PowerCableState) {
   TestObserver observer_1(client_);
 
@@ -920,6 +938,19 @@ TEST_F(RmadClientTest, PowerCableState) {
   EmitPowerCableStateSignal(true);
   EXPECT_EQ(observer_1.num_power_cable_state(), 2);
   EXPECT_TRUE(observer_1.last_power_cable_state());
+}
+
+// Tests that synchronous observers are notified about external disk state.
+TEST_F(RmadClientTest, ExternalDiskState) {
+  TestObserver observer_1(client_);
+
+  EmitExternalDiskStateSignal(false);
+  EXPECT_EQ(observer_1.num_external_disk_state(), 1);
+  EXPECT_FALSE(observer_1.last_external_disk_state());
+
+  EmitExternalDiskStateSignal(true);
+  EXPECT_EQ(observer_1.num_external_disk_state(), 2);
+  EXPECT_TRUE(observer_1.last_external_disk_state());
 }
 
 // Tests that synchronous observers are notified about hardware verification

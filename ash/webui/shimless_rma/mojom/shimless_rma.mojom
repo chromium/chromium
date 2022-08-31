@@ -470,6 +470,14 @@ interface PowerCableStateObserver {
   OnPowerCableStateChanged(bool plugged_in);
 };
 
+// Implemented by clients to track the external disk presence.
+interface ExternalDiskStateObserver {
+  // OnExternalDiskStateChanged is called to update the state of external disk.
+  // It is used to display a hint for saving logs in the repair complete state
+  // and for firmware updates.
+  OnExternalDiskStateChanged(bool detected);
+};
+
 // Implemented by clients to receive status of hardware verification.
 interface HardwareVerificationStatusObserver {
   // OnHardwareVerificationResult is called to report if hardware verification
@@ -796,6 +804,10 @@ interface ShimlessRmaService {
   // The power cable state is needed to indicate if the device is ready for
   // battery cutoff.
   ObservePowerCableState(pending_remote<PowerCableStateObserver> observer);
+  // Registers an observer for changes in external disk state.
+  // The external disk state is needed to display a hint when saving logs
+  // and for firmware updates.
+  ObserveExternalDiskState(pending_remote<ExternalDiskStateObserver> observer);
   // Registers an observer for completion of hardware verification.
   ObserveHardwareVerificationStatus(
       pending_remote<HardwareVerificationStatusObserver> observer);

@@ -2999,6 +2999,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_BUTTON" translateable="false" desc="Label for the logs dialog save to USB button. This triggers saving to the root of a USB drive with no option to select location or title of the logs. It is automatic as the file browser is not available to the shimless RMA app.">
         Save to USB
       </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_MISSING_USB_MESSAGE_TEXT" translateable="false" desc="Instructions that tell the user that a USB drive should be connected to save the logs.">
+        To log this session, insert external storage, such as a USB drive or a SD card. Make sure the external storage is different from the one used to install the firmware image in the previous step.
+      </message>
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_TITLE" translateable="false" desc="Title for the powerwash dialog displayed on repair complete page">
         Powerwash (factory reset) required
       </message>

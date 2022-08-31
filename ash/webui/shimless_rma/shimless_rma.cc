@@ -216,6 +216,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"rmaLogsTitleText", IDS_SHIMLESS_RMA_LOGS_TITLE},
       {"rmaLogsCancelButtonText", IDS_SHIMLESS_RMA_LOGS_CANCEL_BUTTON},
       {"rmaLogsSaveToUsbButtonText", IDS_SHIMLESS_RMA_LOGS_SAVE_BUTTON},
+      {"rmaLogsMissingUsbMessageText",
+       IDS_SHIMLESS_RMA_LOGS_MISSING_USB_MESSAGE_TEXT},
       {"repairCompletedPowerwashTitle",
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_TITLE},
       {"repairCompletedPowerwashShutdownDescription",

@@ -263,6 +263,27 @@ export const PowerCableStateObserverInterface =
     ash.shimlessRma.mojom.PowerCableStateObserverInterface;
 
 /**
+ * Type alias for ExternalDiskStateObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.ExternalDiskStateObserverRemote}
+ */
+export const ExternalDiskStateObserverRemote =
+    ash.shimlessRma.mojom.ExternalDiskStateObserverRemote;
+
+/**
+ * Type alias for ExternalDiskStateObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.ExternalDiskStateObserverReceiver}
+ */
+export const ExternalDiskStateObserverReceiver =
+    ash.shimlessRma.mojom.ExternalDiskStateObserverReceiver;
+
+/**
+ * Type alias for ExternalDiskStateObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.ExternalDiskStateObserverInterface}
+ */
+export const ExternalDiskStateObserverInterface =
+    ash.shimlessRma.mojom.ExternalDiskStateObserverInterface;
+
+/**
  * Type alias for HardwareVerificationStatusObserverRemote.
  * @typedef {ash.shimlessRma.mojom.HardwareVerificationStatusObserverRemote}
  */

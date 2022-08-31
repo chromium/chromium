@@ -420,6 +420,11 @@ void FakeRmadClient::TriggerPowerCableStateObservation(bool plugged_in) {
     observer.PowerCableState(plugged_in);
 }
 
+void FakeRmadClient::TriggerExternalDiskStateObservation(bool detected) {
+  for (auto& observer : observers_)
+    observer.ExternalDiskState(detected);
+}
+
 void FakeRmadClient::TriggerHardwareVerificationResultObservation(
     bool is_compliant,
     const std::string& error_str) {

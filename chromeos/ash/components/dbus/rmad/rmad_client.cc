@@ -80,6 +80,7 @@ class RmadClientImpl : public RmadClient {
   void ErrorReceived(dbus::Signal* signal);
   void HardwareWriteProtectionStateReceived(dbus::Signal* signal);
   void PowerCableStateReceived(dbus::Signal* signal);
+  void ExternalDiskStatusReceived(dbus::Signal* signal);
   void ProvisioningProgressReceived(dbus::Signal* signal);
   void HardwareVerificationResultReceived(dbus::Signal* signal);
   void FinalizationProgressReceived(dbus::Signal* signal);
@@ -134,6 +135,8 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
       {rmad::kHardwareWriteProtectionStateSignal,
        &RmadClientImpl::HardwareWriteProtectionStateReceived},
       {rmad::kPowerCableStateSignal, &RmadClientImpl::PowerCableStateReceived},
+      {rmad::kExternalDiskDetectedSignal,
+       &RmadClientImpl::ExternalDiskStatusReceived},
       {rmad::kProvisioningProgressSignal,
        &RmadClientImpl::ProvisioningProgressReceived},
       {rmad::kHardwareVerificationResultSignal,
@@ -298,6 +301,21 @@ void RmadClientImpl::PowerCableStateReceived(dbus::Signal* signal) {
   DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.PowerCableState(plugged_in);
+  }
+}
+
+void RmadClientImpl::ExternalDiskStatusReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kExternalDiskDetectedSignal);
+  dbus::MessageReader reader(signal);
+  bool detected;
+  if (!reader.PopBool(&detected)) {
+    LOG(ERROR) << "Unable to decode detected bool from " << signal->GetMember()
+               << " signal";
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  for (auto& observer : observers_) {
+    observer.ExternalDiskState(detected);
   }
 }
 

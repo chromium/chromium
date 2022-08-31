@@ -13,7 +13,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {PowerCableStateObserverInterface, PowerCableStateObserverReceiver, RmadErrorCode, SaveLogResponse, ShimlessRmaServiceInterface, ShutdownMethod} from './shimless_rma_types.js';
+import {ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, PowerCableStateObserverInterface, PowerCableStateObserverReceiver, RmadErrorCode, SaveLogResponse, ShimlessRmaServiceInterface, ShutdownMethod} from './shimless_rma_types.js';
 import {executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
@@ -45,7 +45,6 @@ const FinishRmaOption = {
  * @enum {number}
  */
 const USBLogState = {
-  // TODO (gavinwill): Implement `USB_UNPLUGGED` once USB detection is ready.
   USB_UNPLUGGED: 0,
   USB_READY: 1,
   SAVING_LOGS: 2,
@@ -158,6 +157,13 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
 
     this.shimlessRmaService_.observePowerCableState(
         this.powerCableStateReceiver_.$.bindNewPipeAndPassRemote());
+
+    /** @private {!ExternalDiskStateObserverReceiver} */
+    this.externalDiskStateReceiver_ = new ExternalDiskStateObserverReceiver(
+        /** @type {!ExternalDiskStateObserverInterface} */ (this));
+
+    this.shimlessRmaService_.observeExternalDiskState(
+        this.externalDiskStateReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   /** @protected */
@@ -361,6 +367,21 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   /**
+   * Implements ExternalDiskStateObserver.onExternalDiskStateChanged()
+   * @param {boolean} detected
+   */
+  onExternalDiskStateChanged(detected) {
+    if (!detected) {
+      this.usbLogState_ = USBLogState.USB_UNPLUGGED;
+      return;
+    }
+
+    if (this.usbLogState_ === USBLogState.USB_UNPLUGGED) {
+      this.usbLogState_ = USBLogState.USB_READY;
+    }
+  }
+
+  /**
    * @return {boolean}
    * @protected
    */
@@ -428,6 +449,14 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   shouldShowLogSaveAttemptContainer_() {
     return this.usbLogState_ === USBLogState.LOG_SAVE_SUCCESS ||
         this.usbLogState_ === USBLogState.LOG_SAVE_FAIL;
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowLogUsbMessageContainer_() {
+    return this.usbLogState_ === USBLogState.USB_UNPLUGGED;
   }
 
   /**

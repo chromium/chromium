@@ -1145,6 +1145,13 @@ void ShimlessRmaService::PowerCableState(bool plugged_in) {
   }
 }
 
+void ShimlessRmaService::ExternalDiskState(bool detected) {
+  last_external_disk_state_ = detected;
+  if (external_disk_state_observer_.is_bound()) {
+    external_disk_state_observer_->OnExternalDiskStateChanged(detected);
+  }
+}
+
 void ShimlessRmaService::HardwareVerificationResult(
     const rmad::HardwareVerificationResult& result) {
   last_hardware_verification_result_ = result;
@@ -1231,6 +1238,15 @@ void ShimlessRmaService::ObservePowerCableState(
   power_cable_observer_.Bind(std::move(observer));
   if (last_power_cable_state_) {
     power_cable_observer_->OnPowerCableStateChanged(*last_power_cable_state_);
+  }
+}
+
+void ShimlessRmaService::ObserveExternalDiskState(
+    ::mojo::PendingRemote<mojom::ExternalDiskStateObserver> observer) {
+  external_disk_state_observer_.Bind(std::move(observer));
+  if (last_external_disk_state_) {
+    external_disk_state_observer_->OnExternalDiskStateChanged(
+        *last_external_disk_state_);
   }
 }
 

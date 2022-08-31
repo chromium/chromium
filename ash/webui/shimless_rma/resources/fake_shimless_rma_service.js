@@ -8,7 +8,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -1028,6 +1028,20 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * Implements ShimlessRmaServiceInterface.ObserveExternalDiskState.
+   * @param {!ExternalDiskStateObserverRemote} remote
+   */
+  observeExternalDiskState(remote) {
+    this.observables_.observe(
+        'ExternalDiskStateObserver_onExternalDiskStateChanged', (detected) => {
+          remote.onExternalDiskStateChanged(/** @type {boolean} */ (detected));
+        });
+
+    this.triggerExternalDiskObserver(true, 10000);
+    this.triggerExternalDiskObserver(false, 15000);
+  }
+
+  /**
    * Implements ShimlessRmaServiceInterface.ObserveHardwareVerificationStatus.
    * @param {!HardwareVerificationStatusObserverRemote} remote
    */
@@ -1169,6 +1183,17 @@ export class FakeShimlessRmaService {
   triggerPowerCableObserver(pluggedIn, delayMs) {
     return this.triggerObserverAfterMs(
         'PowerCableStateObserver_onPowerCableStateChanged', pluggedIn, delayMs);
+  }
+
+  /**
+   * Causes the external disk observer to fire after a delay.
+   * @param {boolean} detected
+   * @param {number} delayMs
+   */
+  triggerExternalDiskObserver(detected, delayMs) {
+    return this.triggerObserverAfterMs(
+        'ExternalDiskStateObserver_onExternalDiskStateChanged', detected,
+        delayMs);
   }
 
   /**
@@ -1350,6 +1375,8 @@ export class FakeShimlessRmaService {
         'HardwareWriteProtectionStateObserver_onHardwareWriteProtectionStateChanged');
     this.observables_.register(
         'PowerCableStateObserver_onPowerCableStateChanged');
+    this.observables_.register(
+        'ExternalDiskStateObserver_onExternalDiskStateChanged');
     this.observables_.register(
         'HardwareVerificationStatusObserver_onHardwareVerificationResult');
     this.observables_.register('FinalizationObserver_onFinalizationUpdated');

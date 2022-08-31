@@ -155,6 +155,14 @@
     align-items: center;
     display: flex;
   }
+
+  #connectUsbIcon {
+    color: var(--cros-icon-color-secondary);
+  }
+
+  #connectUsbInstructions {
+    color: var(--cros-text-color-primary);
+  }
 </style>
 
 <base-page>
@@ -242,7 +250,7 @@
   <div slot="body">
     <div class="log">[[log_]]</div>
   </div>
-  <div class="dialog-footer" slot="button-container"
+  <div id="saveLogButtonContainer" class="dialog-footer" slot="button-container"
       hidden="[[!shouldShowSaveToUsbButton_(usbLogState_)]]">
     <cr-button id="closeLogDialogButton" on-click="closeLogsDialog_">
       [[i18n('rmaLogsCancelButtonText')]]
@@ -265,6 +273,17 @@
         on-click="closeLogsDialog_">
       [[i18n('doneButtonLabel')]]
     </cr-button>
+  </div>
+  <div id="logConnectUsbMessageContainer" class="dialog-footer"
+        slot="button-container"
+        hidden="[[!shouldShowLogUsbMessageContainer_(usbLogState_)]]">
+    <div id="logSavedIconText">
+      <iron-icon id="connectUsbIcon" class="small-icon"
+          icon="shimless-icon:warning"></iron-icon>
+      <span id="connectUsbInstructions" class="instructions">
+        [[i18n('rmaLogsMissingUsbMessageText')]]
+      </span>
+    </div>
   </div>
 </cr-dialog>
 
