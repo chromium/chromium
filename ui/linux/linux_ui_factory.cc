@@ -12,6 +12,7 @@
 #include "ui/base/buildflags.h"
 #include "ui/color/system_theme.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_delegate.h"
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/gtk/gtk_ui_factory.h"
@@ -34,6 +35,9 @@ std::unique_ptr<LinuxUi> CreateGtkUi() {
 }
 
 LinuxUi* GetGtkUi() {
+  // LinuxUi creation will fail without a delegate.
+  if (!ui::LinuxUiDelegate::GetInstance())
+    return nullptr;
   static LinuxUi* gtk_ui = CreateGtkUi().release();
   return gtk_ui;
 }
@@ -48,6 +52,9 @@ std::unique_ptr<LinuxUi> CreateQtUi() {
 }
 
 LinuxUi* GetQtUi() {
+  // LinuxUi creation will fail without a delegate.
+  if (!ui::LinuxUiDelegate::GetInstance())
+    return nullptr;
   static LinuxUi* qt_ui = CreateQtUi().release();
   return qt_ui;
 }

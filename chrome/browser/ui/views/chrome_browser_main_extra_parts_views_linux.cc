@@ -31,15 +31,6 @@ class LinuxUiGetterImpl : public ui::LinuxUiGetter {
   }
 };
 
-ui::LinuxUi* BuildLinuxUI() {
-  // If the ozone backend hasn't provided a LinuxUiDelegate, don't try to create
-  // a LinuxUi instance as this may result in a crash in toolkit initialization.
-  if (!ui::LinuxUiDelegate::GetInstance())
-    return nullptr;
-
-  return ui::GetDefaultLinuxUi();
-}
-
 }  // namespace
 
 ChromeBrowserMainExtraPartsViewsLinux::ChromeBrowserMainExtraPartsViewsLinux() =
@@ -51,7 +42,7 @@ ChromeBrowserMainExtraPartsViewsLinux::
 void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
   ChromeBrowserMainExtraPartsViews::ToolkitInitialized();
 
-  if (auto* linux_ui = BuildLinuxUI()) {
+  if (auto* linux_ui = ui::GetDefaultLinuxUi()) {
     linux_ui_getter_ = std::make_unique<LinuxUiGetterImpl>();
     ui::LinuxUi::SetInstance(linux_ui);
 
