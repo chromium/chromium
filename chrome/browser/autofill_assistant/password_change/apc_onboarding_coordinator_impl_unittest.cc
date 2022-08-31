@@ -103,7 +103,7 @@ class ApcOnboardingCoordinatorImplTest
 TEST_F(ApcOnboardingCoordinatorImplTest,
        PerformOnboardingWithPreviouslyGivenConsent) {
   // Simulate previously given consent.
-  GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopEnabled, true);
+  GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopConsent, true);
 
   base::MockCallback<ApcOnboardingCoordinator::Callback> callback;
   EXPECT_CALL(callback, Run(true));
@@ -114,13 +114,13 @@ TEST_F(ApcOnboardingCoordinatorImplTest,
 
   // Consent is still registered as in the pref.
   EXPECT_TRUE(
-      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled));
+      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent));
 }
 
 TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndAccept) {
   // The default is false.
   EXPECT_FALSE(
-      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled));
+      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent));
 
   // Create a mock controller.
   raw_ptr<MockAssistantOnboardingController> controller =
@@ -152,7 +152,7 @@ TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndAccept) {
 
   // Consent is saved in the pref.
   EXPECT_TRUE(
-      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled));
+      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent));
 
   // Consent is also recorded via the `ConsentAuditor`.
   ASSERT_THAT(consent_auditor()->recorded_consents(), SizeIs(1));
@@ -172,7 +172,7 @@ TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndAccept) {
 TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndDecline) {
   // The default is false.
   EXPECT_FALSE(
-      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled));
+      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent));
 
   // Create a mock controller.
   raw_ptr<MockAssistantOnboardingController> controller =
@@ -198,7 +198,7 @@ TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndDecline) {
 
   // Consent is saved in the pref.
   EXPECT_FALSE(
-      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled));
+      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent));
 }
 
 TEST_F(ApcOnboardingCoordinatorImplTest,
@@ -265,8 +265,15 @@ TEST_F(ApcOnboardingCoordinatorImplTest,
 }
 
 TEST_F(ApcOnboardingCoordinatorImplTest, RevokeConsent) {
+  // Simulate previously given consent.
+  GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopConsent, true);
+
   coordinator()->RevokeConsent(
       {kRevokationDescriptionId1, kRevokationDescriptionId2});
+
+  // Consent is now revoked.
+  EXPECT_FALSE(
+      GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent));
 
   // Consent is also recorded via the `ConsentAuditor`.
   ASSERT_THAT(consent_auditor()->recorded_consents(), SizeIs(1));

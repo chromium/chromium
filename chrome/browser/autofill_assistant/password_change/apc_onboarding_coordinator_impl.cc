@@ -67,6 +67,7 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
 void ApcOnboardingCoordinatorImpl::RevokeConsent(
     const std::vector<int>& description_grd_ids) {
   sync_pb::UserConsentTypes::AutofillAssistantConsent consent;
+  GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopConsent, false);
   consent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
                          UserConsentTypes_ConsentStatus_NOT_GIVEN);
   consent.mutable_description_grd_ids()->Assign(description_grd_ids.cbegin(),
@@ -88,7 +89,7 @@ ApcOnboardingCoordinatorImpl::CreateOnboardingPrompt(
 }
 
 bool ApcOnboardingCoordinatorImpl::IsOnboardingAlreadyAccepted() {
-  return GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled);
+  return GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent);
 }
 
 void ApcOnboardingCoordinatorImpl::OpenOnboardingDialog() {
@@ -109,7 +110,7 @@ void ApcOnboardingCoordinatorImpl::OnControllerResponseReceived(
     absl::optional<int> confirmation_grd_id,
     const std::vector<int>& description_grd_ids) {
   if (success) {
-    GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopEnabled, true);
+    GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopConsent, true);
     CHECK(confirmation_grd_id.has_value());
     RecordConsentGiven(confirmation_grd_id.value(), description_grd_ids);
   }
