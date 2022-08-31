@@ -5130,6 +5130,7 @@
           '--child-processes=8',
           '--run-by-dir=0',
           '--no-restart-on-new-group',
+          '--log-wptreport',
         ],
         'merge': {
           'args': [
@@ -5152,6 +5153,7 @@
           '--child-processes=8',
           '--run-by-dir=0',
           '--no-restart-on-new-group',
+          '--log-wptreport',
           '--xvfb'
         ],
         'merge': {
