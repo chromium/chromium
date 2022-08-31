@@ -709,8 +709,6 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_scale.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_scope_rule.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_scope_rule.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_scroll_timeline_rule.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_scroll_timeline_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_skew.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_skew.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_skew_x.cc",

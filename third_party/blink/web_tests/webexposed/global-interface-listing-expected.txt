@@ -914,14 +914,6 @@ interface CSSScale : CSSTransformComponent
 interface CSSScopeRule : CSSConditionRule
     attribute @@toStringTag
     method constructor
-interface CSSScrollTimelineRule : CSSRule
-    attribute @@toStringTag
-    getter end
-    getter name
-    getter orientation
-    getter source
-    getter start
-    method constructor
 interface CSSSkew : CSSTransformComponent
     attribute @@toStringTag
     getter ax

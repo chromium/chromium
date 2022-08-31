@@ -191,7 +191,6 @@ class CORE_EXPORT CSSParserImpl {
   StyleRulePage* ConsumePageRule(CSSParserTokenStream&);
   StyleRuleProperty* ConsumePropertyRule(CSSParserTokenStream&);
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
-  StyleRuleScrollTimeline* ConsumeScrollTimelineRule(CSSParserTokenStream&);
   template <bool UseArena>
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&);
   template <bool UseArena>

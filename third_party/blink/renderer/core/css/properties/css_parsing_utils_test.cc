@@ -19,7 +19,6 @@ namespace {
 using css_parsing_utils::AtDelimiter;
 using css_parsing_utils::AtIdent;
 using css_parsing_utils::ConsumeAngle;
-using css_parsing_utils::ConsumeIdSelector;
 using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
 
@@ -43,65 +42,6 @@ TEST(CSSParsingUtilsTest, BasicShapeUseCount) {
 TEST(CSSParsingUtilsTest, Revert) {
   EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword(CSSValueID::kRevert));
   EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword("revert"));
-}
-
-TEST(CSSParsingUtilsTest, ConsumeIdSelector) {
-  {
-    String text = "#foo";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_EQ("#foo", ConsumeIdSelector(range)->CssText());
-  }
-  {
-    String text = "#bar  ";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_EQ("#bar", ConsumeIdSelector(range)->CssText());
-    EXPECT_TRUE(range.AtEnd())
-        << "ConsumeIdSelector cleans up trailing whitespace";
-  }
-
-  {
-    String text = "#123";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    ASSERT_TRUE(range.Peek().GetType() == kHashToken &&
-                range.Peek().GetHashTokenType() == kHashTokenUnrestricted);
-    EXPECT_FALSE(ConsumeIdSelector(range))
-        << "kHashTokenUnrestricted is not a valid <id-selector>";
-  }
-  {
-    String text = "#";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_FALSE(ConsumeIdSelector(range));
-  }
-  {
-    String text = " #foo";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_FALSE(ConsumeIdSelector(range))
-        << "ConsumeIdSelector does not accept preceding whitespace";
-    EXPECT_EQ(kWhitespaceToken, range.Peek().GetType());
-  }
-  {
-    String text = "foo";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_FALSE(ConsumeIdSelector(range));
-  }
-  {
-    String text = "##";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_FALSE(ConsumeIdSelector(range));
-  }
-  {
-    String text = "10px";
-    auto tokens = CSSTokenizer(text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_FALSE(ConsumeIdSelector(range));
-  }
 }
 
 double ConsumeAngleValue(String target) {

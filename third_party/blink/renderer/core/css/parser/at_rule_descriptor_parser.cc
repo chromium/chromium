@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
-#include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -283,21 +282,6 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenRange& range,
   return values;
 }
 
-CSSValue* ConsumeScrollTimelineSource(CSSParserTokenRange& range) {
-  if (auto* selector_function =
-          css_parsing_utils::ConsumeSelectorFunction(range)) {
-    return selector_function;
-  }
-  return css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(
-      range);
-}
-
-CSSValue* ConsumeScrollTimelineOrientation(CSSParserTokenRange& range) {
-  return css_parsing_utils::ConsumeIdent<
-      CSSValueID::kAuto, CSSValueID::kBlock, CSSValueID::kInline,
-      CSSValueID::kHorizontal, CSSValueID::kVertical>(range);
-}
-
 CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
                             AtRuleDescriptorID id,
                             const CSSTokenizedValue& tokenized_value,
@@ -314,8 +298,6 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
       return Parser::ParseAtPropertyDescriptor(id, tokenized_value, context);
     case StyleRule::kCounterStyle:
       return Parser::ParseAtCounterStyleDescriptor(id, range, context);
-    case StyleRule::kScrollTimeline:
-      return Parser::ParseAtScrollTimelineDescriptor(id, range, context);
     case StyleRule::kCharset:
     case StyleRule::kContainer:
     case StyleRule::kStyle:
@@ -464,35 +446,6 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
       range.ConsumeWhitespace();
       parsed_value = css_parsing_utils::ConsumeIdent<CSSValueID::kTrue,
                                                      CSSValueID::kFalse>(range);
-      break;
-    default:
-      break;
-  }
-
-  if (!parsed_value || !range.AtEnd())
-    return nullptr;
-
-  return parsed_value;
-}
-
-CSSValue* AtRuleDescriptorParser::ParseAtScrollTimelineDescriptor(
-    AtRuleDescriptorID id,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context) {
-  CSSValue* parsed_value = nullptr;
-
-  range.ConsumeWhitespace();
-
-  switch (id) {
-    case AtRuleDescriptorID::Source:
-      parsed_value = ConsumeScrollTimelineSource(range);
-      break;
-    case AtRuleDescriptorID::Orientation:
-      parsed_value = ConsumeScrollTimelineOrientation(range);
-      break;
-    case AtRuleDescriptorID::Start:
-    case AtRuleDescriptorID::End:
-      parsed_value = css_parsing_utils::ConsumeScrollOffset(range, context);
       break;
     default:
       break;

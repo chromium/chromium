@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
-#include "third_party/blink/renderer/core/css/css_element_offset_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
@@ -25,7 +24,6 @@
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
-#include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
@@ -1367,29 +1365,6 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
   AtomicString url_string(url.ToString());
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
       url_string, context.CompleteURL(url_string));
-}
-
-CSSValue* ConsumeSelectorFunction(CSSParserTokenRange& range) {
-  if (range.Peek().FunctionId() != CSSValueID::kSelector)
-    return nullptr;
-  auto block = ConsumeFunction(range);
-  if (auto* id_value = ConsumeIdSelector(block)) {
-    if (!block.AtEnd())
-      return nullptr;
-    auto* selector_function =
-        MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kSelector);
-    selector_function->Append(*id_value);
-    return selector_function;
-  }
-  return nullptr;
-}
-
-CSSValue* ConsumeIdSelector(CSSParserTokenRange& range) {
-  if (!IsHashIdentifier(range.Peek()))
-    return nullptr;
-  auto token = range.ConsumeIncludingWhitespace();
-  return MakeGarbageCollected<cssvalue::CSSIdSelectorValue>(
-      token.Value().ToString());
 }
 
 static int ClampRGBComponent(const CSSPrimitiveValue& value) {
@@ -3182,46 +3157,6 @@ bool IsTimelineName(const CSSParserToken& token) {
     return true;
   return token.GetType() == kIdentToken &&
          IsCustomIdent<CSSValueID::kNone>(token.Id());
-}
-
-CSSValue* ConsumeScrollOffset(CSSParserTokenRange& range,
-                              const CSSParserContext& context) {
-  if (IdentMatches<CSSValueID::kAuto>(range.Peek().Id()))
-    return ConsumeIdent(range);
-  CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
-  if (auto* element_offset = ConsumeElementOffset(range, context))
-    return element_offset;
-  CSSValue* value = ConsumeLengthOrPercent(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-  if (!range.AtEnd())
-    return nullptr;
-  return value;
-}
-
-namespace {
-
-// https://drafts.csswg.org/scroll-animations-1/#typedef-element-offset-edge
-CSSValue* ConsumeElementOffsetEdge(CSSParserTokenRange& range) {
-  return ConsumeIdent<CSSValueID::kStart, CSSValueID::kEnd>(range);
-}
-
-}  // namespace
-
-// https://drafts.csswg.org/scroll-animations-1/#typedef-element-offset
-CSSValue* ConsumeElementOffset(CSSParserTokenRange& range,
-                               const CSSParserContext& context) {
-  CSSValue* target = ConsumeSelectorFunction(range);
-  if (!target)
-    return nullptr;
-  CSSValue* edge = ConsumeElementOffsetEdge(range);
-  CSSValue* threshold = ConsumeNumber(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-  // Edge and threshold may appear in any order.
-  edge = edge ? edge : ConsumeElementOffsetEdge(range);
-  if (!range.AtEnd())
-    return nullptr;
-  return MakeGarbageCollected<cssvalue::CSSElementOffsetValue>(target, edge,
-                                                               threshold);
 }
 
 CSSValue* ConsumeSelfPositionOverflowPosition(

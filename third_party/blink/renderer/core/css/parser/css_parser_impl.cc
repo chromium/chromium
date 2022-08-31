@@ -650,8 +650,6 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
         return ConsumePageRule(stream);
       case kCSSAtRuleProperty:
         return ConsumePropertyRule(stream);
-      case kCSSAtRuleScrollTimeline:
-        return ConsumeScrollTimelineRule(stream);
       case kCSSAtRuleScope:
         return ConsumeScopeRule<UseArena>(stream);
       case kCSSAtRuleCounterStyle:
@@ -1119,36 +1117,6 @@ StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
       name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
-StyleRuleScrollTimeline* CSSParserImpl::ConsumeScrollTimelineRule(
-    CSSParserTokenStream& stream) {
-  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
-  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
-  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
-    return nullptr;
-  CSSParserTokenStream::BlockGuard guard(stream);
-
-  if (!RuntimeEnabledFeatures::CSSScrollTimelineEnabled())
-    return nullptr;
-
-  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
-  if (!prelude.AtEnd())
-    return nullptr;
-  if (!css_parsing_utils::IsTimelineName(name_token))
-    return nullptr;
-  String name = name_token.Value().ToString();
-
-  if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kScrollTimeline,
-                               prelude_offset_start);
-    observer_->EndRuleHeader(prelude_offset_end);
-  }
-
-  ConsumeDeclarationList(stream, StyleRule::kScrollTimeline);
-  return MakeGarbageCollected<StyleRuleScrollTimeline>(
-      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
-}
-
 template <bool UseArena>
 StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
   DCHECK(RuntimeEnabledFeatures::CSSScopeEnabled());
@@ -1435,7 +1403,6 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
       rule_type == StyleRule::kContainer ||
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kFontPaletteValues ||
-      rule_type == StyleRule::kScrollTimeline ||
       rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope ||
       rule_type == StyleRule::kTry;
   bool use_observer = observer_ && is_observer_rule_type;
@@ -1517,8 +1484,7 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   if (rule_type == StyleRule::kFontFace ||
       rule_type == StyleRule::kFontPaletteValues ||
       rule_type == StyleRule::kProperty ||
-      rule_type == StyleRule::kCounterStyle ||
-      rule_type == StyleRule::kScrollTimeline) {
+      rule_type == StyleRule::kCounterStyle) {
     if (important)  // Invalid
       return;
     atrule_id = lhs.ParseAsAtRuleDescriptorID();

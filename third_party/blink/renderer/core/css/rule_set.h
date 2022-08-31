@@ -425,10 +425,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return font_palette_values_rules_;
   }
-  const HeapVector<Member<StyleRuleScrollTimeline>>& ScrollTimelineRules()
-      const {
-    return scroll_timeline_rules_;
-  }
   const HeapVector<Member<StyleRulePositionFallback>>& PositionFallbackRules()
       const {
     return position_fallback_rules_;
@@ -519,7 +515,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddFontFaceRule(StyleRuleFontFace*);
   void AddKeyframesRule(StyleRuleKeyframes*);
   void AddPropertyRule(StyleRuleProperty*);
-  void AddScrollTimelineRule(StyleRuleScrollTimeline*);
   void AddCounterStyleRule(StyleRuleCounterStyle*);
   void AddFontPaletteValuesRule(StyleRuleFontPaletteValues*);
   void AddPositionFallbackRule(StyleRulePositionFallback*);
@@ -609,7 +604,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleKeyframes>> keyframes_rules_;
   HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
-  HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules_;
   HeapVector<Member<StyleRulePositionFallback>> position_fallback_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
 

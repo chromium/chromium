@@ -62,7 +62,6 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kContainer,
     kCounterStyle,
     kScope,
-    kScrollTimeline,
     kSupports,
     kViewport,
     kPositionFallback,
@@ -94,7 +93,6 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPropertyRule() const { return GetType() == kProperty; }
   bool IsStyleRule() const { return GetType() == kStyle; }
   bool IsScopeRule() const { return GetType() == kScope; }
-  bool IsScrollTimelineRule() const { return GetType() == kScrollTimeline; }
   bool IsSupportsRule() const { return GetType() == kSupports; }
   bool IsViewportRule() const { return GetType() == kViewport; }
   bool IsImportRule() const { return GetType() == kImport; }
@@ -345,35 +343,6 @@ class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {
   Member<const CascadeLayer> layer_;
 };
 
-class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
- public:
-  StyleRuleScrollTimeline(const String& name, const CSSPropertyValueSet*);
-  StyleRuleScrollTimeline(const StyleRuleScrollTimeline&) = default;
-
-  StyleRuleScrollTimeline* Copy() const {
-    return MakeGarbageCollected<StyleRuleScrollTimeline>(*this);
-  }
-
-  void TraceAfterDispatch(blink::Visitor*) const;
-
-  const AtomicString& GetName() const { return name_; }
-  const CSSValue* GetSource() const { return source_; }
-  const CSSValue* GetOrientation() const { return orientation_; }
-  const CSSValue* GetStart() const { return start_; }
-  const CSSValue* GetEnd() const { return end_; }
-
-  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
-  const CascadeLayer* GetCascadeLayer() const { return layer_; }
-
- private:
-  AtomicString name_;
-  Member<const CSSValue> source_;
-  Member<const CSSValue> orientation_;
-  Member<const CSSValue> start_;
-  Member<const CSSValue> end_;
-  Member<const CascadeLayer> layer_;
-};
-
 class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
  public:
   const HeapVector<Member<StyleRuleBase>>& ChildRules() const {
@@ -586,13 +555,6 @@ template <>
 struct DowncastTraits<StyleRuleProperty> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsPropertyRule();
-  }
-};
-
-template <>
-struct DowncastTraits<StyleRuleScrollTimeline> {
-  static bool AllowFrom(const StyleRuleBase& rule) {
-    return rule.IsScrollTimelineRule();
   }
 };
 

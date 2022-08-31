@@ -486,11 +486,6 @@ void RuleSet::AddFontPaletteValuesRule(StyleRuleFontPaletteValues* rule) {
   font_palette_values_rules_.push_back(rule);
 }
 
-void RuleSet::AddScrollTimelineRule(StyleRuleScrollTimeline* rule) {
-  need_compaction_ = true;
-  scroll_timeline_rules_.push_back(rule);
-}
-
 void RuleSet::AddPositionFallbackRule(StyleRulePositionFallback* rule) {
   need_compaction_ = true;
   position_fallback_rules_.push_back(rule);
@@ -538,10 +533,6 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
       counter_style_rule->SetCascadeLayer(cascade_layer);
       AddCounterStyleRule(counter_style_rule);
-    } else if (auto* scroll_timeline_rule =
-                   DynamicTo<StyleRuleScrollTimeline>(rule)) {
-      scroll_timeline_rule->SetCascadeLayer(cascade_layer);
-      AddScrollTimelineRule(scroll_timeline_rule);
     } else if (auto* position_fallback_rule =
                    DynamicTo<StyleRulePositionFallback>(rule)) {
       // TODO(crbug.com/1309178): Handle interaction with cascade layers.
@@ -867,7 +858,6 @@ void RuleSet::CompactRules() {
   keyframes_rules_.ShrinkToFit();
   property_rules_.ShrinkToFit();
   counter_style_rules_.ShrinkToFit();
-  scroll_timeline_rules_.ShrinkToFit();
   position_fallback_rules_.ShrinkToFit();
   layer_intervals_.ShrinkToFit();
 
@@ -971,7 +961,6 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
-  visitor->Trace(scroll_timeline_rules_);
   visitor->Trace(position_fallback_rules_);
   visitor->Trace(media_query_set_results_);
   visitor->Trace(implicit_outer_layer_);

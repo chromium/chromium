@@ -163,8 +163,6 @@ StringView ConsumeUrlAsStringView(CSSParserTokenRange&,
                                   const CSSParserContext&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange&,
                                   const CSSParserContext&);
-CSSValue* ConsumeSelectorFunction(CSSParserTokenRange&);
-CORE_EXPORT CSSValue* ConsumeIdSelector(CSSParserTokenRange&);
 
 CORE_EXPORT CSSValue* ConsumeColor(CSSParserTokenRange&,
                                    const CSSParserContext&,
@@ -292,8 +290,6 @@ bool IsCustomIdent(CSSValueID);
 // https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-name
 bool IsTimelineName(const CSSParserToken&);
 
-CSSValue* ConsumeScrollOffset(CSSParserTokenRange&, const CSSParserContext&);
-CSSValue* ConsumeElementOffset(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeSelfPositionOverflowPosition(CSSParserTokenRange&,
                                               IsPositionKeyword);
 CSSValue* ConsumeSimplifiedDefaultPosition(CSSParserTokenRange&,

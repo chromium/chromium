@@ -452,20 +452,6 @@ const CSSAnimationUpdate* GetPendingAnimationUpdate(Node& node) {
   return &element_animations->CssAnimations().PendingUpdate();
 }
 
-// The source element must be a previous inclusive sibling of one of
-// subject's inclusive ancestors.
-bool IsPreviousSiblingAncestor(Node* source, Node* subject) {
-  DCHECK(subject);
-
-  for (Node* prev = subject; prev; prev = prev->previousSibling()) {
-    if (source == prev)
-      return true;
-  }
-
-  Node* parent = subject->ParentOrShadowHostNode();
-  return parent && IsPreviousSiblingAncestor(source, parent);
-}
-
 }  // namespace
 
 const CSSAnimations::TimelineData* CSSAnimations::GetTimelineData(
@@ -573,24 +559,8 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
     return nullptr;
   }
   if (style_timeline.IsName()) {
-    // First, look for timelines created by 'scroll-timeline' properties.
-    if (CSSScrollTimeline* timeline = FindPreviousSiblingAncestorTimeline(
-            style_timeline.GetName().GetValue(), element, &update)) {
-      return timeline;
-    }
-    // Otherwise, look for timelines created by @scroll-timeline.
-    // TODO(crbug.com/1317765): Remove support for @scroll-timeline.
-    CSSScrollTimeline* timeline = document.GetStyleEngine().FindScrollTimeline(
-        style_timeline.GetName().GetValue());
-    if (!timeline)
-      return nullptr;
-    // This currently enforces the lookup rules from the new scroll timeline API
-    // on @scroll-timelines. This makes transitioning to the new API easier.
-    if (timeline->source() &&
-        !IsPreviousSiblingAncestor(timeline->source(), element)) {
-      return nullptr;
-    }
-    return timeline;
+    return FindPreviousSiblingAncestorTimeline(
+        style_timeline.GetName().GetValue(), element, &update);
   }
   DCHECK(style_timeline.IsScroll());
   return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll());

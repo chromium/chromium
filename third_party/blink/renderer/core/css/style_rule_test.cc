@@ -12,67 +12,6 @@ namespace blink {
 
 class StyleRuleTest : public PageTestBase {};
 
-// Verifies that a StyleRuleScrollTimeline can be accessed even if
-// the runtime flag CSSScrollTimeline is disabled.
-//
-// Note that this test can be removed when the CSSScrollTimeline flag is
-// removed.
-TEST_F(StyleRuleTest, StyleRuleScrollTimelineGettersWithoutFeature) {
-  ScopedCSSScrollTimelineForTest scoped_disable_feature(false);
-
-  StyleRuleBase* base_rule = nullptr;
-
-  {
-    ScopedCSSScrollTimelineForTest scoped_enable_feature(true);
-    base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
-        @scroll-timeline timeline {
-          source: selector(#foo);
-          start: 1px;
-          end: 2px;
-        }
-      )CSS");
-  }
-
-  ASSERT_TRUE(base_rule);
-  const auto* rule = To<StyleRuleScrollTimeline>(base_rule);
-
-  // Don't crash:
-  EXPECT_FALSE(rule->GetName().IsEmpty());
-  EXPECT_TRUE(rule->GetSource());
-  EXPECT_TRUE(rule->GetStart());
-  EXPECT_TRUE(rule->GetEnd());
-}
-
-TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
-  ScopedCSSScrollTimelineForTest scoped_feature(true);
-
-  auto* base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
-      @scroll-timeline timeline {
-        source: selector(#foo);
-        start: 1px;
-        end: 2px;
-      }
-    )CSS");
-
-  ASSERT_TRUE(base_rule);
-  auto* base_copy = base_rule->Copy();
-
-  EXPECT_NE(base_rule, base_copy);
-  EXPECT_EQ(base_rule->GetType(), base_copy->GetType());
-
-  auto* rule = DynamicTo<StyleRuleScrollTimeline>(base_rule);
-  auto* copy = DynamicTo<StyleRuleScrollTimeline>(base_copy);
-
-  ASSERT_TRUE(rule);
-  ASSERT_TRUE(copy);
-
-  EXPECT_EQ(rule->GetName(), copy->GetName());
-  EXPECT_EQ(rule->GetSource(), copy->GetSource());
-  EXPECT_EQ(rule->GetOrientation(), copy->GetOrientation());
-  EXPECT_EQ(rule->GetStart(), copy->GetStart());
-  EXPECT_EQ(rule->GetEnd(), copy->GetEnd());
-}
-
 TEST_F(StyleRuleTest, StyleRulePropertyCopy) {
   auto* base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
       @property --foo {

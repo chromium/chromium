@@ -67,14 +67,13 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
 
     // Values for internal use, not web-exposed:
     kPropertyRule = 16,
-    kScrollTimelineRule = 17,
-    kContainerRule = 18,
-    kLayerBlockRule = 19,
-    kLayerStatementRule = 20,
-    kFontPaletteValuesRule = 21,
-    kScopeRule = 22,
-    kPositionFallbackRule = 23,
-    kTryRule = 24,
+    kContainerRule = 17,
+    kLayerBlockRule = 18,
+    kLayerStatementRule = 19,
+    kFontPaletteValuesRule = 20,
+    kScopeRule = 21,
+    kPositionFallbackRule = 22,
+    kTryRule = 23,
   };
 
   virtual Type GetType() const = 0;

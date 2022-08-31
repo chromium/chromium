@@ -570,7 +570,6 @@ void StyleEngine::UpdateActiveStyle() {
   UpdateViewport();
   UpdateActiveStyleSheets();
   UpdateGlobalRuleSet();
-  UpdateTimelines();
 }
 
 const ActiveStyleSheetVector StyleEngine::ActiveStyleSheetsForInspector() {
@@ -1935,10 +1934,9 @@ enum RuleSetFlags {
   kKeyframesRules = 1 << 1,
   kFullRecalcRules = 1 << 2,
   kPropertyRules = 1 << 3,
-  kScrollTimelineRules = 1 << 4,
-  kCounterStyleRules = 1 << 5,
-  kLayerRules = 1 << 6,
-  kFontPaletteValuesRules = 1 << 7,
+  kCounterStyleRules = 1 << 4,
+  kLayerRules = 1 << 5,
+  kFontPaletteValuesRules = 1 << 6,
 };
 
 const unsigned kRuleSetFlagsAll = ~0u;
@@ -1959,8 +1957,6 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
       flags |= kPropertyRules;
     if (!rule_set->CounterStyleRules().IsEmpty())
       flags |= kCounterStyleRules;
-    if (!rule_set->ScrollTimelineRules().IsEmpty())
-      flags |= kScrollTimelineRules;
     if (rule_set->HasCascadeLayers())
       flags |= kLayerRules;
   }
@@ -2002,8 +1998,8 @@ void StyleEngine::InvalidateInitialData() {
   initial_data_ = nullptr;
 }
 
-// A miniature CascadeMap for cascading @property and @scroll-timeline
-// at-rules according to their origin, cascade layer order and position.
+// A miniature CascadeMap for cascading @property at-rules according to their
+// origin, cascade layer order and position.
 class StyleEngine::AtRuleCascadeMap {
   STACK_ALLOCATED();
 
@@ -2138,19 +2134,12 @@ void StyleEngine::ApplyUserRuleSetChanges(
     MarkCounterStylesNeedUpdate();
   }
 
-  if (changed_rule_flags &
-      (kPropertyRules | kScrollTimelineRules | kFontPaletteValuesRules)) {
+  if (changed_rule_flags & (kPropertyRules | kFontPaletteValuesRules)) {
     if (changed_rule_flags & kPropertyRules) {
       ClearPropertyRules();
       AtRuleCascadeMap cascade_map(GetDocument());
       AddPropertyRulesFromSheets(cascade_map, new_style_sheets,
                                  true /* is_user_style */);
-    }
-    if (changed_rule_flags & kScrollTimelineRules) {
-      ClearScrollTimelineRules();
-      AtRuleCascadeMap cascade_map(GetDocument());
-      AddScrollTimelineRulesFromSheets(cascade_map, new_style_sheets,
-                                       true /* is_user_style */);
     }
 
     if (changed_rule_flags & kFontPaletteValuesRules) {
@@ -2188,13 +2177,11 @@ void StyleEngine::ApplyRuleSetChanges(
                                  (changed_rule_flags & kFontFaceRules) &&
                                  tree_scope.RootNode().IsDocumentNode();
   bool rebuild_at_property_registry = false;
-  bool rebuild_at_scroll_timeline_map = false;
   bool rebuild_at_font_palette_values_map = false;
   ScopedStyleResolver* scoped_resolver = tree_scope.GetScopedStyleResolver();
   if (scoped_resolver && scoped_resolver->NeedsAppendAllSheets()) {
     rebuild_font_face_cache = true;
     rebuild_at_property_registry = true;
-    rebuild_at_scroll_timeline_map = true;
     rebuild_at_font_palette_values_map = true;
     change = kActiveSheetsChanged;
   }
@@ -2260,20 +2247,6 @@ void StyleEngine::ApplyRuleSetChanges(
                                  true /* is_user_style */);
       AddPropertyRulesFromSheets(cascade_map, new_style_sheets,
                                  false /* is_user_style */);
-    }
-  }
-
-  if ((changed_rule_flags & kScrollTimelineRules) ||
-      rebuild_at_scroll_timeline_map) {
-    // @scroll-timeline rules are currently not allowed in shadow trees.
-    // https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule
-    if (tree_scope.RootNode().IsDocumentNode()) {
-      ClearScrollTimelineRules();
-      AtRuleCascadeMap cascade_map(GetDocument());
-      AddScrollTimelineRulesFromSheets(cascade_map, active_user_style_sheets_,
-                                       true /* is_user_style */);
-      AddScrollTimelineRulesFromSheets(cascade_map, new_style_sheets,
-                                       false /* is_user_style */);
     }
   }
 
@@ -2393,17 +2366,6 @@ void StyleEngine::EnvironmentVariableChanged() {
     resolver_->InvalidateMatchedPropertiesCache();
 }
 
-void StyleEngine::ScrollTimelinesChanged() {
-  MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
-      style_change_reason::kScrollTimeline));
-  // We currently rely on marking at least one element for recalc in order
-  // to clean the timelines_need_update_ flag. (Otherwise the timelines
-  // will just remain dirty). Hence, if we in the future remove the call
-  // to mark elements for recalc, we would need to call
-  // ScheduleLayoutTreeUpdateIfNeeded to ensure that we reach UpdateTimelines.
-  timelines_need_update_ = true;
-}
-
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
@@ -2461,11 +2423,6 @@ void StyleEngine::ClearPropertyRules() {
   PropertyRegistration::RemoveDeclaredProperties(GetDocument());
 }
 
-void StyleEngine::ClearScrollTimelineRules() {
-  scroll_timeline_rule_map_.clear();
-  ScrollTimelinesChanged();
-}
-
 void StyleEngine::AddPropertyRulesFromSheets(
     AtRuleCascadeMap& cascade_map,
     const ActiveStyleSheetVector& sheets,
@@ -2473,16 +2430,6 @@ void StyleEngine::AddPropertyRulesFromSheets(
   for (const ActiveStyleSheet& active_sheet : sheets) {
     if (RuleSet* rule_set = active_sheet.second)
       AddPropertyRules(cascade_map, *rule_set, is_user_style);
-  }
-}
-
-void StyleEngine::AddScrollTimelineRulesFromSheets(
-    AtRuleCascadeMap& cascade_map,
-    const ActiveStyleSheetVector& sheets,
-    bool is_user_style) {
-  for (const ActiveStyleSheet& active_sheet : sheets) {
-    if (RuleSet* rule_set = active_sheet.second)
-      AddScrollTimelineRules(cascade_map, *rule_set, is_user_style);
   }
 }
 
@@ -2574,23 +2521,6 @@ void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
   }
 }
 
-void StyleEngine::AddScrollTimelineRules(AtRuleCascadeMap& cascade_map,
-                                         const RuleSet& rule_set,
-                                         bool is_user_style) {
-  const HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules =
-      rule_set.ScrollTimelineRules();
-  if (scroll_timeline_rules.IsEmpty())
-    return;
-  for (const auto& rule : scroll_timeline_rules) {
-    auto priority =
-        cascade_map.GetPriority(is_user_style, rule->GetCascadeLayer());
-    if (!cascade_map.AddAndCascade(rule->GetName(), priority))
-      continue;
-    scroll_timeline_rule_map_.Set(rule->GetName(), rule);
-  }
-  ScrollTimelinesChanged();
-}
-
 StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
   if (keyframes_rule_map_.IsEmpty())
@@ -2616,51 +2546,6 @@ StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(
     return nullptr;
 
   return it->value.Get();
-}
-
-void StyleEngine::UpdateTimelines() {
-  if (!timelines_need_update_)
-    return;
-  timelines_need_update_ = false;
-
-  HeapHashMap<AtomicString, Member<CSSScrollTimeline>> timelines;
-
-  for (const auto& it : scroll_timeline_rule_map_) {
-    const AtomicString& name = it.key;
-
-    CSSScrollTimeline::Options options(GetDocument(), *it.value);
-
-    // Check if we can re-use existing timeline.
-    CSSScrollTimeline* existing_timeline = FindScrollTimeline(name);
-    if (existing_timeline && existing_timeline->Matches(options)) {
-      timelines.Set(name, existing_timeline);
-      continue;
-    }
-
-    // Create a new timeline.
-    auto* timeline = MakeGarbageCollected<CSSScrollTimeline>(
-        &GetDocument(), std::move(options));
-    // It is not allowed for a style update to create timelines that
-    // needs timing updates (i.e.
-    // AnimationTimeline::NeedsAnimationTimingUpdate() must return false).
-    // Servicing animations after creation preserves this invariant by ensuring
-    // the last-update time of the timeline is equal to the current time.
-    timeline->ServiceAnimations(kTimingUpdateOnDemand);
-    timelines.Set(name, timeline);
-  }
-
-  std::swap(scroll_timeline_map_, timelines);
-}
-
-CSSScrollTimeline* StyleEngine::FindScrollTimeline(const AtomicString& name) {
-  DCHECK(!timelines_need_update_);
-  auto it = scroll_timeline_map_.find(name);
-  return it != scroll_timeline_map_.end() ? it->value : nullptr;
-}
-
-void StyleEngine::ScrollTimelineInvalidated(CSSScrollTimeline& timeline) {
-  timelines_need_update_ = true;
-  timeline.InvalidateEffectTargetStyle();
 }
 
 DocumentStyleEnvironmentVariables& StyleEngine::EnsureEnvironmentVariables() {
@@ -3375,8 +3260,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(font_palette_values_rule_map_);
   visitor->Trace(user_counter_style_map_);
-  visitor->Trace(scroll_timeline_rule_map_);
-  visitor->Trace(scroll_timeline_map_);
   visitor->Trace(user_cascade_layer_map_);
   visitor->Trace(inspector_style_sheet_);
   visitor->Trace(document_style_sheet_collection_);

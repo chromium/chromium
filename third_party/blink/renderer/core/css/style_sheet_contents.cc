@@ -597,7 +597,6 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kKeyframes:
       case StyleRuleBase::kKeyframe:
       case StyleRuleBase::kLayerStatement:
-      case StyleRuleBase::kScrollTimeline:
       case StyleRuleBase::kSupports:
       case StyleRuleBase::kViewport:
       case StyleRuleBase::kFontPaletteValues:

@@ -27,134 +27,10 @@ class CSSScrollTimelineTest : public PageTestBase,
  public:
   CSSScrollTimelineTest() : ScopedCSSScrollTimelineForTest(true) {}
 
-  bool HasObservers(const AtomicString& id) {
-    return GetDocument().GetIdTargetObserverRegistry().HasObservers(id);
-  }
-
   DocumentAnimations& GetDocumentAnimations() const {
     return GetDocument().GetDocumentAnimations();
   }
-
-  void SimulateFrame() {
-    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
-    GetPage().Animator().ServiceScriptedAnimations(new_time);
-  }
 };
-
-TEST_F(CSSScrollTimelineTest, IdObserverElementRemoval) {
-  ASSERT_FALSE(HasObservers("scroller"));
-
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes anim {
-        from { width: 100px; }
-        to { width: 200px; }
-      }
-      @scroll-timeline timeline {
-        source: selector(#scroller);
-      }
-      div {
-        animation: anim 10s;
-        animation-timeline: timeline;
-      }
-    </style>
-    <div id=element1></div>
-    <div id=element2></div>
-  )HTML");
-
-  EXPECT_TRUE(HasObservers("scroller"));
-
-  Element* element1 = GetDocument().getElementById("element1");
-  Element* element2 = GetDocument().getElementById("element2");
-  ASSERT_TRUE(element1);
-  ASSERT_TRUE(element2);
-
-  element1->remove();
-  SimulateFrame();
-  UpdateAllLifecyclePhasesForTest();
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_TRUE(HasObservers("scroller"));
-
-  element2->remove();
-  SimulateFrame();
-  UpdateAllLifecyclePhasesForTest();
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_FALSE(HasObservers("scroller"));
-}
-
-TEST_F(CSSScrollTimelineTest, IdObserverRuleInsertion) {
-  ASSERT_FALSE(HasObservers("scroller1"));
-  ASSERT_FALSE(HasObservers("scroller2"));
-  ASSERT_FALSE(HasObservers("scroller3"));
-  ASSERT_FALSE(HasObservers("redefined"));
-
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes anim {
-        from { width: 100px; }
-        to { width: 200px; }
-      }
-      @scroll-timeline timeline1 {
-        source: selector(#scroller1);
-      }
-      @scroll-timeline timeline2 {
-        source: selector(#scroller2);
-      }
-      div {
-        animation: anim 10s;
-      }
-      #element1 {
-        animation-timeline: timeline1;
-      }
-      #element2 {
-        animation-timeline: timeline2;
-      }
-    </style>
-    <div id=element1></div>
-    <div id=element2></div>
-    <div id=element3></div>
-  )HTML");
-
-  EXPECT_TRUE(HasObservers("scroller1"));
-  EXPECT_TRUE(HasObservers("scroller2"));
-
-  Element* element1 = GetDocument().getElementById("element1");
-  Element* element2 = GetDocument().getElementById("element2");
-  ASSERT_TRUE(element1);
-  ASSERT_TRUE(element2);
-
-  // Insert a <style> element which redefines timeline2, and also
-  // creates an additional timeline (timeline3).
-  auto* style_element = MakeGarbageCollected<HTMLStyleElement>(
-      GetDocument(), CreateElementFlags());
-  style_element->setTextContent(R"CSS(
-      @scroll-timeline timeline2 {
-        source: selector(#redefined);
-      }
-      @scroll-timeline timeline3 {
-        source: selector(#scroller3);
-      }
-      #element3 {
-        animation-timeline: timeline3;
-      }
-  )CSS");
-  GetDocument().body()->AppendChild(style_element);
-  UpdateAllLifecyclePhasesForTest();
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_TRUE(HasObservers("scroller1"));
-  EXPECT_FALSE(HasObservers("scroller2"));
-  EXPECT_TRUE(HasObservers("scroller3"));
-  EXPECT_TRUE(HasObservers("redefined"));
-
-  // Remove the <style> element again.
-  style_element->remove();
-  UpdateAllLifecyclePhasesForTest();
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_TRUE(HasObservers("scroller1"));
-  EXPECT_TRUE(HasObservers("scroller2"));
-  EXPECT_FALSE(HasObservers("scroller3"));
-  EXPECT_FALSE(HasObservers("redefined"));
-}
 
 TEST_F(CSSScrollTimelineTest, SharedTimelines) {
   SetBodyInnerHTML(R"HTML(
@@ -162,25 +38,26 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
       @keyframes anim1 { to { top: 200px; } }
       @keyframes anim2 { to { left: 200px; } }
       @keyframes anim3 { to { right: 200px; } }
-      @scroll-timeline timeline1 {
-        source: selector(#scroller);
-      }
-      @scroll-timeline timeline2 {
-        source: selector(#scroller);
-      }
-      #scroller {
+      .scroller {
         height: 100px;
         overflow: scroll;
       }
-      #scroller > div {
+      .scroller > div {
         height: 200px;
       }
+      #scroller1 {
+        scroll-timeline: timeline1;
+      }
+      #scroller2 {
+        scroll-timeline: timeline2;
+      }
     </style>
-    <div id=scroller><div></div></div>
+    <div id=scroller1 class=scroller><div></div></div>
+    <div id=scroller2 class=scroller><div></div></div>
     <main id=main></main>
   )HTML");
-  // #scroller etc is created in a separate lifecycle phase to ensure that
-  // we get a layout box for #scroller before the animations are started.
+  // #scroller[1,2] etc is created in a separate lifecycle phase to ensure that
+  // we get a layout box for #scroller[1,2] before the animations are started.
 
   Element* main = GetDocument().getElementById("main");
   ASSERT_TRUE(main);
@@ -227,14 +104,10 @@ TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
         from { color: green; }
         to { color: green; }
       }
-      @scroll-timeline timeline {
-        source: selector(#scroller);
-        start: auto;
-        end: auto;
-      }
       #scroller {
         height: 100px;
         overflow: scroll;
+        scroll-timeline: timeline;
       }
       #scroller > div {
         height: 200px;
@@ -274,25 +147,22 @@ namespace {
 
 class AnimationTriggeringDelegate : public ResizeObserver::Delegate {
  public:
-  explicit AnimationTriggeringDelegate(Element* style_element)
-      : style_element_(style_element) {}
+  explicit AnimationTriggeringDelegate(Element* scroller_element)
+      : scroller_element_(scroller_element) {}
 
   void OnResize(
       const HeapVector<Member<ResizeObserverEntry>>& entries) override {
-    style_element_->setTextContent(R"CSS(
-      @scroll-timeline timeline {
-        source: selector(#scroller);
-      }
-    )CSS");
+    scroller_element_->SetInlineStyleProperty(CSSPropertyID::kScrollTimeline,
+                                              "timeline");
   }
 
   void Trace(Visitor* visitor) const override {
     ResizeObserver::Delegate::Trace(visitor);
-    visitor->Trace(style_element_);
+    visitor->Trace(scroller_element_);
   }
 
  private:
-  Member<Element> style_element_;
+  Member<Element> scroller_element_;
 };
 
 }  // namespace
@@ -329,16 +199,12 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   scroller->setAttribute(blink::html_names::kIdAttr, "scroller");
   scroller->AppendChild(MakeGarbageCollected<HTMLDivElement>(GetDocument()));
 
-  Element* style = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
-                                                          CreateElementFlags());
-
   Element* main = GetDocument().getElementById("main");
   ASSERT_TRUE(main);
-  main->AppendChild(style);
   main->AppendChild(scroller);
   main->AppendChild(element);
 
-  auto* delegate = MakeGarbageCollected<AnimationTriggeringDelegate>(style);
+  auto* delegate = MakeGarbageCollected<AnimationTriggeringDelegate>(scroller);
   ResizeObserver* observer =
       ResizeObserver::Create(GetDocument().domWindow(), delegate);
   observer->observe(element);
@@ -357,11 +223,8 @@ TEST_F(CSSScrollTimelineTest, DocumentScrollerInQuirksMode) {
       from { z-index: 100; }
       to { z-index: 100; }
     }
-    @scroll-timeline timeline {
-      source: auto;
-    }
     #element {
-      animation: anim 10s timeline forwards;
+      animation: anim 10s forwards scroll(root);
     }
     </style>
     <div id=element></div>

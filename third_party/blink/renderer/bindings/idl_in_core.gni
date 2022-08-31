@@ -57,7 +57,6 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/css/css_rule.idl",
           "//third_party/blink/renderer/core/css/css_rule_list.idl",
           "//third_party/blink/renderer/core/css/css_scope_rule.idl",
-          "//third_party/blink/renderer/core/css/css_scroll_timeline_rule.idl",
           "//third_party/blink/renderer/core/css/css_style_declaration.idl",
           "//third_party/blink/renderer/core/css/css_style_rule.idl",
           "//third_party/blink/renderer/core/css/css_style_sheet.idl",
