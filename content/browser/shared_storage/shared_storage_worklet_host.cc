@@ -90,7 +90,10 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       shared_storage_origin_(
           document_service.render_frame_host().GetLastCommittedOrigin()),
       main_frame_origin_(document_service.main_frame_origin()),
-      creation_time_(base::TimeTicks::Now()) {}
+      creation_time_(base::TimeTicks::Now()) {
+  GetContentClient()->browser()->OnSharedStorageWorkletHostCreated(
+      &(document_service.render_frame_host()));
+}
 
 SharedStorageWorkletHost::~SharedStorageWorkletHost() {
   base::UmaHistogramEnumeration("Storage.SharedStorage.Worklet.DestroyedStatus",

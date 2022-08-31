@@ -1178,6 +1178,11 @@ void PageLoadTracker::OnV8MemoryChanged(
     observer->OnV8MemoryChanged(memory_updates);
 }
 
+void PageLoadTracker::OnSharedStorageWorkletHostCreated() {
+  for (const auto& observer : observers_)
+    observer->OnSharedStorageWorkletHostCreated();
+}
+
 void PageLoadTracker::UpdateMetrics(
     content::RenderFrameHost* render_frame_host,
     mojom::PageLoadTimingPtr timing,

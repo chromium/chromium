@@ -872,6 +872,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Worklet.NumPerPage"
+    units="WorkletsCreated" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the number of `SharedStorageWorkletHost`'s created by a given page.
+    Recorded in
+    `SharedStoragePageLoadMetricsObserver::RecordSessionEndHistogram()` when
+    metrics are flushed due to the pageload completing or the app entering the
+    background.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Worklet.Timing.Append" units="ms"
     expires_after="2023-07-31">
   <owner>cammie@chromium.org</owner>

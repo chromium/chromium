@@ -549,6 +549,9 @@ class PageLoadMetricsObserverInterface {
   virtual void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) = 0;
 
+  // Called when a `SharedStorageWorkletHost` is created.
+  virtual void OnSharedStorageWorkletHostCreated() = 0;
+
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};
 };

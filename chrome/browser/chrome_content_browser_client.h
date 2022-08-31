@@ -817,6 +817,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool OpenExternally(content::RenderFrameHost* opener,
                       const GURL& url,
                       WindowOpenDisposition disposition) override;
+  void OnSharedStorageWorkletHostCreated(
+      content::RenderFrameHost* rfh) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

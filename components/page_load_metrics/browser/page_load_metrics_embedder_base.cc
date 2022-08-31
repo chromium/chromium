@@ -6,14 +6,17 @@
 
 #include "base/timer/timer.h"
 
+#include "base/feature_list.h"
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/early_hints_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/fenced_frames_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/layout_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/shared_storage_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace page_load_metrics {
 
@@ -35,6 +38,10 @@ void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
     tracker->AddObserver(
         std::make_unique<FencedFramesPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
+    if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+      tracker->AddObserver(
+          std::make_unique<SharedStoragePageLoadMetricsObserver>());
+    }
   }
   // Allow the embedder to register any embedder-specific observers
   RegisterEmbedderObservers(tracker);

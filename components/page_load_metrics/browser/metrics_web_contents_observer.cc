@@ -1209,6 +1209,15 @@ void MetricsWebContentsObserver::OnV8MemoryChanged(
     map_pair.first->OnV8MemoryChanged(map_pair.second);
 }
 
+void MetricsWebContentsObserver::OnSharedStorageWorkletHostCreated(
+    content::RenderFrameHost* rfh) {
+  if (!rfh)
+    return;
+
+  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
+    tracker->OnSharedStorageWorkletHostCreated();
+}
+
 // This contains some bugs. RenderFrameHost::IsActive is not relevant to
 // determine what members we have to search.
 //

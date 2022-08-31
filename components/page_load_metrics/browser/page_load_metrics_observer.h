@@ -257,6 +257,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       content::NavigationHandle* navigation_handle) override {}
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override {}
+  void OnSharedStorageWorkletHostCreated() override {}
 
  private:
   raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;

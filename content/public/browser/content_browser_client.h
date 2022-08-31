@@ -2313,6 +2313,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool OpenExternally(RenderFrameHost* opener,
                               const GURL& url,
                               WindowOpenDisposition disposition);
+
+  // Called when a `SharedStorageWorkletHost` is created for `rfh`.
+  virtual void OnSharedStorageWorkletHostCreated(RenderFrameHost* rfh) {}
 };
 
 }  // namespace content

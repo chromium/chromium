@@ -384,4 +384,10 @@ void PageLoadMetricsForwardObserver::OnV8MemoryChanged(
   parent_observer_->OnV8MemoryChanged(memory_updates);
 }
 
+void PageLoadMetricsForwardObserver::OnSharedStorageWorkletHostCreated() {
+  if (!parent_observer_)
+    return;
+  parent_observer_->OnSharedStorageWorkletHostCreated();
+}
+
 }  // namespace page_load_metrics

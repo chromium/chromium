@@ -151,6 +151,7 @@ class PageLoadMetricsForwardObserver final
       content::NavigationHandle* navigation_handle) override;
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override;
+  void OnSharedStorageWorkletHostCreated() override;
 
   // Holds the forward target observer running in the parent PageLoadTracker.
   base::WeakPtr<PageLoadMetricsObserverInterface> parent_observer_;

@@ -168,6 +168,9 @@ class MetricsWebContentsObserver
   virtual void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates);
 
+  // Called when a `SharedStorageWorkletHost` is created for `rfh`.
+  void OnSharedStorageWorkletHostCreated(content::RenderFrameHost* rfh);
+
  protected:
   // Protected rather than private so that derived test classes can call
   // constructor.
