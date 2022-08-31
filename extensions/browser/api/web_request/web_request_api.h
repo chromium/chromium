@@ -541,6 +541,9 @@ class ExtensionWebRequestEventRouter {
   // Get the number of listeners - for testing only.
   size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
                                     const std::string& event_name);
+  size_t GetInactiveListenerCountForTesting(
+      content::BrowserContext* browser_context,
+      const std::string& event_name);
 
  private:
   friend class WebRequestAPI;
@@ -549,13 +552,6 @@ class ExtensionWebRequestEventRouter {
   FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BrowserContextShutdown);
 
   struct EventListener {
-    // TODO(rdevlin.cronin): There are two types of EventListeners - those
-    // associated with WebViews and those that are not. The ones associated with
-    // WebViews are always identified by all seven properties. The other ones
-    // will always have web_view_instance_id = 0. Unfortunately, the
-    // callbacks/interfaces for these ones don't specify render_process_id.
-    // This is why we need the LooselyMatches method, and the need for a
-    // |strict| argument on RemoveEventListener.
     struct ID {
       ID(content::BrowserContext* browser_context,
          const std::string& extension_id,
@@ -566,11 +562,6 @@ class ExtensionWebRequestEventRouter {
          int64_t service_worker_version_id);
 
       ID(const ID& source);
-
-      // If web_view_instance_id is 0, then ignore render_process_id.
-      // TODO(rdevlin.cronin): In a more sane world, LooselyMatches wouldn't be
-      // necessary.
-      bool LooselyMatches(const ID& that) const;
 
       bool operator==(const ID& that) const;
 
@@ -594,7 +585,7 @@ class ExtensionWebRequestEventRouter {
 
     ~EventListener();
 
-    const ID id;
+    ID id;
     std::string extension_name;
     events::HistogramValue histogram_value = events::UNKNOWN;
     RequestFilter filter;
@@ -616,6 +607,9 @@ class ExtensionWebRequestEventRouter {
     // The listeners that are currently active (i.e., have a corresponding
     // render process).
     ListenerMap active_listeners;
+    // Listeners that are associated with currently-inactive lazy contexts.
+    // These can still match events, but don't have an active renderer process.
+    ListenerMap inactive_listeners;
     // The number of listeners that request extra headers be included with their
     // events. Modified through `IncrementExtraHeadersListenerCount()` and
     // `DecrementExtraHeadersListenerCount()`.
@@ -636,6 +630,17 @@ class ExtensionWebRequestEventRouter {
   using SignaledRequestMap = std::map<uint64_t, int>;
   using CallbacksForPageLoad = std::list<base::OnceClosure>;
 
+  // The type of listener removal.
+  enum class ListenerUpdateType {
+    // The listener was fully removed by the extension and the registration
+    // should be removed here.
+    kRemove,
+    // This is for a lazy listener where the "active" listener's process is shut
+    // down, but the listener should still be registered (and will be stored in
+    // `BrowserContextData::inactive_listeners`).
+    kDeactivate,
+  };
+
   ExtensionWebRequestEventRouter();
 
   ExtensionWebRequestEventRouter(const ExtensionWebRequestEventRouter&) =
@@ -654,9 +659,37 @@ class ExtensionWebRequestEventRouter {
   EventListener* FindEventListenerInContainer(const EventListener::ID& id,
                                               Listeners& listeners);
 
-  // Removes the listener for the given sub-event. Must be called from the IO
-  // thread.
-  void RemoveEventListener(const EventListener::ID& id, bool strict);
+  // Updates the active listener registration indicated by the given criteria.
+  // `update_type` indicates whether the listener is fully removed or if it's
+  // a lazy listener that had its context shut down.
+  void UpdateActiveListener(ListenerUpdateType update_type,
+                            content::BrowserContext* browser_context,
+                            const ExtensionId& extension_id,
+                            const std::string& sub_event_name,
+                            int worker_thread_id,
+                            int64_t service_worker_version_id);
+
+  // Removes a lazy listener registration. This affects both the provided
+  // `original_context` and any incognito context associated with it.
+  void RemoveLazyListener(content::BrowserContext* original_context,
+                          const ExtensionId& extension_id,
+                          const std::string& sub_event_name);
+
+  // Removes the listener from `listeners` that matches the given criteria.
+  // Optional criteria are ignored if not provided. Removes the matching
+  // listener, if any. Expects a maximum of one listener to match.
+  static std::unique_ptr<EventListener> RemoveMatchingListener(
+      Listeners& listeners,
+      const ExtensionId& extension_id,
+      const std::string& sub_event_name,
+      absl::optional<int> worker_thread_id,
+      absl::optional<int64_t> service_worker_version_id,
+      content::BrowserContext* browser_context);
+
+  // Cleans up for a listener being removed, unblocking any requests and
+  // updating counts as appropriate.
+  void CleanUpForListener(const EventListener& listener,
+                          ListenerUpdateType removal_type);
 
   // Ensures that future callbacks for |request| are ignored so that it can be
   // destroyed safely.

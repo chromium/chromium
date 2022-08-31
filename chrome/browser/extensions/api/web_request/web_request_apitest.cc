@@ -102,6 +102,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
@@ -5558,6 +5559,8 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // A single webRequest listener should be registered.
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
 
   // Stop the service worker.
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
@@ -5566,11 +5569,11 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // is async; run to flush the posted task.
   base::RunLoop().RunUntilIdle();
 
-  // The listener should still be registered.
-  // TODO(https://crbug.com/1024211): This currently fails.
-  // EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
-  //     profile(), "webRequest.onBeforeRequest"));
+  // The listener should still be registered, but should be counted as an
+  // inactive listener.
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Navigate to block.example. The request should be blocked by the extension.
@@ -5650,6 +5653,8 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // A single listener should be registered.
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
 
   // Navigate to a URL. The request should be seen by the extension.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
@@ -5672,22 +5677,166 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // is async; run to flush the posted task.
   base::RunLoop().RunUntilIdle();
 
-  // The listener should still be registered.
-  // TODO(https://crbug.com/1024211): This currently fails.
-  // EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
-  //     profile(), "webRequest.onBeforeRequest"));
+  // The listener should still be registered, but should be counted as an
+  // inactive listener.
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // TODO(https://crbug.com/1024211): We currently manually "kick" the
+  // service worker, since the webRequest API doesn't (yet) know how to
+  // dispatch events to inactive listeners.
+  {
+    base::RunLoop run_loop;
+    auto quit_loop_adapter =
+        [&run_loop](std::unique_ptr<LazyContextTaskQueue::ContextInfo>) {
+          run_loop.QuitWhenIdle();
+        };
+    ServiceWorkerTaskQueue::Get(profile())->AddPendingTask(
+        LazyContextId(profile(), extension->id(), extension->url()),
+        base::BindLambdaForTesting(quit_loop_adapter));
+    run_loop.Run();
+  }
 
   // Navigate again. The request should again be seen by the extension.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
 
-  // TODO(https://crbug.com/1024211): This currently fails. Additionally,
-  // BackgroundScriptExecutor won't wake up a passive service worker, so
-  // we can't even call `get_request_count()`.
-  // EXPECT_EQ(2, get_request_count());
+  // The inactive listener should have been reactivated...
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // ... and the extension should have seen the request.
+  EXPECT_EQ(2, get_request_count());
+}
+
+// Tests unloading an extension with lazy listeners while the worker is
+// inactive. The listeners should be properly cleaned up.
+IN_PROC_BROWSER_TEST_F(
+    ManifestV3WebRequestApiTest,
+    ServiceWorkerWithWebRequest_UnloadExtensionWhileWorkerInactive) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest"],
+           "host_permissions": [
+             "http://example.com/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             async (details) => { },
+             {urls: ['<all_urls>'], types: ['main_frame']});)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  // Note: the task to remove listeners from ExtensionWebRequestEventRouter
+  // is async; run to flush the posted task.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  DisableExtension(extension->id());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+}
+
+// Tests a service worker adding and then removing a listener.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       ServiceWorkerWithWebRequest_ManuallyRemoveListener) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest"],
+           "host_permissions": [
+             "http://example.com/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(self.firstListenerCount = 0;
+         self.secondListenerCount = 0;
+         self.firstListener = function() { ++firstListenerCount; };
+         self.secondListener = function() { ++secondListenerCount; };
+         chrome.webRequest.onBeforeRequest.addListener(
+             firstListener,
+             {urls: ['<all_urls>'], types: ['main_frame']});
+         chrome.webRequest.onBeforeRequest.addListener(
+             secondListener,
+             {urls: ['<all_urls>'], types: ['main_frame']});)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+
+  // There should initially be two listeners registered, both active (since
+  // the service worker is active).
+  EXPECT_EQ(2u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Manually remove one of the listeners. This should result in the listener
+  // being fully removed (not deactivated), so there should only be a single
+  // listener remaining.
+  static constexpr char kRemoveListener[] =
+      R"(chrome.webRequest.onBeforeRequest.removeListener(self.firstListener);
+         chrome.test.sendScriptResult('');)";
+  BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), kRemoveListener,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+
+  // Note: the task to remove listeners from ExtensionWebRequestEventRouter
+  // is async; run to flush the posted task.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Navigate to a page and verify that only the second listener fires.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  EXPECT_EQ(0, GetCountFromBackgroundPage(extension, profile(),
+                                          "firstListenerCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
+                                          "secondListenerCount"));
 }
 
 }  // namespace extensions

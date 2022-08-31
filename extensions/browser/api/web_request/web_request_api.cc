@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
@@ -661,28 +662,61 @@ WebRequestAPI::GetFactoryInstance() {
 
 void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Note that details.event_name includes the sub-event details (e.g. "/123").
+
   // TODO(fsamuel): <webview> events will not be removed through this code path.
   // <webview> events will be removed in RemoveWebViewEventListeners. Ideally,
   // this code should be decoupled from extensions, we should use the host ID
   // instead, and not have two different code paths. This is a huge undertaking
   // unfortunately, so we'll resort to two code paths for now.
-  //
-  // Note that details.event_name is actually the sub_event_name!
-  ExtensionWebRequestEventRouter::EventListener::ID id(
-      details.browser_context, details.extension_id, details.event_name, 0, 0,
-      details.worker_thread_id, details.service_worker_version_id);
+
+  // Note that details.event_name includes the sub-event details (e.g. "/123").
+  const std::string& sub_event_name = details.event_name;
+
+  // The way we handle the listener removal depends on whether this was a
+  // lazy listener registration (indicated by a null browser context on
+  // `details`).
+  base::OnceClosure remove_listener;
+
+  if (!details.browser_context) {
+    // This is a removed lazy listener. This happens when an extension uses
+    // removeListener() in its lazy context to forceably remove a listener
+    // registration (as opposed to when the context is torn down, in which case
+    // it's the active listener registration that's removed).
+    // Due to https://crbug.com/1347597, we only have a single lazy listener
+    // registration shared for both the on- and off-the-record contexts, so we
+    // use the original context (associated with this KeyedService) to remove
+    // the listener from both contexts.
+    remove_listener = base::BindOnce(
+        &ExtensionWebRequestEventRouter::RemoveLazyListener,
+        base::Unretained(ExtensionWebRequestEventRouter::GetInstance()),
+        browser_context_, details.extension_id, sub_event_name);
+  } else {
+    // This was an active listener registration.
+    auto update_type =
+        ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove;
+    if (details.service_worker_version_id !=
+        blink::mojom::kInvalidServiceWorkerVersionId) {
+      // This was a listener removed for a service worker, but it wasn't the
+      // lazy listener registration. In this case, we only deactivate the
+      // listener (rather than removing it).
+      update_type =
+          ExtensionWebRequestEventRouter::ListenerUpdateType::kDeactivate;
+    }
+
+    remove_listener = base::BindOnce(
+        &ExtensionWebRequestEventRouter::UpdateActiveListener,
+        base::Unretained(ExtensionWebRequestEventRouter::GetInstance()),
+        update_type, details.browser_context, details.extension_id,
+        sub_event_name, details.worker_thread_id,
+        details.service_worker_version_id);
+  }
 
   // This PostTask is necessary even though we are already on the UI thread to
   // allow cases where blocking listeners remove themselves inside the handler.
   // This Unretained is safe because the ExtensionWebRequestEventRouter
   // singleton is leaked.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ExtensionWebRequestEventRouter::RemoveEventListener,
-          base::Unretained(ExtensionWebRequestEventRouter::GetInstance()), id,
-          false /* not strict */));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(remove_listener));
 }
 
 bool WebRequestAPI::MaybeProxyURLLoaderFactory(
@@ -1720,10 +1754,37 @@ bool ExtensionWebRequestEventRouter::AddEventListener(
 
   RecordAddEventListenerUMAs(extra_info_spec);
 
+  // This might be a reactivated listener - a listener being added for a
+  // lazy context where it was shut down and then respawned. This can only
+  // happen for service worker listeners.
+  bool is_reactivated = false;
+  if (service_worker_version_id !=
+      blink::mojom::kInvalidServiceWorkerVersionId) {
+    auto& listeners = data_[browser_context].inactive_listeners[event_name];
+    // Search for any listener with the same sub-event name.
+    // NOTE: The sub-event name will be the same for any listener registered in
+    // the *same order* in the extension. In practice, this should pretty much
+    // always be the case, because we require listeners to be set up
+    // synchronously.
+    size_t erased = base::EraseIf(
+        listeners, [browser_context, extension_id, sub_event_name](
+                       const std::unique_ptr<EventListener>& listener) {
+          return listener->id.browser_context == browser_context &&
+                 listener->id.extension_id == extension_id &&
+                 listener->id.sub_event_name == sub_event_name;
+        });
+    // Only a single listener should ever match. It's possible no listener will
+    // match if this is a new listener in a worker context.
+    DCHECK_LE(erased, 1u);
+    is_reactivated = erased > 0u;
+  }
+
   data_[browser_context].active_listeners[event_name].push_back(
       std::move(listener));
 
-  if (extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS)
+  // If the listener was previously registered, there's no need to adjust the
+  // extra headers count.
+  if (!is_reactivated && extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS)
     IncrementExtraHeadersListenerCount(browser_context);
 
   return true;
@@ -1749,37 +1810,137 @@ ExtensionWebRequestEventRouter::FindEventListenerInContainer(
   return nullptr;
 }
 
-void ExtensionWebRequestEventRouter::RemoveEventListener(
-    const EventListener::ID& id,
-    bool strict) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::string event_name = EventRouter::GetBaseEventName(id.sub_event_name);
-  Listeners& listeners = data_[id.browser_context].active_listeners[event_name];
-  for (auto it = listeners.begin(); it != listeners.end(); ++it) {
-    std::unique_ptr<EventListener>& listener = *it;
-
-    // There are two places that call this method: RemoveWebViewEventListeners
-    // and OnListenerRemoved. The latter can't use operator== because it doesn't
-    // have the render_process_id. This shouldn't be a problem, because
-    // OnListenerRemoved is only called for web_view_instance_id == 0.
-    bool matches =
-        strict ? listener->id == id : listener->id.LooselyMatches(id);
-    if (matches) {
-      // Unblock any request that this event listener may have been blocking.
-      for (uint64_t blocked_request_id : listener->blocked_requests) {
-        DecrementBlockCount(
-            listener->id.browser_context, listener->id.extension_id, event_name,
-            blocked_request_id, nullptr, 0 /* extra_info_spec */);
-      }
-
-      if (listener->extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS)
-        DecrementExtraHeadersListenerCount(listener->id.browser_context);
-
-      listeners.erase(it);
-      helpers::ClearCacheOnNavigation();
-      return;
+// static
+std::unique_ptr<ExtensionWebRequestEventRouter::EventListener>
+ExtensionWebRequestEventRouter::RemoveMatchingListener(
+    Listeners& listeners,
+    const ExtensionId& extension_id,
+    const std::string& sub_event_name,
+    absl::optional<int> worker_thread_id,
+    absl::optional<int64_t> service_worker_version_id,
+    content::BrowserContext* browser_context) {
+  Listeners removed_listeners;
+  for (auto iter = listeners.begin(); iter != listeners.end();) {
+    std::unique_ptr<EventListener>& listener = *iter;
+    const EventListener::ID& id = listener->id;
+    DCHECK_EQ(browser_context, id.browser_context);
+    bool listener_matches =
+        extension_id == id.extension_id &&
+        sub_event_name == id.sub_event_name &&
+        (!worker_thread_id || worker_thread_id == id.worker_thread_id) &&
+        (!service_worker_version_id ||
+         service_worker_version_id == id.service_worker_version_id);
+    if (!listener_matches) {
+      ++iter;
+      continue;
     }
+
+    removed_listeners.push_back(std::move(listener));
+    iter = listeners.erase(iter);
+  }
+
+  DCHECK_LE(removed_listeners.size(), 1u);
+  return removed_listeners.empty() ? nullptr
+                                   : std::move(removed_listeners.front());
+}
+
+void ExtensionWebRequestEventRouter::RemoveLazyListener(
+    content::BrowserContext* original_context,
+    const ExtensionId& extension_id,
+    const std::string& sub_event_name) {
+  std::string event_name = EventRouter::GetBaseEventName(sub_event_name);
+
+  // Remove any active or inactive listeners that match the sub-event name.
+  // Due to https://crbug.com/1347597, we only have a single lazy listener
+  // registration shared for both the on- and off-the-record contexts, so we
+  // need to remove it from both. This means there may be a listener in any
+  // of our four sets (active and inactive for both the on-the-record and
+  // off-the-record contexts).
+  BrowserContextData& data = data_[original_context];
+  Listeners removed_listeners;
+  auto check_list = [&removed_listeners, extension_id, sub_event_name](
+                        Listeners& listeners,
+                        content::BrowserContext* browser_context) {
+    auto listener =
+        RemoveMatchingListener(listeners, extension_id, sub_event_name,
+                               absl::nullopt, absl::nullopt, browser_context);
+    if (listener)
+      removed_listeners.push_back(std::move(listener));
+  };
+
+  check_list(data.active_listeners[event_name], original_context);
+  check_list(data.inactive_listeners[event_name], original_context);
+  if (data.cross_context) {
+    BrowserContextData& cross_data = data_[data.cross_context];
+    check_list(cross_data.active_listeners[event_name], data.cross_context);
+    check_list(cross_data.inactive_listeners[event_name], data.cross_context);
+  }
+
+  // We should only have a maximum of two listeners removed - one for the
+  // on-the-record and one for the off-the-record profile - since each listener
+  // must either be active *or* inactive.
+  DCHECK_LE(removed_listeners.size(), 2u);
+
+  for (const auto& listener : removed_listeners) {
+    CleanUpForListener(*listener, ListenerUpdateType::kRemove);
+  }
+}
+
+void ExtensionWebRequestEventRouter::UpdateActiveListener(
+    ListenerUpdateType update_type,
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& sub_event_name,
+    int worker_thread_id,
+    int64_t service_worker_version_id) {
+  std::string event_name = EventRouter::GetBaseEventName(sub_event_name);
+
+  BrowserContextData& data = data_[browser_context];
+  auto matching_listener = RemoveMatchingListener(
+      data.active_listeners[event_name], extension_id, sub_event_name,
+      worker_thread_id, service_worker_version_id, browser_context);
+  if (!matching_listener)
+    return;
+
+  CleanUpForListener(*matching_listener, update_type);
+
+  // If this is only deactivating the listener, reset the process-specific bits
+  // for the listener and move it to inactive listeners.
+  if (update_type == ListenerUpdateType::kDeactivate) {
+    matching_listener->id.worker_thread_id = kMainThreadId;
+    matching_listener->id.service_worker_version_id =
+        blink::mojom::kInvalidServiceWorkerVersionId;
+    matching_listener->id.render_process_id = -1;
+    data.inactive_listeners[event_name].push_back(std::move(matching_listener));
+  }
+}
+
+void ExtensionWebRequestEventRouter::CleanUpForListener(
+    const EventListener& listener,
+    ListenerUpdateType update_type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::string event_name =
+      EventRouter::GetBaseEventName(listener.id.sub_event_name);
+
+  // Unblock any request that this event listener may have been blocking.
+  // Note that we do this even for deactivations, since if the service worker
+  // is shut down (which would happen if it reached the hard lifetime timeout),
+  // it won't be able to respond to the request.
+  // TODO(https://crbug.com/1024211): This likely won't be sufficient, since it
+  // means requests can leak through.
+  for (uint64_t blocked_request_id : listener.blocked_requests) {
+    DecrementBlockCount(listener.id.browser_context, listener.id.extension_id,
+                        event_name, blocked_request_id, nullptr,
+                        0 /* extra_info_spec */);
+  }
+
+  // Update the extra headers count and clear the cache only if the listener is
+  // fully removed; otherwise, these values are still correct.
+  if (update_type == ListenerUpdateType::kRemove) {
+    if (listener.extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) {
+      DecrementExtraHeadersListenerCount(listener.id.browser_context);
+    }
+    helpers::ClearCacheOnNavigation();
   }
 }
 
@@ -1791,21 +1952,21 @@ void ExtensionWebRequestEventRouter::RemoveWebViewEventListeners(
 
   // Iterate over all listeners of all WebRequest events to delete
   // any listeners that belong to the provided <webview>.
-  const BrowserContextData& data = data_[browser_context];
-  for (const auto& kv : data.active_listeners) {
-    const Listeners& listeners = kv.second;
-    // Construct a listeners_to_delete vector so that we don't modify the set of
-    // listeners as we iterate through it.
-    std::vector<EventListener::ID> listeners_to_delete;
-    for (const auto& listener : listeners) {
-      if (listener->id.render_process_id == render_process_id &&
-          listener->id.web_view_instance_id == web_view_instance_id) {
-        listeners_to_delete.push_back(listener->id);
+  BrowserContextData& data = data_[browser_context];
+  for (auto& kv : data.active_listeners) {
+    Listeners& listeners = kv.second;
+    for (auto iter = listeners.begin(); iter != listeners.end();) {
+      std::unique_ptr<EventListener>& listener = *iter;
+      bool listener_matches =
+          listener->id.render_process_id == render_process_id &&
+          listener->id.web_view_instance_id == web_view_instance_id;
+      if (!listener_matches) {
+        ++iter;
+        continue;
       }
+      CleanUpForListener(**iter, ListenerUpdateType::kRemove);
+      iter = listeners.erase(iter);
     }
-    // Remove the listeners selected for deletion.
-    for (const auto& listener_id : listeners_to_delete)
-      RemoveEventListener(listener_id, true /* strict */);
   }
 }
 
@@ -1893,6 +2054,12 @@ size_t ExtensionWebRequestEventRouter::GetListenerCountForTesting(
   return data_[browser_context].active_listeners[event_name].size();
 }
 
+size_t ExtensionWebRequestEventRouter::GetInactiveListenerCountForTesting(
+    content::BrowserContext* browser_context,
+    const std::string& event_name) {
+  return data_[browser_context].inactive_listeners[event_name].size();
+}
+
 bool ExtensionWebRequestEventRouter::HasAnyExtraHeadersListenerImpl(
     content::BrowserContext* browser_context) {
   auto iter = data_.find(browser_context);
@@ -1953,7 +2120,7 @@ void ExtensionWebRequestEventRouter::GetMatchingListenersImpl(
   for (std::unique_ptr<EventListener>& listener : listeners) {
     if (!content::RenderProcessHost::FromID(listener->id.render_process_id)) {
       // The IPC sender has been deleted. This listener will be removed soon
-      // via a call to RemoveEventListener. For now, just skip it.
+      // via a call to `CleanUpForListener()`. For now, just skip it.
       continue;
     }
 
@@ -2891,21 +3058,6 @@ ExtensionWebRequestEventRouter::EventListener::ID::ID(
 
 ExtensionWebRequestEventRouter::EventListener::ID::ID(const ID& source) =
     default;
-
-bool ExtensionWebRequestEventRouter::EventListener::ID::LooselyMatches(
-    const ID& that) const {
-  if (web_view_instance_id == 0 && that.web_view_instance_id == 0) {
-    // Since EventListeners are segmented by browser_context, check that
-    // last, as it is exceedingly unlikely to be different.
-    return extension_id == that.extension_id &&
-           sub_event_name == that.sub_event_name &&
-           worker_thread_id == that.worker_thread_id &&
-           service_worker_version_id == that.service_worker_version_id &&
-           browser_context == that.browser_context;
-  }
-
-  return *this == that;
-}
 
 bool ExtensionWebRequestEventRouter::EventListener::ID::operator==(
     const ID& that) const {
