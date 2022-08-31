@@ -117,9 +117,6 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // Returns true if this object is empty.
   bool IsEmpty() const { return all_writers_.empty(); }
 
-  // Invoked during HttpCache's destruction.
-  void Clear() { all_writers_.clear(); }
-
   // Returns true if |transaction| is part of writers.
   bool HasTransaction(const Transaction* transaction) const {
     return all_writers_.count(const_cast<Transaction*>(transaction)) > 0;
