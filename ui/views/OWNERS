@@ -25,5 +25,7 @@ per-file *_mac.*=lgrey@chromium.org
 per-file *_cocoa.*=lgrey@chromium.org
 per-file *.mm=lgrey@chromium.org
 
+per-file *_win.*=davidbienvenu@chromium.org
+
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*
