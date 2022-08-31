@@ -35,7 +35,6 @@ group("polymer3_elements") {
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
     ":sync_consent_module",
-    ":theme_selection_module",
     ":tpm_error_module",
     ":user_creation_module",
     ":wrong_hwid_module",
@@ -84,7 +83,7 @@ js_type_check("closure_compile_local") {
     ":signin_fatal_error.m",
     ":smart_privacy_protection.m",
     ":sync_consent.m",
-    ":theme_selection.m",
+    ":theme_selection",
     ":tpm_error.m",
     ":user_creation.m",
     ":wrong_hwid.m",
@@ -588,8 +587,8 @@ js_library("sync_consent.m") {
   extra_deps = [ ":sync_consent_module" ]
 }
 
-js_library("theme_selection.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/theme_selection.m.js" ]
+js_library("theme_selection") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/theme_selection.js" ]
   deps = [
     "../../components:display_manager_types.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -599,7 +598,7 @@ js_library("theme_selection.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":theme_selection_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("tpm_error.m") {
@@ -846,14 +845,6 @@ polymer_modulizer("sync_consent") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("theme_selection") {
-  js_file = "theme_selection.js"
-  html_file = "theme_selection.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("tpm_error") {
   js_file = "tpm_error.js"
   html_file = "tpm_error.html"
@@ -889,5 +880,6 @@ html_to_js("web_components") {
     "parental_handoff.js",
     "pin_setup.js",
     "saml_confirm_password.js",
+    "theme_selection.js",
   ]
 }
