@@ -334,8 +334,17 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
+  auto* process = GetRenderProcessHost();
+  if (!process)
     return;
+  TRACE_EVENT("extensions", "MessageFilter::OnOpenChannelToTab",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
+  if (!util::CanRendererHostExtensionOrigin(render_process_id_, extension_id)) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG);
+    return;
+  }
 
   ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
                                   source_context);

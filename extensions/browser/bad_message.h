@@ -44,6 +44,7 @@ enum BadMessageReason {
   EMF_INVALID_PORT_CONTEXT = 18,
   AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME = 19,
   EFD_INVALID_EXTENSION_ID_FOR_PROCESS = 20,
+  EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG = 21,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:
