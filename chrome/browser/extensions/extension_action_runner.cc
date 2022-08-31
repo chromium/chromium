@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
@@ -138,10 +139,10 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
 
 void ExtensionActionRunner::GrantTabPermissions(
     const std::vector<const Extension*>& extensions) {
-  bool refresh_required = std::any_of(extensions.begin(), extensions.end(),
-                                      [this](const Extension* extension) {
-                                        return PageNeedsRefreshToRun(extension);
-                                      });
+  bool refresh_required =
+      base::ranges::any_of(extensions, [this](const Extension* extension) {
+        return PageNeedsRefreshToRun(extension);
+      });
 
   if (!refresh_required) {
     // Immediately grant permissions to every extension.
@@ -158,11 +159,11 @@ void ExtensionActionRunner::GrantTabPermissions(
   const GURL& url = web_contents()->GetLastCommittedURL();
   auto permissions =
       SitePermissionsHelper(Profile::FromBrowserContext(browser_context_));
-  DCHECK(std::all_of(extensions.begin(), extensions.end(),
-                     [url, &permissions](const Extension* extension) {
-                       return permissions.GetSiteAccess(*extension, url) ==
-                              SitePermissionsHelper::SiteAccess::kOnClick;
-                     }));
+  DCHECK(base::ranges::all_of(
+      extensions, [url, &permissions](const Extension* extension) {
+        return permissions.GetSiteAccess(*extension, url) ==
+               SitePermissionsHelper::SiteAccess::kOnClick;
+      }));
 
   std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
   ShowReloadPageBubble(
@@ -244,8 +245,8 @@ void ExtensionActionRunner::HandleUserSiteSettingModified(
                   PermissionsManager::UserSiteSetting::kCustomizeByExtension);
         // Refresh the page if any extension that wants site access and needs a
         // page refresh to run will gain site access.
-        refresh_required = std::any_of(
-            extensions.begin(), extensions.end(),
+        refresh_required = base::ranges::any_of(
+            extensions,
             [&permissions_helper, this](const Extension* extension) {
               return permissions_helper.GetSiteInteraction(*extension,
                                                            web_contents()) ==
@@ -256,8 +257,8 @@ void ExtensionActionRunner::HandleUserSiteSettingModified(
       }
       case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
         // Refresh the page if any extension that had site access will lose it.
-        refresh_required = std::any_of(
-            extensions.begin(), extensions.end(),
+        refresh_required = base::ranges::any_of(
+            extensions,
             [&permissions_helper, this](const Extension* extension) {
               return permissions_helper.GetSiteInteraction(*extension,
                                                            web_contents()) ==
@@ -283,8 +284,8 @@ void ExtensionActionRunner::HandleUserSiteSettingModified(
         // requests host permissions). However, this can be easily wrongly
         // called in the future. For this change, a major restructure in
         // permissions struct and enums will be needed.
-        refresh_required = std::any_of(
-            extensions.begin(), extensions.end(),
+        refresh_required = base::ranges::any_of(
+            extensions,
             [&permissions_helper, this](const Extension* extension) {
               return permissions_helper.GetSiteAccess(
                          *extension, web_contents()->GetLastCommittedURL()) ==

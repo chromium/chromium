@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -354,10 +355,8 @@ void TestPasswordsPrivateDelegate::SendPasswordExceptionsList() {
 
 bool TestPasswordsPrivateDelegate::IsCredentialPresentInInsecureCredentialsList(
     const api::passwords_private::PasswordUiEntry& credential) {
-  return std::any_of(insecure_credentials_.begin(), insecure_credentials_.end(),
-                     [&credential](const auto& insecure_credential) {
-                       return insecure_credential.id == credential.id;
-                     });
+  return base::Contains(insecure_credentials_, credential.id,
+                        &api::passwords_private::PasswordUiEntry::id);
 }
 
 }  // namespace extensions

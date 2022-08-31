@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -13,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -108,7 +108,7 @@ bool AreModesEqual(const QuickUnlockModeList& a, const QuickUnlockModeList& b) {
 }
 
 bool IsPinNumeric(const std::string& pin) {
-  return std::all_of(pin.begin(), pin.end(), ::isdigit);
+  return base::ranges::all_of(pin, ::isdigit);
 }
 
 // Reads and sanitizes the pin length policy.
