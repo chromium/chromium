@@ -52,7 +52,7 @@ class ScopedModuleModifier {
 
   ~ScopedModuleModifier() {
     uint8_t modification[ModificationLength];
-    std::transform(address_.get(), address_ + ModificationLength,
+    std::transform(address_.get(), (address_ + ModificationLength).get(),
                    &modification[0], [](uint8_t byte) { return byte - 1U; });
     SIZE_T bytes_written = 0;
     EXPECT_NE(0, WriteProcessMemory(GetCurrentProcess(),

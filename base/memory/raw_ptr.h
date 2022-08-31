@@ -462,6 +462,7 @@ struct BackupRefPtrImpl {
     // rewrapped the pointer (wrapped the new pointer and unwrapped the old
     // one).
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
+    // TODO(bartekn): Consider adding support for non-BRP pool too.
     if (IsSupportedAndNotNull(address))
       CHECK(IsValidDelta(address, delta_elems * static_cast<Z>(sizeof(T))));
     return wrapped_ptr + delta_elems;
@@ -1009,16 +1010,25 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
     --(*this);
     return result;
   }
-  template <typename Z,
-            typename = std::enable_if_t<internal::offset_type<Z>, void>>
+  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
   ALWAYS_INLINE raw_ptr& operator+=(Z delta_elems) {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
-  template <typename Z,
-            typename = std::enable_if_t<internal::offset_type<Z>, void>>
+  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
   ALWAYS_INLINE raw_ptr& operator-=(Z delta_elems) {
     return *this += -delta_elems;
+  }
+
+  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
+  friend ALWAYS_INLINE raw_ptr operator+(const raw_ptr& p, Z delta_elems) {
+    raw_ptr result = p;
+    return result += delta_elems;
+  }
+  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
+  friend ALWAYS_INLINE raw_ptr operator-(const raw_ptr& p, Z delta_elems) {
+    raw_ptr result = p;
+    return result -= delta_elems;
   }
 
   // Stop referencing the underlying pointer and free its memory. Compared to

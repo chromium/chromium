@@ -979,6 +979,34 @@ TEST_F(RawPtrTest, MinusEqualOperatorTypes) {
   ASSERT_EQ(*ptr, 42);
 }
 
+TEST_F(RawPtrTest, PlusOperator) {
+  int foo[] = {42, 43, 44, 45};
+  CountingRawPtr<int> ptr = foo;
+  for (int i = 0; i < 4; ++i) {
+    ASSERT_EQ(*(ptr + i), 42 + i);
+  }
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = 4,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 0,
+              }),
+              CountingRawPtrHasCounts());
+}
+
+TEST_F(RawPtrTest, MinusOperator) {
+  int foo[] = {42, 43, 44, 45};
+  CountingRawPtr<int> ptr = &foo[4];
+  for (int i = 1; i <= 4; ++i) {
+    ASSERT_EQ(*(ptr - i), 46 - i);
+  }
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = 4,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 0,
+              }),
+              CountingRawPtrHasCounts());
+}
+
 TEST_F(RawPtrTest, AdvanceString) {
   const char kChars[] = "Hello";
   std::string str = kChars;
@@ -1443,19 +1471,29 @@ TEST(BackupRefPtrImpl, QuarantinedBytes) {
 void RunBackupRefPtrImplAdvanceTest(
     partition_alloc::PartitionAllocator& allocator,
     size_t requested_size) {
-  raw_ptr<char> ptr =
-      static_cast<char*>(allocator.root()->Alloc(requested_size, ""));
+  char* ptr = static_cast<char*>(allocator.root()->Alloc(requested_size, ""));
+  raw_ptr<char> protected_ptr = ptr;
 
-  ptr += 123;
-  ptr -= 123;
-  ptr += requested_size / 2;
-  ptr += requested_size / 2;  // end-of-allocation address is ok
-  EXPECT_DEATH_IF_SUPPORTED(ptr += 1, "");
-  EXPECT_DEATH_IF_SUPPORTED(++ptr, "");
-  ptr -= requested_size / 2;
-  ptr -= requested_size / 2;
-  EXPECT_DEATH_IF_SUPPORTED(ptr -= 1, "");
-  EXPECT_DEATH_IF_SUPPORTED(--ptr, "");
+  protected_ptr += 123;
+  protected_ptr -= 123;
+  protected_ptr = protected_ptr + 123;
+  protected_ptr = protected_ptr - 123;
+  protected_ptr += requested_size / 2;
+  protected_ptr =
+      protected_ptr + requested_size / 2;  // end-of-allocation address is ok
+  EXPECT_DEATH_IF_SUPPORTED(protected_ptr = protected_ptr + 1, "");
+  EXPECT_DEATH_IF_SUPPORTED(protected_ptr += 1, "");
+  EXPECT_DEATH_IF_SUPPORTED(++protected_ptr, "");
+
+  // Even though |protected_ptr| is already puinting to the end of the
+  // allocation, assign it explicitly to make sure the underlying implementation
+  // doesn't "switch" to the next slot.
+  protected_ptr = ptr + requested_size;
+  protected_ptr -= requested_size / 2;
+  protected_ptr = protected_ptr - requested_size / 2;
+  EXPECT_DEATH_IF_SUPPORTED(protected_ptr = protected_ptr - 1, "");
+  EXPECT_DEATH_IF_SUPPORTED(protected_ptr -= 1, "");
+  EXPECT_DEATH_IF_SUPPORTED(--protected_ptr, "");
 
   allocator.root()->Free(ptr);
 }

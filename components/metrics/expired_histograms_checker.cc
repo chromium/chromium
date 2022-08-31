@@ -29,7 +29,8 @@ bool ExpiredHistogramsChecker::ShouldRecord(uint32_t histogram_hash) const {
   if (base::Contains(allowlist_, histogram_hash))
     return true;
   return !std::binary_search(expired_histogram_hashes_.get(),
-                             expired_histogram_hashes_ + size_, histogram_hash);
+                             (expired_histogram_hashes_ + size_).get(),
+                             histogram_hash);
 }
 
 void ExpiredHistogramsChecker::InitAllowlist(const std::string& allowlist_str) {
