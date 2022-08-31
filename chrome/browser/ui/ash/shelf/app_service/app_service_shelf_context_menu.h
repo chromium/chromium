@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
@@ -40,19 +41,21 @@ class AppServiceShelfContextMenu : public ShelfContextMenu {
 
  private:
   void OnGetMenuModel(GetMenuModelCallback callback,
-                      apps::mojom::MenuItemsPtr menu_items);
+                      apps::MenuItems menu_items);
+  void OnGetMojomMenuModel(GetMenuModelCallback callback,
+                           apps::mojom::MenuItemsPtr menu_items);
 
   // Build additional extension app menu items.
   void BuildExtensionAppShortcutsMenu(ui::SimpleMenuModel* menu_model);
 
   // Build additional app shortcuts menu items.
-  void BuildAppShortcutsMenu(apps::mojom::MenuItemsPtr menu_items,
+  void BuildAppShortcutsMenu(apps::MenuItems menu_items,
                              std::unique_ptr<ui::SimpleMenuModel> menu_model,
                              GetMenuModelCallback callback,
                              size_t shortcut_index);
 
   // Build ARC-specific app shortcuts menu items.
-  void BuildArcAppShortcutsMenu(apps::mojom::MenuItemsPtr menu_items,
+  void BuildArcAppShortcutsMenu(apps::MenuItems menu_items,
                                 std::unique_ptr<ui::SimpleMenuModel> menu_model,
                                 GetMenuModelCallback callback,
                                 size_t arc_shortcut_index);

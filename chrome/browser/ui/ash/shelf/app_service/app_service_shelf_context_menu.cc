@@ -46,7 +46,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/cpp/menu.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -121,11 +120,21 @@ AppServiceShelfContextMenu::AppServiceShelfContextMenu(
 AppServiceShelfContextMenu::~AppServiceShelfContextMenu() = default;
 
 void AppServiceShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
-  apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
-      ->GetMenuModel(
-          item().id.app_id, apps::mojom::MenuType::kShelf, display_id(),
-          base::BindOnce(&AppServiceShelfContextMenu::OnGetMenuModel,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceGetMenuWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
+        ->GetMenuModel(
+            item().id.app_id, apps::MenuType::kShelf, display_id(),
+            base::BindOnce(&AppServiceShelfContextMenu::OnGetMenuModel,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
+        ->GetMenuModel(
+            item().id.app_id, apps::mojom::MenuType::kShelf, display_id(),
+            base::BindOnce(&AppServiceShelfContextMenu::OnGetMojomMenuModel,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
+  }
 }
 
 void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
@@ -290,17 +299,15 @@ bool AppServiceShelfContextMenu::IsCommandIdEnabled(int command_id) const {
   return true;
 }
 
-void AppServiceShelfContextMenu::OnGetMenuModel(
-    GetMenuModelCallback callback,
-    apps::mojom::MenuItemsPtr menu_items) {
+void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
+                                                apps::MenuItems menu_items) {
   auto menu_model = GetBaseMenuModel();
   submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
   size_t index = 0;
   // Unretained is safe here because PopulateNewItemFromMojoMenuItems should
   // call GetVectorIcon synchronously.
   if (apps::PopulateNewItemFromMenuItems(
-          apps::ConvertMojomMenuItemsToMenuItems(menu_items), menu_model.get(),
-          submenu_.get(),
+          menu_items, menu_model.get(), submenu_.get(),
           base::BindOnce(&AppServiceShelfContextMenu::GetCommandIdVectorIcon,
                          base::Unretained(this)))) {
     ++index;
@@ -316,31 +323,30 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
     BuildExtensionAppShortcutsMenu(menu_model.get());
 
   // "New Window" should go above "Pin".
-  if (menu_items->items.size() > index &&
-      menu_items->items[index]->command_id ==
-          ash::APP_CONTEXT_MENU_NEW_WINDOW) {
+  if (menu_items.items.size() > index &&
+      menu_items.items[index]->command_id == ash::APP_CONTEXT_MENU_NEW_WINDOW) {
     AddContextMenuOption(menu_model.get(), ash::APP_CONTEXT_MENU_NEW_WINDOW,
-                         menu_items->items[index]->string_id);
+                         menu_items.items[index]->string_id);
     ++index;
   }
 
   if (ShouldAddPinMenu())
     AddPinMenu(menu_model.get());
 
-  size_t shortcut_index = menu_items->items.size();
-  for (size_t i = index; i < menu_items->items.size(); i++) {
+  size_t shortcut_index = menu_items.items.size();
+  for (size_t i = index; i < menu_items.items.size(); i++) {
     // For Chrome browser, add the close item before the app info item.
     if ((item().id.app_id == app_constants::kChromeAppId ||
          item().id.app_id == app_constants::kLacrosAppId) &&
-        menu_items->items[i]->command_id == ash::SHOW_APP_INFO) {
+        menu_items.items[i]->command_id == ash::SHOW_APP_INFO) {
       BuildChromeAppMenu(menu_model.get());
     }
 
-    if (menu_items->items[i]->type == apps::mojom::MenuItemType::kCommand) {
+    if (menu_items.items[i]->type == apps::MenuItemType::kCommand) {
       AddContextMenuOption(
           menu_model.get(),
-          static_cast<ash::CommandId>(menu_items->items[i]->command_id),
-          menu_items->items[i]->string_id);
+          static_cast<ash::CommandId>(menu_items.items[i]->command_id),
+          menu_items.items[i]->string_id);
     } else {
       // All shortcut menu items are appended at the end, so break out
       // of the loop and continue processing shortcut menu items in
@@ -377,6 +383,13 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
   std::move(callback).Run(std::move(menu_model));
 }
 
+void AppServiceShelfContextMenu::OnGetMojomMenuModel(
+    GetMenuModelCallback callback,
+    apps::mojom::MenuItemsPtr menu_items) {
+  OnGetMenuModel(std::move(callback),
+                 apps::ConvertMojomMenuItemsToMenuItems(menu_items));
+}
+
 void AppServiceShelfContextMenu::BuildExtensionAppShortcutsMenu(
     ui::SimpleMenuModel* menu_model) {
   extension_menu_items_ = std::make_unique<extensions::ContextMenuMatcher>(
@@ -393,21 +406,20 @@ void AppServiceShelfContextMenu::BuildExtensionAppShortcutsMenu(
 }
 
 void AppServiceShelfContextMenu::BuildAppShortcutsMenu(
-    apps::mojom::MenuItemsPtr menu_items,
+    apps::MenuItems menu_items,
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     GetMenuModelCallback callback,
     size_t shortcut_index) {
   app_shortcut_items_ = std::make_unique<apps::AppShortcutItems>();
-  for (size_t i = shortcut_index; i < menu_items->items.size(); i++) {
-    apps::PopulateItemFromMenuItem(
-        apps::ConvertMojomMenuItemToMenuItem(menu_items->items[i]),
-        menu_model.get(), app_shortcut_items_.get());
+  for (size_t i = shortcut_index; i < menu_items.items.size(); i++) {
+    apps::PopulateItemFromMenuItem(menu_items.items[i], menu_model.get(),
+                                   app_shortcut_items_.get());
   }
   std::move(callback).Run(std::move(menu_model));
 }
 
 void AppServiceShelfContextMenu::BuildArcAppShortcutsMenu(
-    apps::mojom::MenuItemsPtr menu_items,
+    apps::MenuItems menu_items,
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     GetMenuModelCallback callback,
     size_t arc_shortcut_index) {

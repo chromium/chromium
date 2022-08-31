@@ -607,6 +607,19 @@ void AppServiceProxyBase::StopApp(const std::string& app_id) {
 
 void AppServiceProxyBase::GetMenuModel(
     const std::string& app_id,
+    MenuType menu_type,
+    int64_t display_id,
+    base::OnceCallback<void(MenuItems)> callback) {
+  auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+  if (publisher) {
+    publisher->GetMenuModel(app_id, menu_type, display_id, std::move(callback));
+  } else {
+    std::move(callback).Run(MenuItems());
+  }
+}
+
+void AppServiceProxyBase::GetMenuModel(
+    const std::string& app_id,
     apps::mojom::MenuType menu_type,
     int64_t display_id,
     apps::mojom::Publisher::GetMenuModelCallback callback) {
