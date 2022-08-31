@@ -84,6 +84,7 @@ public class SyncPromoController {
     private static final int MAX_TOTAL_PROMO_SHOW_COUNT = 100;
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
+    private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
     private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
             "SyncAndroidNTPPromoMaxImpressions";
 
@@ -440,16 +441,16 @@ public class SyncPromoController {
 
     /** Increases promo show count by one. */
     public void increasePromoShowCount() {
-        if (mAccessPoint != SigninAccessPoint.RECENT_TABS) {
-            SharedPreferencesManager.getInstance().incrementInt(
-                    getPromoShowCountPreferenceName(mAccessPoint));
-        }
-        SharedPreferencesManager.getInstance().incrementInt(
-                ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        recordShowCountHistogram(UserAction.SHOWN);
-
         if (mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
             final long currentTime = System.currentTimeMillis();
+            final long lastShownTime = SharedPreferencesManager.getInstance().readLong(
+                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
+            if (currentTime - lastShownTime < NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE
+                                    * DateUtils.MINUTE_IN_MILLIS
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
+                return;
+            }
             if (SharedPreferencesManager.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME)
                     == 0) {
@@ -459,6 +460,13 @@ public class SyncPromoController {
             SharedPreferencesManager.getInstance().writeLong(
                     ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, currentTime);
         }
+        if (mAccessPoint != SigninAccessPoint.RECENT_TABS) {
+            SharedPreferencesManager.getInstance().incrementInt(
+                    getPromoShowCountPreferenceName(mAccessPoint));
+        }
+        SharedPreferencesManager.getInstance().incrementInt(
+                ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+        recordShowCountHistogram(UserAction.SHOWN);
     }
 
     // TODO(crbug.com/1323197): we can share more code between setupColdState() and setupHotState().
