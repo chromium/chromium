@@ -472,6 +472,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CloseTabDuringDrag) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
+                             LOG(WARNING) << "Drag test: mouse move completed.";
                              // For WebUI tab drag, the tab isn't actually
                              // removed from the tabstrip until the drag
                              // completes.
@@ -480,6 +481,8 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CloseTabDuringDrag) {
 
                              // Close the new tab.
                              second_tab->Execute("() => window.close()");
+                             LOG(WARNING)
+                                 << "Drag test: waiting for window to close.";
                            })))
 
           // Wait for the dragged tab to be closed, verify it is closed, and
@@ -495,6 +498,8 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CloseTabDuringDrag) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
+                             LOG(WARNING)
+                                 << "Drag test: window successfully closed.";
                              // The tab should now be removed from the tabstrip
                              // because it was closed; the drag has not yet
                              // finished.
