@@ -222,7 +222,7 @@ const base::Feature kAutofillUpstream{"AutofillUpstream",
 // enterprise or education user).
 const base::Feature kAutofillUpstreamAllowAdditionalEmailDomains{
     "AutofillUpstreamAllowAdditionalEmailDomains",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, Chrome allows credit card upload to Google Payments, no matter
 // the user's email domain.
