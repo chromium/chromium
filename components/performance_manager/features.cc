@@ -7,6 +7,7 @@
 
 #include "components/performance_manager/public/features.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -36,5 +37,8 @@ extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState{
 
 const base::Feature kBFCachePerformanceManagerPolicy{
     "BFCachePerformanceManagerPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kUrgentPageDiscarding{"UrgentPageDiscarding",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace performance_manager::features

@@ -49,6 +49,9 @@ extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState;
 // BFCache of all pages when the system is under memory pressure.
 extern const base::Feature kBFCachePerformanceManagerPolicy;
 
+// Whether tabs are discarded under high memory pressure.
+extern const base::Feature kUrgentPageDiscarding;
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

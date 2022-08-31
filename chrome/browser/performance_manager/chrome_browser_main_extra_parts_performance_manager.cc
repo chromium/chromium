@@ -131,9 +131,12 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   }
 
 #if URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
-  graph->PassToGraph(
-      std::make_unique<
-          performance_manager::policies::UrgentPageDiscardingPolicy>());
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kUrgentPageDiscarding)) {
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::UrgentPageDiscardingPolicy>());
+  }
 #endif  // URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
 
   if (base::FeatureList::IsEnabled(
