@@ -57,7 +57,7 @@ class PopularSitesImpl : public PopularSites {
   std::string GetDirectoryToFetch() override;
   std::string GetCountryToFetch() override;
   std::string GetVersionToFetch() override;
-  const base::ListValue* GetCachedJson() override;
+  const base::Value::List& GetCachedJson() override;
 
   // Register preferences used by this class.
   static void RegisterProfilePrefs(

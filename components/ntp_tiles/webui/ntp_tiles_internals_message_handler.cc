@@ -45,7 +45,7 @@ constexpr std::array<IconTypeAndName, 4> kIconTypesAndNames{{
     {favicon_base::IconType::kWebManifestIcon, "kWebManifestIcon"},
 }};
 
-std::string FormatJson(const base::Value& value) {
+std::string FormatJson(const base::Value::List& value) {
   std::string pretty_printed;
   bool ok = base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &pretty_printed);
@@ -173,7 +173,7 @@ void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
   }
 
   popular_sites_json_ =
-      FormatJson(*most_visited_sites_->popular_sites()->GetCachedJson());
+      FormatJson(most_visited_sites_->popular_sites()->GetCachedJson());
   SendSourceInfo();
 }
 

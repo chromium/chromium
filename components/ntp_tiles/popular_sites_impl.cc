@@ -399,9 +399,8 @@ std::string PopularSitesImpl::GetVersionToFetch() {
   return version;
 }
 
-const base::ListValue* PopularSitesImpl::GetCachedJson() {
-  return &base::Value::AsListValue(
-      *prefs_->GetList(prefs::kPopularSitesJsonPref));
+const base::Value::List& PopularSitesImpl::GetCachedJson() {
+  return prefs_->GetValueList(prefs::kPopularSitesJsonPref);
 }
 
 // static
