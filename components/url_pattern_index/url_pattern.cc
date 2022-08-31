@@ -17,12 +17,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/fuzzy_pattern_matching.h"
@@ -73,7 +73,7 @@ base::StringPiece ConvertString(const flatbuffers::String* string) {
 }
 
 bool HasAnyUpperAscii(base::StringPiece string) {
-  return std::any_of(string.begin(), string.end(), base::IsAsciiUpper<char>);
+  return base::ranges::any_of(string, base::IsAsciiUpper<char>);
 }
 
 // Returns whether |position| within the |url| belongs to its |host| component

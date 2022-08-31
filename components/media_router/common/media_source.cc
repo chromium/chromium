@@ -4,12 +4,12 @@
 
 #include "components/media_router/common/media_source.h"
 
-#include <algorithm>
 #include <array>
 #include <cstdio>
 #include <ostream>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -43,8 +43,8 @@ constexpr std::array<const char* const, 5> kAllowedSchemes{
 
 bool IsSchemeAllowed(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS() ||
-         std::any_of(
-             kAllowedSchemes.begin(), kAllowedSchemes.end(),
+         base::ranges::any_of(
+             kAllowedSchemes,
              [&url](const char* const scheme) { return url.SchemeIs(scheme); });
 }
 

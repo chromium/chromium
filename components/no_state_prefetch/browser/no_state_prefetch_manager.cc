@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <functional>
 #include <string>
 #include <utility>
@@ -25,6 +24,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -869,12 +869,10 @@ void NoStatePrefetchManager::SetPrefetchFinalStatusForUrl(
 
 bool NoStatePrefetchManager::HasRecentlyPrefetchedUrlForTesting(
     const GURL& url) {
-  return std::any_of(prefetches_.cbegin(), prefetches_.cend(),
-                     [url](const NavigationRecord& r) {
-                       return r.url == url &&
-                              r.final_status ==
-                                  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED;
-                     });
+  return base::ranges::any_of(prefetches_, [url](const NavigationRecord& r) {
+    return r.url == url &&
+           r.final_status == FINAL_STATUS_NOSTATE_PREFETCH_FINISHED;
+  });
 }
 
 void NoStatePrefetchManager::OnPrefetchUsed(const GURL& url) {

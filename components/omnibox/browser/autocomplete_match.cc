@@ -4,8 +4,6 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 
-#include <algorithm>
-
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -1264,8 +1262,8 @@ bool AutocompleteMatch::IsTrivialAutocompletion() const {
 
 bool AutocompleteMatch::SupportsDeletion() const {
   return deletable ||
-         std::any_of(duplicate_matches.begin(), duplicate_matches.end(),
-                     [](const auto& m) { return m.deletable; });
+         base::ranges::any_of(duplicate_matches,
+                              [](const auto& m) { return m.deletable; });
 }
 
 AutocompleteMatch

@@ -4,12 +4,12 @@
 
 #include "components/permissions/permission_request_manager.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -518,10 +518,8 @@ void PermissionRequestManager::Deny() {
   // a rejection.
   if (base::FeatureList::IsEnabled(
           features::kBlockRepeatedNotificationPermissionPrompts) &&
-      std::any_of(requests_.begin(), requests_.end(), [](const auto* request) {
-        return request->GetContentSettingsType() ==
-               ContentSettingsType::NOTIFICATIONS;
-      })) {
+      base::Contains(requests_, ContentSettingsType::NOTIFICATIONS,
+                     &PermissionRequest::GetContentSettingsType)) {
     is_notification_prompt_cooldown_active_ = true;
   }
 

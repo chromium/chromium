@@ -5,6 +5,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <unordered_set>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -187,9 +189,9 @@ void GetBookmarksMatchingPropertiesImpl(
 bool HasUserCreatedBookmarks(BookmarkModel* model) {
   const BookmarkNode* root_node = model->root_node();
 
-  return std::any_of(
-      root_node->children().cbegin(), root_node->children().cend(),
-      [](const auto& node) { return !node->children().empty(); });
+  return base::ranges::any_of(root_node->children(), [](const auto& node) {
+    return !node->children().empty();
+  });
 }
 #endif
 

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -283,11 +284,11 @@ void PaymentRequestSpec::StartWaitingForUpdateWith(
 bool PaymentRequestSpec::IsMixedCurrency() const {
   DCHECK(details_->display_items);
   const std::string& total_currency = details_->total->amount->currency;
-  return std::any_of(details_->display_items->begin(),
-                     details_->display_items->end(),
-                     [&total_currency](const mojom::PaymentItemPtr& item) {
-                       return item->amount->currency != total_currency;
-                     });
+  return base::ranges::any_of(
+      *details_->display_items,
+      [&total_currency](const mojom::PaymentItemPtr& item) {
+        return item->amount->currency != total_currency;
+      });
 }
 
 const mojom::PaymentItemPtr& PaymentRequestSpec::GetTotal(

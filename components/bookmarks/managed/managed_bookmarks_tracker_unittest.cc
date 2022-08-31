@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -137,16 +138,13 @@ class ManagedBookmarksTrackerTest : public testing::Test {
 
     if (node->is_folder()) {
       const base::Value::List* children = dict.FindList("children");
-      if (!children || node->children().size() != children->size())
-        return false;
-      size_t i = 0;
-      return std::all_of(node->children().cbegin(), node->children().cend(),
-                         [children, &i](const auto& child_node) {
-                           const base::Value& child = (*children)[i++];
-                           return child.is_dict() &&
-                                  NodeMatchesValue(child_node.get(),
-                                                   child.GetDict());
-                         });
+      return children &&
+             base::ranges::equal(
+                 *children, node->children(),
+                 [](const base::Value& child, const auto& child_node) {
+                   return child.is_dict() &&
+                          NodeMatchesValue(child_node.get(), child.GetDict());
+                 });
     }
     if (!node->is_url())
       return false;

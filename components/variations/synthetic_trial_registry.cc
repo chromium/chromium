@@ -4,8 +4,7 @@
 
 #include "components/variations/synthetic_trial_registry.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -80,11 +79,10 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
     // If existing ids shouldn't be overridden, skip entries whose study names
     // are already registered.
     if (mode == kDoNotOverrideExistingIds) {
-      auto matches_trial = [trial_hash](const SyntheticTrialGroup& group) {
-        return group.id().name == trial_hash;
-      };
-      const auto& groups = synthetic_trial_groups_;
-      if (std::any_of(groups.begin(), groups.end(), matches_trial)) {
+      if (base::Contains(synthetic_trial_groups_, trial_hash,
+                         [](const SyntheticTrialGroup& group) {
+                           return group.id().name;
+                         })) {
         continue;
       }
     }

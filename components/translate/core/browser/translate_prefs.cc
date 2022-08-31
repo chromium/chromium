@@ -4,7 +4,6 @@
 
 #include "components/translate/core/browser/translate_prefs.h"
 
-#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -16,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/json/values_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -104,30 +104,25 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // about always translating from or to the old source language, or always
     // translating from the old target language, then skip merging this pair
     // into the new pref.
-    const auto& new_language_pairs = always_translate_dictionary;
-    if (std::any_of(new_language_pairs.begin(), new_language_pairs.end(),
-                    [&old_language_pair](const auto& new_language_pair) {
-                      return old_language_pair.first ==
-                                 new_language_pair.first ||
-                             old_language_pair.first ==
-                                 new_language_pair.second.GetString() ||
-                             old_language_pair.second.GetString() ==
-                                 new_language_pair.first;
-                    })) {
+    if (base::ranges::any_of(
+            always_translate_dictionary,
+            [&old_language_pair](const auto& new_language_pair) {
+              return old_language_pair.first == new_language_pair.first ||
+                     old_language_pair.first ==
+                         new_language_pair.second.GetString() ||
+                     old_language_pair.second.GetString() ==
+                         new_language_pair.first;
+            })) {
       continue;
     }
 
     // If the old pair's source language matches any of the never-translate
     // languages, it probably means that this source language was set to never
     // be translated after the old pref was deprecated, so avoid this conflict.
-    const auto& never_translate_languages =
-        prefs->GetValueList(prefs::kBlockedLanguages);
-    if (std::any_of(
-            never_translate_languages.begin(), never_translate_languages.end(),
-            [&old_language_pair](const base::Value& never_translate_language) {
-              return old_language_pair.first ==
-                     never_translate_language.GetString();
-            })) {
+    const std::string& (base::Value::*get_string)() const =
+        &base::Value::GetString;
+    if (base::Contains(prefs->GetValueList(prefs::kBlockedLanguages),
+                       old_language_pair.first, get_string)) {
       continue;
     }
 

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <map>
 #include <numeric>
 #include <tuple>
@@ -16,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -23,6 +23,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -174,7 +175,7 @@ struct FieldMatches {
   // Increments |count| and returns true if |words| includes a word equal to or
   // prefixed by |word|.
   bool Includes(const std::u16string& word) {
-    if (std::none_of(words.begin(), words.end(), [word](std::u16string w) {
+    if (base::ranges::none_of(words, [word](std::u16string w) {
           return base::StartsWith(w, word,
                                   base::CompareCase::INSENSITIVE_ASCII);
         }))
@@ -289,9 +290,8 @@ int BoostOwned(const int score,
   std::vector<const std::string*> owner_emails = ExtractResultList(
       result, "metadata.owner.emailAddresses", "emailAddress");
 
-  bool owned = std::any_of(
-      owner_emails.begin(), owner_emails.end(),
-      [owner](const std::string* email) { return owner == *email; });
+  bool owned = base::Contains(owner_emails, owner,
+                              [](const std::string* email) { return *email; });
 
   return std::max(score + (owned ? promotion : -demotion), 0);
 }

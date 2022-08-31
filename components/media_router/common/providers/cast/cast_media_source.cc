@@ -4,11 +4,11 @@
 
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -492,9 +492,9 @@ bool CastMediaSource::ContainsApp(const std::string& app_id) const {
 
 bool CastMediaSource::ContainsAnyAppFrom(
     const std::vector<std::string>& app_ids) const {
-  return std::any_of(
-      app_ids.begin(), app_ids.end(),
-      [this](const std::string& app_id) { return ContainsApp(app_id); });
+  return base::ranges::any_of(app_ids, [this](const std::string& app_id) {
+    return ContainsApp(app_id);
+  });
 }
 
 bool CastMediaSource::ContainsStreamingApp() const {

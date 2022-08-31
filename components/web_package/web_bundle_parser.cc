@@ -4,13 +4,12 @@
 
 #include "components/web_package/web_bundle_parser.h"
 
-#include <algorithm>
-
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -137,7 +136,7 @@ absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
     // If name contains any upper-case or non-ASCII characters, return an error.
     // This matches the requirement in Section 8.1.2 of [RFC7540].
     if (!base::IsStringASCII(name) ||
-        std::any_of(name.begin(), name.end(), base::IsAsciiUpper<char>))
+        base::ranges::any_of(name, base::IsAsciiUpper<char>))
       return absl::nullopt;
 
     if (!name.empty() && name[0] == ':') {
@@ -1069,8 +1068,7 @@ class WebBundleParser::ResponseParser
     int status;
     const auto& status_str = pseudo_status->second;
     if (status_str.size() != 3 ||
-        !std::all_of(status_str.begin(), status_str.end(),
-                     base::IsAsciiDigit<char>) ||
+        !base::ranges::all_of(status_str, base::IsAsciiDigit<char>) ||
         !base::StringToInt(status_str, &status)) {
       RunErrorCallbackAndDestroy(":status must be 3 ASCII decimal digits.");
       return;

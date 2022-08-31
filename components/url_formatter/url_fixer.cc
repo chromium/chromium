@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -353,8 +351,7 @@ bool HasPort(const std::string& original_text,
   //
   // https://url.spec.whatwg.org/#url-port-string says that "A URL-port string
   // must be zero or more ASCII digits".
-  if (!std::all_of(port_piece.begin(), port_piece.end(),
-                   base::IsAsciiDigit<char>)) {
+  if (!base::ranges::all_of(port_piece, base::IsAsciiDigit<char>)) {
     return false;
   }
 

@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -84,8 +85,9 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal() {
         compromised_password_changed = true;
     }
 
-    if (std::any_of(form->password_issues.begin(), form->password_issues.end(),
-                    [](const auto& issue) { return !issue.second.is_muted; })) {
+    if (base::ranges::any_of(form->password_issues, [](const auto& issue) {
+          return !issue.second.is_muted;
+        })) {
       compromised_count_++;
     }
   }

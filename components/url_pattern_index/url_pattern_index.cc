@@ -4,7 +4,6 @@
 
 #include "components/url_pattern_index/url_pattern_index.h"
 
-#include <algorithm>
 #include <limits>
 #include <string>
 #include <utility>
@@ -15,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -98,7 +98,7 @@ base::StringPiece ToStringPiece(const flatbuffers::String* string) {
 }
 
 bool HasNoUpperAscii(base::StringPiece string) {
-  return std::none_of(string.begin(), string.end(), base::IsAsciiUpper<char>);
+  return base::ranges::none_of(string, base::IsAsciiUpper<char>);
 }
 
 // Comparator to sort UrlRule. Sorts rules by descending order of rule priority.

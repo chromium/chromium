@@ -4,7 +4,6 @@
 
 #include "components/payments/content/payment_request_state.h"
 
-#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -14,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/address_normalizer.h"
@@ -200,9 +200,8 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
   if (IsInTwa()) {
     // If a preferred payment app is present (e.g. Play Billing within a TWA),
     // all other payment apps are ignored.
-    bool has_preferred_app =
-        std::any_of(available_apps_.begin(), available_apps_.end(),
-                    [](const auto& app) { return app->IsPreferred(); });
+    bool has_preferred_app = base::ranges::any_of(
+        available_apps_, [](const auto& app) { return app->IsPreferred(); });
     if (has_preferred_app) {
       available_apps_.erase(
           std::remove_if(available_apps_.begin(), available_apps_.end(),
@@ -219,9 +218,9 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
   SetDefaultProfileSelections();
 
   get_all_apps_finished_ = true;
-  has_enrolled_instrument_ =
-      std::any_of(available_apps_.begin(), available_apps_.end(),
-                  [](const auto& app) { return app->HasEnrolledInstrument(); });
+  has_enrolled_instrument_ = base::ranges::any_of(
+      available_apps_,
+      [](const auto& app) { return app->HasEnrolledInstrument(); });
   are_requested_methods_supported_ |= !available_apps_.empty();
   NotifyOnGetAllPaymentAppsFinished();
   NotifyInitialized();

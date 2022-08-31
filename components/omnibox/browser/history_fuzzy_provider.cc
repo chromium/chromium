@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <ostream>
@@ -15,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -509,11 +509,10 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 void HistoryFuzzyProvider::RecordOpenMatchMetrics(
     const AutocompleteResult& result,
     const AutocompleteMatch& match_opened) {
-  if (std::any_of(result.begin(), result.end(),
-                  [](const AutocompleteMatch& match) {
-                    return match.provider->type() ==
-                           AutocompleteProvider::TYPE_HISTORY_FUZZY;
-                  })) {
+  if (base::Contains(result, AutocompleteProvider::TYPE_HISTORY_FUZZY,
+                     [](const AutocompleteMatch& match) {
+                       return match.provider->type();
+                     })) {
     const bool opened_fuzzy_match = match_opened.provider->type() ==
                                     AutocompleteProvider::TYPE_HISTORY_FUZZY;
     UMA_HISTOGRAM_BOOLEAN(kMetricPrecision, opened_fuzzy_match);
