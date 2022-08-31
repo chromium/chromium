@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -267,8 +268,8 @@ void ExtensionsPermissionsTracker::OnExtensionLoaded(
 }
 
 void ExtensionsPermissionsTracker::UpdateLocalState() {
-  bool any_unsafe = std::any_of(
-      extension_safety_ratings_.begin(), extension_safety_ratings_.end(),
+  bool any_unsafe = base::ranges::any_of(
+      extension_safety_ratings_,
       [](const auto& key_value) { return !key_value.second; });
 
   DCHECK(pending_forced_extensions_.empty() || any_unsafe);

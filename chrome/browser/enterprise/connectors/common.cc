@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
@@ -285,8 +286,7 @@ void RunSavePackageScanningCallback(download::DownloadItem* item,
 }
 
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
-  const auto& results = response.results();
-  return std::any_of(results.begin(), results.end(), [](const auto& result) {
+  return base::ranges::any_of(response.results(), [](const auto& result) {
     return result.tag() == kMalwareTag && !result.triggered_rules().empty();
   });
 }

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -16,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/sys_byteorder.h"
@@ -89,10 +87,9 @@ bool IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
   const PrefService* prefs = profile->GetPrefs();
   const base::Value::List& permit_attestation =
       prefs->GetValueList(prefs::kSecurityKeyPermitAttestation);
-  return std::any_of(permit_attestation.begin(), permit_attestation.end(),
-                     [&relying_party_id](const base::Value& v) {
-                       return v.GetString() == relying_party_id;
-                     });
+  const std::string& (base::Value::*get_string)() const =
+      &base::Value::GetString;
+  return base::Contains(permit_attestation, relying_party_id, get_string);
 }
 
 bool IsOriginListedInEnterpriseAttestationSwitch(
@@ -670,11 +667,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
 #if BUILDFLAG(IS_LINUX)
   // No caBLEv1 on Linux. It tends to crash bluez.
-  if (std::any_of(pairings_from_extension.begin(),
-                  pairings_from_extension.end(),
-                  [](const device::CableDiscoveryData& v) -> bool {
-                    return v.version == device::CableDiscoveryData::Version::V1;
-                  })) {
+  if (base::Contains(pairings_from_extension,
+                     device::CableDiscoveryData::Version::V1,
+                     &device::CableDiscoveryData::version)) {
     pairings_from_extension = base::span<const device::CableDiscoveryData>();
   }
 #endif
@@ -686,10 +681,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   }
   const bool cable_extension_accepted = !pairings.empty();
   const bool cablev2_extension_provided =
-      std::any_of(pairings.begin(), pairings.end(),
-                  [](const device::CableDiscoveryData& v) -> bool {
-                    return v.version == device::CableDiscoveryData::Version::V2;
-                  });
+      base::Contains(pairings, device::CableDiscoveryData::Version::V2,
+                     &device::CableDiscoveryData::version);
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
   std::vector<AuthenticatorRequestDialogModel::PairedPhone>

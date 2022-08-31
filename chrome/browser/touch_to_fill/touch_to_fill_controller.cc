@@ -90,10 +90,9 @@ bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness,
 // Returns whether there is at least one credential with a non-empty username.
 bool ContainsNonEmptyUsername(
     const base::span<const UiCredential>& credentials) {
-  return std::any_of(credentials.begin(), credentials.end(),
-                     [](const UiCredential& credential) {
-                       return !credential.username().empty();
-                     });
+  return base::ranges::any_of(credentials, [](const UiCredential& credential) {
+    return !credential.username().empty();
+  });
 }
 
 }  // namespace

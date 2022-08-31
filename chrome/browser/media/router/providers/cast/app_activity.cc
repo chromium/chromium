@@ -4,12 +4,12 @@
 
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "components/cast_channel/enum_table.h"
@@ -161,13 +161,13 @@ bool AppActivity::CanJoinSession(const CastMediaSource& cast_source,
 bool AppActivity::HasJoinableClient(AutoJoinPolicy policy,
                                     const url::Origin& origin,
                                     int frame_tree_node_id) const {
-  return std::any_of(connected_clients_.begin(), connected_clients_.end(),
-                     [policy, &origin, frame_tree_node_id](const auto& client) {
-                       return IsAutoJoinAllowed(
-                           policy, origin, frame_tree_node_id,
-                           client.second->origin(),
-                           client.second->frame_tree_node_id());
-                     });
+  return base::ranges::any_of(
+      connected_clients_,
+      [policy, &origin, frame_tree_node_id](const auto& client) {
+        return IsAutoJoinAllowed(policy, origin, frame_tree_node_id,
+                                 client.second->origin(),
+                                 client.second->frame_tree_node_id());
+      });
 }
 
 }  // namespace media_router

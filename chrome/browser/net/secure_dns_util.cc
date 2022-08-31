@@ -4,7 +4,6 @@
 
 #include "chrome/browser/net/secure_dns_util.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -53,11 +52,11 @@ bool EntryIsForCountry(const net::DohProviderEntry* entry, int country_id) {
     return true;
   }
   const auto& countries = entry->display_countries;
-  bool matches = std::any_of(countries.begin(), countries.end(),
-                             [country_id](const std::string& country_code) {
-                               return country_codes::CountryStringToCountryID(
-                                          country_code) == country_id;
-                             });
+  bool matches = base::ranges::any_of(
+      countries, [country_id](const std::string& country_code) {
+        return country_codes::CountryStringToCountryID(country_code) ==
+               country_id;
+      });
   if (matches) {
     DCHECK(!entry->ui_name.empty());
     DCHECK(!entry->privacy_policy.empty());

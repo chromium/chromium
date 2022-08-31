@@ -4,7 +4,6 @@
 
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
-#include <algorithm>
 #include <unordered_set>
 #include <utility>
 
@@ -19,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_runner_util.h"
@@ -530,11 +530,10 @@ std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
     std::vector<ProfileAttributesEntry*> entries =
         const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
 
-    if (std::none_of(entries.begin(), entries.end(),
-                     [name](ProfileAttributesEntry* entry) {
-                       return entry->GetLocalProfileName() == name ||
-                              entry->GetName() == name;
-                     })) {
+    if (base::ranges::none_of(entries, [name](ProfileAttributesEntry* entry) {
+          return entry->GetLocalProfileName() == name ||
+                 entry->GetName() == name;
+        })) {
       return name;
     }
   }

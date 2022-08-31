@@ -4,10 +4,10 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
 
+#include <algorithm>
 #include <utility>
 
 #include <fcntl.h>
-#include <algorithm>
 
 #include "base/base_paths.h"
 #include "base/bind.h"

@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -114,10 +115,9 @@ void ExpandEnvironmentVariables(std::string* arg) {
 
 #if BUILDFLAG(IS_MAC)
 bool ContainsUrlVarName(const std::vector<std::string>& tokens) {
-  return std::any_of(tokens.begin(), tokens.end(),
-                     [](const std::string& token) {
-                       return token.find(kUrlVarName) != std::string::npos;
-                     });
+  return base::ranges::any_of(tokens, [](const std::string& token) {
+    return token.find(kUrlVarName) != std::string::npos;
+  });
 }
 #endif  // BUILDFLAG(IS_MAC)
 

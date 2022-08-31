@@ -4,7 +4,6 @@
 
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -122,9 +121,9 @@ XmlDownloader::XmlDownloader(Profile* profile,
 XmlDownloader::~XmlDownloader() = default;
 
 bool XmlDownloader::HasValidSources() const {
-  return std::any_of(
-      sources_.begin(), sources_.end(),
-      [](const RulesetSource& source) { return source.url.is_valid(); });
+  return base::ranges::any_of(sources_, [](const RulesetSource& source) {
+    return source.url.is_valid();
+  });
 }
 
 base::Time XmlDownloader::last_refresh_time() const {

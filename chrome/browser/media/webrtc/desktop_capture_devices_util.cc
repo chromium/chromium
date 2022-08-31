@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
@@ -56,11 +57,11 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   const auto& captured_config = captured->GetCaptureHandleConfig();
   if (!captured_config.all_origins_permitted &&
-      std::none_of(captured_config.permitted_origins.begin(),
-                   captured_config.permitted_origins.end(),
-                   [capturer_origin](const url::Origin& permitted_origin) {
-                     return capturer_origin.IsSameOriginWith(permitted_origin);
-                   })) {
+      base::ranges::none_of(
+          captured_config.permitted_origins,
+          [capturer_origin](const url::Origin& permitted_origin) {
+            return capturer_origin.IsSameOriginWith(permitted_origin);
+          })) {
     return nullptr;
   }
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -252,10 +253,7 @@ std::string FindUniqueName(const std::string& orig_name,
   std::string name = orig_name;
   std::string name_for_display = NameForDisplay(name);
   for (int i = 1;; i++) {
-    if (std::none_of(existing_names.begin(), existing_names.end(),
-                     [&name_for_display](base::StringPiece s) -> bool {
-                       return NameForDisplay(s) == name_for_display;
-                     })) {
+    if (!base::Contains(existing_names, name_for_display, &NameForDisplay)) {
       // The new name is unique.
       break;
     }

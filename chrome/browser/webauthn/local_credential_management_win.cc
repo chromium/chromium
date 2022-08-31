@@ -5,11 +5,10 @@
 #include "chrome/browser/webauthn/local_credential_management_win.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/string_compare.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -86,9 +85,8 @@ class CredentialComparator {
 
 bool ContainsUserCreatedCredential(
     const std::vector<device::DiscoverableCredentialMetadata>& credentials) {
-  return std::any_of(
-      credentials.begin(), credentials.end(),
-      [](const device::DiscoverableCredentialMetadata& cred) -> bool {
+  return base::ranges::any_of(
+      credentials, [](const device::DiscoverableCredentialMetadata& cred) {
         return !cred.system_created;
       });
 }

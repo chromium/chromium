@@ -4,13 +4,13 @@
 
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -129,12 +129,12 @@ bool MetadataTable::DeleteComponentForCurrentUser(
 
 bool MetadataTable::HasComponentForAnyUser(
     const std::string& component_name) const {
-  return std::any_of(installed_items_.begin(), installed_items_.end(),
-                     [&component_name](const base::Value& item) {
-                       const std::string& name = GetRequiredStringFromDict(
-                           item, kMetadataContentItemComponentKey);
-                       return name == component_name;
-                     });
+  return base::ranges::any_of(
+      installed_items_, [&component_name](const base::Value& item) {
+        const std::string& name =
+            GetRequiredStringFromDict(item, kMetadataContentItemComponentKey);
+        return name == component_name;
+      });
 }
 
 MetadataTable::MetadataTable() : pref_service_(nullptr) {

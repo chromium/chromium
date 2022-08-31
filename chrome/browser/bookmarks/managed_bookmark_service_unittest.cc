@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -151,18 +152,13 @@ class ManagedBookmarkServiceTest : public testing::Test {
 
     if (node->is_folder()) {
       const base::Value::List* children = dict.FindList("children");
-      if (!children || node->children().size() != children->size()) {
-        return false;
-      }
-      size_t i = 0;
-      return std::all_of(node->children().cbegin(), node->children().cend(),
-                         [children, &i](const auto& child_node) {
-                           const base::Value& child = (*children)[i++];
-                           if (!child.is_dict())
-                             return false;
-                           return NodeMatchesValue(child_node.get(),
-                                                   child.GetDict());
-                         });
+      return children &&
+             base::ranges::equal(
+                 *children, node->children(),
+                 [](const base::Value& child, const auto& child_node) {
+                   return child.is_dict() &&
+                          NodeMatchesValue(child_node.get(), child.GetDict());
+                 });
     }
     if (!node->is_url())
       return false;

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -14,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
@@ -544,13 +544,13 @@ bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
   // dialog) then start the request over (once) if the user cancels the Windows
   // UI and there are other options in Chrome's UI.
   if (!have_restarted_due_to_windows_cancel_) {
-    bool have_other_option = std::any_of(
-        mechanisms_.begin(), mechanisms_.end(), [](const Mechanism& m) -> bool {
+    bool have_other_option =
+        base::ranges::any_of(mechanisms_, [](const Mechanism& m) -> bool {
           return absl::holds_alternative<Mechanism::Phone>(m.type) ||
                  absl::holds_alternative<Mechanism::AddPhone>(m.type);
         });
-    bool windows_was_priority = std::any_of(
-        mechanisms_.begin(), mechanisms_.end(), [](const Mechanism& m) -> bool {
+    bool windows_was_priority =
+        base::ranges::any_of(mechanisms_, [](const Mechanism& m) -> bool {
           return m.priority &&
                  absl::holds_alternative<Mechanism::WindowsAPI>(m.type);
         });
@@ -1117,8 +1117,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
     // showing a QR code.
     bool is_priority = false;
     if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
-      if (std::any_of(mechanisms_.begin(), mechanisms_.end(),
-                      [](const Mechanism& m) { return m.priority; })) {
+      if (base::ranges::any_of(mechanisms_,
+                               [](const Mechanism& m) { return m.priority; })) {
         LOG(ERROR) << "Not jumping to QR because of other priority";
       } else if (!paired_phone_names().empty()) {
         LOG(ERROR) << "Not jumping to QR because linked phones exist";
