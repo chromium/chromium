@@ -402,11 +402,13 @@ BOOL gChromeContextMenuEnabled = NO;
 }
 
 - (void)evaluateJavaScript:(NSString*)javaScriptString
-                completion:(void (^)(id, BOOL))completion {
+                completion:(void (^)(id, NSError*))completion {
   web::WebFrame* mainFrame = web::GetMainFrame(_webState.get());
   if (!mainFrame) {
     if (completion) {
-      completion(nil, NO);
+      completion(nil, [NSError errorWithDomain:@"org.chromium.chromewebview"
+                                          code:0
+                                      userInfo:nil]);
     }
     return;
   }
@@ -418,12 +420,12 @@ BOOL gChromeContextMenuEnabled = NO;
 
   mainFrame->ExecuteJavaScript(
       base::SysNSStringToUTF16(javaScriptString),
-      base::BindOnce(^(const base::Value* result, bool error) {
-        id jsResult;
+      base::BindOnce(^(const base::Value* result, NSError* error) {
+        id jsResult = nil;
         if (!error && result) {
           jsResult = NSObjectFromValue(result);
         }
-        completion(jsResult, !error);
+        completion(jsResult, error);
       }));
 }
 

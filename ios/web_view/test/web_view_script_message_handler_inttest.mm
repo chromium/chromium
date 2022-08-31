@@ -55,9 +55,9 @@ TEST_F(WebViewScriptMessageHandlerTest, MessageReceived) {
   NSString* script =
       @"let payload = {'key1':'value1', 'key2':42};"
       @"__gCrWeb.cwvMessaging.messageHost('messageHandlerCommand', payload);";
-  bool success;
-  test::EvaluateJavaScript(web_view_, script, &success);
-  ASSERT_TRUE(success);
+  NSError* error;
+  test::EvaluateJavaScript(web_view_, script, &error);
+  ASSERT_FALSE(error);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^{
@@ -87,9 +87,9 @@ TEST_F(WebViewScriptMessageHandlerTest, MessageReceivedAfterStateRestoration) {
   NSString* script =
       @"let payload = {'key1':'value1', 'key2':42};"
       @"__gCrWeb.cwvMessaging.messageHost('messageHandlerCommand', payload);";
-  bool success;
-  test::EvaluateJavaScript(web_view_, script, &success);
-  ASSERT_TRUE(success);
+  NSError* error;
+  test::EvaluateJavaScript(web_view_, script, &error);
+  ASSERT_FALSE(error);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^{
@@ -127,9 +127,9 @@ TEST_F(WebViewScriptMessageHandlerTest, NonregisteredMessagesIgnored) {
       @"__gCrWeb.cwvMessaging.messageHost('invalidCommand', payload);"
       @"__gCrWeb.cwvMessaging.messageHost('command1', payload);"
       @"__gCrWeb.cwvMessaging.messageHost('command2', payload);";
-  bool success;
-  test::EvaluateJavaScript(web_view_, script, &success);
-  ASSERT_TRUE(success);
+  NSError* error;
+  test::EvaluateJavaScript(web_view_, script, &error);
+  ASSERT_FALSE(error);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^{

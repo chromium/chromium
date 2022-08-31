@@ -54,12 +54,12 @@ TEST_F(UIDelegateTest, CreateWebView) {
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
 
-  bool success;
+  NSError* error = nil;
   EXPECT_NE(nil,
             test::EvaluateJavaScript(
                 web_view_, @"typeof open('http://example.com/') === 'object'",
-                &success));
-  EXPECT_TRUE(success);
+                &error));
+  EXPECT_FALSE(error);
 
   [(id)mock_delegate_ verify];
 }
@@ -78,9 +78,9 @@ TEST_F(UIDelegateTest, RunJavaScriptAlertPanel) {
                        completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  bool success;
-  test::EvaluateJavaScript(web_view_, @"alert('message')", &success);
-  EXPECT_TRUE(success);
+  NSError* error = nil;
+  test::EvaluateJavaScript(web_view_, @"alert('message')", &error);
+  EXPECT_FALSE(error);
 
   [(id)mock_delegate_ verify];
 }
@@ -100,10 +100,10 @@ TEST_F(UIDelegateTest, RunJavaScriptConfirmPanel) {
                          completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  bool success;
+  NSError* error = nil;
   EXPECT_NSEQ(@(YES), test::EvaluateJavaScript(web_view_, @"confirm('message')",
-                                               &success));
-  EXPECT_TRUE(success);
+                                               &error));
+  EXPECT_FALSE(error);
 
   [(id)mock_delegate_ verify];
 }
@@ -124,11 +124,10 @@ TEST_F(UIDelegateTest, RunJavaScriptTextInputPanel) {
                           completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  bool success;
-  EXPECT_NSEQ(@"input",
-              test::EvaluateJavaScript(
-                  web_view_, @"prompt('prompt', 'default')", &success));
-  EXPECT_TRUE(success);
+  NSError* error = nil;
+  EXPECT_NSEQ(@"input", test::EvaluateJavaScript(
+                            web_view_, @"prompt('prompt', 'default')", &error));
+  EXPECT_FALSE(error);
 
   [(id)mock_delegate_ verify];
 }

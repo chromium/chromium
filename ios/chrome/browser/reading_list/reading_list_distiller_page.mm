@@ -261,7 +261,7 @@ void ReadingListDistillerPage::HandleGoogleCachedAMPPage() {
 
 void ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult(
     const base::Value* value,
-    bool error) {
+    NSError* error) {
   if (!error && value->is_string()) {
     GURL new_gurl(value->GetString());
     if (new_gurl.is_valid()) {

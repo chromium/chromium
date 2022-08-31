@@ -13,6 +13,8 @@ source_set("js_messaging") {
   ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
 
+  frameworks = [ "Foundation.framework" ]
+
   sources = [
     "java_script_feature.h",
     "java_script_feature_util.h",

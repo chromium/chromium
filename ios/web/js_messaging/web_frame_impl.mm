@@ -199,10 +199,10 @@ bool WebFrameImpl::ExecuteJavaScript(
   void (^completion_handler)(id, NSError*) = ^void(id value, NSError* error) {
     if (error) {
       LogScriptWarning(ns_script, error);
-      std::move(internal_callback).Run(nullptr, true);
+      std::move(internal_callback).Run(nullptr, error);
     } else {
       std::move(internal_callback)
-          .Run(ValueResultFromWKResult(value).get(), false);
+          .Run(ValueResultFromWKResult(value).get(), nil);
     }
   };
 
@@ -219,7 +219,7 @@ WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
   // __block keyword to be able to run the callback inside
   // the completion handler.
   __block auto internal_callback = std::move(callback);
-  return base::BindOnce(^(const base::Value* value, bool error) {
+  return base::BindOnce(^(const base::Value* value, NSError* error) {
     if (!error) {
       std::move(internal_callback).Run(value);
     }

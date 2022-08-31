@@ -30,7 +30,7 @@ namespace test {
 // result.
 id EvaluateJavaScript(CWVWebView* web_view,
                       NSString* script,
-                      bool* success = nullptr);
+                      NSError** error = nil);
 
 // Waits for |web_view| to contain |text|. Returns false if the condition is not
 // met within a timeout.

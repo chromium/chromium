@@ -47,7 +47,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
       base::OnceCallback<void(const base::Value*)> callback) override;
   bool ExecuteJavaScript(
       const std::u16string& script,
-      base::OnceCallback<void(const base::Value*, bool)> callback) override;
+      base::OnceCallback<void(const base::Value*, NSError*)> callback) override;
 
   // FakeWebFrame:
   std::u16string GetLastJavaScriptCall() const override;

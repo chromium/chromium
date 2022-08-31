@@ -998,7 +998,7 @@ NSString* SerializedValue(const base::Value* value) {
 + (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript {
   __block bool handlerCalled = false;
   __block NSString* blockResult = nil;
-  __block bool blockError = false;
+  __block NSError* blockError = nil;
 
   web::WebFrame* web_frame =
       web::GetMainFrame(chrome_test_util::GetCurrentWebState());
@@ -1006,7 +1006,7 @@ NSString* SerializedValue(const base::Value* value) {
   if (web_frame) {
     std::u16string script = base::SysNSStringToUTF16(javaScript);
     web_frame->ExecuteJavaScript(
-        script, base::BindOnce(^(const base::Value* value, bool error) {
+        script, base::BindOnce(^(const base::Value* value, NSError* error) {
           handlerCalled = true;
           blockError = error;
           blockResult = SerializedValue(value);

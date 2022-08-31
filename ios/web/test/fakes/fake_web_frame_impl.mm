@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/test/fakes/fake_web_frame_impl.h"
+#import "ios/web/test/fakes/fake_web_frame_impl.h"
 
-#include <string>
-#include <utility>
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/json/json_writer.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import <string>
+#import <utility>
+
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/json/json_writer.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 namespace web {
 
@@ -168,18 +172,21 @@ bool FakeWebFrameImpl::ExecuteJavaScript(
 
 bool FakeWebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
-    base::OnceCallback<void(const base::Value*, bool)> callback) {
+    base::OnceCallback<void(const base::Value*, NSError*)> callback) {
   java_script_calls_.push_back(script);
 
   const base::Value* result = executed_js_result_map_[script];
-  bool success = result != nullptr;
+  NSError* error = nil;
+  if (!result) {
+    error = [[NSError alloc] initWithDomain:@"" code:0 userInfo:nil];
+  }
 
   if (!callback.is_null()) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), result, success));
+        FROM_HERE, base::BindOnce(std::move(callback), result, error));
   }
 
-  return success;
+  return !error;
 }
 
 void FakeWebFrameImpl::AddJsResultForFunctionCall(

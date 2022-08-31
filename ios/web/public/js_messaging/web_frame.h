@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_WEB_FRAME_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_WEB_FRAME_H_
 
+#import <Foundation/Foundation.h>
+
 #include <string>
 
 #include "base/callback_forward.h"
@@ -82,7 +84,7 @@ class WebFrame : public base::SupportsUserData {
       base::OnceCallback<void(const base::Value*)> callback) = 0;
 
   using ExecuteJavaScriptCallbackWithError =
-      base::OnceCallback<void(const base::Value*, bool error)>;
+      base::OnceCallback<void(const base::Value*, NSError* error)>;
   // Executes the given |script| and returns whether the script was run.
   // If the script is successfully executed, |callback| is called with
   // the result. Otherwise, |callback| is called with the bool. The

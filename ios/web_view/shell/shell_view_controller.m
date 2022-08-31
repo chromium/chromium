@@ -935,11 +935,15 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 - (void)evaluateJavaScript:(NSString*)javascript {
   [self.webView
       evaluateJavaScript:javascript
-              completion:^(id result, BOOL success) {
-                NSString* formatString =
-                    success ? @"JavaScript evaluation finished with result: %@"
-                            : @"JavaScript evaluation FAILED with result: %@";
-                NSLog(formatString, result);
+              completion:^(id result, NSError* error) {
+                if (error) {
+                  NSLog(
+                      @"JavaScript evaluation FAILED with error: %@ result: %@",
+                      error, result);
+                } else {
+                  NSLog(@"JavaScript evaluation finished with result: %@",
+                        result);
+                }
               }];
 }
 
