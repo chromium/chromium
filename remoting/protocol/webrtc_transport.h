@@ -249,7 +249,6 @@ class WebrtcTransport : public Transport,
       pending_incoming_candidates_;
 
   std::string preferred_video_codec_;
-  int desired_video_frame_rate_ = kTargetFrameRate;
 
   SessionOptions session_options_;
 
