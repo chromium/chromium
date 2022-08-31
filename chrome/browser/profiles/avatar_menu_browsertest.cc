@@ -80,8 +80,14 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile) {
             chrome::GetSettingsUrl(chrome::kManageProfileSubPage));
 }
 
+// TODO(crbug.com/1358380): Re-enable this test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EditProfile_NoBrowser DISABLED_EditProfile_NoBrowser
+#else
+#define MAYBE_EditProfile_NoBrowser EditProfile_NoBrowser
+#endif
 // Click on "Edit" will open a new browser if none exists for a profile.
-IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
+IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, MAYBE_EditProfile_NoBrowser) {
   Profile* profile = browser()->profile();
   // Open the profile picker before closing all browser windows to keep the
   // browser process alive.
