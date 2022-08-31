@@ -35,7 +35,7 @@ HighEfficiencyModePolicy* HighEfficiencyModePolicy::GetInstance() {
 }
 
 void HighEfficiencyModePolicy::OnPageNodeAdded(const PageNode* page_node) {
-  if (!page_node->IsVisible()) {
+  if (page_node->GetType() == PageType::kTab && !page_node->IsVisible()) {
     // Some mechanisms (like "session restore" and "open all bookmarks") can
     // create pages that are non-visible. If that happens, start a discard timer
     // so that the pages are discarded if they don't ever become visible.
@@ -65,6 +65,17 @@ void HighEfficiencyModePolicy::OnIsVisibleChanged(const PageNode* page_node) {
   if (page_node->IsVisible()) {
     RemoveActiveTimer(page_node);
   } else {
+    StartDiscardTimerIfEnabled(page_node, time_before_discard_);
+  }
+}
+
+void HighEfficiencyModePolicy::OnTypeChanged(const PageNode* page_node) {
+  if (page_node->GetType() != PageType::kTab) {
+    RemoveActiveTimer(page_node);
+  } else if (!page_node->IsVisible()) {
+    // If the page is a tab now, it wasn't before so it doesn't yet have a timer
+    // running. Add it to the timer map if it's not visible, otherwise it will
+    // be added as needed when its OnVisibleChange event fires.
     StartDiscardTimerIfEnabled(page_node, time_before_discard_);
   }
 }
@@ -107,6 +118,7 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
 void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
     const PageNode* page_node,
     base::TimeDelta time_before_discard) {
+  DCHECK_EQ(page_node->GetType(), PageType::kTab);
   if (IsHighEfficiencyDiscardingEnabled()) {
     // High Efficiency mode is enabled, so the tab should be discarded after the
     // amount of time specified by finch is elapsed.

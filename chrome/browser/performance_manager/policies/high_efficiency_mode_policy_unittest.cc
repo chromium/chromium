@@ -30,8 +30,6 @@ class HighEfficiencyModeTest
     auto policy = std::make_unique<HighEfficiencyModePolicy>();
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
-
-    page_node()->SetType(PageType::kTab);
   }
 
   void TearDown() override {
@@ -41,13 +39,33 @@ class HighEfficiencyModeTest
 
   HighEfficiencyModePolicy* policy() { return policy_; }
 
+ protected:
+  PageNodeImpl* CreateOtherPageNode() {
+    other_process_node_ = CreateNode<performance_manager::ProcessNodeImpl>();
+    other_page_node_ = CreateNode<performance_manager::PageNodeImpl>();
+    other_main_frame_node_ = CreateFrameNodeAutoId(other_process_node_.get(),
+                                                   other_page_node_.get());
+    other_main_frame_node_->SetIsCurrent(true);
+    testing::MakePageNodeDiscardable(other_page_node_.get(), task_env());
+
+    return other_page_node_.get();
+  }
+
  private:
   raw_ptr<HighEfficiencyModePolicy> policy_;
+
+  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
+      other_page_node_;
+  performance_manager::TestNodeWrapper<performance_manager::ProcessNodeImpl>
+      other_process_node_;
+  performance_manager::TestNodeWrapper<performance_manager::FrameNodeImpl>
+      other_main_frame_node_;
 
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(HighEfficiencyModeTest, NoDiscardIfHighEfficiencyOff) {
+  page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
   task_env().FastForwardUntilNoTasksRemain();
@@ -55,6 +73,7 @@ TEST_F(HighEfficiencyModeTest, NoDiscardIfHighEfficiencyOff) {
 }
 
 TEST_F(HighEfficiencyModeTest, DiscardAfterBackgrounded) {
+  page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   policy()->OnHighEfficiencyModeChanged(true);
 
@@ -82,6 +101,7 @@ TEST_F(HighEfficiencyModeTest, DontDiscardIfPageIsNotATab) {
 // conditions that prevent discarding, but they're implemented in
 // `PageDiscardingHelper` and therefore tested there.
 TEST_F(HighEfficiencyModeTest, DontDiscardIfPlayingAudio) {
+  page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   policy()->OnHighEfficiencyModeChanged(true);
 
@@ -93,6 +113,7 @@ TEST_F(HighEfficiencyModeTest, DontDiscardIfPlayingAudio) {
 }
 
 TEST_F(HighEfficiencyModeTest, DiscardIfAlreadyNotVisibleWhenModeEnabled) {
+  page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
 
@@ -112,6 +133,71 @@ TEST_F(HighEfficiencyModeTest, DiscardIfAlreadyNotVisibleWhenModeEnabled) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
   task_env().FastForwardBy(base::Seconds(10));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HighEfficiencyModeTest, NoDiscardIfPageNodeRemoved) {
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  page_node()->SetIsVisible(false);
+  policy()->OnBeforePageNodeRemoved(page_node());
+
+  task_env().FastForwardUntilNoTasksRemain();
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HighEfficiencyModeTest, UnknownPageNodeNeverAddedToMap) {
+  // This case will be using a different page node, so make the default one
+  // visible so it's not discarded.
+  page_node()->SetIsVisible(true);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  PageNodeImpl* page_node = CreateOtherPageNode();
+  EXPECT_EQ(PageType::kUnknown, page_node->type());
+
+  page_node->SetIsVisible(false);
+  policy()->OnBeforePageNodeRemoved(page_node);
+
+  task_env().FastForwardUntilNoTasksRemain();
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HighEfficiencyModeTest, PageNodeDiscardedIfTypeChanges) {
+  // This case will be using a different page node, so make the default one
+  // visible so it's not discarded.
+  page_node()->SetIsVisible(true);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  PageNodeImpl* page_node = CreateOtherPageNode();
+  EXPECT_EQ(PageType::kUnknown, page_node->type());
+
+  page_node->SetType(PageType::kTab);
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node))
+      .WillOnce(::testing::Return(true));
+  page_node->SetIsVisible(false);
+
+  task_env().FastForwardBy(
+      performance_manager::features::kHighEfficiencyModeTimeBeforeDiscard
+          .Get());
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HighEfficiencyModeTest, PageNodeNotDiscardedIfBecomesNotTab) {
+  // This case will be using a different page node, so make the default one
+  // visible so it's not discarded.
+  page_node()->SetIsVisible(true);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  PageNodeImpl* page_node = CreateOtherPageNode();
+  page_node->SetType(PageType::kTab);
+
+  page_node->SetIsVisible(false);
+  page_node->SetType(PageType::kUnknown);
+
+  task_env().FastForwardUntilNoTasksRemain();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
