@@ -3785,7 +3785,7 @@
     },
 
     'backuprefptr': {
-      'gn_args': 'use_allocator="partition" use_backup_ref_ptr=true enable_backup_ref_ptr_slow_checks=true',
+      'gn_args': 'use_allocator="partition" use_backup_ref_ptr=true enable_backup_ref_ptr_slow_checks=true enable_backup_ref_ptr_support = true put_ref_count_in_previous_slot = true',
     },
 
     'betty-arc-r': {
