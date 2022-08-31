@@ -6721,6 +6721,14 @@
           'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
       },
+      'mac11.0.arm64-blink-rel': {
+        'mixins': [
+          'mac_11_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'mac12.0-blink-rel': {
         'mixins': [
           'mac_12_x64',
