@@ -208,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
 // - Non-empty extra_diagnostics provided.
 // - sentBluetoothLog flag is set true.
 // - category_tag is set to "BluetoothReportWithLogs".
+// - User is logged in with internal google account.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedIncludeSysLogsAndScreenshot) {
   ReportPtr report = Report::New();
@@ -219,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->send_bluetooth_logs = true;
   report->feedback_context->category_tag = kFeedbackCategoryTag;
   report->include_system_logs_and_histograms = true;
-  const FeedbackParams expected_params{/*is_internal_email=*/false,
+  report->feedback_context->is_internal_account = true;
+  const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/true,
@@ -255,6 +257,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - sentBluetoothLogs flag is set false.
 // - category_tag is not set to "BluetoothReportWithLogs".
 // - Empty string Extra Diagnostics provided.
+// - User is not logged in with an internal google account.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
   ReportPtr report = Report::New();
@@ -266,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->include_screenshot = false;
   report->contact_user_consent_granted = false;
   report->send_bluetooth_logs = false;
-
+  report->feedback_context->is_internal_account = false;
   report->include_system_logs_and_histograms = false;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
                                        /*load_system_info=*/false,

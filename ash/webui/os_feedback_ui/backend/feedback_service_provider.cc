@@ -45,6 +45,10 @@ void EmitTimeOnEachPageMetrics(
   }
 }
 
+bool IsInternalAccount(const absl::optional<std::string>& email) {
+  return email.has_value() && gaia::IsGoogleInternalAccountEmail(email.value());
+}
+
 FeedbackServiceProvider::FeedbackServiceProvider(
     std::unique_ptr<OsFeedbackDelegate> feedback_delegate)
     : feedback_delegate_(std::move(feedback_delegate)) {
@@ -69,9 +73,7 @@ void FeedbackServiceProvider::GetFeedbackContext(
   feedback_context->email = feedback_delegate_->GetSignedInUserEmail();
 
   feedback_context->is_internal_account =
-      feedback_context->email.has_value() &&
-      gaia::IsGoogleInternalAccountEmail(feedback_context->email.value());
-
+      IsInternalAccount(feedback_context->email);
   std::move(callback).Run(std::move(feedback_context));
 }
 
@@ -82,6 +84,8 @@ void FeedbackServiceProvider::GetScreenshotPng(
 
 void FeedbackServiceProvider::SendReport(ReportPtr report,
                                          SendReportCallback callback) {
+  report->feedback_context->is_internal_account =
+      IsInternalAccount(feedback_delegate_->GetSignedInUserEmail());
   feedback_delegate_->SendReport(std::move(report), std::move(callback));
   share_data_page_close_timestamp_ = base::Time::Now();
   feedback_sent = true;
