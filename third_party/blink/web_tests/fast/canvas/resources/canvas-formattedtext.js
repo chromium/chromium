@@ -1,5 +1,4 @@
-function RenderWithCanvas(parent)
-{
+function RenderWithCanvas(parent) {
     test_cases.forEach(async function(test_case) {
         var heading = document.createElement("b");
         heading.innerText = test_case.description;
@@ -10,21 +9,19 @@ function RenderWithCanvas(parent)
         canvas.setAttribute("style", "border: 1px solid black");
         canvas.setAttribute("height", test_case.height ? test_case.height : 60);
         parent.appendChild(canvas);
-        var text = new CanvasFormattedText();
-        text.appendRun(new CanvasFormattedTextRun(test_case.text));
+        var text = CanvasFormattedText.format(test_case.text,
+          `color:black; font:${test_case.font_size}px Arial`, canvas.width);
+
         var context = canvas.getContext("2d", { alpha: false });
         context.clearRect(0,0,test_case.width, canvas.height);
         context.fillStyle = "#FFFFFF";
         context.fillRect(0,0,test_case.width, canvas.height);
-        context.fillStyle = "#000000";
-        context.font = (test_case.font_size + "px Arial");
         var y = (test_case.y === undefined ? 0 : test_case.y);
-        context.fillFormattedText(text, 0, y, canvas.width);
+        context.drawFormattedText(text, 0, y);
     });
 }
 
-function RenderWithDiv(parent)
-{
+function RenderWithDiv(parent) {
     test_cases.forEach(async function(test_case) {
         var heading = document.createElement("b");
         heading.innerText = test_case.description;

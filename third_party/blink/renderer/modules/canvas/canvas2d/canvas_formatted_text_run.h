@@ -15,14 +15,9 @@
 
 namespace blink {
 
-class CanvasFormattedText;
-
-class MODULES_EXPORT CanvasFormattedTextRun final
-    : public ScriptWrappable,
+class CanvasFormattedTextRun final
+    : public GarbageCollected<CanvasFormattedTextRun>,
       public CanvasFormattedTextStyle {
-  DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(CanvasFormattedTextRun, Dispose);
-
  public:
   static CanvasFormattedTextRun* Create(ExecutionContext* execution_context,
                                         const String text) {
@@ -34,31 +29,13 @@ class MODULES_EXPORT CanvasFormattedTextRun final
   CanvasFormattedTextRun(const CanvasFormattedTextRun&) = delete;
   CanvasFormattedTextRun& operator=(const CanvasFormattedTextRun&) = delete;
 
-  String text() const { return text_; }
-  void setText(const String text) { text_ = text; }
-
-  unsigned length() const { return text_.length(); }
-
   LayoutText* GetLayoutObject() { return layout_text_; }
   void UpdateStyle(Document& document, const ComputedStyle& parent_style);
 
-  void SetParent(CanvasFormattedText* canvas_formatted_text) {
-    parent_ = canvas_formatted_text;
-  }
-
   void Trace(Visitor* visitor) const override;
-
-  void Dispose();
-
-  // Style dirtiness is tracked only at the level of a canvas formatted text
-  // and all run styles are recomputed when a canvas formatted text has its
-  // style recomputed. This can be improved by adding additional granularity
-  // of dirtiness tracking.
-  void SetNeedsStyleRecalc() override;
 
  private:
   String text_;
-  WeakMember<CanvasFormattedText> parent_;
   Member<LayoutText> layout_text_;
 };
 

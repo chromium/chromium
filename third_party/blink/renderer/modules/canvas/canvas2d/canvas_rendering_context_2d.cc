@@ -925,12 +925,11 @@ TextMetrics* CanvasRenderingContext2D::measureText(const String& text) {
                                            GetState().GetTextAlign(), text);
 }
 
-void CanvasRenderingContext2D::fillFormattedText(
+void CanvasRenderingContext2D::drawFormattedText(
     CanvasFormattedText* formatted_text,
     double x,
     double y,
-    double wrap_width,
-    double height) {
+    ExceptionState& exception_state) {
   if (!formatted_text)
     return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -941,16 +940,18 @@ void CanvasRenderingContext2D::fillFormattedText(
 
   gfx::RectF bounds;
   sk_sp<PaintRecord> recording = formatted_text->PaintFormattedText(
-      canvas()->GetDocument(), GetState().GetFontDescription(), x, y,
-      wrap_width, height, bounds);
-  Draw<OverdrawOp::kNone>(
-      [recording](cc::PaintCanvas* c,
-                  const cc::PaintFlags* flags)  // draw lambda
-      { c->drawPicture(recording); },
-      [](const SkIRect& rect) { return false; }, gfx::RectFToSkRect(bounds),
-      CanvasRenderingContext2DState::PaintType::kFillPaintType,
-      CanvasRenderingContext2DState::kNoImage,
-      CanvasPerformanceMonitor::DrawType::kText);
+      canvas()->GetDocument(), GetState().GetFontDescription(), x, y, bounds,
+      exception_state);
+  if (recording) {
+    Draw<OverdrawOp::kNone>(
+        [recording](cc::PaintCanvas* c,
+                    const cc::PaintFlags* flags)  // draw lambda
+        { c->drawPicture(recording); },
+        [](const SkIRect& rect) { return false; }, gfx::RectFToSkRect(bounds),
+        CanvasRenderingContext2DState::PaintType::kFillPaintType,
+        CanvasRenderingContext2DState::kNoImage,
+        CanvasPerformanceMonitor::DrawType::kText);
+  }
 }
 
 void CanvasRenderingContext2D::DrawTextInternal(

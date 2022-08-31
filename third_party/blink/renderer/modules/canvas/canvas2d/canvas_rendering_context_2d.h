@@ -133,14 +133,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void strokeText(const String& text, double x, double y);
   void strokeText(const String& text, double x, double y, double max_width);
   TextMetrics* measureText(const String& text);
-
-  CanvasRenderingContext2DSettings* getContextAttributes() const;
-
-  void fillFormattedText(CanvasFormattedText* formatted_text,
+  void drawFormattedText(CanvasFormattedText* formatted_text,
                          double x,
                          double y,
-                         double wrap_width,
-                         double height = kIndefiniteSize);
+                         ExceptionState&);
+
+  CanvasRenderingContext2DSettings* getContextAttributes() const;
 
   void drawFocusIfNeeded(Element*);
   void drawFocusIfNeeded(Path2D*, Element*);

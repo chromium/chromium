@@ -24,6 +24,7 @@ namespace blink {
 class Document;
 class FontDescription;
 class LayoutBlockFlow;
+class V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString;
 
 class MODULES_EXPORT CanvasFormattedText final
     : public ScriptWrappable,
@@ -32,110 +33,63 @@ class MODULES_EXPORT CanvasFormattedText final
   USING_PRE_FINALIZER(CanvasFormattedText, Dispose);
 
  public:
-  static CanvasFormattedText* Create(ExecutionContext* execution_context) {
-    return MakeGarbageCollected<CanvasFormattedText>(execution_context);
-  }
-
-  static CanvasFormattedText* Create(ExecutionContext* execution_context,
-                                     const String text);
-
-  static CanvasFormattedText* Create(ExecutionContext* execution_context,
-                                     CanvasFormattedTextRun* run,
-                                     ExceptionState& exception_state) {
-    CanvasFormattedText* canvas_formatted_text =
-        MakeGarbageCollected<CanvasFormattedText>(execution_context);
-    canvas_formatted_text->appendRun(run, exception_state);
-    return canvas_formatted_text;
-  }
-
   explicit CanvasFormattedText(ExecutionContext* execution_context);
   CanvasFormattedText(const CanvasFormattedText&) = delete;
   CanvasFormattedText& operator=(const CanvasFormattedText&) = delete;
 
   void Trace(Visitor* visitor) const override;
 
-  unsigned length() const { return text_runs_.size(); }
+  static CanvasFormattedText* format(
+      ExecutionContext* execution_context,
+      V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
+      const String& style,
+      ExceptionState& exception_state);
+  static CanvasFormattedText* format(
+      ExecutionContext* execution_context,
+      V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
+      const String& style,
+      double inline_constraint,
+      ExceptionState& exception_state);
+  static CanvasFormattedText* format(
+      ExecutionContext* execution_context,
+      V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
+      const String& style,
+      double inline_constraint,
+      double block_constraint,
+      ExceptionState& exception_state);
 
-  bool CheckRunsIndexBound(uint32_t index,
-                           ExceptionState* exception_state) const {
-    if (index >= text_runs_.size()) {
-      if (exception_state) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kIndexSizeError,
-            ExceptionMessages::IndexExceedsMaximumBound("index", index,
-                                                        text_runs_.size()));
-      }
-      return false;
-    }
-    return true;
-  }
+  bool CheckViewExists(ExceptionState* exception_state) const;
 
-  bool CheckRunIsNotParented(CanvasFormattedTextRun* run,
-                             ExceptionState* exception_state) const {
-    if (run->GetLayoutObject() && run->GetLayoutObject()->Parent()) {
-      if (exception_state) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kInvalidModificationError,
-            "The run is already a part of a formatted text. Remove it from "
-            "that formatted text before insertion.");
-      }
-      return false;
-    }
-    return true;
-  }
-
-  bool CheckViewExists(CanvasFormattedTextRun* run,
-                       ExceptionState* exception_state) const;
-  bool CheckRunBelongsToSameFrame(CanvasFormattedTextRun* run,
-                                  ExceptionState* exception_state) const;
-
-  CanvasFormattedTextRun* getRun(unsigned index,
-                                 ExceptionState& exception_state) const {
-    if (!CheckRunsIndexBound(index, &exception_state))
-      return nullptr;
-    return text_runs_[index];
-  }
-
-  CanvasFormattedTextRun* appendRun(CanvasFormattedTextRun* run,
+  CanvasFormattedTextRun* AppendRun(CanvasFormattedTextRun* run,
                                     ExceptionState& exception_state);
-
-  CanvasFormattedTextRun* setRun(unsigned index,
-                                 CanvasFormattedTextRun* run,
-                                 ExceptionState& exception_state);
-
-  CanvasFormattedTextRun* insertRun(unsigned index,
-                                    CanvasFormattedTextRun* run,
-                                    ExceptionState& exception_state);
-
-  void deleteRun(unsigned index, ExceptionState& exception_state) {
-    deleteRun(index, 1, exception_state);
-  }
-
-  void deleteRun(unsigned index,
-                 unsigned length,
-                 ExceptionState& exception_state);
 
   sk_sp<PaintRecord> PaintFormattedText(Document& document,
                                         const FontDescription& font,
                                         double x,
                                         double y,
-                                        double wrap_width,
-                                        double wrap_height,
-                                        gfx::RectF& bounds);
+                                        gfx::RectF& bounds,
+                                        ExceptionState& exception_state);
 
   void Dispose();
 
-  void SetNeedsStyleRecalc() override;
-
  private:
+  static CanvasFormattedText* FormatImpl(
+      ExecutionContext* execution_context,
+      V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
+      const String& style,
+      LayoutUnit inline_constraint,
+      LayoutUnit block_constraint,
+      ExceptionState& exception_state);
+
   void UpdateComputedStylesIfNeeded(Document& document,
                                     const FontDescription& defaultFont);
 
  private:
   HeapVector<Member<CanvasFormattedTextRun>> text_runs_;
   Member<LayoutBlockFlow> block_;
-  FontDescription current_default_font_;
-  bool needs_style_recalc_ = true;
+
+  LayoutUnit inline_constraint_ = kIndefiniteSize;
+  LayoutUnit block_constraint_ = kIndefiniteSize;
 };
 
 }  // namespace blink

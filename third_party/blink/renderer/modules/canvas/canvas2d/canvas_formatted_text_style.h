@@ -10,69 +10,22 @@
 
 namespace blink {
 
-class CanvasFormattedTextStylePropertyMap;
+class CSSParserContext;
 class FontDescription;
 
 class CanvasFormattedTextStyle : public GarbageCollectedMixin {
   DISALLOW_NEW();
 
  public:
-  explicit CanvasFormattedTextStyle(bool is_text_run)
-      : is_text_run_(is_text_run) {}
-  StylePropertyMap* styleMap();
+  explicit CanvasFormattedTextStyle() = default;
 
-  virtual void SetNeedsStyleRecalc() = 0;
   const CSSPropertyValueSet* GetCssPropertySet() const;
+  void SetStyle(const CSSParserContext* context, const String& style_text);
 
   void Trace(Visitor* visitor) const override;
 
  private:
-  bool is_text_run_;
-  Member<CanvasFormattedTextStylePropertyMap> style_map_;
-};
-
-class CanvasFormattedTextStylePropertyMap final : public StylePropertyMap {
- public:
-  explicit CanvasFormattedTextStylePropertyMap(bool is_text_run,
-                                               CanvasFormattedTextStyle*);
-  CanvasFormattedTextStylePropertyMap(
-      const CanvasFormattedTextStylePropertyMap&) = delete;
-  CanvasFormattedTextStylePropertyMap& operator=(
-      const CanvasFormattedTextStylePropertyMap&) = delete;
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(css_property_value_set_);
-    visitor->Trace(canvas_formatted_text_style_);
-    StylePropertyMap::Trace(visitor);
-  }
-
-  unsigned int size() const final {
-    return css_property_value_set_->PropertyCount();
-  }
-
-  const CSSPropertyValueSet* GetCssPropertySet() const {
-    return css_property_value_set_;
-  }
-
- protected:
-  const CSSValue* GetProperty(CSSPropertyID) const override;
-  const CSSValue* GetCustomProperty(const AtomicString&) const override;
-  void ForEachProperty(const IterationCallback&) override;
-  void SetProperty(CSSPropertyID, const CSSValue&) override;
-  bool SetShorthandProperty(CSSPropertyID,
-                            const String&,
-                            SecureContextMode) override;
-  void SetCustomProperty(const AtomicString&, const CSSValue&) override;
-  void RemoveProperty(CSSPropertyID) override;
-  void RemoveCustomProperty(const AtomicString&) override;
-  void RemoveAllProperties() final;
-
-  String SerializationForShorthand(const CSSProperty&) const final;
-
- private:
   Member<MutableCSSPropertyValueSet> css_property_value_set_;
-  WeakMember<CanvasFormattedTextStyle> canvas_formatted_text_style_;
-  bool is_text_run_;
 };
 
 }  // namespace blink

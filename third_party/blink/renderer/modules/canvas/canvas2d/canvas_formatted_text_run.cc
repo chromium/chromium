@@ -11,7 +11,7 @@ namespace blink {
 CanvasFormattedTextRun::CanvasFormattedTextRun(
     ExecutionContext* execution_context,
     const String text)
-    : CanvasFormattedTextStyle(/* is_text_run */ true), text_(text) {
+    : text_(text) {
   // Refrain from extending the use of document, apart from creating layout
   // text. In the future we should handle execution_context's from worker
   // threads that do not have a document.
@@ -31,22 +31,9 @@ void CanvasFormattedTextRun::UpdateStyle(Document& document,
   layout_text_->SetStyle(style, LayoutObject::ApplyStyleChanges::kNo);
 }
 
-void CanvasFormattedTextRun::Dispose() {
-  AllowDestroyingLayoutObjectInFinalizerScope scope;
-  if (layout_text_)
-    layout_text_->Destroy();
-}
-
 void CanvasFormattedTextRun::Trace(Visitor* visitor) const {
   visitor->Trace(layout_text_);
-  visitor->Trace(parent_);
-  ScriptWrappable::Trace(visitor);
   CanvasFormattedTextStyle::Trace(visitor);
-}
-
-void CanvasFormattedTextRun::SetNeedsStyleRecalc() {
-  if (parent_ != nullptr)
-    parent_->SetNeedsStyleRecalc();
 }
 
 }  // namespace blink
