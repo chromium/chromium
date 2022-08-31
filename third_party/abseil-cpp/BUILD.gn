@@ -97,9 +97,8 @@ group("absl_component_deps") {
   # The following dependencies currently don't build with NaCl.
   # TODO(https://crbug.com/1114625): Fix build errors and remove this section.
   if (is_nacl) {
-    public_deps -= [
-      "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
-    ]
+    public_deps -=
+        [ "//third_party/abseil-cpp/absl/debugging:failure_signal_handler" ]
   }
 
   visibility = [ ":absl" ]
@@ -191,6 +190,20 @@ if (build_with_chromium) {
         "absl/functional:any_invocable_test",
         "absl/hash:hash_test",
         "absl/hash:low_level_hash_test",
+        "absl/log:basic_log_test",
+        "absl/log:check_test",
+        "absl/log:die_if_null_test",
+        "absl/log:flags_test",
+        "absl/log:globals_test",
+        "absl/log:log_entry_test",
+        "absl/log:log_format_test",
+        "absl/log:log_macro_hygiene_test",
+        "absl/log:log_modifier_methods_test",
+        "absl/log:log_sink_test",
+        "absl/log:log_streamer_test",
+        "absl/log:scoped_mock_log_test",
+        "absl/log:stripping_test",
+        "absl/log/internal:stderr_log_sink_test",
         "absl/memory:memory_test",
         "absl/meta:type_traits_test",
         "absl/profiling:exponential_biased_test",

@@ -253,11 +253,13 @@ static bool StrPrefix(const char *str, const char *prefix) {
   return prefix[i] == '\0';  // Consumed everything in "prefix".
 }
 
-static void InitState(State *state, const char *mangled, char *out,
-                      int out_size) {
+static void InitState(State* state,
+                      const char* mangled,
+                      char* out,
+                      size_t out_size) {
   state->mangled_begin = mangled;
   state->out = out;
-  state->out_end_idx = out_size;
+  state->out_end_idx = static_cast<int>(out_size);
   state->recursion_depth = 0;
   state->steps = 0;
 
@@ -451,7 +453,7 @@ static bool MaybeAppendDecimal(State *state, int val) {
     // one-past-the-end and manipulate one character before the pointer.
     char *p = &buf[kMaxLength];
     do {  // val=0 is the only input that should write a leading zero digit.
-      *--p = (val % 10) + '0';
+      *--p = static_cast<char>((val % 10) + '0');
       val /= 10;
     } while (p > buf && val != 0);
 
@@ -1974,7 +1976,7 @@ static bool Overflowed(const State *state) {
 }
 
 // The demangler entry point.
-bool Demangle(const char *mangled, char *out, int out_size) {
+bool Demangle(const char* mangled, char* out, size_t out_size) {
   State state;
   InitState(&state, mangled, out, out_size);
   return ParseTopLevelMangledName(&state) && !Overflowed(&state) &&

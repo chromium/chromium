@@ -23,7 +23,10 @@ absl_source_set("program_name") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/synchronization",
   ]
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "../log:*",
+  ]
 }
 
 # Since absl/flags are only used by some test binaries (e.g. in WebRTC),
@@ -64,7 +67,7 @@ absl_source_set("marshalling") {
 }
 
 absl_source_set("commandlineflag_internal") {
-  visibility = [":*"]
+  visibility = [ ":*" ]
   public = [ "internal/commandlineflag.h" ]
   sources = [ "internal/commandlineflag.cc" ]
   deps = [

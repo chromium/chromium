@@ -284,13 +284,14 @@ INSTANTIATE_TEST_SUITE_P(WithParam, CordRepBtreeDualTest,
 TEST(CordRepBtreeTest, SizeIsMultipleOf64) {
   // Only enforce for fully 64-bit platforms.
   if (sizeof(size_t) == 8 && sizeof(void*) == 8) {
-    EXPECT_THAT(sizeof(CordRepBtree) % 64, Eq(0)) << "Should be multiple of 64";
+    EXPECT_THAT(sizeof(CordRepBtree) % 64, Eq(0u))
+        << "Should be multiple of 64";
   }
 }
 
 TEST(CordRepBtreeTest, NewDestroyEmptyTree) {
   auto* tree = CordRepBtree::New();
-  EXPECT_THAT(tree->size(), Eq(0));
+  EXPECT_THAT(tree->size(), Eq(0u));
   EXPECT_THAT(tree->height(), Eq(0));
   EXPECT_THAT(tree->Edges(), ElementsAre());
   CordRepBtree::Destroy(tree);
@@ -298,7 +299,7 @@ TEST(CordRepBtreeTest, NewDestroyEmptyTree) {
 
 TEST(CordRepBtreeTest, NewDestroyEmptyTreeAtHeight) {
   auto* tree = CordRepBtree::New(3);
-  EXPECT_THAT(tree->size(), Eq(0));
+  EXPECT_THAT(tree->size(), Eq(0u));
   EXPECT_THAT(tree->height(), Eq(3));
   EXPECT_THAT(tree->Edges(), ElementsAre());
   CordRepBtree::Destroy(tree);
@@ -356,7 +357,7 @@ TEST(CordRepBtreeTest, EdgeData) {
 TEST(CordRepBtreeTest, CreateUnrefLeaf) {
   auto* flat = MakeFlat("a");
   auto* leaf = CordRepBtree::Create(flat);
-  EXPECT_THAT(leaf->size(), Eq(1));
+  EXPECT_THAT(leaf->size(), Eq(1u));
   EXPECT_THAT(leaf->height(), Eq(0));
   EXPECT_THAT(leaf->Edges(), ElementsAre(flat));
   CordRepBtree::Unref(leaf);
@@ -365,7 +366,7 @@ TEST(CordRepBtreeTest, CreateUnrefLeaf) {
 TEST(CordRepBtreeTest, NewUnrefNode) {
   auto* leaf = CordRepBtree::Create(MakeFlat("a"));
   CordRepBtree* tree = CordRepBtree::New(leaf);
-  EXPECT_THAT(tree->size(), Eq(1));
+  EXPECT_THAT(tree->size(), Eq(1u));
   EXPECT_THAT(tree->height(), Eq(1));
   EXPECT_THAT(tree->Edges(), ElementsAre(leaf));
   CordRepBtree::Unref(tree);
@@ -653,7 +654,7 @@ TEST_P(CordRepBtreeDualTest, MergeEqualHeightTrees) {
     CordRepBtree* tree = use_append ? CordRepBtree::Append(left, right)
                                     : CordRepBtree::Prepend(right, left);
     EXPECT_THAT(tree, IsNode(1));
-    EXPECT_THAT(tree->Edges(), SizeIs(5));
+    EXPECT_THAT(tree->Edges(), SizeIs(5u));
 
     // `tree` contains all flats originally belonging to `left` and `right`.
     EXPECT_THAT(GetLeafEdges(tree), ElementsAreArray(flats));
@@ -681,7 +682,7 @@ TEST_P(CordRepBtreeDualTest, MergeLeafWithTreeNotExceedingLeafCapacity) {
     CordRepBtree* tree = use_append ? CordRepBtree::Append(left, right)
                                     : CordRepBtree::Prepend(right, left);
     EXPECT_THAT(tree, IsNode(1));
-    EXPECT_THAT(tree->Edges(), SizeIs(3));
+    EXPECT_THAT(tree->Edges(), SizeIs(3u));
 
     // `tree` contains all flats originally belonging to `left` and `right`.
     EXPECT_THAT(GetLeafEdges(tree), ElementsAreArray(flats));
@@ -709,7 +710,7 @@ TEST_P(CordRepBtreeDualTest, MergeLeafWithTreeExceedingLeafCapacity) {
     CordRepBtree* tree = use_append ? CordRepBtree::Append(left, right)
                                     : CordRepBtree::Prepend(right, left);
     EXPECT_THAT(tree, IsNode(1));
-    EXPECT_THAT(tree->Edges(), SizeIs(4));
+    EXPECT_THAT(tree->Edges(), SizeIs(4u));
 
     // `tree` contains all flats originally belonging to `left` and `right`.
     EXPECT_THAT(GetLeafEdges(tree), ElementsAreArray(flats));
@@ -738,7 +739,7 @@ TEST(CordRepBtreeTest, MergeFuzzTest) {
   auto random_leaf_count = [&]() {
     std::uniform_int_distribution<int> dist_height(0, 3);
     std::uniform_int_distribution<int> dist_leaf(0, max_cap - 1);
-    const size_t height = dist_height(rnd);
+    const int height = dist_height(rnd);
     return (height ? pow(max_cap, height) : 0) + dist_leaf(rnd);
   };
 
@@ -749,14 +750,16 @@ TEST(CordRepBtreeTest, MergeFuzzTest) {
     CordRepBtree* left = MakeTree(random_leaf_count(), coin_flip(rnd));
     GetLeafEdges(left, flats);
     if (dice_throw(rnd) == 1) {
-      std::uniform_int_distribution<int> dist(0, left->height());
+      std::uniform_int_distribution<size_t> dist(
+          0, static_cast<size_t>(left->height()));
       RefEdgesAt(dist(rnd), refs, left);
     }
 
     CordRepBtree* right = MakeTree(random_leaf_count(), coin_flip(rnd));
     GetLeafEdges(right, flats);
     if (dice_throw(rnd) == 1) {
-      std::uniform_int_distribution<int> dist(0, right->height());
+      std::uniform_int_distribution<size_t> dist(
+          0, static_cast<size_t>(right->height()));
       RefEdgesAt(dist(rnd), refs, right);
     }
 
@@ -784,7 +787,7 @@ TEST_P(CordRepBtreeTest, RemoveSuffix) {
       CordRep::Unref(node);
     }
 
-    for (int n = 1; n < data.length(); ++n) {
+    for (size_t n = 1; n < data.length(); ++n) {
       AutoUnref refs;
       auto flats = CreateFlatsFromString(data, 512);
       CordRepBtree* node = refs.RefIf(shared(), CreateTree(flats));
@@ -802,10 +805,10 @@ TEST_P(CordRepBtreeTest, RemoveSuffix) {
       const size_t last_length = rep->length - edges.size() * 512;
 
       // All flats except the last edge must be kept or copied 'as is'
-      int index = 0;
+      size_t index = 0;
       for (CordRep* edge : edges) {
         ASSERT_THAT(edge, Eq(flats[index++]));
-        ASSERT_THAT(edge->length, Eq(512));
+        ASSERT_THAT(edge->length, Eq(512u));
       }
 
       // CordRepBtree may optimize small substrings to avoid waste, so only
@@ -813,7 +816,7 @@ TEST_P(CordRepBtreeTest, RemoveSuffix) {
       if (last_length >= 500) {
         EXPECT_THAT(last_edge, Eq(flats[index++]));
         if (shared()) {
-          EXPECT_THAT(last_edge->length, Eq(512));
+          EXPECT_THAT(last_edge->length, Eq(512u));
         } else {
           EXPECT_TRUE(last_edge->refcount.IsOne());
           EXPECT_THAT(last_edge->length, Eq(last_length));
@@ -837,8 +840,8 @@ TEST(CordRepBtreeTest, SubTree) {
     node = CordRepBtree::Append(node, CordRep::Ref(flats[i]));
   }
 
-  for (int offset = 0; offset < data.length(); ++offset) {
-    for (int length = 1; length <= data.length() - offset; ++length) {
+  for (size_t offset = 0; offset < data.length(); ++offset) {
+    for (size_t length = 1; length <= data.length() - offset; ++length) {
       CordRep* rep = node->SubTree(offset, length);
       EXPECT_THAT(CordToString(rep), Eq(data.substr(offset, length)));
       CordRep::Unref(rep);
@@ -865,12 +868,12 @@ TEST(CordRepBtreeTest, SubTreeOnExistingSubstring) {
   ASSERT_THAT(result->tag, Eq(BTREE));
   CordRep::Unref(leaf);
   leaf = result->btree();
-  ASSERT_THAT(leaf->Edges(), ElementsAre(_, IsSubstring(0, 990)));
+  ASSERT_THAT(leaf->Edges(), ElementsAre(_, IsSubstring(0u, 990u)));
   EXPECT_THAT(leaf->Edges()[1]->substring()->child, Eq(flat));
 
   // Verify substring of substring.
   result = leaf->SubTree(3 + 5, 970);
-  ASSERT_THAT(result, IsSubstring(5, 970));
+  ASSERT_THAT(result, IsSubstring(5u, 970u));
   EXPECT_THAT(result->substring()->child, Eq(flat));
   CordRep::Unref(result);
 
@@ -1092,7 +1095,7 @@ TEST_P(CordRepBtreeHeightTest, GetAppendBufferNotFlat) {
   for (int i = 1; i <= height(); ++i) {
     tree = CordRepBtree::New(tree);
   }
-  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0));
+  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0u));
   CordRepBtree::Unref(tree);
 }
 
@@ -1102,7 +1105,7 @@ TEST_P(CordRepBtreeHeightTest, GetAppendBufferFlatNotPrivate) {
   for (int i = 1; i <= height(); ++i) {
     tree = CordRepBtree::New(tree);
   }
-  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0));
+  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0u));
   CordRepBtree::Unref(tree);
   CordRep::Unref(flat);
 }
@@ -1116,7 +1119,7 @@ TEST_P(CordRepBtreeHeightTest, GetAppendBufferTreeNotPrivate) {
     if (i == (height() + 1) / 2) refs.Ref(tree);
     tree = CordRepBtree::New(tree);
   }
-  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0));
+  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0u));
   CordRepBtree::Unref(tree);
   CordRep::Unref(flat);
 }
@@ -1128,7 +1131,7 @@ TEST_P(CordRepBtreeHeightTest, GetAppendBufferFlatNoCapacity) {
   for (int i = 1; i <= height(); ++i) {
     tree = CordRepBtree::New(tree);
   }
-  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0));
+  EXPECT_THAT(tree->GetAppendBuffer(1), SizeIs(0u));
   CordRepBtree::Unref(tree);
 }
 
@@ -1139,9 +1142,9 @@ TEST_P(CordRepBtreeHeightTest, GetAppendBufferFlatWithCapacity) {
     tree = CordRepBtree::New(tree);
   }
   absl::Span<char> span = tree->GetAppendBuffer(2);
-  EXPECT_THAT(span, SizeIs(2));
+  EXPECT_THAT(span, SizeIs(2u));
   EXPECT_THAT(span.data(), TypedEq<void*>(flat->Data() + 3));
-  EXPECT_THAT(tree->length, Eq(5));
+  EXPECT_THAT(tree->length, Eq(5u));
 
   size_t avail = flat->Capacity() - 5;
   span = tree->GetAppendBuffer(avail + 100);
@@ -1393,11 +1396,11 @@ TEST(CordRepBtreeTest, CheckAssertValidShallowVsDeep) {
 }
 
 TEST_P(CordRepBtreeTest, Rebuild) {
-  for (size_t size : {3, 8, 100, 10000, 1000000}) {
+  for (size_t size : {3u, 8u, 100u, 10000u, 1000000u}) {
     SCOPED_TRACE(absl::StrCat("Rebuild @", size));
 
     std::vector<CordRepFlat*> flats;
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
       flats.push_back(CordRepFlat::New(2));
       flats.back()->Data()[0] = 'x';
       flats.back()->length = 1;

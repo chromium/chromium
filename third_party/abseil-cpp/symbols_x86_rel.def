@@ -336,7 +336,7 @@ EXPORTS
     ?Delete@CordRepRing@cord_internal@absl@@CAXPAV123@@Z
     ?Delete@CordzHandle@cord_internal@absl@@SAXPAV123@@Z
     ?DeleteArena@LowLevelAlloc@base_internal@absl@@SA_NPAUArena@123@@Z
-    ?Demangle@debugging_internal@absl@@YA_NPBDPADH@Z
+    ?Demangle@debugging_internal@absl@@YA_NPBDPADI@Z
     ?Description@TimeZoneInfo@cctz@time_internal@absl@@UBE?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ?Description@TimeZoneLibC@cctz@time_internal@absl@@UBE?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ?Destroy@CordRep@cord_internal@absl@@SAXPAU123@@Z

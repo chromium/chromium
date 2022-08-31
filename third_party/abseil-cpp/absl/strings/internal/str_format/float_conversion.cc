@@ -1090,12 +1090,12 @@ void PrintExponent(int exp, char e, Buffer *out) {
   }
   // Exponent digits.
   if (exp > 99) {
-    out->push_back(static_cast<char>(exp / 100) + '0');
-    out->push_back(exp / 10 % 10 + '0');
-    out->push_back(exp % 10 + '0');
+    out->push_back(static_cast<char>(exp / 100 + '0'));
+    out->push_back(static_cast<char>(exp / 10 % 10 + '0'));
+    out->push_back(static_cast<char>(exp % 10 + '0'));
   } else {
-    out->push_back(static_cast<char>(exp / 10) + '0');
-    out->push_back(exp % 10 + '0');
+    out->push_back(static_cast<char>(exp / 10 + '0'));
+    out->push_back(static_cast<char>(exp % 10 + '0'));
   }
 }
 

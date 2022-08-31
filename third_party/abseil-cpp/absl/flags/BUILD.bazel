@@ -53,6 +53,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl/flags:__pkg__",
+        "//absl/log:__pkg__",
     ],
     deps = [
         ":path_util",

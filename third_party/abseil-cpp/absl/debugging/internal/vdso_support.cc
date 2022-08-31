@@ -193,8 +193,9 @@ long VDSOSupport::InitAndGetCPU(unsigned *cpu,  // NOLINT(runtime/int)
 ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY
 int GetCPU() {
   unsigned cpu;
-  int ret_code = (*VDSOSupport::getcpu_fn_)(&cpu, nullptr, nullptr);
-  return ret_code == 0 ? cpu : ret_code;
+  long ret_code =  // NOLINT(runtime/int)
+      (*VDSOSupport::getcpu_fn_)(&cpu, nullptr, nullptr);
+  return ret_code == 0 ? static_cast<int>(cpu) : static_cast<int>(ret_code);
 }
 
 }  // namespace debugging_internal
