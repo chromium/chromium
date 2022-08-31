@@ -75,7 +75,7 @@ size_t GetBytesPerElement(V8MLOperandType::Enum operand_type) {
 
 absl::optional<size_t> ValidateAndCalculateByteLength(
     V8MLOperandType::Enum type,
-    const Vector<int32_t>& dimensions,
+    const Vector<uint32_t>& dimensions,
     ExceptionState& exception_state) {
   if (dimensions.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -84,7 +84,7 @@ absl::optional<size_t> ValidateAndCalculateByteLength(
   }
   base::CheckedNumeric<size_t> elements_num = 1;
   for (auto& d : dimensions) {
-    if (d <= 0) {
+    if (d == 0) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                         "All dimensions should be positive");
       return absl::nullopt;
@@ -119,8 +119,9 @@ bool ValidateClampOptions(const MLClampOptions* options,
   return true;
 }
 
-absl::optional<Vector<int32_t>> BroadcastShapes(const Vector<int32_t>& dims_a,
-                                                const Vector<int32_t>& dims_b) {
+absl::optional<Vector<uint32_t>> BroadcastShapes(
+    const Vector<uint32_t>& dims_a,
+    const Vector<uint32_t>& dims_b) {
   // According WebNN spec:
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-binary, the element-wise
   // binary operation will be broadcasted according to numpy-broadcasting-rule:
@@ -128,12 +129,12 @@ absl::optional<Vector<int32_t>> BroadcastShapes(const Vector<int32_t>& dims_a,
   // The rank of the output tensor is the maximum rank of the input tensors.
   auto rank_a = dims_a.size(), rank_b = dims_b.size();
   auto rank_output = std::max(rank_a, rank_b);
-  Vector<int32_t> dims_output(rank_output);
+  Vector<uint32_t> dims_output(rank_output);
   for (wtf_size_t i = 0; i < rank_output; ++i) {
     auto dim_a = i < rank_a ? dims_a[rank_a - i - 1] : 1;
-    DCHECK_GT(dim_a, 0);
+    DCHECK_GT(dim_a, uint32_t(0));
     auto dim_b = i < rank_b ? dims_b[rank_b - i - 1] : 1;
-    DCHECK_GT(dim_b, 0);
+    DCHECK_GT(dim_b, uint32_t(0));
     // Two dimensions are compatible when they are equal, or one of them is 1.
     if (dim_a != dim_b && dim_a != 1 && dim_b != 1) {
       return absl::nullopt;
@@ -155,7 +156,7 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
                                       "The input types don't match.");
     return nullptr;
   }
-  absl::optional<Vector<int32_t>> dims_output =
+  absl::optional<Vector<uint32_t>> dims_output =
       BroadcastShapes(a->Dimensions(), b->Dimensions());
   if (!dims_output) {
     exception_state.ThrowDOMException(
@@ -196,7 +197,7 @@ MLOperand* MLGraphBuilder::input(String name,
   }
   V8MLOperandType::Enum type = desc->type().AsEnum();
   // If no dimensions, it represents a scalar. Set dimensions to {1}.
-  Vector<int32_t> dimensions = desc->getDimensionsOr({1});
+  Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
   if (!ValidateAndCalculateByteLength(type, dimensions, exception_state)) {
     return nullptr;
   }
@@ -215,7 +216,7 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
   }
   V8MLOperandType::Enum type = desc->type().AsEnum();
   // If no dimensions, it represents a scalar. Set dimensions to {1}.
-  Vector<int32_t> dimensions = desc->getDimensionsOr({1});
+  Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
   absl::optional<size_t> expected_byte_length =
       ValidateAndCalculateByteLength(type, dimensions, exception_state);
   if (!expected_byte_length) {

@@ -12,7 +12,7 @@ namespace blink {
 // static
 MLOperand* MLOperand::CreateInput(MLGraphBuilder* builder,
                                   const V8MLOperandType::Enum type,
-                                  Vector<int32_t> dimensions,
+                                  Vector<uint32_t> dimensions,
                                   String name) {
   auto* input = MakeGarbageCollected<MLOperand>(builder, OperandKind::kInput,
                                                 type, std::move(dimensions));
@@ -24,7 +24,7 @@ MLOperand* MLOperand::CreateInput(MLGraphBuilder* builder,
 MLOperand* MLOperand::CreateConstant(
     MLGraphBuilder* builder,
     const V8MLOperandType::Enum type,
-    Vector<int32_t> dimensions,
+    Vector<uint32_t> dimensions,
     const DOMArrayBufferView* array_buffer_view) {
   auto* constant = MakeGarbageCollected<MLOperand>(
       builder, OperandKind::kConstant, type, std::move(dimensions));
@@ -35,7 +35,7 @@ MLOperand* MLOperand::CreateConstant(
 // static
 MLOperand* MLOperand::CreateOutput(MLGraphBuilder* builder,
                                    const V8MLOperandType::Enum type,
-                                   Vector<int32_t> dimensions,
+                                   Vector<uint32_t> dimensions,
                                    const MLOperator* ml_operator) {
   auto* output = MakeGarbageCollected<MLOperand>(builder, OperandKind::kOutput,
                                                  type, std::move(dimensions));
@@ -46,7 +46,7 @@ MLOperand* MLOperand::CreateOutput(MLGraphBuilder* builder,
 MLOperand::MLOperand(MLGraphBuilder* builder,
                      OperandKind kind,
                      const V8MLOperandType::Enum type,
-                     Vector<int32_t> dimensions)
+                     Vector<uint32_t> dimensions)
     : builder_(builder),
       kind_(kind),
       type_(type),
@@ -66,7 +66,7 @@ V8MLOperandType::Enum MLOperand::Type() const {
   return type_;
 }
 
-const Vector<int32_t>& MLOperand::Dimensions() const {
+const Vector<uint32_t>& MLOperand::Dimensions() const {
   return dimensions_;
 }
 
