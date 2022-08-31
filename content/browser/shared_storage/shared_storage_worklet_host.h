@@ -122,6 +122,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const std::string& error_message);
 
   virtual void OnRunOperationOnWorkletFinished(
+      base::TimeTicks start_time,
       bool success,
       const std::string& error_message);
 

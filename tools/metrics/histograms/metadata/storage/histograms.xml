@@ -761,6 +761,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from when the end of the call to
+    `SharedStorageWorkletHost::RunOperationOnWorklet()` to the end of
+    `SharedStorageWorkletHost::OnRunOperationOnWorkletFinished()`. Recorded in
+    `SharedStorageWorkletHost::OnRunOperationOnWorkletFinished()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Document.Timing.SelectURL" units="ms"
     expires_after="2023-07-31">
   <owner>cammie@chromium.org</owner>

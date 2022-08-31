@@ -182,6 +182,7 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
 
   if (add_module_state_ != AddModuleState::kInitiated) {
     OnRunOperationOnWorkletFinished(
+        base::TimeTicks::Now(),
         /*success=*/false,
         /*error_message=*/
         "sharedStorage.worklet.addModule() has to be called before "
@@ -192,7 +193,7 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
       name, serialized_data,
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
@@ -546,6 +547,7 @@ void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
 }
 
 void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
+    base::TimeTicks start_time,
     bool success,
     const std::string& error_message) {
   if (!success) {
@@ -560,6 +562,9 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
     }
   }
 
+  base::UmaHistogramLongTimes(
+      "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet",
+      base::TimeTicks::Now() - start_time);
   DecrementPendingOperationsCount();
 }
 

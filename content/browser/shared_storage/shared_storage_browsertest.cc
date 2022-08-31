@@ -71,6 +71,9 @@ const char kErrorTypeHistogram[] = "Storage.SharedStorage.Worklet.Error.Type";
 const char kTimingUsefulResourceHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration";
 
+const char kTimingRunExecutedInWorkletHistogram[] =
+    "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet";
+
 const char kTimingSelectUrlExecutedInWorkletHistogram[] =
     "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet";
 
@@ -197,23 +200,25 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
   }
 
   void OnRunOperationOnWorkletFinished(
+      base::TimeTicks start_time,
       bool success,
       const std::string& error_message) override {
-    OnRunOperationOnWorkletFinishedHelper(success, error_message,
+    OnRunOperationOnWorkletFinishedHelper(start_time, success, error_message,
                                           /*initial_message=*/true);
   }
 
-  void OnRunOperationOnWorkletFinishedHelper(bool success,
+  void OnRunOperationOnWorkletFinishedHelper(base::TimeTicks start_time,
+                                             bool success,
                                              const std::string& error_message,
                                              bool initial_message) {
     if (should_defer_worklet_messages_ && initial_message) {
       pending_worklet_messages_.push_back(base::BindOnce(
           &TestSharedStorageWorkletHost::OnRunOperationOnWorkletFinishedHelper,
-          weak_ptr_factory_.GetWeakPtr(), success, error_message,
+          weak_ptr_factory_.GetWeakPtr(), start_time, success, error_message,
           /*initial_message=*/false));
     } else {
-      SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(success,
-                                                                error_message);
+      SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
+          start_time, success, error_message);
     }
 
     if (initial_message)
@@ -678,6 +683,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
             base::UTF16ToUTF8(console_observer.messages()[3].message));
   EXPECT_EQ("Finish executing 'test-operation'",
             base::UTF16ToUTF8(console_observer.messages()[4].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -725,7 +733,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   // Navigate again to record histograms.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
-                     kErrorTypeHistogram});
+                     kErrorTypeHistogram,
+                     kTimingRunExecutedInWorkletHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
@@ -734,6 +743,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
   histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -759,6 +769,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                   "              sharedStorage.run(\n"
                   "                            ^^^^^\n"),
       result.error);
+
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -804,6 +816,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             base::UTF16ToUTF8(console_observer.messages()[3].message));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[3].log_level);
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, WorkletDestroyed) {
@@ -1073,7 +1088,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2u, console_observer.messages().size());
 
   WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
-                     kTimingKeepAliveDurationHistogram});
+                     kTimingKeepAliveDurationHistogram,
+                     kTimingRunExecutedInWorkletHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
@@ -1082,6 +1098,7 @@ IN_PROC_BROWSER_TEST_F(
       1);
   histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
@@ -1449,6 +1466,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInDocument) {
   EXPECT_EQ("value3value333",
             base::UTF16ToUTF8(console_observer.messages()[3].message));
   EXPECT_EQ("4", base::UTF16ToUTF8(console_observer.messages()[4].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInDocument) {
@@ -1475,6 +1495,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInDocument) {
             base::UTF16ToUTF8(console_observer.messages()[1].message));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
             console_observer.messages()[1].log_level);
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInDocument) {
@@ -1494,6 +1517,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInDocument) {
 
   EXPECT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
@@ -1531,6 +1557,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
   EXPECT_EQ("value3value333",
             base::UTF16ToUTF8(console_observer.messages()[3].message));
   EXPECT_EQ("4", base::UTF16ToUTF8(console_observer.messages()[4].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1552,6 +1581,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             base::UTF16ToUTF8(console_observer.messages()[0].message));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[0].log_level);
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
@@ -1586,6 +1618,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
             console_observer.messages()[2].log_level);
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
             console_observer.messages()[3].log_level);
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInWorklet) {
@@ -1609,6 +1644,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInWorklet) {
   EXPECT_EQ("value0",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
   EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1631,6 +1669,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
   EXPECT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1653,6 +1694,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
   EXPECT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeysAndEntriesOperation) {
@@ -1686,6 +1730,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeysAndEntriesOperation) {
             base::UTF16ToUTF8(console_observer.messages()[4].message));
   EXPECT_EQ("key2;value2",
             base::UTF16ToUTF8(console_observer.messages()[5].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1721,6 +1768,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
     EXPECT_EQ(base::StrCat({"key", zero_padded_i, ";value", zero_padded_i}),
               base::UTF16ToUTF8(console_observer.messages()[i + 150].message));
   }
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 }
 
 class SharedStorageFencedFrameInteractionBrowserTest
@@ -1827,7 +1877,7 @@ class SharedStorageFencedFrameInteractionBrowserTest
     std::string urn_uuid =
         EvalJs(iframe, kSelectFrom8URLsScript).ExtractString();
 
-    // There are 2 "worklet operations": `addModule()` and `run()`.
+    // There are 2 "worklet operations": `addModule()` and `selectURL()`.
     test_worklet_host_manager()
         .GetAttachedWorkletHostForOrigin(origin)
         ->WaitForWorkletResponsesCount(2);
