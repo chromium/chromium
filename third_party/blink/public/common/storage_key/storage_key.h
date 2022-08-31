@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -177,6 +178,10 @@ class BLINK_COMMON_EXPORT StorageKey {
         storage_key.ancestor_chain_bit_if_third_party_enabled_;
     return storage_key;
   }
+
+  // Cast a storage key to a cookie partition key. If cookie partitioning is not
+  // enabled, then it will always return nullopt.
+  const absl::optional<net::CookiePartitionKey> ToCookiePartitionKey() const;
 
  private:
   // This enum represents the different type of encodable partitioning

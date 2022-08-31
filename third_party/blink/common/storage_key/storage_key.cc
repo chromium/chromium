@@ -439,6 +439,12 @@ bool StorageKey::ShouldSkipKeyDueToPartitioning(
   return false;
 }
 
+const absl::optional<net::CookiePartitionKey> StorageKey::ToCookiePartitionKey()
+    const {
+  return net::CookiePartitionKey::FromStorageKeyComponents(top_level_site_,
+                                                           nonce_);
+}
+
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
   return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
                   lhs.ancestor_chain_bit_) ==

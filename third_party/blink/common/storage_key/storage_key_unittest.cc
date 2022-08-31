@@ -697,4 +697,86 @@ TEST(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
   }
 }
 
+TEST(StorageKeyTest, ToCookiePartitionKey) {
+  struct TestCase {
+    const StorageKey storage_key;
+    const absl::optional<net::CookiePartitionKey> expected;
+  };
+
+  auto nonce = base::UnguessableToken::Create();
+
+  {  // Cookie partitioning disabled.
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatures(
+        {net::features::kThirdPartyStoragePartitioning},
+        {net::features::kPartitionedCookies,
+         net::features::kNoncedPartitionedCookies});
+
+    TestCase test_cases[] = {
+        {StorageKey(url::Origin::Create(GURL("https://www.example.com"))),
+         absl::nullopt},
+        {StorageKey::CreateForTesting(
+             url::Origin::Create(GURL("https://www.foo.com")),
+             url::Origin::Create(GURL("https://www.bar.com"))),
+         absl::nullopt},
+        {StorageKey::CreateWithNonce(
+             url::Origin::Create(GURL("https://www.example.com")), nonce),
+         absl::nullopt},
+    };
+    for (const auto& test_case : test_cases) {
+      EXPECT_EQ(test_case.expected,
+                test_case.storage_key.ToCookiePartitionKey());
+    }
+  }
+
+  {
+    // Nonced partitioned cookies enabled only.
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatures(
+        {net::features::kThirdPartyStoragePartitioning,
+         net::features::kNoncedPartitionedCookies},
+        {net::features::kPartitionedCookies});
+
+    TestCase test_cases[] = {
+        {StorageKey(url::Origin::Create(GURL("https://www.example.com"))),
+         absl::nullopt},
+        {StorageKey::CreateWithNonce(
+             url::Origin::Create(GURL("https://www.example.com")), nonce),
+         net::CookiePartitionKey::FromURLForTesting(GURL("https://example.com"),
+                                                    nonce)},
+    };
+    for (const auto& test_case : test_cases) {
+      EXPECT_EQ(test_case.expected,
+                test_case.storage_key.ToCookiePartitionKey());
+    }
+  }
+
+  {  // Cookie partitioning enabled.
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatures(
+        {net::features::kThirdPartyStoragePartitioning,
+         net::features::kPartitionedCookies},
+        {});
+
+    TestCase test_cases[] = {
+        {StorageKey(url::Origin::Create(GURL("https://www.example.com"))),
+         net::CookiePartitionKey::FromURLForTesting(
+             GURL("https://www.example.com"))},
+        {StorageKey::CreateForTesting(
+             url::Origin::Create(GURL("https://www.foo.com")),
+             url::Origin::Create(GURL("https://www.bar.com"))),
+         net::CookiePartitionKey::FromURLForTesting(
+             GURL("https://subdomain.bar.com"))},
+        {StorageKey::CreateWithNonce(
+             url::Origin::Create(GURL("https://www.example.com")), nonce),
+         net::CookiePartitionKey::FromURLForTesting(
+             GURL("https://www.example.com"), nonce)},
+    };
+    for (const auto& test_case : test_cases) {
+      EXPECT_EQ(test_case.expected,
+                test_case.storage_key.ToCookiePartitionKey());
+    }
+  }
+}
+
 }  // namespace blink

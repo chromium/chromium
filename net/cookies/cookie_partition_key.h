@@ -92,6 +92,14 @@ class NET_EXPORT CookiePartitionKey {
     return absl::make_optional(CookiePartitionKey(true));
   }
 
+  // Create a new CookiePartitionKey from the components of a StorageKey.
+  // Forwards to FromWire, but unlike that method in this one the optional nonce
+  // argument has no default. It also checks that cookie partitioning is enabled
+  // before returning a valid key, which FromWire does not check.
+  static absl::optional<CookiePartitionKey> FromStorageKeyComponents(
+      const SchemefulSite& top_level_site,
+      const absl::optional<base::UnguessableToken>& nonce);
+
   const SchemefulSite& site() const { return site_; }
 
   bool from_script() const { return from_script_; }
