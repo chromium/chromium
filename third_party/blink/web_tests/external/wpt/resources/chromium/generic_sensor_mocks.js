@@ -134,9 +134,8 @@ self.GenericSensorTest = (() => {
     }
 
     // Sets fake data that is used to deliver sensor reading updates.
-    async setSensorReading(readingData) {
+    setSensorReading(readingData) {
       this.readingData_ = new RingBuffer(readingData);
-      return this;
     }
 
     // This is a workaround to accommodate Blink's Device Orientation
