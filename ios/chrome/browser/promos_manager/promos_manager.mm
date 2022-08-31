@@ -61,6 +61,25 @@ void PromosManager::Init() {
       local_state_->GetValueList(prefs::kIosPromosManagerImpressions));
 }
 
+absl::optional<promos_manager::Promo> PromosManager::NextPromoForDisplay()
+    const {
+  absl::optional<std::vector<promos_manager::Promo>>
+      least_recently_shown_promos =
+          LeastRecentlyShown(active_promos_, impression_history_);
+
+  if (!least_recently_shown_promos.has_value())
+    return absl::nullopt;
+
+  std::vector<promos_manager::Promo> sorted_promos =
+      least_recently_shown_promos.value();
+
+  for (promos_manager::Promo promo : sorted_promos)
+    if (CanShowPromo(promo, impression_history_))
+      return promo;
+
+  return absl::nullopt;
+}
+
 #pragma mark - Private
 
 std::vector<promos_manager::Impression> PromosManager::ImpressionHistory(
@@ -161,7 +180,7 @@ bool PromosManager::AnyImpressionLimitTriggered(
 
 bool PromosManager::CanShowPromo(
     promos_manager::Promo promo,
-    const std::vector<promos_manager::Impression>& valid_impressions) const {
+    const std::vector<promos_manager::Impression>& sorted_impressions) const {
   // Maintains a map ([promos_manager::Promo] : [current impression count]) for
   // evaluating against GlobalImpressionLimits(),
   // GlobalPerPromoImpressionLimits(), and, if defined, `promo`-specific
@@ -191,9 +210,9 @@ bool PromosManager::CanShowPromo(
   // 2-day scope is no longer valid. However, if window covered 1-2 days, an
   // impression limit of 2-day scope is valid.
   for (int curr_day = window_start; curr_day >= window_end; --curr_day) {
-    if (curr_impression_index < valid_impressions.size()) {
+    if (curr_impression_index < sorted_impressions.size()) {
       promos_manager::Impression curr_impression =
-          valid_impressions[curr_impression_index];
+          sorted_impressions[curr_impression_index];
       // If the current impression matches the current day, add it to
       // `promo_impression_counts`.
       if (curr_impression.day == curr_day) {

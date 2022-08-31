@@ -25,6 +25,9 @@ class PromosManager {
   explicit PromosManager(PrefService* local_state);
   ~PromosManager();
 
+  // Returns the next promo for display, if any.
+  absl::optional<promos_manager::Promo> NextPromoForDisplay() const;
+
   // Initialize the Promos Manager by restoring state from Prefs. Must be called
   // after creation and before any other operation.
   void Init();
@@ -101,13 +104,9 @@ class PromosManager {
       int window_days,
       NSArray<ImpressionLimit*>* impression_limits) const;
 
-  // Algorithm loops over pre-pruned & pre-sorted impressions history list.
-  // The algorithm assumes:
-  //
-  // (1) `valid_impressions` only contains impressions that occurred in the
-  // last `kNumDaysForStoringImpressionHistory` days. (2)
-  // `valid_impressions` is sorted by impression day (most recent -> least
-  // recent).
+  // Algorithm loops over pre-sorted impressions history list. The algorithm
+  // assumes `valid_impressions` is sorted by impression day (most recent ->
+  // least recent).
   //
   // At each impression, the algorithm asks if either a time-based or
   // time-agnostic impression limit has been met. If so, the algorithm exits
@@ -118,7 +117,7 @@ class PromosManager {
   // `promo`.
   bool CanShowPromo(
       promos_manager::Promo promo,
-      const std::vector<promos_manager::Impression>& valid_impressions) const;
+      const std::vector<promos_manager::Impression>& sorted_impressions) const;
 
   // Returns a list of impression counts (std::vector<int>) from a promo
   // impression counts map.
