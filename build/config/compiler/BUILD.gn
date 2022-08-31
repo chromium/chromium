@@ -1671,6 +1671,11 @@ config("chromium_code") {
         "-Wthread-safety",
       ]
     }
+
+    # TODO(https://crbug.com/1355871): Enable on more platforms.
+    if (is_win && target_cpu == "x64") {
+      cflags += [ "-Wextra-semi" ]
+    }
   }
 
   configs = [
