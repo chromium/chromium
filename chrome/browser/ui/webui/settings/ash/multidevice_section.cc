@@ -402,10 +402,6 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL},
       {"multideviceNotificationAccessSetupConnectingTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE},
-      {"multideviceNotificationAccessSetupScreenLockTitle",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE},
-      {"multideviceNotificationAccessSetupScreenLockInstruction",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION},
       {"multideviceNotificationAccessSetupScreenLockIconInstruction",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_ICON_INSTRUCTION},
       {"multideviceNotificationAccessSetupAwaitingResponseTitle",
@@ -513,6 +509,10 @@ void MultiDeviceSection::AddLoadTimeData(
       "multideviceAllowedByPolicy",
       chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
           profile()->GetPrefs()));
+  html_source->AddString(
+      "multideviceNotificationAccessSetupScreenLockTitle",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE));
   html_source->AddString(
       "multideviceNotificationAccessSetupAckSummary",
       ui::SubstituteChromeOSDeviceType(

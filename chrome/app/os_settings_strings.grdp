@@ -3326,16 +3326,13 @@ Press an assigned switch or key to remove assignment.
     Connecting to your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE" desc="The title of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
-    Set a PIN or password
+    Use a password or PIN to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE" desc="The subtitle of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
-    This PIN or password protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, including any information you access from your phone
-  </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION" desc="The instruction message of the screen lock dialog.">
-    Choose either one each time you sign in
+    This password or PIN protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and any information you access from your phone. You'll need to unlock each time your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> wakes from sleep.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_ICON_INSTRUCTION" desc="The icon instruction message of the screen lock dialog.">
-    If Smart Lock is turned on, you won't need to enter a PIN or password
+    If Smart Lock is turned on and your phone is unlocked, you don't need to enter a password or PIN
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
     Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on
