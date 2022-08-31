@@ -2613,6 +2613,7 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     update->GetList().Append(std::move(item));
   }
   active_app_id_ = observer.Wait();
+  AppRegistrationWaiter(profile(), active_app_id_).Await();
 }
 
 void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
