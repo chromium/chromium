@@ -183,7 +183,10 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
   RunUtilityProcess(/*elevated=*/false, /*crash=*/false, /*fail_launch=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcessAndCrash) {
+// Disabled because it crashes on android-arm64-tests:
+// https://crbug.com/1358585.
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
+                       DISABLED_LaunchProcessAndCrash) {
   RunUtilityProcess(/*elevated=*/false, /*crash=*/true, /*fail_launch=*/false);
 }
 
