@@ -9,6 +9,20 @@
 
 namespace policy {
 
+namespace {
+
+dlp::RequestFileAccessRequest PrepareBaseRequestFileAccessRequest(
+    const std::vector<base::FilePath>& files) {
+  dlp::RequestFileAccessRequest request;
+  for (const auto& file : files)
+    request.add_files_paths(file.value());
+
+  request.set_process_id(base::GetCurrentProcId());
+  return request;
+}
+
+}  // namespace
+
 // static
 void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
   if (!HasInstance()) {
@@ -29,12 +43,31 @@ void DlpScopedFileAccessDelegate::RequestFilesAccess(
     return;
   }
 
-  dlp::RequestFileAccessRequest request;
-  for (const auto& file : files)
-    request.add_files_paths(file.value());
-
+  dlp::RequestFileAccessRequest request =
+      PrepareBaseRequestFileAccessRequest(files);
   request.set_destination_url(destination_url.spec());
-  request.set_process_id(base::GetCurrentProcId());
+
+  PostRequestFileAccessToDaemon(request, std::move(callback));
+}
+
+void DlpScopedFileAccessDelegate::RequestFilesAccessForSystem(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+  if (!client_->IsAlive()) {
+    std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+    return;
+  }
+
+  dlp::RequestFileAccessRequest request =
+      PrepareBaseRequestFileAccessRequest(files);
+  request.set_destination_component(dlp::DlpComponent::SYSTEM);
+
+  PostRequestFileAccessToDaemon(request, std::move(callback));
+}
+
+void DlpScopedFileAccessDelegate::PostRequestFileAccessToDaemon(
+    const ::dlp::RequestFileAccessRequest request,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
   client_->RequestFileAccess(
       request, base::BindOnce(&DlpScopedFileAccessDelegate::OnResponse,
                               base::Unretained(this), std::move(callback)));

@@ -38,9 +38,19 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
   // The instance will be deconstructed
   static void DeleteInstance();
 
+  // Requests access to |files| in order to be sent to |destination_url|.
+  // |callback| is called with a token that should be hold until
+  // `open()` operation on the files finished.
   virtual void RequestFilesAccess(
       const std::vector<base::FilePath>& files,
       const GURL& destination_url,
+      base::OnceCallback<void(file_access::ScopedFileAccess)> callback) = 0;
+
+  // Requests access to |files| in order to be sent to a system process.
+  // |callback| is called with a token that should be hold until
+  // `open()` operation on the files finished.
+  virtual void RequestFilesAccessForSystem(
+      const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback) = 0;
 
  protected:

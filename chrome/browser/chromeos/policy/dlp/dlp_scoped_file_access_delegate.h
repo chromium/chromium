@@ -33,12 +33,14 @@ class DlpScopedFileAccessDelegate
   // Initializes the singleton instance.
   static void Initialize(chromeos::DlpClient* client);
 
-  // Requests access to |files| in order to be sent to |destination_url|.
-  // |continuation_callback| is called with a token that should be hold until
-  // `open()` operation on the files finished.
+  // file_access::ScopedFileAccessDelegate:
   void RequestFilesAccess(
       const std::vector<base::FilePath>& files,
       const GURL& destination_url,
+      base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
+      override;
+  void RequestFilesAccessForSystem(
+      const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
       override;
 
@@ -47,6 +49,12 @@ class DlpScopedFileAccessDelegate
 
  private:
   friend class DlpScopedFileAccessDelegateTest;
+
+  // Starts a RequestFileAccess request to the daemon.
+  void PostRequestFileAccessToDaemon(
+      const ::dlp::RequestFileAccessRequest request,
+      base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
+
   // Handles D-Bus response to access files.
   void OnResponse(
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback,

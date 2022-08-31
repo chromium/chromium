@@ -12,9 +12,15 @@ class ScopedFileAccessDelegateTestInstance : public ScopedFileAccessDelegate {
   static int instance_counter;
   ScopedFileAccessDelegateTestInstance() { ++instance_counter; }
   ~ScopedFileAccessDelegateTestInstance() override { --instance_counter; }
+
+  // ScopedFileAccessDelegate:
   void RequestFilesAccess(
       const std::vector<base::FilePath>& files,
       const GURL& destination_url,
+      base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
+      override {}
+  void RequestFilesAccessForSystem(
+      const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
       override {}
 };
