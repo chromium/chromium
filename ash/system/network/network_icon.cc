@@ -186,9 +186,10 @@ gfx::ImageSkia& ConnectingWirelessImage(ImageType image_type,
 
   // Cache of images used to avoid redrawing the icon during every animation;
   // the key is a tuple including a bool representing whether the icon displays
-  // bars (as oppose to arcs), the IconType, and an int representing the index
-  // of the image (with respect to GetImageForIndex()).
-  static base::flat_map<std::tuple<bool, IconType, int>, gfx::ImageSkia>
+  // bars (as oppose to arcs), a bool representing whether the icon is to be
+  // displayed in dark mode, the IconType, and an int representing the index of
+  // the image (with respect to GetImageForIndex()).
+  static base::flat_map<std::tuple<bool, bool, IconType, int>, gfx::ImageSkia>
       s_image_cache;
 
   // Note that if |image_type| is NONE, arcs are displayed by default.
@@ -198,7 +199,9 @@ gfx::ImageSkia& ConnectingWirelessImage(ImageType image_type,
       animation * nextafter(static_cast<float>(kNumConnectingImages), 0);
   index = base::clamp(index, 0, kNumConnectingImages - 1);
 
-  auto map_key = std::make_tuple(is_bars_image, icon_type, index);
+  auto map_key = std::make_tuple(
+      is_bars_image, DarkLightModeControllerImpl::Get()->IsDarkModeEnabled(),
+      icon_type, index);
 
   if (!s_image_cache.contains(map_key)) {
     // Lazily cache images.
