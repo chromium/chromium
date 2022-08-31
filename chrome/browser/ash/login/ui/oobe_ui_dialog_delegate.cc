@@ -251,6 +251,11 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
 
 OobeUIDialogDelegate::~OobeUIDialogDelegate() {
   view_observer_.Reset();
+  // Reset scoped observation of the captive portal before closing the captive
+  // portal delegate as it posts the task which can trigger
+  // `OnAfterCaptivePortalHidden` to be called after `OobeUIDialogDelegate`
+  // destruction.
+  captive_portal_observer_.Reset();
   if (captive_portal_delegate_)
     captive_portal_delegate_->Close();
   if (controller_)
