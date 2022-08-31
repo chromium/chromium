@@ -9,9 +9,6 @@ namespace ash {
 
 // The reason a home launcher animation was triggered.
 enum class HomeLauncherAnimationTrigger {
-  // Launcher animation is triggered by drag release.
-  kDragRelease,
-
   // Launcher animation is triggered by pressing the AppList button.
   kLauncherButton,
 

@@ -195,10 +195,6 @@ TabletModeAnimationTransition CalculateAnimationTransitionForMetrics(
       return TabletModeAnimationTransition::kHideHomeLauncherForWindow;
     case HomeLauncherAnimationTrigger::kLauncherButton:
       return TabletModeAnimationTransition::kHomeButtonShow;
-    case HomeLauncherAnimationTrigger::kDragRelease:
-      return launcher_should_show
-                 ? TabletModeAnimationTransition::kDragReleaseShow
-                 : TabletModeAnimationTransition::kDragReleaseHide;
     case HomeLauncherAnimationTrigger::kOverviewModeFade:
       return launcher_should_show
                  ? TabletModeAnimationTransition::kFadeOutOverview

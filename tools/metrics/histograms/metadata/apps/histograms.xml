@@ -2131,10 +2131,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="AppListTabletModeTransition">
     <variant name=""/>
-    <variant name=".DragReleaseHide"
-        summary="Release drag to hide the app list"/>
-    <variant name=".DragReleaseShow"
-        summary="Release drag to show the app list"/>
     <variant name=".EnterFullscreenAllApps"
         summary="Enter kFullScreenAllApps state in tablet"/>
     <variant name=".EnterFullscreenSearch"

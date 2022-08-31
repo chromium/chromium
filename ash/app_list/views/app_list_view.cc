@@ -257,17 +257,6 @@ void AppListView::StateAnimationMetricsReporter::RecordMetricsInTablet(
   if (!tablet_transition)
     return;
   switch (*tablet_transition) {
-    case TabletModeAnimationTransition::kDragReleaseShow:
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Apps.HomeLauncherTransition.AnimationSmoothness.DragReleaseShow",
-          value);
-      break;
-    case TabletModeAnimationTransition::kDragReleaseHide:
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Apps.HomeLauncherTransition.AnimationSmoothness."
-          "DragReleaseHide",
-          value);
-      break;
     case TabletModeAnimationTransition::kHomeButtonShow:
       UMA_HISTOGRAM_PERCENTAGE(
           "Apps.HomeLauncherTransition.AnimationSmoothness."
