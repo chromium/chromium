@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/style/temp_palette.h"
+#include "ui/color/temp_palette.h"
 
-namespace ash {
+namespace ui {
 
 namespace {
 
@@ -212,4 +212,4 @@ const ToneMap GetTempPalette(SkColor seed_color) {
   return tones;
 }
 
-}  // namespace ash
+}  // namespace ui

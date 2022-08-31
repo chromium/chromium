@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_STYLE_TEMP_PALETTE_H_
-#define ASH_STYLE_TEMP_PALETTE_H_
+#ifndef UI_COLOR_TEMP_PALETTE_H_
+#define UI_COLOR_TEMP_PALETTE_H_
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace ash {
+namespace ui {
 
 enum class Luma {
   k0 = 0,
@@ -27,7 +28,7 @@ enum class Luma {
 };
 
 // The tones generated from `seed` in the luma range.
-struct ToneMap {
+struct COMPONENT_EXPORT(COLOR) ToneMap {
   ToneMap();
   ToneMap(const ToneMap&);
   ~ToneMap();
@@ -46,8 +47,8 @@ struct ToneMap {
 };
 
 // Returns the tones that closest match `seed_color`.
-const ToneMap GetTempPalette(SkColor seed_color);
+const ToneMap COMPONENT_EXPORT(COLOR) GetTempPalette(SkColor seed_color);
 
-}  // namespace ash
+}  // namespace ui
 
-#endif  // ASH_STYLE_TEMP_PALETTE_H_
+#endif  // UI_COLOR_TEMP_PALETTE_H_

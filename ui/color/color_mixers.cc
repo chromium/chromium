@@ -6,12 +6,14 @@
 
 #include "ui/color/core_default_color_mixer.h"
 #include "ui/color/native_color_mixers.h"
+#include "ui/color/ref_color_mixer.h"
 #include "ui/color/ui_color_mixer.h"
 
 namespace ui {
 
 void AddColorMixers(ColorProvider* provider,
                     const ColorProviderManager::Key& key) {
+  ui::AddRefColorMixer(provider, key);
   ui::AddCoreDefaultColorMixer(provider, key);
   ui::AddNativeCoreColorMixer(provider, key);
   ui::AddUiColorMixer(provider, key);

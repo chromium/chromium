@@ -53,6 +53,8 @@ component("color") {
     "color_recipe.h",
     "color_transform.cc",
     "color_transform.h",
+    "temp_palette.cc",
+    "temp_palette.h",
   ]
 
   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
@@ -138,6 +140,8 @@ component("mixers") {
     "core_default_color_mixer.h",
     "native_color_mixers.cc",
     "native_color_mixers.h",
+    "ref_color_mixer.cc",
+    "ref_color_mixer.h",
     "ui_color_mixer.cc",
     "ui_color_mixer.h",
   ]
