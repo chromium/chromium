@@ -1059,8 +1059,6 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     if (!obj.AccessibilityIsIncludedInTree())
       continue;
 
-    DCHECK(obj.AxID() != ui::kInvalidAXNodeID);
-
     // Further down this loop, we update |already_serialized_ids| with all IDs
     // actually serialized. However, add this object's ID first because there's
     // a chance that we try to serialize this object but the serializer ends up
@@ -1092,10 +1090,8 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     AddImageAnnotations(document, update.nodes);
 
     DCHECK_GT(update.nodes.size(), 0U);
-    for (auto& node : update.nodes) {
-      DCHECK(node.id != ui::kInvalidAXNodeID);
+    for (auto& node : update.nodes)
       already_serialized_ids.insert(node.id);
-    }
 
     updates.push_back(update);
 
