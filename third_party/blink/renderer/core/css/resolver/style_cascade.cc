@@ -456,10 +456,7 @@ void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
     }
   }
 
-  state_.GetFontBuilder().CreateFont(state_.StyleRef(), state_.ParentStyle());
-  state_.SetConversionFontSizes(CSSToLengthConversionData::FontSizes(
-      state_.Style(), state_.RootElementStyle()));
-  state_.SetConversionZoom(state_.Style()->EffectiveZoom());
+  state_.UpdateFont();
 }
 
 void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {

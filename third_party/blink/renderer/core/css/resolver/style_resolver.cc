@@ -1553,13 +1553,6 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForText(
   return nullptr;
 }
 
-void StyleResolver::UpdateFont(StyleResolverState& state) {
-  state.GetFontBuilder().CreateFont(state.StyleRef(), state.ParentStyle());
-  state.SetConversionFontSizes(CSSToLengthConversionData::FontSizes(
-      state.Style(), state.RootElementStyle()));
-  state.SetConversionZoom(state.Style()->EffectiveZoom());
-}
-
 void StyleResolver::AddMatchedRulesToTracker(
     const ElementRuleCollector& collector) {
   collector.AddMatchedRulesToTracker(tracker_);
@@ -1891,7 +1884,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
         state.ParentStyle()->SetChildHasExplicitInheritance();
       is_non_inherited_cache_hit = true;
     }
-    UpdateFont(state);
+    state.UpdateFont();
   }
   // This is needed because pseudo_argument is copied to the state.Style() as
   // part of a raredata field when copying non-inherited values from the cached
@@ -2153,7 +2146,7 @@ void StyleResolver::ComputeFont(Element& element,
 
   for (const CSSProperty* property : properties) {
     if (property->IDEquals(CSSPropertyID::kLineHeight))
-      UpdateFont(state);
+      state.UpdateFont();
     // TODO(futhark): If we start supporting fonts on ShadowRoot.fonts in
     // addition to Document.fonts, we need to pass the correct TreeScope instead
     // of GetDocument() in the ScopedCSSValue below.

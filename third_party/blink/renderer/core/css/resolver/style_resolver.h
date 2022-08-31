@@ -224,9 +224,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                            StyleCascade& cascade,
                            ActiveInterpolationsMap& interpolations);
 
-  // FIXME: This should probably go away, folded into FontBuilder.
-  void UpdateFont(StyleResolverState&);
-
   void AddMatchedRulesToTracker(const ElementRuleCollector&);
 
   void CollectPseudoRulesForElement(const Element&,

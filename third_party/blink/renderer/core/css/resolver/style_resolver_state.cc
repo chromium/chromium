@@ -241,4 +241,11 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
   return value;
 }
 
+void StyleResolverState::UpdateFont() {
+  GetFontBuilder().CreateFont(StyleRef(), ParentStyle());
+  SetConversionFontSizes(
+      CSSToLengthConversionData::FontSizes(Style(), RootElementStyle()));
+  SetConversionZoom(Style()->EffectiveZoom());
+}
+
 }  // namespace blink
