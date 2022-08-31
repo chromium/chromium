@@ -3175,6 +3175,28 @@
             ]
         }
     ],
+    "ContextualPageActions": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "action_chip": "false",
+                        "action_chip_time_ms": "3000",
+                        "action_chip_with_different_color": "false",
+                        "enable_ui": "true"
+                    },
+                    "enable_features": [
+                        "ContextualPageActionPriceTracking",
+                        "ContextualPageActions"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTriggers": [
         {
             "platforms": [
