@@ -441,6 +441,9 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
         case policy::DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
           UMA(policy::kMetricEnrollmentIllegalAccountForPackagedEDULicense);
           break;
+        case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
+          UMA(policy::kMetricEnrollmentInvalidPackagedDeviceForKIOSK);
+          break;
       }
       break;
     case policy::EnrollmentStatus::REGISTRATION_BAD_MODE:

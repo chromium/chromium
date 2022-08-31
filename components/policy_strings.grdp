@@ -49,6 +49,9 @@
   <message name="IDS_POLICY_DM_STATUS_UNKNOWN_ERROR" desc="Message indicating an unknown error from the enterprise server.">
     Unknown error
   </message>
+  <message name="IDS_POLICY_DM_STATUS_INVALID_PACKAGED_DEVICE_FOR_KIOSK" desc="Message to show when the user tries to enroll a device with a packaged license into Kiosk.">
+    This is a bundled device and can not be enrolled with Kiosk and Signage Upgrade.
+  </message>
   <message name="IDS_POLICY_DM_STATUS_SERVICE_DOMAIN_MISMATCH" desc="Message indicating this client cannot be registered with the specified domain.">
     Domain mismatch
   </message>

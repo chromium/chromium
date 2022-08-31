@@ -129,6 +129,7 @@ const int DeviceManagementService::kArcDisabled;
 const int DeviceManagementService::kInvalidDomainlessCustomer;
 const int DeviceManagementService::kTosHasNotBeenAccepted;
 const int DeviceManagementService::kIllegalAccountForPackagedEDULicense;
+const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
 
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(

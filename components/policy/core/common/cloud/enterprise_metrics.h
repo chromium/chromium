@@ -145,8 +145,10 @@ enum MetricEnrollment {
   // Enrollment failed: dev mode would be blocked but this is prevented by a
   // command-line switch.
   kMetricEnrollmentMayNotBlockDevMode = 64,
+  // Enrollment failed: Packaged license device invalid for KIOSK.
+  kMetricEnrollmentInvalidPackagedDeviceForKIOSK = 65,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentMayNotBlockDevMode
+  kMaxValue = kMetricEnrollmentInvalidPackagedDeviceForKIOSK
 };
 
 // Events related to policy refresh.

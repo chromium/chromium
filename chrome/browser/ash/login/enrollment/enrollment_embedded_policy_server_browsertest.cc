@@ -773,6 +773,23 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.RetryAfterError();
 }
 
+// Error during enrollment : Error 418: PACKAGED_DEVICE_KIOSK_DISALLOWED.
+IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
+                       EnrollmentErrorPackagedDeviceInvalidForKiosk) {
+  policy_server_.SetDeviceEnrollmentError(
+      policy::DeviceManagementService::kInvalidPackagedDeviceForKiosk);
+
+  TriggerEnrollmentAndSignInSuccessfully();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+  enrollment_ui_.ExpectErrorMessage(
+      IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
+      /*can_retry=*/true);
+  enrollment_ui_.RetryAfterError();
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
+}
+
 // Error during enrollment : Error fetching policy : 902 - policy not found.
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        EnrollmentErrorFetchingPolicyNotFound) {

@@ -536,6 +536,10 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               IDS_ENTERPRISE_ENROLLMENT_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE,
               true);
           break;
+        case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
+          ShowError(IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
+                    true);
+          break;
         default:
           ShowErrorMessage(
               l10n_util::GetStringFUTF8(
