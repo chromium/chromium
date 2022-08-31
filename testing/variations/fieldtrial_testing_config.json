@@ -165,6 +165,21 @@
             ]
         }
     ],
+    "AndroidBindingManagerUseNotPerceptibleBinding": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220830",
+                    "enable_features": [
+                        "BindingManagerUseNotPerceptibleBinding"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBulkTabRestore": [
         {
             "platforms": [
