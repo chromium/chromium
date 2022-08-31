@@ -59,10 +59,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ChromeBrowserState* _browserState;  // weak
 
   // List of url patterns that are allowed to display popups.
-  base::ListValue _exceptions;
+  base::Value::List _exceptions;
 
   // List of url patterns set by policy that are allowed to display popups.
-  base::ListValue _allowPopupsByPolicy;
+  base::Value::List _allowPopupsByPolicy;
 
   // The observable boolean that binds to the "Disable Popups" setting state.
   ContentSettingBackedBoolean* _disablePopupsSetting;
@@ -134,8 +134,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if ([self popupsCurrentlyBlocked] &&
-      (_exceptions.GetListDeprecated().size() ||
-       _allowPopupsByPolicy.GetListDeprecated().size())) {
+      (_exceptions.size() || _allowPopupsByPolicy.size())) {
     [self populateExceptionsItems];
   }
 }
@@ -145,7 +144,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)editButtonEnabled {
-  return _exceptions.GetListDeprecated().size() > 0;
+  return _exceptions.size() > 0;
 }
 
 // Override.
@@ -221,7 +220,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self deleteItemAtIndexPaths:@[ indexPath ]];
   if (![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierExceptions] ||
-      !_exceptions.GetListDeprecated().size()) {
+      !_exceptions.size()) {
     self.navigationItem.rightBarButtonItem.enabled = NO;
   }
 }
@@ -297,10 +296,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   for (NSIndexPath* indexPath in indexPaths) {
     size_t urlIndex = indexPath.item;
     std::string urlToRemove;
-    base::Value::ListView exceptions_view = _exceptions.GetListDeprecated();
-    if (urlIndex < exceptions_view.size() &&
-        exceptions_view[urlIndex].is_string()) {
-      urlToRemove = exceptions_view[urlIndex].GetString();
+    if (urlIndex < _exceptions.size() && _exceptions[urlIndex].is_string()) {
+      urlToRemove = _exceptions[urlIndex].GetString();
     }
 
     // Remove the exception for the site by resetting its popup setting to the
@@ -312,7 +309,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
             CONTENT_SETTING_DEFAULT);
 
     // Remove the site from `_exceptions`.
-    _exceptions.EraseListIter(exceptions_view.begin() + urlIndex);
+    _exceptions.erase(_exceptions.begin() + urlIndex);
   }
   [self.tableView
       performBatchUpdates:^{
@@ -390,7 +387,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:header forSectionWithIdentifier:SectionIdentifierExceptions];
 
   // Populate the exception items set by the user.
-  for (const base::Value& exception : _exceptions.GetListDeprecated()) {
+  for (const base::Value& exception : _exceptions) {
     std::string allowed_url;
     if (exception.is_string())
       allowed_url = exception.GetString();
@@ -401,7 +398,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   // Populate the allowed popup items set by the policy.
-  for (const base::Value& l : _allowPopupsByPolicy.GetListDeprecated()) {
+  for (const base::Value& l : _allowPopupsByPolicy) {
     std::string allowed_url_by_policy;
     if (l.is_string())
       allowed_url_by_policy = l.GetString();
@@ -413,8 +410,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)layoutSections:(BOOL)blockPopupsIsOn {
-  BOOL hasExceptions = _exceptions.GetListDeprecated().size() ||
-                       _allowPopupsByPolicy.GetListDeprecated().size();
+  BOOL hasExceptions = _exceptions.size() || _allowPopupsByPolicy.size();
   BOOL exceptionsListShown = [self.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierExceptions];
 
