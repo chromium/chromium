@@ -289,11 +289,25 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
 
   DoConnection(cert_config);
 
-  ssl_test_util::CheckAuthenticationBrokenState(
-      chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
-      AuthState::SHOWING_INTERSTITIAL);
-
   net::CertStatus cert_status = GetCurrentCertStatus();
+  if (ssl_test_util::UsingBuiltinCertVerifier()) {
+    ssl_test_util::CheckAuthenticationBrokenState(
+        chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
+        AuthState::SHOWING_INTERSTITIAL);
+  } else {
+#if BUILDFLAG(IS_WIN)
+    // TODO(mattm): Seems to be flaky on Windows. Either returns
+    // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
+    // soft-fail), or CERT_STATUS_REVOKED.
+    EXPECT_THAT(cert_status & net::CERT_STATUS_ALL_ERRORS,
+                ::testing::AnyOf(0u, net::CERT_STATUS_REVOKED));
+#else
+    ssl_test_util::CheckAuthenticationBrokenState(
+        chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
+        AuthState::SHOWING_INTERSTITIAL);
+#endif
+  }
+
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
@@ -318,17 +332,26 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
       chrome_test_utils::GetActiveWebContents(this), AuthState::NONE);
 
   net::CertStatus cert_status = GetCurrentCertStatus();
-
   if (ssl_test_util::UsingBuiltinCertVerifier()) {
     // The builtin verifier enforces the baseline requirements for max age
     // of an intermediate's OCSP response.
     EXPECT_EQ(0u, cert_status & net::CERT_STATUS_ALL_ERRORS);
   } else {
+#if BUILDFLAG(IS_WIN)
+    // TODO(mattm): Seems to be flaky on Windows. Either returns
+    // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
+    // soft-fail), or CERT_STATUS_REVOKED.
+    EXPECT_THAT(cert_status & net::CERT_STATUS_ALL_ERRORS,
+                ::testing::AnyOf(0u, net::CERT_STATUS_REVOKED));
+#else
     // The platform verifiers are more lenient.
     ssl_test_util::CheckAuthenticationBrokenState(
         chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
         AuthState::SHOWING_INTERSTITIAL);
+
+#endif
   }
+
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
@@ -348,19 +371,23 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, TestHTTPSOCSPIntermediateRevoked) {
   DoConnection(cert_config);
 
   net::CertStatus cert_status = GetCurrentCertStatus();
-
+  if (ssl_test_util::UsingBuiltinCertVerifier()) {
+    ssl_test_util::CheckAuthenticationBrokenState(
+        chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
+        AuthState::SHOWING_INTERSTITIAL);
+  } else {
 #if BUILDFLAG(IS_WIN)
-  // TODO(mattm): Seems to be flaky on Windows. Either returns
-  // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
-  // soft-fail), or CERT_STATUS_REVOKED.
-  EXPECT_THAT(cert_status & net::CERT_STATUS_ALL_ERRORS,
-              ::testing::AnyOf(0u, net::CERT_STATUS_REVOKED));
+    // TODO(mattm): Seems to be flaky on Windows. Either returns
+    // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
+    // soft-fail), or CERT_STATUS_REVOKED.
+    EXPECT_THAT(cert_status & net::CERT_STATUS_ALL_ERRORS,
+                ::testing::AnyOf(0u, net::CERT_STATUS_REVOKED));
 #else
-  ssl_test_util::CheckAuthenticationBrokenState(
-      chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
-      AuthState::SHOWING_INTERSTITIAL);
+    ssl_test_util::CheckAuthenticationBrokenState(
+        chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
+        AuthState::SHOWING_INTERSTITIAL);
 #endif
-
+  }
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
