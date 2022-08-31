@@ -1246,5 +1246,122 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_NoCpuInfo) {
   run_loop.Run();
 }
 
+TEST_F(SystemDataProviderTest, RecordSystemDataError_NoPhysicalCpuInfo) {
+  base::HistogramTester histogram_tester;
+  VerifySystemDataErrorBucketCounts(histogram_tester,
+                                    /*expected_no_data_error=*/0,
+                                    /*expected_not_a_number_error=*/0,
+                                    /*expected_expectation_not_met_error=*/0);
+
+  // System info.
+  auto system_info = GetDefaultSystemInfoPtr();
+
+  // Battery info.
+  auto battery_info = healthd_mojom::BatteryInfo::New();
+
+  // Memory info.
+  auto memory_info = healthd_mojom::MemoryInfo::New();
+  memory_info->total_memory_kib = 1234;
+
+  // CPU info.
+  auto cpu_info = healthd_mojom::CpuInfo::New();
+  auto logical_cpu_info = healthd_mojom::LogicalCpuInfo::New();
+  logical_cpu_info->max_clock_speed_khz = 91011;
+  cpu_info->num_total_threads = 5678;
+
+  SetProbeTelemetryInfoResponse(std::move(battery_info), std::move(cpu_info),
+                                std::move(memory_info), std::move(system_info));
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetSystemInfo(
+      base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
+        EXPECT_TRUE(ptr);
+        VerifySystemDataErrorBucketCounts(
+            histogram_tester,
+            /*expected_no_data_error=*/0,
+            /*expected_not_a_number_error=*/0,
+            /*expected_expectation_not_met_error=*/1);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Validate expected metric ExpectationNotMet error triggered when logical cpu
+// info is empty.
+TEST_F(SystemDataProviderTest, RecordSystemDataError_NoLogicalCpuInfo) {
+  base::HistogramTester histogram_tester;
+  VerifySystemDataErrorBucketCounts(histogram_tester,
+                                    /*expected_no_data_error=*/0,
+                                    /*expected_not_a_number_error=*/0,
+                                    /*expected_expectation_not_met_error=*/0);
+
+  // System info.
+  auto system_info = GetDefaultSystemInfoPtr();
+
+  // Battery info.
+  auto battery_info = healthd_mojom::BatteryInfo::New();
+
+  // Memory info.
+  auto memory_info = healthd_mojom::MemoryInfo::New();
+  memory_info->total_memory_kib = 1234;
+
+  // CPU info.
+  auto cpu_info = healthd_mojom::CpuInfo::New();
+  auto physical_cpu_info = healthd_mojom::PhysicalCpuInfo::New();
+  physical_cpu_info->model_name = "cpu_model";
+  cpu_info->num_total_threads = 5678;
+  cpu_info->physical_cpus.emplace_back(std::move(physical_cpu_info));
+
+  SetProbeTelemetryInfoResponse(std::move(battery_info), std::move(cpu_info),
+                                std::move(memory_info), std::move(system_info));
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetSystemInfo(
+      base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
+        EXPECT_TRUE(ptr);
+        VerifySystemDataErrorBucketCounts(
+            histogram_tester,
+            /*expected_no_data_error=*/0,
+            /*expected_not_a_number_error=*/0,
+            /*expected_expectation_not_met_error=*/1);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Validate expected metric ExpectationNotMet error triggered when cpu usage
+// delta is zero.
+TEST_F(SystemDataProviderTest, RecordSystemDataError_DeltaZero) {
+  base::HistogramTester histogram_tester;
+  VerifySystemDataErrorBucketCounts(histogram_tester,
+                                    /*expected_no_data_error=*/0,
+                                    /*expected_not_a_number_error=*/0,
+                                    /*expected_expectation_not_met_error=*/0);
+
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
+  // Setup initial data
+  CpuUsageData core_1(100, 1000, 1000);
+
+  SetCrosHealthdCpuUsageResponse({core_1});
+
+  // Registering as an observer should trigger one update.
+  FakeCpuUsageObserver cpu_usage_observer;
+  system_data_provider_->ObserveCpuUsage(
+      cpu_usage_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  VerifySystemDataErrorBucketCounts(histogram_tester,
+                                    /*expected_no_data_error=*/0,
+                                    /*expected_not_a_number_error=*/0,
+                                    /*expected_expectation_not_met_error=*/1);
+}
+
 }  // namespace diagnostics
 }  // namespace ash

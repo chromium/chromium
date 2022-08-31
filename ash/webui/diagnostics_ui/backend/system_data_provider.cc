@@ -10,6 +10,7 @@
 
 #include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/webui/diagnostics_ui/backend/cros_healthd_helpers.h"
+#include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/power_manager_client_conversions.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -60,6 +61,7 @@ void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
   out_system_info.cpu_threads_count = cpu_info.num_total_threads;
 
   if (physical_cpus.empty()) {
+    EmitSystemDataError(metrics::DataError::kExpectationNotMet);
     LOG(ERROR) << "No physical cpus in SystemInfo response.";
     return;
   }
@@ -69,6 +71,7 @@ void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
   out_system_info.cpu_model_name = physical_cpus[0]->model_name.value_or("");
 
   if (physical_cpus[0]->logical_cpus.empty()) {
+    EmitSystemDataError(metrics::DataError::kExpectationNotMet);
     LOG(ERROR) << "Device reported having 0 logical CPUs.";
     return;
   }
@@ -201,6 +204,7 @@ void PopulateCpuUsagePercentages(const CpuUsageData& new_usage,
 
   const uint64_t total_delta = delta.GetTotalTime();
   if (total_delta == 0) {
+    EmitSystemDataError(metrics::DataError::kExpectationNotMet);
     return;
   }
 
