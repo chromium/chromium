@@ -115,7 +115,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
-  void SetFullscreen(bool fullscreen) override;
+  void SetFullscreen(bool fullscreen, int64_t display_id) override;
   bool IsFullscreen() const override;
   void SetOpacity(float opacity) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;

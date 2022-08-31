@@ -507,9 +507,10 @@ void DesktopWindowTreeHostWin::FrameTypeChanged() {
   message_handler_->FrameTypeChanged();
 }
 
-void DesktopWindowTreeHostWin::SetFullscreen(bool fullscreen) {
+void DesktopWindowTreeHostWin::SetFullscreen(bool fullscreen,
+                                             int64_t target_display_id) {
   auto weak_ptr = GetWeakPtr();
-  message_handler_->SetFullscreen(fullscreen);
+  message_handler_->SetFullscreen(fullscreen, target_display_id);
   if (!weak_ptr)
     return;
   // TODO(sky): workaround for ScopedFullscreenVisibility showing window

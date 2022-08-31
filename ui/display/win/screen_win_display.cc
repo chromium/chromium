@@ -36,6 +36,8 @@ ScreenWinDisplay::ScreenWinDisplay(const Display& display,
                                    const DisplayInfo& display_info)
     : display_(display),
       pixel_bounds_(display_info.screen_rect()),
-      pixels_per_inch_(display_info.pixels_per_inch()) {}
+      pixels_per_inch_(display_info.pixels_per_inch()),
+      screen_rect_(display_info.screen_rect()),
+      screen_work_rect_(display_info.screen_work_rect()) {}
 }  // namespace win
 }  // namespace display

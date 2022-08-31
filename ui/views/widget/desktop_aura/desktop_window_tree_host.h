@@ -164,7 +164,10 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual bool ShouldWindowContentsBeTransparent() const = 0;
   virtual void FrameTypeChanged() = 0;
 
-  virtual void SetFullscreen(bool fullscreen) = 0;
+  // Set the fullscreen state. `target_display_id` indicates the display where
+  // the window should be shown fullscreen; display::kInvalidDisplayId indicates
+  // that no display was specified, so the current display may be used.
+  virtual void SetFullscreen(bool fullscreen, int64_t target_display_id) = 0;
   virtual bool IsFullscreen() const = 0;
 
   virtual void SetOpacity(float opacity) = 0;

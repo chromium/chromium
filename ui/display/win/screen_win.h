@@ -148,6 +148,10 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // parameters).
   static void SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
 
+  // Returns the ScreenWinDisplay with the given id, or a default object if an
+  // unrecognized id was specified or if this was called during a screen update.
+  static ScreenWinDisplay GetScreenWinDisplayWithDisplayId(int64_t id);
+
   // Returns the HWND associated with the NativeWindow.
   virtual HWND GetHWNDFromNativeWindow(gfx::NativeWindow view) const;
 

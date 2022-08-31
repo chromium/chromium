@@ -716,7 +716,7 @@ void NativeWidgetAura::Restore() {
 
 void NativeWidgetAura::SetFullscreen(bool fullscreen,
                                      int64_t target_display_id) {
-  // The `target_display_id` argument is unsupported in Aura.
+  // TODO(crbug.com/1034783) Support `target_display_id` on this platform.
   DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
   if (!window_ || IsFullscreen() == fullscreen)
     return;  // Nothing to do.

@@ -4192,10 +4192,11 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     }
   }
 
-  bool swapping_screens_during_fullscreen = false;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Request target display fullscreen from lower layers on supported platforms.
   frame_->SetFullscreen(fullscreen, display_id);
-#else
+#else  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1034783): Reimplement this at lower layers on all platforms.
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
@@ -4205,16 +4206,13 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         current_display.id() != display_id) {
       // Fullscreen windows must exit fullscreen to move to another display.
       if (IsFullscreen()) {
-        swapping_screens_during_fullscreen = true;
         frame_->SetFullscreen(false);
 
         // Activate the window to give it input focus and bring it to the front
         // of the z-order. This prevents an inactive fullscreen window from
-        // occluding the active window receiving key events on Mac and Linux,
-        // and also prevents an inactive fullscreen window and its exit bubble
-        // from being occluded by the active window on Windows and Chrome OS.
-        // Content fullscreen requests require user activation (so the window
-        // should already be active), but it is safer to ensure activation here.
+        // occluding the active window receiving key events on Linux, and also
+        // prevents an inactive fullscreen window and its exit bubble from being
+        // occluded by the active window on Chrome OS.
         Activate();
       }
 
@@ -4257,7 +4255,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   frame_->SetFullscreen(fullscreen);
   if (!fullscreen && restore_pre_fullscreen_bounds_callback_)
     std::move(restore_pre_fullscreen_bounds_callback_).Run();
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // Enable immersive before the browser refreshes its list of enabled commands.
   const bool should_stay_in_immersive =
@@ -4284,7 +4282,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     UpdateExclusiveAccessExitBubbleContent(
         url, bubble_type, ExclusiveAccessBubbleHideCallback(),
         /*notify_download=*/false,
-        /*force_update=*/swapping_screens_during_fullscreen);
+        /*force_update=*/display_id != display::kInvalidDisplayId);
   }
 
   // Undo our anti-jankiness hacks and force a re-layout.

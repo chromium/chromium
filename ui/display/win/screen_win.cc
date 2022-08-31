@@ -705,6 +705,22 @@ void ScreenWin::SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
   }
 }
 
+// static
+ScreenWinDisplay ScreenWin::GetScreenWinDisplayWithDisplayId(int64_t id) {
+  if (!g_instance)
+    return ScreenWinDisplay();
+  const auto it = std::find_if(
+      g_instance->screen_win_displays_.cbegin(),
+      g_instance->screen_win_displays_.cend(),
+      [id](const auto& display) { return display.display().id() == id; });
+  // There is 1:1 correspondence between MONITORINFOEX and ScreenWinDisplay.
+  // If we found no screens, either there are no screens, or we're in the midst
+  // of updating our screens (see crbug.com/768845); either way, hand out the
+  // default display.
+  return (it == g_instance->screen_win_displays_.cend()) ? ScreenWinDisplay()
+                                                         : *it;
+}
+
 HWND ScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {
   NOTREACHED();
   return nullptr;

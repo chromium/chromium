@@ -177,7 +177,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
     use_system_default_icon_ = use_system_default_icon;
   }
 
-  void SetFullscreen(bool fullscreen);
+  // Set the fullscreen state. `target_display_id` indicates the display where
+  // the window should be shown fullscreen; display::kInvalidDisplayId indicates
+  // that no display was specified, so the current display may be used.
+  void SetFullscreen(bool fullscreen, int64_t target_display_id);
 
   // Updates the aspect ratio of the window.
   void SetAspectRatio(float aspect_ratio);

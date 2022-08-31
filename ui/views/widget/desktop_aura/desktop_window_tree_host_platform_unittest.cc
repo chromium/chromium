@@ -15,6 +15,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -212,7 +213,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
 
   // When fullscreen mode, clip_path_ is set to empty since there is no
   // |NonClientView::GetWindowMask|.
-  host_platform->SetFullscreen(true);
+  host_platform->SetFullscreen(true, display::kInvalidDisplayId);
   widget->SetBounds(gfx::Rect(800, 800));
   EXPECT_TRUE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
   EXPECT_TRUE(host_platform->GetWindowMaskForClipping().isEmpty());

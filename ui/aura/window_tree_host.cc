@@ -429,6 +429,7 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
     return;
 
   occlusion_state_ = state;
+  occluded_region_ = occluded_region;
 
   if (compositor() && accelerated_widget_made_visible_ &&
       NativeWindowOcclusionTracker::

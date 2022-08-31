@@ -48,7 +48,12 @@ class DISPLAY_EXPORT DisplayInfo final {
 
  private:
   int64_t id_;
+  // The MONITORINFO::rcMonitor display rectangle in virtual-screen coordinates.
+  // Used to derive display::Display bounds, and for window placement logic.
   gfx::Rect screen_rect_;
+  // The MONITORINFO::rcWork work area rectangle in virtual-screen coordinates.
+  // These are display bounds that exclude system UI, like the Windows taskbar.
+  // Used to derive display::Display work areas, and for window placement logic.
   gfx::Rect screen_work_rect_;
   float device_scale_factor_;
   float sdr_white_level_;

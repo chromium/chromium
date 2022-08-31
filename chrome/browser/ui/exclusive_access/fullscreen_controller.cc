@@ -237,7 +237,11 @@ void FullscreenController::EnterFullscreenModeForTab(
 }
 
 void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
-  popunder_preventer_.reset();
+  // Reset the popunder preventer after the window exits content fullscreen.
+  // This activates any popup windows that were created while fullscreen.
+  base::ScopedClosureRunner reset_popunder_preventer(
+      base::BindOnce(&std::unique_ptr<PopunderPreventer>::reset,
+                     base::Unretained(&popunder_preventer_), nullptr));
 
   if (MaybeToggleFullscreenWithinTab(web_contents, false)) {
     // During tab capture of fullscreen-within-tab views, the browser window

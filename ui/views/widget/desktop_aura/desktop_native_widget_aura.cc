@@ -998,10 +998,8 @@ void DesktopNativeWidgetAura::Restore() {
 
 void DesktopNativeWidgetAura::SetFullscreen(bool fullscreen,
                                             int64_t target_display_id) {
-  // The `target_display_id` argument is unsupported in Aura.
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
   if (desktop_window_tree_host_)
-    desktop_window_tree_host_->SetFullscreen(fullscreen);
+    desktop_window_tree_host_->SetFullscreen(fullscreen, target_display_id);
 }
 
 bool DesktopNativeWidgetAura::IsFullscreen() const {
