@@ -357,7 +357,7 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
 
 BrowserAccessibility* BrowserAccessibilityManager::GetRoot() const {
   ui::AXNode* root = GetRootAsAXNode();
-  return root ? GetFromID(root->id()) : nullptr;
+  return root ? GetFromAXNode(root) : nullptr;
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
@@ -366,9 +366,6 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
   // `AXPlatformTreeManager`.
   if (!node)
     return nullptr;
-  // TODO(aleventhal) Why would node->GetManager() return null?
-  // TODO(aleventhal) Should we just use |this| as the manager in most cases? It
-  // looks like node->GetManager() may be slow because of AXTreeID usage.
   if (AXTreeManager* manager = node->GetManager()) {
     return static_cast<BrowserAccessibilityManager*>(manager)->GetFromID(
         node->id());
@@ -377,16 +374,11 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFromID(int32_t id) const {
-  if (id == ui::kInvalidAXNodeID)
-    return nullptr;
   const auto iter = id_wrapper_map_.find(id);
   if (iter != id_wrapper_map_.end()) {
     DCHECK(iter->second);
     return iter->second.get();
   }
-  DCHECK(!ax_tree()->GetFromId(id))
-      << "BAM's map was missing id " << id
-      << ", but AXTree's map had it: " << *ax_tree()->GetFromId(id);
 
   return nullptr;
 }
@@ -548,12 +540,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     // but it should still be investigated and could be the sign of a
     // performance issue.
     DCHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size());
-    // Every node in the AXTree must also be in BAM's map. However, the BAM map
-    // can have extra nodes, specifically extra mac nodes from AXTableInfo.
-    DCHECK_GE(static_cast<int>(id_wrapper_map_.size()), ax_tree()->size());
   }
-
-  DCHECK(ax_tree()->root());
 
   EnsureParentConnectionIfNotRootManager();
 
@@ -1624,10 +1611,6 @@ void BrowserAccessibilityManager::OnSubtreeWillBeDeleted(ui::AXTree* tree,
 void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
                                                 ui::AXNode* node) {
   DCHECK(node);
-  DCHECK(node->IsDataValid());
-  DCHECK(tree->GetFromId(node->id()) || node->IsGenerated())
-      << "Node must be in AXTree's map, unless it's an ExtraMacNode.";
-
   id_wrapper_map_[node->id()] = BrowserAccessibility::Create(this, node);
 
   if (tree->root() != node &&
@@ -1649,9 +1632,13 @@ void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
   auto iter = id_wrapper_map_.find(node->id());
   // TODO(crbug.com/1315661): This if statement ideally should never be entered.
   // Identify why we are entering this code path and fix the root cause.
-  SANITIZER_CHECK(iter != id_wrapper_map_.end())
-      << "Missing BrowserAccessibility* for node: " << *node
-      << "\nTree: " << tree->ToString();
+  if (iter == id_wrapper_map_.end()) {
+    bool success;
+    std::tie(iter, success) = id_wrapper_map_.insert(
+        {node->id(), BrowserAccessibility::Create(this, node)});
+    DCHECK(success);
+  }
+  DCHECK(iter != id_wrapper_map_.end());
   BrowserAccessibility* wrapper = iter->second.get();
   wrapper->SetNode(*node);
 }
@@ -1693,14 +1680,6 @@ ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
   auto* manager = BrowserAccessibilityManager::FromID(tree_id);
   CHECK(manager);
   return manager->GetNode(node_id);
-}
-
-ui::AXNode* BrowserAccessibilityManager::GetNode(
-    const ui::AXNodeID node_id) const {
-  // This does not use ax_tree()->FromID(), because that uses a different map
-  // that does not contain extra mac nodes from AXTableInfo.
-  BrowserAccessibility* browser_accessibility = GetFromID(node_id);
-  return browser_accessibility ? browser_accessibility->node() : nullptr;
 }
 
 ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(

@@ -100,11 +100,9 @@ TEST_F(AutomationInternalCustomBindingsTest, GetDesktop) {
   ExtensionMsg_AccessibilityEventBundleParams bundle;
   bundle.updates.emplace_back();
   auto& tree_update = bundle.updates.back();
-  tree_update.root_id = 1;
   tree_update.nodes.emplace_back();
   auto& node_data = tree_update.nodes.back();
   node_data.role = ax::mojom::Role::kDesktop;
-  node_data.id = 1;
   SendOnAccessibilityEvents(bundle, true /* active profile */);
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());

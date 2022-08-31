@@ -1213,26 +1213,44 @@ TEST(AXTreeTest, BogusAXTree) {
   initial_state.nodes.push_back(node);
   initial_state.nodes.push_back(node);
   ui::AXTree tree;
-#if DCHECK_IS_ON()
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
-                            "AXTreeUpdate contains invalid node");
-#else
   tree.Unserialize(initial_state);
-#endif
 }
 
 // UAF caught by ax_tree_fuzzer
 TEST(AXTreeTest, BogusAXTree2) {
   AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
   AXNodeData node;
-  node.id = 1;
+  node.id = 0;
   initial_state.nodes.push_back(node);
+  AXNodeData node2;
+  node2.id = 0;
+  node2.child_ids.push_back(0);
+  node2.child_ids.push_back(0);
+  initial_state.nodes.push_back(node2);
+  ui::AXTree tree;
+#if defined(AX_FAIL_FAST_BUILD)
+  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
+                            "Node 0 has duplicate child id 0");
+#else
+  EXPECT_FALSE(tree.Unserialize(initial_state));
+  EXPECT_EQ("Node 0 has duplicate child id 0", tree.error());
+#endif
+}
+
+// UAF caught by ax_tree_fuzzer
+TEST(AXTreeTest, BogusAXTree3) {
+  AXTreeUpdate initial_state;
+  AXNodeData node;
+  node.id = 0;
+  node.child_ids.push_back(1);
+  initial_state.nodes.push_back(node);
+
   AXNodeData node2;
   node2.id = 1;
   node2.child_ids.push_back(1);
   node2.child_ids.push_back(1);
   initial_state.nodes.push_back(node2);
+
   ui::AXTree tree;
 #if defined(AX_FAIL_FAST_BUILD)
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
@@ -1240,30 +1258,6 @@ TEST(AXTreeTest, BogusAXTree2) {
 #else
   EXPECT_FALSE(tree.Unserialize(initial_state));
   EXPECT_EQ("Node 1 has duplicate child id 1", tree.error());
-#endif
-}
-
-// UAF caught by ax_tree_fuzzer
-TEST(AXTreeTest, BogusAXTree3) {
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  AXNodeData node;
-  node.id = 1;
-  node.child_ids.push_back(2);
-  node.child_ids.push_back(2);
-  initial_state.nodes.push_back(node);
-
-  AXNodeData node2;
-  node2.id = 2;
-  initial_state.nodes.push_back(node2);
-
-  ui::AXTree tree;
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
-                            "Node 1 has duplicate child id 2");
-#else
-  EXPECT_FALSE(tree.Unserialize(initial_state));
-  EXPECT_EQ("Node 2 has duplicate child id 1", tree.error());
 #endif
 }
 
