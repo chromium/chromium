@@ -1976,6 +1976,9 @@ extern const char kFeedIsAblatedDescription[];
 extern const char kFeedCloseRefreshName[];
 extern const char kFeedCloseRefreshDescription[];
 
+extern const char kFeedVideoInlinePlaybackName[];
+extern const char kFeedVideoInlinePlaybackDescription[];
+
 extern const char kGridTabSwitcherForTabletsName[];
 extern const char kGridTabSwitcherForTabletsDescription[];
 

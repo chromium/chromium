@@ -138,6 +138,9 @@ extern const base::Feature kFeedNoViewCache;
 // When enabled, replace all items.
 extern const base::Feature kFeedReplaceAll;
 
+// When enabled, play the feed video via inline playback.
+extern const base::Feature kFeedVideoInlinePlayback;
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

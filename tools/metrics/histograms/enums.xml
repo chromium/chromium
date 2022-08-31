@@ -56204,6 +56204,7 @@ from previous Chrome versions.
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
   <int value="-1920912991" label="PermissionChip:disabled"/>
   <int value="-1920349954" label="FontManagerEarlyInit:disabled"/>
+  <int value="-1920177029" label="FeedVideoInlinePlayback:enabled"/>
   <int value="-1920004248" label="FeedBackToTop:disabled"/>
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
   <int value="-1919199528"
@@ -57946,6 +57947,7 @@ from previous Chrome versions.
       label="UseSyncInvalidationsForWalletAndOffer:enabled"/>
   <int value="-866097797"
       label="ExperimentalAccessibilityDictationOffline:disabled"/>
+  <int value="-864481314" label="FeedVideoInlinePlayback:disabled"/>
   <int value="-864266073" label="cros-regions-mode"/>
   <int value="-864234985" label="UseDdljsonApi:enabled"/>
   <int value="-864232986" label="StartSurfaceAndroid:disabled"/>

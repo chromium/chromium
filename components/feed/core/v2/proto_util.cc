@@ -147,6 +147,9 @@ feedwire::Request CreateFeedQueryRequest(
   }
   if (request_metadata.autoplay_enabled) {
     feed_request.add_client_capability(Capability::INLINE_VIDEO_AUTOPLAY);
+  }
+  if (request_metadata.autoplay_enabled ||
+      base::FeatureList::IsEnabled(kFeedVideoInlinePlayback)) {
     feed_request.add_client_capability(Capability::OPEN_VIDEO_COMMAND);
   }
 
