@@ -4574,6 +4574,23 @@
             ]
         }
     ],
+    "GoogleLensDesktopRegionSearchPdf": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220819",
+                    "enable_features": [
+                        "LensEnableRegionSearchOnPdfViewer"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensDesktopTransparentImagesFix": [
         {
             "platforms": [
