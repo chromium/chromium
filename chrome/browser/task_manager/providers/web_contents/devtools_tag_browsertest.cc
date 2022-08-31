@@ -128,10 +128,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
   }
   EXPECT_NE(task_manager.tasks()[0]->title(),
             task_manager.tasks()[1]->title());
-  // If back/forward cache is enabled, the task for the previous page
+  // If same-site back-forward cache is enabled, the task for the previous page
   // will still be around.
   EXPECT_EQ(
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 3U : 2U,
+      content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+          ? 3U
+          : 2U,
       task_manager.tasks().size());
 
   // Close the DevTools window.
@@ -139,7 +141,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
   EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
 
   EXPECT_EQ(
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2U : 1U,
+      content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+          ? 2U
+          : 1U,
       task_manager.tasks().size());
 }
 

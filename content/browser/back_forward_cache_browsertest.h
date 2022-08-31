@@ -184,6 +184,9 @@ class BackForwardCacheBrowserTest
   const ukm::TestAutoSetUkmRecorder& ukm_recorder() override;
   const base::HistogramTester& histogram_tester() override;
 
+  bool same_site_back_forward_cache_enabled_ = true;
+  bool skip_same_site_if_unload_exists_ = false;
+
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
 

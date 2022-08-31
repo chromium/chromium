@@ -418,9 +418,10 @@ TEST_F(NavigationControllerTest, GoToOffset) {
   const int test_offsets[NUM_TESTS] = {
       GO_TO_MIDDLE_PAGE, GO_FORWARDS, GO_BACKWARDS, GO_TO_BEGINNING, GO_TO_END};
 
-  if (IsBackForwardCacheEnabled()) {
-    // The `navigation_entry_committed_counter_` checks below currently fail on
-    // the linux-bfcache-rel bot with bfcache enabled, so return early.
+  if (IsSameSiteBackForwardCacheEnabled()) {
+    // The |navigation_entry_committed_counter_| checks below currently fail on
+    // the linux-bfcache-rel bot with same-site bfcache enabled, so return
+    // early.
     // TODO(https://crbug.com/1232883): re-enable this test.
     return;
   }
@@ -3716,8 +3717,8 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
   main_test_rfh()->GoToEntryAtOffset(120, false);  // Out of bounds.
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   // TODO(https://crbug.com/1232883): Figure out why HasNavigationRequest() is
-  // true when back/forward cache is enabled.
-  EXPECT_EQ(IsBackForwardCacheEnabled(), HasNavigationRequest());
+  // true when same-site back/forward cache is enabled.
+  EXPECT_EQ(IsSameSiteBackForwardCacheEnabled(), HasNavigationRequest());
 }
 
 // Test call to PruneAllButLastCommitted for the only entry.
@@ -3738,9 +3739,9 @@ TEST_F(NavigationControllerTest, PruneAllButLastCommittedForSingle) {
 
 // Test call to PruneAllButLastCommitted for first entry.
 TEST_F(NavigationControllerTest, PruneAllButLastCommittedForFirst) {
-  if (IsBackForwardCacheEnabled()) {
+  if (IsSameSiteBackForwardCacheEnabled()) {
     // The PruneAllButLastCommitted() call below currently DCHECKS on the
-    // linux-bfcache-rel bot with back/forward cache enabled because
+    // linux-bfcache-rel bot with same-site bfcache enabled because
     // CanPruneAllButLastCommitted() returns false, so just return early here.
     // TODO(https://crbug.com/1232883): Figure out why the DCHECK happened and
     // re-enable this test.

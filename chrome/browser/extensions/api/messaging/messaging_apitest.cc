@@ -132,7 +132,10 @@ class MessagingApiTest : public ExtensionApiTest {
   explicit MessagingApiTest(bool enable_back_forward_cache) {
     if (enable_back_forward_cache) {
       feature_list_.InitWithFeaturesAndParameters(
-          {{features::kBackForwardCache, {}},
+          {{features::kBackForwardCache,
+            // The tests does same-site navigation. So same site BFCache needs
+            // to be enabled.
+            {{"enable_same_site", "true"}}},
            // Allow BackForwardCache for all devices regardless of their memory.
            {features::kBackForwardCacheMemoryControls, {}}},
           {});

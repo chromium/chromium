@@ -946,9 +946,11 @@ public class UrlOverridingTest {
     @LargeTest
     @Features.EnableFeatures({"BackForwardCache<Study"})
     @Features.DisableFeatures({"BackForwardCacheMemoryControls"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_same_site/true"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    public void testNoRedirectWithBFCache() throws Exception {
+    public void
+    testNoRedirectWithBFCache() throws Exception {
         final CallbackHelper finishCallback = new CallbackHelper();
         final CallbackHelper syncHelper = new CallbackHelper();
         AtomicReference<NavigationHandle> mLastNavigationHandle = new AtomicReference<>(null);

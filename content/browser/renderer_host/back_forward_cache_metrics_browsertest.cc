@@ -141,11 +141,11 @@ class BackForwardCacheMetricsBrowserTest
     if (GetParam() == BackForwardCacheStatus::kEnabled) {
       // Enable BackForwardCache.
       feature_list_.InitWithFeaturesAndParameters(
-          {{features::kBackForwardCache, {}},
+          {{features::kBackForwardCache, {{"enable_same_site", "true"}}},
            {kBackForwardCacheNoTimeEviction, {}}},
           // Allow BackForwardCache for all devices regardless of their memory.
           {features::kBackForwardCacheMemoryControls});
-      DCHECK(IsBackForwardCacheEnabled());
+      DCHECK(IsSameSiteBackForwardCacheEnabled());
     } else {
       feature_list_.InitAndDisableFeature(features::kBackForwardCache);
       DCHECK(!IsBackForwardCacheEnabled());

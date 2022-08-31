@@ -251,7 +251,7 @@ bool CanSameSiteMainFrameNavigationsChangeRenderFrameHosts() {
 
 bool CanSameSiteMainFrameNavigationsChangeSiteInstances() {
   return IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() ||
-         IsBackForwardCacheEnabled();
+         IsSameSiteBackForwardCacheEnabled();
 }
 
 void DisableProactiveBrowsingInstanceSwapFor(RenderFrameHost* rfh) {

@@ -576,6 +576,8 @@ bool BackForwardCacheMetrics::DidSwapBrowsingInstance() const {
     case ShouldSwapBrowsingInstance::kNo_Reload:
     case ShouldSwapBrowsingInstance::kNo_Guest:
     case ShouldSwapBrowsingInstance::kNo_HasNotComittedAnyNavigation:
+    case ShouldSwapBrowsingInstance::
+        kNo_UnloadHandlerExistsOnSameSiteNavigation:
     case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
       return false;
     case ShouldSwapBrowsingInstance::kYes_ForceSwap:

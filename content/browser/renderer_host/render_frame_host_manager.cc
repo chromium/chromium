@@ -247,6 +247,10 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
     case ShouldSwapBrowsingInstance::kNo_HasNotComittedAnyNavigation:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_NO_HAS_NOT_COMMITTED_ANY_NAVIGATION;
+    case ShouldSwapBrowsingInstance::
+        kNo_UnloadHandlerExistsOnSameSiteNavigation:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_UNLOAD_HANDLER_EXISTS_ON_SAME_SITE_NAVIGATION;
     case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_PRIMARY_MAIN_FRAME;
@@ -1817,14 +1821,27 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
       render_frame_host_->IsNavigationSameSite(destination_url_info);
   if (is_same_site) {
     // If it's a same-site navigation, we should only swap if same-site
-    // ProactivelySwapBrowsingInstance is enabled, or if BackForwardCache
-    // is enabled and the current RFH is eligible for back/forward cache
-    // (checked later).
+    // ProactivelySwapBrowsingInstance is enabled, or if same-site
+    // BackForwardCache is enabled and the current RFH is eligible for
+    // back-forward cache (checked later).
     if (IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled()) {
       return ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap;
     }
-    if (!IsBackForwardCacheEnabled())
+    if (!IsSameSiteBackForwardCacheEnabled())
       return ShouldSwapBrowsingInstance::kNo_SameSiteNavigation;
+    // We should not do a proactive BrowsingInstance swap on pages with unload
+    // handlers if we explicitly specified to do so to avoid exposing a
+    // web-observable behavior change (unload handlers running after a same-site
+    // navigation). Note that we're only checking for unload handlers in frames
+    // that share the same SiteInstance as the main frame, because unload
+    // handlers that exist in cross-SiteInstance subframes will be dispatched
+    // after we committed the navigation, regardless of our decision to swap
+    // BrowsingInstances or not.
+    if (ShouldSkipSameSiteBackForwardCacheForPageWithUnload() &&
+        render_frame_host_->UnloadHandlerExistsInSameSiteInstanceSubtree()) {
+      return ShouldSwapBrowsingInstance::
+          kNo_UnloadHandlerExistsOnSameSiteNavigation;
+    }
   }
 
   if (IsProactivelySwapBrowsingInstanceEnabled())
@@ -2040,13 +2057,13 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     reuse_current_process_if_possible = true;
   }
 
-  // 2) When BackForwardCache is enabled.
+  // 2) When BackForwardCache is enabled on same-site navigations.
   // Note 1: When BackForwardCache is disabled, we typically reuse processes on
   // same-site navigations. This follows that behavior.
   // Note 2: This doesn't cover cross-site navigations. Cross-site process-reuse
   // is being experimented independently and is covered in path #1 above.
   // See crbug.com/1122974 for further details.
-  if (IsBackForwardCacheEnabled() && is_same_site_proactive_swap) {
+  if (IsSameSiteBackForwardCacheEnabled() && is_same_site_proactive_swap) {
     reuse_current_process_if_possible = true;
   }
 
@@ -2060,7 +2077,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       !new_instance->IsRelatedSiteInstance(current_instance);
   bool is_same_site_proactive_swap_enabled =
       IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() ||
-      IsBackForwardCacheEnabled();
+      IsSameSiteBackForwardCacheEnabled();
   if (is_same_site_proactive_swap_enabled && is_history_navigation &&
       swapped_browsing_instance &&
       render_frame_host_->IsNavigationSameSite(dest_url_info)) {

@@ -160,7 +160,8 @@ void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
                                  bool enable_back_forward_cache) {
   if (enable_back_forward_cache) {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> features;
-    features.push_back({features::kBackForwardCache, {}});
+    features.push_back(
+        {features::kBackForwardCache, {{"enable_same_site", "true"}}});
     features.push_back({kBackForwardCacheNoTimeEviction, {}});
     features.push_back({features::kBackForwardCacheMemoryControls, {}});
     feature_list->InitWithFeaturesAndParameters(features, {});

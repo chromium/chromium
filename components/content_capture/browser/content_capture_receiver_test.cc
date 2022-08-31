@@ -30,9 +30,11 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
                                    public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    // TODO (crbug.com/1115234): Remove the param when BFCache same site feature
+    // launched.
     if (GetParam()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{{features::kBackForwardCache}, {}}},
+          {{{features::kBackForwardCache}, {{"enable_same_site", "true"}}}},
           // Allow BackForwardCache for all devices regardless of their memory.
           {features::kBackForwardCacheMemoryControls});
     }

@@ -73,6 +73,10 @@ const char* BrowsingInstanceSwapResultToString(
       return "BI not swapped - <webview> guest";
     case ShouldSwapBrowsingInstance::kNo_HasNotComittedAnyNavigation:
       return "BI not swapped - hasn't committed any navigation";
+    case ShouldSwapBrowsingInstance::
+        kNo_UnloadHandlerExistsOnSameSiteNavigation:
+      return "BI not swapped - unload handler exists and the navigation is "
+             "same-site";
     case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
       return "BI not swapped - not a primary main frame";
   }
