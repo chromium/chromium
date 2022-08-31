@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.ShowChromeStartSegmentationResult"
-    enum="ShowChromeStartSegmentationResult" expires_after="2022-10-09">
+    enum="ShowChromeStartSegmentationResult" expires_after="2023-04-09">
   <owner>hanxi@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
