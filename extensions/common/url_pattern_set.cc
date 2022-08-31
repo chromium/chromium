@@ -226,6 +226,19 @@ bool URLPatternSet::MatchesAllURLs() const {
   return false;
 }
 
+bool URLPatternSet::MatchesHost(const GURL& test,
+                                bool require_match_subdomains) const {
+  if (!test.is_valid())
+    return false;
+
+  return std::any_of(
+      patterns_.begin(), patterns_.end(),
+      [&test, require_match_subdomains](const URLPattern& pattern) {
+        return pattern.MatchesHost(test) &&
+               (!require_match_subdomains || pattern.match_subdomains());
+      });
+}
+
 bool URLPatternSet::MatchesSecurityOrigin(const GURL& origin) const {
   for (auto pattern = patterns_.begin(); pattern != patterns_.end();
        ++pattern) {

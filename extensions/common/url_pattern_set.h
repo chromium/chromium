@@ -132,6 +132,10 @@ class URLPatternSet {
   // Test if the extent matches all URLs (for example, <all_urls>).
   bool MatchesAllURLs() const;
 
+  // Returns true if any pattern in this set matches the host in |test|, plus
+  // all subdomains of |test| if |require_match_subdomains| is true,
+  bool MatchesHost(const GURL& test, bool require_match_subdomains) const;
+
   bool MatchesSecurityOrigin(const GURL& origin) const;
 
   // Returns true if there is a single URL that would be in two extents.

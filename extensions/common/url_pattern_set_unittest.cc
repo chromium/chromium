@@ -412,4 +412,46 @@ TEST(URLPatternSetTest, ToStringVector) {
   EXPECT_TRUE(base::Contains(*string_vector, "https://yahoo.com/"));
 }
 
+TEST(URLPatternSetTest, MatchesHost) {
+  URLPatternSet set;
+  AddPattern(&set, "https://example.com/");
+  AddPattern(&set, "https://*.google.com/");
+  AddPattern(&set, "https://*.sub.yahoo.com/");
+
+  struct {
+    std::string url;
+    bool require_match_subdomains;
+    bool expect_matches_host;
+  } test_cases[] = {
+      // Simple cases to test if the url's host is contained within any patterns
+      // in `set`.
+      {"http://example.com", false, true},
+      {"http://images.google.com/path", false, true},
+
+      // Test subdomain matching for patterns in `set`.
+      {"http://example.com", true, false},
+      {"http://yahoo.com", true, false},
+      {"http://sub.yahoo.com", true, true},
+      {"http://asdf.sub.yahoo.com", true, true},
+      {"http://google.com", true, true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.url);
+    EXPECT_EQ(test_case.expect_matches_host,
+              set.MatchesHost(GURL(test_case.url),
+                              test_case.require_match_subdomains));
+  }
+
+  // Test subdomain matching for a pattern that matches any .com site, and a
+  // pattern that matches with all urls.
+  AddPattern(&set, "https://*.com/");
+
+  EXPECT_TRUE(set.MatchesHost(GURL("http://anything.com"), true));
+  EXPECT_FALSE(set.MatchesHost(GURL("http://anything.ca"), false));
+
+  AddPattern(&set, "<all_urls>");
+  EXPECT_TRUE(set.MatchesHost(GURL("http://anything.ca"), true));
+}
+
 }  // namespace extensions
