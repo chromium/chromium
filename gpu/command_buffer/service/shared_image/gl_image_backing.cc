@@ -352,6 +352,14 @@ GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
       cleared_rect_(params.is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
   DCHECK(image_);
+#if BUILDFLAG(IS_MAC)
+  // NOTE: Mac currently retains GLTexture and reuses it. Not sure if this is
+  // best approach as it can lead to issues with context losses.
+  if (!gl_texture_retained_for_legacy_mailbox_) {
+    RetainGLTexture();
+    gl_texture_retained_for_legacy_mailbox_ = true;
+  }
+#endif
 }
 
 GLImageBacking::~GLImageBacking() {
