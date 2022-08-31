@@ -141,6 +141,12 @@ float WindowAndroid::GetRefreshRate() {
   return Java_WindowAndroid_getRefreshRate(env, GetJavaObject());
 }
 
+gfx::OverlayTransform WindowAndroid::GetOverlayTransform() {
+  JNIEnv* env = AttachCurrentThread();
+  return static_cast<gfx::OverlayTransform>(
+      Java_WindowAndroid_getOverlayTransform(env, GetJavaObject()));
+}
+
 std::vector<float> WindowAndroid::GetSupportedRefreshRates() {
   if (test_hooks_)
     return test_hooks_->GetSupportedRates();
@@ -224,6 +230,13 @@ void WindowAndroid::OnSupportedRefreshRatesUpdated(
   }
   if (compositor_)
     compositor_->OnUpdateSupportedRefreshRates(supported_refresh_rates);
+}
+
+void WindowAndroid::OnOverlayTransformUpdated(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  if (compositor_)
+    compositor_->OnUpdateOverlayTransform();
 }
 
 void WindowAndroid::SetWideColorEnabled(bool enabled) {

@@ -51,6 +51,7 @@ class MockCompositor : public WindowAndroidCompositor {
       base::TimeDelta timeout) override {
     return nullptr;
   }
+  void OnUpdateOverlayTransform() override {}
 };
 
 class MockGlowClient : public OverscrollGlowClient {

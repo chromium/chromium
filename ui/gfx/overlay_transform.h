@@ -7,6 +7,7 @@
 
 namespace gfx {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.gfx
 // Describes transformation to be applied to the buffer before presenting
 // to screen.  Rotations are expressed anticlockwise.
 enum OverlayTransform {

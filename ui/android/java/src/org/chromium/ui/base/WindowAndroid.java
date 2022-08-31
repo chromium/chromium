@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.Process;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -47,6 +48,7 @@ import org.chromium.base.compat.ApiHelperForOMR1;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
+import org.chromium.ui.gfx.OverlayTransform;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.CachedActivityAndroidPermissionDelegate;
@@ -147,6 +149,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     private float mRefreshRate;
     private boolean mHasFocus = true;
+    private OverlayTransformApiHelper mOverlayTransformApiHelper;
 
     /**
      * An interface to notify listeners that a context menu is closed.
@@ -255,6 +258,10 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
             Configuration configuration = context.getResources().getConfiguration();
             boolean isScreenWideColorGamut = ApiHelperForO.isScreenWideColorGamut(configuration);
             display.updateIsDisplayServerWideColorGamut(isScreenWideColorGamut);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            mOverlayTransformApiHelper = OverlayTransformApiHelper.create(this);
         }
     }
 
@@ -679,6 +686,12 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         if (mTouchExplorationMonitor != null) mTouchExplorationMonitor.destroy();
 
         mApplicationBottomInsetProvider.destroy();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            if (mOverlayTransformApiHelper != null) {
+                mOverlayTransformApiHelper.destroy();
+            }
+        }
     }
 
     /**
@@ -717,7 +730,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     // Helper to get the android Window. Always null for application context. Need to null check
     // result returning value.
-    private Window getWindow() {
+    Window getWindow() {
         Activity activity = ContextUtils.activityFromContext(mContextRef.get());
         if (activity == null || activity.isFinishing()) return null;
         return activity.getWindow();
@@ -1042,6 +1055,36 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         return mUnownedUserDataHost;
     }
 
+    void onOverlayTransformUpdated() {
+        if (mNativeWindowAndroid != 0) {
+            WindowAndroidJni.get().onOverlayTransformUpdated(mNativeWindowAndroid, this);
+        }
+    }
+
+    @CalledByNative
+    private @OverlayTransform int getOverlayTransform() {
+        int overlayTransform = OverlayTransform.INVALID;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            overlayTransform = mOverlayTransformApiHelper.getOverlayTransform();
+        }
+        // Fallback to display rotation
+        if (overlayTransform == OverlayTransform.INVALID) {
+            switch (mDisplayAndroid.getRotation()) {
+                case Surface.ROTATION_0:
+                    return OverlayTransform.NONE;
+                case Surface.ROTATION_90:
+                    return OverlayTransform.ROTATE_90;
+                case Surface.ROTATION_180:
+                    return OverlayTransform.ROTATE_180;
+                case Surface.ROTATION_270:
+                    return OverlayTransform.ROTATE_270;
+                default:
+                    return OverlayTransform.NONE;
+            }
+        }
+        return overlayTransform;
+    }
+
     @NativeMethods
     interface Natives {
         long init(WindowAndroid caller, int displayId, float scrollFactor,
@@ -1054,5 +1097,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         void destroy(long nativeWindowAndroid, WindowAndroid caller);
         void onSupportedRefreshRatesUpdated(
                 long nativeWindowAndroid, WindowAndroid caller, float[] supportedRefreshRates);
+        void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
     }
 }

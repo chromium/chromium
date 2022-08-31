@@ -414,6 +414,7 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
     CreateLayerTreeHost();
     resource_manager_.Init(host_->GetUIResourceManager());
   }
+  OnUpdateOverlayTransform();
   host_->SetRootLayer(root_window_->GetLayer());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());
@@ -500,11 +501,7 @@ void CompositorImpl::CreateLayerTreeHost() {
   DCHECK(!host_->IsVisible());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());
-  const auto& display_props =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_);
-  host_->set_display_transform_hint(
-      display::DisplayRotationToOverlayTransform(display_props.rotation()));
-
+  OnUpdateOverlayTransform();
   if (needs_animate_)
     host_->SetNeedsAnimate();
 }
@@ -851,8 +848,7 @@ void CompositorImpl::OnDisplayMetricsChanged(const display::Display& display,
 
   if (changed_metrics &
       display::DisplayObserver::DisplayMetric::DISPLAY_METRIC_ROTATION) {
-    host_->set_display_transform_hint(
-        display::DisplayRotationToOverlayTransform(display.rotation()));
+    OnUpdateOverlayTransform();
   }
 }
 
@@ -878,6 +874,17 @@ void CompositorImpl::OnUpdateSupportedRefreshRates(
     const std::vector<float>& supported_refresh_rates) {
   if (display_private_)
     display_private_->SetSupportedRefreshRates(supported_refresh_rates);
+}
+
+// WindowAndroid can call this callback
+// 1. when display rotation is changed
+// 2. when display type is changed in fold device(e.g., main->sub, sub->main),
+// the hint can be changed because of panel orientation. e.g., In Galaxy fold,
+// main lcd has 270 degrees panel orientation, but sub lcd does not have it.
+void CompositorImpl::OnUpdateOverlayTransform() {
+  gfx::OverlayTransform hint = root_window_->GetOverlayTransform();
+  if (host_)
+    host_->set_display_transform_hint(hint);
 }
 
 void CompositorImpl::InitializeVizLayerTreeFrameSink(

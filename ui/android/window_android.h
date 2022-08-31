@@ -18,6 +18,7 @@
 #include "ui/android/ui_android_export.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/overlay_transform.h"
 
 namespace display {
 class Display;
@@ -75,6 +76,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   WindowAndroidCompositor* GetCompositor() { return compositor_; }
   float GetRefreshRate();
+  gfx::OverlayTransform GetOverlayTransform();
   std::vector<float> GetSupportedRefreshRates();
   void SetPreferredRefreshRate(float refresh_rate);
 
@@ -97,6 +99,9 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jfloatArray>& supported_refresh_rates);
+  void OnOverlayTransformUpdated(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
 
   // Return whether the specified Android permission is granted.
   bool HasPermission(const std::string& permission);

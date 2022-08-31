@@ -48,6 +48,7 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
       const std::vector<float>& supported_refresh_rates) = 0;
   virtual std::unique_ptr<ui::CompositorLock> GetCompositorLock(
       base::TimeDelta timeout) = 0;
+  virtual void OnUpdateOverlayTransform() = 0;
 };
 
 }  // namespace ui
