@@ -13,12 +13,6 @@ namespace arc {
 using ShieldLayerType = ash::ColorProvider::ShieldLayerType;
 using ContentLayerType = ash::ColorProvider::ContentLayerType;
 
-// Get the shield layer color
-SkColor GetShieldLayerColor(ShieldLayerType type);
-
-// Get the content layer color
-SkColor GetContentLayerColor(ContentLayerType type);
-
 // Get dialog background base color
 SkColor GetDialogBackgroundBaseColor();
 

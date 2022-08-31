@@ -67,6 +67,7 @@
       light: "$google_blue_700",
       dark: "$google_blue_200",
       debug: "$google_red_700",
+      generate_per_mode: true,
     },
 
     /*

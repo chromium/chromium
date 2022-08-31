@@ -8,6 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/style/ash_color_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 
 namespace views {
@@ -57,6 +59,13 @@ ASH_EXPORT std::unique_ptr<views::Label> CreateBubbleLabel(
     views::View* view_defining_max_width = nullptr,
     SkColor color = AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary),
+    const gfx::FontList& font_list = GetLoginDefaultFontList(),
+    int line_height = kDefaultLineHeight);
+
+ASH_EXPORT std::unique_ptr<views::Label> CreateThemedBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width = nullptr,
+    ui::ColorId enabled_color_type = cros_tokens::kTextColorPrimary,
     const gfx::FontList& font_list = GetLoginDefaultFontList(),
     int line_height = kDefaultLineHeight);
 

@@ -10,30 +10,10 @@
 
 namespace arc {
 
-// Default color
-constexpr SkColor kDefaultColor = SK_ColorWHITE;
 // Dialog background base color
 constexpr SkColor kDialogBackgroundBaseColorLight = SK_ColorWHITE;
 constexpr SkColor kDialogBackgroundBaseColorDark =
     SkColorSetRGB(0x32, 0x33, 0x36);
-
-SkColor GetShieldLayerColor(ShieldLayerType type) {
-  auto* provider = ash::ColorProvider::Get();
-  // |provider| may return null in unit testing
-  if (!provider)
-    return kDefaultColor;
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-  return provider->GetShieldLayerColor(type);
-}
-
-SkColor GetContentLayerColor(ContentLayerType type) {
-  auto* provider = ash::ColorProvider::Get();
-  // |provider| may return null in unit testing
-  if (!provider)
-    return kDefaultColor;
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-  return provider->GetContentLayerColor(type);
-}
 
 SkColor GetDialogBackgroundBaseColor() {
   return IsDarkModeEnabled() ? kDialogBackgroundBaseColorDark

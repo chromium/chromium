@@ -205,8 +205,24 @@ SkColor Label::GetEnabledColor() const {
 void Label::SetEnabledColor(SkColor color) {
   if (enabled_color_set_ && requested_enabled_color_ == color)
     return;
-  requested_enabled_color_ = color;
+
   enabled_color_set_ = true;
+  UpdateEnabledColor(color);
+}
+
+void Label::SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id) {
+  if (enabled_color_id_ == enabled_color_id)
+    return;
+
+  enabled_color_id_ = enabled_color_id;
+  OnPropertyChanged(&enabled_color_id_, kPropertyEffectsPaint);
+}
+
+void Label::UpdateEnabledColor(SkColor color) {
+  if (requested_enabled_color_ == color)
+    return;
+
+  requested_enabled_color_ = color;
   RecalculateColors();
   OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
 }
@@ -805,6 +821,8 @@ void Label::OnPaint(gfx::Canvas* canvas) {
 void Label::OnThemeChanged() {
   View::OnThemeChanged();
   UpdateColorsFromTheme();
+  if (enabled_color_id_)
+    UpdateEnabledColor(GetColorProvider()->GetColor(*enabled_color_id_));
 }
 
 ui::Cursor Label::GetCursor(const ui::MouseEvent& event) {
@@ -1210,7 +1228,7 @@ void Label::ApplyTextColors() const {
 
 void Label::UpdateColorsFromTheme() {
   ui::ColorProvider* color_provider = GetColorProvider();
-  if (!enabled_color_set_) {
+  if (!enabled_color_set_ && !enabled_color_id_.has_value()) {
     const absl::optional<SkColor> cascading_color =
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
     requested_enabled_color_ = cascading_color.value_or(

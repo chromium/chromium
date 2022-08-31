@@ -10,11 +10,14 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/ranges/algorithm.h"
+#include "ui/color/color_id.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
 
@@ -103,28 +106,51 @@ bool HasFocusInAnyChildView(views::View* view) {
   return search == view;
 }
 
+std::unique_ptr<views::Label> CreateUnthemedBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width,
+    const gfx::FontList& font_list,
+    int line_height) {
+  auto builder = views::Builder<views::Label>()
+                     .SetText(message)
+                     .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                     .SetAutoColorReadabilityEnabled(false)
+                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                     .SetSubpixelRenderingEnabled(false)
+                     .SetFontList(font_list)
+                     .SetLineHeight(line_height);
+  if (view_defining_max_width != nullptr) {
+    builder.SetMultiLine(true)
+        .SetAllowCharacterBreak(true)
+        // Make sure to set a maximum label width, otherwise text wrapping will
+        // significantly increase width and layout may not work correctly if
+        // the input string is very long.
+        .SetMaximumWidth(view_defining_max_width->GetPreferredSize().width());
+  }
+  return std::move(builder).Build();
+}
+
 std::unique_ptr<views::Label> CreateBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width,
     SkColor color,
     const gfx::FontList& font_list,
     int line_height) {
-  auto label = std::make_unique<views::Label>(
-      message, views::style::CONTEXT_DIALOG_BODY_TEXT);
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
+                                         font_list, line_height);
   label->SetEnabledColor(color);
-  label->SetSubpixelRenderingEnabled(false);
-  label->SetFontList(font_list);
-  label->SetLineHeight(line_height);
-  if (view_defining_max_width != nullptr) {
-    label->SetMultiLine(true);
-    label->SetAllowCharacterBreak(true);
-    // Make sure to set a maximum label width, otherwise text wrapping will
-    // significantly increase width and layout may not work correctly if
-    // the input string is very long.
-    label->SetMaximumWidth(view_defining_max_width->GetPreferredSize().width());
-  }
+  return label;
+}
+
+std::unique_ptr<views::Label> CreateThemedBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width,
+    ui::ColorId enabled_color_type,
+    const gfx::FontList& font_list,
+    int line_height) {
+  auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
+                                         font_list, line_height);
+  label->SetEnabledColorId(enabled_color_type);
   return label;
 }
 

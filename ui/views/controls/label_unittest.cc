@@ -23,6 +23,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
@@ -287,6 +288,14 @@ TEST_F(LabelTest, ColorProperty) {
   SkColor color = SkColorSetARGB(20, 40, 10, 5);
   label()->SetAutoColorReadabilityEnabled(false);
   label()->SetEnabledColor(color);
+  EXPECT_EQ(color, label()->GetEnabledColor());
+}
+
+TEST_F(LabelTest, ColorPropertyOnEnabledColorIdChange) {
+  const auto color = label()->GetWidget()->GetColorProvider()->GetColor(
+      ui::kColorPrimaryForeground);
+  label()->SetAutoColorReadabilityEnabled(false);
+  label()->SetEnabledColorId(ui::kColorPrimaryForeground);
   EXPECT_EQ(color, label()->GetEnabledColor());
 }
 

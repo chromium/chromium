@@ -5,12 +5,16 @@
 #include "ash/components/arc/compat_mode/overlay_dialog.h"
 
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
+#include "ash/constants/ash_features.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/view.h"
 
 namespace arc {
 
@@ -48,6 +52,14 @@ void OverlayDialog::AddedToWidget() {
   view_ax.OverrideIsIgnored(true);
 }
 
+void OverlayDialog::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  const ui::ColorId color_id = ash::features::IsDarkLightModeEnabled()
+                                   ? ash::kColorAshShieldAndBase60
+                                   : ash::kColorAshShieldAndBase60Light;
+  SetBackground(views::CreateThemedSolidBackground(color_id));
+}
+
 OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,
                              std::unique_ptr<views::View> dialog_view)
     : has_dialog_view_(dialog_view),
@@ -63,8 +75,6 @@ OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,
 
     AddChildView(std::move(dialog_view));
   }
-  const SkColor kScrimColor = GetShieldLayerColor(ShieldLayerType::kShield60);
-  SetBackground(views::CreateSolidBackground(kScrimColor));
 }
 
 BEGIN_METADATA(OverlayDialog, views::FlexLayoutView)

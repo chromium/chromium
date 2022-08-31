@@ -132,6 +132,8 @@ class VIEWS_EXPORT Label : public View,
   // enabled.
   SkColor GetEnabledColor() const;
   virtual void SetEnabledColor(SkColor color);
+  void SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id);
+  void UpdateEnabledColor(SkColor color);
 
   // Gets/Sets the background color. This won't be explicitly drawn, but the
   // label will force the text color to be readable over it.
@@ -468,6 +470,8 @@ class VIEWS_EXPORT Label : public View,
   SkColor actual_selection_text_color_ = gfx::kPlaceholderColor;
   SkColor selection_background_color_ = gfx::kPlaceholderColor;
 
+  absl::optional<ui::ColorId> enabled_color_id_;
+
   // Set to true once the corresponding setter is invoked.
   bool enabled_color_set_ = false;
   bool background_color_set_ = false;
@@ -512,6 +516,7 @@ VIEW_BUILDER_PROPERTY(SkColor, EnabledColor)
 VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionTextColor)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionBackgroundColor)
+VIEW_BUILDER_PROPERTY(ui::ColorId, EnabledColorId)
 VIEW_BUILDER_PROPERTY(const gfx::ShadowValues&, Shadows)
 VIEW_BUILDER_PROPERTY(bool, SubpixelRenderingEnabled)
 VIEW_BUILDER_PROPERTY(bool, SkipSubpixelRenderingOpacityCheck)
