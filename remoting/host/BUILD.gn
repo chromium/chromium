@@ -124,6 +124,7 @@ source_set("ipc_constants") {
   deps = [
     "//base",
     "//mojo/public/cpp/platform",
+    "//remoting/host/base",
     "//remoting/host/mojo_ipc",
   ]
 }

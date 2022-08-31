@@ -4,27 +4,35 @@
 
 #include "remoting/host/ipc_constants.h"
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "remoting/host/base/username.h"
 #include "remoting/host/mojo_ipc/mojo_ipc_util.h"
 
 namespace remoting {
 
 namespace {
 
-#if !defined(NDEBUG) && BUILDFLAG(IS_LINUX)
-// Use a different IPC name for Linux debug builds so that we can run the host
+#if BUILDFLAG(IS_LINUX)
+
+#if !defined(NDEBUG)
+// Use a different IPC name for debug builds so that we can run the host
 // directly from out/Debug without interfering with the production host that
 // might also be running.
-constexpr char kChromotingHostServicesIpcName[] =
-    "chromoting_host_services_debug_mojo_ipc";
+constexpr char kChromotingHostServicesIpcNamePattern[] =
+    "chromoting.%s.host_services_debug_mojo_ipc";
+#else
+constexpr char kChromotingHostServicesIpcNamePattern[] =
+    "chromoting.%s.host_services_mojo_ipc";
+#endif
+
 #else
 constexpr char kChromotingHostServicesIpcName[] =
-    "chromoting_host_services_mojo_ipc";
+    "chromoting.host_services_mojo_ipc";
 #endif
 
 }  // namespace
@@ -57,7 +65,19 @@ const mojo::NamedPlatformChannel::ServerName&
 GetChromotingHostServicesServerName() {
   static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
       server_name(WorkingDirectoryIndependentServerNameFromUTF8(
-          kChromotingHostServicesIpcName));
+#if BUILDFLAG(IS_LINUX)
+          // Linux host creates the socket file in /tmp, and it won't be deleted
+          // until reboot, so we put username in the path in case the user
+          // switches the host owner.
+          base::StringPrintf(kChromotingHostServicesIpcNamePattern,
+                             GetUsername().c_str())
+#else
+          // None of the core Windows processes runs as the host owner so we
+          // can't just put username in the path. This is fine since the named
+          // pipe is accessible by all authenticated users.
+          kChromotingHostServicesIpcName
+#endif
+              ));
   return *server_name;
 }
 
