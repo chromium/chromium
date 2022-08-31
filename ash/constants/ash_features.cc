@@ -331,15 +331,6 @@ const base::Feature kCellularBypassESimInstallationConnectivityCheck{
 const base::Feature kCellularCustomAPNProfiles{
     "CellularCustomAPNProfiles", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, the value of |kCellularUseAttachApn| should have no effect and
-// and the LTE attach APN configuration will not be sent to the modem. This
-// flag exists because the |kCellularUseAttachApn| flag can be enabled
-// by command-line arguments via board overlays which takes precedence over
-// server-side field trial config, which may be needed to turn off the Attach
-// APN feature.
-const base::Feature kCellularForbidAttachApn{"CellularForbidAttachApn",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, send the LTE attach APN configuration to the modem.
 const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2603,9 +2594,7 @@ bool ShouldShowPlayStoreInDemoMode() {
 }
 
 bool ShouldUseAttachApn() {
-  // See comment on |kCellularForbidAttachApn| for details.
-  return !base::FeatureList::IsEnabled(kCellularForbidAttachApn) &&
-         base::FeatureList::IsEnabled(kCellularUseAttachApn);
+  return base::FeatureList::IsEnabled(kCellularUseAttachApn);
 }
 
 bool ShouldUseV1DeviceSync() {
