@@ -58,7 +58,8 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, DISABLED_ExitStatus254, {
       "pm_exit_status_test.html?trigger=exit254&expected_exit=254"));
 })
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatusNeg2, {
+// TODO(https://crbug.com/1059468): Flaky.
+NACL_BROWSER_TEST_F(NaClBrowserTest, DISABLED_ExitStatusNeg2, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL(
       "pm_exit_status_test.html?trigger=exitneg2&expected_exit=254"));
 })
