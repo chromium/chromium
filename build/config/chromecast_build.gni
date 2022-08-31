@@ -35,8 +35,13 @@ declare_args() {
   # Set this to true to build for Nest hardware running Linux (aka "CastOS").
   # Set this to false to use the defaults for Linux.
   is_castos = false
+
+  # Set this to true to build for Android-based Cast devices.
+  # Set this to false to use the defaults for Android.
+  is_cast_android = false
 }
 is_castos = is_castos && current_toolchain == default_toolchain
+is_cast_android = is_cast_android && current_toolchain == default_toolchain
 
 declare_args() {
   # Set this true for a Chromecast build. Chromecast builds are supported on
@@ -45,10 +50,6 @@ declare_args() {
   # During the migration from is_chromecast, this must be set to the same value
   # as is_chromecast.
   enable_cast_receiver = is_chromecast
-
-  # Set this to true to build for Android-based Cast devices.
-  # Set this to false to use the defaults for the target OS/platform.
-  is_cast_android = is_chromecast && is_android
 }
 
 declare_args() {

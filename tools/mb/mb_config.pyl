@@ -1394,11 +1394,11 @@
     ],
 
     'android_cast_debug_static_bot_compile_only': [
-      'android', 'cast', 'clang', 'debug_static_bot', 'compile_only',
+      'android', 'cast_android', 'cast_receiver', 'clang', 'debug_static_bot', 'compile_only',
     ],
 
     'android_cast_debug_static_bot_reclient': [
-      'android', 'cast', 'clang', 'debug_static_bot_reclient',
+      'android', 'cast_android', 'cast_receiver', 'clang', 'debug_static_bot_reclient',
     ],
 
     'android_clang_asan_debug_bot_reclient': [
@@ -3806,6 +3806,10 @@
 
     'cast': {
       'gn_args': 'is_chromecast=true'
+    },
+
+    'cast_android': {
+      'gn_args': 'is_cast_android=true'
     },
 
     'cast_audio': {

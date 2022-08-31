@@ -79,8 +79,9 @@
   },
   "Cast Android (dbg)": {
     "gn_args": {
+      "enable_cast_receiver": true,
       "ffmpeg_branding": "Chrome",
-      "is_chromecast": true,
+      "is_cast_android": true,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": true,
