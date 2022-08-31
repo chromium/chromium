@@ -1561,6 +1561,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kOsUIAppDisabledURL),
       GURL(chrome::kOsUIAppServiceInternalsURL),
       GURL(chrome::kOsUIBluetoothInternalsURL),
+      GURL(chrome::kChromeUIBluetoothInternalsURL),
       GURL(chrome::kChromeUIArcGraphicsTracingURL),
       GURL(chrome::kChromeUIArcOverviewTracingURL),
       GURL(chrome::kChromeUIArcPowerControlURL),

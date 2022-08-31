@@ -39,6 +39,7 @@ const char kChromeUIAppsWithForceInstalledDeprecationDialogURL[] =
     "chrome://apps?showForceInstallDialog=";
 const char kChromeUIAutofillInternalsHost[] = "autofill-internals";
 const char kChromeUIBluetoothInternalsHost[] = "bluetooth-internals";
+const char kChromeUIBluetoothInternalsURL[] = "chrome://bluetooth-internals";
 const char kChromeUIBookmarksHost[] = "bookmarks";
 const char kChromeUIBookmarksURL[] = "chrome://bookmarks/";
 const char kChromeUIBrowsingTopicsInternalsHost[] = "topics-internals";

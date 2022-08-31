@@ -41,6 +41,7 @@ extern const char kChromeUIAppsWithDeprecationDialogURL[];
 extern const char kChromeUIAppsWithForceInstalledDeprecationDialogURL[];
 extern const char kChromeUIAutofillInternalsHost[];
 extern const char kChromeUIBluetoothInternalsHost[];
+extern const char kChromeUIBluetoothInternalsURL[];
 extern const char kChromeUIBookmarksHost[];
 extern const char kChromeUIBookmarksURL[];
 extern const char kChromeUIBrowsingTopicsInternalsHost[];
