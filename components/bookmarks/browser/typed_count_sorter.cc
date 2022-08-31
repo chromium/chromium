@@ -29,9 +29,8 @@ struct UrlTypedCountPairSortFunctor {
 // corresponding TitledUrlNode.
 class UrlTypedCountPairNodeLookupFunctor {
  public:
-  UrlTypedCountPairNodeLookupFunctor(UrlNodeMap& url_node_map)
-      : url_node_map_(url_node_map) {
-  }
+  explicit UrlTypedCountPairNodeLookupFunctor(UrlNodeMap& url_node_map)
+      : url_node_map_(url_node_map) {}
 
   const TitledUrlNode* operator()(const UrlTypedCountPair& pair) const {
     return url_node_map_[pair.first];
@@ -48,7 +47,7 @@ TypedCountSorter::TypedCountSorter(BookmarkClient* client)
   DCHECK(client_);
 }
 
-TypedCountSorter::~TypedCountSorter() {}
+TypedCountSorter::~TypedCountSorter() = default;
 
 void TypedCountSorter::SortMatches(const TitledUrlNodeSet& matches,
                                    TitledUrlNodes* sorted_nodes) const {

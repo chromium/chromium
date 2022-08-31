@@ -240,6 +240,20 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, uses an alternative approach to loading typed counts for URLs
+// when fetching bookmark matches for the bookmark provider.
+// - When disabled, for each matching bookmark, it runs 1 SQL query to look up
+//   its typed count by URL, which is indexed and therefore runs O(n * log(m)),
+//   where n is the # of bookmark matches, and m is the # of URLs.
+// - When enabled, reads all URLs from the DB in 1 scan and stores them to a
+//   `std::map`. Then for each matching bookmark, it looks up the URL in the
+//   map. This is O(n*log(m) + m) runtime and requires O(m) additional space.
+//   This map isn't cached since the DB changes as the user visits and deletes
+//   visits; and propagating those changes to the cached map would add
+//   complexity.
+const base::Feature kBookmarkTypedUrlsMap{"OmniboxBookmarkTypedUrlsMap",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If disabled, shortcuts to the same stripped destination URL are scored
 // independently, and only the highest scored shortcut is kept. If enabled,
 // duplicate shortcuts are given an aggregate score, as if they had been a
