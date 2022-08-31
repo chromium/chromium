@@ -94,9 +94,8 @@ def FilterCompilerOutput(compiler_output, relative_paths):
   return ''.join(filtered_output)
 
 
-def CompileAssetCatalog(output, platform, target_environment, product_type,
-                        min_deployment_target, inputs, compress_pngs,
-                        partial_info_plist):
+def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
+                        inputs, compress_pngs, partial_info_plist):
   """Compile the .xcassets bundles to an asset catalog using actool.
 
   Args:
@@ -115,6 +114,8 @@ def CompileAssetCatalog(output, platform, target_environment, product_type,
       '--notices',
       '--warnings',
       '--errors',
+      '--platform',
+      platform,
       '--minimum-deployment-target',
       min_deployment_target,
   ]
@@ -125,41 +126,10 @@ def CompileAssetCatalog(output, platform, target_environment, product_type,
   if product_type != '':
     command.extend(['--product-type', product_type])
 
-  if platform == 'mac':
-    command.extend([
-        '--platform',
-        'macosx',
-        '--target-device',
-        'mac',
-    ])
-  elif platform == 'ios':
-    if target_environment == 'simulator':
-      command.extend([
-          '--platform',
-          'iphonesimulator',
-          '--target-device',
-          'iphone',
-          '--target-device',
-          'ipad',
-      ])
-    elif target_environment == 'device':
-      command.extend([
-          '--platform',
-          'iphoneos'
-          '--target-device',
-          'iphone',
-          '--target-device',
-          'ipad',
-      ])
-    elif target_environment == 'catalyst':
-      command.extend([
-          '--platform',
-          'macosx',
-          '--target-device',
-          'ipad',
-          '--ui-framework-family',
-          'uikit',
-      ])
+  if platform == 'macosx':
+    command.extend(['--target-device', 'mac'])
+  else:
+    command.extend(['--target-device', 'iphone', '--target-device', 'ipad'])
 
   # Scan the input directories for the presence of asset catalog types that
   # require special treatment, and if so, add them to the actool command-line.
@@ -241,13 +211,8 @@ def Main():
   parser.add_argument('--platform',
                       '-p',
                       required=True,
-                      choices=('mac', 'ios'),
+                      choices=('macosx', 'iphoneos', 'iphonesimulator'),
                       help='target platform for the compiled assets catalog')
-  parser.add_argument('--target-environment',
-                      '-e',
-                      default='',
-                      choices=('simulator', 'device', 'catalyst'),
-                      help='target environment for the compiled assets catalog')
   parser.add_argument(
       '--minimum-deployment-target',
       '-t',
@@ -284,9 +249,9 @@ def Main():
     else:
       shutil.rmtree(args.output)
 
-  CompileAssetCatalog(args.output, args.platform, args.target_environment,
-                      args.product_type, args.minimum_deployment_target,
-                      args.inputs, args.compress_pngs, args.partial_info_plist)
+  CompileAssetCatalog(args.output, args.platform, args.product_type,
+                      args.minimum_deployment_target, args.inputs,
+                      args.compress_pngs, args.partial_info_plist)
 
 
 if __name__ == '__main__':
