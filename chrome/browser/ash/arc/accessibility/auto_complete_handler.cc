@@ -54,7 +54,7 @@ AutoCompleteHandler::AutoCompleteHandler(const int32_t editable_node_id)
 AutoCompleteHandler::~AutoCompleteHandler() = default;
 
 // static
-std::vector<std::pair<int32_t, std::unique_ptr<AutoCompleteHandler>>>
+std::vector<AutoCompleteHandler::IdAndHandler>
 AutoCompleteHandler::CreateIfNecessary(
     AXTreeSourceArc* tree_source,
     const mojom::AccessibilityEventData& event_data) {
@@ -63,7 +63,7 @@ AutoCompleteHandler::CreateIfNecessary(
     return {};
   }
 
-  std::vector<std::pair<int32_t, std::unique_ptr<AutoCompleteHandler>>> results;
+  std::vector<IdAndHandler> results;
 
   // Check all updated nodes under the event source.
   std::vector<AccessibilityInfoDataWrapper*> to_visit;

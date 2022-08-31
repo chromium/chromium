@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -98,15 +99,14 @@ bool AppSupportsMimeTypeOfAllEntries(
     const guest_os::GuestOsMimeTypesService& mime_types_service,
     const std::vector<extensions::EntryInfo>& entries,
     const guest_os::GuestOsRegistryService::Registration& app) {
-  return std::all_of(
-      cbegin(entries), cend(entries),
-      // Get fields once, as their getters are not cheap.
-      [supported_mime_types = app.MimeTypes(), vm_name = app.VmName(),
-       container_name = app.ContainerName(),
-       &mime_types_service](const auto& entry) {
-        return HasSupportedMimeType(supported_mime_types, vm_name,
-                                    container_name, mime_types_service, entry);
-      });
+  // Get fields once, as their getters are not cheap.
+  const std::set<std::string> supported_mime_types = app.MimeTypes();
+  const std::string vm_name = app.VmName();
+  const std::string container_name = app.ContainerName();
+  return base::ranges::all_of(entries, [&](const auto& entry) {
+    return HasSupportedMimeType(supported_mime_types, vm_name, container_name,
+                                mime_types_service, entry);
+  });
 }
 
 bool HasSupportedExtension(const std::set<std::string>& supported_extensions,
@@ -122,11 +122,10 @@ bool HasSupportedExtension(const std::set<std::string>& supported_extensions,
 bool AppSupportsExtensionOfAllEntries(
     const std::vector<extensions::EntryInfo>& entries,
     const guest_os::GuestOsRegistryService::Registration& app) {
-  return std::all_of(
-      cbegin(entries), cend(entries),
-      [supported_extensions = app.Extensions()](const auto& entry) {
-        return HasSupportedExtension(supported_extensions, entry);
-      });
+  const std::set<std::string> supported_extensions = app.Extensions();
+  return base::ranges::all_of(entries, [&](const auto& entry) {
+    return HasSupportedExtension(supported_extensions, entry);
+  });
 }
 
 auto ConvertLaunchPluginVmAppResultToTaskResult(

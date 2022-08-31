@@ -4,8 +4,10 @@
 
 #include <memory>
 #include <string>
+
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -71,10 +73,8 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   }
 
   bool NoUsbEventsEnqueued(const std::vector<::reporting::Record>& records) {
-    return std::none_of(
-        records.begin(), records.end(), [](::reporting::Record r) {
-          return r.destination() == ::reporting::Destination::PERIPHERAL_EVENTS;
-        });
+    return !base::Contains(records, ::reporting::Destination::PERIPHERAL_EVENTS,
+                           &::reporting::Record::destination);
   }
 
   void LoginAffiliatedUser() {

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
@@ -184,10 +185,10 @@ TEST_F(AutoCompleteHandlerTest, Create) {
   ASSERT_EQ(2U, create_result.size());
 
   // Check both IDs are included.
-  ASSERT_TRUE(std::any_of(create_result.begin(), create_result.end(),
-                          [](const auto& p) { return p.first == 1; }));
-  ASSERT_TRUE(std::any_of(create_result.begin(), create_result.end(),
-                          [](const auto& p) { return p.first == 2; }));
+  ASSERT_TRUE(base::Contains(create_result, 1,
+                             &AutoCompleteHandler::IdAndHandler::first));
+  ASSERT_TRUE(base::Contains(create_result, 2,
+                             &AutoCompleteHandler::IdAndHandler::first));
 }
 
 TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {

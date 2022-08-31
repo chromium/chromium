@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,10 +55,8 @@ bool IsIntentAcceptedByApp(const crosapi::mojom::IntentPtr& intent,
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppsForIntent(
           apps_util::CreateAppServiceIntentFromCrosapi(intent, profile));
-  return std::any_of(intent_launch_info.begin(), intent_launch_info.end(),
-                     [&app_id](const apps::IntentLaunchInfo& launch_entry) {
-                       return launch_entry.app_id == app_id;
-                     });
+  return base::Contains(intent_launch_info, app_id,
+                        &apps::IntentLaunchInfo::app_id);
 }
 
 // Returns an Intent accepted by Sample System Web App.

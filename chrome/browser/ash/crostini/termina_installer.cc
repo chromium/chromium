@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -227,9 +228,7 @@ void TerminaInstaller::RemoveDlc(base::OnceCallback<void()> callback,
 void TerminaInstaller::OnUninstallFinished(
     base::OnceCallback<void(bool)> callback,
     std::vector<UninstallResult> partial_results) {
-  bool result = std::all_of(partial_results.begin(), partial_results.end(),
-                            [](bool b) { return b; });
-  std::move(callback).Run(result);
+  std::move(callback).Run(!base::Contains(partial_results, 0));
 }
 
 base::FilePath TerminaInstaller::GetInstallLocation() {

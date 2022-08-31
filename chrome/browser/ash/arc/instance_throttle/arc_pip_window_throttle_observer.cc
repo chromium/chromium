@@ -4,12 +4,11 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_pip_window_throttle_observer.h"
 
-#include <algorithm>
-
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
 
@@ -61,8 +60,7 @@ void ArcPipWindowThrottleObserver::OnWindowRemoved(aura::Window* window) {
   // window may be removed after a new one is added.
   auto* const container = GetPipContainer();
   if (!container ||
-      std::none_of(container->children().begin(), container->children().end(),
-                   &ash::IsArcWindow)) {
+      base::ranges::none_of(container->children(), &ash::IsArcWindow)) {
     SetActive(false);
   }
 }
