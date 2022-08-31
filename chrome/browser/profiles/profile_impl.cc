@@ -771,9 +771,11 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Listen for bookmark model load, to bootstrap the sync service.
+  // Not necessary for profiles that don't have a BookmarkModel.
   // On CrOS sync service will be initialized after sign in.
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(this);
-  model->AddObserver(new BookmarkModelLoadedObserver(this));
+  if (model)
+    model->AddObserver(new BookmarkModelLoadedObserver(this));
 #endif
 
   HeavyAdServiceFactory::GetForBrowserContext(this)->Initialize(GetPath());
