@@ -2330,13 +2330,13 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   }
 
   base::OnceClosure login_host_finalized_callback = base::BindOnce(
-      [](void* trace_id) {
+      [](uint64_t trace_id) {
         session_manager::SessionManager::Get()->SessionStarted();
         TRACE_EVENT_NESTABLE_ASYNC_END0(kEventCategoryChromeOS,
                                         kEventStartSession,
                                         TRACE_ID_LOCAL(trace_id));
       },
-      this);
+      static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this)));
 
   // Mark login host for deletion after browser starts.  This
   // guarantees that the message loop will be referenced by the
