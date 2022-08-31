@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
@@ -97,21 +96,20 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private final Activity mActivity;
-    private final @Px int mMaxHeight;
-
-    private final @Px int mFullyExpandedAdjustmentHeight;
     private final Integer mNavigationBarColor;
     private final Integer mNavigationBarDividerColor;
     private final OnResizedCallback mOnResizedCallback;
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final int mCachedHandleHeight;
-    private boolean mWindowAboveNavbar;
     private final boolean mIsFixedHeight;
-    private @Px int mInitialHeight;
+    private final @Px int mUnclampedInitialHeight;
+
+    private @Px int mDisplayHeight;
+    private @Px int mFullyExpandedAdjustmentHeight;
+    private boolean mWindowAboveNavbar;
     private ValueAnimator mAnimator;
     private int mShadowOffset;
     private boolean mDrawOutlineShadow;
-    private @Px int mDisplayHeight;
 
     // ContentFrame + CoordinatorLayout - CompositorViewHolder
     //              + NavigationBar
@@ -131,7 +129,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private @Px int mNavbarHeight;
     private int mOrientation;
     private boolean mIsInMultiWindowMode;
-    private int mHeight;
 
     private ImageView mSpinnerView;
     private LinearLayout mNavbar;
@@ -158,6 +155,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         /** The Custom Tab has been resized. */
         void onResized(int size);
     }
+
+    // The current height used to trigger onResizedCallback when it is resized.
+    private int mHeight;
 
     /**
      * Handling touch events for resizing the Window.
@@ -269,7 +269,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         private boolean handleAnimation(int flingDistance) {
             int currentY = mActivity.getWindow().getAttributes().y;
             int finalY = currentY + flingDistance;
-            int topY = getFullyExpandedYCoordinateWithAdjustment();
+            int topY = getFullyExpandedYWithAdjustment();
             int initialY = initialY();
             int bottomY = mDisplayHeight - mNavbarHeight;
 
@@ -315,17 +315,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
         mWindowAboveNavbar = ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled();
         mActivity = activity;
-        mMaxHeight = getMaximumPossibleHeight();
-        mInitialHeight = MathUtils.clamp(
-                initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
         mDisplayHeight = getDisplayHeight();
+        mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
         mOnResizedCallback = onResizedCallback;
-        // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
-        // 90% of the height.
-        mFullyExpandedAdjustmentHeight = ChromeFeatureList.sCctResizable90MaximumHeight.isEnabled()
-                ? (int) ((mMaxHeight - getFullyExpandedYCoordinate()) * EXTRA_HEIGHT_RATIO)
-                : 0;
 
         mAnimator = new ValueAnimator();
         mAnimator.setDuration(SCROLL_DURATION_MS);
@@ -384,7 +377,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     public void onPostInflationStartup() {
         mContentFrame = (ViewGroup) mActivity.findViewById(android.R.id.content);
         mCoordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
-
         // Elevate the main web contents area as high as the handle bar to have the shadow
         // effect look right.
         int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
@@ -398,7 +390,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         // Expands to full height.
         int start = mActivity.getWindow().getAttributes().y;
-        int end = getFullyExpandedYCoordinateWithAdjustment();
+        int end = getFullyExpandedYWithAdjustment();
         mAnimator.setIntValues(start, end);
         mStatus = HeightStatus.TRANSITION;
         mTargetStatus = HeightStatus.TOP;
@@ -419,7 +411,13 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private int initialY() {
-        return mDisplayHeight - mInitialHeight;
+        return mDisplayHeight - initialHeightInPortraitMode();
+    }
+
+    private int initialHeightInPortraitMode() {
+        assert !isFullHeight() : "initialHeightInPortraitModie() is used in portrait mode only";
+        return MathUtils.clamp(mUnclampedInitialHeight, mDisplayHeight,
+                (int) (mDisplayHeight * MINIMAL_HEIGHT_RATIO));
     }
 
     private @Px int getNavbarHeight() {
@@ -563,8 +561,16 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         mNavbarHeight = getNavbarHeight();
-        int maxExpandedY = getFullyExpandedYCoordinate();
-        final @Px int height;
+
+        // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
+        // 90% of the height.
+        mFullyExpandedAdjustmentHeight = ChromeFeatureList.sCctResizable90MaximumHeight.isEnabled()
+                ? (int) ((mDisplayHeight - getFullyExpandedY()) * EXTRA_HEIGHT_RATIO)
+                : 0;
+
+        int maxExpandedY = getFullyExpandedY();
+        @Px
+        int height = 0;
 
         if (isFullHeight()) {
             // Resizing by user dragging is not supported in landscape mode; no need to set
@@ -574,7 +580,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             }
         } else {
-            height = mInitialHeight;
+            height = initialHeightInPortraitMode();
             mStatus = HeightStatus.INITIAL_HEIGHT;
             if (!mWindowAboveNavbar) {
                 mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -655,15 +661,17 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private void updateWindowPos(@Px int y) {
         // Do not allow the Window to go above the minimum threshold capped by the status
         // bar and (optionally) the 90%-height adjustment.
-        int topY = getFullyExpandedYCoordinateWithAdjustment();
-        y = MathUtils.clamp(y, topY, mMaxHeight);
+        int topY = getFullyExpandedYWithAdjustment();
+        y = MathUtils.clamp(y, topY, mDisplayHeight);
         Window window = mActivity.getWindow();
         WindowManager.LayoutParams attrs = window.getAttributes();
         if (attrs.y == y) return;
 
+        int initialY = initialY();
+
         // If the tab is not resizable then dragging it higher than the initial height will not be
         // allowed. The tab can still be dragged down in order to be closed.
-        if (isFixedHeight() && y < initialY()) return;
+        if (isFixedHeight() && y < initialY) return;
 
         attrs.y = y;
         window.setAttributes(attrs);
@@ -673,7 +681,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // Starting dragging from INITIAL_HEIGHT state, we can hide the spinner if the tab:
         // 1) reaches full height
         // 2) is dragged below the initial height
-        if (mStatus == HeightStatus.INITIAL_HEIGHT && (y <= topY || y > initialY())
+        if (mStatus == HeightStatus.INITIAL_HEIGHT && (y <= topY || y > initialY)
                 && isSpinnerVisible()) {
             hideSpinnerView();
             if (y <= topY) {
@@ -720,8 +728,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             Window window = mActivity.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             WindowManager.LayoutParams attrs = window.getAttributes();
-            attrs.y = mMaxHeight - attrs.height - mNavbarHeight;
-            attrs.height = mMaxHeight;
+            attrs.y = mDisplayHeight - attrs.height - mNavbarHeight;
+            attrs.height = mDisplayHeight;
             attrs.gravity = Gravity.NO_GRAVITY;
             window.setAttributes(attrs);
             showNavbarButtons(false);
@@ -739,7 +747,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (mWindowAboveNavbar) {
             Window window = mActivity.getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            positionAtHeight(mMaxHeight - window.getAttributes().y);
+            positionAtHeight(mDisplayHeight - window.getAttributes().y);
             showNavbarButtons(true);
             maybeInvokeResizeCallback();
         } else {
@@ -802,7 +810,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private void centerSpinnerVertically(ViewGroup.LayoutParams lp) {
         int toolbarHeight = mToolbarView.getHeight();
-        int cctHeight = mMaxHeight - mActivity.getWindow().getAttributes().y - toolbarHeight;
+        int cctHeight = mDisplayHeight - mActivity.getWindow().getAttributes().y - toolbarHeight;
         lp.height = cctHeight;
         mSpinnerView.setLayoutParams(lp);
     }
@@ -927,21 +935,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         }
     }
 
-    private @Px int getMaximumPossibleHeight() {
-        @Px
-        int res = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Rect rect = mActivity.getWindowManager().getMaximumWindowMetrics().getBounds();
-            res = Math.max(rect.width(), rect.height());
-        } else {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
-            res = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        }
-        return res;
-    }
-
-    // TODO(ctzsm): Explore the way to use androidx.window.WindowManager or
+    // TODO(jinsukkim): Explore the way to use androidx.window.WindowManager or
     // androidx.window.java.WindowInfoRepoJavaAdapter once the androidx API get finalized and is
     // available in Chromium to use #getCurrentWindowMetrics()/#currentWindowMetrics() to get the
     // height of the display our Window currently in.
@@ -984,17 +978,17 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return statusBarHeight;
     }
 
-    private @Px int getFullyExpandedYCoordinate() {
+    private @Px int getFullyExpandedY() {
         return getStatusBarHeight();
     }
 
     @VisibleForTesting
     @Px
-    int getFullyExpandedYCoordinateWithAdjustment() {
+    int getFullyExpandedYWithAdjustment() {
         // Adding |mFullyExpandedAdjustmentHeight| to the y coordinate because the
         // coordinates system's origin is at the top left and y is growing in downward, larger y
         // means smaller height of the bottom sheet CCT.
-        return getFullyExpandedYCoordinate() + mFullyExpandedAdjustmentHeight;
+        return getFullyExpandedY() + mFullyExpandedAdjustmentHeight;
     }
 
     @Override

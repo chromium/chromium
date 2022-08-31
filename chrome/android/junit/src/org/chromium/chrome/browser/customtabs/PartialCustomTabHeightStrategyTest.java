@@ -580,7 +580,7 @@ public class PartialCustomTabHeightStrategyTest {
         clearInvocations(mSpinnerView);
 
         // Verify the spinner remains invisible after the tab reaches the top.
-        int topY = strategy.getFullyExpandedYCoordinateWithAdjustment();
+        int topY = strategy.getFullyExpandedYWithAdjustment();
         actionMove(handleStrategy, timestamp, topY);
         verify(mSpinnerView).setVisibility(View.GONE);
         clearInvocations(mSpinnerView);
