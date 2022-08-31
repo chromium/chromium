@@ -218,6 +218,7 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",

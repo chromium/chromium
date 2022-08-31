@@ -44,6 +44,7 @@ import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.components.browser_ui.share.ShareHelper;
+import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
 
@@ -69,8 +70,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     // committed to Url bar's Edit text. Ex: google.com search field.
     private static final String IME_OPTION_RESTRICT_STYLUS_WRITING_AREA =
             "restrictDirectWritingArea=true";
-
-    private boolean mFirstDrawComplete;
 
     /**
      * The text direction of the URL or query: LAYOUT_DIRECTION_LOCALE, LAYOUT_DIRECTION_LTR, or
@@ -215,6 +214,14 @@ public abstract class UrlBar extends AutocompleteEditText {
         // the first draw.
         setFocusable(false);
         setFocusableInTouchMode(false);
+        // Use a global draw instead of View#onDraw in case this View is not visible.
+        FirstDrawDetector.waitForFirstDraw(this, () -> {
+            // We have now avoided the first draw problem (see the comments above) so we want to
+            // make the URL bar focusable so that touches etc. activate it.
+            setFocusable(mAllowFocus);
+            setFocusableInTouchMode(mAllowFocus);
+        });
+
         setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI
                 | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
@@ -493,16 +500,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        if (!mFirstDrawComplete) {
-            mFirstDrawComplete = true;
-
-            // We have now avoided the first draw problem (see the comment in
-            // the constructor) so we want to make the URL bar focusable so that
-            // touches etc. activate it.
-            setFocusable(mAllowFocus);
-            setFocusableInTouchMode(mAllowFocus);
-        }
 
         // Notify listeners if the URL's direction has changed.
         updateUrlDirection();

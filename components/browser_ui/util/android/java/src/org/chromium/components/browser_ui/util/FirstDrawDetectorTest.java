@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.init;
+package org.chromium.components.browser_ui.util;
 
 import android.view.View;
 import android.widget.FrameLayout;
@@ -14,14 +14,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.CountDownLatch;
 
 /** Tests for {@link FirstDrawDetector}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 public class FirstDrawDetectorTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
