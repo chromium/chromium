@@ -6837,6 +6837,10 @@ crbug.com/1356118 [ Linux ] external/wpt/html/anonymous-iframe/local-storage-ini
 crbug.com/1356118 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html [ Failure Pass ]
 crbug.com/1356118 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html [ Failure Pass ]
 
+# Temporaruly disable to land IndexedDB frontend changes
+crbug.com/1296584 http/tests/devtools/indexeddb/database-names.js [ Skip ]
+crbug.com/1296584 http/tests/devtools/indexeddb/upgrade-events.js [ Skip ]
+
 # Sheriff 2022-08-30
 crbug.com/1357621 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html [ Failure Pass Timeout ]
 crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default.html [ Failure Pass ]
