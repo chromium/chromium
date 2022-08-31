@@ -18,6 +18,7 @@
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -53,12 +54,34 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
   int num_sheets = 0;
   int num_bytes = 0;
 
+  // If --pre-tokenize is given, we do all the tokenization outside of
+  // the timer (simulating the case where it's already tokenized for us
+  // on a different thread).
+  const bool pre_tokenize =
+      base::CommandLine::ForCurrentProcess()->HasSwitch("pre-tokenize");
+  std::vector<std::unique_ptr<CachedCSSTokenizer>> tokenizers;
+  base::ElapsedTimer tokenize_timer;
+  for (const base::Value& sheet_json : *dict.FindList("stylesheets")) {
+    const base::Value::Dict& sheet_dict = sheet_json.GetDict();
+    if (pre_tokenize) {
+      tokenizers.push_back(CSSTokenizer::CreateCachedTokenizer(
+          WTF::String(*sheet_dict.FindString("text"))));
+    } else {
+      tokenizers.push_back(nullptr);
+    }
+  }
+  base::TimeDelta tokenize_time = tokenize_timer.Elapsed();
+
   base::ElapsedTimer parse_timer;
+  int sheet_idx = 0;
   for (const base::Value& sheet_json : *dict.FindList("stylesheets")) {
     const base::Value::Dict& sheet_dict = sheet_json.GetDict();
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(
         MakeGarbageCollected<CSSParserContext>(document));
-    sheet->ParseString(WTF::String(*sheet_dict.FindString("text")));
+
+    sheet->ParseString(WTF::String(*sheet_dict.FindString("text")),
+                       /*allow_import_rules=*/true,
+                       std::move(tokenizers[sheet_idx++]));
     if (*sheet_dict.FindString("type") == "user") {
       engine.InjectSheet("", sheet, WebCssOrigin::kUser);
     } else {
@@ -74,6 +97,11 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
   reporter.RegisterFyiMetric("SheetSize", "kB");
   reporter.AddResult("SheetSize", static_cast<double>(num_bytes / 1024));
+
+  if (pre_tokenize) {
+    reporter.RegisterImportantMetric("TokenizeTime", "us");
+    reporter.AddResult("TokenizeTime", tokenize_time);
+  }
 
   reporter.RegisterImportantMetric("ParseTime", "us");
   reporter.AddResult("ParseTime", parse_time);
