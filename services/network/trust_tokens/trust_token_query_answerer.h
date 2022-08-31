@@ -18,12 +18,12 @@ namespace network {
 class SynchronousTrustTokenKeyCommitmentGetter;
 
 // TrustTokenQueryAnswerer is a class bound to a top-level origin, able to
-// answer queries about whether the user possesses trust tokens issued by
-// any issuer origin associated with the top-level origin.
+// answer queries about whether the user possesses trust tokens and redemption
+// records issued by any issuer origin associated with the top-level origin.
 //
-// When receiving a HasTrustTokens(issuer) call, the answerer attempts to
-// associate |issuer| with the bound top-level origin; if this is not
-// possible, it returns an error (see the TrustTokenQueryAnswerer
+// When receiving a HasTrustTokens(issuer) or HasRedemptionRecord(issuer) call,
+// the answerer attempts to associate |issuer| with the bound top-level origin;
+// if this is not possible, it returns an error (see the TrustTokenQueryAnswerer
 // Mojo interface's comment for all possible error returns).
 class TrustTokenQueryAnswerer : public mojom::TrustTokenQueryAnswerer {
  public:
@@ -38,9 +38,13 @@ class TrustTokenQueryAnswerer : public mojom::TrustTokenQueryAnswerer {
   TrustTokenQueryAnswerer(const TrustTokenQueryAnswerer&) = delete;
   TrustTokenQueryAnswerer& operator=(const TrustTokenQueryAnswerer&) = delete;
 
-  // mojom::TrustTokenQueryAnswerer:
+  // mojom::TrustTokenQueryAnswerer::HasTrustTokens
   void HasTrustTokens(const url::Origin& issuer,
                       HasTrustTokensCallback callback) override;
+
+  // mojom::TrustTokenQueryAnswerer::HasRedemptionRecord
+  void HasRedemptionRecord(const url::Origin& issuer,
+                           HasRedemptionRecordCallback callback) override;
 
  private:
   // Continuation of HasTrustTokens: uses |trust_token_store| to answer a
@@ -49,7 +53,15 @@ class TrustTokenQueryAnswerer : public mojom::TrustTokenQueryAnswerer {
   // Requires that |issuer| is potentially trustworthy and HTTP or HTTPS.
   void AnswerTokenQueryWithStore(const SuitableTrustTokenOrigin& issuer,
                                  HasTrustTokensCallback callback,
-                                 TrustTokenStore* trust_token_store);
+                                 TrustTokenStore* trust_token_store) const;
+
+  // Continuation of HasRedemptionRecord: uses |trust_token_store| to answer a
+  // HasRedemptionRecord query against |issuer|.
+  //
+  // Requires that |issuer| is potentially trustworthy and HTTP or HTTPS.
+  void AnswerRedemptionQueryWithStore(const SuitableTrustTokenOrigin& issuer,
+                                      HasRedemptionRecordCallback callback,
+                                      TrustTokenStore* trust_token_store) const;
 
   const SuitableTrustTokenOrigin top_frame_origin_;
   raw_ptr<PendingTrustTokenStore> pending_trust_token_store_;

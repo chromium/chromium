@@ -201,6 +201,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Trust Token API (https://github.com/wicg/trust-token-api)
     [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=TrustTokens] Promise<boolean> hasTrustToken(USVString issuer);
 
+    // Trust Token API (https://github.com/wicg/trust-token-api)
+    [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=TrustTokens] Promise<boolean> hasRedemptionRecord(USVString issuer);
+
     // Event handler attributes
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;

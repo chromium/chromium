@@ -6352,9 +6352,9 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
     return promise;
   }
 
-  if (!top_frame_origin->IsPotentiallyTrustworthy() ||
-      (top_frame_origin->Protocol() != url::kHttpsScheme &&
-       top_frame_origin->Protocol() != url::kHttpScheme)) {
+  DCHECK(top_frame_origin->IsPotentiallyTrustworthy());
+  if (top_frame_origin->Protocol() != url::kHttpsScheme &&
+      top_frame_origin->Protocol() != url::kHttpScheme) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "hasTrustToken: Cannot execute in "
@@ -6397,6 +6397,101 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
               resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                   state->GetIsolate(), DOMExceptionCode::kOperationError,
                   "Failed to retrieve hasTrustToken response. (Would "
+                  "associating the given issuer with this top-level origin "
+                  "have exceeded its number-of-issuers limit?)"));
+            }
+
+            document->data_->pending_trust_token_query_resolvers_.erase(
+                resolver);
+          },
+          WrapWeakPersistent(resolver), WrapWeakPersistent(this)));
+
+  return promise;
+}
+
+ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
+                                            const String& issuer,
+                                            ExceptionState& exception_state) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  ScriptPromise promise = resolver->Promise();
+
+  // Trust Tokens state is keyed by issuer and top-frame origins that
+  // are both (1) HTTP or HTTPS and (2) potentially trustworthy. Consequently,
+  // we can return early if either the issuer or the top-frame origin fails to
+  // satisfy either of these requirements.
+  KURL issuer_url = KURL(issuer);
+  auto issuer_origin = SecurityOrigin::Create(issuer_url);
+  if (!issuer_url.ProtocolIsInHTTPFamily() ||
+      !issuer_origin->IsPotentiallyTrustworthy()) {
+    exception_state.ThrowTypeError(
+        "hasRedemptionRecord: Trust token issuer origins must be both HTTP(S) "
+        "and "
+        "secure (\"potentially trustworthy\").");
+    resolver->Reject(exception_state);
+    return promise;
+  }
+
+  scoped_refptr<const SecurityOrigin> top_frame_origin = TopFrameOrigin();
+  if (!top_frame_origin) {
+    // Note: One case where there might be no top frame origin is if this
+    // document is destroyed. In this case, this function will return
+    // `undefined`. Still bother adding the exception and rejecting, just in
+    // case there are other situations in which the top frame origin might be
+    // absent.
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "hasRedemptionRecord: Cannot execute in "
+                                      "documents lacking top-frame origins.");
+    resolver->Reject(exception_state);
+    return promise;
+  }
+
+  DCHECK(top_frame_origin->IsPotentiallyTrustworthy());
+  if (top_frame_origin->Protocol() != url::kHttpsScheme &&
+      top_frame_origin->Protocol() != url::kHttpScheme) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "hasRedemptionRecord: Cannot execute in "
+        "documents without secure, HTTP(S), top-frame origins.");
+    resolver->Reject(exception_state);
+    return promise;
+  }
+
+  if (!data_->trust_token_query_answerer_.is_bound()) {
+    GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+        data_->trust_token_query_answerer_.BindNewPipeAndPassReceiver(
+            GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)));
+    data_->trust_token_query_answerer_.set_disconnect_handler(
+        WTF::Bind(&Document::TrustTokenQueryAnswererConnectionError,
+                  WrapWeakPersistent(this)));
+  }
+
+  data_->pending_trust_token_query_resolvers_.insert(resolver);
+
+  data_->trust_token_query_answerer_->HasRedemptionRecord(
+      issuer_origin,
+      WTF::Bind(
+          [](WeakPersistent<ScriptPromiseResolver> resolver,
+             WeakPersistent<Document> document,
+             network::mojom::blink::HasRedemptionRecordResultPtr result) {
+            // If there was a Mojo connection error, the promise was already
+            // resolved and deleted.
+            if (!base::Contains(
+                    document->data_->pending_trust_token_query_resolvers_,
+                    resolver)) {
+              return;
+            }
+
+            if (result->status ==
+                network::mojom::blink::TrustTokenOperationStatus::kOk) {
+              resolver->Resolve(result->has_redemption_record);
+            } else {
+              ScriptState* state = resolver->GetScriptState();
+              ScriptState::Scope scope(state);
+              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                  state->GetIsolate(), DOMExceptionCode::kOperationError,
+                  "Failed to retrieve hasRedemptionRecord response. (Would "
                   "associating the given issuer with this top-level origin "
                   "have exceeded its number-of-issuers limit?)"));
             }

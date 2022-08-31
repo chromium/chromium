@@ -328,4 +328,206 @@ TEST(TrustTokenQueryAnswerer,
   EXPECT_EQ(raw_store->CountTokens(kIssuer1), 2);
 }
 
+TEST(TrustTokenQueryAnswerer, RedemptionQueryHandlesInsecureIssuerOrigin) {
+  PendingTrustTokenStore pending_store;
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
+      &pending_store, key_commitment_getter.get());
+
+  mojom::HasRedemptionRecordResultPtr result;
+
+  // Providing an insecure issuer origin should make the operation fail.
+  answerer->HasRedemptionRecord(
+      url::Origin::Create(GURL("http://issuer.com")),
+      base::BindLambdaForTesting(
+          [&](mojom::HasRedemptionRecordResultPtr obtained_result) {
+            result = std::move(obtained_result);
+          }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kInvalidArgument);
+}
+
+TEST(TrustTokenQueryAnswerer,
+     RedemptionQueryHandlesNonHttpNonHttpsIssuerOrigin) {
+  PendingTrustTokenStore pending_store;
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
+      &pending_store, key_commitment_getter.get());
+
+  mojom::HasRedemptionRecordResultPtr result;
+
+  // Providing a secure but non-HTTP(S) issuer origin should make the operation
+  // fail.
+  answerer->HasRedemptionRecord(
+      url::Origin::Create(GURL("file:///hello.txt")),
+      base::BindLambdaForTesting(
+          [&](mojom::HasRedemptionRecordResultPtr obtained_result) {
+            result = std::move(obtained_result);
+          }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kInvalidArgument);
+}
+
+TEST(TrustTokenQueryAnswerer, RedemptionQueryHandlesFailureToAssociateIssuer) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+
+  const SuitableTrustTokenOrigin kToplevel =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+
+  // This max-number-of-issuer limit is expected to be quite small (as of
+  // writing, 2).
+  for (int i = 0; i < kTrustTokenPerToplevelMaxNumberOfAssociatedIssuers; ++i) {
+    ASSERT_TRUE(store->SetAssociation(
+        *SuitableTrustTokenOrigin::Create(
+            GURL(base::StringPrintf("https://issuer%d.com", i))),
+        kToplevel));
+  }
+
+  PendingTrustTokenStore pending_store;
+  pending_store.OnStoreReady(std::move(store));
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
+
+  mojom::HasRedemptionRecordResultPtr result;
+
+  // Since there's no capacity to associate the issuer with the top-level
+  // origin, the operation should fail.
+  answerer->HasRedemptionRecord(
+      url::Origin::Create(GURL("https://issuer.com")),
+      base::BindLambdaForTesting(
+          [&](mojom::HasRedemptionRecordResultPtr obtained_result) {
+            result = std::move(obtained_result);
+          }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
+  EXPECT_FALSE(result->has_redemption_record);
+}
+
+TEST(TrustTokenQueryAnswerer,
+     RedemptionQuerySuccessWithNoTokensNoRedemptionRecord) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+
+  const SuitableTrustTokenOrigin kIssuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  const SuitableTrustTokenOrigin kToplevel =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+
+  PendingTrustTokenStore pending_store;
+  pending_store.OnStoreReady(std::move(store));
+
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
+
+  mojom::HasRedemptionRecordResultPtr result;
+
+  answerer->HasRedemptionRecord(
+      kIssuer, base::BindLambdaForTesting(
+                   [&](mojom::HasRedemptionRecordResultPtr obtained_result) {
+                     result = std::move(obtained_result);
+                   }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
+  EXPECT_FALSE(result->has_redemption_record);
+}
+
+TEST(TrustTokenQueryAnswerer,
+     RedemptionQuerySuccessWithTokensNoRedemptionRecord) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  TrustTokenStore* raw_store = store.get();
+
+  const SuitableTrustTokenOrigin kIssuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  const SuitableTrustTokenOrigin kToplevel =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+
+  PendingTrustTokenStore pending_store;
+  pending_store.OnStoreReady(std::move(store));
+
+  const std::string issuing_key = "issuing key";
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{issuing_key});
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
+
+  // Populate the store, giving the issuer a key commitment for the key "issuing
+  // key" and a token issued with that key.
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token"}, issuing_key);
+
+  mojom::HasRedemptionRecordResultPtr result;
+
+  answerer->HasRedemptionRecord(
+      kIssuer, base::BindLambdaForTesting(
+                   [&](mojom::HasRedemptionRecordResultPtr obtained_result) {
+                     result = std::move(obtained_result);
+                   }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
+  EXPECT_FALSE(result->has_redemption_record);
+}
+
+TEST(TrustTokenQueryAnswerer,
+     RedemptionQuerySuccessWithTokensWithRedemptionRecord) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  TrustTokenStore* raw_store = store.get();
+
+  const SuitableTrustTokenOrigin kIssuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  const SuitableTrustTokenOrigin kToplevel =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+
+  PendingTrustTokenStore pending_store;
+  pending_store.OnStoreReady(std::move(store));
+
+  const std::string issuing_key = "issuing key";
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{issuing_key});
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
+
+  // Populate the store, giving the issuer a key commitment for the key "issuing
+  // key" and a token issued with that key.
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token"}, issuing_key);
+  // Set association of issuer and top level origin
+  ASSERT_TRUE(raw_store->SetAssociation(kIssuer, kToplevel));
+
+  auto redemption_record = network::TrustTokenRedemptionRecord();
+  redemption_record.set_body("rr_body");
+  redemption_record.set_public_key("rr_public_key");
+  redemption_record.set_signing_key("rr_signing_key");
+  redemption_record.set_token_verification_key("rr_token_verification_key");
+  redemption_record.set_lifetime(12345);
+  raw_store->SetRedemptionRecord(kIssuer, kToplevel, redemption_record);
+
+  mojom::HasRedemptionRecordResultPtr result;
+
+  answerer->HasRedemptionRecord(
+      kIssuer, base::BindLambdaForTesting(
+                   [&](mojom::HasRedemptionRecordResultPtr obtained_result) {
+                     result = std::move(obtained_result);
+                   }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
+  EXPECT_TRUE(result->has_redemption_record);
+}
+
 }  // namespace network

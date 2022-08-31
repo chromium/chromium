@@ -154,6 +154,12 @@ struct HasTrustTokensResult {
   bool has_trust_tokens;
 };
 
+// Result struct for a HasRedemptionRecord (see below) call:
+struct HasRedemptionRecordResult {
+  TrustTokenOperationStatus status;
+  bool has_redemption_record;
+};
+
 // This interface is implicitly scoped to a top-level origin that is
 // (1) potentially trustworthy and (2) either HTTP or HTTPS. (All Trust Tokens
 // state is keyed by origins satisfying those two conditions.)
@@ -175,6 +181,17 @@ interface TrustTokenQueryAnswerer {
   // - if all of these conditions pass, returns kOk alongside a boolean
   // denoting whether the user possesses any trust tokens issued by |issuer|.
   HasTrustTokens(url.mojom.Origin issuer) => (HasTrustTokensResult result);
+
+  // Returns whether the user has a redemption record of redemption of an
+  // |issuer| issued token redeemed by the underlying top level origin.
+  //
+  // This method verifies that |issuer| is HTTP(S) and potentially trustworthy,
+  // which are preconditions for a Trust Tokens issuer origin, returns
+  // kInvalidArgument if not. It returns kOk alongside a boolean denoting
+  // whether the user possesses a valid redemption record issued by |issuer|
+  // and redeemed from the underlying top level origin.
+  HasRedemptionRecord(url.mojom.Origin issuer) =>
+                                       (HasRedemptionRecordResult result);
 };
 
 // Struct TrustTokenKeyCommitmentResult represents a trust token issuer's
