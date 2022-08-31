@@ -4,7 +4,10 @@
 
 source_set("promos") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "promo_protocol.h" ]
+  sources = [
+    "promo_protocol.h",
+    "standard_promo_display_handler.h",
+  ]
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//ios/chrome/browser/promos_manager:constants",
