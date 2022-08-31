@@ -19,7 +19,7 @@ import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 /**
- * A delegate class to handle the title animation and security icon fading animation in
+ * A delegate class to handle the title animation and security icon animation in
  * {@link CustomTabToolbar}.
  * <p>
  * How does the title animation work?
@@ -29,14 +29,21 @@ import org.chromium.ui.interpolators.BakedBezierInterpolator;
  * exactly the same as before the relayout. (Note the scale factor is calculated based on
  * {@link TextView#getTextSize()}, not height or width.) 3. Finally the urlbar will be animated to
  * its new position.
+ *
+ * <p>
+ * How does the security button animation work?
+ * </p>
+ * See {@link SecurityButtonAnimationDelegate} and {@link BrandingSecurityButtonAnimationDelegate}.
  */
 class CustomTabToolbarAnimationDelegate {
     private final SecurityButtonAnimationDelegate mSecurityButtonAnimationDelegate;
+    private final BrandingSecurityButtonAnimationDelegate mBrandingAnimationDelegate;
 
     private TextView mUrlBar;
     private TextView mTitleBar;
     // A flag controlling whether the animation has run before.
     private boolean mShouldRunTitleAnimation;
+    private boolean mUseRotationTransition;
 
     /**
      * Constructs an instance of {@link CustomTabToolbarAnimationDelegate}.
@@ -48,6 +55,7 @@ class CustomTabToolbarAnimationDelegate {
         titleUrlContainer.setTranslationX(-securityButtonWidth);
         mSecurityButtonAnimationDelegate = new SecurityButtonAnimationDelegate(
                 securityButton, titleUrlContainer, securityStatusIconSize);
+        mBrandingAnimationDelegate = new BrandingSecurityButtonAnimationDelegate(securityButton);
     }
 
     /**
@@ -132,7 +140,15 @@ class CustomTabToolbarAnimationDelegate {
      * When this is null, the icon is animated to the left and faded out.
      */
     void updateSecurityButton(int securityIconResource) {
-        mSecurityButtonAnimationDelegate.updateSecurityButton(
-                securityIconResource, /*animate=*/true);
+        if (mUseRotationTransition) {
+            mBrandingAnimationDelegate.updateDrawableResource(securityIconResource);
+        } else {
+            mSecurityButtonAnimationDelegate.updateSecurityButton(
+                    securityIconResource, /*animate=*/true);
+        }
+    }
+
+    void setUseRotationSecurityButtonTransition(boolean useRotation) {
+        mUseRotationTransition = useRotation;
     }
 }
