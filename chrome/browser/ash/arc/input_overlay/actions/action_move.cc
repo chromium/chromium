@@ -373,7 +373,7 @@ gfx::PointF ActionMove::GetUICenterPosition() {
     DCHECK(IsMouseBound(*current_input_));
     return gfx::PointF(content_bounds.width() / 2, content_bounds.height() / 2);
   }
-  return original_positions().front().CalculatePosition(content_bounds);
+  return GetCurrentDisplayedPosition().CalculatePosition(content_bounds);
 }
 
 std::unique_ptr<ActionView> ActionMove::CreateView(

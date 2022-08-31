@@ -41,7 +41,8 @@ ActionView::ActionView(Action* action,
                        DisplayOverlayController* display_overlay_controller)
     : views::View(),
       action_(action),
-      display_overlay_controller_(display_overlay_controller) {}
+      display_overlay_controller_(display_overlay_controller),
+      beta_(display_overlay_controller->touch_injector()->beta()) {}
 ActionView::~ActionView() = default;
 
 void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
@@ -165,6 +166,44 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
   return false;
 }
 
+bool ActionView::OnMousePressed(const ui::MouseEvent& event) {
+  if (!beta_)
+    return false;
+  OnDragStart(event);
+  return true;
+}
+
+bool ActionView::OnMouseDragged(const ui::MouseEvent& event) {
+  return beta_ ? OnDragUpdate(event) : false;
+}
+
+void ActionView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!beta_)
+    return;
+  OnDragEnd();
+}
+
+void ActionView::OnGestureEvent(ui::GestureEvent* event) {
+  if (!beta_)
+    return;
+  switch (event->type()) {
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      OnDragStart(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      if (OnDragUpdate(*event))
+        event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+      OnDragEnd();
+      event->SetHandled();
+      break;
+    default:
+      break;
+  }
+}
+
 void ActionView::AddEditButton() {
   if (!show_edit_button_ || !editable_ || menu_entry_)
     return;
@@ -185,6 +224,35 @@ void ActionView::RemoveEditButton() {
     return;
   RemoveChildViewT(menu_entry_);
   menu_entry_ = nullptr;
+}
+
+void ActionView::OnDragStart(const ui::LocatedEvent& event) {
+  start_drag_pos_ = event.location();
+}
+
+bool ActionView::OnDragUpdate(const ui::LocatedEvent& event) {
+  auto new_location = event.location();
+  auto target_location = origin() + (new_location - start_drag_pos_);
+  target_location.set_x(base::clamp(target_location.x(), /*lo=*/0,
+                                    /*hi=*/parent()->width() - width()));
+  target_location.set_y(base::clamp(target_location.y(), /*lo=*/0,
+                                    /*hi=*/parent()->height() - height()));
+  SetPosition(target_location);
+  return true;
+}
+
+void ActionView::OnDragEnd() {
+  auto new_touch_center =
+      gfx::Point(origin().x() + center_.x(), origin().y() + center_.y());
+  ChangePositionBinding(new_touch_center);
+}
+
+void ActionView::ChangePositionBinding(const gfx::Point& new_touch_center) {
+  DCHECK(beta_);
+  if (!beta_)
+    return;
+
+  action_->PrepareToBindPosition(new_touch_center);
 }
 
 }  // namespace input_overlay

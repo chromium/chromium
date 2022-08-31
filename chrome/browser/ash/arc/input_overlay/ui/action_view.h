@@ -82,6 +82,13 @@ class ActionView : public views::View {
   // Otherwise, don't show any error message and return false.
   bool ShouldShowErrorMsg(ui::DomCode code,
                           ActionLabel* editing_label = nullptr);
+
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }
   void set_editable(bool editable) { editable_ = editable; }
@@ -118,13 +125,25 @@ class ActionView : public views::View {
   void AddEditButton();
   void RemoveEditButton();
 
-  // By default, all the labels are unbound.
+  // Drag operations.
+  void OnDragStart(const ui::LocatedEvent& event);
+  bool OnDragUpdate(const ui::LocatedEvent& event);
+  void OnDragEnd();
+
+  void ChangePositionBinding(const gfx::Point& point);
+
+  // By default, no label is unbound.
   int unbind_label_index_ = kDefaultLabelIndex;
+  // The position when starting to drag.
+  gfx::Point start_drag_pos_;
 
   // TODO(cuicuiruan) As requested, we remove the action circle for edit mode
   // for now. We will remove the circle permanently once the future design for
   // MVP confirm that circle is not needed anymore.
   bool show_circle_ = false;
+
+  // TODO(cuicuiruan): This can be removed when removing the flag.
+  bool beta_;
 };
 
 }  // namespace input_overlay

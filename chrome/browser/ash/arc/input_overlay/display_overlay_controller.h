@@ -83,6 +83,8 @@ class DisplayOverlayController : public ui::EventHandler,
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
+  const TouchInjector* touch_injector() const { return touch_injector_; }
+
  private:
   friend class ::arc::ArcInputOverlayManagerTest;
   friend class DisplayOverlayControllerTest;
@@ -136,8 +138,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
   void DismissEducationalViewForTesting();
-
-  TouchInjector* touch_injector() { return touch_injector_; }
 
   const raw_ptr<TouchInjector> touch_injector_;
 

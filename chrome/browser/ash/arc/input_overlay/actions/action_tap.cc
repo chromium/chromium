@@ -251,7 +251,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
 }
 
 gfx::PointF ActionTap::GetUICenterPosition() {
-  return original_positions().front().CalculatePosition(
+  return GetCurrentDisplayedPosition().CalculatePosition(
       touch_injector_->content_bounds());
 }
 

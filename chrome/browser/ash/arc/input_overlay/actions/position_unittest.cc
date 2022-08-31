@@ -510,5 +510,19 @@ TEST(PositionTest, TestCalculatePositionAspectRatioDependent) {
   EXPECT_TRUE(std::abs(target.y() - 200) < kEpsilon);
 }
 
+TEST(PositionTest, TestPositionEquality) {
+  auto pos1 = std::make_unique<Position>(PositionType::kDefault);
+  auto pos2 = std::make_unique<Position>(PositionType::kDefault);
+  EXPECT_EQ(*pos1, *pos2);
+  auto pos3 = std::make_unique<Position>(PositionType::kDependent);
+  EXPECT_NE(*pos1, *pos3);
+  pos2->Normalize(gfx::Point(10, 20), gfx::RectF(100, 150));
+  EXPECT_NE(*pos1, *pos2);
+  pos1->Normalize(gfx::Point(10, 20), gfx::RectF(100, 150));
+  EXPECT_EQ(*pos1, *pos2);
+  pos3->Normalize(gfx::Point(10, 20), gfx::RectF(100, 150));
+  EXPECT_EQ(*pos1, *pos3);
+}
+
 }  // namespace input_overlay
 }  // namespace arc

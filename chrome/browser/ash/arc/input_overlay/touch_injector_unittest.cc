@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
+#include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -19,6 +20,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -28,6 +30,9 @@ namespace input_overlay {
 namespace {
 
 // TODO(cuicuiruan): Create test for other device scale.
+
+// Consider two points are at the same position within kTolerance.
+constexpr const float kTolerance = 0.999f;
 
 constexpr const char kValidJsonActionTapKey[] =
     R"json({
@@ -221,33 +226,6 @@ class TouchInjectorTest : public views::ViewsTestBase {
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  std::unique_ptr<views::Widget> CreateArcWindow() {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-    params.bounds = gfx::Rect(200, 100, 200, 400);
-    params.context = root_window();
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    auto widget = std::make_unique<views::Widget>();
-    widget->Init(std::move(params));
-    widget->widget_delegate()->SetCanResize(true);
-    widget->SetBounds(gfx::Rect(200, 100, 200, 400));
-    auto app_id = absl::optional<std::string>("app_id");
-    widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, *app_id);
-    widget->GetNativeWindow()->SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
-    widget->Show();
-    widget->Activate();
-
-    return widget;
-  }
-
-  bool IsPointsEqual(gfx::PointF& point_a, const gfx::PointF& point_b) {
-    if (std::abs(point_a.x() - point_b.x()) < 1 &&
-        std::abs(point_a.y() - point_b.y()) < 1) {
-      return true;
-    }
-    return false;
-  }
-
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
     return injector_->GetRewrittenTouchIdForTesting(original_id);
   }
@@ -282,7 +260,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
     root_window()->SetBounds(gfx::Rect(800, 600));
     root_window()->AddPostTargetHandler(&event_capturer_);
 
-    widget_ = CreateArcWindow();
+    widget_ = CreateArcWindow(root_window(), gfx::Rect(200, 100, 200, 400));
     caption_height_ = -widget_->non_client_view()
                            ->frame_view()
                            ->GetWindowBoundsForClientBounds(gfx::Rect())
@@ -325,7 +303,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   auto expectA1 =
       gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
-  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -334,7 +312,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
   // Next touch position.
   EXPECT_EQ(1, actionA->current_position_idx());
@@ -362,7 +340,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   auto expectB =
       gfx::PointF(360, 100 + (400 - caption_height_) * 0.8 + caption_height_);
-  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -372,7 +350,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   auto expectA2 =
       gfx::PointF(260, 100 + (400 - caption_height_) * 0.3 + caption_height_);
-  EXPECT_TRUE(IsPointsEqual(expectA2, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA2, event->root_location_f(), kTolerance);
   EXPECT_EQ(1, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -380,7 +358,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectA2, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA2, event->root_location_f(), kTolerance);
   EXPECT_EQ(1, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
@@ -388,7 +366,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
   event_capturer_.Clear();
 
@@ -398,7 +376,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -406,7 +384,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
   EXPECT_EQ(1, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
@@ -414,7 +392,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -422,7 +400,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
   EXPECT_EQ(1, event->pointer_details().id);
   event_capturer_.Clear();
 
@@ -431,7 +409,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   event_generator_->PressKey(ui::VKEY_B, ui::EF_IS_REPEAT, 1);
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
-  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
   event_capturer_.Clear();
 
@@ -443,7 +421,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events().back().get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
   event_capturer_.Clear();
   // Register the event-rewriter and press key again.
@@ -453,7 +431,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, 1);
   event_capturer_.Clear();
@@ -497,7 +475,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_EQ(0, event->pointer_details().id);
   auto expect_primary =
       gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
-  EXPECT_TRUE(IsPointsEqual(expect_primary, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect_primary, event->root_location_f(), kTolerance);
   // Mouse secondary button click.
   event_generator_->PressRightButton();
   EXPECT_EQ(2u, event_capturer_.touch_events().size());
@@ -506,21 +484,21 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_EQ(1, event->pointer_details().id);
   auto expect_secondary = gfx::PointF(
       200 + 200 * 0.8, 100 + (400 - caption_height_) * 0.8 + caption_height_);
-  EXPECT_TRUE(IsPointsEqual(expect_secondary, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect_secondary, event->root_location_f(), kTolerance);
 
   event_generator_->ReleaseRightButton();
   EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
   EXPECT_EQ(1, event->pointer_details().id);
-  EXPECT_TRUE(IsPointsEqual(expect_secondary, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect_secondary, event->root_location_f(), kTolerance);
 
   event_generator_->ReleaseLeftButton();
   EXPECT_EQ(4u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
   EXPECT_EQ(0, event->pointer_details().id);
-  EXPECT_TRUE(IsPointsEqual(expect_primary, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect_primary, event->root_location_f(), kTolerance);
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
@@ -543,7 +521,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   auto expect =
       gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
-  EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect, event->root_location_f(), kTolerance);
   // Generate touch move left event.
   auto expectA = gfx::PointF(expect);
   auto* action_move = static_cast<ActionMove*>(action);
@@ -551,7 +529,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   expectA.Offset(-move_distance, 0);
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectA, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
 
   // Press key W (move left + up) and generate touch move (up and left) event.
@@ -561,7 +539,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   auto expectW = gfx::PointF(expectA);
   expectW.Offset(0, -move_distance);
-  EXPECT_TRUE(IsPointsEqual(expectW, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectW, event->root_location_f(), kTolerance);
 
   // Release key A and generate touch move up event (Key W is still pressed).
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
@@ -570,7 +548,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expectW = gfx::PointF(expect);
   expectW.Offset(0, -move_distance);
-  EXPECT_TRUE(IsPointsEqual(expectW, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectW, event->root_location_f(), kTolerance);
 
   // Press key D and generate touch move (up and right) event.
   event_generator_->PressKey(ui::VKEY_D, ui::EF_NONE, 1);
@@ -579,7 +557,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   auto expectD = gfx::PointF(expectW);
   expectD.Offset(move_distance, 0);
-  EXPECT_TRUE(IsPointsEqual(expectD, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectD, event->root_location_f(), kTolerance);
 
   // Release key W and generate touch move (right) event (Key D is still
   // pressed).
@@ -589,14 +567,14 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expectD = gfx::PointF(expect);
   expectD.Offset(move_distance, 0);
-  EXPECT_TRUE(IsPointsEqual(expectD, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectD, event->root_location_f(), kTolerance);
 
   // Release key D and generate touch release event.
   event_generator_->ReleaseKey(ui::VKEY_D, ui::EF_NONE, 1);
   EXPECT_TRUE((int)event_capturer_.touch_events().size() == 7);
   event = event_capturer_.touch_events()[6].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectD, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectD, event->root_location_f(), kTolerance);
   event_capturer_.Clear();
 
   // Press A again, it should repeat the same as previous result.
@@ -608,11 +586,11 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   // Generate touch down event.
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect, event->root_location_f(), kTolerance);
   // Generate touch move left event.
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
-  EXPECT_TRUE(IsPointsEqual(expectA, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expectA, event->root_location_f(), kTolerance);
   EXPECT_EQ(0, event->pointer_details().id);
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
   event_capturer_.Clear();
@@ -666,13 +644,13 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   auto expect = gfx::PointF(350, 200);
-  EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect, event->root_location_f(), kTolerance);
   event_generator_->MoveMouseTo(gfx::Point(350, 250), 1);
   EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expect = gfx::PointF(375, 250);
-  EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
+  EXPECT_POINTF_NEAR(expect, event->root_location_f(), kTolerance);
   // Send mouse hover move outside of window content bounds when mouse is
   // locked. The mouse event will be discarded.
   event_generator_->MoveMouseTo(gfx::Point(500, 200), 1);

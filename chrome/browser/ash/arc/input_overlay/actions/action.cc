@@ -139,7 +139,7 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
 }
 
 Action::Action(TouchInjector* touch_injector)
-    : touch_injector_(touch_injector) {}
+    : touch_injector_(touch_injector), beta_(touch_injector->beta()) {}
 
 Action::~Action() = default;
 
@@ -188,6 +188,8 @@ bool Action::ParseFromJson(const base::Value& value) {
       original_positions_ = parsed_pos;
       on_left_or_middle_side_ =
           (original_positions_.front().anchor().x() <= kHalf);
+      if (beta_)
+        current_positions_ = std::move(parsed_pos);
     }
   }
   // Parse action radius.
@@ -226,6 +228,14 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
 }
 
 void Action::BindPending() {
+  // Check whether position is adjusted.
+  if (beta_ && pending_position_) {
+    current_positions_[0] = *pending_position_;
+    pending_position_.reset();
+    UpdateTouchDownPositions();
+  }
+
+  // Check whether input is changed.
   if (!pending_input_)
     return;
 
@@ -235,32 +245,68 @@ void Action::BindPending() {
 }
 
 void Action::CancelPendingBind() {
-  if (!pending_input_)
-    return;
-  pending_input_.reset();
+  // Clear the pending positions.
+  bool canceled = false;
+  if (beta_ && pending_position_) {
+    pending_position_.reset();
+    canceled = true;
+  }
+  // Clear the pending input.
+  if (pending_input_) {
+    pending_input_.reset();
+    canceled = true;
+  }
 
   DCHECK(action_view_);
-  if (!action_view_)
+  if (!action_view_ || !canceled)
     return;
   action_view_->SetViewContent(BindingOption::kCurrent);
 }
 
 void Action::ResetPendingBind() {
+  if (beta_)
+    pending_position_.reset();
   pending_input_.reset();
+}
+
+void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
+  DCHECK(!current_positions().empty());
+
+  if (pending_position_)
+    pending_position_.reset();
+
+  // Keep the customized position to default type.
+  pending_position_ = std::make_unique<Position>(PositionType::kDefault);
+  pending_position_->Normalize(new_touch_center,
+                               touch_injector_->content_bounds());
 }
 
 void Action::RestoreToDefault() {
   DCHECK(action_view_);
-  if (!action_view_)
-    return;
-
+  bool restored = false;
+  if (beta_) {
+    pending_position_.reset();
+    if (!original_positions_.empty()) {
+      pending_position_ = std::make_unique<Position>(original_positions_[0]);
+    } else {
+      // TODO(cuicuiruan): ActionMove by mouse may have empty position.
+      // Implement this once UX/UI confirmed.
+      NOTREACHED();
+    }
+    restored = true;
+  }
   if (GetCurrentDisplayedInput() != *original_input_) {
     pending_input_.reset();
     pending_input_ = std::make_unique<InputElement>(*original_input_);
-    action_view_->SetViewContent(BindingOption::kPending);
+    restored = true;
   }
-  // Set to |DisplayMode::kRestore| to clear the focus even the current binding
-  // is same as original binding.
+
+  if (!action_view_ || !restored)
+    return;
+
+  action_view_->SetViewContent(BindingOption::kPending);
+  // Set to |DisplayMode::kRestore| to clear the focus even the current
+  // binding is same as original binding.
   action_view_->SetDisplayMode(DisplayMode::kRestore);
 }
 
@@ -275,6 +321,15 @@ bool Action::IsOverlapped(const InputElement& input_element) {
     return false;
   auto& input_binding = GetCurrentDisplayedInput();
   return input_binding.IsOverlapped(input_element);
+}
+
+const Position& Action::GetCurrentDisplayedPosition() {
+  DCHECK(!original_positions_.empty());
+
+  return pending_position_
+             ? *pending_position_
+             : (!current_positions_.empty() ? current_positions_[0]
+                                            : original_positions_[0]);
 }
 
 absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
@@ -388,7 +443,9 @@ void Action::UpdateTouchDownPositions() {
   touch_down_positions_.clear();
   const auto& content_bounds = touch_injector_->content_bounds();
   for (int i = 0; i < original_positions_.size(); i++) {
-    auto point = original_positions_[i].CalculatePosition(content_bounds);
+    auto point = beta_
+                     ? current_positions_[i].CalculatePosition(content_bounds)
+                     : original_positions_[i].CalculatePosition(content_bounds);
     const auto calculated_point = point.ToString();
     point.Offset(content_bounds.origin().x(), content_bounds.origin().y());
     const auto root_point = point.ToString();

@@ -32,7 +32,14 @@ class Position {
   // Return the position coords in |content_bounds|. |content_bounds| is bounds
   // excluding caption if the caption shows.
   gfx::PointF CalculatePosition(const gfx::RectF& content_bounds) const;
+  // Normalize the |point| inside of |content_bounds|. |point| is relative
+  // position inside of |content_bounds|.
+  void Normalize(const gfx::Point& point, const gfx::RectF& content_bounds);
 
+  bool operator==(const Position& other) const;
+  bool operator!=(const Position& other) const;
+
+  PositionType position_type() const { return position_type_; }
   const gfx::PointF& anchor() const { return anchor_; }
   const gfx::Vector2dF& anchor_to_target() const { return anchor_to_target_; }
   absl::optional<float> x_on_y() const { return x_on_y_; }

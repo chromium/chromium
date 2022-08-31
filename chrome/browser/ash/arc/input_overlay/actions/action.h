@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -94,6 +95,8 @@ class Action {
   void CancelPendingBind();
   void ResetPendingBind();
 
+  void PrepareToBindPosition(const gfx::Point& new_touch_center);
+
   // Restore the input binding back to the original binding.
   void RestoreToDefault();
   // Return currently displayed input binding.
@@ -101,6 +104,9 @@ class Action {
   // Check if there is any overlap between |input_element| and current
   // displayed binding.
   bool IsOverlapped(const InputElement& input_element);
+  // Make sure |original_positions_| is not empty before calling this.
+  const Position& GetCurrentDisplayedPosition();
+
   // Return the proto object if the action is customized.
   std::unique_ptr<ActionProto> ConvertToProtoIfCustomized();
   // Update |touch_down_positions_| after reposition, rotation change or window
@@ -119,6 +125,9 @@ class Action {
   const std::string& name() { return name_; }
   const std::vector<Position>& original_positions() const {
     return original_positions_;
+  }
+  const std::vector<Position>& current_positions() const {
+    return current_positions_;
   }
   const std::vector<gfx::PointF>& touch_down_positions() const {
     return touch_down_positions_;
@@ -164,7 +173,13 @@ class Action {
   // Position take turns for each key press if there are more than
   // one positions. This is for original default positions.
   std::vector<Position> original_positions_;
-  // Touch down root location corresponding to |original_positions_|.
+  // The first element of |current_positions_| is different from
+  // |original_positions_| if the position is customized.
+  std::vector<Position> current_positions_;
+  // Only support the reposition of the first touch position if there are more
+  // than one touch position.
+  std::unique_ptr<Position> pending_position_;
+  // Root locations of touch point.
   std::vector<gfx::PointF> touch_down_positions_;
   // If |require_mouse_locked_| == true, the action takes effect when the mouse
   // is locked. Once the mouse is unlocked, the active actions which need mouse
@@ -185,6 +200,10 @@ class Action {
   // By default, it doesn't support modifier key.
   bool support_modifier_key_ = false;
   raw_ptr<ActionView> action_view_ = nullptr;
+
+ private:
+  // TODO(cuicuiruan): This can be removed when removing the flag.
+  bool beta_;
 };
 
 }  // namespace input_overlay

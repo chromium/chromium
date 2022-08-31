@@ -56,8 +56,13 @@ DisplayOverlayController::DisplayOverlayController(
     TouchInjector* touch_injector,
     bool first_launch)
     : touch_injector_(touch_injector) {
-  AddOverlay(first_launch ? DisplayMode::kEducation : DisplayMode::kView);
   touch_injector_->set_display_overlay_controller(this);
+
+  // There is no instance for unittest.
+  if (!ash::Shell::HasInstance())
+    return;
+
+  AddOverlay(first_launch ? DisplayMode::kEducation : DisplayMode::kView);
   ash::Shell::Get()->AddPreTargetHandler(this);
   if (auto* dark_light_mode_controller =
           ash::DarkLightModeControllerImpl::Get()) {
@@ -66,12 +71,17 @@ DisplayOverlayController::DisplayOverlayController(
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
+  touch_injector_->set_display_overlay_controller(nullptr);
+
+  // There is no instance for unittest.
+  if (!ash::Shell::HasInstance())
+    return;
+
   if (auto* dark_light_mode_controller =
           ash::DarkLightModeControllerImpl::Get()) {
     dark_light_mode_controller->RemoveObserver(this);
   }
   ash::Shell::Get()->RemovePreTargetHandler(this);
-  touch_injector_->set_display_overlay_controller(nullptr);
   RemoveOverlayIfAny();
 }
 
@@ -460,6 +470,10 @@ void DisplayOverlayController::RemoveActionEditMenu() {
 
 void DisplayOverlayController::AddEditMessage(const base::StringPiece& message,
                                               MessageType message_type) {
+  // There is no instance for unittest.
+  if (!ash::Shell::HasInstance())
+    return;
+
   RemoveEditMessage();
   auto* overlay_widget = GetOverlayWidget();
   DCHECK(overlay_widget);

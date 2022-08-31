@@ -224,5 +224,31 @@ gfx::PointF Position::CalculateDependentPosition(
   return res;
 }
 
+void Position::Normalize(const gfx::Point& point,
+                         const gfx::RectF& content_bounds) {
+  position_type_ = PositionType::kDefault;
+  anchor_.SetPoint(0, 0);
+  anchor_to_target_ = gfx::Vector2dF(1.0 * point.x() / content_bounds.width(),
+                                     1.0 * point.y() / content_bounds.height());
+  x_on_y_.reset();
+  y_on_x_.reset();
+  aspect_ratio_.reset();
+}
+
+bool Position::operator==(const Position& other) const {
+  if (this->position_type_ != other.position_type() ||
+      this->anchor_ != other.anchor() ||
+      this->anchor_to_target_ != other.anchor_to_target() ||
+      this->x_on_y_ != other.x_on_y() || this->y_on_x_ != other.y_on_x() ||
+      this->aspect_ratio_ != other.aspect_ratio()) {
+    return false;
+  }
+  return true;
+}
+
+bool Position::operator!=(const Position& other) const {
+  return !(*this == other);
+}
+
 }  // namespace input_overlay
 }  // namespace arc

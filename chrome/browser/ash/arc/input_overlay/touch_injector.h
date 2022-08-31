@@ -51,7 +51,7 @@ class TouchInjector : public ui::EventRewriter {
   ~TouchInjector() override;
 
   aura::Window* window() { return window_; }
-  const gfx::RectF& content_bounds() { return content_bounds_; }
+  const gfx::RectF& content_bounds() const { return content_bounds_; }
   const gfx::Transform* rotation_transform() {
     return rotation_transform_.get();
   }
@@ -88,6 +88,9 @@ class TouchInjector : public ui::EventRewriter {
 
   bool enable_mouse_lock() { return enable_mouse_lock_; }
   void set_enable_mouse_lock(bool enable) { enable_mouse_lock_ = true; }
+
+  bool beta() const { return beta_; }
+  void set_beta(bool beta) { beta_ = beta; }
 
   // Parse Json to actions.
   // Json value format:
@@ -254,16 +257,18 @@ class TouchInjector : public ui::EventRewriter {
   // Data reading is finished after launching if the value is true.
   bool data_reading_finished_ = false;
 
-  // TODO(cuicuiruan): It can be removed after the mouse lock is enabled for
-  // post MVP.
-  bool enable_mouse_lock_ = false;
-
   // Key is the original touch id. Value is a struct containing required info
   // for this touch event.
   base::flat_map<ui::PointerId, TouchPointInfo> rewritten_touch_infos_;
 
   // Callback when saving proto file.
   OnSaveProtoFileCallback save_file_callback_;
+
+  // TODO(cuicuiruan): It can be removed after the mouse lock is enabled for
+  // post MVP.
+  bool enable_mouse_lock_ = false;
+  // TODO(cuicuiruan): This can be removed when removing the flag.
+  bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };
