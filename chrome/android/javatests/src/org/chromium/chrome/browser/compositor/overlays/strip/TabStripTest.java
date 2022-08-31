@@ -1179,10 +1179,10 @@ public class TabStripTest {
     private void assertSetTabStripScrollOffset(final int scrollOffset) throws ExecutionException {
         final StripLayoutHelper strip =
                 TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { strip.setScrollOffsetForTesting(scrollOffset); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { strip.setScrollOffset(scrollOffset); });
 
-        Assert.assertEquals("Tab strip scroll incorrect.", scrollOffset, strip.getScrollOffset());
+        Assert.assertEquals(
+                "Tab strip scroll incorrect.", scrollOffset, strip.getScrollOffset(), 0);
         compareAllTabStripsWithModel();
     }
 
