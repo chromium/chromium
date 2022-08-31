@@ -153,8 +153,8 @@ media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() {
 
 media::AudioParameters MirrorSettings::GetAudioCaptureParams() {
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_STEREO, kAudioTimebase,
-                                kAudioTimebase / 100);
+                                media::ChannelLayoutConfig::Stereo(),
+                                kAudioTimebase, kAudioTimebase / 100);
   DCHECK(params.IsValid());
   return params;
 }
