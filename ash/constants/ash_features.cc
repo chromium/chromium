@@ -819,7 +819,7 @@ const base::Feature kGlanceables{"Glanceables",
 
 // Enable GuestOS integration with the files app.
 const base::Feature kGuestOsFiles{"GuestOsFiles",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the Gaia reauth endpoint with deleted user customization page.
 const base::Feature kGaiaReauthEndpoint{"GaiaReauthEndpoint",
