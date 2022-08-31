@@ -81,16 +81,12 @@ class WebRequestEventDetails {
   // - ip
   void SetResponseSource(const WebRequestInfo& request);
 
-  void SetBoolean(const std::string& key, bool value) {
-    dict_.SetBoolPath(key, value);
-  }
+  void SetBoolean(const std::string& key, bool value) { dict_.Set(key, value); }
 
-  void SetInteger(const std::string& key, int value) {
-    dict_.SetIntPath(key, value);
-  }
+  void SetInteger(const std::string& key, int value) { dict_.Set(key, value); }
 
   void SetString(const std::string& key, const std::string& value) {
-    dict_.SetStringPath(key, value);
+    dict_.Set(key, value);
   }
 
   // Create an event dictionary that contains all required keys, and also the
@@ -110,12 +106,12 @@ class WebRequestEventDetails {
 
  private:
   // The details that are always included in a webRequest event object.
-  base::DictionaryValue dict_;
+  base::Value::Dict dict_;
 
   // Extra event details: Only included when |extra_info_spec_| matches.
-  std::unique_ptr<base::DictionaryValue> request_body_;
-  std::unique_ptr<base::ListValue> request_headers_;
-  std::unique_ptr<base::ListValue> response_headers_;
+  absl::optional<base::Value::Dict> request_body_;
+  absl::optional<base::Value::List> request_headers_;
+  absl::optional<base::Value::List> response_headers_;
   absl::optional<url::Origin> initiator_;
 
   int extra_info_spec_;
