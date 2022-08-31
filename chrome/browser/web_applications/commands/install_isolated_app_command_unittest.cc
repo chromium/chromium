@@ -67,7 +67,7 @@ using ::testing::UnorderedElementsAre;
 blink::mojom::ManifestPtr CreateDefaultManifest(
     base::StringPiece application_url) {
   auto manifest = blink::mojom::Manifest::New();
-  manifest->id = u"/";
+  manifest->id = u"";
   manifest->scope = GURL{application_url}.Resolve("/");
   manifest->start_url =
       GURL{application_url}.Resolve("/testing-start-url.html");
@@ -346,7 +346,7 @@ TEST_F(InstallIsolatedAppCommandTest, CommandLocksOnAppIdAndWebContents) {
               AllOf(Property(&Lock::type, Eq(Lock::Type::kAppAndWebContents)),
                     Property(&Lock::app_ids,
                              UnorderedElementsAre(GenerateAppIdFromUnhashed(
-                                 "http://test-app-id.com//")))));
+                                 "http://test-app-id.com/")))));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
@@ -400,10 +400,10 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 }
 
 TEST_F(InstallIsolatedAppCommandManifestTest,
-       PassesManifestIdToFinalizerWhenManifestIdIsSlash) {
+       PassesManifestIdToFinalizerWhenManifestIdIsEmpty) {
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest("http://manifest-test-url.com");
-  manifest->id = u"/";
+  manifest->id = u"";
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
@@ -411,10 +411,10 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 
   EXPECT_THAT(install_finalizer().web_app_info(),
               Pointee(Field(&WebAppInstallInfo::manifest_id,
-                            Optional(std::string{"/"}))));
+                            Optional(std::string{""}))));
 }
 
-TEST_F(InstallIsolatedAppCommandManifestTest, FailsWhenManifestIdIsNotSlash) {
+TEST_F(InstallIsolatedAppCommandManifestTest, FailsWhenManifestIdIsNotEmpty) {
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest("http://manifest-test-url.com");
   manifest->id = u"test-manifest-id";
@@ -616,7 +616,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
 }
 
 TEST_F(InstallIsolatedAppCommandMetricsTest,
-       ReportFailureWhenManifestIdIsNotSlash) {
+       ReportFailureWhenManifestIdIsNotEmpty) {
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest("http://manifest-test-url.com");
   manifest->id = u"test manifest id";

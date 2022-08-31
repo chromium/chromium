@@ -57,7 +57,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     WebAppInstallFinalizer& install_finalizer,
     base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback)
     : lock_(std::make_unique<SharedWebContentsWithAppLock>(
-          base::flat_set<AppId>{GenerateAppId("/", GURL{url})})),
+          base::flat_set<AppId>{GenerateAppId("", GURL{url})})),
       url_(url),
       url_loader_(url_loader),
       install_finalizer_(install_finalizer),
@@ -152,11 +152,11 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
     return absl::nullopt;
   }
 
-  if (*encoded_id != "/") {
+  if (!encoded_id->empty()) {
     return absl::nullopt;
   }
 
-  info.manifest_id = *encoded_id;
+  info.manifest_id = "";
 
   if (manifest.scope != GURL{url_}.Resolve("/")) {
     return absl::nullopt;
