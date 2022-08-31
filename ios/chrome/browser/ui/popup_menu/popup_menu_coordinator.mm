@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_help_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_mediator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_metrics_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
@@ -106,6 +107,8 @@ enum class IOSOverflowMenuActionType {
 // Whether the user took an action on the tools menu while it was open.
 @property(nonatomic, assign) BOOL toolsMenuUserTookAction;
 
+@property(nonatomic, strong) PopupMenuHelpCoordinator* popupMenuHelpCoordinator;
+
 @end
 
 @implementation PopupMenuCoordinator
@@ -137,6 +140,7 @@ enum class IOSOverflowMenuActionType {
 }
 
 - (void)stop {
+  [self.popupMenuHelpCoordinator stop];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.overflowMenuMediator disconnect];
   self.overflowMenuMediator = nil;
@@ -149,6 +153,13 @@ enum class IOSOverflowMenuActionType {
 
 - (BOOL)isShowingPopupMenu {
   return self.presenter != nil;
+}
+
+- (void)startPopupMenuHelpCoordinator {
+  self.popupMenuHelpCoordinator = [[PopupMenuHelpCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  [self.popupMenuHelpCoordinator start];
 }
 
 #pragma mark - PopupMenuCommands
@@ -419,6 +430,8 @@ enum class IOSOverflowMenuActionType {
                               self.baseViewController.traitCollection
                                   .verticalSizeClass];
 
+        self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
+
         UIViewController* menu = [OverflowMenuViewProvider
             makeViewControllerWithModel:self.overflowMenuMediator
                                             .overflowMenuModel
@@ -459,10 +472,15 @@ enum class IOSOverflowMenuActionType {
           ];
         }
 
+        __weak __typeof(self) weakSelf = self;
         [self.UIUpdater updateUIForMenuDisplayed:type];
-        [self.baseViewController presentViewController:menu
-                                              animated:YES
-                                            completion:nil];
+        [self.baseViewController
+            presentViewController:menu
+                         animated:YES
+                       completion:^{
+                         [weakSelf.popupMenuHelpCoordinator
+                             showOverflowMenuIPHInViewController:menu];
+                       }];
         return;
       }
     }

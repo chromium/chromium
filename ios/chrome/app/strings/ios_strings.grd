@@ -3523,6 +3523,9 @@ New Search
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH" desc="Accessibility label for a button that starts a Paste and Search [iOS only]">
         Paste and Search
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP" desc="The text of the tip explaining to the user they can use the carousel in the overflow menu.">
+        Your saved bookmarks, passwords, settings, and more are now here
+      </message>
     </messages>
   </release>
 </grit>

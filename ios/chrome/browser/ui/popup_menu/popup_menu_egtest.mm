@@ -4,12 +4,14 @@
 
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
@@ -199,6 +201,34 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   // Close Tools menu.
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+}
+
+// Tests that the overflow menu IPH shows up when triggered.
+- (void)testOverflowMenuIPH {
+  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The overflow menu IPH only exists when the overflow menu is enabled.")
+  }
+  GREYAssert([FeatureEngagementAppInterface enableOverflowMenuTipTriggering],
+             @"Feature Engagement tracker did not load");
+
+  // Open and close tools menu twice with no action to trigger tooltip.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI closeToolsMenu];
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI closeToolsMenu];
+
+  // Background and foreground the app, which should show tooltip.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+
+  // Open the tools menu and verify the second tooltip is visible.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
 }
 
 @end

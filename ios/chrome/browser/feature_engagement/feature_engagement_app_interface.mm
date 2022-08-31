@@ -230,6 +230,30 @@ class ScopedFeatureListHolder {
   return LoadFeatureEngagementTracker();
 }
 
++ (BOOL)enableOverflowMenuTipTriggering {
+  std::map<std::string, std::string> overflow_menu_tip_params;
+
+  overflow_menu_tip_params["availability"] = "any";
+  overflow_menu_tip_params["session_rate"] = "any";
+  overflow_menu_tip_params["event_used"] =
+      "name:popup_menu_tip_used;comparator:==0;window:180;"
+      "storage:360";
+  overflow_menu_tip_params["event_trigger"] =
+      "name:popup_menu_tip_triggered;comparator:==0;window:1825;"
+      "storage:1825";
+  overflow_menu_tip_params["event_lockout"] =
+      "name:overflow_menu_no_horizontal_scroll_or_action;comparator:>=2;window:"
+      "180;storage:360";
+
+  ScopedFeatureListHolder::GetInstance()
+      ->CreateList()
+      .InitAndEnableFeatureWithParameters(
+          feature_engagement::kIPHOverflowMenuTipFeature,
+          overflow_menu_tip_params);
+
+  return LoadFeatureEngagementTracker();
+}
+
 + (void)showTranslate {
   [chrome_test_util::HandlerForActiveBrowser() showTranslate];
 }

@@ -55,6 +55,11 @@
 // if FeatureEngagementTracker failed to load.
 + (BOOL)enablePasswordSuggestionsTipTriggering [[nodiscard]];
 
+// Enables the Overflow Menu tip to be triggered. The tip is triggered
+// after the user has opened the overflow menu twice and not scrolled. Returns
+// NO if FeatureEngagementTracker failed to load.
++ (BOOL)enableOverflowMenuTipTriggering [[nodiscard]];
+
 // Starts manual page translation.
 + (void)showTranslate;
 

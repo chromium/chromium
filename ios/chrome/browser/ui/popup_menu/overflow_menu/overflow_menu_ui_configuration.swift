@@ -9,6 +9,9 @@ import SwiftUI
   @Published public var presentingViewControllerHorizontalSizeClass: UserInterfaceSizeClass
   @Published public var presentingViewControllerVerticalSizeClass: UserInterfaceSizeClass
 
+  /// The destination list's frame in screen coordinates.
+  public var destinationListScreenFrame: CGRect = .zero
+
   public init(
     presentingViewControllerHorizontalSizeClass: UIUserInterfaceSizeClass,
     presentingViewControllerVerticalSizeClass: UIUserInterfaceSizeClass

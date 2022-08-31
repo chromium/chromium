@@ -296,7 +296,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 // Coordinator for the QR scanner.
 @property(nonatomic, strong) QRScannerLegacyCoordinator* qrScannerCoordinator;
 
-// Coordinator for the QR scanner.
+// Coordinator for the popup menu.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
 
 // Coordinator for displaying the Reading List.
@@ -667,7 +667,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
   // Coordinator `start` is executed before setting it's `baseViewController`.
   // It is done intentionally, since this does not affecting the coordinator's
-  // behavior but helps command hanlders setup below.
+  // behavior but helps command handler setup below.
   [self.popupMenuCoordinator start];
 
   _primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
@@ -854,6 +854,11 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   self.printController =
       [[PrintController alloc] initWithBaseViewController:self.viewController];
+
+  // Help should only show in regular, non-incognito.
+  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+    [self.popupMenuCoordinator startPopupMenuHelpCoordinator];
+  }
 
   /* NetExportCoordinator is created and started by a delegate method */
 
