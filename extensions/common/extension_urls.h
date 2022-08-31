@@ -65,6 +65,15 @@ GURL GetWebstoreUpdateUrl();
 GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
                                const std::string& referrer_id);
 
+// Returns whether the URL's host matches or is in the same domain as any of the
+// webstore URLs. Note: This includes any subdomains of the webstore URLs.
+// TODO(crbug.com/1355623): We should move the domain checks for the webstore to
+// use the IsSameOrigin version below where appropriate.
+bool IsWebstoreDomain(const GURL& url);
+
+// Returns whether the origin is the same origin as any of the webstore URLs.
+bool IsWebstoreOrigin(const url::Origin& origin);
+
 // Returns whether the URL is the webstore update URL (just considering host
 // and path, not scheme, query, etc.)
 bool IsWebstoreUpdateUrl(const GURL& update_url);

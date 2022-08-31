@@ -80,6 +80,16 @@ GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
                                  extension_id.c_str(), referrer_id.c_str()));
 }
 
+bool IsWebstoreDomain(const GURL& url) {
+  return url.DomainIs(GetWebstoreLaunchURL().host()) ||
+         url.DomainIs(GetNewWebstoreLaunchURL().host());
+}
+
+bool IsWebstoreOrigin(const url::Origin& origin) {
+  return origin.IsSameOriginWith(GetWebstoreLaunchURL()) ||
+         origin.IsSameOriginWith(GetNewWebstoreLaunchURL());
+}
+
 bool IsWebstoreUpdateUrl(const GURL& update_url) {
   GURL store_url = GetWebstoreUpdateUrl();
   return (update_url.host_piece() == store_url.host_piece() &&

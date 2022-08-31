@@ -146,9 +146,7 @@ bool ChromeExtensionsClient::IsScriptableURL(
   // The gallery is special-cased as a restricted URL for scripting to prevent
   // access to special JS bindings we expose to the gallery (and avoid things
   // like extensions removing the "report abuse" link).
-  GURL store_url(extension_urls::GetWebstoreLaunchURL());
-  GURL new_store_url(extension_urls::GetNewWebstoreLaunchURL());
-  if (url.DomainIs(store_url.host()) || url.DomainIs(new_store_url.host())) {
+  if (extension_urls::IsWebstoreDomain(url)) {
     if (error)
       *error = manifest_errors::kCannotScriptGallery;
     return false;
