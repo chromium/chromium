@@ -359,8 +359,11 @@ void CueTimeline::TimeMarchesOn() {
       media_element.ScheduleEvent(
           CreateEventWithTarget(event_name, task.second.Get()));
       if (features::IsTextBasedAudioDescriptionEnabled()) {
-        if (is_enter_event)
+        if (is_enter_event) {
           cue->OnEnter(MediaElement());
+        } else {
+          cue->OnExit(MediaElement());
+        }
       }
     }
   }

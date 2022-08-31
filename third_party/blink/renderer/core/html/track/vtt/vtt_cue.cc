@@ -753,6 +753,13 @@ void VTTCue::OnEnter(HTMLMediaElement& video) {
   video.SpeechSynthesis()->Speak(text_);
 }
 
+void VTTCue::OnExit(HTMLMediaElement& video) {
+  if (!track()->IsSpokenKind())
+    return;
+  if (video.SpeechSynthesis()->Speaking())
+    video.pause();
+}
+
 void VTTCue::UpdateDisplay(HTMLDivElement& container) {
   DCHECK(track() && track()->IsRendered() && IsActive());
 

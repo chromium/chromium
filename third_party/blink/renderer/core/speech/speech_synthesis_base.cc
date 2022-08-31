@@ -21,4 +21,14 @@ SpeechSynthesisBase* SpeechSynthesisBase::Create(LocalDOMWindow& window) {
   return create_function_(window);
 }
 
+void SpeechSynthesisBase::SetOnSpeakingCompletedCallback(
+    OnSpeakingCompletedCallback callback) {
+  on_speaking_completed_callback_ = std::move(callback);
+}
+
+void SpeechSynthesisBase::HandleSpeakingCompleted() {
+  if (!on_speaking_completed_callback_.is_null())
+    on_speaking_completed_callback_.Run();
+}
+
 }  // namespace blink

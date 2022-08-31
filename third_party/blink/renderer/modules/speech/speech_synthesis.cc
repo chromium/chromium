@@ -128,7 +128,7 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
       .Record(GetSupplementable()->UkmRecorder());
 }
 
-bool SpeechSynthesis::speaking() const {
+bool SpeechSynthesis::Speaking() const {
   // If we have a current speech utterance, then that means we're assumed to be
   // in a speaking state. This state is independent of whether the utterance
   // happens to be paused.
@@ -190,7 +190,7 @@ void SpeechSynthesis::Cancel() {
     mojom_synthesis->Cancel();
 }
 
-void SpeechSynthesis::pause() {
+void SpeechSynthesis::Pause() {
   if (is_paused_)
     return;
 
@@ -199,7 +199,7 @@ void SpeechSynthesis::pause() {
     mojom_synthesis->Pause();
 }
 
-void SpeechSynthesis::resume() {
+void SpeechSynthesis::Resume() {
   if (!CurrentSpeechUtterance())
     return;
 
@@ -272,6 +272,9 @@ void SpeechSynthesis::HandleSpeakingCompleted(
     SpeechSynthesisUtterance* utterance,
     bool error_occurred) {
   DCHECK(utterance);
+
+  // Special handling for audio descriptions.
+  SpeechSynthesisBase::HandleSpeakingCompleted();
 
   bool should_start_speaking = false;
   // If the utterance that completed was the one we're currently speaking,

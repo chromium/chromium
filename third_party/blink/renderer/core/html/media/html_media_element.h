@@ -507,6 +507,10 @@ class CORE_EXPORT HTMLMediaElement
   virtual void OnLoadStarted() {}
   virtual void OnLoadFinished() {}
 
+  // Handles playing of media element when audio descriptions are finished
+  // speaking.
+  void OnSpeakingCompleted();
+
   void SetShowPosterFlag(bool value);
 
   void SetReadyState(ReadyState);

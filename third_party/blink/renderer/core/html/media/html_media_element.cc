@@ -4111,6 +4111,8 @@ SpeechSynthesisBase* HTMLMediaElement::SpeechSynthesis() {
   if (!speech_synthesis_) {
     speech_synthesis_ =
         SpeechSynthesisBase::Create(*(GetDocument().domWindow()));
+    speech_synthesis_->SetOnSpeakingCompletedCallback(WTF::BindRepeating(
+        &HTMLMediaElement::OnSpeakingCompleted, WrapWeakPersistent(this)));
   }
   return speech_synthesis_;
 }
@@ -4335,6 +4337,11 @@ void HTMLMediaElement::BindMediaPlayerReceiver(
   media_player_receiver_set_->Value().Add(
       std::move(receiver),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
+}
+
+void HTMLMediaElement::OnSpeakingCompleted() {
+  if (paused())
+    Play();
 }
 
 void HTMLMediaElement::Trace(Visitor* visitor) const {

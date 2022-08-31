@@ -62,17 +62,20 @@ class MODULES_EXPORT SpeechSynthesis final
   explicit SpeechSynthesis(LocalDOMWindow&);
 
   bool pending() const;
-  bool speaking() const;
+  bool speaking() const { return Speaking(); }
   bool paused() const;
 
   // SpeechSynthesisBase
   void Speak(const String&) override;
   void Cancel() override;
+  void Pause() override;
+  void Resume() override;
+  bool Speaking() const override;
 
   void speak(ScriptState*, SpeechSynthesisUtterance*);
   void cancel() { Cancel(); }
-  void pause();
-  void resume();
+  void pause() { Pause(); }
+  void resume() { Resume(); }
 
   const HeapVector<Member<SpeechSynthesisVoice>>& getVoices();
 

@@ -16,6 +16,8 @@ namespace blink {
 // in /core. /core is where all audio description handling occurs.
 class CORE_EXPORT SpeechSynthesisBase : public GarbageCollectedMixin {
  public:
+  using OnSpeakingCompletedCallback = base::RepeatingCallback<void()>;
+
   SpeechSynthesisBase(const SpeechSynthesisBase&) = delete;
   SpeechSynthesisBase& operator=(const SpeechSynthesisBase&) = delete;
   ~SpeechSynthesisBase() = default;
@@ -41,6 +43,15 @@ class CORE_EXPORT SpeechSynthesisBase : public GarbageCollectedMixin {
   // Overridden in speech_synthesis.cc.
   virtual void Speak(const String& text) = 0;
   virtual void Cancel() = 0;
+  virtual void Pause() = 0;
+  virtual void Resume() = 0;
+  virtual bool Speaking() const = 0;
+
+  void SetOnSpeakingCompletedCallback(OnSpeakingCompletedCallback callback);
+
+  // Calls on_speaking_completed_callback_ when audio description is finished
+  // speaking. Run in SpeechSynthesis::HandleSpeakingCompleted.
+  void HandleSpeakingCompleted();
 
  protected:
   SpeechSynthesisBase() = default;
@@ -49,6 +60,9 @@ class CORE_EXPORT SpeechSynthesisBase : public GarbageCollectedMixin {
   // Creates a SpeechSynthesis object returned as type SpeechSynthesisBase for
   // use in /core.
   static SpeechSynthesisBaseCreateFunction create_function_;
+
+  // Restarts the video once if it was paused by VTTCue::OnExit.
+  OnSpeakingCompletedCallback on_speaking_completed_callback_;
 };
 
 }  // namespace blink

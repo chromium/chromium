@@ -136,7 +136,12 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   DocumentFragment* getCueAsHTML();
 
+  // Handles the entrance and exit of cues for description-tagged tracks.
+  // OnEnter begins speaking the cue. OnExit pauses the video to let the
+  // description finish, if the cue is still being spoken at the specified end
+  // time.
   void OnEnter(HTMLMediaElement& video) override;
+  void OnExit(HTMLMediaElement& video) override;
 
   void UpdateDisplay(HTMLDivElement& container) override;
 
