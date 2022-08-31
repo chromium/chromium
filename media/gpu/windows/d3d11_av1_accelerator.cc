@@ -560,12 +560,19 @@ void D3D11AV1Accelerator::FillPicParams(
       pp->film_grain.ar_coeffs_cb[i] = fg.auto_regression_coeff_u[i] + 128;
       pp->film_grain.ar_coeffs_cr[i] = fg.auto_regression_coeff_v[i] + 128;
     }
-    pp->film_grain.cb_mult = fg.u_multiplier;
-    pp->film_grain.cb_luma_mult = fg.u_luma_multiplier;
-    pp->film_grain.cb_offset = fg.u_offset;
-    pp->film_grain.cr_mult = fg.v_multiplier;
-    pp->film_grain.cr_luma_mult = fg.v_luma_multiplier;
-    pp->film_grain.cr_offset = fg.v_offset;
+    // libgav1 will provide the multipliers by subtracting 128 and the offsets
+    // by subtracting 256. Restore values as DXVA spec requires values without
+    // subtraction.
+    if (fg.num_u_points > 0) {
+      pp->film_grain.cb_mult = fg.u_multiplier + 128;
+      pp->film_grain.cb_luma_mult = fg.u_luma_multiplier + 128;
+      pp->film_grain.cb_offset = fg.u_offset + 256;
+    }
+    if (fg.num_v_points > 0) {
+      pp->film_grain.cr_mult = fg.v_multiplier + 128;
+      pp->film_grain.cr_luma_mult = fg.v_luma_multiplier + 128;
+      pp->film_grain.cr_offset = fg.v_offset + 256;
+    }
   }
 
   // StatusReportFeedbackNumber "should not be equal to 0"... but it crashes :|
