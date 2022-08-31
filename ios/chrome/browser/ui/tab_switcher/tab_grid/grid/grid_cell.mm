@@ -7,8 +7,9 @@
 #import <MaterialComponents/MaterialActivityIndicator.h>
 #include <ostream>
 
-#include "base/check.h"
-#include "base/notreached.h"
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
@@ -16,8 +17,8 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -56,6 +57,10 @@ void PositionView(UIView* view, CGPoint point) {
   frame.origin = point;
   view.frame = frame;
 }
+
+// Kill switch guarding a workaround for crash, see crbug.com/1350976
+const base::Feature kPreviousTabViewWidthCrash{
+    "PreviousTabViewWidthCrash", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace
 
@@ -694,6 +699,12 @@ void PositionView(UIView* view, CGPoint point) {
   if (!mainTabView.superview)
     [self.contentView addSubview:mainTabView];
   _previousTabViewWidth = mainTabView.frame.size.width;
+  static bool previous_tab_view_width_crash_workaround =
+      base::FeatureList::IsEnabled(kPreviousTabViewWidthCrash);
+  if (previous_tab_view_width_crash_workaround && !_previousTabViewWidth) {
+    UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+    _previousTabViewWidth = window.bounds.size.width;
+  }
   _mainTabView = mainTabView;
 }
 
@@ -764,6 +775,12 @@ void PositionView(UIView* view, CGPoint point) {
   ScaleView(self.mainTabView, scale);
   ScaleView(self.bottomTabView, scale);
   _previousTabViewWidth = self.mainTabView.frame.size.width;
+  static bool previous_tab_view_width_crash_workaround =
+      base::FeatureList::IsEnabled(kPreviousTabViewWidthCrash);
+  if (previous_tab_view_width_crash_workaround && !_previousTabViewWidth) {
+    UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+    _previousTabViewWidth = window.bounds.size.width;
+  }
 }
 
 @end
