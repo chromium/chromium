@@ -864,11 +864,7 @@ const NGLayoutResult* LayoutGridItemForMeasure(
 LayoutUnit NGGridLayoutAlgorithm::GetLogicalBaseline(
     const NGBoxFragment& baseline_fragment,
     BaselineGroup baseline_group) const {
-  const auto baseline =
-      baseline_fragment.BaselineOrSynthesize(Style().GetFontBaseline());
-  return (baseline_group == BaselineGroup::kMajor)
-             ? baseline
-             : baseline_fragment.BlockSize() - baseline;
+  return baseline_fragment.BaselineOrSynthesize(Style().GetFontBaseline());
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
@@ -953,8 +949,10 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       result = LayoutGridItemForMeasure(*grid_item, space, sizing_constraint);
     }
 
+    const auto baseline_writing_direction =
+        grid_item->BaselineWritingDirection(track_direction);
     NGBoxFragment baseline_fragment(
-        grid_item->BaselineWritingDirection(track_direction),
+        baseline_writing_direction,
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
     if (grid_item->IsBaselineAlignedForDirection(track_direction)) {
@@ -972,7 +970,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
         // Subtract out the start margin so it doesn't get added a second time
         // at the end of |NGGridLayoutAlgorithm::ContributionSizeForGridItem|.
         baseline_shim -=
-            is_for_columns ? margins.inline_start : margins.block_start;
+            ComputeMarginsFor(space, item_style, baseline_writing_direction)
+                .block_start;
       }
     }
     return baseline_fragment.BlockSize() + baseline_shim;
@@ -1371,19 +1370,19 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     const auto* result =
         LayoutGridItemForMeasure(grid_item, space, sizing_constraint);
 
+    const auto baseline_writing_direction =
+        grid_item.BaselineWritingDirection(track_direction);
     NGBoxFragment baseline_fragment(
-        grid_item.BaselineWritingDirection(track_direction),
+        baseline_writing_direction,
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
     grid_item.SetAlignmentFallback(track_direction, Style(),
                                    /* has_synthesized_baseline */
                                    !baseline_fragment.Baseline().has_value());
 
-    const auto margins =
-        ComputeMarginsFor(space, item_style, ConstraintSpace());
     LayoutUnit baseline =
-        ((track_direction == kForColumns) ? margins.inline_start
-                                          : margins.block_start) +
+        ComputeMarginsFor(space, item_style, baseline_writing_direction)
+            .block_start +
         GetLogicalBaseline(baseline_fragment,
                            grid_item.BaselineGroup(track_direction));
 
@@ -2890,44 +2889,49 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     auto* result = grid_item.node.Layout(space);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+    NGBoxFragment fragment(container_writing_direction, physical_fragment);
 
-    auto BaselineOffset =
-        [&](const GridTrackSizingDirection track_direction) -> LayoutUnit {
-      if (grid_item.IsBaselineAlignedForDirection(track_direction)) {
-        NGBoxFragment baseline_fragment(
-            grid_item.BaselineWritingDirection(track_direction),
-            physical_fragment);
-        // The baseline offset is the difference between the grid item's
-        // baseline and its track baseline.
-        const LayoutUnit item_baseline = GetLogicalBaseline(
-            baseline_fragment, grid_item.BaselineGroup(track_direction));
-        const LayoutUnit track_baseline =
-            Baseline(layout_data, grid_item, track_direction);
+    auto BaselineOffset = [&](const GridTrackSizingDirection track_direction,
+                              LayoutUnit size) -> LayoutUnit {
+      if (!grid_item.IsBaselineAlignedForDirection(track_direction))
+        return LayoutUnit();
 
-        return (track_baseline != LayoutUnit::Min())
-                   ? (track_baseline - item_baseline)
-                   : item_baseline;
-      }
-      return (track_direction == kForColumns) ? margins.inline_start
-                                              : margins.block_start;
+      const auto baseline_group = grid_item.BaselineGroup(track_direction);
+      NGBoxFragment baseline_fragment(
+          grid_item.BaselineWritingDirection(track_direction),
+          physical_fragment);
+      // The baseline offset is the difference between the grid item's baseline
+      // and its track baseline.
+      const LayoutUnit baseline_delta =
+          Baseline(layout_data, grid_item, track_direction) -
+          GetLogicalBaseline(baseline_fragment, baseline_group);
+      if (baseline_group == BaselineGroup::kMajor)
+        return baseline_delta;
+
+      // BaselineGroup::kMinor
+      const LayoutUnit item_size = (track_direction == kForColumns)
+                                       ? fragment.InlineSize()
+                                       : fragment.BlockSize();
+      return size - baseline_delta - item_size;
     };
 
-    LayoutUnit inline_baseline_offset = BaselineOffset(kForColumns);
-    LayoutUnit block_baseline_offset = BaselineOffset(kForRows);
+    LayoutUnit inline_baseline_offset =
+        BaselineOffset(kForColumns, containing_grid_area.size.inline_size);
+    LayoutUnit block_baseline_offset =
+        BaselineOffset(kForRows, containing_grid_area.size.block_size);
 
     // Apply the grid-item's alignment (if any).
-    NGBoxFragment fragment(container_writing_direction, physical_fragment);
     containing_grid_area.offset += LogicalOffset(
         AlignmentOffset(containing_grid_area.size.inline_size,
                         fragment.InlineSize(), margins.inline_start,
                         margins.inline_end, inline_baseline_offset,
                         grid_item.InlineAxisAlignment(),
-                        grid_item.is_inline_axis_overflow_safe),
+                        grid_item.IsInlineAxisOverflowSafe()),
         AlignmentOffset(containing_grid_area.size.block_size,
                         fragment.BlockSize(), margins.block_start,
                         margins.block_end, block_baseline_offset,
                         grid_item.BlockAxisAlignment(),
-                        grid_item.is_block_axis_overflow_safe));
+                        grid_item.IsBlockAxisOverflowSafe()));
 
     // Grid is special in that %-based offsets resolve against the grid-area.
     // Determine the relative offset here (instead of in the builder). This is

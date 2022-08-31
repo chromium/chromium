@@ -42,6 +42,15 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
     return block_axis_alignment_fallback.value_or(block_axis_alignment);
   }
 
+  bool IsInlineAxisOverflowSafe() const {
+    return is_inline_axis_overflow_safe_fallback.value_or(
+        is_inline_axis_overflow_safe);
+  }
+  bool IsBlockAxisOverflowSafe() const {
+    return is_block_axis_overflow_safe_fallback.value_or(
+        is_block_axis_overflow_safe);
+  }
+
   bool IsBaselineAlignedForDirection(
       const GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
@@ -187,6 +196,9 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
 
   absl::optional<AxisEdge> inline_axis_alignment_fallback;
   absl::optional<AxisEdge> block_axis_alignment_fallback;
+
+  absl::optional<bool> is_inline_axis_overflow_safe_fallback;
+  absl::optional<bool> is_block_axis_overflow_safe_fallback;
 
   NGAutoBehavior inline_auto_behavior;
   NGAutoBehavior block_auto_behavior;

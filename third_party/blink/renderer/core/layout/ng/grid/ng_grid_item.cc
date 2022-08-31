@@ -279,21 +279,26 @@ void GridItemData::SetAlignmentFallback(
   // Set fallback alignment to start edges if an item requests baseline
   // alignment but does not meet requirements for it.
   if (!CanParticipateInBaselineAlignment(container_style, track_direction)) {
-    if (track_direction == kForColumns &&
-        inline_axis_alignment == AxisEdge::kBaseline) {
-      inline_axis_alignment_fallback = AxisEdge::kStart;
-    } else if (track_direction == kForRows &&
-               block_axis_alignment == AxisEdge::kBaseline) {
-      block_axis_alignment_fallback = AxisEdge::kStart;
+    const auto baseline_group = BaselineGroup(track_direction);
+    if (track_direction == kForColumns) {
+      inline_axis_alignment_fallback = baseline_group == BaselineGroup::kMajor
+                                           ? AxisEdge::kStart
+                                           : AxisEdge::kEnd;
+      is_inline_axis_overflow_safe_fallback = true;
+    } else {
+      block_axis_alignment_fallback = baseline_group == BaselineGroup::kMajor
+                                          ? AxisEdge::kStart
+                                          : AxisEdge::kEnd;
+      is_block_axis_overflow_safe_fallback = true;
     }
   } else {
     // Reset the alignment fallback if eligibility has changed.
-    if (track_direction == kForColumns &&
-        inline_axis_alignment_fallback.has_value()) {
+    if (track_direction == kForColumns) {
       inline_axis_alignment_fallback.reset();
-    } else if (track_direction == kForRows &&
-               block_axis_alignment_fallback.has_value()) {
+      is_inline_axis_overflow_safe_fallback.reset();
+    } else {
       block_axis_alignment_fallback.reset();
+      is_block_axis_overflow_safe_fallback.reset();
     }
   }
 }
