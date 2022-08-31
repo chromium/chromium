@@ -11,7 +11,7 @@
 namespace video_capture {
 
 VideoSourceImpl::VideoSourceImpl(
-    mojom::DeviceFactory* device_factory,
+    DeviceFactory* device_factory,
     const std::string& device_id,
     base::RepeatingClosure on_last_binding_closed_cb)
     : device_factory_(device_factory),
