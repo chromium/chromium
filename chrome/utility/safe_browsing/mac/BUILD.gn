@@ -49,11 +49,6 @@ source_set("dmg_common") {
     "//third_party/zlib",
   ]
 
-  cflags = [
-    # For HFSPlusForkData and HFSPlusVolumeHeader (crbug.com/619640).
-    "-Wno-address-of-packed-member",
-  ]
-
   public_configs = [ ":dmg_public_config" ]
 }
 
