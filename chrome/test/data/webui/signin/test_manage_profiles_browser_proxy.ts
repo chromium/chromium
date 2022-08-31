@@ -17,7 +17,8 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'openManageProfileSettingsSubPage', 'launchSelectedProfile',
       'askOnStartupChanged', 'getNewProfileSuggestedThemeInfo',
       'getProfileThemeInfo', 'removeProfile', 'getProfileStatistics',
-      'selectNewAccount', 'createProfile', 'setProfileName',
+      'selectNewAccount', 'createProfile',
+      'createProfileAndOpenCustomizationDialog', 'setProfileName',
       'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
       'confirmProfileSwitch', 'cancelProfileSwitch',
       // <if expr="chromeos_lacros">
@@ -111,6 +112,11 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled(
         'createProfile',
         [profileName, profileColor, avatarIndex, createShortcut]);
+  }
+
+  createProfileAndOpenCustomizationDialog(profileColor: number) {
+    this.methodCalled(
+        'createProfileAndOpenCustomizationDialog', [profileColor]);
   }
 
   setProfileName(profilePath: string, profileName: string) {

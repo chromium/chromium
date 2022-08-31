@@ -126,11 +126,18 @@ export interface ManageProfilesBrowserProxy {
   getAvailableIcons(): Promise<AvatarIcon[]>;
 
   /**
-   * Creates local profile
+   * Creates local profile.
    */
   createProfile(
       profileName: string, profileColor: number, avatarIndex: number,
       createShortcut: boolean): void;
+
+  /**
+   * Creates local profile and opens a profile customization modal dialog on a
+   * browser window.
+   * TODO(https://crbug.com/1282157): Add createShortcut parameter.
+   */
+  createProfileAndOpenCustomizationDialog(profileColor: number): void;
 
   /**
    * Sets the local profile name.
@@ -224,6 +231,10 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send(
         'createProfile',
         [profileName, profileColor, avatarIndex, createShortcut]);
+  }
+
+  createProfileAndOpenCustomizationDialog(profileColor: number) {
+    chrome.send('createProfileAndOpenCustomizationDialog', [profileColor]);
   }
 
   setProfileName(profilePath: string, profileName: string) {

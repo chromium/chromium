@@ -14,7 +14,7 @@ import {AvailableAccount} from 'chrome://profile-picker/profile_picker.js';
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender, whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -217,5 +217,50 @@ suite('ProfilePickerAppTest', function() {
         testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('selectNewAccount');
+  });
+
+  test('CreateLocalProfile', async function() {
+    loadTimeData.overrideValues({
+      isProfileCreationAllowed: true,
+      isLocalProfileCreationDialogEnabled: true,
+      isForceSigninEnabled: false,
+    });
+    await resetTestElement(Routes.NEW_PROFILE);
+    await waitForProfileCreationLoad();
+    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+    assertTrue(!!choice);
+    await whenCheck(choice!, () => choice!.classList.contains('active'));
+    verifyProfileCreationViewStyle(choice!);
+    choice!.$.notNowButton.click();
+    const args = await browserProxy.whenCalled(
+        'createProfileAndOpenCustomizationDialog');
+    assertEquals(args[0], browserProxy.profileThemeInfo.color);
+    assertTrue(testElement.profileCreationInProgress);
+    assertTrue(choice.profileCreationInProgress);
+    assertTrue(choice!.$.signInButton.disabled);
+    assertTrue(choice!.$.notNowButton.disabled);
+    assertTrue(choice!.$.backButton.disabled);
+
+    webUIListenerCallback('create-profile-finished', []);
+    flushTasks();
+    assertFalse(testElement.profileCreationInProgress);
+    assertFalse(choice.profileCreationInProgress);
+    assertFalse(choice!.$.signInButton.disabled);
+    assertFalse(choice!.$.notNowButton.disabled);
+    assertFalse(choice!.$.backButton.disabled);
+  });
+
+  test('CreateLocalProfileWithBrowserSigninNotAllowed', async function() {
+    loadTimeData.overrideValues({
+      isProfileCreationAllowed: true,
+      isLocalProfileCreationDialogEnabled: true,
+      isForceSigninEnabled: false,
+      isBrowserSigninAllowed: false,
+    });
+    await resetTestElement(Routes.NEW_PROFILE);
+    await browserProxy.whenCalled('getNewProfileSuggestedThemeInfo');
+    const args = await browserProxy.whenCalled(
+        'createProfileAndOpenCustomizationDialog');
+    assertEquals(args[0], browserProxy.profileThemeInfo.color);
   });
 });

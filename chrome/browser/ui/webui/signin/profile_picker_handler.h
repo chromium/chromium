@@ -91,6 +91,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetProfileThemeInfo(const base::Value::List& args);
   void HandleGetAvailableIcons(const base::Value::List& args);
   void HandleCreateProfile(const base::Value::List& args);
+  // This function creates a new local profile and opens the profile
+  // customization in a modal dialog.
+  void HandleCreateProfileAndOpenCustomizationDialog(
+      const base::Value::List& args);
 
   // Profile switch screen:
   void HandleGetSwitchProfile(const base::Value::List& args);
@@ -107,9 +111,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnSwitchToProfileComplete(bool new_profile,
                                  bool open_settings,
                                  Profile* profile);
+  void OnSwitchToProfileCompleteOpenCustomization(Profile* profile);
   void OnProfileInitialized(absl::optional<SkColor> profile_color,
                             bool create_shortcut,
                             Profile* profile);
+  void OnLocalProfileInitialized(absl::optional<SkColor> profile_color,
+                                 Profile* profile);
   void PushProfilesList();
   base::Value::List GetProfilesList();
   // Adds a profile with `profile_path` to `profiles_order_`.

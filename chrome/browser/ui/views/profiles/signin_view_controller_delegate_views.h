@@ -72,6 +72,7 @@ class SigninViewControllerDelegateViews
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   static std::unique_ptr<views::WebView> CreateProfileCustomizationWebView(
       Browser* browser,
+      bool is_local_profile_creation,
       bool show_profile_switch_iph = false);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 

@@ -345,7 +345,7 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
     // Modal dialog doesn't exist yet, create a new one.
     SetDialogDelegate(
         SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-            browser_));
+            browser_, /*is_local_profile_creation=*/false));
     return;
   }
 

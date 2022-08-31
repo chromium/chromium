@@ -17,7 +17,8 @@
   <cr-lazy-render id="profileTypeChoice">
     <template>
       <profile-type-choice slot="view"
-          profile-theme-info="[[newProfileThemeInfo]]">
+          profile-theme-info="[[newProfileThemeInfo]]"
+          profile-creation-in-progress="{{profileCreationInProgress}}">
       </profile-type-choice>
     </template>
   </cr-lazy-render>
@@ -25,7 +26,8 @@
   <cr-lazy-render id="localProfileCustomization">
     <template>
       <local-profile-customization slot="view"
-          profile-theme-info="{{newProfileThemeInfo}}">
+          profile-theme-info="{{newProfileThemeInfo}}"
+          profile-creation-in-progress="{{profileCreationInProgress}}">
       </local-profile-customization>
     </template>
   </cr-lazy-render>

@@ -238,7 +238,7 @@
   </cr-checkbox>
 
   <cr-button id="save" class="action-button" on-click="onSaveClick_"
-      disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
+      disabled="[[isSaveDisabled_(profileCreationInProgress, profileName_)]]">
     $i18n{createProfileConfirm}
   </cr-button>
 </div>

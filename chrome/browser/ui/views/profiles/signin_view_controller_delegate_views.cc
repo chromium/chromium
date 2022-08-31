@@ -145,10 +145,15 @@ SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     Browser* browser,
+    bool is_local_profile_creation,
     bool show_profile_switch_iph) {
+  GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
+  if (is_local_profile_creation) {
+    url = AppendProfileCustomizationQueryParams(
+        url, ProfileCustomizationStyle::kLocalProfileCreation);
+  }
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
-      browser, GURL(chrome::kChromeUIProfileCustomizationURL),
-      ProfileCustomizationUI::kPreferredHeight,
+      browser, url, ProfileCustomizationUI::kPreferredHeight,
       ProfileCustomizationUI::kPreferredWidth,
       InitializeSigninWebDialogUI(false));
 
@@ -441,10 +446,11 @@ SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
     Browser* browser,
+    bool is_local_profile_creation,
     bool show_profile_switch_iph) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
-          browser, show_profile_switch_iph),
+          browser, is_local_profile_creation, show_profile_switch_iph),
       browser, ui::MODAL_TYPE_WINDOW, false, false);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
