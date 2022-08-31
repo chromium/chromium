@@ -1004,6 +1004,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1925017091976104802">Druk op <ph name="MODIFIER_KEY_DESCRIPTION" /> om te plakken</translation>
 <translation id="1925021887439448749">Aangepast webadres opgeven</translation>
 <translation id="1925124445985510535">Veiligheidscheck is uitgevoerd om <ph name="TIME" /></translation>
+<translation id="192564025059434655">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Windows-apparaten. Je kunt checken of er een nieuwe versie beschikbaar is.</translation>
 <translation id="1926339101652878330">Deze instellingen vallen onder een bedrijfsbeleid. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="1927632033341042996">Vinger <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Pincode voor schermvergrendeling</translation>
@@ -2504,6 +2505,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3348131053948466246">Voorgestelde emoji's. Druk op de pijl-omhoog of pijl-omlaag om te navigeren en druk op Enter om het geselecteerde item in te voegen.</translation>
 <translation id="3349933790966648062">Geheugenvoetafdruk</translation>
 <translation id="3353786022389205125">Zet 'Vergrendelscherm bekijken bij activering vanuit de slaapstand' aan en probeer het opnieuw</translation>
+<translation id="3354768182971982851">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Mac-apparaten. Je kunt checken of er een nieuwe versie beschikbaar is.</translation>
 <translation id="3354972872297836698">Kan niet koppelen met apparaat <ph name="DEVICE_NAME" />, selecteer het apparaat om het opnieuw te proberen</translation>
 <translation id="3355936511340229503">Verbindingsfout</translation>
 <translation id="3356469410714175391">(Virtuele kaart staat aan)</translation>
@@ -3109,6 +3111,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3918972485393593704">Details melden aan Google</translation>
 <translation id="3919145445993746351">Zet de synchronisatie aan om op al je computers toegang te krijgen tot je extensies</translation>
 <translation id="3919229493046408863">Melding uitzetten als apparaten in de buurt zijn</translation>
+<translation id="3919262972282962508">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Mac-apparaten. Neem contact op met je beheerder als je wilt updaten naar een nieuwe versie of verwijder deze app.</translation>
 <translation id="3919798653937160644">De pagina's die je in dit venster bekijkt, zijn niet zichtbaar in de browsergeschiedenis en laten geen sporen (zoals cookies) op de computer achter nadat je alle geopende gastvensters hebt gesloten. Bestanden die je downloadt, blijven wel behouden.</translation>
 <translation id="3920504717067627103">Certificaatbeleid</translation>
 <translation id="3920909973552939961">Geen toestemming om betalingshandlers te installeren</translation>
@@ -5598,6 +5601,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Opnieuw proberen</translation>
 <translation id="6374635887697228982">Kortingen zoeken?</translation>
+<translation id="637642201764944055">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Linux-apparaten. Neem contact op met je beheerder als je wilt updaten naar een nieuwe versie of verwijder deze app.</translation>
 <translation id="6377268785556383139">Eén resultaat voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">Openen in Wifi-netwerken</translation>
 <translation id="6380143666419481200">Accepteren en doorgaan</translation>
@@ -6076,6 +6080,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6826872289184051766">Verifiëren via USB</translation>
 <translation id="6827121912381363404">Toestaan dat alle extensies <ph name="PERMITTED_SITE" /> lezen en wijzigen</translation>
 <translation id="6827517233063803343">Je apps en instellingen worden gesynchroniseerd voor alle Chrome OS-apparaten waarop je bent ingelogd met je Google-account. Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor opties voor browsersynchronisatie.</translation>
+<translation id="6827767090350758381">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Windows-apparaten. Neem contact op met je beheerder als je wilt updaten naar een nieuwe versie of verwijder deze app.</translation>
 <translation id="6828153365543658583">Inloggen beperken tot de volgende gebruikers:</translation>
 <translation id="6828182567531805778">Voer je wachtwoordzin in om je gegevens te synchroniseren</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7925,6 +7930,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="863109444997383731">We voorkomen dat sites je vragen om meldingen te tonen. Als een site om meldingen vraagt, zie je in de adresbalk de indicator Geblokkeerd.</translation>
 <translation id="8632104508818855045">Je hebt er eerder voor gekozen om geen extensies op <ph name="ORIGIN" /> toe te staan</translation>
 <translation id="8633025649649592204">Recente activiteit</translation>
+<translation id="8633979878370972178">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Linux-apparaten. Je kunt checken of er een nieuwe versie beschikbaar is.</translation>
 <translation id="8634348081024879304">Je kunt je virtuele kaart niet meer gebruiken met Google Pay. <ph name="BEGIN_LINK" />Meer informatie over virtuele kaarten<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Opnieuw laden...</translation>
 <translation id="8636284842992792762">Extensies initialiseren…</translation>
