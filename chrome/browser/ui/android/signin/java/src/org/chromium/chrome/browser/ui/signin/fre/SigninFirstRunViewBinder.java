@@ -30,12 +30,9 @@ class SigninFirstRunViewBinder {
             view.getDismissButtonView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_DISMISS_CLICKED));
         } else if (propertyKey == SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT) {
-            updateVisibilityOnButtonClick(view,
-                    model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT),
-                    true);
+            updateVisibilityOnButtonClick(view, model);
         } else if (propertyKey == SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER) {
-            updateVisibilityOnButtonClick(
-                    view, model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER), false);
+            updateVisibilityOnButtonClick(view, model);
         } else if (propertyKey == SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED) {
             view.getSelectedAccountView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED));
@@ -126,7 +123,15 @@ class SigninFirstRunViewBinder {
     }
 
     private static void updateVisibilityOnButtonClick(
-            SigninFirstRunView view, boolean showSigninProgressSpinner, boolean showSigningInText) {
+            SigninFirstRunView view, PropertyModel model) {
+        final boolean showSigninProgressSpinner =
+                model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
+                || model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
+        final boolean isSelectedAccountSupervised =
+                model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+        final boolean showSigningInText =
+                model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT);
+
         if (showSigninProgressSpinner) {
             // Transition is only used when the progress spinner is shown.
             TransitionManager.beginDelayedTransition(
@@ -134,7 +139,10 @@ class SigninFirstRunViewBinder {
         }
         final int bottomGroupVisibility = showSigninProgressSpinner ? View.INVISIBLE : View.VISIBLE;
         view.getSelectedAccountView().setVisibility(bottomGroupVisibility);
-        view.getDismissButtonView().setVisibility(bottomGroupVisibility);
+        if (!isSelectedAccountSupervised) {
+            // Only adjust dismiss button visibility if it's not already removed for a child user.
+            view.getDismissButtonView().setVisibility(bottomGroupVisibility);
+        }
         view.getContinueButtonView().setVisibility(bottomGroupVisibility);
         view.getFooterView().setVisibility(bottomGroupVisibility);
 

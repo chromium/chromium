@@ -32,6 +32,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
@@ -239,6 +240,23 @@ public class FirstRunActivitySigninAndSyncTest {
         clickButton(R.id.signin_fre_continue_button);
 
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+    }
+
+    @Test
+    @MediumTest
+    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
+    // adding at least one policy via AppRestrictions prevents that.
+    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
+    public void dismissButtonNotShownOnResetForChildAccount() {
+        mAccountManagerTestRule.addAccount(CHILD_EMAIL);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
+
+        onView((withId(R.id.signin_fre_continue_button))).perform(click());
+        Espresso.pressBack();
+
+        onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
     }
 
     @Test
