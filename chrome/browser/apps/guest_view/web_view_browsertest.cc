@@ -4333,21 +4333,21 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 IN_PROC_BROWSER_TEST_P(WebViewPdfTest, NestedGuestContainerBounds) {
   TestHelper("testPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
-  std::vector<content::WebContents*> guest_web_contents_list;
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_web_contents_list);
-  ASSERT_EQ(2u, guest_web_contents_list.size());
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
 
-  content::WebContents* web_view_contents = guest_web_contents_list[0];
-  content::WebContents* mime_handler_view_contents = guest_web_contents_list[1];
+  content::RenderFrameHost* web_view_rfh = guest_rfh_list[0];
+  content::RenderFrameHost* mime_handler_view_rfh = guest_rfh_list[1];
 
   // Make sure we've completed loading |mime_handler_view_guest|.
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_view_contents));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_view_rfh));
 
-  gfx::Rect web_view_container_bounds = web_view_contents->GetContainerBounds();
+  gfx::Rect web_view_container_bounds =
+      web_view_rfh->GetRenderWidgetHost()->GetView()->GetViewBounds();
   gfx::Rect mime_handler_view_container_bounds =
-      mime_handler_view_contents->GetContainerBounds();
+      mime_handler_view_rfh->GetRenderWidgetHost()->GetView()->GetViewBounds();
   EXPECT_EQ(web_view_container_bounds.origin(),
             mime_handler_view_container_bounds.origin());
 }
