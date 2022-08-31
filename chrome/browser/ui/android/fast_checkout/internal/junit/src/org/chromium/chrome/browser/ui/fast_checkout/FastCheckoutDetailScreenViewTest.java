@@ -40,12 +40,12 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -63,8 +63,8 @@ public class FastCheckoutDetailScreenViewTest {
     @Rule
     public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
     @Rule
-    public ActivityScenarioRule<ChromeTabbedActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(ChromeTabbedActivity.class);
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
     private Runnable mBackClickHandler;
@@ -125,7 +125,9 @@ public class FastCheckoutDetailScreenViewTest {
         }
         assertNotNull(backButton);
         backButton.performClick();
+
         ShadowLooper.shadowMainLooper().idle();
+        verify(mBackClickHandler).run();
     }
 
     @Test
@@ -135,7 +137,9 @@ public class FastCheckoutDetailScreenViewTest {
         View settingsMenuElement = mView.findViewById(R.id.settings_menu_id);
         assertNotNull(settingsMenuElement);
         settingsMenuElement.performClick();
+
         ShadowLooper.shadowMainLooper().idle();
+        verify(mSettingsClickHandler).run();
     }
 
     @Test
