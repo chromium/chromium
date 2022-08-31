@@ -35,6 +35,8 @@
 
 using ash::phonehub::util::LogPermissionOnboardingDialogAction;
 using ash::phonehub::util::LogPermissionOnboardingSettingsClicked;
+using ash::phonehub::util::LogPermissionOnboardingSetupMode;
+using ash::phonehub::util::LogPermissionOnboardingSetupResult;
 using ash::phonehub::util::PermissionsOnboardingScreenEvent;
 using ash::phonehub::util::PermissionsOnboardingSetUpMode;
 using ash::phonehub::util::PermissionsOnboardingStep;
@@ -201,6 +203,16 @@ void MultideviceHandler::RegisterMessages() {
       "logPhoneHubPermissionSetUpButtonClicked",
       base::BindRepeating(
           &MultideviceHandler::LogPhoneHubPermissionSetUpButtonClicked,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "logPhoneHubPermissionOnboardingSetupMode",
+      base::BindRepeating(
+          &MultideviceHandler::LogPhoneHubPermissionOnboardingSetupMode,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "logPhoneHubPermissionOnboardingSetupResult",
+      base::BindRepeating(
+          &MultideviceHandler::LogPhoneHubPermissionOnboardingSetupResult,
           base::Unretained(this)));
 }
 
@@ -652,6 +664,20 @@ void MultideviceHandler::LogPhoneHubPermissionSetUpButtonClicked(
   int setup_mode = args[0].GetInt();
   LogPermissionOnboardingSettingsClicked(
       static_cast<PermissionsOnboardingSetUpMode>(setup_mode));
+}
+
+void MultideviceHandler::LogPhoneHubPermissionOnboardingSetupMode(
+    const base::Value::List& args) {
+  int setup_mode = args[0].GetInt();
+  LogPermissionOnboardingSetupMode(
+      static_cast<PermissionsOnboardingSetUpMode>(setup_mode));
+}
+
+void MultideviceHandler::LogPhoneHubPermissionOnboardingSetupResult(
+    const base::Value::List& args) {
+  int completed_mode = args[0].GetInt();
+  LogPermissionOnboardingSetupResult(
+      static_cast<PermissionsOnboardingSetUpMode>(completed_mode));
 }
 
 void MultideviceHandler::OnNotificationStatusChange(

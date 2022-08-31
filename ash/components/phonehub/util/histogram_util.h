@@ -163,6 +163,12 @@ void LogPermissionOnboardingDialogAction(
     PermissionsOnboardingStep step,
     PermissionsOnboardingScreenEvent event);
 
+// Log setup mode when multidevice permissions set up dialog is displayed.
+void LogPermissionOnboardingSetupMode(PermissionsOnboardingSetUpMode mode);
+
+// Log setup result when multidevice permissions set up dialog is finished.
+void LogPermissionOnboardingSetupResult(PermissionsOnboardingSetUpMode mode);
+
 }  // namespace util
 }  // namespace phonehub
 }  // namespace ash

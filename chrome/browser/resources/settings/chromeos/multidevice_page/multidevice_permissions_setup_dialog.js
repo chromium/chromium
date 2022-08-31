@@ -28,7 +28,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
+import {MultiDeviceFeature, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 
 /**
  * Numerical values should not be changed because they must stay in sync with
@@ -389,8 +389,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       this.flowState_ = SetupFlowStatus.FINISHED;
       // We don't need to deal with the apps streaming onboarding flow, so we
       // can log completed case here.
-      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
-          this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
+      this.logCompletedSetupModeMetrics_();
     }
   }
 
@@ -410,17 +409,20 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         !this.showAppStreaming) {
       this.completedMode_ |= APPS_FEATURE;
       this.browserProxy_.setFeatureEnabledState(MultiDeviceFeature.ECHE, true);
-      this.setupState_ = appsSetupResult;
-      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
-          this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
     }
+
     this.setupState_ = appsSetupResult;
+
     if (appsSetupResult !==
             PermissionsSetupStatus
                 .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE &&
         appsSetupResult !== PermissionsSetupStatus.CONNECTING &&
         appsSetupResult !== PermissionsSetupStatus.CONNECTION_REQUESTED) {
       this.flowState_ = SetupFlowStatus.FINISHED;
+    }
+
+    if (this.computeHasCompletedSetup_()) {
+      this.logCompletedSetupModeMetrics_();
     }
   }
 
@@ -487,9 +489,35 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       this.flowState_ = SetupFlowStatus.FINISHED;
       // We don't need to deal with the apps streaming onboarding flow, so we
       // can log completed case here.
-      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
-          this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
+      this.logCompletedSetupModeMetrics_();
     }
+  }
+
+  /**
+   * @private
+   */
+  logSetupModeMetrics_() {
+    if (this.showCameraRoll) {
+      this.setupMode_ |= CAMERA_ROLL_FEATURE;
+    }
+    if (this.showNotifications) {
+      this.setupMode_ |= NOTIFICATION_FEATURE;
+    }
+    if (this.showAppStreaming) {
+      this.setupMode_ |= APPS_FEATURE;
+    }
+    this.browserProxy_.logPhoneHubPermissionOnboardingSetupMode(
+        this.computePhoneHubPermissionsSetupMode_(this.setupMode_));
+  }
+
+  /**
+   * @private
+   */
+  logCompletedSetupModeMetrics_() {
+    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+        this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
+    this.browserProxy_.logPhoneHubPermissionOnboardingSetupResult(
+        this.computePhoneHubPermissionsSetupMode_(this.completedMode_));
   }
 
   /**
@@ -633,6 +661,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         this.setupScreen_, PhoneHubPermissionsSetupAction.NEXT_OR_TRY_AGAIN);
     switch (this.flowState_) {
       case SetupFlowStatus.INTRO:
+        this.logSetupModeMetrics_();
       case SetupFlowStatus.FINISHED:
         this.flowState_ = SetupFlowStatus.WAIT_FOR_CONNECTION;
       case SetupFlowStatus.WAIT_FOR_CONNECTION:
@@ -660,15 +689,6 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
 
   /** @private */
   startSetupProcess_() {
-    if (this.showCameraRoll) {
-      this.setupMode_ |= CAMERA_ROLL_FEATURE;
-    }
-    if (this.showNotifications) {
-      this.setupMode_ |= NOTIFICATION_FEATURE;
-    }
-    if (this.showAppStreaming) {
-      this.setupMode_ |= APPS_FEATURE;
-    }
     if ((this.showCameraRoll || this.showNotifications) &&
         this.combinedSetupSupported) {
       this.browserProxy_.attemptCombinedFeatureSetup(
@@ -696,6 +716,9 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       this.browserProxy_.cancelCombinedFeatureSetup();
     } else if (this.flowState_ === SetupFlowStatus.WAIT_FOR_CONNECTION) {
       this.browserProxy_.cancelFeatureSetupConnection();
+    }
+    if (this.noFeatureHasBeenSetupWhenCompleted_()) {
+      this.logCompletedSetupModeMetrics_();
     }
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.setupScreen_, PhoneHubPermissionsSetupAction.CANCEL);
@@ -957,6 +980,34 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       default:
         return this.i18n(
             'multidevicePermissionsSetupAppssCompletedFailedTitle');
+    }
+  }
+
+  /**
+   * @return {!PhoneHubPermissionsSetupFeatureCombination}
+   * @private
+   */
+  computePhoneHubPermissionsSetupMode_(mode) {
+    switch (mode) {
+      case NOTIFICATION_FEATURE:
+        return PhoneHubPermissionsSetupFeatureCombination.NOTIFICATION;
+      case CAMERA_ROLL_FEATURE:
+        return PhoneHubPermissionsSetupFeatureCombination.CAMERA_ROLL;
+      case NOTIFICATION_FEATURE|CAMERA_ROLL_FEATURE:
+        return PhoneHubPermissionsSetupFeatureCombination
+            .NOTIFICATION_AND_CAMERA_ROLL;
+      case APPS_FEATURE:
+        return PhoneHubPermissionsSetupFeatureCombination.MESSAGING_APP;
+      case NOTIFICATION_FEATURE|APPS_FEATURE:
+        return PhoneHubPermissionsSetupFeatureCombination
+            .NOTIFICATION_AND_MESSAGING_APP;
+      case CAMERA_ROLL_FEATURE|APPS_FEATURE:
+        return PhoneHubPermissionsSetupFeatureCombination
+            .MESSAGING_APP_AND_CAMERA_ROLL;
+      case NOTIFICATION_FEATURE|CAMERA_ROLL_FEATURE|APPS_FEATURE:
+        return PhoneHubPermissionsSetupFeatureCombination.ALL_PERMISSONS;
+      default:
+        return PhoneHubPermissionsSetupFeatureCombination.NONE;
     }
   }
 

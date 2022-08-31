@@ -77942,6 +77942,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="All permissions"/>
 </enum>
 
+<enum name="PhoneHubPermissionsOnboardingSetUpResult">
+  <int value="0" label="None"/>
+  <int value="1" label="Notification"/>
+  <int value="2" label="Messaging Apps"/>
+  <int value="3" label="Recent Photos"/>
+  <int value="4" label="Notification and messaging apps"/>
+  <int value="5" label="Notification and recent photos"/>
+  <int value="6" label="Messaging apps and recent photos"/>
+  <int value="7" label="All permissions"/>
+</enum>
+
 <enum name="PhoneHubQuickAction">
   <int value="0" label="Toggle Hotspot On"/>
   <int value="1" label="Toggle Hotspot Off"/>

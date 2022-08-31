@@ -59,6 +59,10 @@ constexpr char kDialogSetupFinishedActionHistogram[] =
     "PhoneHub.PermissionsOnboarding.DialogScreenEvents.SetUpFinishedScreen";
 constexpr char kSetupButtonInSettingsClikedHistogram[] =
     "PhoneHub.PermissionsOnboarding.SetUpMode.OnSettingsClicked";
+constexpr char kDialogIntroScreenSetupModeHistogram[] =
+    "PhoneHub.PermissionsOnboarding.SetUpMode.IntroScreenShown";
+constexpr char kDialogSetUpFinishedScreenSetupModeHistogram[] =
+    "PhoneHub.PermissionsOnboarding.SetUpMode.SetUpFinishedScreenShown";
 
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace multidevice_setup = ::ash::multidevice_setup;
@@ -1186,6 +1190,32 @@ TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetupFlow) {
       "logPhoneHubPermissionSetUpButtonClicked", set_up_screen_args);
   histogram_tester.ExpectBucketCount(kSetupButtonInSettingsClikedHistogram,
                                      /*camera_roll_setup=*/3, 1);
+}
+
+TEST_F(MultideviceHandlerTest, LogUmaMetricsForIntroScreenSetupMode) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDialogIntroScreenSetupModeHistogram, 0);
+
+  base::Value::List set_up_mode_args;
+  set_up_mode_args.Append(/*all_permissions=*/7);
+  test_web_ui()->HandleReceivedMessage(
+      "logPhoneHubPermissionOnboardingSetupMode", set_up_mode_args);
+  histogram_tester.ExpectBucketCount(kDialogIntroScreenSetupModeHistogram,
+                                     /*all_permissions=*/7, 1);
+}
+
+TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetUpFinishedScreenSetupMode) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      kDialogSetUpFinishedScreenSetupModeHistogram, 0);
+
+  base::Value::List set_up_mode_args;
+  set_up_mode_args.Append(/*notification_and_camera_roll=*/5);
+  test_web_ui()->HandleReceivedMessage(
+      "logPhoneHubPermissionOnboardingSetupResult", set_up_mode_args);
+  histogram_tester.ExpectBucketCount(
+      kDialogSetUpFinishedScreenSetupModeHistogram,
+      /*notification_and_camera_roll=*/5, 1);
 }
 
 TEST_F(MultideviceHandlerTest, PageContentData) {

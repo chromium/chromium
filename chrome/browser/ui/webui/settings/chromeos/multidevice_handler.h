@@ -63,6 +63,9 @@ class MultideviceHandler
 
   void LogPhoneHubPermissionSetUpScreenAction(const base::Value::List& args);
   void LogPhoneHubPermissionSetUpButtonClicked(const base::Value::List& args);
+  void LogPhoneHubPermissionOnboardingSetupMode(const base::Value::List& args);
+  void LogPhoneHubPermissionOnboardingSetupResult(
+      const base::Value::List& args);
 
  private:
   // ::settings::SettingsPageUIHandler:

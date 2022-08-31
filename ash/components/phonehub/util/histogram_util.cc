@@ -178,6 +178,17 @@ void LogPermissionOnboardingDialogAction(
   }
 }
 
+void LogPermissionOnboardingSetupMode(PermissionsOnboardingSetUpMode mode) {
+  base::UmaHistogramEnumeration(
+      "PhoneHub.PermissionsOnboarding.SetUpMode.IntroScreenShown", mode);
+}
+
+void LogPermissionOnboardingSetupResult(PermissionsOnboardingSetUpMode mode) {
+  base::UmaHistogramEnumeration(
+      "PhoneHub.PermissionsOnboarding.SetUpMode.SetUpFinishedScreenShown",
+      mode);
+}
+
 }  // namespace util
 }  // namespace phonehub
 }  // namespace ash

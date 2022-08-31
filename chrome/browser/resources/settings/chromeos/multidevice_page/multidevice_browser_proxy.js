@@ -126,6 +126,20 @@ export class MultiDeviceBrowserProxy {
    *  @param {!PhoneHubPermissionsSetupFeatureCombination} setup_mode
    */
   logPhoneHubPermissionSetUpButtonClicked(setup_mode) {}
+
+  /**
+   * Log setup mode when multidevice permissions set up intro screen is
+   * displayed.
+   * @param {!PhoneHubPermissionsSetupFeatureCombination} setup_mode
+   */
+  logPhoneHubPermissionOnboardingSetupMode(setup_mode) {}
+
+  /**
+   * Log setup mode when multidevice permissions set up finished screen is
+   * displayed.
+   * @param {!PhoneHubPermissionsSetupFeatureCombination} completed_mode
+   */
+  logPhoneHubPermissionOnboardingSetupResult(completed_mode) {}
 }
 
 /** @type {?MultiDeviceBrowserProxy} */
@@ -244,5 +258,15 @@ export class MultiDeviceBrowserProxyImpl {
   /** @override */
   logPhoneHubPermissionSetUpButtonClicked(setup_mode) {
     chrome.send('logPhoneHubPermissionSetUpButtonClicked', [setup_mode]);
+  }
+
+  /** @override */
+  logPhoneHubPermissionOnboardingSetupMode(setup_mode) {
+    chrome.send('logPhoneHubPermissionOnboardingSetupMode', [setup_mode]);
+  }
+
+  /** @override */
+  logPhoneHubPermissionOnboardingSetupResult(completed_mode) {
+    chrome.send('logPhoneHubPermissionOnboardingSetupResult', [completed_mode]);
   }
 }
