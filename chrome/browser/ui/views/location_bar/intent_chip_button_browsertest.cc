@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
+#include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -130,6 +131,8 @@ class IntentChipButtonBrowserTest
 
     overlapping_app_id_ =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    DCHECK(!overlapping_app_id_.empty());
+    web_app::AppRegistrationWaiter(profile(), overlapping_app_id_).Await();
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
