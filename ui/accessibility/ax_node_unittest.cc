@@ -757,7 +757,7 @@ TEST(AXNodeTest, IsGridCellReadOnlyOrDisabled) {
   row.id = 3;
   gridcell_1.id = 4;
   gridcell_2.id = 5;
-  gridcell_2.id = 6;
+  gridcell_3.id = 6;
 
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {grid.id};

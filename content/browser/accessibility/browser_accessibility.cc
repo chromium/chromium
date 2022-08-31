@@ -52,6 +52,8 @@ BrowserAccessibility::BrowserAccessibility(BrowserAccessibilityManager* manager,
                                            ui::AXNode* node)
     : AXPlatformNodeDelegate(node), manager_(manager) {
   DCHECK(manager);
+  DCHECK(node);
+  DCHECK(node->IsDataValid());
 }
 
 BrowserAccessibility::~BrowserAccessibility() = default;
@@ -1197,6 +1199,10 @@ const ui::AXSelection BrowserAccessibility::GetUnignoredSelection() const {
 BrowserAccessibility::AXPosition BrowserAccessibility::CreateTextPositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
+  DCHECK(node()->IsDataValid());
+  DCHECK(manager_->GetNode(GetId()))
+      << "No node for id: " << GetId() << "   " << node()->id() << "  "
+      << node()->data().id;
   return ui::AXNodePosition::CreateTextPosition(manager_->ax_tree_id(), GetId(),
                                                 offset, affinity);
 }
