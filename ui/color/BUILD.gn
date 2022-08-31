@@ -55,6 +55,8 @@ component("color") {
     "color_transform.h",
   ]
 
+  configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
+
   defines = [ "IS_COLOR_IMPL" ]
 
   public_deps = [

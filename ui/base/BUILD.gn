@@ -441,7 +441,10 @@ component("base") {
     sources += [ "resource/resource_bundle_fuchsia.cc" ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [
+    "//build/config/compiler:prevent_unsafe_narrowing",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   defines = [ "IS_UI_BASE_IMPL" ]
 
