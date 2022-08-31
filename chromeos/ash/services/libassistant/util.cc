@@ -16,10 +16,10 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/cpp/switches.h"
 #include "chromeos/ash/services/libassistant/constants.h"
+#include "chromeos/ash/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/util_headers.h"
-#include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/version/version_loader.h"
 
 using ::assistant::api::Interaction;

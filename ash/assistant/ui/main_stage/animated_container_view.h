@@ -14,7 +14,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/scoped_observation.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {

@@ -106,7 +106,7 @@ mojom("mojom") {
       traits_headers = [ "mojom_traits.h" ]
       traits_sources = [ "mojom_traits.cc" ]
       traits_public_deps =
-          [ "//chromeos/services/libassistant/public/cpp:structs" ]
+          [ "//chromeos/ash/services/libassistant/public/cpp:structs" ]
     },
   ]
 }

@@ -97,7 +97,7 @@ source_set("ui") {
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/mojom",
-    "//chromeos/services/libassistant/public/cpp:structs",
+    "//chromeos/ash/services/libassistant/public/cpp:structs",
     "//chromeos/ui/vector_icons",
     "//components/vector_icons",
     "//ui/aura",

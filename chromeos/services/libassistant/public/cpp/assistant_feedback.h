@@ -5,37 +5,9 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_FEEDBACK_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_FEEDBACK_H_
 
-#include <cstdint>
-#include <string>
-#include <vector>
+// TODO(https://crbug.com/1164001): Remove this file when internal assistant
+// codes are changed to use the new path chromeos/ash/services/libassistant.
 
-#include "base/component_export.h"
-
-namespace chromeos {
-namespace assistant {
-
-//  Details for Assistant feedback.
-struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantFeedback {
-  AssistantFeedback();
-  ~AssistantFeedback();
-
-  // User input to be sent with the feedback report.
-  std::string description;
-
-  // Whether user consent to send debug info.
-  bool assistant_debug_info_allowed{false};
-
-  // Screenshot if allowed by user.
-  // Raw data (non-encoded binary octets)
-  std::vector<uint8_t> screenshot_png;
-};
-
-}  // namespace assistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::assistant {
-using ::chromeos::assistant::AssistantFeedback;
-}
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_feedback.h"
 
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_FEEDBACK_H_

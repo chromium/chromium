@@ -10,8 +10,8 @@
 #include "base/callback_forward.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace assistant {
 namespace api {

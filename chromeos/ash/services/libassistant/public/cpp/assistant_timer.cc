@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace chromeos {
 namespace assistant {

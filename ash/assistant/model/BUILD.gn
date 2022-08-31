@@ -49,7 +49,7 @@ component("model") {
     "//ash/public/cpp",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/mojom",
-    "//chromeos/services/libassistant/public/cpp:structs",
+    "//chromeos/ash/services/libassistant/public/cpp:structs",
     "//ui/accessibility/mojom:ax_assistant_mojom",
     "//ui/gfx/geometry",
   ]

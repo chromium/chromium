@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 
 namespace chromeos {
 namespace assistant {

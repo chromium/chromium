@@ -14,7 +14,7 @@
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 

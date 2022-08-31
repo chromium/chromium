@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_TIMER_UTILS_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_TIMER_UTILS_H_
 
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace assistant {
 namespace api {

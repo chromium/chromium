@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/libassistant/grpc/utils/media_status_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/utils/settings_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/utils/timer_utils.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
@@ -31,7 +32,6 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace chromeos {
 namespace libassistant {

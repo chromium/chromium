@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 
 namespace ash {
 

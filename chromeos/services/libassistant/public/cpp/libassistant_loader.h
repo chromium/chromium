@@ -5,23 +5,9 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_
 
-#include "base/callback_helpers.h"
-#include "base/component_export.h"
+// TODO(https://crbug.com/1164001): Remove this file when internal assistant
+// codes are changed to use the new path chromeos/ash/services/libassistant.
 
-namespace chromeos::libassistant {
-
-// Interface to load libassistant library for different versions.
-class COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_LOADER) LibassistantLoader {
- public:
-  using LoadCallback = base::OnceCallback<void(bool success)>;
-
-  virtual ~LibassistantLoader() = default;
-
-  // Load the libassistant.so.
-  // `callback` will be called to indicate whether loading is successful.
-  static void Load(LoadCallback callback);
-};
-
-}  // namespace chromeos::libassistant
+#include "chromeos/ash/services/libassistant/public/cpp/libassistant_loader.h"
 
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_

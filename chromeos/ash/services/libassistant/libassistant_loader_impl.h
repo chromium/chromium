@@ -11,9 +11,9 @@
 #include "base/scoped_native_library.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/libassistant/public/cpp/libassistant_loader.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/services/libassistant/public/cpp/libassistant_loader.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

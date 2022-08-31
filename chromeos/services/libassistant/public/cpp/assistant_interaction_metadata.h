@@ -5,68 +5,9 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_INTERACTION_METADATA_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_INTERACTION_METADATA_H_
 
-#include <string>
+// TODO(https://crbug.com/1164001): Remove this file when internal assistant
+// codes are changed to use the new path chromeos/ash/services/libassistant.
 
-#include "base/component_export.h"
-
-namespace chromeos {
-namespace assistant {
-
-// Enumeration of possible Assistant query sources. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never
-// be reused. Append new values to the end.
-enum class AssistantQuerySource {
-  kUnspecified = 0,
-  kMinValue = kUnspecified,
-  kDeepLink = 1,
-  kDialogPlateTextField = 2,
-  kStylus = 3,
-  kSuggestionChip = 4,
-  kVoiceInput = 5,
-  // kProactiveSuggestionsDeprecated = 6,
-  kLibAssistantInitiated = 7,
-  // kWarmerWelcomeDeprecated = 8,
-  kConversationStarter = 9,
-  kWhatsOnMyScreen = 10,
-  kQuickAnswers = 11,
-  kLauncherChip = 12,
-  kBetterOnboarding = 13,
-  // kBloomDeprecated = 14,
-  kMaxValue = kBetterOnboarding,
-};
-
-// Enumeration of possible Assistant interaction types.
-enum class AssistantInteractionType {
-  kText,
-  kVoice,
-};
-
-// Describes an Assistant interaction.
-struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS)
-    AssistantInteractionMetadata {
-  AssistantInteractionMetadata();
-  AssistantInteractionMetadata(AssistantInteractionType type,
-                               AssistantQuerySource source,
-                               const std::string& query);
-  AssistantInteractionMetadata(const AssistantInteractionMetadata& suggestion);
-  AssistantInteractionMetadata& operator=(const AssistantInteractionMetadata&);
-  AssistantInteractionMetadata(AssistantInteractionMetadata&& suggestion);
-  AssistantInteractionMetadata& operator=(AssistantInteractionMetadata&&);
-  ~AssistantInteractionMetadata();
-
-  AssistantInteractionType type{AssistantInteractionType::kText};
-  AssistantQuerySource source{AssistantQuerySource::kUnspecified};
-  std::string query;
-};
-
-}  // namespace assistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::assistant {
-using ::chromeos::assistant::AssistantInteractionMetadata;
-using ::chromeos::assistant::AssistantInteractionType;
-using ::chromeos::assistant::AssistantQuerySource;
-}  // namespace ash::assistant
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_INTERACTION_METADATA_H_

@@ -10,7 +10,7 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

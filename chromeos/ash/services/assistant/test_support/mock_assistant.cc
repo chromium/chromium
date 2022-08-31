@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/assistant/test_support/mock_assistant.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_feedback.h"
 
 namespace ash::assistant {
 

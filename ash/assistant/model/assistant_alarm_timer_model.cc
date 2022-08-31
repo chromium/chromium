@@ -8,7 +8,7 @@
 
 #include "ash/assistant/model/assistant_alarm_timer_model_observer.h"
 #include "base/time/time.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace ash {
 

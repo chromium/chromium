@@ -5,9 +5,9 @@
 #include "chromeos/ash/services/libassistant/grpc/utils/timer_utils.h"
 
 #include "base/time/time.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/assistant/internal/proto/shared/proto/timer_params.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace chromeos {
 namespace libassistant {
