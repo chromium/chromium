@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -167,6 +168,13 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
   if (opt_manifest) {
     UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
                                  web_app_info_.get());
+  }
+
+  if (install_params_.install_as_shortcut &&
+      base::FeatureList::IsEnabled(
+          webapps::features::kCreateShortcutIgnoresManifest)) {
+    *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
+        web_contents_->GetLastCommittedURL(), *web_app_info_);
   }
 
   app_id_ = GenerateAppId(web_app_info_->manifest_id, web_app_info_->start_url);

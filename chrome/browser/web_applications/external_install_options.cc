@@ -65,6 +65,7 @@ bool ExternalInstallOptions::operator==(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         options.bypass_service_worker_check,
         options.require_manifest,
+        options.install_as_shortcut,
         options.force_reinstall,
         options.force_reinstall_for_milestone,
         options.wait_for_windows_closed,
@@ -143,6 +144,7 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
                   override_previous_user_uninstall);
   root.SetBoolKey("reinstall_placeholder", reinstall_placeholder);
   root.SetBoolKey("require_manifest", require_manifest);
+  root.SetBoolKey("install_as_shortcut", install_as_shortcut);
   root.SetKey("service_worker_registration_url",
               service_worker_registration_url
                   ? base::Value(service_worker_registration_url->spec())
@@ -188,6 +190,7 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.bypass_service_worker_check =
       install_options.bypass_service_worker_check;
   params.require_manifest = install_options.require_manifest;
+  params.install_as_shortcut = install_options.install_as_shortcut;
 
   params.additional_search_terms = install_options.additional_search_terms;
 

@@ -14088,7 +14088,8 @@
               "default_launch_container": "window"
             },
             {
-              "url": "https://foobar.example"
+              "url": "https://foobar.example",
+              "install_as_shortcut": true
             },
             {
               "url": "https://xyz.example",

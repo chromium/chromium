@@ -90,6 +90,10 @@ struct WebAppInstallParams {
   bool bypass_service_worker_check = false;
   bool require_manifest = false;
 
+  // Used only by ExternallyManagedInstallCommand.
+  // Has the same meaning as WebAppInstallFlow::kCreateShortcut
+  bool install_as_shortcut = false;
+
   std::vector<std::string> additional_search_terms;
 
   absl::optional<std::string> launch_query_params;

@@ -358,6 +358,7 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   const base::Value* fallback_app_name = entry.FindKey(kFallbackAppNameKey);
   const base::Value* uninstall_and_replace =
       entry.FindKey(kUninstallAndReplaceKey);
+  const base::Value* install_as_shortcut = entry.FindKey(kInstallAsShortcut);
 
   DCHECK(!default_launch_container ||
          default_launch_container->GetString() ==
@@ -408,6 +409,9 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
       }
     }
   }
+
+  install_options.install_as_shortcut =
+      install_as_shortcut ? install_as_shortcut->GetBool() : false;
 
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value* custom_name = entry.FindKey(kCustomNameKey);

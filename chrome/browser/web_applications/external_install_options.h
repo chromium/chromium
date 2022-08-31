@@ -134,6 +134,10 @@ struct ExternalInstallOptions {
   // is used.
   bool require_manifest = false;
 
+  // The web app should be installed as a shortcut, as if done via the
+  // "Create Shortcut..." option in desktop browser GUI.
+  bool install_as_shortcut = false;
+
   // Whether the app should be reinstalled even if it is already installed.
   bool force_reinstall = false;
 
