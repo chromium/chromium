@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/version.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -41,12 +40,8 @@ class PluginMetadata {
   static const char kJavaGroupName[];
   static const char kQuickTimeGroupName[];
   static const char kShockwaveGroupName[];
-  static const char kAdobeFlashPlayerGroupName[];
   static const char kRealPlayerGroupName[];
   static const char kSilverlightGroupName[];
-  static const char kWindowsMediaPlayerGroupName[];
-  static const char kGoogleTalkGroupName[];
-  static const char kGoogleEarthGroupName[];
 
   PluginMetadata(const std::string& identifier,
                  const std::u16string& name,
@@ -83,17 +78,11 @@ class PluginMetadata {
   // Returns whether the plugin has been deprecated and cannot be updated.
   bool plugin_is_deprecated() const { return plugin_is_deprecated_; }
 
-  bool HasMimeType(const std::string& mime_type) const;
-  void AddMimeType(const std::string& mime_type);
-  void AddMatchingMimeType(const std::string& mime_type);
-
   // Adds information about a plugin version.
   void AddVersion(const base::Version& version, SecurityStatus status);
 
-  // Checks if |plugin| mime types match all |matching_mime_types_|.
-  // If there is no |matching_mime_types_|, |group_name_matcher_| is used
-  // for matching.
-  bool MatchesPlugin(const content::WebPluginInfo& plugin);
+  // Checks if `group_name_matcher_` matches the name of `plugin`.
+  bool MatchesPlugin(const content::WebPluginInfo& plugin) const;
 
   // If |status_str| describes a valid security status, writes it to |status|
   // and returns true, else returns false and leaves |status| unchanged.
@@ -119,8 +108,6 @@ class PluginMetadata {
   GURL help_url_;
   std::string language_;
   std::map<base::Version, SecurityStatus, VersionComparator> versions_;
-  std::vector<std::string> all_mime_types_;
-  std::vector<std::string> matching_mime_types_;
   const bool plugin_is_deprecated_;
 };
 

@@ -112,18 +112,7 @@
         <include name="IDR_PDF_MANIFEST" file="resources\pdf\manifest.json" type="BINDATA" />
       </if>
       <if expr="enable_plugins">
-        <if expr="is_win">
-          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_win.json" type="BINDATA" />
-        </if>
-        <if expr="is_macosx">
-          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_mac.json" type="BINDATA" />
-        </if>
-        <if expr="chromeos_ash">
-          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_chromeos.json" type="BINDATA" />
-        </if>
-        <if expr="is_linux or chromeos_lacros or is_fuchsia">
-          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
-        </if>
+        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata.json" type="BINDATA" />
       </if>
       <if expr="chromeos_ash">
         <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />

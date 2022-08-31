@@ -18,13 +18,8 @@ const char PluginMetadata::kAdobeReaderGroupName[] = "Adobe Reader";
 const char PluginMetadata::kJavaGroupName[] = "Java(TM)";
 const char PluginMetadata::kQuickTimeGroupName[] = "QuickTime Player";
 const char PluginMetadata::kShockwaveGroupName[] = "Adobe Shockwave Player";
-const char PluginMetadata::kAdobeFlashPlayerGroupName[] = "Adobe Flash Player";
 const char PluginMetadata::kRealPlayerGroupName[] = "RealPlayer";
 const char PluginMetadata::kSilverlightGroupName[] = "Silverlight";
-const char PluginMetadata::kWindowsMediaPlayerGroupName[] =
-    "Windows Media Player";
-const char PluginMetadata::kGoogleTalkGroupName[] = "Google Talk";
-const char PluginMetadata::kGoogleEarthGroupName[] = "Google Earth";
 
 PluginMetadata::PluginMetadata(const std::string& identifier,
                                const std::u16string& name,
@@ -43,8 +38,7 @@ PluginMetadata::PluginMetadata(const std::string& identifier,
       language_(language),
       plugin_is_deprecated_(plugin_is_deprecated) {}
 
-PluginMetadata::~PluginMetadata() {
-}
+PluginMetadata::~PluginMetadata() = default;
 
 void PluginMetadata::AddVersion(const base::Version& version,
                                 SecurityStatus status) {
@@ -52,31 +46,7 @@ void PluginMetadata::AddVersion(const base::Version& version,
   versions_[version] = status;
 }
 
-void PluginMetadata::AddMimeType(const std::string& mime_type) {
-  all_mime_types_.push_back(mime_type);
-}
-
-void PluginMetadata::AddMatchingMimeType(const std::string& mime_type) {
-  matching_mime_types_.push_back(mime_type);
-}
-
-bool PluginMetadata::HasMimeType(const std::string& mime_type) const {
-  return base::Contains(all_mime_types_, mime_type);
-}
-
-bool PluginMetadata::MatchesPlugin(const content::WebPluginInfo& plugin) {
-  for (size_t i = 0; i < matching_mime_types_.size(); ++i) {
-    // To have a match, every one of the |matching_mime_types_|
-    // must be handled by the plugin.
-    size_t j = 0;
-    for (; j < plugin.mime_types.size(); ++j) {
-      if (plugin.mime_types[j].mime_type == matching_mime_types_[i])
-        break;
-    }
-    if (j == plugin.mime_types.size())
-      return false;
-  }
-
+bool PluginMetadata::MatchesPlugin(const content::WebPluginInfo& plugin) const {
   return base::MatchPattern(plugin.name, group_name_matcher_);
 }
 

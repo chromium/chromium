@@ -43,26 +43,6 @@ static std::u16string GetGroupName(const content::WebPluginInfo& plugin) {
   return plugin.path.BaseName().RemoveExtension().AsUTF16Unsafe();
 }
 
-void LoadMimeTypes(bool matching_mime_types,
-                   const base::Value::Dict& plugin_dict,
-                   PluginMetadata* plugin) {
-  base::StringPiece list_key =
-      matching_mime_types ? "matching_mime_types" : "mime_types";
-  const base::Value::List* mime_types = plugin_dict.FindList(list_key);
-  if (!mime_types)
-    return;
-
-  for (const auto& mime_type : *mime_types) {
-    const std::string* mime_type_str = mime_type.GetIfString();
-    if (!mime_type_str)
-      continue;
-    if (matching_mime_types)
-      plugin->AddMatchingMimeType(*mime_type_str);
-    else
-      plugin->AddMimeType(*mime_type_str);
-  }
-}
-
 std::unique_ptr<PluginMetadata> CreatePluginMetadata(
     const std::string& identifier,
     const base::Value::Dict& plugin_dict) {
@@ -123,9 +103,6 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
       plugin->AddVersion(base::Version(version), status);
     }
   }
-
-  LoadMimeTypes(false, plugin_dict, plugin.get());
-  LoadMimeTypes(true, plugin_dict, plugin.get());
   return plugin;
 }
 
@@ -201,11 +178,14 @@ std::unique_ptr<PluginMetadata> PluginFinder::GetPluginMetadata(
   // The plugin metadata was not found, create a dummy one holding
   // the name, identifier and group name only. Dummy plugin is not deprecated.
   std::string identifier = GetIdentifier(plugin);
-  std::unique_ptr<PluginMetadata> metadata = std::make_unique<PluginMetadata>(
-      identifier, GetGroupName(plugin), false, GURL(), GURL(), plugin.name,
-      std::string(), false /* plugin_is_deprecated */);
-  for (size_t i = 0; i < plugin.mime_types.size(); ++i)
-    metadata->AddMatchingMimeType(plugin.mime_types[i].mime_type);
+  auto metadata =
+      std::make_unique<PluginMetadata>(identifier, GetGroupName(plugin),
+                                       /*url_for_display=*/false,
+                                       /*plugin_url=*/GURL(),
+                                       /*help_url=*/GURL(),
+                                       /*group_name_matcher=*/plugin.name,
+                                       /*language=*/std::string(),
+                                       /*plugin_is_deprecated=*/false);
 
   DCHECK(metadata->MatchesPlugin(plugin));
   if (identifier_plugin_.find(identifier) != identifier_plugin_.end())

@@ -7937,18 +7937,7 @@ grit("resources") {
 
   # TODO(crbug.com/1064647): Remove PluginFinder completely.
   if (enable_plugins) {
-    if (is_win) {
-      inputs = [ "resources/plugin_metadata/plugins_win.json" ]
-    }
-    if (is_mac) {
-      inputs = [ "resources/plugin_metadata/plugins_mac.json" ]
-    }
-    if (is_chromeos_ash) {
-      inputs = [ "resources/plugin_metadata/plugins_chromeos.json" ]
-    }
-    if (is_linux || is_chromeos_lacros || is_fuchsia) {
-      inputs = [ "resources/plugin_metadata/plugins_linux.json" ]
-    }
+    inputs = [ "resources/plugin_metadata.json" ]
   }
 
   if (enable_webui_certificate_viewer) {
