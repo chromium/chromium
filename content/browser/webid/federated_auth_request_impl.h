@@ -56,11 +56,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   ~FederatedAuthRequestImpl() override;
 
   // blink::mojom::FederatedAuthRequest:
-  void RequestToken(
-      std::vector<blink::mojom::IdentityProviderPtr> identity_provider_ptrs,
-      bool prefer_auto_sign_in,
-      bool show_iframe_requester,
-      RequestTokenCallback) override;
+  void RequestToken(std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs,
+                    bool prefer_auto_sign_in,
+                    bool show_iframe_requester,
+                    RequestTokenCallback) override;
   void CancelTokenRequest() override;
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  LogoutRpsCallback) override;
@@ -74,6 +73,30 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
+  // Fetched from the IDP FedCM manifest configuration.
+  struct Endpoints {
+    Endpoints();
+    ~Endpoints();
+    Endpoints(const Endpoints&);
+
+    GURL idp;
+    GURL token;
+    GURL accounts;
+    GURL client_metadata;
+    GURL metrics;
+  };
+
+  struct IdentityProviderInfo {
+    IdentityProviderInfo();
+    ~IdentityProviderInfo();
+    IdentityProviderInfo(const IdentityProviderInfo&);
+
+    blink::mojom::IdentityProvider provider;
+    Endpoints endpoints;
+    bool manifest_list_checked{false};
+    absl::optional<IdentityProviderMetadata> metadata;
+  };
+
  private:
   friend class FederatedAuthRequestImplTest;
 
@@ -85,52 +108,42 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
-  GURL ResolveManifestUrl(
-      const blink::mojom::IdentityProvider& identity_provider,
-      const std::string& url);
+  GURL ResolveManifestUrl(const blink::mojom::IdentityProvider& idp,
+                          const std::string& url);
 
   // Checks validity of the passed-in endpoint URL origin.
-  bool IsEndpointUrlValid(
-      const blink::mojom::IdentityProvider& identity_provider,
-      const GURL& endpoint_url);
+  bool IsEndpointUrlValid(const blink::mojom::IdentityProvider& idp,
+                          const GURL& endpoint_url);
 
-  void FetchManifest(blink::mojom::IdentityProviderPtr identity_provider_ptr);
-  void OnManifestListFetched(
-      const blink::mojom::IdentityProvider& identity_provider,
-      IdpNetworkRequestManager::FetchStatus status,
-      const std::set<GURL>& urls);
-  void OnManifestFetched(
-      const blink::mojom::IdentityProvider& identity_provider,
-      IdpNetworkRequestManager::FetchStatus status,
-      IdpNetworkRequestManager::Endpoints,
-      IdentityProviderMetadata idp_metadata);
-  void OnManifestReady(const blink::mojom::IdentityProvider& identity_provider,
-                       IdentityProviderMetadata idp_metadata);
+  void FetchManifest(const blink::mojom::IdentityProvider& idp);
+  void OnManifestListFetched(const blink::mojom::IdentityProvider& idp,
+                             IdpNetworkRequestManager::FetchStatus status,
+                             const std::set<GURL>& urls);
+  void OnManifestFetched(const blink::mojom::IdentityProvider& idp,
+                         IdpNetworkRequestManager::FetchStatus status,
+                         IdpNetworkRequestManager::Endpoints,
+                         IdentityProviderMetadata idp_metadata);
+  void OnManifestReady(const IdentityProviderInfo& idp_info);
   void OnClientMetadataResponseReceived(
-      const blink::mojom::IdentityProvider& identity_provider,
-      IdentityProviderMetadata idp_metadata,
+      const IdentityProviderInfo& idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata data);
 
   void OnAccountsResponseReceived(
-      const blink::mojom::IdentityProvider& identity_provider,
-      IdentityProviderMetadata idp_metadata,
+      const IdentityProviderInfo& idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts);
-  void OnAccountSelected(
-      const blink::mojom::IdentityProvider& identity_provider,
-      const std::string& account_id,
-      bool is_sign_in);
+  void OnAccountSelected(const IdentityProviderInfo& idp_info,
+                         const std::string& account_id,
+                         bool is_sign_in);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
-  void CompleteTokenRequest(
-      const blink::mojom::IdentityProvider& identity_provider,
-      IdpNetworkRequestManager::FetchStatus status,
-      const std::string& token);
-  void OnTokenResponseReceived(
-      const blink::mojom::IdentityProvider& identity_provider,
-      IdpNetworkRequestManager::FetchStatus status,
-      const std::string& token);
+  void CompleteTokenRequest(const blink::mojom::IdentityProvider& idp,
+                            IdpNetworkRequestManager::FetchStatus status,
+                            const std::string& token);
+  void OnTokenResponseReceived(const blink::mojom::IdentityProvider& idp,
+                               IdpNetworkRequestManager::FetchStatus status,
+                               const std::string& token);
   void DispatchOneLogout();
   void OnLogoutCompleted();
   void CompleteRequestWithError(
@@ -169,7 +182,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // reorders accounts so that those that are considered returning users are
   // before users that are not returning.
   void ComputeLoginStateAndReorderAccounts(
-      const blink::mojom::IdentityProvider& identity_provider,
+      const blink::mojom::IdentityProvider& idp,
       IdpNetworkRequestManager::AccountList& accounts);
 
   url::Origin GetEmbeddingOrigin() const;
@@ -196,10 +209,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     GURL metrics;
   } endpoints_;
 
-  // Tracks for which IDPs the manifest URL has been checked against the IDP's
-  // manifest list.
-  base::flat_set<GURL> manifest_lists_checked_;
-  absl::optional<IdentityProviderMetadata> idp_metadata_;
+  base::flat_map<GURL, IdentityProviderInfo> idp_info_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
