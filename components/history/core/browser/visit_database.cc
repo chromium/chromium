@@ -96,6 +96,22 @@ bool TransitionIsVisible(int32_t transition) {
                                        ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 }
 
+VisitSource VisitSourceFromInt(int value) {
+  auto converted = static_cast<VisitSource>(value);
+  // Verify that `converted` is actually a valid enum value.
+  switch (converted) {
+    case SOURCE_SYNCED:
+    case SOURCE_BROWSED:
+    case SOURCE_EXTENSION:
+    case SOURCE_FIREFOX_IMPORTED:
+    case SOURCE_IE_IMPORTED:
+    case SOURCE_SAFARI_IMPORTED:
+      return converted;
+  }
+  // In cases of database corruption, SOURCE_BROWSED is a safe default value.
+  return SOURCE_BROWSED;
+}
+
 }  // namespace
 
 VisitDatabase::VisitDatabase() = default;
@@ -957,8 +973,7 @@ void VisitDatabase::GetVisitsSource(const VisitVector& visits,
     // Get the source entries out of the query result.
     while (statement.Step()) {
       std::pair<VisitID, VisitSource> source_entry(
-          statement.ColumnInt64(0),
-          static_cast<VisitSource>(statement.ColumnInt(1)));
+          statement.ColumnInt64(0), VisitSourceFromInt(statement.ColumnInt(1)));
       sources->insert(source_entry);
     }
   }
@@ -970,7 +985,7 @@ VisitSource VisitDatabase::GetVisitSource(const VisitID visit_id) {
   statement.BindInt64(0, visit_id);
   if (!statement.Step())
     return VisitSource::SOURCE_BROWSED;
-  return static_cast<VisitSource>(statement.ColumnInt(0));
+  return VisitSourceFromInt(statement.ColumnInt(0));
 }
 
 std::vector<DomainVisit>
