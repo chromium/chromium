@@ -941,9 +941,11 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     }
     if (!skip_click_dispatch && mouse_target &&
         event_type == WebInputEvent::Type::kPointerUp) {
+      Element* captured_click_target = GetEffectiveTargetForPointerEvent(
+          nullptr, pointer_event->pointerId());
       mouse_event_manager_->DispatchMouseClickIfNeeded(
-          mouse_target, mouse_event, pointer_event->pointerId(),
-          pointer_event->pointerType());
+          mouse_target, captured_click_target, mouse_event,
+          pointer_event->pointerId(), pointer_event->pointerType());
     }
   }
 
@@ -1106,11 +1108,6 @@ bool PointerEventManager::SetPointerCapture(PointerId pointer_id,
   if (explicit_capture) {
     UseCounter::Count(frame_->GetDocument(),
                       WebFeature::kPointerEventSetCapture);
-    if (pointer_id == PointerEventFactory::kMouseId &&
-        target != mouse_event_manager_->ClickElement()) {
-      UseCounter::Count(frame_->GetDocument(),
-                        WebFeature::kExplicitPointerCaptureClickTargetDiff);
-    }
   }
   if (pointer_event_factory_.IsActiveButtonsState(pointer_id)) {
     if (pointer_id != dispatching_pointer_id_) {

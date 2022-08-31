@@ -352,6 +352,10 @@
       status: "stable",
     },
     {
+      name: "ClickToCapturedPointer",
+      status: "experimental",
+    },
+    {
       name: "ClientHintsMetaEquivDelegateCH",
       status: "stable",
     },

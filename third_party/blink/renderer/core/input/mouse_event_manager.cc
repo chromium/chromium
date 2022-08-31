@@ -337,6 +337,7 @@ WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
 
 WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     Element* mouse_release_target,
+    Element* captured_click_target,
     const WebMouseEvent& mouse_event,
     const PointerId& pointer_id,
     const String& pointer_type) {
@@ -359,12 +360,22 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     return WebInputEventResult::kNotHandled;
 
   Node* click_target_node = nullptr;
-  if (click_element_->GetDocument() == mouse_release_target->GetDocument()) {
+  if (RuntimeEnabledFeatures::ClickToCapturedPointerEnabled() &&
+      captured_click_target) {
+    click_target_node = captured_click_target;
+  } else if (click_element_->GetDocument() ==
+             mouse_release_target->GetDocument()) {
     click_target_node = mouse_release_target->CommonAncestor(
         *click_element_, event_handling_util::ParentForClickEvent);
   }
+
   if (!click_target_node)
     return WebInputEventResult::kNotHandled;
+
+  if (captured_click_target && (click_target_node != captured_click_target)) {
+    UseCounter::Count(frame_->GetDocument(),
+                      WebFeature::kExplicitPointerCaptureClickTargetDiff);
+  }
 
   return DispatchMouseEvent(
       click_target_node,

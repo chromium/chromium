@@ -60,6 +60,7 @@ class CORE_EXPORT MouseEventManager final
 
   WebInputEventResult DispatchMouseClickIfNeeded(
       Element* mouse_release_target,
+      Element* captured_click_target,
       const WebMouseEvent& mouse_event,
       const PointerId& pointer_id,
       const String& pointer_type);
