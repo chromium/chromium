@@ -172,7 +172,7 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
 
     // Add chrome policy.
     PolicyMap policy_map;
-    policy_map.LoadFrom(dictionary_value, level, scope_,
+    policy_map.LoadFrom(dictionary_value->GetDict(), level, scope_,
                         POLICY_SOURCE_PLATFORM);
     bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
         .MergeFrom(policy_map);
@@ -225,7 +225,8 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
       }
 
       PolicyMap policy;
-      policy.LoadFrom(policy_dictionary, level, scope_, POLICY_SOURCE_PLATFORM);
+      policy.LoadFrom(policy_dictionary->GetDict(), level, scope_,
+                      POLICY_SOURCE_PLATFORM);
       bundle->Get(PolicyNamespace(domain, components_it.key()))
           .MergeFrom(policy);
     }

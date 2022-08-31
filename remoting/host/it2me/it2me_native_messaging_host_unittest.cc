@@ -339,7 +339,7 @@ void It2MeNativeMessagingHostTest::SetPolicies(
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string());
   policy::PolicyBundle policy_bundle;
   policy::PolicyMap& policy_map = policy_bundle.Get(policy_namespace);
-  policy_map.LoadFrom(&dict, policy::POLICY_LEVEL_MANDATORY,
+  policy_map.LoadFrom(dict.GetDict(), policy::POLICY_LEVEL_MANDATORY,
                       policy::POLICY_SCOPE_MACHINE,
                       policy::POLICY_SOURCE_CLOUD);
 

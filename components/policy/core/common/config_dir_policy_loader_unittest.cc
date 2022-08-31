@@ -260,8 +260,8 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
   ASSERT_TRUE(bundle.get());
   PolicyBundle expected_bundle;
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .LoadFrom(&test_dict_foo, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                POLICY_SOURCE_PLATFORM);
+      .LoadFrom(test_dict_foo.GetDict(), POLICY_LEVEL_MANDATORY,
+                POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM);
   for (unsigned int i = 1; i <= 8; ++i) {
     auto conflict_policy =
         expected_bundle

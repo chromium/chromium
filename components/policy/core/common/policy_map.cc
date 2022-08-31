@@ -542,17 +542,16 @@ bool PolicyMap::IsPolicyExternal(const std::string& policy) {
   return false;
 }
 
-void PolicyMap::LoadFrom(const base::DictionaryValue* policies,
+void PolicyMap::LoadFrom(const base::Value::Dict& policies,
                          PolicyLevel level,
                          PolicyScope scope,
                          PolicySource source) {
-  for (base::DictionaryValue::Iterator it(*policies); !it.IsAtEnd();
-       it.Advance()) {
-    if (IsPolicyExternal(it.key())) {
-      LOG(WARNING) << "Ignoring external policy: " << it.key();
+  for (auto it : policies) {
+    if (IsPolicyExternal(it.first)) {
+      LOG(WARNING) << "Ignoring external policy: " << it.first;
       continue;
     }
-    Set(it.key(), level, scope, source, it.value().Clone(), nullptr);
+    Set(it.first, level, scope, source, it.second.Clone(), nullptr);
   }
 }
 

@@ -609,8 +609,8 @@ TEST_F(PolicyLoaderWinTest, LoadStringEncodedValues) {
       InstallValue(encoded_policy, HKEY_CURRENT_USER, kPathSuffix, kMandatory));
 
   PolicyBundle expected;
-  expected.Get(ns).LoadFrom(&policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                            POLICY_SOURCE_PLATFORM);
+  expected.Get(ns).LoadFrom(policy.GetDict(), POLICY_LEVEL_MANDATORY,
+                            POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM);
   EXPECT_TRUE(Matches(expected));
 }
 
@@ -642,8 +642,8 @@ TEST_F(PolicyLoaderWinTest, LoadIntegerEncodedValues) {
   policy.SetIntKey("int", 123);
   policy.SetDoubleKey("double", 456.0);
   PolicyBundle expected;
-  expected.Get(ns).LoadFrom(&policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                            POLICY_SOURCE_PLATFORM);
+  expected.Get(ns).LoadFrom(policy.GetDict(), POLICY_LEVEL_MANDATORY,
+                            POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM);
   EXPECT_TRUE(Matches(expected));
 }
 
@@ -693,7 +693,7 @@ TEST_F(PolicyLoaderWinTest, DefaultPropertySchemaType) {
   base::DictionaryValue expected_policies;
   expected_policies.SetKey("policy", expected_policy.Clone());
   PolicyBundle expected;
-  expected.Get(ns).LoadFrom(&expected_policies, POLICY_LEVEL_MANDATORY,
+  expected.Get(ns).LoadFrom(expected_policies.GetDict(), POLICY_LEVEL_MANDATORY,
                             POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM);
   EXPECT_TRUE(Matches(expected));
 }
@@ -720,11 +720,11 @@ TEST_F(PolicyLoaderWinTest, AlternativePropertySchemaType) {
   base::DictionaryValue expected_a;
   expected_a.SetIntKey("policy 1", 3);
   expected_a.SetIntKey("policy 2", 3);
-  expected.Get(ns_a).LoadFrom(&expected_a, POLICY_LEVEL_MANDATORY,
+  expected.Get(ns_a).LoadFrom(expected_a.GetDict(), POLICY_LEVEL_MANDATORY,
                               POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM);
   base::DictionaryValue expected_b;
   expected_b.SetIntKey("policy 1", 2);
-  expected.Get(ns_b).LoadFrom(&expected_b, POLICY_LEVEL_MANDATORY,
+  expected.Get(ns_b).LoadFrom(expected_b.GetDict(), POLICY_LEVEL_MANDATORY,
                               POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM);
 
   const std::wstring kPathSuffix =

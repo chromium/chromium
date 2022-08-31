@@ -83,13 +83,13 @@ void ParsePolicy(const RegistryDict* gpo_dict,
     return;
 
   std::unique_ptr<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
-  const base::DictionaryValue* policy_dict = nullptr;
-  if (!policy_value->GetAsDictionary(&policy_dict) || !policy_dict) {
+  const base::Value::Dict* policy_dict = policy_value->GetIfDict();
+  if (!policy_dict) {
     SYSLOG(WARNING) << "Root policy object is not a dictionary!";
     return;
   }
 
-  policy->LoadFrom(policy_dict, level, scope, POLICY_SOURCE_PLATFORM);
+  policy->LoadFrom(*policy_dict, level, scope, POLICY_SOURCE_PLATFORM);
 }
 
 // Returns a name, using the |get_name| callback, which may refuse the call if

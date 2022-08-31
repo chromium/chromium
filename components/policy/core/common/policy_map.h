@@ -287,7 +287,7 @@ class POLICY_EXPORT PolicyMap {
   // Loads the values in |policies| into this PolicyMap. All policies loaded
   // will have |level|, |scope| and |source| in their entries. Existing entries
   // are replaced.
-  void LoadFrom(const base::DictionaryValue* policies,
+  void LoadFrom(const base::Value::Dict& policies,
                 PolicyLevel level,
                 PolicyScope scope,
                 PolicySource source);

@@ -401,8 +401,7 @@ TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
       expected_policy.Clone();
   expected_policy.Clear();
-  expected_policy.LoadFrom(&policy_dict,
-                           test_harness_->policy_level(),
+  expected_policy.LoadFrom(policy_dict.GetDict(), test_harness_->policy_level(),
                            test_harness_->policy_scope(),
                            test_harness_->policy_source());
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
