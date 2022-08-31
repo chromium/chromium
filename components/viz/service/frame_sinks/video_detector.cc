@@ -11,6 +11,8 @@
 #include "base/time/time.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -51,9 +53,22 @@ class VideoDetector::ClientInfo {
       return false;
     }
 
-    gfx::Rect damage =
-        gfx::ScaleToEnclosingRect(frame.render_pass_list.back()->damage_rect,
-                                  1.f / frame.device_scale_factor());
+    gfx::Rect damage = frame.render_pass_list.back()->damage_rect;
+    if (frame.render_pass_list.back()->has_per_quad_damage) {
+      for (auto* quad : frame.render_pass_list.back()->quad_list) {
+        if (quad->material != DrawQuad::Material::kTextureContent)
+          continue;
+
+        auto* texture_quad = TextureDrawQuad::MaterialCast(quad);
+        if (!texture_quad->damage_rect)
+          continue;
+
+        damage.Union(*texture_quad->damage_rect);
+      }
+    }
+
+    damage =
+        gfx::ScaleToEnclosingRect(damage, 1.f / frame.device_scale_factor());
 
     if (damage.width() < kMinDamageWidth || damage.height() < kMinDamageHeight)
       return false;
