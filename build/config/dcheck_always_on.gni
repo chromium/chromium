@@ -29,3 +29,8 @@ declare_args() {
   # Set to false to disable EXPENSIVE_DCHECK()s.
   enable_expensive_dchecks = is_debug || dcheck_always_on
 }
+
+assert(!dcheck_is_configurable || (dcheck_always_on || is_debug),
+       "dcheck_is_configurable only makes sense with DCHECKs enabled")
+assert(!enable_expensive_dchecks || (dcheck_always_on || is_debug),
+       "enable_expensive_dchecks only makes sense with DCHECKs enabled")
