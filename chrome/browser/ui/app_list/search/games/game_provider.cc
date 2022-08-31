@@ -44,6 +44,9 @@ constexpr double kRelevanceThreshold = 0.65;
 constexpr size_t kMaxResults = 3u;
 constexpr double kEpsilon = 1e-5;
 
+// Flag to enable/disable diacritics stripping
+constexpr bool kStripDiacritics = true;
+
 // Outcome of a call to GameSearchProvider::Start. These values persist to logs.
 // Entries should not be renumbered and numeric values should not be reused.
 enum class Status {
@@ -99,7 +102,8 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
   }
 
   FuzzyTokenizedStringMatch match;
-  return match.Relevance(tokenized_query, tokenized_title, kUseWeightedRatio);
+  return match.Relevance(tokenized_query, tokenized_title, kUseWeightedRatio,
+                         kStripDiacritics);
 }
 
 std::vector<std::pair<const apps::Result*, double>> SearchGames(

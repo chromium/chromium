@@ -77,6 +77,9 @@ constexpr const char* const ranked_default_app_ids[] = {
     web_app::kOsSettingsAppId, web_app::kHelpAppId, arc::kPlayStoreAppId,
     web_app::kCanvasAppId, web_app::kCameraAppId};
 
+// Flag to enable/disable diacritics stripping
+constexpr bool kStripDiacritics = true;
+
 // A selection of apps are designated as default recommended apps, and these are
 // ranked in a priority order. Determine the rank of the app corresponding to
 // |app_id|.
@@ -216,7 +219,8 @@ class AppSearchProvider::App {
     } else {
       FuzzyTokenizedStringMatch match;
       for (auto& curr_text : tokenized_indexed_searchable_text_) {
-        if (match.Relevance(query, *curr_text, kUseWeightedRatio) >=
+        if (match.Relevance(query, *curr_text, kUseWeightedRatio,
+                            kStripDiacritics) >=
             std::max(kRelevanceThreshold, relevance_threshold())) {
           return true;
         }
@@ -601,8 +605,8 @@ void AppSearchProvider::UpdateQueriedResults() {
       MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
     } else {
       FuzzyTokenizedStringMatch match;
-      const double relevance =
-          match.Relevance(query_terms, *indexed_name, kUseWeightedRatio);
+      const double relevance = match.Relevance(
+          query_terms, *indexed_name, kUseWeightedRatio, kStripDiacritics);
       if (relevance >= kRelevanceThreshold ||
           app->MatchSearchableText(query_terms, use_exact_match)) {
         std::unique_ptr<AppResult> result = app->data_source()->CreateResult(
