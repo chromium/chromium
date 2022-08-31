@@ -112,41 +112,6 @@ ComputeAudioOutputBufferSize(const AudioParameters& parameters);
 MEDIA_SHMEM_EXPORT uint32_t ComputeAudioOutputBufferSize(int channels,
                                                          int frames);
 
-// Channel count and ChannelLayout pair, with helper methods to enforce safe
-// construction.
-class MEDIA_SHMEM_EXPORT ChannelLayoutConfig {
- public:
-  ChannelLayoutConfig(const ChannelLayoutConfig& other);
-  ChannelLayoutConfig& operator=(const ChannelLayoutConfig& other);
-  ChannelLayoutConfig();
-  ChannelLayoutConfig(ChannelLayout channel_layout, int channels);
-  ~ChannelLayoutConfig();
-
-  template <ChannelLayout layout>
-  static ChannelLayoutConfig FromLayout() {
-    return ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout));
-  }
-
-  // For |CHANNEL_LAYOUT_DISCRETE|, we have to explicitly set the number of
-  // channels, so we need to use the normal constructor.
-  template <>
-  ChannelLayoutConfig FromLayout<CHANNEL_LAYOUT_DISCRETE>() = delete;
-
-  static ChannelLayoutConfig Mono();
-
-  static ChannelLayoutConfig Stereo();
-
-  static ChannelLayoutConfig Guess(int channels);
-
-  ChannelLayout channel_layout() const { return channel_layout_; }
-
-  int channels() const { return channels_; }
-
- private:
-  ChannelLayout channel_layout_;  // Order of surround sound channels.
-  int channels_;                  // Number of channels.
-};
-
 class MEDIA_SHMEM_EXPORT AudioParameters {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
@@ -224,20 +189,6 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   };
 
   AudioParameters();
-
-  AudioParameters(Format format,
-                  ChannelLayoutConfig channel_layout_config,
-                  int sample_rate,
-                  int frames_per_buffer);
-
-  AudioParameters(Format format,
-                  ChannelLayoutConfig channel_layout_config,
-                  int sample_rate,
-                  int frames_per_buffer,
-                  const HardwareCapabilities& hardware_capabilities);
-
-  // TODO(1286281): Remove these old constructors once the new constructors are
-  // used everywhere.
   AudioParameters(Format format,
                   ChannelLayout channel_layout,
                   int sample_rate,
@@ -251,13 +202,6 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   ~AudioParameters();
 
   // Re-initializes all members except for |hardware_capabilities_|.
-  void Reset(Format format,
-             ChannelLayoutConfig channel_layout_config,
-             int sample_rate,
-             int frames_per_buffer);
-
-  // TODO(1286281): Remove this old overload once the new version is used
-  // everywhere.
   void Reset(Format format,
              ChannelLayout channel_layout,
              int sample_rate,
@@ -299,27 +243,18 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   void set_format(Format format) { format_ = format; }
   Format format() const { return format_; }
 
-  void SetChannelLayoutConfig(ChannelLayout layout, int channels);
+  // A setter for channel_layout_ is intentionally excluded.
+  ChannelLayout channel_layout() const { return channel_layout_; }
 
-  const ChannelLayoutConfig& channel_layout_config() const {
-    return channel_layout_config_;
-  }
-
-  ChannelLayout channel_layout() const {
-    return channel_layout_config_.channel_layout();
-  }
-
-  // TODO(1286281): Remove this method once the new constructors are used
-  // everywhere. The number of channels is usually computed from
-  // channel_layout_. Setting this explicitly is only required with
-  // CHANNEL_LAYOUT_DISCRETE.
+  // The number of channels is usually computed from channel_layout_. Setting
+  // this explicitly is only required with CHANNEL_LAYOUT_DISCRETE.
   void set_channels_for_discrete(int channels) {
-    DCHECK(channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
-           channel_layout() == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
-           channels == ChannelLayoutToChannelCount(channel_layout()));
-    SetChannelLayoutConfig(channel_layout(), channels);
+    DCHECK(channel_layout_ == CHANNEL_LAYOUT_DISCRETE ||
+           channel_layout_ == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
+           channels == ChannelLayoutToChannelCount(channel_layout_));
+    channels_ = channels;
   }
-  int channels() const { return channel_layout_config_.channels(); }
+  int channels() const { return channels_; }
 
   void set_sample_rate(int sample_rate) { sample_rate_ = sample_rate; }
   int sample_rate() const { return sample_rate_; }
@@ -359,8 +294,9 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
  private:
   Format format_;                 // Format of the stream.
-  ChannelLayoutConfig channel_layout_config_;  // The channel layout and the
-                                               // number of channels.
+  ChannelLayout channel_layout_;  // Order of surround sound channels.
+  int channels_;                  // Number of channels. Value set based on
+                                  // |channel_layout|.
   int sample_rate_;               // Sampling frequency/rate.
   int frames_per_buffer_;         // Number of frames in a buffer.
   int effects_;                   // Bitmask using PlatformEffectsMask.

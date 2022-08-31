@@ -6,32 +6,10 @@
 
 #include <sstream>
 
-#include "base/check_op.h"
 #include "media/base/audio_bus.h"
-#include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 
 namespace media {
-
-namespace {
-
-int ComputeChannelCount(ChannelLayout channel_layout, int channels) {
-  if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
-    // TODO(1286281): Assert that channels is not 0 once the new constructors
-    // are used everywhere.
-    return channels;
-  } else if (channel_layout == CHANNEL_LAYOUT_5_1_4_DOWNMIX && channels != 0) {
-    // For CHANNEL_LAYOUT_5_1_4_DOWNMIX we can set a custom number of channels,
-    // but we are not forced to.
-    return channels;
-  }
-  const int calculated_channel_count =
-      ChannelLayoutToChannelCount(channel_layout);
-  DCHECK_EQ(calculated_channel_count, channels);
-  return calculated_channel_count;
-}
-
-}  // namespace
 
 static_assert(AudioBus::kChannelAlignment == kParametersAlignment,
               "Audio buffer parameters struct alignment not same as AudioBus");
@@ -113,57 +91,8 @@ uint32_t ComputeAudioOutputBufferSize(int channels, int frames) {
   return result.ValueOrDie();
 }
 
-ChannelLayoutConfig::ChannelLayoutConfig(const ChannelLayoutConfig& other) =
-    default;
-ChannelLayoutConfig& ChannelLayoutConfig::operator=(
-    const ChannelLayoutConfig& other) = default;
-ChannelLayoutConfig::~ChannelLayoutConfig() = default;
-
-ChannelLayoutConfig::ChannelLayoutConfig()
-    : ChannelLayoutConfig(
-          ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>()) {}
-
-ChannelLayoutConfig::ChannelLayoutConfig(ChannelLayout channel_layout,
-                                         int channels)
-    : channel_layout_(channel_layout),
-      channels_(ComputeChannelCount(channel_layout, channels)) {}
-
-ChannelLayoutConfig ChannelLayoutConfig::Mono() {
-  return FromLayout<CHANNEL_LAYOUT_MONO>();
-}
-
-ChannelLayoutConfig ChannelLayoutConfig::Stereo() {
-  return FromLayout<CHANNEL_LAYOUT_STEREO>();
-}
-
-ChannelLayoutConfig ChannelLayoutConfig::Guess(int channels) {
-  return ChannelLayoutConfig(GuessChannelLayout(channels), channels);
-}
-
 AudioParameters::AudioParameters()
-    : AudioParameters(AUDIO_PCM_LINEAR,
-                      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>(),
-                      0,
-                      0) {}
-
-AudioParameters::AudioParameters(Format format,
-                                 ChannelLayoutConfig channel_layout_config,
-                                 int sample_rate,
-                                 int frames_per_buffer)
-    : latency_tag_(AudioLatency::LATENCY_COUNT) {
-  Reset(format, channel_layout_config, sample_rate, frames_per_buffer);
-}
-
-AudioParameters::AudioParameters(
-    Format format,
-    ChannelLayoutConfig channel_layout_config,
-    int sample_rate,
-    int frames_per_buffer,
-    const HardwareCapabilities& hardware_capabilities)
-    : latency_tag_(AudioLatency::LATENCY_COUNT),
-      hardware_capabilities_(hardware_capabilities) {
-  Reset(format, channel_layout_config, sample_rate, frames_per_buffer);
-}
+    : AudioParameters(AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_NONE, 0, 0) {}
 
 AudioParameters::AudioParameters(Format format,
                                  ChannelLayout channel_layout,
@@ -190,28 +119,21 @@ AudioParameters::AudioParameters(const AudioParameters&) = default;
 AudioParameters& AudioParameters::operator=(const AudioParameters&) = default;
 
 void AudioParameters::Reset(Format format,
-                            ChannelLayoutConfig channel_layout_config,
+                            ChannelLayout channel_layout,
                             int sample_rate,
                             int frames_per_buffer) {
   format_ = format;
-  channel_layout_config_ = channel_layout_config;
+  channel_layout_ = channel_layout;
+  channels_ = ChannelLayoutToChannelCount(channel_layout);
   sample_rate_ = sample_rate;
   frames_per_buffer_ = frames_per_buffer;
   effects_ = NO_EFFECTS;
   mic_positions_.clear();
 }
 
-void AudioParameters::Reset(Format format,
-                            ChannelLayout channel_layout,
-                            int sample_rate,
-                            int frames_per_buffer) {
-  Reset(format, {channel_layout, ChannelLayoutToChannelCount(channel_layout)},
-        sample_rate, frames_per_buffer);
-}
-
 bool AudioParameters::IsValid() const {
-  return (channels() > 0) && (channels() <= media::limits::kMaxChannels) &&
-         (channel_layout() > CHANNEL_LAYOUT_UNSUPPORTED) &&
+  return (channels_ > 0) && (channels_ <= media::limits::kMaxChannels) &&
+         (channel_layout_ > CHANNEL_LAYOUT_UNSUPPORTED) &&
          (sample_rate_ >= media::limits::kMinSampleRate) &&
          (sample_rate_ <= media::limits::kMaxSampleRate) &&
          (frames_per_buffer_ > 0) &&
@@ -225,9 +147,9 @@ bool AudioParameters::IsValid() const {
             media::limits::kMaxSamplesPerPacket) &&
            (hardware_capabilities_->max_frames_per_buffer >=
             hardware_capabilities_->min_frames_per_buffer))) &&
-         (channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
-          channel_layout() == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
-          channels() == ChannelLayoutToChannelCount(channel_layout()));
+         (channel_layout_ == CHANNEL_LAYOUT_DISCRETE ||
+          channel_layout_ == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
+          channels_ == ChannelLayoutToChannelCount(channel_layout_));
 }
 
 std::string AudioParameters::AsHumanReadableString() const {
@@ -253,7 +175,7 @@ int AudioParameters::GetBytesPerBuffer(SampleFormat fmt) const {
 }
 
 int AudioParameters::GetBytesPerFrame(SampleFormat fmt) const {
-  return channels() * SampleFormatToBytesPerChannel(fmt);
+  return channels_ * SampleFormatToBytesPerChannel(fmt);
 }
 
 double AudioParameters::GetMicrosecondsPerFrame() const {
@@ -268,8 +190,8 @@ base::TimeDelta AudioParameters::GetBufferDuration() const {
 
 bool AudioParameters::Equals(const AudioParameters& other) const {
   return format_ == other.format() && sample_rate_ == other.sample_rate() &&
-         channel_layout() == other.channel_layout() &&
-         channels() == other.channels() &&
+         channel_layout_ == other.channel_layout() &&
+         channels_ == other.channels() &&
          frames_per_buffer_ == other.frames_per_buffer() &&
          effects_ == other.effects() && mic_positions_ == other.mic_positions_;
 }
@@ -293,18 +215,13 @@ bool AudioParameters::IsFormatSupportedByHardware(Format format) const {
          (hardware_capabilities_->bitstream_formats & format);
 }
 
-void AudioParameters::SetChannelLayoutConfig(ChannelLayout layout,
-                                             int channels) {
-  channel_layout_config_ = {layout, channels};
-}
-
 // static
 AudioParameters AudioParameters::UnavailableDeviceParams() {
   // Using 10 ms buffer since WebAudioMediaStreamSource::DeliverRebufferedAudio
   // deals incorrectly with reference time calculation if output buffer size
   // significantly differs from 10 ms used there, see http://crbug/701000.
   return media::AudioParameters(
-      media::AudioParameters::AUDIO_FAKE, ChannelLayoutConfig::Stereo(),
+      media::AudioParameters::AUDIO_FAKE, media::CHANNEL_LAYOUT_STEREO,
       media::AudioParameters::kAudioCDSampleRate,
       media::AudioParameters::kAudioCDSampleRate / 100);
 }
