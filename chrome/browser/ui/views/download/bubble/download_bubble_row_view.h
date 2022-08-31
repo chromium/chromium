@@ -55,14 +55,17 @@ class DownloadBubbleRowView : public views::View,
   Views GetChildrenInZOrder() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   gfx::Size CalculatePreferredSize() const override;
 
   // Overrides views::FocusChangeListener
   void OnWillChangeFocus(views::View* before, views::View* now) override;
   void OnDidChangeFocus(views::View* before, views::View* now) override {}
 
-  void UpdateQuickActionsVisibilityAndFocus(bool visible,
-                                            bool request_focus_on_last);
+  // Update the row and its elements for hover and focus events.
+  void UpdateRowForHover(bool hovered);
+  void UpdateRowForFocus(bool visible, bool request_focus_on_last_quick_action);
 
   // Overrides DownloadUIModel::Delegate:
   void OnDownloadOpened() override;
@@ -184,9 +187,9 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<const gfx::VectorIcon> last_overriden_icon_ = nullptr;
   bool already_set_default_icon_ = false;
 
-  // HoverButton for main button click, inkdrop animations and drag and drop
+  // Button for transparent button click, inkdrop animations and drag and drop
   // events.
-  raw_ptr<HoverButton> hover_button_ = nullptr;
+  raw_ptr<views::Button> transparent_button_ = nullptr;
 
   // Drag and drop:
   // Whether we are dragging the download bubble row.
