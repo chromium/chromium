@@ -22,6 +22,7 @@
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "media/audio/audio_system.h"
 #include "media/base/audio_converter.h"
+#include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "services/audio/public/cpp/device_factory.h"
 
@@ -584,7 +585,8 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   // Hard coded, WebSpeech specific parameters are utilized here.
   int frames_per_buffer = (kAudioSampleRate * chunk_duration_ms) / 1000;
   AudioParameters output_parameters =
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, kChannelLayout,
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                       kAudioSampleRate, frames_per_buffer);
   DVLOG(1) << "SRI::output_parameters: "
            << output_parameters.AsHumanReadableString();
