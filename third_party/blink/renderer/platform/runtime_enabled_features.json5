@@ -717,7 +717,7 @@
       // https://drafts.csswg.org/css-text-decor-4/#valdef-text-decoration-line-spelling-error
       // https://drafts.csswg.org/css-text-decor-4/#valdef-text-decoration-line-grammar-error
       name: "CSSSpellingGrammarErrors",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://drafts.csswg.org/css-contain-3/#style-container
