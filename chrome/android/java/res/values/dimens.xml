@@ -297,6 +297,10 @@
     <dimen name="custom_tabs_menu_footer_margin_horizontal">8dp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_vertical">12dp</dimen>
 
+    <dimen name="custom_tabs_toast_branding_icon_size">28dp</dimen>
+    <dimen name="custom_tabs_toast_branding_height">50dp</dimen>
+    <dimen name="custom_tabs_toast_branding_padding">16dp</dimen>
+
     <!-- Account chooser dialog dimensions -->
     <dimen name="account_chooser_dialog_margin">24dp</dimen>
     <dimen name="account_chooser_dialog_item_margin">24dp</dimen>
