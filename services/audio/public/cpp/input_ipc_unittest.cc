@@ -115,7 +115,7 @@ class InputIPCTest : public ::testing::Test {
   std::unique_ptr<audio::InputIPC> ipc;
   const media::AudioParameters audioParameters =
       media::AudioParameters(media::AudioParameters::AUDIO_PCM_LINEAR,
-                             media::CHANNEL_LAYOUT_STEREO,
+                             media::ChannelLayoutConfig::Stereo(),
                              16000,
                              1600);
 
