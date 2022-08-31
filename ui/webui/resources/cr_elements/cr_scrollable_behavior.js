@@ -47,24 +47,17 @@ export const CrScrollableBehavior = {
   intervalId_: null,
 
   ready() {
-    const readyAsync = () => {
+    beforeNextRender(this, () => {
       this.requestUpdateScroll();
 
       // Listen to the 'scroll' event for each scrollable container.
-      const scrollableElements = this.root.querySelectorAll('[scrollable]');
+      const scrollableElements =
+          this.shadowRoot.querySelectorAll('[scrollable]');
       for (let i = 0; i < scrollableElements.length; i++) {
         scrollableElements[i].addEventListener(
             'scroll', this.updateScrollEvent_.bind(this));
       }
-    };
-
-    // TODO(dpapad): Remove Polymer 1 codepath when Polymer 2 migration has
-    // completed.
-    if (Polymer.DomIf) {
-      beforeNextRender(this, readyAsync);
-      return;
-    }
-    readyAsync();
+    });
   },
 
   detached() {
@@ -85,7 +78,7 @@ export const CrScrollableBehavior = {
 
     this.requestUpdateScroll();
 
-    const nodeList = this.root.querySelectorAll('[scrollable] iron-list');
+    const nodeList = this.shadowRoot.querySelectorAll('[scrollable] iron-list');
     if (!nodeList.length) {
       return;
     }
@@ -137,7 +130,8 @@ export const CrScrollableBehavior = {
    */
   requestUpdateScroll() {
     requestAnimationFrame(function() {
-      const scrollableElements = this.root.querySelectorAll('[scrollable]');
+      const scrollableElements =
+          this.shadowRoot.querySelectorAll('[scrollable]');
       for (let i = 0; i < scrollableElements.length; i++) {
         this.updateScroll_(/** @type {!HTMLElement} */ (scrollableElements[i]));
       }
