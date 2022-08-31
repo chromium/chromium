@@ -167,10 +167,12 @@ std::vector<uint8_t> GenerateRandomCredentialId() {
 
 Credential::Credential(base::ScopedCFTypeRef<SecKeyRef> private_key,
                        std::vector<uint8_t> credential_id,
-                       CredentialMetadata metadata)
+                       CredentialMetadata metadata,
+                       std::string rp_id)
     : private_key(std::move(private_key)),
       credential_id(std::move(credential_id)),
-      metadata(std::move(metadata)) {}
+      metadata(std::move(metadata)),
+      rp_id(rp_id) {}
 
 Credential::Credential(const Credential& other) = default;
 
@@ -265,7 +267,7 @@ TouchIdCredentialStore::CreateCredential(
 
   return std::make_pair(
       Credential(std::move(private_key), std::move(credential_id),
-                 std::move(credential_metadata)),
+                 std::move(credential_metadata), std::move(rp_id)),
       std::move(public_key));
 }
 
@@ -337,7 +339,7 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
 
   return std::make_pair(
       Credential(std::move(private_key), std::move(credential_id),
-                 std::move(*metadata)),
+                 std::move(*metadata), std::move(rp_id)),
       std::move(public_key));
 }
 
@@ -364,7 +366,7 @@ TouchIdCredentialStore::FindCredentialsFromCredentialDescriptorList(
 
 absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindResidentCredentials(
-    const std::string& rp_id) const {
+    const absl::optional<std::string>& rp_id) const {
   absl::optional<std::list<Credential>> credentials =
       FindCredentialsImpl(rp_id, /*credential_ids=*/{});
   if (!credentials) {
@@ -472,7 +474,7 @@ std::vector<Credential> TouchIdCredentialStore::FindCredentialsForTesting(
 
 absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindCredentialsImpl(
-    const std::string& rp_id,
+    const absl::optional<std::string>& rp_id,
     const std::set<std::vector<uint8_t>>& credential_ids) const {
   // Query all credentials for the RP. Filtering for `rp_id` here ensures we
   // don't retrieve credentials for other profiles, because their
@@ -505,6 +507,37 @@ TouchIdCredentialStore::FindCredentialsImpl(
   for (CFIndex i = 0; i < CFArrayGetCount(keychain_items); ++i) {
     CFDictionaryRef attributes = base::mac::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(keychain_items, i));
+    if (!attributes) {
+      FIDO_LOG(ERROR) << "credential with missing attributes";
+      return absl::nullopt;
+    }
+    // Skip items that don't belong to the correct keychain access group
+    // because the kSecAttrAccessGroup filter is broken.
+    CFStringRef attr_access_group =
+        base::mac::GetValueFromDictionary<CFStringRef>(attributes,
+                                                       kSecAttrAccessGroup);
+    if (!attr_access_group) {
+      continue;
+    }
+    std::string rp_id_value;
+    if (!rp_id) {
+      CFStringRef sec_attr_label =
+          base::mac::GetValueFromDictionary<CFStringRef>(attributes,
+                                                         kSecAttrLabel);
+      if (!sec_attr_label) {
+        FIDO_LOG(ERROR) << "credential with missing kSecAttrLabel_data";
+        continue;
+      }
+      absl::optional<std::string> opt_rp_id = DecodeRpId(
+          config_.metadata_secret, base::SysCFStringRefToUTF8(sec_attr_label));
+      if (!opt_rp_id) {
+        FIDO_LOG(ERROR) << "could not decode RP ID";
+        continue;
+      }
+      rp_id_value = *opt_rp_id;
+    } else {
+      rp_id_value = *rp_id;
+    }
     CFDataRef application_label = base::mac::GetValueFromDictionary<CFDataRef>(
         attributes, kSecAttrApplicationLabel);
     if (!application_label) {
@@ -533,10 +566,10 @@ TouchIdCredentialStore::FindCredentialsImpl(
           CFDataGetBytePtr(application_tag_ref) +
               CFDataGetLength(application_tag_ref));
       metadata = UnsealMetadataFromApplicationTag(config_.metadata_secret,
-                                                  rp_id, application_tag);
+                                                  rp_id_value, application_tag);
     } else {
-      metadata = UnsealMetadataFromLegacyCredentialId(config_.metadata_secret,
-                                                      rp_id, credential_id);
+      metadata = UnsealMetadataFromLegacyCredentialId(
+          config_.metadata_secret, rp_id_value, credential_id);
     }
     if (!metadata) {
       FIDO_LOG(ERROR) << "credential with invalid metadata";
@@ -552,9 +585,9 @@ TouchIdCredentialStore::FindCredentialsImpl(
     base::ScopedCFTypeRef<SecKeyRef> private_key(key,
                                                  base::scoped_policy::RETAIN);
 
-    credentials.emplace_back(Credential{std::move(private_key),
-                                        std::move(credential_id),
-                                        std::move(*metadata)});
+    credentials.emplace_back(
+        Credential{std::move(private_key), std::move(credential_id),
+                   std::move(*metadata), std::move(rp_id_value)});
   }
   return std::move(credentials);
 }

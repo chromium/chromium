@@ -7,11 +7,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/i18n/string_compare.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,66 +17,8 @@
 #include "content/public/common/content_features.h"
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/webauthn_api.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace {
-
-// CredentialComparator compares two credentials based on their RP ID's eTLD +
-// 1, then on the label-reversed RP ID, then on user.name, and finally on
-// credential ID if the previous values are equal.
-class CredentialComparator {
- public:
-  CredentialComparator() {
-    UErrorCode error = U_ZERO_ERROR;
-    collator_.reset(
-        icu::Collator::createInstance(icu::Locale::getDefault(), error));
-  }
-
-  bool operator()(const device::DiscoverableCredentialMetadata& a,
-                  const device::DiscoverableCredentialMetadata& b) {
-    UCollationResult relation = base::i18n::CompareString16WithCollator(
-        *collator_, ETLDPlus1(a.rp_id), ETLDPlus1(b.rp_id));
-    if (relation != UCOL_EQUAL) {
-      return relation == UCOL_LESS;
-    }
-
-    relation = base::i18n::CompareString16WithCollator(
-        *collator_, LabelReverse(a.rp_id), LabelReverse(b.rp_id));
-    if (relation != UCOL_EQUAL) {
-      return relation == UCOL_LESS;
-    }
-
-    relation = base::i18n::CompareString16WithCollator(
-        *collator_, base::UTF8ToUTF16(a.user.name.value_or("")),
-        base::UTF8ToUTF16(b.user.name.value_or("")));
-    if (relation != UCOL_EQUAL) {
-      return relation == UCOL_LESS;
-    }
-
-    return a.cred_id < b.cred_id;
-  }
-
- private:
-  static std::u16string ETLDPlus1(const std::string& rp_id) {
-    std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-        rp_id, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-    if (domain.empty()) {
-      domain = rp_id;
-    }
-    return base::UTF8ToUTF16(domain);
-  }
-
-  static std::u16string LabelReverse(const std::string& rp_id) {
-    std::vector<base::StringPiece> parts = base::SplitStringPiece(
-        rp_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::reverse(parts.begin(), parts.end());
-    return base::UTF8ToUTF16(base::JoinString(parts, "."));
-  }
-
-  std::unique_ptr<icu::Collator> collator_;
-};
 
 bool ContainsUserCreatedCredential(
     const std::vector<device::DiscoverableCredentialMetadata>& credentials) {
@@ -165,8 +102,9 @@ void EnumerateResultToBool(
 }  // namespace
 
 LocalCredentialManagementWin::LocalCredentialManagementWin(
-    device::WinWebAuthnApi* api)
-    : api_(api) {}
+    device::WinWebAuthnApi* api,
+    Profile* profile)
+    : api_(api), profile_(profile) {}
 
 // static
 void LocalCredentialManagementWin::RegisterProfilePrefs(
@@ -174,20 +112,20 @@ void LocalCredentialManagementWin::RegisterProfilePrefs(
   registry->RegisterBooleanPref(kHasPlatformCredentialsPref, false);
 }
 
-std::unique_ptr<LocalCredentialManagement> LocalCredentialManagement::Create() {
+std::unique_ptr<LocalCredentialManagement> LocalCredentialManagement::Create(
+    Profile* profile) {
   return std::make_unique<LocalCredentialManagementWin>(
-      device::WinWebAuthnApi::GetDefault());
+      device::WinWebAuthnApi::GetDefault(), profile);
 }
 
 void LocalCredentialManagementWin::HasCredentials(
-    Profile* profile,
     base::OnceCallback<void(bool)> callback) {
   absl::optional<bool> result;
 
   if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery() ||
       !base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
     result = false;
-  } else if (profile->GetPrefs()->GetBoolean(kHasPlatformCredentialsPref)) {
+  } else if (profile_->GetPrefs()->GetBoolean(kHasPlatformCredentialsPref)) {
     result = true;
   }
 
@@ -198,14 +136,13 @@ void LocalCredentialManagementWin::HasCredentials(
   }
 
   auto cacher = std::make_unique<CredentialPresenceCacher>(
-      profile, base::BindOnce(EnumerateResultToBool, std::move(callback)));
+      profile_, base::BindOnce(EnumerateResultToBool, std::move(callback)));
   device::WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
       api_, base::BindOnce(&CredentialPresenceCacher::OnEnumerateResult,
                            std::move(cacher)));
 }
 
 void LocalCredentialManagementWin::Enumerate(
-    Profile* profile,
     base::OnceCallback<void(
         absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
         callback) {
@@ -216,14 +153,13 @@ void LocalCredentialManagementWin::Enumerate(
   }
 
   auto cacher =
-      std::make_unique<CredentialPresenceCacher>(profile, std::move(callback));
+      std::make_unique<CredentialPresenceCacher>(profile_, std::move(callback));
   device::WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
       api_, base::BindOnce(&CredentialPresenceCacher::OnEnumerateResult,
                            std::move(cacher)));
 }
 
 void LocalCredentialManagementWin::Delete(
-    Profile* profile,
     base::span<const uint8_t> credential_id,
     base::OnceCallback<void(bool)> callback) {
   device::WinWebAuthnApiAuthenticator::DeletePlatformCredential(

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
 
 class Profile;
@@ -15,19 +16,20 @@ class Profile;
 // LocalCredentialManagement.
 class LocalCredentialManagementMac : public LocalCredentialManagement {
  public:
-  LocalCredentialManagementMac();
+  explicit LocalCredentialManagementMac(
+      device::fido::mac::AuthenticatorConfig config);
 
   // LocalCredentialManagement:
-  void HasCredentials(Profile* profile,
-                      base::OnceCallback<void(bool)> callback) override;
+  void HasCredentials(base::OnceCallback<void(bool)> callback) override;
   void Enumerate(
-      Profile* profile,
       base::OnceCallback<void(
           absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
           callback) override;
-  void Delete(Profile* profile,
-              base::span<const uint8_t> credential_id,
+  void Delete(base::span<const uint8_t> credential_id,
               base::OnceCallback<void(bool)> callback) override;
+
+ private:
+  device::fido::mac::AuthenticatorConfig config_;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_LOCAL_CREDENTIAL_MANAGEMENT_MAC_H_

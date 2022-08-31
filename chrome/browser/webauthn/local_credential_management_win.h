@@ -26,26 +26,25 @@ class WinWebAuthnApi;
 // LocalCredentialManagement.
 class LocalCredentialManagementWin : public LocalCredentialManagement {
  public:
-  explicit LocalCredentialManagementWin(device::WinWebAuthnApi* api);
+  explicit LocalCredentialManagementWin(device::WinWebAuthnApi* api,
+                                        Profile* profile);
 
   // RegisterProfilePrefs registers preference values that are used for caching
   // whether local credentials exist.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // LocalCredentialManagement:
-  void HasCredentials(Profile* profile,
-                      base::OnceCallback<void(bool)> callback) override;
+  void HasCredentials(base::OnceCallback<void(bool)> callback) override;
   void Enumerate(
-      Profile* profile,
       base::OnceCallback<void(
           absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
           callback) override;
-  void Delete(Profile* profile,
-              base::span<const uint8_t> credential_id,
+  void Delete(base::span<const uint8_t> credential_id,
               base::OnceCallback<void(bool)> callback) override;
 
  private:
   device::WinWebAuthnApi* const api_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_LOCAL_CREDENTIAL_MANAGEMENT_WIN_H_

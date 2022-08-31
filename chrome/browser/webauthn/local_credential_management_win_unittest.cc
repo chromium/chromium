@@ -4,15 +4,11 @@
 
 #include <tuple>
 
-#include "build/build_config.h"
-
-// This class is only supported on Windows so far.
-#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/webauthn/local_credential_management_win.h"
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/webauthn/local_credential_management.h"
-#include "chrome/browser/webauthn/local_credential_management_win.h"
+#include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -38,11 +34,9 @@ class LocalCredentialManagementTest : public testing::Test {
 
   bool HasCredentials() {
     device::test::TestCallbackReceiver<bool> callback;
-    local_cred_man_.HasCredentials(&profile_, callback.callback());
+    local_cred_man_.HasCredentials(callback.callback());
 
-    while (!callback.was_called()) {
-      base::RunLoop().RunUntilIdle();
-    }
+    callback.WaitForCallback();
     return std::get<0>(callback.TakeResult());
   }
 
@@ -51,11 +45,9 @@ class LocalCredentialManagementTest : public testing::Test {
     device::test::TestCallbackReceiver<
         absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
         callback;
-    local_cred_man_.Enumerate(&profile_, callback.callback());
+    local_cred_man_.Enumerate(callback.callback());
 
-    while (!callback.was_called()) {
-      base::RunLoop().RunUntilIdle();
-    }
+    callback.WaitForCallback();
     return std::get<0>(callback.TakeResult());
   }
 
@@ -64,7 +56,7 @@ class LocalCredentialManagementTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   device::FakeWinWebAuthnApi api_;
-  LocalCredentialManagementWin local_cred_man_{&api_};
+  LocalCredentialManagementWin local_cred_man_{&api_, &profile_};
   const base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -171,5 +163,3 @@ TEST_F(LocalCredentialManagementTest, Sorting) {
 }
 
 }  // namespace
-
-#endif

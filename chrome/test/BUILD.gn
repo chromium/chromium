@@ -6876,7 +6876,6 @@ test("unit_tests") {
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/cablev2_devices_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
-      "../browser/webauthn/local_credential_management_unittest.cc",
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",
@@ -6885,6 +6884,16 @@ test("unit_tests") {
       "../utility/importer/bookmarks_file_importer_unittest.cc",
       "interaction/webui_interaction_test_util_unittest.cc",
     ]
+
+    if (is_mac) {
+      sources +=
+          [ "../browser/webauthn/local_credential_management_mac_unittest.mm" ]
+    }
+
+    if (is_win) {
+      sources +=
+          [ "../browser/webauthn/local_credential_management_win_unittest.cc" ]
+    }
 
     sources += [
       # Badging isn't supported on Android.
