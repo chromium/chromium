@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL location.href setter throws a TypeError for unparseable URLs assert_throws_js: location.href setter throws a TypeError function "() => {
+    win.location.href = kUnparseableURL;
+  }" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://web-platform.test:8001:notaport/common/blank.html' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+FAIL <a> tag navigate fails for unparseable URLs promise_test: Unhandled rejection with value: object "Error: Navigation was attempted to unparseable URL"
+Harness: the test ran to completion.
+
