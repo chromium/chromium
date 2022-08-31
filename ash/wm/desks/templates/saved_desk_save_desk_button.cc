@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/save_desk_template_button.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
@@ -18,10 +18,11 @@ namespace ash {
 
 constexpr int kCornerRadius = 16;
 
-SaveDeskTemplateButton::SaveDeskTemplateButton(base::RepeatingClosure callback,
-                                               const std::u16string& text,
-                                               Type button_type,
-                                               const gfx::VectorIcon* icon)
+SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
+    base::RepeatingClosure callback,
+    const std::u16string& text,
+    Type button_type,
+    const gfx::VectorIcon* icon)
     : PillButton(callback,
                  text,
                  PillButton::Type::kDefaultWithIconLeading,
@@ -31,7 +32,7 @@ SaveDeskTemplateButton::SaveDeskTemplateButton(base::RepeatingClosure callback,
   views::FocusRing* focus_ring =
       StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
   focus_ring->SetHasFocusPredicate([](views::View* view) {
-    return static_cast<SaveDeskTemplateButton*>(view)->IsViewHighlighted();
+    return static_cast<SavedDeskSaveDeskButton*>(view)->IsViewHighlighted();
   });
   focus_ring->SetColorId(ui::kColorAshFocusRing);
 
@@ -43,47 +44,47 @@ SaveDeskTemplateButton::SaveDeskTemplateButton(base::RepeatingClosure callback,
   }
 }
 
-SaveDeskTemplateButton::~SaveDeskTemplateButton() = default;
+SavedDeskSaveDeskButton::~SavedDeskSaveDeskButton() = default;
 
-views::View* SaveDeskTemplateButton::GetView() {
+views::View* SavedDeskSaveDeskButton::GetView() {
   return this;
 }
 
-void SaveDeskTemplateButton::MaybeActivateHighlightedView() {
+void SavedDeskSaveDeskButton::MaybeActivateHighlightedView() {
   if (GetEnabled())
     callback_.Run();
 }
 
-void SaveDeskTemplateButton::MaybeCloseHighlightedView(bool primary_action) {}
+void SavedDeskSaveDeskButton::MaybeCloseHighlightedView(bool primary_action) {}
 
-void SaveDeskTemplateButton::MaybeSwapHighlightedView(bool right) {}
+void SavedDeskSaveDeskButton::MaybeSwapHighlightedView(bool right) {}
 
-void SaveDeskTemplateButton::OnViewHighlighted() {
+void SavedDeskSaveDeskButton::OnViewHighlighted() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-void SaveDeskTemplateButton::OnViewUnhighlighted() {
+void SavedDeskSaveDeskButton::OnViewUnhighlighted() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-void SaveDeskTemplateButton::OnThemeChanged() {
+void SavedDeskSaveDeskButton::OnThemeChanged() {
   PillButton::OnThemeChanged();
   SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80));
 }
 
-void SaveDeskTemplateButton::OnFocus() {
+void SavedDeskSaveDeskButton::OnFocus() {
   UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
   OnViewHighlighted();
   View::OnFocus();
 }
 
-void SaveDeskTemplateButton::OnBlur() {
+void SavedDeskSaveDeskButton::OnBlur() {
   OnViewUnhighlighted();
   View::OnBlur();
 }
 
-BEGIN_METADATA(SaveDeskTemplateButton, PillButton)
+BEGIN_METADATA(SavedDeskSaveDeskButton, PillButton)
 END_METADATA
 
 }  // namespace ash

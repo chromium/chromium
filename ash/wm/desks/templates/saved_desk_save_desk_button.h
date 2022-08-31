@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_SAVE_DESK_TEMPLATE_BUTTON_H_
-#define ASH_WM_DESKS_TEMPLATES_SAVE_DESK_TEMPLATE_BUTTON_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_H_
 
 #include "ash/ash_export.h"
 #include "ash/style/pill_button.h"
@@ -13,10 +13,10 @@
 
 namespace ash {
 
-class ASH_EXPORT SaveDeskTemplateButton : public PillButton,
-                                          public OverviewHighlightableView {
+class ASH_EXPORT SavedDeskSaveDeskButton : public PillButton,
+                                           public OverviewHighlightableView {
  public:
-  METADATA_HEADER(SaveDeskTemplateButton);
+  METADATA_HEADER(SavedDeskSaveDeskButton);
 
   enum class Type {
     // Button that saves current desk as template.
@@ -26,13 +26,13 @@ class ASH_EXPORT SaveDeskTemplateButton : public PillButton,
     kSaveForLater,
   };
 
-  SaveDeskTemplateButton(base::RepeatingClosure callback,
-                         const std::u16string& text,
-                         Type button_type,
-                         const gfx::VectorIcon* icon);
-  SaveDeskTemplateButton(const SaveDeskTemplateButton&) = delete;
-  SaveDeskTemplateButton& operator=(const SaveDeskTemplateButton&) = delete;
-  ~SaveDeskTemplateButton() override;
+  SavedDeskSaveDeskButton(base::RepeatingClosure callback,
+                          const std::u16string& text,
+                          Type button_type,
+                          const gfx::VectorIcon* icon);
+  SavedDeskSaveDeskButton(const SavedDeskSaveDeskButton&) = delete;
+  SavedDeskSaveDeskButton& operator=(const SavedDeskSaveDeskButton&) = delete;
+  ~SavedDeskSaveDeskButton() override;
 
   Type button_type() const { return button_type_; }
 
@@ -56,4 +56,4 @@ class ASH_EXPORT SaveDeskTemplateButton : public PillButton,
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_TEMPLATES_SAVE_DESK_TEMPLATE_BUTTON_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_H_

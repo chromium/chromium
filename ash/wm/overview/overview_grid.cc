@@ -28,13 +28,13 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/save_desk_template_button.h"
-#include "ash/wm/desks/templates/save_desk_template_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -1911,7 +1911,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
     save_desk_button_container_widget_ =
         CreateSaveDeskButtonContainerWidget(root_window_);
     save_desk_button_container_widget_->SetContentsView(
-        std::make_unique<SaveDeskTemplateButtonContainer>(
+        std::make_unique<SavedDeskSaveDeskButtonContainer>(
             base::BindRepeating(
                 &OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
                 weak_ptr_factory_.GetWeakPtr()),
@@ -1937,16 +1937,16 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // Enable/disable button and update tooltip.
   const SavedDeskPresenter* saved_desk_presenter =
       overview_session_->saved_desk_presenter();
-  SaveDeskTemplateButtonContainer* container =
-      static_cast<SaveDeskTemplateButtonContainer*>(
+  SavedDeskSaveDeskButtonContainer* container =
+      static_cast<SavedDeskSaveDeskButtonContainer*>(
           save_desk_button_container_widget_->GetContentsView());
   container->UpdateButtonEnableStateAndTooltip(
-      SaveDeskTemplateButton::Type::kSaveAsTemplate,
+      SavedDeskSaveDeskButton::Type::kSaveAsTemplate,
       saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate),
       saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
       num_incognito_windows_, num_unsupported_windows_, size());
   container->UpdateButtonEnableStateAndTooltip(
-      SaveDeskTemplateButton::Type::kSaveForLater,
+      SavedDeskSaveDeskButton::Type::kSaveForLater,
       saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall),
       saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kSaveAndRecall),
       num_incognito_windows_, num_unsupported_windows_, size());
@@ -1991,8 +1991,8 @@ bool OverviewGrid::IsSaveDeskButtonContainerVisible() const {
 bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {
   if (!IsSaveDeskButtonContainerVisible())
     return false;
-  SaveDeskTemplateButtonContainer* container =
-      static_cast<SaveDeskTemplateButtonContainer*>(
+  SavedDeskSaveDeskButtonContainer* container =
+      static_cast<SavedDeskSaveDeskButtonContainer*>(
           save_desk_button_container_widget_->GetContentsView());
   return container->save_desk_as_template_button() &&
          container->save_desk_as_template_button()->GetVisible();
@@ -2001,33 +2001,33 @@ bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {
 bool OverviewGrid::IsSaveDeskForLaterButtonVisible() const {
   if (!IsSaveDeskButtonContainerVisible())
     return false;
-  SaveDeskTemplateButtonContainer* container =
-      static_cast<SaveDeskTemplateButtonContainer*>(
+  SavedDeskSaveDeskButtonContainer* container =
+      static_cast<SavedDeskSaveDeskButtonContainer*>(
           save_desk_button_container_widget_->GetContentsView());
   return container->save_desk_for_later_button() &&
          container->save_desk_for_later_button()->GetVisible();
 }
 
-SaveDeskTemplateButton* OverviewGrid::GetSaveDeskAsTemplateButton() const {
+SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskAsTemplateButton() const {
   return save_desk_button_container_widget_
-             ? static_cast<SaveDeskTemplateButtonContainer*>(
+             ? static_cast<SavedDeskSaveDeskButtonContainer*>(
                    save_desk_button_container_widget_->GetContentsView())
                    ->save_desk_as_template_button()
              : nullptr;
 }
 
-SaveDeskTemplateButton* OverviewGrid::GetSaveDeskForLaterButton() const {
+SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskForLaterButton() const {
   return save_desk_button_container_widget_
-             ? static_cast<SaveDeskTemplateButtonContainer*>(
+             ? static_cast<SavedDeskSaveDeskButtonContainer*>(
                    save_desk_button_container_widget_->GetContentsView())
                    ->save_desk_for_later_button()
              : nullptr;
 }
 
-SaveDeskTemplateButtonContainer*
-OverviewGrid::GetSaveDeskTemplateButtonContainer() const {
+SavedDeskSaveDeskButtonContainer* OverviewGrid::GetSaveDeskButtonContainer()
+    const {
   return save_desk_button_container_widget_
-             ? static_cast<SaveDeskTemplateButtonContainer*>(
+             ? static_cast<SavedDeskSaveDeskButtonContainer*>(
                    save_desk_button_container_widget_->GetContentsView())
              : nullptr;
 }

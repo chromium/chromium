@@ -16,7 +16,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"

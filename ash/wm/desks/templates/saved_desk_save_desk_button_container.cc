@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/save_desk_template_button_container.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 
 #include <array>
 
@@ -53,18 +53,18 @@ constexpr std::array<int,
         IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP,
 };
 
-int GetTooltipID(SaveDeskTemplateButton::Type button_type,
+int GetTooltipID(SavedDeskSaveDeskButton::Type button_type,
                  TooltipStatus status) {
   switch (button_type) {
-    case SaveDeskTemplateButton::Type::kSaveAsTemplate:
+    case SavedDeskSaveDeskButton::Type::kSaveAsTemplate:
       return kSaveAsTemplateButtonTooltipIDs[static_cast<int>(status)];
-    case SaveDeskTemplateButton::Type::kSaveForLater:
+    case SavedDeskSaveDeskButton::Type::kSaveForLater:
       return kSaveForLaterButtonTooltipIDs[static_cast<int>(status)];
   }
 }
 
 std::pair<bool, int> GetEnableStateAndTooltipIDForButtonType(
-    SaveDeskTemplateButton::Type type,
+    SavedDeskSaveDeskButton::Type type,
     int current_entry_count,
     int max_entry_count,
     int incognito_window_count,
@@ -104,25 +104,23 @@ std::pair<bool, int> GetEnableStateAndTooltipIDForButtonType(
 
 }  // namespace
 
-class SaveDeskTemplateButtonContainer::
-    SaveDeskTemplateButtonContainerAccessibilityObserver
+class SavedDeskSaveDeskButtonContainer::
+    SaveDeskButtonContainerAccessibilityObserver
     : public AccessibilityObserver {
  public:
-  explicit SaveDeskTemplateButtonContainerAccessibilityObserver(
+  explicit SaveDeskButtonContainerAccessibilityObserver(
       const base::RepeatingClosure& accessibility_state_changed_callback)
       : accessibility_state_changed_callback_(
             accessibility_state_changed_callback) {
     observation_.Observe(Shell::Get()->accessibility_controller());
   }
 
-  SaveDeskTemplateButtonContainerAccessibilityObserver(
-      const SaveDeskTemplateButtonContainerAccessibilityObserver& other) =
-      delete;
-  SaveDeskTemplateButtonContainerAccessibilityObserver& operator=(
-      const SaveDeskTemplateButtonContainerAccessibilityObserver& other) =
-      delete;
+  SaveDeskButtonContainerAccessibilityObserver(
+      const SaveDeskButtonContainerAccessibilityObserver& other) = delete;
+  SaveDeskButtonContainerAccessibilityObserver& operator=(
+      const SaveDeskButtonContainerAccessibilityObserver& other) = delete;
 
-  ~SaveDeskTemplateButtonContainerAccessibilityObserver() override = default;
+  ~SaveDeskButtonContainerAccessibilityObserver() override = default;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override {
@@ -137,7 +135,7 @@ class SaveDeskTemplateButtonContainer::
       observation_{this};
 };
 
-SaveDeskTemplateButtonContainer::SaveDeskTemplateButtonContainer(
+SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
     base::RepeatingClosure save_as_template_callback,
     base::RepeatingClosure save_for_later_callback) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -147,41 +145,41 @@ SaveDeskTemplateButtonContainer::SaveDeskTemplateButtonContainer(
 
   if (saved_desk_util::AreDesksTemplatesEnabled()) {
     save_desk_as_template_button_ =
-        AddChildView(std::make_unique<SaveDeskTemplateButton>(
+        AddChildView(std::make_unique<SavedDeskSaveDeskButton>(
             save_as_template_callback,
             l10n_util::GetStringUTF16(
                 IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON),
-            SaveDeskTemplateButton::Type::kSaveAsTemplate,
+            SavedDeskSaveDeskButton::Type::kSaveAsTemplate,
             &kSaveDeskAsTemplateIcon));
   }
 
   if (saved_desk_util::IsDeskSaveAndRecallEnabled()) {
     save_desk_for_later_button_ =
-        AddChildView(std::make_unique<SaveDeskTemplateButton>(
+        AddChildView(std::make_unique<SavedDeskSaveDeskButton>(
             save_for_later_callback,
             l10n_util::GetStringUTF16(
                 IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_FOR_LATER_BUTTON),
-            SaveDeskTemplateButton::Type::kSaveForLater,
+            SavedDeskSaveDeskButton::Type::kSaveForLater,
             &kSaveDeskForLaterIcon));
   }
 
   accessibility_observer_ =
-      std::make_unique<SaveDeskTemplateButtonContainerAccessibilityObserver>(
-          base::BindRepeating(&SaveDeskTemplateButtonContainer::
+      std::make_unique<SaveDeskButtonContainerAccessibilityObserver>(
+          base::BindRepeating(&SavedDeskSaveDeskButtonContainer::
                                   UpdateButtonContainerForAccessibilityState,
                               base::Unretained(this)));
 }
 
-SaveDeskTemplateButtonContainer::~SaveDeskTemplateButtonContainer() = default;
+SavedDeskSaveDeskButtonContainer::~SavedDeskSaveDeskButtonContainer() = default;
 
-void SaveDeskTemplateButtonContainer::UpdateButtonEnableStateAndTooltip(
-    SaveDeskTemplateButton::Type type,
+void SavedDeskSaveDeskButtonContainer::UpdateButtonEnableStateAndTooltip(
+    SavedDeskSaveDeskButton::Type type,
     int current_entry_count,
     int max_entry_count,
     int incognito_window_count,
     int unsupported_window_count,
     int window_count) {
-  SaveDeskTemplateButton* button = GetButtonFromType(type);
+  SavedDeskSaveDeskButton* button = GetButtonFromType(type);
   if (!button)
     return;
   std::pair<bool, int> enable_state_and_tooltip_ID =
@@ -193,7 +191,7 @@ void SaveDeskTemplateButtonContainer::UpdateButtonEnableStateAndTooltip(
       l10n_util::GetStringUTF16(enable_state_and_tooltip_ID.second));
 }
 
-void SaveDeskTemplateButtonContainer::
+void SavedDeskSaveDeskButtonContainer::
     UpdateButtonContainerForAccessibilityState() {
   // If Chromevox is turned on or off during the life span of this widget,
   // adjust to activatable or non-activatable accordingly.
@@ -201,12 +199,12 @@ void SaveDeskTemplateButtonContainer::
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
 }
 
-SaveDeskTemplateButton* SaveDeskTemplateButtonContainer::GetButtonFromType(
-    SaveDeskTemplateButton::Type type) {
+SavedDeskSaveDeskButton* SavedDeskSaveDeskButtonContainer::GetButtonFromType(
+    SavedDeskSaveDeskButton::Type type) {
   switch (type) {
-    case SaveDeskTemplateButton::Type::kSaveAsTemplate:
+    case SavedDeskSaveDeskButton::Type::kSaveAsTemplate:
       return save_desk_as_template_button_;
-    case SaveDeskTemplateButton::Type::kSaveForLater:
+    case SavedDeskSaveDeskButton::Type::kSaveForLater:
       return save_desk_for_later_button_;
   }
 }

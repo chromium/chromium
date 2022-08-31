@@ -28,8 +28,6 @@
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/save_desk_template_button.h"
-#include "ash/wm/desks/templates/save_desk_template_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_feedback_button.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
@@ -40,6 +38,8 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -212,25 +212,25 @@ class SavedDeskTest : public OverviewTestBase {
                : nullptr;
   }
 
-  SaveDeskTemplateButton* GetSaveDeskAsTemplateButtonForRoot(
+  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButtonForRoot(
       aura::Window* root_window) {
     const auto* overview_grid = GetOverviewGridForRoot(root_window);
     DCHECK(overview_grid);
     return overview_grid->GetSaveDeskAsTemplateButton();
   }
 
-  SaveDeskTemplateButton* GetSaveDeskForLaterButtonForRoot(
+  SavedDeskSaveDeskButton* GetSaveDeskForLaterButtonForRoot(
       aura::Window* root_window) {
     const auto* overview_grid = GetOverviewGridForRoot(root_window);
     DCHECK(overview_grid);
     return overview_grid->GetSaveDeskForLaterButton();
   }
 
-  SaveDeskTemplateButtonContainer* GetSaveDeskButtonContainerForRoot(
+  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainerForRoot(
       aura::Window* root_window) {
     const auto* overview_grid = GetOverviewGridForRoot(root_window);
     DCHECK(overview_grid);
-    return overview_grid->GetSaveDeskTemplateButtonContainer();
+    return overview_grid->GetSaveDeskButtonContainer();
   }
 
   // Shows the desks templates grid by emulating a click on the templates
@@ -892,7 +892,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   auto* overview_grid =
       GetOverviewSession()->GetGridWithRootWindow(root_window);
-  SaveDeskTemplateButtonContainer* save_desk_button_container =
+  SavedDeskSaveDeskButtonContainer* save_desk_button_container =
       GetSaveDeskButtonContainerForRoot(root_window);
 
   auto verify_save_desk_widget_bounds = [&overview_grid,
@@ -942,7 +942,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonFocusRingColor) {
   auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
 
   // Verify the focus ring of the given button is as expected.
-  auto verify_button_focus_ring_color = [this](SaveDeskTemplateButton* button,
+  auto verify_button_focus_ring_color = [this](SavedDeskSaveDeskButton* button,
                                                bool highlighted) {
     EXPECT_EQ(
         cc::ExactPixelComparator(/*discard_alpha=*/false)
@@ -1136,7 +1136,7 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {
 
   // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  SaveDeskTemplateButton* save_desk_as_template_button =
+  SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(save_desk_as_template_button);
   EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
@@ -3037,7 +3037,7 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateRecordsMetric) {
 
   // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  SaveDeskTemplateButton* save_desk_as_template_button =
+  SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(save_desk_as_template_button);
   EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
@@ -3080,7 +3080,7 @@ TEST_F(SavedDeskTest, UnsupportedAppDialogRecordsMetric) {
   // dialog should show up.
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
-  SaveDeskTemplateButton* save_template_button =
+  SavedDeskSaveDeskButton* save_template_button =
       GetSaveDeskAsTemplateButtonForRoot(root);
   ASSERT_TRUE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
@@ -3168,7 +3168,7 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
 
     // The `save_desk_as_template_button` is visible when at least one window is
     // open.
-    SaveDeskTemplateButton* save_desk_as_template_button =
+    SavedDeskSaveDeskButton* save_desk_as_template_button =
         GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
     ASSERT_TRUE(save_desk_as_template_button);
     EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
@@ -3654,7 +3654,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
 
   // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  SaveDeskTemplateButton* save_desk_as_template_button =
+  SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(save_desk_as_template_button);
   EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
@@ -3760,7 +3760,7 @@ TEST_F(SavedDeskTest, SelectAllAfterSavingDuplicateTemplate) {
   ToggleOverview();
 
   // Click on `save_desk_as_template_button` button.
-  SaveDeskTemplateButton* save_desk_as_template_button =
+  SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   ClickOnView(save_desk_as_template_button);
   WaitForDesksTemplatesUI();
@@ -3789,7 +3789,7 @@ TEST_F(SavedDeskTest, NoSortBeforeNameConfirmed) {
   ToggleOverview();
   // The `save_desk_as_template_button` is visible when at least one window is
   // open.
-  SaveDeskTemplateButton* save_desk_as_template_button =
+  SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(save_desk_as_template_button);
   EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
@@ -3827,7 +3827,7 @@ TEST_F(SavedDeskTest, NudgeOnTheCorrectDisplay) {
   ToggleOverview();
 
   // Click on `save_desk_as_template_button` button on the primary display.
-  SaveDeskTemplateButton* save_desk_as_template_button =
+  SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetAllRootWindows()[0]);
   ClickOnView(save_desk_as_template_button);
   WaitForDesksTemplatesUI();
@@ -3867,7 +3867,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerVisibleAfterSwipeToClose) {
   // bounds do not intersect (they are both fully visible).
   OverviewItem* item2 = GetOverviewItemForWindow(widget2->GetNativeWindow());
   ASSERT_TRUE(item2);
-  SaveDeskTemplateButtonContainer* save_desk_button_container =
+  SavedDeskSaveDeskButtonContainer* save_desk_button_container =
       GetSaveDeskButtonContainerForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_FALSE(item2->target_bounds().Intersects(
       gfx::RectF(save_desk_button_container->GetBoundsInScreen())));
