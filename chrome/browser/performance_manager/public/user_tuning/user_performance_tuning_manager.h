@@ -47,7 +47,7 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
    public:
     // Raised when the battery saver mode interventions are activated or
     // deactivated
-    virtual void OnBatterySaverModeChanged(bool is_active) = 0;
+    virtual void OnBatterySaverModeChanged(bool is_active) {}
 
     // Raised when the device is plugged in or unplugged
     // Can be used by the UI to show a promo if BSM isn't configured to be
@@ -56,24 +56,24 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
     // enabled/disabled, the state of battery saver will not yet be updated when
     // this is invoked. `OnBatterySaverModeChanged` will be invoked after the
     // state is updated.
-    virtual void OnExternalPowerConnectedChanged(bool on_battery_power) = 0;
+    virtual void OnExternalPowerConnectedChanged(bool on_battery_power) {}
 
     // Raised when the battery has reached the X% threshold
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power under a certain threshold.
-    virtual void OnBatteryThresholdReached() = 0;
+    virtual void OnBatteryThresholdReached() {}
 
     // Raised when the total memory footprint reaches X%.
     // Can be used by the UI to show a promo
-    virtual void OnMemoryThresholdReached() = 0;
+    virtual void OnMemoryThresholdReached() {}
 
     // Raised when the tab count reaches X.
     // Can be used by the UI to show a promo
-    virtual void OnTabCountThresholdReached() = 0;
+    virtual void OnTabCountThresholdReached() {}
 
     // Raised when the count of janky intervals reaches X.
     // Can be used by the UI to show a promo
-    virtual void OnJankThresholdReached() = 0;
+    virtual void OnJankThresholdReached() {}
   };
 
   static UserPerformanceTuningManager* GetInstance();

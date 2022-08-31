@@ -30,14 +30,6 @@ class QuitRunLoopObserverBase : public performance_manager::user_tuning::
 
   void Quit() { quit_closure_.Run(); }
 
-  // UserPeformanceTuningManager::Observer implementation:
-  void OnBatterySaverModeChanged(bool) override {}
-  void OnExternalPowerConnectedChanged(bool) override {}
-  void OnBatteryThresholdReached() override {}
-  void OnMemoryThresholdReached() override {}
-  void OnTabCountThresholdReached() override {}
-  void OnJankThresholdReached() override {}
-
  private:
   base::RepeatingClosure quit_closure_;
 };
