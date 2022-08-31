@@ -999,6 +999,11 @@ dictionary IOTaskParams {
 
   // Password used for unpacking encrypted archives.
   DOMString? password;
+
+  // Whether to display a notification in the UI. This does not stop the
+  // IOProgressStatus event propagating instead it provides a true boolean on
+  // the event that the UI can choose to show / hide the notification.
+  boolean? showNotification;
 };
 
 // IO Task Progress status, see file_manager::io_task::ProgressStatus.

@@ -1790,29 +1790,34 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
     }
   }
 
+  // Whether to display this IOTask notification, if undefined this should
+  // default to true.
+  bool show_notification = params->params.show_notification.value_or(true);
+
   std::unique_ptr<file_manager::io_task::IOTask> task;
   switch (type.value()) {
     case file_manager::io_task::OperationType::kCopy:
     case file_manager::io_task::OperationType::kMove:
       task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
           type.value(), std::move(source_urls),
-          std::move(destination_folder_url), profile, file_system_context);
+          std::move(destination_folder_url), profile, file_system_context,
+          show_notification);
       break;
     case file_manager::io_task::OperationType::kZip:
       task = std::make_unique<file_manager::io_task::ZipIOTask>(
           std::move(source_urls), std::move(destination_folder_url),
-          file_system_context);
+          file_system_context, show_notification);
       break;
     case file_manager::io_task::OperationType::kDelete:
       task = std::make_unique<file_manager::io_task::DeleteIOTask>(
-          std::move(source_urls), file_system_context);
+          std::move(source_urls), file_system_context, show_notification);
       break;
     case file_manager::io_task::OperationType::kEmptyTrash:
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
         task = std::make_unique<file_manager::io_task::EmptyTrashIOTask>(
             blink::StorageKey(render_frame_host()->GetLastCommittedOrigin()),
             profile, file_system_context,
-            /*base_path=*/base::FilePath());
+            /*base_path=*/base::FilePath(), show_notification);
         break;
       } else {
         return RespondNow(Error("Invalid operation type"));
@@ -1821,7 +1826,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
         task = std::make_unique<file_manager::io_task::RestoreIOTask>(
             std::move(source_urls), profile, file_system_context,
-            /*base_path=*/base::FilePath());
+            /*base_path=*/base::FilePath(), show_notification);
         break;
       } else {
         return RespondNow(Error("Invalid operation type"));
@@ -1830,7 +1835,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
         task = std::make_unique<file_manager::io_task::TrashIOTask>(
             std::move(source_urls), profile, file_system_context,
-            /*base_path=*/base::FilePath());
+            /*base_path=*/base::FilePath(), show_notification);
         break;
       } else {
         return RespondNow(Error("Invalid operation type"));
@@ -1844,7 +1849,8 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
         }
         task = std::make_unique<file_manager::io_task::ExtractIOTask>(
             std::move(source_urls), std::move(password),
-            std::move(destination_folder_url), profile, file_system_context);
+            std::move(destination_folder_url), profile, file_system_context,
+            show_notification);
         break;
       }
       // Fall through

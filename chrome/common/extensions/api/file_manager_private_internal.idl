@@ -16,6 +16,7 @@ namespace fileManagerPrivateInternal {
   dictionary IOTaskParams {
     DOMString? destinationFolderUrl;
     DOMString? password;
+    boolean? showNotification;
   };
   dictionary ParsedTrashInfoFile {
     EntryDescription restoreEntry;

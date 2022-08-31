@@ -385,6 +385,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         if (params.password) {
           newParams.password = params.password;
         }
+        if (params.showNotification !== undefined) {
+          newParams.showNotification = params.showNotification;
+        }
         fileManagerPrivateInternal.startIOTask(type, urls, newParams, callback);
       });
 

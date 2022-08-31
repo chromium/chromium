@@ -728,6 +728,7 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
  * @typedef {{
  *   destinationFolder: (DirectoryEntry|undefined),
  *   password: (string|undefined),
+ *   showNotification: (boolean|undefined),
  * }}
  */
 chrome.fileManagerPrivate.IOTaskParams;
