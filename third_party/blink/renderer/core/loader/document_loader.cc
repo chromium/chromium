@@ -2252,7 +2252,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // browser once the browser will be able to compute the origin in all cases.
   frame_->DomWindow()->SetStorageKey(
       BlinkStorageKey(security_origin, storage_key_.GetTopLevelSite(),
-                      base::OptionalToPtr(storage_key_.GetNonce())));
+                      base::OptionalToPtr(storage_key_.GetNonce()),
+                      storage_key_.GetAncestorChainBit()));
 
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that

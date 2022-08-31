@@ -32,9 +32,17 @@
 
 namespace blink {
 
-class DocumentLoaderTest : public testing::Test {
+class DocumentLoaderTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
+    if (IsThirdPartyStoragePartitioningEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          net::features::kThirdPartyStoragePartitioning);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          net::features::kThirdPartyStoragePartitioning);
+    }
+
     web_view_helper_.Initialize();
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://example.com/foo.html"),
@@ -66,6 +74,8 @@ class DocumentLoaderTest : public testing::Test {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
+  bool IsThirdPartyStoragePartitioningEnabled() const { return GetParam(); }
+
   class ScopedLoaderDelegate {
    public:
     ScopedLoaderDelegate(WebURLLoaderTestDelegate* delegate) {
@@ -77,9 +87,14 @@ class DocumentLoaderTest : public testing::Test {
   WebLocalFrameImpl* MainFrame() { return web_view_helper_.LocalMainFrame(); }
 
   frame_test_helpers::WebViewHelper web_view_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DocumentLoaderTest, SingleChunk) {
+INSTANTIATE_TEST_SUITE_P(DocumentLoaderTest,
+                         DocumentLoaderTest,
+                         ::testing::Bool());
+
+TEST_P(DocumentLoaderTest, SingleChunk) {
   class TestDelegate : public WebURLLoaderTestDelegate {
    public:
     void DidReceiveData(WebURLLoaderClient* original_client,
@@ -100,7 +115,7 @@ TEST_F(DocumentLoaderTest, SingleChunk) {
 
 // Test normal case of DocumentLoader::dataReceived(): data in multiple chunks,
 // with no reentrancy.
-TEST_F(DocumentLoaderTest, MultiChunkNoReentrancy) {
+TEST_P(DocumentLoaderTest, MultiChunkNoReentrancy) {
   class TestDelegate : public WebURLLoaderTestDelegate {
    public:
     void DidReceiveData(WebURLLoaderClient* original_client,
@@ -118,7 +133,7 @@ TEST_F(DocumentLoaderTest, MultiChunkNoReentrancy) {
 }
 
 // Finally, test reentrant callbacks to DocumentLoader::BodyDataReceived().
-TEST_F(DocumentLoaderTest, MultiChunkWithReentrancy) {
+TEST_P(DocumentLoaderTest, MultiChunkWithReentrancy) {
   // This test delegate chunks the response stage into three distinct stages:
   // 1. The first BodyDataReceived() callback, which triggers frame detach
   //    due to committing a provisional load.
@@ -216,7 +231,7 @@ TEST_F(DocumentLoaderTest, MultiChunkWithReentrancy) {
   web_view_helper_.Reset();
 }
 
-TEST_F(DocumentLoaderTest, isCommittedButEmpty) {
+TEST_P(DocumentLoaderTest, isCommittedButEmpty) {
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("about:blank");
   EXPECT_TRUE(To<LocalFrame>(web_view_impl->GetPage()->MainFrame())
@@ -281,7 +296,7 @@ TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
       mojom::blink::PermissionsPolicyFeature::kPayment));
 }
 
-TEST_F(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
+TEST_P(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
@@ -300,7 +315,7 @@ TEST_F(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
   EXPECT_TRUE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest,
+TEST_P(DocumentLoaderTest,
        CommitsNotDeferredOnDifferentOriginNavigationWithCrossOriginDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kPaintHoldingCrossOrigin);
@@ -323,7 +338,7 @@ TEST_F(DocumentLoaderTest,
   EXPECT_FALSE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest,
+TEST_P(DocumentLoaderTest,
        CommitsDeferredOnDifferentOriginNavigationWithCrossOriginEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPaintHoldingCrossOrigin);
@@ -346,7 +361,7 @@ TEST_F(DocumentLoaderTest,
   EXPECT_TRUE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest,
+TEST_P(DocumentLoaderTest,
        CommitsNotDeferredOnDifferentPortNavigationWithCrossOriginDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kPaintHoldingCrossOrigin);
@@ -369,7 +384,7 @@ TEST_F(DocumentLoaderTest,
   EXPECT_FALSE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest,
+TEST_P(DocumentLoaderTest,
        CommitsDeferredOnDifferentPortNavigationWithCrossOriginEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPaintHoldingCrossOrigin);
@@ -392,7 +407,7 @@ TEST_F(DocumentLoaderTest,
   EXPECT_TRUE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest, CommitsNotDeferredOnDataURLNavigation) {
+TEST_P(DocumentLoaderTest, CommitsNotDeferredOnDataURLNavigation) {
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
@@ -410,7 +425,7 @@ TEST_F(DocumentLoaderTest, CommitsNotDeferredOnDataURLNavigation) {
   EXPECT_FALSE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest,
+TEST_P(DocumentLoaderTest,
        CommitsNotDeferredOnDataURLNavigationWithCrossOriginEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPaintHoldingCrossOrigin);
@@ -432,7 +447,7 @@ TEST_F(DocumentLoaderTest,
   EXPECT_FALSE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest, NavigationToAboutBlank) {
+TEST_P(DocumentLoaderTest, NavigationToAboutBlank) {
   const KURL& requestor_url =
       KURL(NullURL(), "https://subdomain.example.com/foo.html");
   WebViewImpl* web_view_impl =
@@ -445,13 +460,14 @@ TEST_F(DocumentLoaderTest, NavigationToAboutBlank) {
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  params->storage_key = local_frame->DomWindow()->GetStorageKey();
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(requestor_url)),
             local_frame->DomWindow()->GetStorageKey());
 }
 
-TEST_F(DocumentLoaderTest, SameOriginNavigation) {
+TEST_P(DocumentLoaderTest, SameOriginNavigation) {
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
@@ -463,18 +479,21 @@ TEST_F(DocumentLoaderTest, SameOriginNavigation) {
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
+  params->storage_key =
+      BlinkStorageKey(SecurityOrigin::Create(same_origin_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(same_origin_url)),
             local_frame->DomWindow()->GetStorageKey());
+
   EXPECT_TRUE(local_frame->Loader()
                   .GetDocumentLoader()
                   ->LastNavigationHadTrustedInitiator());
 }
 
-TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
+TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
@@ -486,18 +505,21 @@ TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
+  params->storage_key =
+      BlinkStorageKey(SecurityOrigin::Create(other_origin_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(other_origin_url)),
             local_frame->DomWindow()->GetStorageKey());
+
   EXPECT_FALSE(local_frame->Loader()
                    .GetDocumentLoader()
                    ->LastNavigationHadTrustedInitiator());
 }
 
-TEST_F(DocumentLoaderTest, StorageKeyFromNavigationParams) {
+TEST_P(DocumentLoaderTest, StorageKeyFromNavigationParams) {
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
@@ -510,8 +532,12 @@ TEST_F(DocumentLoaderTest, StorageKeyFromNavigationParams) {
           SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
 
-  StorageKey storage_key_to_commit = StorageKey::CreateWithNonce(
-      url::Origin(), base::UnguessableToken::Create());
+  net::SchemefulSite top_level_site =
+      net::SchemefulSite(url::Origin::Create(GURL(other_origin_url)));
+  auto nonce = base::UnguessableToken::Create();
+  StorageKey storage_key_to_commit =
+      StorageKey::CreateWithOptionalNonce(url::Origin(), top_level_site, &nonce,
+                                          mojom::AncestorChainBit::kSameSite);
   params->storage_key = storage_key_to_commit;
 
   LocalFrame* local_frame =
@@ -524,11 +550,41 @@ TEST_F(DocumentLoaderTest, StorageKeyFromNavigationParams) {
       local_frame->DomWindow()->GetStorageKey());
 }
 
+TEST_P(DocumentLoaderTest, StorageKeyCrossSiteFromNavigationParams) {
+  const KURL& requestor_url =
+      KURL(NullURL(), "https://www.example.com/foo.html");
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
+
+  const KURL& other_origin_url =
+      KURL(NullURL(), "https://www.another.com/bar.html");
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), other_origin_url);
+  params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
+
+  net::SchemefulSite top_level_site =
+      net::SchemefulSite(url::Origin::Create(GURL("https://foo.com")));
+  StorageKey storage_key_to_commit = StorageKey::CreateWithOptionalNonce(
+      url::Origin::Create(GURL(other_origin_url)), top_level_site, nullptr,
+      mojom::AncestorChainBit::kCrossSite);
+  params->storage_key = storage_key_to_commit;
+
+  LocalFrame* local_frame =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+
+  EXPECT_EQ(BlinkStorageKey(SecurityOrigin::Create(other_origin_url),
+                            BlinkSchemefulSite(top_level_site), nullptr,
+                            mojom::AncestorChainBit::kCrossSite),
+            local_frame->DomWindow()->GetStorageKey());
+}
+
 // Tests that committing a Javascript URL keeps the storage key's nonce of the
 // previous document, ensuring that
 // `DocumentLoader::CreateWebNavigationParamsToCloneDocument` works correctly
 // w.r.t. storage key.
-TEST_F(DocumentLoaderTest, JavascriptURLKeepsStorageKeyNonce) {
+TEST_P(DocumentLoaderTest, JavascriptURLKeepsStorageKeyNonce) {
   WebViewImpl* web_view_impl = web_view_helper_.Initialize();
 
   BlinkStorageKey storage_key = BlinkStorageKey::CreateWithNonce(
@@ -544,7 +600,7 @@ TEST_F(DocumentLoaderTest, JavascriptURLKeepsStorageKeyNonce) {
             frame->DomWindow()->GetStorageKey().GetNonce());
 }
 
-TEST_F(DocumentLoaderTest, PublicSecureNotCounted) {
+TEST_P(DocumentLoaderTest, PublicSecureNotCounted) {
   // Checking to make sure secure pages served in the public address space
   // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =
@@ -555,7 +611,7 @@ TEST_F(DocumentLoaderTest, PublicSecureNotCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_F(DocumentLoaderTest, PublicNonSecureNotCounted) {
+TEST_P(DocumentLoaderTest, PublicNonSecureNotCounted) {
   // Checking to make sure non-secure pages served in the public address space
   // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =
@@ -566,7 +622,7 @@ TEST_F(DocumentLoaderTest, PublicNonSecureNotCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_F(DocumentLoaderTest, PrivateSecureNotCounted) {
+TEST_P(DocumentLoaderTest, PrivateSecureNotCounted) {
   // Checking to make sure secure pages served in the private address space
   // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =
@@ -577,7 +633,7 @@ TEST_F(DocumentLoaderTest, PrivateSecureNotCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_F(DocumentLoaderTest, PrivateNonSecureIsCounted) {
+TEST_P(DocumentLoaderTest, PrivateNonSecureIsCounted) {
   // Checking to make sure non-secure pages served in the private address space
   // are counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =
@@ -588,7 +644,7 @@ TEST_F(DocumentLoaderTest, PrivateNonSecureIsCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_F(DocumentLoaderTest, LocalNonSecureIsCounted) {
+TEST_P(DocumentLoaderTest, LocalNonSecureIsCounted) {
   // Checking to make sure non-secure pages served in the local address space
   // are counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =

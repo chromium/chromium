@@ -45,13 +45,6 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // Creates a BlinkStorageKey with the given origin, top-level site and nonce.
   // `origin` must not be null. `origin` can be opaque.
   // `nonce` can be null to create a key without a nonce.
-  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                  const BlinkSchemefulSite& top_level_site,
-                  const base::UnguessableToken* nonce);
-
-  // Creates a BlinkStorageKey with the given origin, top-level site and nonce.
-  // `origin` must not be null. `origin` can be opaque.
-  // `nonce` can be null to create a key without a nonce.
   // `ancestor_chain_bit` must not be null, if it cannot be determined, default
   // to kSameSite.
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,

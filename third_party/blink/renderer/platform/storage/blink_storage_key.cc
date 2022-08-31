@@ -41,16 +41,6 @@ BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                       nonce,
                       mojom::blink::AncestorChainBit::kSameSite) {}
 
-// TODO(https://crbug.com/1287130): Correctly infer the actual ancestor chain
-// bit value, add a parameter, or use this only in testing environments.
-BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                                 const BlinkSchemefulSite& top_level_site,
-                                 const base::UnguessableToken* nonce)
-    : BlinkStorageKey(std::move(origin),
-                      top_level_site,
-                      nonce,
-                      mojom::blink::AncestorChainBit::kSameSite) {}
-
 BlinkStorageKey::BlinkStorageKey(
     scoped_refptr<const SecurityOrigin> origin,
     const BlinkSchemefulSite& top_level_site,
