@@ -18,10 +18,13 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "signin_url_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -127,6 +130,16 @@ void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
   DCHECK(!profile_name.empty());
   GetProfileEntry()->SetLocalProfileName(profile_name,
                                          /*is_default_name=*/false);
+  // Local profile is created at first as ephemeral and this is changed when
+  // customization is successfully completed.
+  const GURL& url = web_ui()->GetWebContents()->GetVisibleURL();
+  if (GetProfileCustomizationStyle(url) ==
+      ProfileCustomizationStyle::kLocalProfileCreation) {
+    GetProfileEntry()->SetIsOmitted(false);
+    if (!profile_->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+      GetProfileEntry()->SetIsEphemeral(false);
+    }
+  }
 
   if (completion_callback_)
     std::move(completion_callback_).Run(CustomizationResult::kDone);

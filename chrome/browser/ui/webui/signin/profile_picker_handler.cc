@@ -713,7 +713,7 @@ void ProfilePickerHandler::HandleCreateProfileAndOpenCustomizationDialog(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .ChooseNameForNewProfile(icon_index),
-      icon_index, /*is_hidden=*/false,
+      icon_index, /*is_hidden=*/true,
       base::BindOnce(&ProfilePickerHandler::OnLocalProfileInitialized,
                      weak_factory_.GetWeakPtr(), profile_color));
 }
