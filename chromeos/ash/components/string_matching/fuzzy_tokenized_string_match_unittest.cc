@@ -1470,4 +1470,21 @@ TEST_F(FuzzyTokenizedStringMatchTest, ExactTextMatchTest) {
   EXPECT_EQ(match.hits()[0].end(), 3u);
 }
 
+TEST_F(FuzzyTokenizedStringMatchTest, DiacriticsStripTest) {
+  FuzzyTokenizedStringMatch match;
+  std::u16string text = u"áêïôu";
+  std::vector<std::u16string> queries = {u"aeiou", u"ÀēíÔù", u"aÉiøÚ",
+                                         u"ÅĒÎÓÙ"};
+  std::vector<double> scores;
+  for (const auto& query : queries) {
+    const double relevance =
+        match.Relevance(TokenizedString(query), TokenizedString(text),
+                        kUseWeightedRatio, /*strip_diacritics*/ true);
+    scores.push_back(relevance);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+  ExpectAllNearlyEqual(scores);
+}
+
 }  // namespace ash::string_matching

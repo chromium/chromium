@@ -81,7 +81,8 @@ class FuzzyTokenizedStringMatch {
   // Calculates and returns the relevance score of |query| relative to |text|.
   double Relevance(const TokenizedString& query,
                    const TokenizedString& text,
-                   bool use_weighted_ratio);
+                   bool use_weighted_ratio,
+                   bool strip_diacritics = false);
   const Hits& hits() const { return hits_; }
 
  private:

@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/string_matching/diacritic_utils.h"
 #include "chromeos/ash/components/string_matching/prefix_matcher.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
 
@@ -211,11 +212,24 @@ double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
   return 1.0 - std::pow(0.5, match.relevance());
 }
 
-double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query,
-                                            const TokenizedString& text,
-                                            bool use_weighted_ratio) {
-  // If there is an exact match, relevance will be 1.0 and there is only 1 hit
-  // that is the entire text/query.
+double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
+                                            const TokenizedString& text_input,
+                                            bool use_weighted_ratio,
+                                            bool strip_diacritics) {
+  absl::optional<TokenizedString> stripped_query;
+  absl::optional<TokenizedString> stripped_text;
+  if (strip_diacritics) {
+    stripped_query.emplace(RemoveDiacritics(query_input.text()));
+    stripped_text.emplace(RemoveDiacritics(text_input.text()));
+  }
+
+  const TokenizedString& query =
+      strip_diacritics ? stripped_query.value() : query_input;
+  const TokenizedString& text =
+      strip_diacritics ? stripped_text.value() : text_input;
+
+  // If there is an exact match, relevance will be 1.0 and there is only 1
+  // hit that is the entire text/query.
   const auto& query_text = query.text();
   const auto& text_text = text.text();
   const auto query_size = query_text.size();
