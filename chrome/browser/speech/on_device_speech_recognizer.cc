@@ -39,10 +39,10 @@ media::AudioParameters GetAudioParameters(
     int sample_rate = params->sample_rate();
     int frames_per_buffer = std::max(params->frames_per_buffer(),
                                      sample_rate / kPollingTimesPerSecond);
-    media::ChannelLayout channel_layout = is_multichannel_supported
-                                              ? params->channel_layout()
-                                              : media::CHANNEL_LAYOUT_MONO;
-    result.Reset(params->format(), channel_layout, sample_rate,
+    media::ChannelLayoutConfig channel_layout_config =
+        is_multichannel_supported ? params->channel_layout_config()
+                                  : media::ChannelLayoutConfig::Mono();
+    result.Reset(params->format(), channel_layout_config, sample_rate,
                  frames_per_buffer);
     return result;
   }
@@ -51,8 +51,8 @@ media::AudioParameters GetAudioParameters(
                 "Audio sample rate is not divisible by 100");
   return media::AudioParameters(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      is_multichannel_supported ? media::CHANNEL_LAYOUT_STEREO
-                                : media::CHANNEL_LAYOUT_MONO,
+      is_multichannel_supported ? media::ChannelLayoutConfig::Stereo()
+                                : media::ChannelLayoutConfig::Mono(),
       kAudioSampleRate, kAudioSampleRate / kPollingTimesPerSecond);
 }
 

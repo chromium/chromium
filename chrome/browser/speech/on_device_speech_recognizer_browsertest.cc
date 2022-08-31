@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
   int sample_rate = 10000;
   media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_STEREO, sample_rate,
+      media::ChannelLayoutConfig::Stereo(), sample_rate,
       sample_rate / (kDefaultPollingTimesPerSecond / 2));
   ConstructRecognizerAndWaitForReady();
   StartListeningWithAudioParams(params);
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
   int sample_rate = 20000;
   media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_STEREO, sample_rate,
+      media::ChannelLayoutConfig::Stereo(), sample_rate,
       sample_rate / (kDefaultPollingTimesPerSecond * 2));
   ConstructRecognizerAndWaitForReady();
   StartListeningWithAudioParams(params);
@@ -296,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
   fake_service_->set_multichannel_supported(false);
   int sample_rate = 20000;
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_STEREO, sample_rate,
+                                media::ChannelLayoutConfig::Stereo(),
+                                sample_rate,
                                 sample_rate / kDefaultPollingTimesPerSecond);
   ConstructRecognizerAndWaitForReady();
   StartListeningWithAudioParams(params);
