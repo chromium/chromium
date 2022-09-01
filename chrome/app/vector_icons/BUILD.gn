@@ -61,6 +61,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "hardware_computer.icon",
     "hardware_computer_small.icon",
     "hardware_smartphone.icon",
+    "high_efficiency.icon",
     "horizontal_menu.icon",
     "incognito.icon",
     "incognito_menu_art.icon",

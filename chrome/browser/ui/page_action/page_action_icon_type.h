@@ -10,6 +10,7 @@ enum class PageActionIconType {
   kClickToCall,
   kCookieControls,
   kFind,
+  kHighEfficiency,
   kIntentPicker,
   kLocalCardMigration,
   kManagePasswords,
