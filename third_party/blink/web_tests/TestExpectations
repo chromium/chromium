@@ -6851,7 +6851,7 @@ crbug.com/1358051 external/wpt/longtask-timing/containerTypes.html [ Failure Pas
 virtual/plz-dedicated-worker/external/wpt/resource-timing/no-entries-for-cross-origin-css-fetched-memory-cache.sub.html [ Skip ]
 
 # Disable step failure trigger flaky tests   
-crbug.com/1351571 [ Mac12-arm64 ] http/tests/devtools/persistence/automapping-bind-committed-network-sourcecode.js [ Failure Timeout Pass ]
+crbug.com/1351571 [ Mac12-arm64 ] http/tests/devtools/persistence/automapping-bind-committed-network-sourcecode.js [ Failure Pass Timeout ]
 crbug.com/1358333 [ Mac10.15 ] external/wpt/webmessaging/event.origin.sub.htm [ Failure Pass ]
 
 # Sheriff 2022-08-31

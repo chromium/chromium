@@ -296343,6 +296343,20 @@
       "c0e56dc051000b907d5c7b66f9a014470c14c685",
       []
      ],
+     "historical": {
+      "webkit-user-modify-01-expected.txt": [
+       "8f93a5c5662d136930da6394bc25a2455fa131c2",
+       []
+      ],
+      "webkit-user-modify-02-expected.txt": [
+       "d17d1d2212af371013c5943f2964742039204edb",
+       []
+      ],
+      "webkit-user-modify-03-expected.txt": [
+       "6a8ec669e7c045645360223257c63f94dc3e021b",
+       []
+      ]
+     },
      "inheritance-expected.txt": [
       "548a76a3407ac8a48f9f108559957cf061f20a19",
       []
@@ -337821,7 +337835,7 @@
      []
     ],
     "enrollment.https-expected.txt": [
-     "d3dd35b3578b4f5bdc3c43348a36f99a572f1e7f",
+     "f9c50fc46685b90a6540ae85112dd061f30ace1a",
      []
     ],
     "resources": {
@@ -345921,7 +345935,7 @@
      []
     ],
     "helpers.js": [
-     "4fb1904b45340efe1f9efdee1c3a236689f7fa4f",
+     "efe3537e4f82926a447287f38b1d3bd434613e3f",
      []
     ],
     "idlharness.https.window-expected.txt": [
@@ -384228,7 +384242,7 @@
      ]
     ],
     "otpcredential-get-basics.https.html": [
-     "c0cac166de91c242a16bd4d6fc2edfa93aa37680",
+     "3907f85450fe4642720b2c8ec374f7f689bfbdd1",
      [
       null,
       {}
@@ -409807,6 +409821,71 @@
        {}
       ]
      ],
+     "historical": {
+      "moz-user-modify-01.html": [
+       "595df9440e523fc371cf55975e4042d569163136",
+       [
+        null,
+        {}
+       ]
+      ],
+      "moz-user-modify-02.html": [
+       "e284d0c4751c09be559a133869edf2dedd9805dc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "moz-user-modify-03.html": [
+       "e827b404e9462b19a456b2c8c6bea35e3cbe8ac1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "user-modify-01.html": [
+       "dee93a618f2538e1a06191d818589dfda788431b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "user-modify-02.html": [
+       "2a96871d90bc5f157c3c9d19bced34a3f206fd20",
+       [
+        null,
+        {}
+       ]
+      ],
+      "user-modify-03.html": [
+       "8d47e5259f759db50f40a0163c2ecef9153f460a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "webkit-user-modify-01.html": [
+       "f756274d472ec1a833944528c39a935f373a83a2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "webkit-user-modify-02.html": [
+       "9db2567467fb91d44e264a3200b58aef8f357235",
+       [
+        null,
+        {}
+       ]
+      ],
+      "webkit-user-modify-03.html": [
+       "e82ceffc37013e74a73eaabb5371268c1640215b",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "inheritance.html": [
       "c2aab07a23b9502353c7c3bbe798963442c651fe",
       [
@@ -537814,7 +537893,7 @@
      ]
     ],
     "enrollment.https.html": [
-     "7a370aa7b7ebecdcebb832f8e54f284ac5011b85",
+     "b93822c7f18e5d265499ade28a254cf85cf5fe1a",
      [
       null,
       {
@@ -564693,6 +564772,16 @@
       }
      ]
     ],
+    "createcredential-abort.https.html": [
+     "d175e660e71821509045528e8cb026967e594f1a",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "createcredential-attachment.https.html": [
      "e9458ad5604875e2ba430647cd434e561556a675",
      [
@@ -564859,6 +564948,15 @@
       null,
       {
        "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "getcredential-abort.https.html": [
+     "958f65daf1bccfe6200bb4a06e9cd75e06f4346d",
+     [
+      null,
+      {
        "timeout": "long"
       }
      ]
