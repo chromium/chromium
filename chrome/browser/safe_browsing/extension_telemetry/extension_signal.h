@@ -15,7 +15,8 @@ namespace safe_browsing {
 enum class ExtensionSignalType {
   kTabsExecuteScript = 0,
   kRemoteHostContacted = 1,
-  kMaxValue = kRemoteHostContacted,
+  kCookiesGetAll = 2,
+  kMaxValue = kCookiesGetAll,
 };
 
 // An abstract signal. Subclasses provide type-specific functionality to
