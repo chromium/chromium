@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -155,11 +156,11 @@ base::Value* PolicyMap::Entry::value(base::Value::Type value_type) {
 }
 
 const base::Value* PolicyMap::Entry::value_unsafe() const {
-  return base::OptionalOrNullptr(value_);
+  return base::OptionalToPtr(value_);
 }
 
 base::Value* PolicyMap::Entry::value_unsafe() {
-  return base::OptionalOrNullptr(value_);
+  return base::OptionalToPtr(value_);
 }
 
 void PolicyMap::Entry::set_value(absl::optional<base::Value> val) {
