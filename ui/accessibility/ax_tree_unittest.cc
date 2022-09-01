@@ -1205,8 +1205,9 @@ TEST(AXTreeTest, TreeObserverIsNotCalledForReparenting) {
   ASSERT_TRUE(test_observer.root_changed());
 }
 
+// https://crbug.com/1359080
 // UAF caught by ax_tree_fuzzer
-TEST(AXTreeTest, BogusAXTree) {
+TEST(AXTreeTest, DISABLED_BogusAXTree) {
   AXTreeUpdate initial_state;
   AXNodeData node;
   node.id = 0;
