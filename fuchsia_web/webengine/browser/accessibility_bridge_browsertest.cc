@@ -862,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(
       kUpdate1Name);
 
-  const char kNodeName[] = "transfrom should update";
+  const char kUpdateNodeName[] = "transfrom should update";
   // Changes the bounds of node 1.
   // (1 (2 (3 (4 (5)))))
   ui::AXTreeUpdate update;
@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   update.nodes[0].SetName(kUpdate2Name);
   update.nodes[1].id = 2;
   update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetName(kNodeName);
+  update.nodes[1].SetName(kUpdateNodeName);
   update.nodes[1].relative_bounds.offset_container_id = 1;
   // Node 2 should have non-trivial relative bounds to ensure that the
   // accessibility bridge correctly composes node 2's transform and the
@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   // Verify that the transform for the Fuchsia semantic node corresponding to
   // node 2 reflects the new bounds of node 1.
   fuchsia::accessibility::semantics::Node* fuchsia_node =
-      semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName);
+      semantics_manager_.semantic_tree()->GetNodeFromLabel(kUpdateNodeName);
   ASSERT_TRUE(fuchsia_node);
   // A Fuchsia node's semantic transform should include an offset for its parent
   // node as a post-translation on top of its existing transform. Therefore, the
@@ -956,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   bridge->offset_container_children_[std::make_pair(tree_id, 1)].insert(
       std::make_pair(tree_id, 2));
 
-  const char kNodeName[] = "transfrom should update";
+  const char kUpdateNodeName[] = "transfrom should update";
   // Changes the bounds of node 1.
   // (1 (2 (3 (4 (5)))))
   ui::AXTreeUpdate update;
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   update.nodes[0].SetName(kUpdate2Name);
   update.nodes[1].id = 2;
   update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetName(kNodeName);
+  update.nodes[1].SetName(kUpdateNodeName);
   bridge->AccessibilityEventReceived(
       CreateAccessibilityEventWithUpdate(std::move(update), tree_id));
   semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(
@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   // Verify that the transform for the Fuchsia semantic node corresponding to
   // node 2 reflects the new bounds of node 1.
   fuchsia::accessibility::semantics::Node* fuchsia_node =
-      semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName);
+      semantics_manager_.semantic_tree()->GetNodeFromLabel(kUpdateNodeName);
 
   // A Fuchsia node's semantic transform should include an offset for its parent
   // node as a post-translation on top of its existing transform. Therefore, the
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OneUpdatePerNode) {
   // OnAtomicUpdateFinished() should replace the now-incorrect update from step
   // (2) with a new update that includes a transform accounting for node 1's
   // bounds.
-  const char kNodeName[] = "transform should update";
+  const char kUpdateNodeName[] = "transform should update";
   // Changes the bounds of node 1.
   // (1 (2 (3 (4 (5)))))
   ui::AXTreeUpdate update;
@@ -1062,16 +1062,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OneUpdatePerNode) {
   update.nodes[2].id = 3;
   update.nodes[2].relative_bounds.offset_container_id = 1u;
   update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetName(kNodeName);
+  update.nodes[2].SetName(kUpdateNodeName);
 
   bridge->AccessibilityEventReceived(
       CreateAccessibilityEventWithUpdate(std::move(update), tree_id));
-  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(
+      kUpdateNodeName);
 
   // Verify that the transform for the Fuchsia semantic node corresponding to
   // node 3 reflects the new bounds of node 1.
   fuchsia::accessibility::semantics::Node* fuchsia_node =
-      semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName);
+      semantics_manager_.semantic_tree()->GetNodeFromLabel(kUpdateNodeName);
 
   // A Fuchsia node's semantic transform should include an offset for its parent
   // node as a post-translation on top of its existing transform. Therefore, the

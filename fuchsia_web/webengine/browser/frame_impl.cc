@@ -766,8 +766,6 @@ void FrameImpl::AddBeforeLoadJavaScript(
     std::vector<std::string> origins,
     fuchsia::mem::Buffer script,
     AddBeforeLoadJavaScriptCallback callback) {
-  constexpr char kWildcardOrigin[] = "*";
-
   if (!context_->IsJavaScriptInjectionAllowed()) {
     callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
     return;
