@@ -329,37 +329,6 @@ class AutofillMetrics {
     NUM_CREDIT_CARD_UPLOAD_FEEDBACK_METRICS,
   };
 
-  // Metrics to measure user interaction with the virtual card manual fallback
-  // bubble after it has appeared upon unmasking and filling a virtual card.
-  enum class VirtualCardManualFallbackBubbleResultMetric {
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-
-    // The reason why the bubble is closed is not clear. Possible reason is the
-    // logging function is invoked before the closed reason is correctly set.
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_RESULT_UNKNOWN = 0,
-    // The user explicitly closed the bubble with the close button or ESC.
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED = 1,
-    // The user did not interact with the bubble.
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED = 2,
-    // Deprecated: VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS = 3,
-    kMaxValue = VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED,
-  };
-
-  // Metric to measure which field in the virtual card manual fallback bubble
-  // was selected by the user.
-  enum class VirtualCardManualFallbackBubbleFieldClickedMetric {
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARD_NUMBER = 0,
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_MONTH = 1,
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_YEAR = 2,
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARDHOLDER_NAME = 3,
-    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC = 4,
-    kMaxValue = VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC,
-  };
-
   // Metrics measuring how well we predict field types.  These metric values are
   // logged for each field in a submitted form for:
   //     - the heuristic prediction
@@ -1299,12 +1268,6 @@ class AutofillMetrics {
       AutofillProgressDialogType autofill_progress_dialog_type);
   static void LogProgressDialogShown(
       AutofillProgressDialogType autofill_progress_dialog_type);
-  static void LogVirtualCardManualFallbackBubbleShown(bool is_reshow);
-  static void LogVirtualCardManualFallbackBubbleResultMetric(
-      VirtualCardManualFallbackBubbleResultMetric metric,
-      bool is_reshow);
-  static void LogVirtualCardManualFallbackBubbleFieldClicked(
-      VirtualCardManualFallbackBubbleFieldClickedMetric metric);
 
   // Should be called when credit card scan is finished. |duration| should be
   // the time elapsed between launching the credit card scanner and getting back

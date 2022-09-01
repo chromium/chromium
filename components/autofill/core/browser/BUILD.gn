@@ -267,6 +267,8 @@ static_library("browser") {
     "metrics/payments/save_credit_card_prompt_metrics.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",
     "metrics/payments/virtual_card_enrollment_metrics.h",
+    "metrics/payments/virtual_card_manual_fallback_bubble_metrics.cc",
+    "metrics/payments/virtual_card_manual_fallback_bubble_metrics.h",
     "metrics/shadow_prediction_metrics.cc",
     "metrics/shadow_prediction_metrics.h",
     "payments/account_info_getter.h",

@@ -188,22 +188,21 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
   set_bubble_view(nullptr);
 
   // Log bubble result according to the closed reason.
-  AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric metric;
+  autofill_metrics::VirtualCardManualFallbackBubbleResult metric;
   switch (closed_reason) {
     case PaymentsBubbleClosedReason::kClosed:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed;
       break;
     case PaymentsBubbleClosedReason::kNotInteracted:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleResult::
+          kNotInteracted;
       break;
     default:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_RESULT_UNKNOWN;
+      metric =
+          autofill_metrics::VirtualCardManualFallbackBubbleResult::kUnknown;
       break;
   }
-  AutofillMetrics::LogVirtualCardManualFallbackBubbleResultMetric(
+  autofill_metrics::LogVirtualCardManualFallbackBubbleResultMetric(
       metric, is_user_gesture_);
 
   UpdatePageActionIcon();
@@ -229,35 +228,30 @@ void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
 void VirtualCardManualFallbackBubbleControllerImpl::
     LogVirtualCardManualFallbackBubbleFieldClicked(
         VirtualCardManualFallbackBubbleField field) const {
-  AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric metric;
+  autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked metric;
   switch (field) {
     case VirtualCardManualFallbackBubbleField::kCardNumber:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARD_NUMBER;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardNumber;
       break;
     case VirtualCardManualFallbackBubbleField::kExpirationMonth:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_MONTH;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationMonth;
       break;
     case VirtualCardManualFallbackBubbleField::kExpirationYear:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_YEAR;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationYear;
       break;
     case VirtualCardManualFallbackBubbleField::kCardholderName:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARDHOLDER_NAME;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardholderName;
       break;
     case VirtualCardManualFallbackBubbleField::kCvc:
       metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC;
+          autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::kCVC;
       break;
   }
-  AutofillMetrics::LogVirtualCardManualFallbackBubbleFieldClicked(metric);
+  autofill_metrics::LogVirtualCardManualFallbackBubbleFieldClicked(metric);
 }
 
 VirtualCardManualFallbackBubbleControllerImpl::
@@ -309,7 +303,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::DoShowBubble() {
   DCHECK(bubble_view());
   bubble_has_been_shown_ = true;
 
-  AutofillMetrics::LogVirtualCardManualFallbackBubbleShown(is_user_gesture_);
+  autofill_metrics::LogVirtualCardManualFallbackBubbleShown(is_user_gesture_);
 
   if (observer_for_test_)
     observer_for_test_->OnBubbleShown();

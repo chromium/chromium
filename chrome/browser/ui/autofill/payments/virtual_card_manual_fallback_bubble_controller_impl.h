@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/virtual_card_manual_fallback_bubble_metrics.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {

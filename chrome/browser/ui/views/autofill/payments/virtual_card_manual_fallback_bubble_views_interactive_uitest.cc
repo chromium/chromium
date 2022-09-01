@@ -238,8 +238,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, u"5454545454545454");
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARD_NUMBER,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardNumber,
       1);
 
   // Expiration month:
@@ -249,8 +249,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextMonth().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_MONTH,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationMonth,
       1);
 
   // Expiration year:
@@ -260,8 +260,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextYear().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_YEAR,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationYear,
       1);
 
   // Cardholder name:
@@ -271,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, u"John Smith");
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARDHOLDER_NAME,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardholderName,
       1);
 
   // CVC:
@@ -282,9 +282,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, u"345");
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC,
-      1);
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::kCVC, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
@@ -308,9 +306,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   // Confirm .FirstShow metrics.
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow",
-      AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED,
-      1);
+      autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed, 1);
 
   // Bubble is reshown by the user.
   ReshowBubble();
@@ -328,9 +324,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   // Confirm .Reshows metrics.
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardManualFallbackBubble.Result.Reshows",
-      AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED,
-      1);
+      autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed, 1);
 
   // Bubble is reshown by the user. Closing a reshown bubble makes the browser
   // inactive for some reason, so we must reactivate it first.
@@ -359,8 +353,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   // Confirm metrics.
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow",
-      AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED,
+      autofill_metrics::VirtualCardManualFallbackBubbleResult::kNotInteracted,
       1);
 }
 
