@@ -578,6 +578,7 @@ source_set("unit_tests") {
     "manifest_handlers/incognito_manifest_unittest.cc",
     "manifest_handlers/kiosk_mode_info_unittest.cc",
     "manifest_handlers/manifest_v3_permissions_unittest.cc",
+    "manifest_handlers/mime_types_handler_unittest.cc",
     "manifest_handlers/oauth2_manifest_unittest.cc",
     "manifest_handlers/replacement_apps_unittest.cc",
     "manifest_handlers/shared_module_manifest_unittest.cc",
