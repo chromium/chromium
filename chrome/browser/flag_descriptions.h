@@ -3378,9 +3378,6 @@ extern const char kSnoopingProtectionDescription[];
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
-extern const char kSyncSettingsCategorizationName[];
-extern const char kSyncSettingsCategorizationDescription[];
-
 extern const char kSystemChinesePhysicalTypingName[];
 extern const char kSystemChinesePhysicalTypingDescription[];
 
