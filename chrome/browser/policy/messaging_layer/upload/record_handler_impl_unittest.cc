@@ -42,11 +42,9 @@ using ::testing::Eq;
 using ::testing::Gt;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
-using ::testing::MockFunction;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::Return;
-using ::testing::StrictMock;
 using ::testing::WithArgs;
 
 namespace reporting {
@@ -68,8 +66,6 @@ MATCHER_P(ResponseEquals,
   }
   return arg.ValueOrDie().force_confirm == expected.force_confirm;
 }
-
-using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
 class RecordHandlerImplTest : public ::testing::TestWithParam<
                                   ::testing::tuple</*need_encryption_key*/ bool,
@@ -144,7 +140,7 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.cb());
+                        encryption_key_attached_event.repeating_cb());
   if (need_encryption_key()) {
     EXPECT_THAT(
         encryption_key_attached_event.result(),
@@ -183,7 +179,7 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.cb());
+                        encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
   EXPECT_EQ(response.status().error_code(), error::INTERNAL);
@@ -220,7 +216,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.cb());
+                        encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
   EXPECT_EQ(response.status().error_code(), error::INTERNAL);
@@ -245,7 +241,7 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.cb());
+                        encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
   EXPECT_EQ(response.status().error_code(), error::FAILED_PRECONDITION);
@@ -263,23 +259,19 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
           std::move(ResponseBuilder().SetNull(true))));
 
   test::TestEvent<DmServerUploadService::CompletionResponse> response_event;
-
-  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
-  EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
-
-  auto encryption_key_attached_callback =
-      base::BindRepeating(&TestEncryptionKeyAttached::Call,
-                          base::Unretained(&encryption_key_attached));
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
 
   RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
-                        encryption_key_attached_callback);
+                        encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
   EXPECT_THAT(response,
               Property(&DmServerUploadService::CompletionResponse::status,
                        Property(&Status::error_code, Eq(error::DATA_LOSS))));
+
+  EXPECT_TRUE(encryption_key_attached_event.no_result());
 }
 
 TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
@@ -308,26 +300,26 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   }
 
   test::TestEvent<DmServerUploadService::CompletionResponse> response_event;
-
-  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
-  EXPECT_CALL(
-      encryption_key_attached,
-      Call(AllOf(Property(&SignedEncryptionInfo::public_asymmetric_key,
-                          Not(IsEmpty())),
-                 Property(&SignedEncryptionInfo::public_key_id, Gt(0)),
-                 Property(&SignedEncryptionInfo::signature, Not(IsEmpty())))))
-      .Times(need_encryption_key() ? 1 : 0);
-  auto encryption_key_attached_callback =
-      base::BindRepeating(&TestEncryptionKeyAttached::Call,
-                          base::Unretained(&encryption_key_attached));
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
 
   RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
-                        encryption_key_attached_callback);
+                        encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
   EXPECT_THAT(response, ResponseEquals(expected_response));
+
+  if (need_encryption_key()) {
+    EXPECT_THAT(
+        encryption_key_attached_event.result(),
+        AllOf(Property(&SignedEncryptionInfo::public_asymmetric_key,
+                       Not(IsEmpty())),
+              Property(&SignedEncryptionInfo::public_key_id, Gt(0)),
+              Property(&SignedEncryptionInfo::signature, Not(IsEmpty()))));
+  } else {
+    EXPECT_TRUE(encryption_key_attached_event.no_result());
+  }
 }
 
 // There may be cases where the server and the client do not align in the
@@ -346,24 +338,20 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
             std::move(callback).Run(base::Value::Dict());
           })));
 
-  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<DmServerUploadService::CompletionResponse> response_event;
-
-  EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
-
-  auto encryption_key_attached_callback =
-      base::BindRepeating(&TestEncryptionKeyAttached::Call,
-                          base::Unretained(&encryption_key_attached));
 
   RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
-                        encryption_key_attached_callback);
+                        encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
   EXPECT_THAT(response,
               Property(&DmServerUploadService::CompletionResponse::status,
                        Property(&Status::error_code, Eq(error::INTERNAL))));
+
+  EXPECT_TRUE(encryption_key_attached_event.no_result());
 }
 
 TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {

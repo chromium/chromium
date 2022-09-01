@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 
 #include <tuple>
 
@@ -19,6 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -31,6 +31,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -201,9 +203,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       .WillOnce(MakeUploadEncryptedReportAction(
           std::move(ResponseBuilder().SetForceConfirm(force_confirm()))));
 
-  test::TestMultiEvent<SequenceInformation, bool> upload_success;
-  UploadClient::ReportSuccessfulUploadCallback upload_success_cb =
-      upload_success.cb();
+  test::TestMultiEvent<SequenceInformation, bool> upload_success_event;
 
   // Save last record seq info for verification.
   const SequenceInformation last_record_seq_info =
@@ -218,10 +218,10 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   auto upload_client = std::move(upload_client_result.ValueOrDie());
   auto enqueue_result = upload_client->EnqueueUpload(
       need_encryption_key(), std::move(records), std::move(total_reservation),
-      std::move(upload_success_cb), encryption_key_attached_cb);
+      upload_success_event.repeating_cb(), encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
 
-  auto upload_success_result = upload_success.result();
+  auto upload_success_result = upload_success_event.result();
   EXPECT_THAT(std::get<0>(upload_success_result),
               EqualsProto(last_record_seq_info));
   EXPECT_THAT(std::get<1>(upload_success_result), Eq(force_confirm()));

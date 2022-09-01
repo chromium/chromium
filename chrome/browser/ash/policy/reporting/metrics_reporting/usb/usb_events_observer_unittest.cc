@@ -139,7 +139,7 @@ TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthd) {
   constexpr int kExpectedUsbTelemetrySize = 1;
   constexpr int kIndexOfUsbTelemetry = 0;
 
-  usb_observer.SetOnEventObservedCallback(result_metric_data.cb());
+  usb_observer.SetOnEventObservedCallback(result_metric_data.repeating_cb());
   usb_observer.SetReportingEnabled(true);
 
   ::ash::cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
