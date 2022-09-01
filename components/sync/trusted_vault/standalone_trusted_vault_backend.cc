@@ -371,17 +371,18 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     DCHECK(!pending_trusted_recovery_method_.has_value());
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
-    degraded_recoverability_handler_ =
-        std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
-            connection_.get(), this, primary_account_.value());
-  }
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account->gaia);
   if (!per_user_vault) {
     per_user_vault = data_.add_user();
     per_user_vault->set_gaia_id(primary_account->gaia);
+  }
+  if (base::FeatureList::IsEnabled(
+          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+    degraded_recoverability_handler_ =
+        std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
+            connection_.get(), /*delegate=*/this, primary_account_.value(),
+            per_user_vault->degraded_recoverability_state());
   }
 
   const absl::optional<TrustedVaultDeviceRegistrationStateForUMA>

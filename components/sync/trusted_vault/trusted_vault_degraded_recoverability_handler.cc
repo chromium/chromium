@@ -47,14 +47,23 @@ TrustedVaultDegradedRecoverabilityHandler::
     TrustedVaultDegradedRecoverabilityHandler(
         TrustedVaultConnection* connection,
         Delegate* delegate,
-        const CoreAccountInfo& account_info)
+        const CoreAccountInfo& account_info,
+        const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+            degraded_recoverability_state)
     : connection_(connection),
       delegate_(delegate),
       account_info_(account_info),
       current_refresh_period_(kLongDegradedRecoverabilityRefreshPeriod) {
-  // TODO(crbug.com/1247990): read `last_refresh_time_`, convert it to
-  // TimeTicks, and schedule next refresh.
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/1247990): Handle the nullopt value after introducing it.
+  is_recoverability_degraded_ =
+      degraded_recoverability_state.is_recoverability_degraded();
+  base::Time last_refresh_time =
+      ProtoTimeToTime(degraded_recoverability_state
+                          .last_refresh_time_millis_since_unix_epoch());
+  if (base::Time::Now() > last_refresh_time) {
+    last_refresh_time_ =
+        base::TimeTicks::Now() - (base::Time::Now() - last_refresh_time);
+  }
   Start();
 }
 

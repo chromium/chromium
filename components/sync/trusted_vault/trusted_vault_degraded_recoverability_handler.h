@@ -46,7 +46,9 @@ class TrustedVaultDegradedRecoverabilityHandler {
   TrustedVaultDegradedRecoverabilityHandler(
       TrustedVaultConnection* connection,
       Delegate* delegate,
-      const CoreAccountInfo& account_info);
+      const CoreAccountInfo& account_info,
+      const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+          degraded_recoverability_state);
   TrustedVaultDegradedRecoverabilityHandler(
       const TrustedVaultDegradedRecoverabilityHandler&) = delete;
   TrustedVaultDegradedRecoverabilityHandler& operator=(

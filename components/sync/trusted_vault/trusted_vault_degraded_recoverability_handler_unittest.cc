@@ -104,7 +104,8 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
     scheduler_ = std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
-        &connection_, &delegate_, MakeAccountInfoWithGaiaId("user"));
+        &connection_, &delegate_, MakeAccountInfoWithGaiaId("user"),
+        sync_pb::LocalTrustedVaultDegradedRecoverabilityState());
     // Moving the time forward by one millisecond to make sure that the first
     // refresh had called.
     task_environment().FastForwardBy(base::Milliseconds(1));
@@ -133,7 +134,8 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler> scheduler =
       std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
-          &connection, &delegate, MakeAccountInfoWithGaiaId("user"));
+          &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
+          sync_pb::LocalTrustedVaultDegradedRecoverabilityState());
   task_environment().FastForwardBy(base::Milliseconds(1));
 }
 
@@ -233,6 +235,23 @@ TEST_F(
               WriteDegradedRecoverabilityState(DegradedRecoverabilityStateEq(
                   degraded_recoverability_state)));
   scheduler().RefreshImmediately();
+}
+
+TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
+       ShouldComputeTheNextRefreshTimeBasedOnTheStoredState) {
+  testing::NiceMock<MockTrustedVaultConnection> connection;
+  testing::NiceMock<MockDelegate> delegate;
+  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state;
+  degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
+      TimeToProtoTime(base::Time::Now() - base::Days(4)));
+
+  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
+  std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler> scheduler =
+      std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
+          &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
+          degraded_recoverability_state);
+  task_environment().FastForwardBy(base::Days(3) + base::Milliseconds(1));
 }
 
 }  // namespace
