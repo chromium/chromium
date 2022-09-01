@@ -15,7 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "net/cookies/first_party_sets_context_config.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

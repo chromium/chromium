@@ -24,7 +24,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "net/cookies/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"

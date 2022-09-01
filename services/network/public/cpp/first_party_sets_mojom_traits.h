@@ -7,9 +7,9 @@
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/first_party_sets.mojom-shared.h"
 
 namespace mojo {

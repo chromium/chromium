@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 
 namespace network {
 

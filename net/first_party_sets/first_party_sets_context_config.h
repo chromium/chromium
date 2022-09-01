@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_COOKIES_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
-#define NET_COOKIES_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
+#ifndef NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
+#define NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
 
 #include "base/containers/flat_map.h"
 #include "net/base/schemeful_site.h"
@@ -39,4 +39,4 @@ class NET_EXPORT FirstPartySetsContextConfig {
 
 }  // namespace net
 
-#endif  // NET_COOKIES_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
+#endif  // NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_

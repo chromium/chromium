@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/cookies/first_party_sets_context_config.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 
 namespace net {
 
