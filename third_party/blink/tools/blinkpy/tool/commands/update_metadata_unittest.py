@@ -147,8 +147,16 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             }],
         }).encode()
 
+    def _unstaged_changes(self):
+        wpt_glob = self.finder.path_from_web_tests('external', 'wpt', '*.ini')
+        return patch.object(
+            self.command.git,
+            'unstaged_changes',
+            side_effect=lambda: self.tool.filesystem.glob(wpt_glob))
+
     def test_execute_all(self):
-        with self._patch_builtins():
+        with self._patch_builtins() as stack:
+            stack.enter_context(self._unstaged_changes())
             exit_code = self.command.main([])
         self.assertEqual(exit_code, 0)
         # Even tests that pass may require an update if a subtest was added or
@@ -271,14 +279,15 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         self.assertEqual(self.tool.git().added_paths, set())
 
     def test_execute_only_changed_tests(self):
-        changed_files = [
-            'third_party/blink/web_tests/external/wpt/crash.html',
-        ]
         with self._patch_builtins() as stack:
             stack.enter_context(
-                patch.object(self.command.git,
-                             'changed_files',
-                             return_value=changed_files))
+                patch.object(
+                    self.command.git,
+                    'changed_files',
+                    return_value=[
+                        'third_party/blink/web_tests/external/wpt/crash.html',
+                    ]))
+            stack.enter_context(self._unstaged_changes())
             exit_code = self.command.main(['--only-changed-tests'])
         self.assertEqual(exit_code, 0)
         self.assertLog([

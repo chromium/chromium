@@ -178,14 +178,23 @@ class UpdateMetadata(Command):
                 test_files_to_stage.append(test_file)
 
         if not dry_run:
-            paths = self._metadata_paths(test_files_to_stage)
+            unstaged_changes = {
+                self._path_finder.path_from_chromium_base(path)
+                for path in self.git.unstaged_changes()
+            }
+            # Filter out all-pass metadata files marked as "modified" that
+            # already do not exist on disk or in the index. Otherwise, `git add`
+            # will fail.
+            paths = [
+                path for path in self._metadata_paths(test_files_to_stage)
+                if path in unstaged_changes
+            ]
             # Stage the files in chunks to avoid a Windows command line length
             # limit. The chunk size was picked heuristically.
             for chunk_start in range(0, len(paths), chunk_size):
                 self.git.add_list(paths[chunk_start:chunk_start + chunk_size])
-            _log.info(
-                'Staged %s.',
-                grammar.pluralize('metadata file', len(test_files_to_stage)))
+            _log.info('Staged %s.',
+                      grammar.pluralize('metadata file', len(paths)))
 
     def _filter_unchanged_test_files(
             self,
