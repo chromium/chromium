@@ -380,6 +380,11 @@ AudioDecoderAndroid::GetAudioTrackTimestamp() {
                 : AudioDecoderAndroid::AudioTrackTimestamp());
 }
 
+int AudioDecoderAndroid::GetStartThresholdInFrames() {
+  TRACE_FUNCTION_ENTRY0();
+  return (sink_ ? sink_->GetStartThresholdInFrames() : 0);
+}
+
 void AudioDecoderAndroid::OnBufferDecoded(
     uint64_t input_bytes,
     CastAudioDecoder::Status status,

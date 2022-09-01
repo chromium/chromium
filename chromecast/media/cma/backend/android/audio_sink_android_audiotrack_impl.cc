@@ -149,7 +149,13 @@ AudioSinkAndroidAudioTrackImpl::GetAudioTrackTimestamp() {
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_);
   return MediaPipelineBackendAndroid::AudioTrackTimestamp(
       direct_audio_track_timestamp_address_[0],
-      direct_audio_track_timestamp_address_[1]);
+      direct_audio_track_timestamp_address_[1],
+      direct_audio_track_timestamp_address_[2]);
+}
+
+int AudioSinkAndroidAudioTrackImpl::GetStartThresholdInFrames() {
+  return Java_AudioSinkAudioTrackImpl_getStartThresholdInFrames(
+      base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_);
 }
 
 void AudioSinkAndroidAudioTrackImpl::FinalizeOnFeederThread() {

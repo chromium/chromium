@@ -44,6 +44,7 @@ class AudioDecoderSoftwareWrapper
   bool SetVolume(float multiplier);
   RenderingDelay GetRenderingDelay();
   AudioTrackTimestamp GetAudioTrackTimestamp();
+  int GetStartThresholdInFrames();
   bool IsUsingSoftwareDecoder();
 
  private:

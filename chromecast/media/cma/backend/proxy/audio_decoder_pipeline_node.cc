@@ -67,6 +67,12 @@ AudioDecoderPipelineNode::GetAudioTrackTimestamp() {
   return delegated_decoder_->GetAudioTrackTimestamp();
 }
 
+int AudioDecoderPipelineNode::GetStartThresholdInFrames() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  return delegated_decoder_->GetStartThresholdInFrames();
+}
+
 bool AudioDecoderPipelineNode::RequiresDecryption() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

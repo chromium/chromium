@@ -119,6 +119,10 @@ AudioDecoderSoftwareWrapper::GetAudioTrackTimestamp() {
   return backend_decoder_->GetAudioTrackTimestamp();
 }
 
+int AudioDecoderSoftwareWrapper::GetStartThresholdInFrames() {
+  return backend_decoder_->GetStartThresholdInFrames();
+}
+
 bool AudioDecoderSoftwareWrapper::IsUsingSoftwareDecoder() {
   return software_decoder_.get() != nullptr;
 }

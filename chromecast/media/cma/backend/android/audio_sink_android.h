@@ -85,6 +85,9 @@ class AudioSinkAndroid {
   virtual MediaPipelineBackendAndroid::AudioTrackTimestamp
   GetAudioTrackTimestamp() = 0;
 
+  // Returns the streaming start threshold of the current audio track.
+  virtual int GetStartThresholdInFrames() = 0;
+
   // Getters
   virtual int input_samples_per_second() const = 0;
   virtual bool primary() const = 0;

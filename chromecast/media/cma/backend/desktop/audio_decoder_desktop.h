@@ -38,6 +38,7 @@ class AudioDecoderDesktop : public MediaPipelineBackend::AudioDecoder {
   bool SetVolume(float multiplier) override;
   RenderingDelay GetRenderingDelay() override;
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
+  int GetStartThresholdInFrames() override;
 
  private:
   Delegate* delegate_;

@@ -71,6 +71,7 @@ class CmaBackend {
     virtual RenderingDelay GetRenderingDelay() = 0;
     virtual void GetStatistics(Statistics* statistics) = 0;
     virtual AudioTrackTimestamp GetAudioTrackTimestamp() = 0;
+    virtual int GetStartThresholdInFrames() = 0;
 
     // Returns true if the audio decoder requires that encrypted buffers be
     // decrypted before being passed to PushBuffer(). The return value may

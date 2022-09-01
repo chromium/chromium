@@ -31,6 +31,7 @@ class MockAudioDecoder : public MediaPipelineBackend::AudioDecoder {
   MOCK_METHOD0(GetRenderingDelay, RenderingDelay());
   MOCK_METHOD1(GetStatistics, void(Statistics*));
   MOCK_METHOD0(GetAudioTrackTimestamp, AudioTrackTimestamp());
+  MOCK_METHOD0(GetStartThresholdInFrames, int());
 };
 
 }  // namespace

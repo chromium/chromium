@@ -136,6 +136,9 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
   AudioTrackTimestamp GetAudioTrackTimestamp() override {
     return AudioTrackTimestamp();
   }
+  int GetStartThresholdInFrames() override {
+    return 0;
+  }
   bool RequiresDecryption() override { return false; }
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 

@@ -62,5 +62,9 @@ AudioDecoderDesktop::AudioTrackTimestamp AudioDecoderDesktop::GetAudioTrackTimes
   return AudioTrackTimestamp();
 }
 
+int AudioDecoderDesktop::GetStartThresholdInFrames() {
+  return 0;
+}
+
 }  // namespace media
 }  // namespace chromecast

@@ -50,6 +50,7 @@ class AudioDecoderPipelineNode : public CmaBackend::Decoder::Delegate,
   CmaBackend::AudioDecoder::RenderingDelay GetRenderingDelay() override;
   void GetStatistics(CmaBackend::AudioDecoder::Statistics* statistics) override;
   CmaBackend::AudioDecoder::AudioTrackTimestamp GetAudioTrackTimestamp() override;
+  int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override;
 

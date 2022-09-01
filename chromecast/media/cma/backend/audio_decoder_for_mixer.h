@@ -59,6 +59,7 @@ class AudioDecoderForMixer
   bool SetVolume(float multiplier) override;
   RenderingDelay GetRenderingDelay() override;
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
+  int GetStartThresholdInFrames() override;
 
   // This allows for very small changes in the rate of audio playback that are
   // (supposedly) imperceptible.

@@ -68,6 +68,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   MediaPipelineBackendAndroid::RenderingDelay GetRenderingDelay() override;
   MediaPipelineBackendAndroid::AudioTrackTimestamp GetAudioTrackTimestamp()
       override;
+  int GetStartThresholdInFrames() override;
 
   // Getters
   int input_samples_per_second() const override;

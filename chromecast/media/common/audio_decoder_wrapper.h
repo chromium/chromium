@@ -51,6 +51,7 @@ class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
   RenderingDelay GetRenderingDelay() override;
   void GetStatistics(Statistics* statistics) override;
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
+  int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
@@ -93,6 +94,7 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
   RenderingDelay GetRenderingDelay() override;
   void GetStatistics(Statistics* statistics) override;
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
+  int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 

@@ -453,6 +453,10 @@ AudioDecoderForMixer::GetAudioTrackTimestamp() {
   return AudioTrackTimestamp();
 }
 
+int AudioDecoderForMixer::GetStartThresholdInFrames() {
+  return 0;
+}
+
 void AudioDecoderForMixer::OnBufferDecoded(
     uint64_t input_bytes,
     bool has_config,
