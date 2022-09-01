@@ -3518,6 +3518,9 @@ extern const char kCrOSDspBasedAgcAllowedDescription[];
 extern const char kCrosPrivacyHubName[];
 extern const char kCrosPrivacyHubDescription[];
 
+extern const char kCrosPrivacyHubDogfoodName[];
+extern const char kCrosPrivacyHubDogfoodDescription[];
+
 extern const char kCrosPrivacyHubFutureName[];
 extern const char kCrosPrivacyHubFutureDescription[];
 

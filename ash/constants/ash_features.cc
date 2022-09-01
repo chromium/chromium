@@ -369,6 +369,10 @@ const base::Feature kCrosNextWMP{"CrosNextWMP",
 const base::Feature kCrosPrivacyHub{"CrosPrivacyHub",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Privacy Hub features selected for dogfooding.
+const base::Feature kCrosPrivacyHubDogfood{"CrosPrivacyHubDogfood",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables future features for Privacy Hub for ChromeOS.
 const base::Feature kCrosPrivacyHubFuture{"CrosPrivacyHubFuture",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1925,6 +1929,11 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 bool IsCrosPrivacyHubEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub) ||
          IsCrosPrivacyHubFutureEnabled();
+}
+
+bool IsCrosPrivacyHubDogfoodEnabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHubDogfood) ||
+         IsCrosPrivacyHubEnabled();
 }
 
 bool IsCrosPrivacyHubFutureEnabled() {

@@ -59105,6 +59105,7 @@ from previous Chrome versions.
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
   <int value="-286603268" label="hide-android-files-in-files-app"/>
+  <int value="-285878046" label="CrosPrivacyHubDogfood:enabled"/>
   <int value="-284547865" label="UnifiedConsent:enabled"/>
   <int value="-284470280" label="ShelfPalmRejectionTouchArea:enabled"/>
   <int value="-284328071" label="LocalWebApprovals:enabled"/>
@@ -62314,6 +62315,7 @@ from previous Chrome versions.
   <int value="1717987538" label="NTPTilesLowerResolutionFavicons:enabled"/>
   <int value="1718341860" label="NTPButton:enabled"/>
   <int value="1718421370" label="SharingHubLinkToggle:enabled"/>
+  <int value="1718868363" label="CrosPrivacyHubDogfood:disabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
   <int value="1722748383" label="EnableAppReinstallZeroState:disabled"/>
