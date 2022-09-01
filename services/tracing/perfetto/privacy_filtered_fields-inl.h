@@ -593,7 +593,7 @@ constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
 
 // Proto Message: TracePacket
 constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12, 13, 35, 36, 41, 42,
-                                       43, 44, 51, 54, 56, 58, 59, 60, -1};
+                                       43, 44, 51, 54, 56, 58, 59, 60, 87, -1};
 constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kClockSnapshot,
     nullptr,
@@ -612,7 +612,8 @@ constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kHeapGraph,
     nullptr,
     &kTracePacketDefaults,
-    &kTrackDescriptor};
+    &kTrackDescriptor,
+    nullptr};
 constexpr MessageInfo kTracePacket = {kTracePacketIndices,
                                       kTracePacketComplexMessages};
 
