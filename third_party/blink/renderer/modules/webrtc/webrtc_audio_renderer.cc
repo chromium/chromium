@@ -319,7 +319,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
       source_(nullptr),
       play_ref_count_(0),
       start_ref_count_(0),
-      sink_params_(kFormat, media::CHANNEL_LAYOUT_STEREO, 0, 0),
+      sink_params_(kFormat, media::ChannelLayoutConfig::Stereo(), 0, 0),
       output_device_id_(device_id),
       on_render_error_callback_(std::move(on_render_error_callback)) {
   if (web_frame && web_frame->Client()) {
@@ -921,11 +921,8 @@ void WebRtcAudioRenderer::PrepareSink() {
   }
   const int sink_frames_per_buffer = media::AudioLatency::GetRtcBufferSize(
       sample_rate, device_info.output_params().frames_per_buffer());
-  new_sink_params.Reset(kFormat, channel_layout, sample_rate,
+  new_sink_params.Reset(kFormat, {channel_layout, channels}, sample_rate,
                         sink_frames_per_buffer);
-  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
-    new_sink_params.set_channels_for_discrete(channels);
-  }
   DCHECK(new_sink_params.IsValid());
 
   // Create a FIFO if re-buffering is required to match the source input with
