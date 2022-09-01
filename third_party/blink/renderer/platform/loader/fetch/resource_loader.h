@@ -54,6 +54,10 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace base {
+class UnguessableToken;
+}
+
 namespace blink {
 
 class FetchContext;
@@ -166,6 +170,9 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidFinishLoadingFirstPartInMultipart();
 
   scoped_refptr<base::SingleThreadTaskRunner> GetLoadingTaskRunner();
+
+  void CancelIfWebBundleTokenMatches(
+      const base::UnguessableToken& web_bundle_token);
 
  private:
   friend class SubresourceIntegrityTest;

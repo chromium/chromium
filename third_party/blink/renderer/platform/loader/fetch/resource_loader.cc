@@ -37,6 +37,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1696,6 +1697,15 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
   }
 
   return false;
+}
+
+void ResourceLoader::CancelIfWebBundleTokenMatches(
+    const base::UnguessableToken& web_bundle_token) {
+  if (resource_->GetResourceRequest().GetWebBundleTokenParams().has_value() &&
+      resource_->GetResourceRequest().GetWebBundleTokenParams().value().token ==
+          web_bundle_token) {
+    Cancel();
+  }
 }
 
 }  // namespace blink

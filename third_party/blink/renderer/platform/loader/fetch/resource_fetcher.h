@@ -335,6 +335,9 @@ class PLATFORM_EXPORT ResourceFetcher
   // Access the UKMRecorder.
   ukm::MojoUkmRecorder* UkmRecorder();
 
+  void CancelWebBundleSubresourceLoadersFor(
+      const base::UnguessableToken& web_bundle_token);
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {

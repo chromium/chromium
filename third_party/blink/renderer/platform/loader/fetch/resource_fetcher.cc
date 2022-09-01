@@ -2404,6 +2404,19 @@ SubresourceWebBundle* ResourceFetcher::GetMatchingBundle(
              : nullptr;
 }
 
+void ResourceFetcher::CancelWebBundleSubresourceLoadersFor(
+    const base::UnguessableToken& web_bundle_token) {
+  // Copy to avoid concurrent iteration and modification.
+  auto loaders = loaders_;
+  for (const auto& loader : loaders) {
+    loader->CancelIfWebBundleTokenMatches(web_bundle_token);
+  }
+  auto non_blocking_loaders = non_blocking_loaders_;
+  for (const auto& loader : non_blocking_loaders) {
+    loader->CancelIfWebBundleTokenMatches(web_bundle_token);
+  }
+}
+
 void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   visitor->Trace(properties_);

@@ -5514,6 +5514,93 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Test for https://crbug.com/1355162.
+// Ensure the following happens when DeclarativeNetRequest API blocks a
+// WebBundle:
+// - A request for the WebBundle fails.
+// - A subresource request associated with the bundle fail.
+// - A window.load is fired. In other words, any request shouldn't remain
+//   pending forever.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
+                       WebBundleRequestCanceled) {
+  // Add a rule to block the bundle.
+  TestRule rule = CreateGenericRule();
+  std::vector<TestRule> rules;
+  rule.id = kMinValidID;
+  rule.condition->url_filter = "web_bundle.wbn|";
+  rule.priority = 1;
+  rules.push_back(rule);
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  const char kPageHtml[] = R"(
+        <title>Loaded</title>
+        <body>
+        <script>
+        (async () => {
+          const window_load = new Promise((resolve) => {
+            window.addEventListener("load", () => {
+              resolve();
+            });
+          });
+
+          const wbn_url =
+              new URL('./web_bundle.wbn', location.href).toString();
+          const pass_js_url = new URL('./pass.js', location.href).toString();
+          const script_web_bundle = document.createElement('script');
+          script_web_bundle.type = 'webbundle';
+          script_web_bundle.textContent = JSON.stringify({
+            source: wbn_url,
+            resources: [pass_js_url]
+          });
+
+          const web_bundle_error = new Promise((resolve) => {
+            script_web_bundle.addEventListener("error", () => {
+              resolve();
+            });
+          });
+
+          document.body.appendChild(script_web_bundle);
+
+          const script_js = document.createElement('script');
+          script_js.src = pass_js_url;
+
+          const script_js_error = new Promise((resolve) => {
+            script_js.addEventListener("error", () => {
+              resolve();
+            });
+          });
+
+          document.body.appendChild(script_js);
+
+          await Promise.all([window_load, web_bundle_error, script_js_error]);
+          document.title = "success";
+        })();
+        </script>
+        </body>
+      )";
+
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/web_bundle.wbn", &web_bundle);
+  RegisterRequestHandler("/test.html", "text/html", kPageHtml);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a web bundle, which can be empty in this test.
+  web_package::WebBundleBuilder builder;
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
+
+  std::u16string expected_title = u"success";
+  content::TitleWatcher title_watcher(web_contents, expected_title);
+
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+}
+
 // Ensure DeclarativeNetRequest API can block the requests for the subresources
 // inside the web bundle.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
