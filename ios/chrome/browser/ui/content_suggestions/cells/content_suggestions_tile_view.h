@@ -13,7 +13,7 @@
 @interface ContentSuggestionsTileView : UIView <UIPointerInteractionDelegate>
 
 // Initializer that will lay itself out as placeholder tile with no text or
-// favicon if |isPlaceholder| is YES.
+// favicon if `isPlaceholder` is YES.
 - (instancetype)initWithFrame:(CGRect)frame placeholder:(BOOL)isPlaceholder;
 
 // Container for the image view. Used in subclasses.

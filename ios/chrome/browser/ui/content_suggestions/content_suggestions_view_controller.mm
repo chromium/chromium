@@ -91,7 +91,7 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 // The Return To Recent Tab view.
 @property(nonatomic, strong)
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile;
-// Module container of |returnToRecentTabTile|.
+// Module container of `returnToRecentTabTile`.
 @property(nonatomic, strong)
     ContentSuggestionsModuleContainer* returnToRecentTabContainer;
 // The WhatsNew view.
