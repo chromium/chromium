@@ -44,7 +44,11 @@ enum FeatureState {
 // for a given feature name - generally defined as a constant global variable or
 // file static. It should never be used as a constexpr as it breaks
 // pointer-based identity lookup.
-// Note: New code should use CONSTINIT on the base::Feature declaration.
+//
+// Note: New code should use CONSTINIT on the base::Feature declaration, as in:
+//
+//   constexpr Feature kSomeFeature CONSTINIT{"FeatureName",
+//                                            FEATURE_DISABLED_BY_DEFAULT};
 //
 // Making Feature constants mutable allows them to contain a mutable member to
 // cache their override state, while still remaining declared as const. This
