@@ -30,13 +30,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -435,15 +434,15 @@ bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
 }
 
 bool WaitFor(base::RepeatingCallback<bool()> predicate) {
-  // Heuristically, use a lower value than the `action_timeout()` so that it is
-  // less likely to kill the entire test because this function timed out.
   base::TimeTicks deadline =
-      base::TimeTicks::Now() + TestTimeouts::action_timeout() / 2;
+      base::TimeTicks::Now() + TestTimeouts::action_max_timeout();
   while (base::TimeTicks::Now() < deadline) {
     if (predicate.Run())
       return true;
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+
+    base::WaitableEvent().TimedWait(TestTimeouts::tiny_timeout());
   }
+
   return false;
 }
 
@@ -676,9 +675,10 @@ std::vector<base::FilePath::StringType> GetTestProcessNames() {
       []() {
         const base::FilePath test_executable =
             base::FilePath::FromASCII(kExecutableName);
-        return base::StrCat({test_executable.RemoveExtension().value(),
-                             base::ASCIIToWide(kExecutableSuffix),
-                             test_executable.Extension()});
+        return test_executable.RemoveExtension()
+            .AppendASCII(kExecutableSuffix)
+            .Append(test_executable.Extension())
+            .value();
       }(),
   };
 #else
