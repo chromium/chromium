@@ -74,6 +74,7 @@
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/text_selection/text_selection_util.h"
+#import "ios/chrome/browser/ui/app_store_rating/features.h"
 #include "ios/chrome/browser/ui/autofill/features.h"
 #include "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -1211,7 +1212,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillBrandingIOSDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillBrandingIOS,
                                     kAutofillBrandingIOSVariations,
-                                    "AutofillBrandingIOS")}};
+                                    "AutofillBrandingIOS")},
+    {"app-store-rating", flag_descriptions::kAppStoreRatingName,
+     flag_descriptions::kAppStoreRatingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAppStoreRating)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

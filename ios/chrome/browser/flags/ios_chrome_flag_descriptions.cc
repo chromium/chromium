@@ -16,6 +16,11 @@ const char kAdaptiveSuggestionsCountDescription[] =
     "Allows Omnibox to dynamically adjust number of offered suggestions to "
     "fill in the space between Omnibox and the soft keyboard.";
 
+const char kAppStoreRatingName[] = "Enable the App Store Rating promo.";
+const char kAppStoreRatingDescription[] =
+    "When enabled, App Store Rating promo will be presented to eligible "
+    "users.";
+
 const char kAutofillBrandingIOSName[] = "Autofill Branding on iOS";
 const char kAutofillBrandingIOSDescription[] =
     "Adds the Chrome logo in the form input suggestions bar. Full color by "
