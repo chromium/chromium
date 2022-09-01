@@ -16,7 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -96,7 +96,7 @@ void InstallIsolatedAppCommand::Start() {
 
   auto url = GURL{url_};
   if (!url.is_valid()) {
-    ReportFailure();
+    ReportFailure(base::StrCat({"Invalid application URL: ", url_}));
     return;
   }
 
@@ -142,7 +142,7 @@ void InstallIsolatedAppCommand::CheckInstallabilityAndRetrieveManifest() {
           weak_factory_.GetWeakPtr()));
 }
 
-absl::optional<WebAppInstallInfo>
+base::expected<WebAppInstallInfo, std::string>
 InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
     const blink::mojom::Manifest& manifest,
     const GURL& manifest_url) {
@@ -150,24 +150,41 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
   UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
 
   if (!manifest.id.has_value()) {
-    return absl::nullopt;
+    return base::unexpected{
+        base::StrCat({"Manifest `id` is not present. manifest_url: ",
+                      manifest_url.possibly_invalid_spec()})};
   }
 
   // In other installations the best-effort encoding is fine, but for isolated
   // apps we have the opportunity to report this error.
   absl::optional<std::string> encoded_id = UTF16ToUTF8(*manifest.id);
   if (!encoded_id.has_value()) {
-    return absl::nullopt;
+    return base::unexpected{
+        "Failed to convert manifest `id` from UTF16 to UTF8."};
   }
 
   if (!encoded_id->empty()) {
-    return absl::nullopt;
+    // Recommend to use "/" for manifest id and not empty manifest id because
+    // the manifest parser does additional work on resolving manifest id taking
+    // `start_url` into account. (See https://w3c.github.io/manifest/#id-member
+    // on how the manifest parser resolves the `id` field).
+    //
+    // It is required for isolated apps to have app id based on origin of the
+    // application and do not include other information in order to be able to
+    // identify isolated apps by origin because there is always only 1 app per
+    // origin.
+    return base::unexpected{base::StrCat(
+        {R"(Manifest `id` must be "/". Resolved manifest id: )", *encoded_id})};
   }
 
   info.manifest_id = "";
 
-  if (manifest.scope != GURL{url_}.Resolve("/")) {
-    return absl::nullopt;
+  GURL origin = GURL{url_}.Resolve("/");
+  if (manifest.scope != origin) {
+    return base::unexpected{
+        base::StrCat({"Scope should resolve to the origin. scope: ",
+                      manifest.scope.possibly_invalid_spec(),
+                      ", origin: ", origin.possibly_invalid_spec()})};
   }
 
   return info;
@@ -205,12 +222,12 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   DCHECK(!manifest_url.is_empty())
       << "must not be empty if manifest is not empty.";
 
-  if (absl::optional<WebAppInstallInfo> install_info =
+  if (base::expected<WebAppInstallInfo, std::string> install_info =
           CreateInstallInfoFromManifest(*opt_manifest, manifest_url);
       install_info.has_value()) {
     DownloadIcons(*std::move(install_info));
   } else {
-    ReportFailure();
+    ReportFailure(install_info.error());
   }
 }
 
@@ -245,15 +262,17 @@ void InstallIsolatedAppCommand::DownloadIcons(WebAppInstallInfo install_info) {
 }
 
 void InstallIsolatedAppCommand::OnSyncSourceRemoved() {
-  ReportFailure();
+  // TODO(kuragin): Test cancellation on sync source removed event.
+  ReportFailure("Sync source removed.");
 }
 
 void InstallIsolatedAppCommand::OnShutdown() {
-  ReportFailure();
+  // TODO(kuragin): Test cancellation of pending installation during system
+  // shutdown.
+  ReportFailure("System is shutting down.");
 }
 
-void InstallIsolatedAppCommand::ReportFailure(
-    absl::optional<std::string> message) {
+void InstallIsolatedAppCommand::ReportFailure(base::StringPiece message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
@@ -261,8 +280,7 @@ void InstallIsolatedAppCommand::ReportFailure(
       CommandResult::kFailure,
       base::BindOnce(std::move(callback_),
                      base::unexpected{InstallIsolatedAppCommandError{
-                         .message = message.value_or("<no error message>"),
-                     }}));
+                         .message = std::string{message}}}));
 }
 
 void InstallIsolatedAppCommand::ReportSuccess() {

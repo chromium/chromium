@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_APP_COMMAND_H_
 
 #include <memory>
+#include <ostream>
 #include <string>
 
 #include "base/callback.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/install_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
@@ -33,14 +33,15 @@ class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
 
-enum class InstallIsolatedAppCommandResult {
-  kOk,
-  kUnknownError,
-};
-
 struct InstallIsolatedAppCommandSuccess {};
 struct InstallIsolatedAppCommandError {
   std::string message;
+
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const InstallIsolatedAppCommandError& error) {
+    return os << "InstallIsolatedAppCommandError { message = \""
+              << error.message << "\" }.";
+  }
 };
 
 class InstallIsolatedAppCommand : public WebAppCommand {
@@ -75,7 +76,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
  private:
-  void ReportFailure(absl::optional<std::string> message = absl::nullopt);
+  void ReportFailure(base::StringPiece message);
   void ReportSuccess();
 
   void DownloadIcons(WebAppInstallInfo install_info);
@@ -89,7 +90,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
-  absl::optional<WebAppInstallInfo> CreateInstallInfoFromManifest(
+  base::expected<WebAppInstallInfo, std::string> CreateInstallInfoFromManifest(
       const blink::mojom::Manifest& manifest,
       const GURL& manifest_url);
   void FinalizeInstall(const WebAppInstallInfo& info);

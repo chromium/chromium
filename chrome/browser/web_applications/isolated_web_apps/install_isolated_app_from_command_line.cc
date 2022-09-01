@@ -57,7 +57,8 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
                                  result) {
                             if (!result.has_value()) {
                               LOG(ERROR) << "Isolated app auto installation "
-                                            "is failed.";
+                                            "failed. Error: "
+                                         << result.error();
                             }
                           },
                           std::move(url_loader));

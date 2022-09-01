@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -285,7 +284,7 @@ TEST_F(InstallIsolatedAppCommandTest,
   SetPrepareForLoadResultLoaded();
 
   ExpectFailureForURL("http://test-url-example.com",
-                      WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
+                      WebAppUrlLoaderResult::kFailedWebContentsDestroyed);
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
               IsInstallationError(HasSubstr(
@@ -309,7 +308,7 @@ TEST_F(InstallIsolatedAppCommandTest, DISABLED_ReportsErrorWhenURLIsInvalid) {
   SetPrepareForLoadResultLoaded();
 
   EXPECT_THAT(ExecuteCommand("some definetely invalid url"),
-              IsInstallationError());
+              IsInstallationError(HasSubstr("Invalid application URL")));
 }
 
 TEST_F(InstallIsolatedAppCommandTest, URLLoaderIgnoresQueryParameters) {
@@ -337,6 +336,21 @@ TEST_F(InstallIsolatedAppCommandTest,
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
               IsInstallationError(
                   HasSubstr("Error during finalization: kNotInstallable")));
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       InstallationFailsWhenFinalizerReturnInstallURLLoadTimeOut) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  install_finalizer().SetNextFinalizeInstallResult(
+      GenerateAppIdFromUnhashed("http://testing-unused-app-id.com/"),
+      webapps::InstallResultCode::kInstallURLLoadTimeOut);
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
+              IsInstallationError(HasSubstr(
+                  "Error during finalization: kInstallURLLoadTimeOut")));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
@@ -444,9 +458,13 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
       CreateDefaultManifest("http://manifest-test-url.com");
   manifest->id = absl::nullopt;
 
-  EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
-                                         manifest.Clone()),
-              IsInstallationError());
+  EXPECT_THAT(
+      ExecuteCommandWithManifest("http://manifest-test-url.com",
+                                 manifest.Clone()),
+
+      IsInstallationError(HasSubstr(
+          "Manifest `id` is not present. manifest_url: " +
+          CreateDefaultManifestURL("http://manifest-test-url.com").spec())));
 
   EXPECT_THAT(install_finalizer().web_app_info(), IsNull());
 }
@@ -460,7 +478,8 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
-              IsInstallationError());
+              IsInstallationError(HasSubstr(
+                  "Failed to convert manifest `id` from UTF16 to UTF8")));
 }
 
 TEST_F(InstallIsolatedAppCommandManifestTest,
@@ -485,7 +504,7 @@ TEST_F(InstallIsolatedAppCommandManifestTest, FailsWhenManifestIdIsNotEmpty) {
 
   EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
                                          manifest.Clone()),
-              IsInstallationError());
+              IsInstallationError(HasSubstr(R"(Manifest `id` must be "/")")));
   EXPECT_THAT(install_finalizer().web_app_info(), IsNull());
 }
 
@@ -496,9 +515,10 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 
   manifest->scope = GURL{"http://manifest-test-url.com"}.Resolve("/scope");
 
-  EXPECT_THAT(ExecuteCommandWithManifest("http://manifest-test-url.com",
-                                         manifest.Clone()),
-              IsInstallationError());
+  EXPECT_THAT(
+      ExecuteCommandWithManifest("http://manifest-test-url.com",
+                                 manifest.Clone()),
+      IsInstallationError(HasSubstr("Scope should resolve to the origin")));
   EXPECT_THAT(install_finalizer().web_app_info(), IsNull());
 }
 
