@@ -142,8 +142,6 @@ class BASE_EXPORT BuildInfo {
 
   bool is_at_least_t() const { return is_at_least_t_; }
 
-  bool is_automotive() const { return is_automotive_; }
-
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -181,7 +179,6 @@ class BASE_EXPORT BuildInfo {
   const char* const version_incremental_;
   const char* const hardware_;
   const bool is_at_least_t_;
-  const bool is_automotive_;
 };
 
 }  // namespace android
