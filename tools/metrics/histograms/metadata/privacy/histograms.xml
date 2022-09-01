@@ -416,6 +416,18 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity"
+    enum="Boolean" expires_after="2023-02-24">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records whether there was sufficient capacity to store the request, i.e.
+    that the per-reporting origin limit had not been reached. Recorded for each
+    StoreRequest attempt.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

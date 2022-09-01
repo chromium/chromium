@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -41,25 +42,26 @@
 
 namespace content {
 
-namespace {
-
-constexpr base::FilePath::CharType kDatabasePath[] =
-    FILE_PATH_LITERAL("AggregationService");
-
 // Version number of the database.
 //
 // Version 1 - https://crrev.com/c/3038364
 //             https://crrev.com/c/3462368
 // Version 2 - https://crrev.com/c/3733377 (adding report_requests table)
-constexpr int kCurrentVersionNumber = 2;
+// Version 3 - https://crrev.com/c/3842459 (adding reporting_origin index)
+constexpr int AggregationServiceStorageSql::kCurrentVersionNumber = 3;
 
 // Earliest version which can use a `kCurrentVersionNumber` database
 // without failing.
-constexpr int kCompatibleVersionNumber = 2;
+constexpr int AggregationServiceStorageSql::kCompatibleVersionNumber = 3;
 
 // Latest version of the database that cannot be upgraded to
 // `kCurrentVersionNumber` without razing the database.
-constexpr int kDeprecatedVersionNumber = 0;
+constexpr int AggregationServiceStorageSql::kDeprecatedVersionNumber = 0;
+
+namespace {
+
+constexpr base::FilePath::CharType kDatabasePath[] =
+    FILE_PATH_LITERAL("AggregationService");
 
 // All columns in this table except `report_time` are designed to be "const".
 // `request_id` uses AUTOINCREMENT to ensure that IDs aren't reused over the
@@ -91,28 +93,43 @@ static constexpr char kCreationTimeIndexSql[] =
     "CREATE INDEX IF NOT EXISTS creation_time_idx ON "
     "report_requests(creation_time)";
 
+// Used to optimize checking whether there is capacity for the reporting origin.
+static constexpr char kReportingOriginIndexSql[] =
+    "CREATE INDEX IF NOT EXISTS reporting_origin_idx ON "
+    "report_requests(reporting_origin)";
+
 bool UpgradeAggregationServiceStorageSqlSchema(sql::Database& db,
                                                sql::MetaTable& meta_table) {
-  if (meta_table.GetVersionNumber() != 1)
-    return false;  // Only one migration is supported.
-
-  // == Migrate from version 1 to 2 ==
-  // Simply create the new empty table.
+  if (meta_table.GetVersionNumber() != 1 && meta_table.GetVersionNumber() != 2)
+    return false;  // Migration is not supported.
 
   sql::Transaction transaction(&db);
+
   if (!transaction.Begin())
     return false;
 
-  if (!db.Execute(kReportRequestsCreateTableSql))
+  if (meta_table.GetVersionNumber() == 1) {
+    // == Migrate from version 1 to 2 ==
+    // Create the new empty table.
+
+    if (!db.Execute(kReportRequestsCreateTableSql))
+      return false;
+
+    if (!db.Execute(kReportTimeIndexSql))
+      return false;
+
+    if (!db.Execute(kCreationTimeIndexSql))
+      return false;
+  }
+
+  // == Migrate from version 2 to 3 ==
+  // Add the new index.
+  if (!db.Execute(kReportingOriginIndexSql))
     return false;
 
-  if (!db.Execute(kReportTimeIndexSql))
-    return false;
+  meta_table.SetVersionNumber(
+      AggregationServiceStorageSql::kCurrentVersionNumber);
 
-  if (!db.Execute(kCreationTimeIndexSql))
-    return false;
-
-  meta_table.SetVersionNumber(kCurrentVersionNumber);
   return transaction.Commit();
 }
 
@@ -127,12 +144,15 @@ void RecordInitializationStatus(
 AggregationServiceStorageSql::AggregationServiceStorageSql(
     bool run_in_memory,
     const base::FilePath& path_to_database,
-    const base::Clock* clock)
+    const base::Clock* clock,
+    int max_stored_requests_per_reporting_origin)
     : run_in_memory_(run_in_memory),
       path_to_database_(run_in_memory_
                             ? base::FilePath()
                             : path_to_database.Append(kDatabasePath)),
       clock_(*clock),
+      max_stored_requests_per_reporting_origin_(
+          max_stored_requests_per_reporting_origin),
       db_(sql::DatabaseOptions{.exclusive_locking = true,
                                .page_size = 4096,
                                .cache_size = 32}) {
@@ -405,12 +425,44 @@ void AggregationServiceStorageSql::ClearAllPublicKeys() {
   transaction.Commit();
 }
 
+bool AggregationServiceStorageSql::ReportingOriginHasCapacity(
+    base::StringPiece serialized_reporting_origin) {
+  static constexpr char kCountRequestSql[] =
+      "SELECT COUNT(*)FROM report_requests WHERE reporting_origin = ?";
+  sql::Statement count_request_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kCountRequestSql));
+  count_request_statement.BindString(0, serialized_reporting_origin);
+
+  if (!count_request_statement.Step())
+    return false;
+
+  int64_t count = count_request_statement.ColumnInt64(0);
+  return count < max_stored_requests_per_reporting_origin_;
+}
+
 void AggregationServiceStorageSql::StoreRequest(
     AggregatableReportRequest request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Force the creation of the database if it doesn't exist, as we need to
-  // persist the public keys.
+  // persist the request.
   if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent))
+    return;
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return;
+
+  const AggregatableReportSharedInfo& shared_info = request.shared_info();
+  std::string serialized_reporting_origin =
+      shared_info.reporting_origin.Serialize();
+
+  bool reporting_origin_has_capacity =
+      ReportingOriginHasCapacity(serialized_reporting_origin);
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
+      reporting_origin_has_capacity);
+
+  if (!reporting_origin_has_capacity)
     return;
 
   static constexpr char kStoreRequestSql[] =
@@ -421,12 +473,9 @@ void AggregationServiceStorageSql::StoreRequest(
   sql::Statement store_request_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kStoreRequestSql));
 
-  const AggregatableReportSharedInfo& shared_info = request.shared_info();
-
   store_request_statement.BindTime(0, shared_info.scheduled_report_time);
   store_request_statement.BindTime(1, clock_.Now());
-  store_request_statement.BindString(2,
-                                     shared_info.reporting_origin.Serialize());
+  store_request_statement.BindString(2, serialized_reporting_origin);
 
   std::vector<uint8_t> serialized_request = request.Serialize();
 
@@ -435,7 +484,10 @@ void AggregationServiceStorageSql::StoreRequest(
   DCHECK(!serialized_request.empty());
   store_request_statement.BindBlob(3, serialized_request);
 
-  store_request_statement.Run();
+  if (!store_request_statement.Run())
+    return;
+
+  transaction.Commit();
 }
 
 void AggregationServiceStorageSql::DeleteRequest(
@@ -829,6 +881,9 @@ bool AggregationServiceStorageSql::CreateSchema() {
     return false;
 
   if (!db_.Execute(kCreationTimeIndexSql))
+    return false;
+
+  if (!db_.Execute(kReportingOriginIndexSql))
     return false;
 
   if (!meta_table_.Init(&db_, kCurrentVersionNumber,

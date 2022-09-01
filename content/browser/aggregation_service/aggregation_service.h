@@ -36,6 +36,11 @@ class AggregationService {
   using SendStatus = AggregatableReportSender::RequestStatus;
   using SendCallback = AggregatableReportSender::ReportSentCallback;
 
+  // No more report requests can be scheduled and not yet sent than this. Any
+  // additional requests will silently be dropped until there is more capacity.
+  // This ensures malicious actors cannot use unbounded memory or disk space.
+  static constexpr int kMaxStoredReportsPerReportingOrigin = 1000;
+
   virtual ~AggregationService() = default;
 
   // Gets the AggregationService that should be used for handling aggregations

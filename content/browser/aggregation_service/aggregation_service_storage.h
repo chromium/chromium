@@ -57,8 +57,8 @@ class AggregationServiceStorage {
 
   // == Aggregatable report request methods =====
 
-  // Persists the `request` with a report time of `*report_time_override`. If
-  // the optional has no value, the `request`'s scheduled report time is used.
+  // Persists the `request` (unless it would exceed a limit on the number of
+  // stored reports).
   virtual void StoreRequest(AggregatableReportRequest request) = 0;
 
   // Deletes the report request with the given `request_id`, if any.
