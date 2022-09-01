@@ -320,19 +320,10 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
       SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
   shm_backing->SetNotReferencedCounted();
 
-  auto gpu_backing = gpu_backing_factory->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage | SHARED_IMAGE_USAGE_CPU_UPLOAD,
-      /*is_thread_safe=*/false);
-  if (!gpu_backing) {
-    DLOG(ERROR) << "Failed to create GPU backing";
-    return nullptr;
-  }
-  gpu_backing->SetNotReferencedCounted();
-
   return std::make_unique<CompoundImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(shm_backing), std::move(gpu_backing));
+      surface_handle, std::move(shm_backing),
+      gpu_backing_factory->GetWeakPtr());
 }
 
 CompoundImageBacking::CompoundImageBacking(
@@ -343,8 +334,9 @@ CompoundImageBacking::CompoundImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    SurfaceHandle surface_handle,
     std::unique_ptr<SharedMemoryImageBacking> shm_backing,
-    std::unique_ptr<SharedImageBacking> gpu_backing)
+    base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -352,13 +344,12 @@ CompoundImageBacking::CompoundImageBacking(
                          surface_origin,
                          alpha_type,
                          usage,
-                         gpu_backing->estimated_size(),
+                         shm_backing->estimated_size(),
                          /*is_thread_safe=*/false),
+      surface_handle_(surface_handle),
       shm_backing_(std::move(shm_backing)),
-      gpu_backing_(std::move(gpu_backing)) {
-  DCHECK(gpu_backing_);
+      gpu_backing_factory_(std::move(gpu_backing_factory)) {
   DCHECK(shm_backing_);
-  DCHECK_EQ(size, gpu_backing_->size());
   DCHECK_EQ(size, shm_backing_->size());
 
   // First access will write pixels from shared memory backing to GPU backing
@@ -405,19 +396,21 @@ void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 }
 
 gfx::Rect CompoundImageBacking::ClearedRect() const {
-  return gpu_backing_->ClearedRect();
+  // Copy on access will always ensure backing is cleared by first access.
+  return gfx::Rect(size());
 }
 
-void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  // Shared memory backing doesn't track cleared rect.
-  gpu_backing_->SetClearedRect(cleared_rect);
-}
+void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
 std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
     WGPUBackendType backend_type) {
+  LazyAllocateGpuBacking();
+  if (!gpu_backing_)
+    return nullptr;
+
   auto real_rep =
       gpu_backing_->ProduceDawn(manager, tracker, device, backend_type);
   if (!real_rep)
@@ -430,6 +423,10 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
 std::unique_ptr<GLTextureImageRepresentation>
 CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker) {
+  LazyAllocateGpuBacking();
+  if (!gpu_backing_)
+    return nullptr;
+
   auto real_rep = gpu_backing_->ProduceGLTexture(manager, tracker);
   if (!real_rep)
     return nullptr;
@@ -441,6 +438,10 @@ CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                   MemoryTypeTracker* tracker) {
+  LazyAllocateGpuBacking();
+  if (!gpu_backing_)
+    return nullptr;
+
   auto real_rep = gpu_backing_->ProduceGLTexturePassthrough(manager, tracker);
   if (!real_rep)
     return nullptr;
@@ -454,6 +455,10 @@ std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
+  LazyAllocateGpuBacking();
+  if (!gpu_backing_)
+    return nullptr;
+
   auto real_rep =
       gpu_backing_->ProduceSkia(manager, tracker, std::move(context_state));
   if (!real_rep)
@@ -466,6 +471,10 @@ std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
 std::unique_ptr<OverlayImageRepresentation>
 CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
+  LazyAllocateGpuBacking();
+  if (!gpu_backing_)
+    return nullptr;
+
   auto real_rep = gpu_backing_->ProduceOverlay(manager, tracker);
   if (!real_rep)
     return nullptr;
@@ -503,15 +512,47 @@ void CompoundImageBacking::OnMemoryDump(
   shm_backing_->OnMemoryDump(shm_dump_name, shm_client_guid, pmd,
                              client_tracing_id);
 
-  auto gpu_client_guid = GetSubBackingGUIDForTracing(mailbox(), 2);
-  std::string gpu_dump_name = base::StringPrintf("%s/gpu", dump_name.c_str());
-  gpu_backing_->OnMemoryDump(gpu_dump_name, gpu_client_guid, pmd,
-                             client_tracing_id);
+  if (gpu_backing_) {
+    auto gpu_client_guid = GetSubBackingGUIDForTracing(mailbox(), 2);
+    std::string gpu_dump_name = base::StringPrintf("%s/gpu", dump_name.c_str());
+    gpu_backing_->OnMemoryDump(gpu_dump_name, gpu_client_guid, pmd,
+                               client_tracing_id);
+  }
 }
 
 size_t CompoundImageBacking::EstimatedSizeForMemTracking() const {
-  return shm_backing_->EstimatedSizeForMemTracking() +
-         gpu_backing_->EstimatedSizeForMemTracking();
+  size_t estimated_size = shm_backing_->EstimatedSizeForMemTracking();
+  if (gpu_backing_)
+    estimated_size += gpu_backing_->EstimatedSizeForMemTracking();
+  return estimated_size;
+}
+
+void CompoundImageBacking::LazyAllocateGpuBacking() {
+  if (gpu_backing_)
+    return;
+
+  if (!gpu_backing_factory_) {
+    if (gpu_backing_factory_.WasInvalidated()) {
+      // The SharedImageFactory must no longer exist so the compound shared
+      // image must already have been destroyed.
+      LOG(ERROR) << "Can't allocate backing after image has been destroyed";
+      gpu_backing_factory_.reset();
+    }
+    return;
+  }
+
+  gpu_backing_ = gpu_backing_factory_->CreateSharedImage(
+      mailbox(), format(), surface_handle_, size(), color_space(),
+      surface_origin(), alpha_type(), usage() | SHARED_IMAGE_USAGE_CPU_UPLOAD,
+      /*is_thread_safe=*/false);
+  if (!gpu_backing_) {
+    LOG(ERROR) << "Failed to allocate GPU backing";
+    gpu_backing_factory_.reset();
+    return;
+  }
+
+  gpu_backing_->SetNotReferencedCounted();
+  gpu_backing_->SetClearedRect(gfx::Rect(size()));
 }
 
 }  // namespace gpu

@@ -54,15 +54,17 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       SkAlphaType alpha_type,
       uint32_t usage);
 
-  CompoundImageBacking(const Mailbox& mailbox,
-                       viz::ResourceFormat format,
-                       const gfx::Size& size,
-                       const gfx::ColorSpace& color_space,
-                       GrSurfaceOrigin surface_origin,
-                       SkAlphaType alpha_type,
-                       uint32_t usage,
-                       std::unique_ptr<SharedMemoryImageBacking> shm_backing,
-                       std::unique_ptr<SharedImageBacking> gpu_backing);
+  CompoundImageBacking(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      SurfaceHandle surface_handle,
+      std::unique_ptr<SharedMemoryImageBacking> shm_backing,
+      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory);
 
   ~CompoundImageBacking() override;
 
@@ -108,7 +110,18 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
                     uint64_t client_tracing_id) override;
   size_t EstimatedSizeForMemTracking() const override;
 
+  // The first call will attempt to allocate `gpu_backing_`. This can fail
+  // so `gpu_backing_` may be null afterwards.
+  void LazyAllocateGpuBacking();
+
+  const SurfaceHandle surface_handle_;
+
   std::unique_ptr<SharedImageBacking> shm_backing_;
+
+  // This will store backing factory to allocate `gpu_backing_` with. It must
+  // be a WeakPtr as the backing can outlive the factory that created it. This
+  // will be reset after lazy allocation is attempted.
+  base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory_;
   std::unique_ptr<SharedImageBacking> gpu_backing_;
 
   // This will be true when shared memory backing has newer pixels than GPU

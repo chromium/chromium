@@ -36,6 +36,9 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage,
       bool is_thread_safe) override {
+    if (allocations_should_fail_)
+      return nullptr;
+
     return std::make_unique<TestImageBacking>(mailbox, format, size,
                                               color_space, surface_origin,
                                               alpha_type, usage, 0);
@@ -74,12 +77,34 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
                    base::span<const uint8_t> pixel_data) override {
     return true;
   }
+
+  using SharedImageBackingFactory::InvalidateWeakPtrsForTesting;
+
+  void SetAllocationsShouldFail(bool allocations_should_fail) {
+    allocations_should_fail_ = allocations_should_fail;
+  }
+
+ private:
+  bool allocations_should_fail_ = false;
 };
 
 }  // namespace
 
 class CompoundImageBackingTest : public testing::Test {
  public:
+  bool HasGpuBacking(CompoundImageBacking* backing) {
+    return !!backing->gpu_backing_;
+  }
+
+  bool GpuBackingFactoryIsValid(CompoundImageBacking* backing) {
+    return !!backing->gpu_backing_factory_;
+  }
+
+  bool GpuBackingFactoryIsCleared(CompoundImageBacking* backing) {
+    return !backing->gpu_backing_factory_ &&
+           !backing->gpu_backing_factory_.WasInvalidated();
+  }
+
   TestImageBacking* GetGpuBacking(CompoundImageBacking* backing) {
     auto* gpu_backing = backing->gpu_backing_.get();
     DCHECK_EQ(gpu_backing->GetType(), SharedImageBackingType::kTest);
@@ -118,12 +143,10 @@ TEST_F(CompoundImageBackingTest, References) {
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
   EXPECT_NE(compound_backing, nullptr);
 
-  auto* gpu_backing = GetGpuBacking(compound_backing);
-
   // The compound backing hasn't been added to the manager yet so it should
   // have zero references.
   EXPECT_FALSE(compound_backing->HasAnyRefs());
-  EXPECT_FALSE(gpu_backing->HasAnyRefs());
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
 
@@ -131,10 +154,12 @@ TEST_F(CompoundImageBackingTest, References) {
   // backing should never have any reference as it's owned by the compound
   // backing and isn't reference counted.
   EXPECT_TRUE(compound_backing->HasAnyRefs());
-  EXPECT_FALSE(gpu_backing->HasAnyRefs());
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
 
   auto overlay_rep =
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+
+  auto* gpu_backing = GetGpuBacking(compound_backing);
 
   // GPU backing still shouldn't have any references after a wrapped
   // representation is created.
@@ -151,15 +176,16 @@ TEST_F(CompoundImageBackingTest, References) {
 TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   auto backing = CreateCompoundBacking();
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
-  auto* gpu_backing = GetGpuBacking(compound_backing);
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
 
-  // The compound backing hasn't been accessed yet.
-  EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
-
   auto overlay_rep =
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+
+  auto* gpu_backing = GetGpuBacking(compound_backing);
+
+  // The compound backing hasn't been accessed yet.
+  EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
   // First access should trigger upload from memory to GPU.
   overlay_rep->BeginScopedReadAccess(false);
@@ -207,6 +233,56 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   compound_backing->Update(nullptr);
   skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+}
+
+TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
+  auto backing = CreateCompoundBacking();
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+
+  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+
+  // The compound backing shouldn't have GPU backing yet and should have
+  // a valid factory to create one.
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
+  EXPECT_TRUE(GpuBackingFactoryIsValid(compound_backing));
+
+  test_factory_.SetAllocationsShouldFail(true);
+
+  auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &tracker_);
+
+  // Creating the GPU backing should fail so representation should be null.
+  EXPECT_FALSE(gl_passthrough_rep);
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
+
+  // The backing factory to create GPU backing should be reset so creation is
+  // not retried.
+  EXPECT_TRUE(GpuBackingFactoryIsCleared(compound_backing));
+}
+
+TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
+  auto backing = CreateCompoundBacking();
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+
+  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+
+  // The compound backing shouldn't have GPU backing yet and should have
+  // a valid factory to create one.
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
+  EXPECT_TRUE(GpuBackingFactoryIsValid(compound_backing));
+
+  test_factory_.InvalidateWeakPtrsForTesting();
+
+  auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &tracker_);
+
+  // Creating the GPU backing should fail so representation should be null.
+  EXPECT_FALSE(gl_passthrough_rep);
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
+
+  // The backing factory to create GPU backing should be reset to avoid logging
+  // about destroyed image multiple times.
+  EXPECT_TRUE(GpuBackingFactoryIsCleared(compound_backing));
 }
 
 }  // namespace gpu

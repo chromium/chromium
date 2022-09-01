@@ -7,6 +7,10 @@
 
 namespace gpu {
 
+SharedImageBackingFactory::SharedImageBackingFactory() = default;
+
+SharedImageBackingFactory::~SharedImageBackingFactory() = default;
+
 std::vector<std::unique_ptr<SharedImageBacking>>
 SharedImageBackingFactory::CreateSharedImageVideoPlanes(
     base::span<const Mailbox> mailboxes,
@@ -16,6 +20,15 @@ SharedImageBackingFactory::CreateSharedImageVideoPlanes(
     uint32_t usage) {
   NOTREACHED();
   return {};
+}
+
+base::WeakPtr<SharedImageBackingFactory>
+SharedImageBackingFactory::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void SharedImageBackingFactory::InvalidateWeakPtrsForTesting() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace gpu

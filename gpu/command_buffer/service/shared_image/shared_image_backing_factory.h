@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -27,7 +28,9 @@ struct Mailbox;
 
 class GPU_GLES2_EXPORT SharedImageBackingFactory {
  public:
-  virtual ~SharedImageBackingFactory() = default;
+  SharedImageBackingFactory();
+  virtual ~SharedImageBackingFactory();
+
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -76,6 +79,14 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
                            gfx::GpuMemoryBufferType gmb_type,
                            GrContextType gr_context_type,
                            base::span<const uint8_t> pixel_data) = 0;
+
+  base::WeakPtr<SharedImageBackingFactory> GetWeakPtr();
+
+ protected:
+  void InvalidateWeakPtrsForTesting();
+
+ private:
+  base::WeakPtrFactory<SharedImageBackingFactory> weak_ptr_factory_{this};
 };
 
 }  // namespace gpu
