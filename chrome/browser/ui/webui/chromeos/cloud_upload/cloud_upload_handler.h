@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
@@ -48,8 +50,7 @@ class CloudUploadHandler
 
  private:
   friend base::RefCounted<CloudUploadHandler>;
-  CloudUploadHandler(Profile* profile,
-                     const storage::FileSystemURL& source_url);
+  CloudUploadHandler(Profile* profile, const storage::FileSystemURL source_url);
   ~CloudUploadHandler() override;
 
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
@@ -57,6 +58,10 @@ class CloudUploadHandler
 
   // Ends upload and runs Upload callback.
   void OnEndUpload(GURL hosted_url);
+
+  void OnDestinationDirectoryCreated(
+      storage::FileSystemURL destination_folder_url,
+      base::File::Error error);
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
@@ -75,9 +80,10 @@ class CloudUploadHandler
                           drivefs::mojom::FileMetadataPtr metadata);
 
   Profile* const profile_;
+  scoped_refptr<storage::FileSystemContext> file_system_context_;
   file_manager::io_task::IOTaskController* io_task_controller_;
   drive::DriveIntegrationService* const drive_integration_service_;
-  const storage::FileSystemURL& source_url_;
+  const storage::FileSystemURL source_url_;
   file_manager::io_task::IOTaskId observed_task_id_;
   base::FilePath observed_relative_drive_path_;
   bool error_found_;

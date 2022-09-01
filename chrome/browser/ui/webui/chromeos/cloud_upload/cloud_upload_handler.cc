@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
 
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "google_apis/common/task_util.h"
 
 namespace chromeos::cloud_upload {
 namespace {
@@ -17,7 +21,7 @@ const char kDestinationFolder[] = "from Chromebook";
 
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
-    storage::FileSystemContext* file_system_context,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
     base::FilePath file_path) {
   GURL url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
@@ -34,6 +38,16 @@ void UploadToCloudDone(scoped_refptr<CloudUploadHandler> cloud_upload_handler,
                        CloudUploadHandler::UploadCallback callback,
                        GURL hosted_url) {
   std::move(callback).Run(hosted_url);
+}
+
+void CreateDirectoryOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    storage::FileSystemURL destination_folder_url,
+    base::OnceCallback<void(base::File::Error)> complete_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  file_system_context->operation_runner()->CreateDirectory(
+      destination_folder_url, /*exclusive=*/false, /*recursive=*/false,
+      std::move(complete_callback));
 }
 
 }  // namespace
@@ -60,8 +74,10 @@ void CloudUploadHandler::UploadToCloud(Profile* profile,
 }
 
 CloudUploadHandler::CloudUploadHandler(Profile* profile,
-                                       const storage::FileSystemURL& source_url)
+                                       const storage::FileSystemURL source_url)
     : profile_(profile),
+      file_system_context_(
+          file_manager::util::GetFileManagerFileSystemContext(profile)),
       drive_integration_service_(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
       source_url_(source_url) {
@@ -124,29 +140,56 @@ void CloudUploadHandler::Run(UploadCallback callback) {
     return;
   }
 
-  // Filesystem context.
-  storage::FileSystemContext* file_system_context =
-      file_manager::util::GetFileSystemContextForSourceURL(
-          profile_, file_manager::util::GetFileManagerURL());
-
-  // Source and destination urls.
-  std::vector<storage::FileSystemURL> source_urls{source_url_};
+  // Destination url.
   base::FilePath destination_folder_path = GenerateUploadFolderPath(profile_);
   if (destination_folder_path.empty()) {
-    LOG(ERROR) << "Unable to generate destination folder, the drive "
-                  "integration service might not be available.";
+    LOG(ERROR) << "Unable to generate destination folder path, the drive "
+                  "integration service might not be available";
     OnEndUpload(GURL());
     return;
   }
   storage::FileSystemURL destination_folder_url = FilePathToFileSystemURL(
-      profile_, file_system_context, destination_folder_path);
+      profile_, file_system_context_, destination_folder_path);
+  // TODO (b/243095484) Define error behavior.
+  if (!destination_folder_url.is_valid()) {
+    LOG(ERROR) << "Unable to generate destination folder URL";
+    OnEndUpload(GURL());
+    return;
+  }
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CreateDirectoryOnIOThread, file_system_context_,
+                     destination_folder_url,
+                     google_apis::CreateRelayCallback(base::BindOnce(
+                         &CloudUploadHandler::OnDestinationDirectoryCreated,
+                         this, destination_folder_url))));
+}
+
+void CloudUploadHandler::OnDestinationDirectoryCreated(
+    storage::FileSystemURL destination_folder_url,
+    base::File::Error error) {
+  if (error != base::File::FILE_OK) {
+    // TODO (b/243095484) Define error behavior.
+    LOG(ERROR) << "Unable to create destination folder";
+    OnEndUpload(GURL());
+    return;
+  }
+  if (!destination_folder_url.is_valid()) {
+    LOG(ERROR) << "Received destination URL is invalid";
+    OnEndUpload(GURL());
+    return;
+  }
+
+  // Source URLs.
+  std::vector<storage::FileSystemURL> source_urls{source_url_};
 
   // TODO (b/242685159) Change copy to move.
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
           file_manager::io_task::OperationType::kCopy, std::move(source_urls),
-          std::move(destination_folder_url), profile_, file_system_context,
-          /*show_notifications=*/false);
+          std::move(destination_folder_url), profile_, file_system_context_,
+          /*show_notification=*/false);
 
   observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
@@ -171,8 +214,8 @@ void CloudUploadHandler::OnIOTaskStatus(
              << " bytes transferred: " << status.bytes_transferred;
   if (observed_relative_drive_path_.empty()) {
     // TODO (b/242685536) Define multiple-file handling.
-    DCHECK(status.sources.size() == 1);
-    DCHECK(status.outputs.size() == 1);
+    DCHECK_EQ(status.sources.size(), 1);
+    DCHECK_EQ(status.outputs.size(), 1);
 
     if (!drive_integration_service_) {
       LOG(ERROR) << "No drive integration service";
