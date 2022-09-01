@@ -554,11 +554,16 @@ class UserMediaClientUnderTest : public UserMediaClient {
   }
 
   void CallGetOpenDevice(
+      const MediaConstraints& audio,
+      const MediaConstraints& video,
       const base::UnguessableToken& session_id,
       const base::UnguessableToken& transfer_id,
       TransferredMediaStreamTrack* transferred_media_stream_track) {
-    UserMediaRequest* user_media_request = UserMediaRequest::CreateForTesting(
-        CreateDefaultConstraints(), CreateDefaultConstraints());
+    UserMediaRequest* user_media_request =
+        MakeGarbageCollected<UserMediaRequest>(
+            nullptr, nullptr, UserMediaRequestType::kDisplayMedia, audio, video,
+            /*should_prefer_current_tab=*/false,
+            /*auto_select_all_screens=*/false, nullptr, IdentifiableSurface());
 
     user_media_request->SetTransferData(session_id, transfer_id,
                                         transferred_media_stream_track);
@@ -787,8 +792,9 @@ TEST_F(UserMediaClientTest, GetOpenDeviceVideo) {
   stream_devices.video_device.value().set_session_id(data.session_id);
   mock_dispatcher_host_.SetStreamDevices(stream_devices);
 
-  user_media_client_impl_->CallGetOpenDevice(data.session_id, data.transfer_id,
-                                             transferred_media_stream_track);
+  user_media_client_impl_->CallGetOpenDevice(
+      MediaConstraints(), CreateDefaultConstraints(), data.session_id,
+      data.transfer_id, transferred_media_stream_track);
   StartMockedVideoSource();
 
   EXPECT_EQ(kRequestSucceeded, request_state());
@@ -821,8 +827,9 @@ TEST_F(UserMediaClientTest, GetOpenDeviceAudio) {
   stream_devices.audio_device.value().set_session_id(data.session_id);
   mock_dispatcher_host_.SetStreamDevices(stream_devices);
 
-  user_media_client_impl_->CallGetOpenDevice(data.session_id, data.transfer_id,
-                                             transferred_media_stream_track);
+  user_media_client_impl_->CallGetOpenDevice(
+      CreateDefaultConstraints(), MediaConstraints(), data.session_id,
+      data.transfer_id, transferred_media_stream_track);
 
   EXPECT_EQ(kRequestSucceeded, request_state());
   EXPECT_EQ("microphone",

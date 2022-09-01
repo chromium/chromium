@@ -1061,6 +1061,8 @@ void UserMediaProcessor::GotOpenDevice(
   OnStreamGenerated(request_id, result, response->label,
                     std::move(stream_devices_set),
                     response->pan_tilt_zoom_allowed);
+  current_request_info_->request()->FinalizeTransferredTrackInitialization(
+      *current_request_info_->descriptors());
 }
 
 void UserMediaProcessor::OnStreamGenerated(
@@ -1765,7 +1767,11 @@ void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
       MediaStreamRequestResultToString(MediaStreamRequestResult::OK)));
   blink::LogUserMediaRequestResult(MediaStreamRequestResult::OK);
   DeleteUserMediaRequest(user_media_request);
-  user_media_request->Succeed(*components);
+  if (!user_media_request->IsTransferredTrackRequest()) {
+    // For transferred tracks, user_media_request has already been resolved in
+    // FinalizeTransferredTrackInitialization.
+    user_media_request->Succeed(*components);
+  }
 }
 
 void UserMediaProcessor::GetUserMediaRequestFailed(

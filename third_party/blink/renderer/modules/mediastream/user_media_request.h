@@ -192,6 +192,10 @@ class MODULES_EXPORT UserMediaRequest final
     return !!transferred_track_session_id_;
   }
   void SetTransferredTrackComponent(MediaStreamComponent* component);
+  // Completes the re-creation of the transferred MediaStreamTrack by
+  // constructing the MediaStreamTrackImpl object.
+  void FinalizeTransferredTrackInitialization(
+      const MediaStreamDescriptorVector& streams_descriptors);
 
   void Trace(Visitor*) const override;
 

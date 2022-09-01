@@ -654,21 +654,13 @@ void UserMediaRequest::Start() {
 void UserMediaRequest::Succeed(
     const MediaStreamDescriptorVector& streams_descriptors) {
   DCHECK(!is_resolved_);
-  DCHECK(transferred_track_ == nullptr || streams_descriptors.size() == 1u);
+  DCHECK(transferred_track_ == nullptr);
   if (!GetExecutionContext())
     return;
 
-  if (transferred_track_) {
-    MediaStream::Create(GetExecutionContext(), streams_descriptors[0],
-                        transferred_track_,
-                        WTF::Bind(&UserMediaRequest::OnMediaStreamInitialized,
-                                  WrapPersistent(this)));
-  } else {
-    MediaStreamSet::Create(
-        GetExecutionContext(), streams_descriptors,
-        WTF::Bind(&UserMediaRequest::OnMediaStreamsInitialized,
-                  WrapPersistent(this)));
-  }
+  MediaStreamSet::Create(GetExecutionContext(), streams_descriptors,
+                         WTF::Bind(&UserMediaRequest::OnMediaStreamsInitialized,
+                                   WrapPersistent(this)));
 }
 
 void UserMediaRequest::OnMediaStreamInitialized(MediaStream* stream) {
@@ -793,6 +785,19 @@ void UserMediaRequest::ContextDestroyed() {
 void UserMediaRequest::SetTransferredTrackComponent(
     MediaStreamComponent* component) {
   transferred_track_->SetComponentImplementation(component);
+}
+
+void UserMediaRequest::FinalizeTransferredTrackInitialization(
+    const MediaStreamDescriptorVector& streams_descriptors) {
+  DCHECK(transferred_track_);
+  DCHECK_EQ(streams_descriptors.size(), 1u);
+  if (!GetExecutionContext())
+    return;
+
+  MediaStream::Create(GetExecutionContext(), streams_descriptors[0],
+                      transferred_track_,
+                      WTF::Bind(&UserMediaRequest::OnMediaStreamInitialized,
+                                WrapPersistent(this)));
 }
 
 void UserMediaRequest::Trace(Visitor* visitor) const {
