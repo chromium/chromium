@@ -20,6 +20,7 @@
 class BrowserProcessImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
+class ChromeProcessSingleton;
 class HttpsFirstModeService;
 class NavigationMetricsRecorder;
 class PrefService;
@@ -150,6 +151,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class segmentation_platform::FieldTrialRegisterImpl;
   friend class ChromeMetricsServiceClient;
   friend class ChromePasswordManagerClient;
+  friend class ChromeProcessSingleton;
   friend void welcome::JoinOnboardingGroup(Profile* profile);
   friend class NavigationMetricsRecorder;
   friend class ChromeBrowserMainExtraPartsGpu;

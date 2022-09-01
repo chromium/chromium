@@ -6,12 +6,58 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_switches.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/hash/hash.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/win/registry.h"
+#include "chrome/common/channel_info.h"
+#include "components/version_info/channel.h"
+#endif
 
 namespace {
 bool g_is_early_singleton_feature_ = false;
 ChromeProcessSingleton* g_chrome_process_singleton_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+
+std::string GetMachineGUID() {
+  base::win::RegKey key;
+  std::wstring value;
+  if (key.Open(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography",
+               KEY_QUERY_VALUE | KEY_WOW64_64KEY) != ERROR_SUCCESS ||
+      key.ReadValue(L"MachineGuid", &value) != ERROR_SUCCESS || value.empty()) {
+    return std::string();
+  }
+
+  std::string machine_guid;
+  if (!base::WideToUTF8(value.c_str(), value.length(), &machine_guid))
+    return std::string();
+  return machine_guid;
+}
+
+bool EnrollMachineInEarlySingletonFeature() {
+  // Run experiment on early channels only.
+  const version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::UNKNOWN) {
+    return false;
+  }
+
+  const std::string machine_guid = GetMachineGUID();
+  if (machine_guid.empty())
+    return false;
+
+  // Enroll 50% of the population.
+  return base::Hash(machine_guid) % 2 == 0;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 ChromeProcessSingleton::ChromeProcessSingleton(
@@ -85,8 +131,16 @@ void ChromeProcessSingleton::SetupEarlySingletonFeature(
   if (command_line.HasSwitch(switches::kEnableEarlyProcessSingleton))
     g_is_early_singleton_feature_ = true;
 
-  // TODO(1340599): Set up a synthetic trial for the early process singleton
-  // experiment.
+#if BUILDFLAG(IS_WIN)
+  if (!g_is_early_singleton_feature_)
+    g_is_early_singleton_feature_ = EnrollMachineInEarlySingletonFeature();
+#endif
+}
+
+void ChromeProcessSingleton::RegisterEarlySingletonFeature() {
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "EarlyProcessSingleton",
+      g_is_early_singleton_feature_ ? "Enabled" : "Disabled");
 }
 
 // static

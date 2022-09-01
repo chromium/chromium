@@ -622,6 +622,10 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
 #endif
 
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+  ChromeProcessSingleton::RegisterEarlySingletonFeature();
+#endif
 }
 
 void ChromeBrowserMainParts::RecordBrowserStartupTime() {
