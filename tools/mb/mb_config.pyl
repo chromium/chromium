@@ -4144,7 +4144,7 @@
     },
 
     'fuchsia_include_chromebook_image': {
-      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/chromebook-x64-release/"]',
+      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images/chromebook-x64-release/"]',
     },
 
     'fuchsia_include_sd_images': {
