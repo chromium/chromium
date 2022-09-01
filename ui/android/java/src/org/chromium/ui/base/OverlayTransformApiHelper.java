@@ -23,9 +23,10 @@ import org.chromium.ui.gfx.OverlayTransform;
 final class OverlayTransformApiHelper
         implements AttachedSurfaceControl.OnBufferTransformHintChangedListener,
                    Window.OnFrameMetricsAvailableListener {
+    private final WindowAndroid mWindowAndroid;
+    private final Window mWindow;
     private boolean mBufferTransformListenerAdded;
     private boolean mFrameMetricsListenerAdded;
-    private WindowAndroid mWindowAndroid;
 
     static OverlayTransformApiHelper create(WindowAndroid windowAndroid) {
         if (windowAndroid.getWindow() == null) return null;
@@ -34,6 +35,8 @@ final class OverlayTransformApiHelper
 
     private OverlayTransformApiHelper(WindowAndroid windowAndroid) {
         mWindowAndroid = windowAndroid;
+        mWindow = windowAndroid.getWindow();
+        assert mWindow != null;
         addOnBufferTransformHintChangedListener();
     }
 
@@ -43,7 +46,7 @@ final class OverlayTransformApiHelper
     }
 
     private void addOnBufferTransformHintChangedListener() {
-        AttachedSurfaceControl surfacecontrol = mWindowAndroid.getWindow().getRootSurfaceControl();
+        AttachedSurfaceControl surfacecontrol = mWindow.getRootSurfaceControl();
         if (surfacecontrol == null) {
             // If AttachedSurfaceControl is not available yet, wait until it's ready and set the
             // listener.
@@ -60,7 +63,7 @@ final class OverlayTransformApiHelper
 
     private void doAddOnBufferTransformHintChangedListener() {
         if (mBufferTransformListenerAdded) return;
-        AttachedSurfaceControl surfacecontrol = mWindowAndroid.getWindow().getRootSurfaceControl();
+        AttachedSurfaceControl surfacecontrol = mWindow.getRootSurfaceControl();
         if (surfacecontrol != null) {
             surfacecontrol.addOnBufferTransformHintChangedListener(this);
             mBufferTransformListenerAdded = true;
@@ -70,7 +73,7 @@ final class OverlayTransformApiHelper
     private void removeOnBufferTransformHintChangedListener() {
         if (!mBufferTransformListenerAdded) return;
 
-        AttachedSurfaceControl surfacecontrol = mWindowAndroid.getWindow().getRootSurfaceControl();
+        AttachedSurfaceControl surfacecontrol = mWindow.getRootSurfaceControl();
         if (surfacecontrol != null) {
             surfacecontrol.removeOnBufferTransformHintChangedListener(this);
             mBufferTransformListenerAdded = false;
@@ -89,24 +92,30 @@ final class OverlayTransformApiHelper
 
     private void addOnFrameMetricsAvailableListener() {
         if (mFrameMetricsListenerAdded) return;
-        mWindowAndroid.getWindow().addOnFrameMetricsAvailableListener(
-                this, new Handler(Looper.myLooper()));
+        mWindow.addOnFrameMetricsAvailableListener(this, new Handler(Looper.myLooper()));
         mFrameMetricsListenerAdded = true;
     }
 
     private void removeOnFrameMetricsAvailableListener() {
         if (!mFrameMetricsListenerAdded) return;
-        mWindowAndroid.getWindow().removeOnFrameMetricsAvailableListener(this);
+        mWindow.removeOnFrameMetricsAvailableListener(this);
         mFrameMetricsListenerAdded = false;
     }
 
     @OverlayTransform
     int getOverlayTransform() {
-        Window window = mWindowAndroid.getWindow();
-        if (window.getRootSurfaceControl() == null) {
+        AttachedSurfaceControl surfacecontrol = mWindow.getRootSurfaceControl();
+        if (surfacecontrol == null) {
             return OverlayTransform.INVALID;
         }
-        int bufferTransform = window.getRootSurfaceControl().getBufferTransformHint();
+        int bufferTransform;
+        try {
+            bufferTransform = surfacecontrol.getBufferTransformHint();
+        } catch (NullPointerException e) {
+            // Can throw exception from implementation of getBufferTransformHint.
+            // See crbug.com/1358898.
+            return OverlayTransform.INVALID;
+        }
         return toOverlayTransform(bufferTransform);
     }
 
