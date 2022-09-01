@@ -10,7 +10,6 @@ import("../../oobe_auto_imports.gni")
 
 group("polymer3_elements") {
   public_deps = [
-    ":active_directory_password_change_module",
     ":checking_downloading_update_module",
     ":offline_login_module",
     ":update_required_card_module",
@@ -21,7 +20,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
-    ":active_directory_password_change.m",
+    ":active_directory_password_change",
     ":checking_downloading_update.m",
     ":encryption_migration",
     ":gaia_password_changed",
@@ -35,8 +34,8 @@ js_type_check("closure_compile") {
 ###############################
 # Closure compiler libraries below
 
-js_library("active_directory_password_change.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/active_directory_password_change.m.js" ]
+js_library("active_directory_password_change") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/active_directory_password_change.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -47,7 +46,7 @@ js_library("active_directory_password_change.m") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
-  extra_deps = [ ":active_directory_password_change_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("encryption_migration") {
@@ -149,15 +148,6 @@ js_library("checking_downloading_update.m") {
   externs_list = [ "$externs_path/tts.js" ]
 }
 
-polymer_modulizer("active_directory_password_change") {
-  js_file = "active_directory_password_change.js"
-  html_file = "active_directory_password_change.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("offline_login") {
   js_file = "offline_login.js"
   html_file = "offline_login.html"
@@ -185,6 +175,7 @@ polymer_modulizer("checking_downloading_update") {
 
 html_to_js("web_components") {
   js_files = [
+    "active_directory_password_change.js",
     "encryption_migration.js",
     "gaia_password_changed.js",
     "lacros_data_migration.js",

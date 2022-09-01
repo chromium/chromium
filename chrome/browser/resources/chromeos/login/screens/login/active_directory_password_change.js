@@ -6,9 +6,25 @@
  * @fileoverview Polymer element for Active Directory password change screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
 
-(function() {
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * Possible error states of the screen. Must be in the same order as
@@ -37,10 +53,14 @@ const UIState = {
  * @implements {OobeI18nBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
- const ActiveDirectoryPasswordChangeBase = Polymer.mixinBehaviors(
-  [OobeI18nBehavior, OobeDialogHostBehavior,
-   LoginScreenBehavior, MultiStepBehavior],
-  Polymer.Element);
+const ActiveDirectoryPasswordChangeBase = mixinBehaviors(
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -56,7 +76,9 @@ class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
     return 'active-directory-password-change-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -223,6 +245,5 @@ class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
   }
 }
 
-customElements.define(ActiveDirectoryPasswordChange.is, ActiveDirectoryPasswordChange);
-})();
-
+customElements.define(
+    ActiveDirectoryPasswordChange.is, ActiveDirectoryPasswordChange);
