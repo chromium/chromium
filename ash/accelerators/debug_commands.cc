@@ -16,7 +16,9 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -105,6 +107,18 @@ void HandleToggleWallpaperMode() {
 
 void HandleDumpCalendarModel() {
   accelerators::DumpCalendarModel();
+}
+
+void HandleToggleDarkMode() {
+  // Toggling dark mode requires that the active user session has started
+  // since the feature is backed by user preferences.
+  if (auto* controller = Shell::Get()->session_controller();
+      !(controller && controller->IsActiveUserSessionStarted())) {
+    return;
+  }
+
+  if (auto* controller = DarkLightModeControllerImpl::Get())
+    controller->ToggleColorMode();
 }
 
 void HandleToggleGlanceables() {
@@ -206,6 +220,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
           ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/false, /*has_dismiss_button=*/true,
           /*custom_dismiss_text=*/u"Dismiss"));
+      break;
+    case DEBUG_TOGGLE_DARK_MODE:
+      HandleToggleDarkMode();
       break;
     case DEBUG_TOGGLE_GLANCEABLES:
       HandleToggleGlanceables();

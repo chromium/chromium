@@ -1854,6 +1854,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DEBUG_PRINT_VIEW_HIERARCHY:
     case DEBUG_PRINT_WINDOW_HIERARCHY:
     case DEBUG_SHOW_TOAST:
+    case DEBUG_TOGGLE_DARK_MODE:
     case DEBUG_TOGGLE_GLANCEABLES:
     case DEBUG_TOGGLE_SHOW_DEBUG_BORDERS:
     case DEBUG_TOGGLE_SHOW_FPS_COUNTER:
@@ -2099,6 +2100,7 @@ void AcceleratorControllerImpl::PerformAction(
     case DEBUG_PRINT_VIEW_HIERARCHY:
     case DEBUG_PRINT_WINDOW_HIERARCHY:
     case DEBUG_SHOW_TOAST:
+    case DEBUG_TOGGLE_DARK_MODE:
     case DEBUG_TOGGLE_GLANCEABLES:
       debug::PerformDebugActionIfEnabled(action);
       break;
