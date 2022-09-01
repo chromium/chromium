@@ -80,8 +80,7 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     @Override
     public void setUsernames(List<String> usernames, String initialUsername) {
         ArrayAdapter<String> usernamesAdapter = new NoFilterArrayAdapter<>(
-                getContext(), android.R.layout.simple_spinner_item, usernames);
-        usernamesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                getContext(), R.layout.password_edit_dialog_dropdown_item, usernames);
         mUsernameView.setAdapter(usernamesAdapter);
         mUsernameView.setText(initialUsername);
     }
