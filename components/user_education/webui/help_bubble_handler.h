@@ -87,9 +87,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
                                          bool visible) final;
   void HelpBubbleButtonPressed(const std::string& identifier_name,
                                uint8_t button) final;
-  void HelpBubbleClosed(
-      const std::string& identifier_name,
-      help_bubble::mojom::HelpBubbleClosedReason reason) final;
+  void HelpBubbleClosed(const std::string& identifier_name, bool by_user) final;
 
   ElementData* GetDataByName(const std::string& identifier_name,
                              ui::ElementIdentifier* found_identifier = nullptr);

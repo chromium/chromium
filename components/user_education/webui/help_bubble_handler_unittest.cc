@@ -89,8 +89,6 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
 MATCHER_P(MatchesHelpBubbleParams, expected, "") {
   EXPECT_EQ(expected->body_text, arg->body_text);
   EXPECT_EQ(expected->close_button_alt_text, arg->close_button_alt_text);
-  EXPECT_EQ(expected->force_close_button, arg->force_close_button);
-  EXPECT_EQ(expected->timeout, arg->timeout);
   EXPECT_EQ(expected->native_identifier, arg->native_identifier);
   EXPECT_EQ(expected->position, arg->position);
   EXPECT_EQ(expected->title_text, arg->title_text);
@@ -227,7 +225,6 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
   expected->close_button_alt_text =
       base::UTF16ToUTF8(params.close_button_alt_text);
   expected->position = help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
-  expected->timeout = base::Seconds(10);
 
   EXPECT_CALL(test_handler_->mock(),
               ShowHelpBubble(MatchesHelpBubbleParams(expected.get())));
@@ -376,8 +373,7 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedRemotely) {
   EXPECT_CALL_IN_SCOPE(
       closed, Run,
       handler()->HelpBubbleClosed(
-          kHelpBubbleHandlerTestElementIdentifier.GetName(),
-          help_bubble::mojom::HelpBubbleClosedReason::kPageChanged));
+          kHelpBubbleHandlerTestElementIdentifier.GetName(), false));
   EXPECT_FALSE(help_bubble->is_open());
 }
 
@@ -438,8 +434,7 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedByUserCallsDismiss) {
   EXPECT_CALL_IN_SCOPE(
       dismissed, Run,
       handler()->HelpBubbleClosed(
-          kHelpBubbleHandlerTestElementIdentifier.GetName(),
-          help_bubble::mojom::HelpBubbleClosedReason::kDismissedByUser));
+          kHelpBubbleHandlerTestElementIdentifier.GetName(), true));
   EXPECT_FALSE(help_bubble->is_open());
 }
 
@@ -559,9 +554,8 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaCallback) {
   EXPECT_TRUE(help_bubble2->is_open());
 
   // Close one bubble without closing the other.
-  handler()->HelpBubbleClosed(
-      kHelpBubbleHandlerTestElementIdentifier.GetName(),
-      help_bubble::mojom::HelpBubbleClosedReason::kPageChanged);
+  handler()->HelpBubbleClosed(kHelpBubbleHandlerTestElementIdentifier.GetName(),
+                              false);
   EXPECT_FALSE(help_bubble->is_open());
   EXPECT_TRUE(help_bubble2->is_open());
 

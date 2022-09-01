@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement, HelpBubbleTimedOutEvent} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import {HELP_BUBBLE_DISMISSED_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleArrowPosition, HelpBubbleButtonParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -50,15 +50,6 @@ suite('CrComponentsHelpBubbleTest', () => {
         isVisible(headerEl),
         'getMovableElement - element in header should not be visible');
     return mainEl;
-  }
-
-  /**
-   * Create a promise that resolves after a given amount of time
-   */
-  async function sleep(milliseconds: number) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, milliseconds);
-    });
   }
 
   setup(() => {
@@ -201,43 +192,6 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertEquals(0, clicked, 'close button should not be clicked');
     closeButton.click();
     assertEquals(1, clicked, 'close button should be clicked once');
-  });
-
-  test('help bubble timeout generates event', async () => {
-    let timedOut: number = 0;
-    const callback = (e: HelpBubbleTimedOutEvent) => {
-      assertEquals(
-          'title', e.detail.anchorId, 'timeout event anchorId should match');
-      ++timedOut;
-    };
-    helpBubble.addEventListener(HELP_BUBBLE_TIMED_OUT_EVENT, callback);
-    helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
-    helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.timeoutMs = 250;  // 250ms
-    helpBubble.show();
-    assertEquals(0, timedOut, 'timeout should not be triggered');
-    await waitAfterNextRender(helpBubble);
-    await sleep(500);  // 500ms
-    assertEquals(1, timedOut, 'timeout should only emit event once');
-  });
-
-  test('help bubble without timeout does not generate event', async () => {
-    let timedOut: number = 0;
-    const callback = (e: HelpBubbleTimedOutEvent) => {
-      assertEquals(
-          'title', e.detail.anchorId, 'timeout event anchorId should match');
-      ++timedOut;
-    };
-    helpBubble.addEventListener(HELP_BUBBLE_TIMED_OUT_EVENT, callback);
-    helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
-    helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.show();
-    assertEquals(0, timedOut, 'timeout should not be triggered');
-    await waitAfterNextRender(helpBubble);
-    await sleep(500);  // 500ms
-    assertEquals(0, timedOut, 'timeout is never triggered');
   });
 
   test('help bubble adds one button', async () => {

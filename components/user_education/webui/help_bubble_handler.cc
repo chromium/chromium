@@ -143,12 +143,6 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   mojom_params->close_button_alt_text =
       base::UTF16ToUTF8(data.params->close_button_alt_text);
   mojom_params->force_close_button = data.params->force_close_button;
-  auto timeout = data.params->timeout.value_or(
-      data.params->buttons.empty() ? kDefaultTimeoutWithoutButtons
-                                   : kDefaultTimeoutWithButtons);
-  if (!timeout.is_zero()) {
-    mojom_params->timeout = timeout;
-  }
   mojom_params->position = HelpBubbleArrowToPosition(data.params->arrow);
   if (data.params->progress) {
     mojom_params->progress = help_bubble::mojom::Progress::New();
@@ -201,9 +195,7 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
       // has additional code which executes after it. If that changes, the weak
       // pointer can be moved closer to the top of this method.
       auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-      HelpBubbleClosed(
-          identifier_name,
-          help_bubble::mojom::HelpBubbleClosedReason::kPageChanged);
+      HelpBubbleClosed(identifier_name, false);
       if (!weak_ptr)
         return;
     }
@@ -252,9 +244,8 @@ void HelpBubbleHandlerBase::HelpBubbleButtonPressed(
   data->closing = false;
 }
 
-void HelpBubbleHandlerBase::HelpBubbleClosed(
-    const std::string& identifier_name,
-    help_bubble::mojom::HelpBubbleClosedReason reason) {
+void HelpBubbleHandlerBase::HelpBubbleClosed(const std::string& identifier_name,
+                                             bool by_user) {
   ElementData* const data = GetDataByName(identifier_name);
   if (!data)
     return;
@@ -270,24 +261,13 @@ void HelpBubbleHandlerBase::HelpBubbleClosed(
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   data->closing = true;
 
-  base::OnceClosure callback;
-  switch (reason) {
-    case help_bubble::mojom::HelpBubbleClosedReason::kDismissedByUser: {
-      callback = std::move(data->params->dismiss_callback);
-      break;
+  if (by_user) {
+    base::OnceClosure callback = std::move(data->params->dismiss_callback);
+    if (callback) {
+      std::move(callback).Run();
+      if (!weak_ptr)
+        return;
     }
-    case help_bubble::mojom::HelpBubbleClosedReason::kTimedOut: {
-      callback = std::move(data->params->timeout_callback);
-      break;
-    }
-    case help_bubble::mojom::HelpBubbleClosedReason::kPageChanged:
-      break;
-  }
-
-  if (callback) {
-    std::move(callback).Run();
-    if (!weak_ptr)
-      return;
   }
 
   // This could also theoretically trigger callbacks.

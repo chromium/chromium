@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
-import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
+import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HelpBubbleProxy, HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -93,8 +93,8 @@ class TestHelpBubbleHandler extends TestBrowserProxy implements
     this.methodCalled('helpBubbleButtonPressed', nativeIdentifier, button);
   }
 
-  helpBubbleClosed(nativeIdentifier: string, reason: HelpBubbleClosedReason) {
-    this.methodCalled('helpBubbleClosed', nativeIdentifier, reason);
+  helpBubbleClosed(nativeIdentifier: string, byUser: boolean) {
+    this.methodCalled('helpBubbleClosed', nativeIdentifier, byUser);
   }
 }
 
@@ -139,15 +139,6 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   async function waitForVisibilityEvents() {
     await waitAfterNextRender(container);
     return waitAfterNextRender(container);
-  }
-
-  /**
-   * Create a promise that resolves after a given amount of time
-   */
-  async function sleep(milliseconds: number) {
-    return new Promise((res) => {
-      setTimeout(res, milliseconds);
-    });
   }
 
   setup(() => {
@@ -343,7 +334,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         assertEquals(
             1, testProxy.getHandler().getCallCount('helpBubbleClosed'));
         assertDeepEquals(
-            [[PARAGRAPH_NATIVE_ID, HelpBubbleClosedReason.kPageChanged]],
+            [[PARAGRAPH_NATIVE_ID, false]],
             testProxy.getHandler().getArgs('helpBubbleClosed'));
         assertFalse(container.isHelpBubbleShowing());
       });
@@ -360,19 +351,6 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
             0, testProxy.getHandler().getCallCount('helpBubbleClosed'));
         assertTrue(container.isHelpBubbleShowing());
       });
-
-  test('help bubble mixin does not timeout by default', async () => {
-    container.showHelpBubble('p1', defaultParams);
-
-    // This is not the current bubble anchor, so should not send an event.
-    container.$.title.style.display = 'none';
-    await waitForVisibilityEvents();
-    assertEquals(0, testProxy.getHandler().getCallCount('helpBubbleClosed'));
-    assertTrue(container.isHelpBubbleShowing());
-    await sleep(100);  // 100ms
-    assertEquals(0, testProxy.getHandler().getCallCount('helpBubbleClosed'));
-    assertTrue(container.isHelpBubbleShowing());
-  });
 
   test('help bubble mixin reshow bubble', async () => {
     testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
@@ -485,7 +463,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     await waitForVisibilityEvents();
     assertEquals(1, testProxy.getHandler().getCallCount('helpBubbleClosed'));
     assertDeepEquals(
-        [[PARAGRAPH_NATIVE_ID, HelpBubbleClosedReason.kDismissedByUser]],
+        [[PARAGRAPH_NATIVE_ID, true]],
         testProxy.getHandler().getArgs('helpBubbleClosed'));
     assertFalse(container.isHelpBubbleShowing());
   });
@@ -523,33 +501,6 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertDeepEquals(
         [[PARAGRAPH_NATIVE_ID, 1]],
         testProxy.getHandler().getArgs('helpBubbleButtonPressed'));
-    assertFalse(container.isHelpBubbleShowing());
-  });
-
-  const timeoutParams: HelpBubbleParams = new HelpBubbleParams();
-  timeoutParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
-  timeoutParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  timeoutParams.position = HelpBubbleArrowPosition.TOP_CENTER;
-  timeoutParams.bodyText = 'This is another help bubble.';
-  timeoutParams.titleText = 'This is a title';
-  timeoutParams.timeout = {
-    microseconds: BigInt(50 * 1000),  // 50ms
-  };
-  timeoutParams.buttons = [];
-
-  test('help bubble mixin sends timeout event', async () => {
-    container.showHelpBubble('p1', timeoutParams);
-    await waitAfterNextRender(container);
-    assertEquals(
-        0, testProxy.getHandler().getCallCount('helpBubbleClosed'),
-        'helpBubbleClosed was not called');
-    await sleep(100);  // 100ms
-    assertEquals(
-        1, testProxy.getHandler().getCallCount('helpBubbleClosed'),
-        'helpBubbleClosed was called');
-    assertDeepEquals(
-        [[PARAGRAPH_NATIVE_ID, HelpBubbleClosedReason.kTimedOut]],
-        testProxy.getHandler().getArgs('helpBubbleClosed'));
     assertFalse(container.isHelpBubbleShowing());
   });
 });
