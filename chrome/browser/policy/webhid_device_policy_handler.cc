@@ -53,14 +53,17 @@ bool WebHidDevicePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   DCHECK(value);
   int item_index = 0;
   for (const auto& item : value->GetList()) {
+    if (!item.is_dict())
+      continue;
     int url_index = 0;
     auto* urls_list = item.GetDict().FindList(kUrlsKey);
     if (!urls_list)
       continue;
 
     for (const auto& url_value : *urls_list) {
-      DCHECK(url_value.is_string());
-      GURL url(url_value.GetString());
+      GURL url;
+      if (url_value.is_string())
+        url = GURL(url_value.GetString());
       // If `url` is invalid, emit an error but do not prevent the policy from
       // being applied.
       if (errors && !url.is_valid()) {

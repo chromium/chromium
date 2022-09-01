@@ -621,6 +621,51 @@ WebHidInvalidPolicyTestData kTestData[]{
         ])",
     },
     {
+        key::kWebHidAllowDevicesForUrls,
+        prefs::kManagedWebHidAllowDevicesForUrls,
+        R"(
+        [
+          {
+            "devices": [
+              {
+                "vendor_id": 1234
+              }
+            ],
+            "urls": [
+              123
+            ]
+          }
+        ])",
+        u"Error at WebHidAllowDevicesForUrls[0].urls[0]: Schema validation "
+        u"error: Policy type mismatch: expected: \"string\", actual: "
+        u"\"integer\".\nError at WebHidAllowDevicesForUrls[0].urls[0]: Invalid "
+        u"URL.",
+        R"(
+        [
+          {
+            "devices": [
+              {
+                "vendor_id": 1234
+              }
+            ],
+            "urls": [
+            ]
+          }
+        ])",
+    },
+    {
+        key::kWebHidAllowDevicesForUrls,
+        prefs::kManagedWebHidAllowDevicesForUrls,
+        R"(
+        [123]
+        )",
+        u"Error at WebHidAllowDevicesForUrls[0]: Schema validation error: "
+        u"Policy type mismatch: expected: \"dictionary\", actual: \"integer\".",
+        R"(
+        []
+        )",
+    },
+    {
         key::kWebHidAllowDevicesWithHidUsagesForUrls,
         prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
         R"(
@@ -872,6 +917,52 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+    },
+    {
+        key::kWebHidAllowDevicesWithHidUsagesForUrls,
+        prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
+        R"(
+        [
+          {
+            "usages": [
+              {
+                "usage_page": 1234
+              }
+            ],
+            "urls": [
+              123
+            ]
+          }
+        ])",
+        u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].urls[0]: Schema "
+        u"validation error: Policy type mismatch: expected: \"string\", "
+        u"actual: \"integer\".\nError at "
+        u"WebHidAllowDevicesWithHidUsagesForUrls[0].urls[0]: Invalid URL.",
+        R"(
+        [
+          {
+            "usages": [
+              {
+                "usage_page": 1234
+              }
+            ],
+            "urls": [
+            ]
+          }
+        ])",
+    },
+    {
+        key::kWebHidAllowDevicesWithHidUsagesForUrls,
+        prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
+        R"(
+        [123]
+        )",
+        u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0]: Schema "
+        u"validation error: Policy type mismatch: expected: \"dictionary\", "
+        u"actual: \"integer\".",
+        R"(
+        []
+        )",
     },
 };
 
