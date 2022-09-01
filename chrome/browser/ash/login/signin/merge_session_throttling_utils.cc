@@ -184,8 +184,8 @@ bool ShouldDelayUrl(const GURL& url) {
   // we will show delayed loading page instead.
   return !content::GetNetworkConnectionTracker()->IsOffline() &&
          !AreAllSessionMergedAlready() &&
-         google_util::IsGoogleHostname(url.host_piece(),
-                                       google_util::ALLOW_SUBDOMAIN);
+         google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
+                                        google_util::ALLOW_NON_STANDARD_PORTS);
 }
 
 bool IsSessionRestorePending(Profile* profile) {

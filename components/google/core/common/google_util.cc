@@ -220,18 +220,18 @@ bool StartsWithCommandLineGoogleBaseURL(const GURL& url) {
                           base::CompareCase::SENSITIVE);
 }
 
-bool IsGoogleHostname(base::StringPiece host,
-                      SubdomainPermission subdomain_permission) {
-  url::CanonHostInfo host_info;
-  return IsCanonicalHostGoogleHostname(net::CanonicalizeHost(host, &host_info),
-                                       subdomain_permission);
-}
-
 bool IsGoogleDomainUrl(const GURL& url,
                        SubdomainPermission subdomain_permission,
                        PortPermission port_permission) {
   return IsValidURL(url, port_permission) &&
          IsCanonicalHostGoogleHostname(url.host_piece(), subdomain_permission);
+}
+
+bool IsGoogleHostname(base::StringPiece host,
+                      SubdomainPermission subdomain_permission) {
+  url::CanonHostInfo host_info;
+  return IsCanonicalHostGoogleHostname(net::CanonicalizeHost(host, &host_info),
+                                       subdomain_permission);
 }
 
 bool IsGoogleHomePageUrl(const GURL& url) {

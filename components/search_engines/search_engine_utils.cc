@@ -33,8 +33,8 @@ SearchEngineType GetEngineType(const GURL& url) {
   // First special-case Google, because the prepopulate URL for it will not
   // convert to a GURL and thus won't have an origin.  Instead see if the
   // incoming URL's host is "[*.]google.<TLD>".
-  if (google_util::IsGoogleHostname(url.host(),
-                                    google_util::DISALLOW_SUBDOMAIN))
+  if (google_util::IsGoogleDomainUrl(url, google_util::DISALLOW_SUBDOMAIN,
+                                     google_util::ALLOW_NON_STANDARD_PORTS))
     return TemplateURLPrepopulateData::google.type;
 
   // Now check the rest of the prepopulate data.

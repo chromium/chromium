@@ -184,8 +184,8 @@ GURL LinkHandlerModel::RewriteUrlFromQueryIfAvailable(const GURL& url) {
   static const char kPathToFind[] = "/url";
   static const char kKeyToFind[] = "url";
 
-  if (!google_util::IsGoogleHostname(url.host_piece(),
-                                     google_util::DISALLOW_SUBDOMAIN)) {
+  if (!google_util::IsGoogleDomainUrl(url, google_util::DISALLOW_SUBDOMAIN,
+                                      google_util::ALLOW_NON_STANDARD_PORTS)) {
     return url;
   }
   if (!url.has_path() || url.path() != kPathToFind)
