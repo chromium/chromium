@@ -4,14 +4,17 @@
 
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/password_manager_resources.h"
 #include "chrome/grit/password_manager_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -26,6 +29,7 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
       IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
       {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
@@ -34,6 +38,12 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
       {"title", IDS_PASSWORD_MANAGER_UI_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
+
+  source->AddString(
+      "passwordsSectionDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
+          base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
 
   return source;
 }
