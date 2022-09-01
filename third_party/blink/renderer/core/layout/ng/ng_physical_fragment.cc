@@ -366,7 +366,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
           builder->HasOutOfFlowInFragmentainerSubtree()),
       break_token_(std::move(builder->break_token_)),
       oof_data_(builder->oof_positioned_descendants_.IsEmpty() &&
-                        builder->anchor_query_.IsEmpty() &&
+                        !builder->AnchorQuery() &&
                         !has_fragmented_out_of_flow_data_
                     ? nullptr
                     : OutOfFlowDataFromBuilder(builder)) {
@@ -405,12 +405,11 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
     }
   }
 
-  if (!builder->anchor_query_.IsEmpty()) {
+  if (const NGLogicalAnchorQuery* anchor_query = builder->AnchorQuery()) {
     DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
     if (!oof_data)
       oof_data = MakeGarbageCollected<OutOfFlowData>();
-
-    oof_data->anchor_query.SetFromLogical(builder->anchor_query_, converter);
+    oof_data->anchor_query.SetFromLogical(*anchor_query, converter);
   }
 
   return oof_data;

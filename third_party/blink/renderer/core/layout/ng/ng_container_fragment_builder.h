@@ -358,7 +358,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   const NGConstraintSpace& ConstraintSpace() const { return space_; }
 
-  const NGLogicalAnchorQuery& AnchorQuery() const { return anchor_query_; }
+  const NGLogicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
 
   const NGLayoutResult* Abort(NGLayoutResult::EStatus);
 
@@ -370,6 +370,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   friend class NGInlineLayoutStateStack;
   friend class NGLayoutResult;
   friend class NGPhysicalFragment;
+
+  NGLogicalAnchorQuery& EnsureAnchorQuery();
 
   NGContainerFragmentBuilder(NGLayoutInputNode node,
                              scoped_refptr<const ComputedStyle> style,
@@ -413,7 +415,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   HeapVector<NGLogicalOOFNodeForFragmentation>
       oof_positioned_fragmentainer_descendants_;
   HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_descendants_;
-  NGLogicalAnchorQuery anchor_query_;
+  NGLogicalAnchorQuery* anchor_query_ = nullptr;
 
   MulticolCollection multicols_with_pending_oofs_;
 

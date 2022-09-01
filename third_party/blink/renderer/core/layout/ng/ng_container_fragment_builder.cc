@@ -34,6 +34,12 @@ void NGContainerFragmentBuilder::ReplaceChild(
   children_[index] = NGLogicalLink{std::move(&new_child), offset};
 }
 
+NGLogicalAnchorQuery& NGContainerFragmentBuilder::EnsureAnchorQuery() {
+  if (!anchor_query_)
+    anchor_query_ = MakeGarbageCollected<NGLogicalAnchorQuery>();
+  return *anchor_query_;
+}
+
 void NGContainerFragmentBuilder::PropagateChildAnchors(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset) {
@@ -43,16 +49,17 @@ void NGContainerFragmentBuilder::PropagateChildAnchors(
     if (const AtomicString& anchor_name = child.Style().AnchorName();
         !anchor_name.IsNull()) {
       DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
-      anchor_query_.Set(anchor_name, child,
-                        LogicalRect{child_offset, child.Size().ConvertToLogical(
-                                                      GetWritingMode())});
+      EnsureAnchorQuery().Set(
+          anchor_name, child,
+          LogicalRect{child_offset,
+                      child.Size().ConvertToLogical(GetWritingMode())});
     }
   }
 
   // Propagate any descendants' anchor references.
   if (const NGPhysicalAnchorQuery* anchor_query = child.AnchorQuery()) {
     const WritingModeConverter converter(GetWritingDirection(), child.Size());
-    anchor_query_.SetFromPhysical(
+    EnsureAnchorQuery().SetFromPhysical(
         *anchor_query, converter, child_offset,
         /* is_invalid */ child.IsOutOfFlowPositioned());
   }
