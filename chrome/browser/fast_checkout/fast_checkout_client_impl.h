@@ -54,14 +54,14 @@ class FastCheckoutClientImpl
   virtual std::unique_ptr<FastCheckoutController>
   CreateFastCheckoutController();
 
-  // Returns the current active personal data manager.
-  virtual autofill::PersonalDataManager* GetPersonalDataManager();
-
  private:
   friend class content::WebContentsUserData<FastCheckoutClientImpl>;
 
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;
+
+  // Returns the current active personal data manager.
+  autofill::PersonalDataManager* GetPersonalDataManager();
 
   // Called whenever the surface gets hidden (regardless of the cause). Informs
   // the Delegate that the surface is now hidden.

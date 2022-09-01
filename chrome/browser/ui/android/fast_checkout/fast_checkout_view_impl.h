@@ -36,9 +36,10 @@ class FastCheckoutViewImpl : public FastCheckoutView {
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized
-  // successfully or false if the creation failed. This method  will recreate
-  // the java object whenever Show() is called.
-  bool RecreateJavaObject();
+  // successfully or false if the creation failed. This method  will create
+  // the java object whenever Show() is called and re-use the same component if
+  // already exist.
+  bool RecreateJavaObjectIfNecessary();
 
   const base::WeakPtr<FastCheckoutController> controller_;
 

@@ -198,8 +198,17 @@ FastCheckoutClientImpl::GetPersonalDataManager() {
 }
 
 void FastCheckoutClientImpl::OnPersonalDataChanged() {
-  // TODO(crbug.com/1334642): Refresh UI data or stop the flow if data is not
-  // valid anymore.
+  if (!delegate_ || !delegate_->IsShowingFastCheckoutUI()) {
+    return;
+  }
+
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager();
+  if (GetValidCreditCardsToSuggest(pdm).empty() ||
+      GetValidAddressProfilesToSuggest(pdm).empty()) {
+    Stop();
+  } else {
+    ShowFastCheckoutUI();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FastCheckoutClientImpl);
