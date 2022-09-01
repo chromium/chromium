@@ -327,20 +327,19 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
         net::EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLonger}});
 
   DoConnection(cert_config);
-
-  ssl_test_util::CheckAuthenticatedState(
-      chrome_test_utils::GetActiveWebContents(this), AuthState::NONE);
-
   net::CertStatus cert_status = GetCurrentCertStatus();
+
   if (ssl_test_util::UsingBuiltinCertVerifier()) {
     // The builtin verifier enforces the baseline requirements for max age
     // of an intermediate's OCSP response.
-    EXPECT_EQ(0u, cert_status & net::CERT_STATUS_ALL_ERRORS);
+    ssl_test_util::CheckAuthenticatedState(
+        chrome_test_utils::GetActiveWebContents(this), AuthState::NONE);
   } else {
 #if BUILDFLAG(IS_WIN)
     // TODO(mattm): Seems to be flaky on Windows. Either returns
     // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
     // soft-fail), or CERT_STATUS_REVOKED.
+
     EXPECT_THAT(cert_status & net::CERT_STATUS_ALL_ERRORS,
                 ::testing::AnyOf(0u, net::CERT_STATUS_REVOKED));
 #else
