@@ -3403,8 +3403,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(WEBRTC_USE_PIPEWIRE)
     {"enable-webrtc-pipewire-capturer",
      flag_descriptions::kWebrtcPipeWireCapturerName,
-     flag_descriptions::kWebrtcPipeWireCapturerDescription,
-     kOsLinux | kOsLacros,
+     flag_descriptions::kWebrtcPipeWireCapturerDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCapturer)},
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4066,7 +4065,7 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::switches::kWalletServiceUseSandbox,
          "0")},
     {"enable-web-bluetooth", flag_descriptions::kWebBluetoothName,
-     flag_descriptions::kWebBluetoothDescription, kOsLinux | kOsLacros,
+     flag_descriptions::kWebBluetoothDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebBluetooth)},
     {"enable-web-bluetooth-new-permissions-backend",
      flag_descriptions::kWebBluetoothNewPermissionsBackendName,
@@ -4121,8 +4120,7 @@ const FeatureEntry kFeatureEntries[] = {
                                blink::switches::kDisableZeroCopy)},
     {"enable-vulkan", flag_descriptions::kEnableVulkanName,
      flag_descriptions::kEnableVulkanDescription,
-     kOsWin | kOsLinux | kOsLacros | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kVulkan)},
+     kOsWin | kOsLinux | kOsAndroid, FEATURE_VALUE_TYPE(features::kVulkan)},
 #if BUILDFLAG(IS_ANDROID)
     {"translate-force-trigger-on-english",
      flag_descriptions::kTranslateForceTriggerOnEnglishName,
@@ -4145,7 +4143,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-system-notifications",
      flag_descriptions::kNotificationsSystemFlagName,
      flag_descriptions::kNotificationsSystemFlagDescription,
-     kOsMac | kOsLinux | kOsLacros | kOsWin,
+     kOsMac | kOsLinux | kOsWin,
      FEATURE_VALUE_TYPE(features::kSystemNotifications)},
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
@@ -5863,7 +5861,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"chrome-wide-echo-cancellation",
      flag_descriptions::kChromeWideEchoCancellationName,
      flag_descriptions::kChromeWideEchoCancellationDescription,
-     kOsMac | kOsWin | kOsLinux | kOsLacros,
+     kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(media::kChromeWideEchoCancellation)},
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
