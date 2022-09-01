@@ -75,7 +75,6 @@
     mediaStoppedPlaying,
     menuEnd,
     menuItemSelected,
-    menuListItemSelected,
     menuListValueChanged,
     menuPopupEnd,
     menuPopupStart,

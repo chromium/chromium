@@ -60,8 +60,7 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
     this.addListener_(
         EventType.ACTIVE_DESCENDANT_CHANGED, this.onActiveDescendantChanged);
     this.addListener_(EventType.DETAILS_CHANGED, this.onDetailsChanged);
-    this.addListener_(
-        EventType.MENU_LIST_ITEM_SELECTED, this.onEventIfSelected);
+    this.addListener_(EventType.MENU_ITEM_SELECTED, this.onEventIfSelected);
     this.addListener_(
         EventType.SELECTED_VALUE_CHANGED, this.onSelectedValueChanged_);
   }
