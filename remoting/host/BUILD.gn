@@ -266,6 +266,8 @@ static_library("common") {
     "desktop_capturer_checker.h",
     "desktop_capturer_proxy.cc",
     "desktop_capturer_proxy.h",
+    "desktop_capturer_wrapper.cc",
+    "desktop_capturer_wrapper.h",
     "desktop_display_info.cc",
     "desktop_display_info.h",
     "desktop_display_info_loader.h",
