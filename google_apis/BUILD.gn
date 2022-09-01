@@ -83,9 +83,6 @@ if (use_official_google_api_keys == "") {
 assert(
     use_official_google_api_keys || !is_chrome_branded || is_ios || is_fuchsia)
 
-# This arg should always be false on iOS. See https://crbug.com/1183709.
-assert(!use_official_google_api_keys || !is_ios)
-
 config("key_defines") {
   defines = []
 
