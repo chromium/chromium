@@ -80,7 +80,6 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/chrono.cpp",
     "trunk/src/condition_variable.cpp",
     "trunk/src/condition_variable_destructor.cpp",
-    "trunk/src/debug.cpp",
     "trunk/src/exception.cpp",
     "trunk/src/format.cpp",
     "trunk/src/functional.cpp",
@@ -89,7 +88,6 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/ios.cpp",
     "trunk/src/ios.instantiations.cpp",
     "trunk/src/iostream.cpp",
-    "trunk/src/legacy_debug_handler.cpp",
     "trunk/src/legacy_pointer_safety.cpp",
     "trunk/src/locale.cpp",
     "trunk/src/memory.cpp",
@@ -116,6 +114,14 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/vector.cpp",
     "trunk/src/verbose_abort.cpp",
   ]
+
+  if (enable_iterator_debugging) {
+    sources += [
+      "trunk/src/debug.cpp",
+      "trunk/src/legacy_debug_handler.cpp",
+    ]
+  }
+
   include_dirs = [ "trunk/src" ]
   if (is_win) {
     sources += [
