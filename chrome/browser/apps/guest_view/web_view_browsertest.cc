@@ -4165,21 +4165,18 @@ IN_PROC_BROWSER_TEST_P(
   std::unique_ptr<EmbedderWebContentsObserver> observer(
       new EmbedderWebContentsObserver(embedder_web_contents));
 
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  ASSERT_TRUE(guest_web_contents);
-  extensions::WebViewGuest* guest =
-      extensions::WebViewGuest::FromWebContents(guest_web_contents);
-  ASSERT_TRUE(guest);
+  guest_view::GuestViewBase* guest_view = GetGuestView();
+  ASSERT_TRUE(guest_view);
 
   // Register rule for the guest.
   Profile* profile = browser()->profile();
   int rules_registry_id =
       extensions::WebViewGuest::GetOrGenerateRulesRegistryID(
-          guest->owner_web_contents()
+          guest_view->owner_web_contents()
               ->GetPrimaryMainFrame()
               ->GetProcess()
               ->GetID(),
-          guest->view_instance_id());
+          guest_view->view_instance_id());
 
   extensions::RulesRegistryService* registry_service =
       extensions::RulesRegistryService::Get(profile);
@@ -4211,22 +4208,19 @@ IN_PROC_BROWSER_TEST_P(WebViewChannelTest,
 
   LoadAppWithGuest("web_view/rules_registry");
 
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  ASSERT_TRUE(guest_web_contents);
-  extensions::WebViewGuest* guest =
-      extensions::WebViewGuest::FromWebContents(guest_web_contents);
-  ASSERT_TRUE(guest);
+  guest_view::GuestViewBase* guest_view = GetGuestView();
+  ASSERT_TRUE(guest_view);
 
   Profile* profile = browser()->profile();
   extensions::RulesRegistryService* registry_service =
       extensions::RulesRegistryService::Get(profile);
   int rules_registry_id =
       extensions::WebViewGuest::GetOrGenerateRulesRegistryID(
-          guest->owner_web_contents()
+          guest_view->owner_web_contents()
               ->GetPrimaryMainFrame()
               ->GetProcess()
               ->GetID(),
-          guest->view_instance_id());
+          guest_view->view_instance_id());
 
   // Get an existing registered rule for the guest.
   extensions::RulesRegistry* registry =
