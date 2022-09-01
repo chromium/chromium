@@ -7,8 +7,10 @@
 
 #import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
 
-// A scene agent that monitors the state of the app and informs the Promos
-// Manager it's a valid time to show a promo. Promos are shown when the UI is
+@protocol PromosManagerSceneAvailabilityObserver;
+
+// A scene agent that monitors the state of the app and informs its observer
+// that it's a valid time to show a promo. Promos are shown when the UI is
 // available (i.e. the app & scene state allow it).
 //
 // The UI is considered available when the following conditions are met:
@@ -26,12 +28,19 @@
 // (2) the scene becomes active in the foreground, and
 // (3) the UI blocker is removed.
 //
-// In a multi-window context, only one scene will present the promo. The first
-// scene to receive the event that triggers the promo will be the one selected.
-// Another scene will be selected if the presenting scene is dismissed.
+// In a multi-window context, only one scene will present the promo: the most
+// recently foregrounded scene. The first scene to receive the event that
+// triggers the promo will be the one selected. Another scene will be selected
+// if the presenting scene is dismissed.
 @interface PromosManagerSceneAgent : ObservingSceneAgent
 
 - (instancetype)init;
+
+// Adds observer that registers promo scene availability updates.
+- (void)addObserver:(id<PromosManagerSceneAvailabilityObserver>)observer;
+
+// Removes observer that registers promo scene availability updates.
+- (void)removeObserver:(id<PromosManagerSceneAvailabilityObserver>)observer;
 
 @end
 

@@ -9,6 +9,7 @@
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_availability_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,12 +18,21 @@
 namespace {
 
 // If the previous app foregrounding occurred less than
-// `kMinutesBetweenForegrounding` minutes ago, a promo won't be displayed.
-constexpr int kMinutesBetweenForegrounding = 240;  // (4 hours) (inclusive)
+// `kHoursBetweenForegrounding` hours ago, a promo won't be displayed.
+constexpr base::TimeDelta kHoursBetweenForegrounding =
+    base::Hours(4);  // (4 hours) (inclusive)
 
 }  // namespace
 
 @interface PromosManagerSceneAgent () <AppStateObserver>
+
+// Weak reference to observer object.
+@property(nonatomic, weak) id<PromosManagerSceneAvailabilityObserver> observer;
+
+// Indicates whether or not the UI is available for a promo to be displayed.
+@property(nonatomic, assign, readonly, getter=isUIAvailableForPromo)
+    BOOL UIAvailableForPromo;
+
 @end
 
 @implementation PromosManagerSceneAgent
@@ -31,6 +41,16 @@ constexpr int kMinutesBetweenForegrounding = 240;  // (4 hours) (inclusive)
   self = [super init];
 
   return self;
+}
+
+#pragma mark - PromosManagerSceneAvailabilityObserver
+
+- (void)addObserver:(id<PromosManagerSceneAvailabilityObserver>)observer {
+  self.observer = observer;
+}
+
+- (void)removeObserver:(id<PromosManagerSceneAvailabilityObserver>)observer {
+  self.observer = nil;
 }
 
 #pragma mark - ObservingSceneAgent
@@ -47,7 +67,7 @@ constexpr int kMinutesBetweenForegrounding = 240;  // (4 hours) (inclusive)
     didTransitionFromInitStage:(InitStage)previousInitStage {
   // Monitor the app intialization stages to consider showing a promo at a point
   // in the initialization of the app that allows it.
-  [self handlePromoDisplayIfUIAvailable];
+  [self maybeNotifyObserver];
 }
 
 #pragma mark - SceneStateObserver
@@ -62,15 +82,15 @@ constexpr int kMinutesBetweenForegrounding = 240;  // (4 hours) (inclusive)
   // Monitor the scene activation level to consider showing a promo
   // when the scene becomes active and in the foreground. In which case the
   // scene is visible and interactable.
-  [self handlePromoDisplayIfUIAvailable];
+  [self maybeNotifyObserver];
 }
 
 #pragma mark - Private
 
-// Handle the display of a promo if the scene UI is available to display one.
-- (void)handlePromoDisplayIfUIAvailable {
-  if (![self isUIAvailableForPromo])
-    return;
+// Notify observer(s) that the UI is available for a promo.
+- (void)maybeNotifyObserver {
+  if (self.UIAvailableForPromo)
+    [self.observer sceneDidBecomeAvailableForPromo];
 }
 
 // Returns YES if a promo can be displayed.
@@ -87,14 +107,13 @@ constexpr int kMinutesBetweenForegrounding = 240;  // (4 hours) (inclusive)
   if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive)
     return NO;
 
-  // (3) At least `kMinutesBetweenForegrounding` have elapsed since the app was
+  // (3) At least `kHoursBetweenForegrounding` have elapsed since the app was
   // last foregrounded, if ever.
   if (!self.sceneState.appState.lastTimeInForeground.is_null()) {
     base::TimeDelta elapsedTimeSinceLastForeground =
         base::TimeTicks::Now() - self.sceneState.appState.lastTimeInForeground;
 
-    if (elapsedTimeSinceLastForeground.InMinutes() <
-        kMinutesBetweenForegrounding)
+    if (elapsedTimeSinceLastForeground < kHoursBetweenForegrounding)
       return NO;
   }
 

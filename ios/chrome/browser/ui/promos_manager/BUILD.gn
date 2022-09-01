@@ -6,9 +6,10 @@ source_set("promos") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "promo_protocol.h",
+    "promos_manager_scene_availability_observer.h",
     "standard_promo_display_handler.h",
   ]
-  frameworks = [ "Foundation.framework" ]
+  frameworks = [ "UIKit.framework" ]
   deps = [
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:types",
@@ -22,6 +23,7 @@ source_set("promos_manager_scene_agent") {
     "promos_manager_scene_agent.mm",
   ]
   deps = [
+    ":promos",
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
