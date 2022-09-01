@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerAppElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerAppElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -22,6 +22,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(isVisible(app));
     assertTrue(isVisible(app.$.sidebar));
     assertTrue(isVisible(app.$.toolbar));
+    assertTrue(isVisible(app.$.content));
   });
 
   test('UI search box updates URL parameters', function() {
@@ -40,4 +41,14 @@ suite('PasswordManagerAppTest', function() {
     assertEquals(
         'test', app.$.toolbar.$.mainToolbar.getSearchField().getValue());
   });
+
+  [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
+      page => test(`Clicking ${page} in the sidebar`, function() {
+        const element =
+            app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
+        element.click();
+        const ironItem =
+            app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
+        assertTrue(ironItem.classList.contains('iron-selected'));
+      }));
 });
