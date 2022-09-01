@@ -56,16 +56,6 @@ void FixExecutionPriorities() {
   ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 }
 
-void MaybeIncreaseTestTimeouts(int argc, char** argv) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kTestLauncherTimeout)) {
-    command_line->AppendSwitchASCII(switches::kTestLauncherTimeout, "60000");
-  }
-  if (!command_line->HasSwitch(switches::kUiTestActionTimeout)) {
-    command_line->AppendSwitchASCII(switches::kUiTestActionTimeout, "30000");
-  }
-}
-
 // Sets the _NT_ALT_SYMBOL_PATH for the system or the user, if it is not set
 // already. Resets it on destruction. The environment variable is set in the
 // corresponding registry hive. _NT_ALT_SYMBOL_PATH is used to avoid symbol
@@ -139,10 +129,28 @@ class ScopedSymbolPath {
 
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace {
+
+void MaybeIncreaseTestTimeouts(int argc, char** argv) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kTestLauncherTimeout)) {
+    command_line->AppendSwitchASCII(switches::kTestLauncherTimeout, "60000");
+  }
+  if (!command_line->HasSwitch(switches::kUiTestActionTimeout)) {
+    command_line->AppendSwitchASCII(switches::kUiTestActionTimeout, "30000");
+  }
+}
+
+}  // namespace
+
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   base::ScopedClosureRunner reset_command_line(
       base::BindOnce(&base::CommandLine::Reset));
+
+  // Change the test timeout defaults if the command line arguments to override
+  // them are not present.
+  MaybeIncreaseTestTimeouts(argc, argv);
 
 #if BUILDFLAG(IS_WIN)
   std::cerr << "Process priority: " << base::Process::Current().GetPriority()
@@ -154,10 +162,6 @@ int main(int argc, char** argv) {
   // normal priority but for some reason, on the updater bots with UAC on, the
   // swarming task runs with a priority below normal.
   FixExecutionPriorities();
-
-  // Change the test timeout defaults if the command line arguments to override
-  // them are not present.
-  MaybeIncreaseTestTimeouts(argc, argv);
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
