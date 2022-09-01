@@ -124,6 +124,11 @@ const base::Feature kMuteCompromisedPasswords {
 #endif
 };
 
+// Decides how long the user does not require reuathentication after
+// successfully authenticated.
+const base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity{
+    &kPasswordNotes, "authentication_validity_duration", base::Minutes(5)};
+
 // Enables adding, displaying and modifying extra notes to stored credentials.
 // When enabled, "PasswordViewPageInSettings" feature is ignored and the new
 // password view subpage is force enabled.

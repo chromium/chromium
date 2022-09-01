@@ -27,10 +27,9 @@ namespace password_manager {
 
 namespace {
 base::TimeDelta GetAuthValidityPeriod() {
-  return base::FeatureList::IsEnabled(features::kPasswordViewPageInSettings) ||
-                 base::FeatureList::IsEnabled(features::kPasswordNotes)
-             ? PasswordAccessAuthenticator::kAuthValidityPeriodExtended
-             : PasswordAccessAuthenticator::kAuthValidityPeriod;
+  if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
+    return PasswordAccessAuthenticator::kAuthValidityPeriod;
+  return features::kPasswordNotesAuthValidity.Get();
 }
 }  // namespace
 
