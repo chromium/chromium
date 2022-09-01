@@ -33,6 +33,7 @@ struct AssistiveWindowButton;
 enum class KeyEventHandledState {
   kNotHandled = 0,
   kHandledByIME = 1,
+  kHandledByAssistiveSuggester = 2,
 };
 }  // namespace ime
 

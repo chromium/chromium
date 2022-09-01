@@ -1163,6 +1163,29 @@ TEST_F(InputMethodAshKeyEventTest, DeadKeyPressTest) {
   EXPECT_EQ(eventA.time_stamp(), key_event.time_stamp());
 }
 
+TEST_F(InputMethodAshKeyEventTest,
+       SingleCharAssistiveSuggesterKeyEventDispatchesProcessKey) {
+  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, EF_NONE);
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+
+  input_method_ash_->OnTextInputTypeChanged(this);
+  input_method_ash_->DispatchKeyEvent(&event);
+  static_cast<IMEInputContextHandlerInterface*>(input_method_ash_.get())
+      ->CommitText(
+          u"b",
+          TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
+
+  const ui::KeyEvent& key_event = dispatched_key_event_;
+  EXPECT_EQ(ET_KEY_PRESSED, key_event.type());
+  EXPECT_EQ(VKEY_PROCESSKEY, key_event.key_code());
+  EXPECT_EQ(event.code(), key_event.code());
+  EXPECT_EQ(event.flags(), key_event.flags());
+  EXPECT_EQ(DomKey::PROCESS, key_event.GetDomKey());
+  EXPECT_EQ(event.time_stamp(), key_event.time_stamp());
+}
+
 TEST_F(InputMethodAshKeyEventTest, JP106KeyTest) {
   ui::KeyEvent eventConvert(ET_KEY_PRESSED, VKEY_CONVERT, EF_NONE);
   input_method_ash_->DispatchKeyEvent(&eventConvert);

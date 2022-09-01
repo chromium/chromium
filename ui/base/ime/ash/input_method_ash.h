@@ -135,7 +135,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // It returns the result of whether the event has been stopped propagation
   // when dispatching post IME.
   [[nodiscard]] ui::EventDispatchDetails ProcessFilteredKeyPressEvent(
-      ui::KeyEvent* event);
+      ui::KeyEvent* event,
+      bool only_dispatch_vkey_processkey);
 
   // Processes a key event that was not filtered by the input method.
   [[nodiscard]] ui::EventDispatchDetails ProcessUnfilteredKeyPressEvent(

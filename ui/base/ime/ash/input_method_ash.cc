@@ -155,7 +155,7 @@ void InputMethodAsh::ProcessKeyEventDone(
     ui::ime::KeyEventHandledState handled_state) {
   DCHECK(event);
   if (event->type() == ET_KEY_PRESSED) {
-    if (handled_state == ui::ime::KeyEventHandledState::kHandledByIME) {
+    if (handled_state != ui::ime::KeyEventHandledState::kNotHandled) {
       // IME event has a priority to be handled, so that character composer
       // should be reset.
       character_composer_.Reset();
@@ -568,8 +568,11 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
   }
 
   if (event->type() == ET_KEY_PRESSED && handled) {
+    bool only_dispatch_vkey_processkey =
+        (handled_state ==
+         ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
     ui::EventDispatchDetails dispatch_details =
-        ProcessFilteredKeyPressEvent(event);
+        ProcessFilteredKeyPressEvent(event, only_dispatch_vkey_processkey);
     if (event->stopped_propagation()) {
       ResetContext();
       return dispatch_details;
@@ -601,8 +604,9 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
 }
 
 ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
-    ui::KeyEvent* event) {
-  if (NeedInsertChar())
+    ui::KeyEvent* event,
+    bool only_dispatch_vkey_processkey) {
+  if (!only_dispatch_vkey_processkey && NeedInsertChar())
     return DispatchKeyEventPostIME(event);
 
   ui::KeyEvent fabricated_event(ET_KEY_PRESSED, VKEY_PROCESSKEY, event->code(),

@@ -794,7 +794,8 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
     ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     if (assistive_suggester_->OnKeyEvent(event)) {
-      std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
+      std::move(callback).Run(
+          ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
       return;
     }
   }
