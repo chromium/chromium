@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 
 import androidx.fragment.app.Fragment;
 
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
@@ -18,7 +21,8 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
  * Controls the behaviour of the Safe Browsing privacy guide page.
  */
 public class SafeBrowsingFragment extends Fragment
-        implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
+        implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
+                   RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
     private BottomSheetController mBottomSheetController;
@@ -31,6 +35,9 @@ public class SafeBrowsingFragment extends Fragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        RadioGroup radioGroup = view.findViewById(R.id.sb_radio_button);
+        radioGroup.setOnCheckedChangeListener(this);
+
         mEnhancedProtection =
                 (RadioButtonWithDescriptionAndAuxButton) view.findViewById(R.id.enhanced_option);
         mStandardProtection =
@@ -38,6 +45,23 @@ public class SafeBrowsingFragment extends Fragment
 
         mEnhancedProtection.setAuxButtonClickedListener(this);
         mStandardProtection.setAuxButtonClickedListener(this);
+
+        initialRadioButtonConfig();
+    }
+
+    private void initialRadioButtonConfig() {
+        @SafeBrowsingState
+        int safeBrowsingState = SafeBrowsingBridge.getSafeBrowsingState();
+        switch (safeBrowsingState) {
+            case (SafeBrowsingState.ENHANCED_PROTECTION):
+                mEnhancedProtection.setChecked(true);
+                break;
+            case (SafeBrowsingState.STANDARD_PROTECTION):
+                mStandardProtection.setChecked(true);
+                break;
+            default:
+                assert false : "Unexpected SafeBrowsingState " + safeBrowsingState;
+        }
     }
 
     @Override
@@ -50,7 +74,18 @@ public class SafeBrowsingFragment extends Fragment
             displayBottomSheet(
                     inflater.inflate(R.layout.privacy_guide_sb_standard_explanation, null));
         } else {
-            assert false : "Should not be reached.";
+            assert false : "Unknown Aux clickedButtonId " + clickedButtonId;
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int clickedButtonId) {
+        if (clickedButtonId == R.id.enhanced_option) {
+            SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
+        } else if (clickedButtonId == R.id.standard_option) {
+            SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        } else {
+            assert false : "Unknown clickedButtonId " + clickedButtonId;
         }
     }
 

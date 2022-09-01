@@ -37,6 +37,7 @@
             style="@style/TextAppearance.TextLarge.Primary" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+            android:id="@+id/sb_radio_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false">
