@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -35,6 +36,16 @@ class BluetoothSerialDeviceEnumerator::AdapterHelper
   // The enumerator that owns this instance.
   base::WeakPtr<BluetoothSerialDeviceEnumerator> enumerator_;
   scoped_refptr<base::SequencedTaskRunner> enumerator_runner_;
+
+  // scoped_refptr<BluetoothAdapter> is required to ensure that this object
+  // actually has a reference to the BluetoothAdapter when the call to
+  // RemoveObserver() happens.
+  scoped_refptr<BluetoothAdapter> adapter_;
+
+  // |observation_| needs to be after |adapter_| to ensure it is reset before
+  // |adapter_|'s reset during destruction.
+  base::ScopedObservation<BluetoothAdapter, BluetoothAdapter::Observer>
+      observation_{this};
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AdapterHelper> weak_ptr_factory_{this};
 };
@@ -53,16 +64,17 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::OnGotClassicAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(adapter);
+  adapter_ = std::move(adapter);
 
-  BluetoothAdapter::DeviceList devices = adapter->GetDevices();
+  BluetoothAdapter::DeviceList devices = adapter_->GetDevices();
   for (auto* device : devices) {
-    DeviceAdded(adapter.get(), device);
+    DeviceAdded(adapter_.get(), device);
   }
-  adapter->AddObserver(this);
+  observation_.Observe(adapter_.get());
   enumerator_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothSerialDeviceEnumerator::SetClassicAdapter,
-                     enumerator_, std::move(adapter)));
+                     enumerator_, adapter_));
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceAdded(

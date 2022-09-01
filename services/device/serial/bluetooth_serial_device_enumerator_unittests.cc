@@ -198,4 +198,38 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
   enumerator.SynchronouslyResetHelperForTesting();
 }
 
+TEST_F(BluetoothSerialDeviceEnumeratorTest,
+       RemoveObserverIsCalledWhenAdapterHelperDestruct) {
+  auto mock_adapter =
+      base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+  {
+    base::RunLoop run_loop;
+    mock_adapter->Initialize(run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(mock_adapter->IsInitialized());
+  }
+
+  device::BluetoothAdapterFactory::Get()->SetAdapterForTesting(mock_adapter);
+  std::unique_ptr<BluetoothSerialDeviceEnumerator> enumerator;
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*mock_adapter, AddObserver)
+        .WillOnce([&run_loop](BluetoothAdapter::Observer* observer) {
+          run_loop.Quit();
+        });
+    enumerator =
+        std::make_unique<BluetoothSerialDeviceEnumerator>(adapter_runner());
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*mock_adapter, RemoveObserver)
+        .WillOnce([&run_loop](BluetoothAdapter::Observer* observer) {
+          run_loop.Quit();
+        });
+    enumerator->SynchronouslyResetHelperForTesting();
+    run_loop.Run();
+  }
+}
+
 }  // namespace device
