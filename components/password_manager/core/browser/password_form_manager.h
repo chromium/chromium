@@ -262,6 +262,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // PasswordFormPredictionWaiter::Client:
   void OnWaitCompleted() override;
+  void OnTimeout() override;
 
   // Create pending credentials from |parsed_submitted_form_| and forms received
   // from the password store.
@@ -347,6 +348,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Sets the timer on |async_predictions_waiter_| while waiting for
   // server-side predictions.
   void DelayFillForServerSidePredictions();
+
+  // Returns true if WebAuthn credential filling is enabled and there are
+  // credentials available to use.
+  bool WebAuthnCredentialsAvailable() const;
 
   // The client which implements embedder-specific PasswordManager operations.
   raw_ptr<PasswordManagerClient> client_;

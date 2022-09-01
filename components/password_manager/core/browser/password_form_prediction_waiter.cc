@@ -34,9 +34,9 @@ void PasswordFormPredictionWaiter::InitializeClosure(size_t callback_count) {
 }
 
 void PasswordFormPredictionWaiter::OnTimeout() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  barrier_closure_ = base::RepeatingClosure();
-  client_->OnWaitCompleted();
+  // The barrier closure remains active. OnWaitCompleted() will still be called
+  // if the callbacks occur ever the timeout.
+  client_->OnTimeout();
 }
 
 void PasswordFormPredictionWaiter::OnClosureComplete() {

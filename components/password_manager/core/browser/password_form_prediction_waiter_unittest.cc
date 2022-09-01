@@ -20,12 +20,18 @@ class WaiterClient : public PasswordFormPredictionWaiter::Client {
   WaiterClient& operator=(const WaiterClient&) = delete;
 
   bool wait_completed() const { return wait_completed_; }
-  void Reset() { wait_completed_ = false; }
+  bool timed_out() const { return timed_out_; }
+  void Reset() {
+    wait_completed_ = false;
+    timed_out_ = false;
+  }
 
  protected:
   void OnWaitCompleted() override { wait_completed_ = true; }
+  void OnTimeout() override { timed_out_ = true; }
 
   bool wait_completed_ = false;
+  bool timed_out_ = false;
 };
 
 class PasswordFormPredictionWaiterTest : public testing::Test {
@@ -43,7 +49,7 @@ class PasswordFormPredictionWaiterTest : public testing::Test {
 TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnTimeout) {
   prediction_waiter_.StartTimer();
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
-  EXPECT_TRUE(client_.wait_completed());
+  EXPECT_TRUE(client_.timed_out());
 }
 
 TEST_F(PasswordFormPredictionWaiterTest,
@@ -51,10 +57,10 @@ TEST_F(PasswordFormPredictionWaiterTest,
   prediction_waiter_.StartTimer();
   prediction_waiter_.InitializeClosure(2);
   prediction_waiter_.closure().Run();
-  EXPECT_FALSE(client_.wait_completed());
 
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
-  EXPECT_TRUE(client_.wait_completed());
+  EXPECT_FALSE(client_.wait_completed());
+  EXPECT_TRUE(client_.timed_out());
 }
 
 TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnSingleBarrierCallback) {
@@ -63,6 +69,7 @@ TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnSingleBarrierCallback) {
 
   EXPECT_TRUE(prediction_waiter_.closure().is_null());
   EXPECT_TRUE(client_.wait_completed());
+  EXPECT_FALSE(client_.timed_out());
 }
 
 TEST_F(PasswordFormPredictionWaiterTest,
@@ -73,6 +80,19 @@ TEST_F(PasswordFormPredictionWaiterTest,
   }
 
   EXPECT_TRUE(prediction_waiter_.closure().is_null());
+  EXPECT_TRUE(client_.wait_completed());
+  EXPECT_FALSE(client_.timed_out());
+}
+
+TEST_F(PasswordFormPredictionWaiterTest,
+       WaitCompletedOnTimeoutAndCallbackCompletion) {
+  prediction_waiter_.StartTimer();
+  prediction_waiter_.InitializeClosure(1);
+
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
+  EXPECT_TRUE(client_.timed_out());
+  EXPECT_FALSE(client_.wait_completed());
+  prediction_waiter_.closure().Run();
   EXPECT_TRUE(client_.wait_completed());
 }
 

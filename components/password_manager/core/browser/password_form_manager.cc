@@ -700,6 +700,19 @@ void PasswordFormManager::OnWaitCompleted() {
   Fill();
 }
 
+void PasswordFormManager::OnTimeout() {
+  Fill();
+}
+
+bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
+  WebAuthnCredentialsDelegate* delegate =
+      client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
+  if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
+    return delegate->GetWebAuthnSuggestions().has_value();
+  }
+  return false;
+}
+
 void PasswordFormManager::CreatePendingCredentials() {
   DCHECK(is_submitted_);
   if (!parsed_submitted_form_)
@@ -814,14 +827,12 @@ void PasswordFormManager::ProcessServerPredictions(
     return;
   }
   UpdatePredictionsForObservedForm(predictions);
-  if (parser_.predictions()) {
-    if (!async_predictions_waiter_.closure().is_null()) {
-      // Signals the availability of server predictions, but there might be
-      // other callbacks still outstanding.
-      async_predictions_waiter_.closure().Run();
-    } else {
-      Fill();
-    }
+  if (!async_predictions_waiter_.closure().is_null()) {
+    // Signals the availability of server predictions, but there might be
+    // other callbacks still outstanding.
+    async_predictions_waiter_.closure().Run();
+  } else if (parser_.predictions()) {
+    Fill();
   }
 }
 
@@ -866,19 +877,11 @@ void PasswordFormManager::Fill() {
     return;
 #endif
 
-  bool webauthn_suggestions_available = false;
-  WebAuthnCredentialsDelegate* delegate =
-      client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
-  if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
-    webauthn_suggestions_available =
-        delegate->GetWebAuthnSuggestions().has_value();
-  }
-
   SendFillInformationToRenderer(
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
       form_fetcher_->GetPreferredMatch(), form_fetcher_->IsBlocklisted(),
-      metrics_recorder_.get(), webauthn_suggestions_available);
+      metrics_recorder_.get(), WebAuthnCredentialsAvailable());
 }
 
 void PasswordFormManager::FillForm(

@@ -24,13 +24,15 @@ constexpr base::TimeDelta kMaxFillingDelayForAsyncPredictions =
 // Helper class for PasswordFormManager to manage outstanding asynchronous
 // prediction fetches. This uses a barrier callback to wait on multiple
 // asynchronous events, signalling when all are complete, and also a timer
-// that will cause cause Client::OnWaitCompleted() to be called even if there
-// are still outstanding callbacks.
+// that will signal OnTimeout() if there are still outstanding callbacks.
+// It is possible for both OnTimeout() and OnWaitCompleted() to be called if
+// OnTimeout() is called first.
 class PasswordFormPredictionWaiter {
  public:
   class Client {
    public:
     virtual void OnWaitCompleted() = 0;
+    virtual void OnTimeout() = 0;
   };
 
   explicit PasswordFormPredictionWaiter(Client* client);
