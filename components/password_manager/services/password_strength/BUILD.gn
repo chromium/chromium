@@ -37,3 +37,15 @@ source_set("service") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_strength_calculator_impl_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/services/password_strength:lib",
+    "//testing/gtest",
+  ]
+}
