@@ -281,7 +281,6 @@ if (is_chromeos_ash) {
 if (include_polymer) {
   generate_definitions_js_files += [
     "cr_elements/cr_icons_css.m.js",
-    "cr_elements/hidden_style_css.m.js",
     "cr_elements/icons.m.js",
     "cr_elements/shared_vars_css.m.js",
   ]

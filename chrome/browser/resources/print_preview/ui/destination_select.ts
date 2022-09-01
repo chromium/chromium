@@ -8,7 +8,7 @@
  * Chrome OS and non-Chrome OS.
  */
 
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/js/util.m.js';

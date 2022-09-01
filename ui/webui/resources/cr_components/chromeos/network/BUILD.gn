@@ -526,6 +526,7 @@ polymer_modulizer("network_icon") {
   html_file = "network_icon.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
 }
 
 polymer_modulizer("network_icons") {

@@ -88,7 +88,6 @@ if (include_polymer) {
     out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
     in_files = [
       "cr_icons_css.m.js",
-      "hidden_style_css.m.js",
       "icons.m.js",
       "policy/cr_policy_indicator.js",
       "policy/cr_policy_pref_indicator.js",
@@ -120,12 +119,6 @@ if (include_polymer) {
     html_type = "custom-style"
   }
 
-  polymer_modulizer("hidden_style_css") {
-    js_file = "hidden_style_css.m.js"
-    html_file = "hidden_style_css.html"
-    html_type = "style-module"
-  }
-
   polymer_modulizer("cr_icons_css") {
     js_file = "cr_icons_css.m.js"
     html_file = "cr_icons_css.html"
@@ -143,7 +136,6 @@ if (include_polymer) {
   group("custom_elements") {
     public_deps = [
       ":cr_icons_css_module",
-      ":hidden_style_css_module",
       ":icons_module",
       ":shared_vars_css_module",
       "policy:web_components",

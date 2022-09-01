@@ -7,7 +7,7 @@
  * a continuous or discrete range of numbers.
  */
 import '../../js/cr.m.js';
-import '../hidden_style_css.m.js';
+import '../cr_hidden_style.css.js';
 import '../shared_vars_css.m.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';

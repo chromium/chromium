@@ -12,7 +12,7 @@
 import '../../../cr_elements/cr_button/cr_button.js';
 import '../../../cr_elements/cr_dialog/cr_dialog.js';
 import '../../../cr_elements/cr_input/cr_input.js';
-import '../../../cr_elements/hidden_style_css.m.js';
+import '../../../cr_elements/cr_hidden_style.css.js';
 import '../../../js/cr.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';

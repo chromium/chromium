@@ -4,7 +4,7 @@
 
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_icons_css.m.js';
-import '../hidden_style_css.m.js';
+import '../cr_hidden_style.css.js';
 import '../icons.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';

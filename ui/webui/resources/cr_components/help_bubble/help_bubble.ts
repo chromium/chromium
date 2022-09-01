@@ -10,7 +10,7 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
@@ -20,7 +20,7 @@ import {isWindows} from '//resources/js/cr.m.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './help_bubble.html.js';
-import {HelpBubbleButtonParams, HelpBubbleArrowPosition, Progress} from './help_bubble.mojom-webui.js';
+import {HelpBubbleArrowPosition, HelpBubbleButtonParams, Progress} from './help_bubble.mojom-webui.js';
 
 const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 

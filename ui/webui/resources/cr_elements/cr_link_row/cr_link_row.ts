@@ -11,7 +11,7 @@
  */
 import '../cr_actionable_row_style.css.js';
 import '../cr_icon_button/cr_icon_button.js';
-import '../hidden_style_css.m.js';
+import '../cr_hidden_style.css.js';
 import '../icons.m.js';
 import '../cr_shared_style.css.js';
 import '../shared_vars_css.m.js';

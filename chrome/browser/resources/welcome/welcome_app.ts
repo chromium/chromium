@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import './google_apps/nux_google_apps.js';
 import './landing_view.js';
 import './ntp_background/nux_ntp_background.js';

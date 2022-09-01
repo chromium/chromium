@@ -6,7 +6,7 @@
  * @fileoverview 'settings-textarea' is a component similar to native textarea,
  * and inherits styling from cr-input.
  */
-import '//resources/cr_elements/hidden_style_css.m.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_input/cr_input_style.css.js';
 

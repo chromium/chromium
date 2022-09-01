@@ -6,7 +6,7 @@
  * @fileoverview The 'certificate-manager' component manages SSL certificates.
  */
 import '../../cr_elements/cr_tabs/cr_tabs.js';
-import '../../cr_elements/hidden_style_css.m.js';
+import '../../cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './ca_trust_edit_dialog.js';
 import './certificate_delete_confirmation_dialog.js';
@@ -16,6 +16,7 @@ import './certificate_password_encryption_dialog.js';
 import './certificates_error_dialog.js';
 // <if expr="is_chromeos">
 import './certificate_provisioning_list.js';
+
 // </if>
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

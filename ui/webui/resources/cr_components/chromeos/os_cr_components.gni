@@ -75,6 +75,7 @@ cr_components_migrated_imports = [
   "ui/webui/resources/cr_elements/action_link.css.html",
   "ui/webui/resources/cr_elements/cr_button/cr_button.html",
   "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html",
+  "ui/webui/resources/cr_elements/cr_hidden_style.css.html",
   "ui/webui/resources/cr_elements/cr_icon_button/cr_icon_button.html",
   "ui/webui/resources/cr_elements/cr_input/cr_input.html",
   "ui/webui/resources/cr_elements/cr_lottie/cr_lottie.html",

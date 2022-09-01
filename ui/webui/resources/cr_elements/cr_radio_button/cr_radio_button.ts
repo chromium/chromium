@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/polymer/v3_0/paper-styles/color.js';
-import '../hidden_style_css.m.js';
+import '../cr_hidden_style.css.js';
 import '../shared_vars_css.m.js';
 import './cr_radio_button_style.css.js';
 

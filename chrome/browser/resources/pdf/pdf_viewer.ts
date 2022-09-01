@@ -12,7 +12,7 @@ import './elements/viewer-properties-dialog.js';
 import './elements/viewer-toolbar.js';
 import './elements/shared-vars.css.js';
 import './pdf_viewer_shared_style.css.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';

@@ -362,6 +362,7 @@ polymer_modulizer("provisioning_page") {
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
 }
 
 polymer_modulizer("psim_flow_ui") {

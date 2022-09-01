@@ -6,7 +6,7 @@
  * @fileoverview Polymer element for indicating policies that apply to an
  * element controlling a settings preference.
  */
-import '../hidden_style_css.m.js';
+import '../cr_hidden_style.css.js';
 import './cr_tooltip_icon.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
