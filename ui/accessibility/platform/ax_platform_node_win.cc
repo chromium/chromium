@@ -5209,6 +5209,16 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
 
     case UIA_LocalizedControlTypePropertyId: {
+      // Always favor the explicitly set aria-roledescription value if there's
+      // one.
+      std::u16string role_description;
+      if (GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription,
+                               &role_description)) {
+        result->vt = VT_BSTR;
+        result->bstrVal = SysAllocString(base::as_wcstr(role_description));
+        break;
+      }
+
       // UIA core handles Localized Control type for some built-in types and
       // also has a mapping for ARIA roles. To get these defaults, we need to
       // have returned VT_EMPTY.

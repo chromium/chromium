@@ -19,3 +19,6 @@ rootWebArea
 ++++++paragraph roleDescription='Texty'
 ++++++++staticText name='baz'
 ++++++++++inlineTextBox name='baz'
+++++++group roleDescription='SuperContainer'
+++++++++staticText name='SuperContainer group'
+++++++++++inlineTextBox name='SuperContainer group'
