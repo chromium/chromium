@@ -14151,8 +14151,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14204,8 +14205,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14257,8 +14259,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14310,8 +14313,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14363,8 +14367,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14416,8 +14421,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14469,8 +14475,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14522,8 +14529,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14575,8 +14583,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14628,8 +14637,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14681,8 +14691,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14734,8 +14745,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14787,8 +14799,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14840,8 +14853,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14893,8 +14907,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14946,8 +14961,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -14999,8 +15015,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15052,8 +15069,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15106,8 +15124,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15160,8 +15179,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15214,8 +15234,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15268,8 +15289,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15322,8 +15344,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15376,8 +15399,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15430,8 +15454,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15485,8 +15510,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15540,8 +15566,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15595,8 +15622,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15650,8 +15678,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15705,8 +15734,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15760,8 +15790,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15815,8 +15846,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15870,8 +15902,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15925,8 +15958,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -15980,8 +16014,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16035,8 +16070,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16090,8 +16126,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16145,8 +16182,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16200,8 +16238,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16255,8 +16294,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16310,8 +16350,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16364,8 +16405,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16418,8 +16460,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16472,8 +16515,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16526,8 +16570,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16580,8 +16625,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16634,8 +16680,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16689,8 +16736,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16744,8 +16792,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16799,8 +16848,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16854,8 +16904,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16908,8 +16959,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -16961,8 +17013,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17014,8 +17067,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17067,8 +17121,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17121,8 +17176,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17175,8 +17231,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17229,8 +17286,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17283,8 +17341,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17337,8 +17396,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17391,8 +17451,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17444,8 +17505,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17497,8 +17559,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17551,8 +17614,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17605,8 +17669,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17659,8 +17724,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17713,8 +17779,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17767,8 +17834,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17821,8 +17889,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17875,8 +17944,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17928,8 +17998,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -17981,8 +18052,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18034,8 +18106,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18087,8 +18160,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18140,8 +18214,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18194,8 +18269,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18248,8 +18324,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18302,8 +18379,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18356,8 +18434,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18410,8 +18489,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18463,8 +18543,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18516,8 +18597,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18569,8 +18651,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18622,8 +18705,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18675,8 +18759,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18728,8 +18813,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18781,8 +18867,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18834,8 +18921,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18887,8 +18975,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18940,8 +19029,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -18993,8 +19083,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19046,8 +19137,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19099,8 +19191,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19152,8 +19245,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19205,8 +19299,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19258,8 +19353,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19311,8 +19407,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19364,8 +19461,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19417,8 +19515,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19470,8 +19569,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19523,8 +19623,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19576,8 +19677,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19629,8 +19731,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
@@ -19682,8 +19785,9 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "arm64",
-              "os": "Mac-12"
+              "cpu": "x86-64",
+              "mac_model": "Macmini8,1",
+              "os": "Mac-12.4"
             }
           ],
           "named_caches": [
