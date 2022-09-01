@@ -6,6 +6,7 @@
 #define IPCZ_SRC_IPCZ_MONITORED_VALUE_H_
 
 #include <atomic>
+#include <limits>
 #include <type_traits>
 
 namespace ipcz {
