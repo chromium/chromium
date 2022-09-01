@@ -407,6 +407,13 @@ void RenderWidgetHostViewMac::InitAsPopup(
   // the white background on popup open when dark color-scheme is used.
   SetContentBackgroundColor(SK_ColorTRANSPARENT);
 
+  // If HiDPI capture mode is active for the parent, propagate the scale
+  // override to the popup window also. Its content was created assuming
+  // that the new window will share the parent window's scale. See
+  // https://crbug.com/1354703 .
+  scale_override_for_capture_ =
+      popup_parent_host_view_->GetScaleOverrideForCapture();
+
   // This path is used by the time/date picker.
   ns_view_->InitAsPopup(pos, popup_parent_host_view_->ns_view_id_);
 }
