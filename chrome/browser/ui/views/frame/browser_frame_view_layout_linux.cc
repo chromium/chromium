@@ -56,8 +56,8 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
   gfx::Rect frame_extents;
   const auto tiled_edges = delegate_->GetTiledEdges();
   for (const auto& shadow_value : view_->GetShadowValues()) {
-    auto shadow_radius = shadow_value.blur() / 4;
-    gfx::InsetsF shadow_insets =
+    const auto shadow_radius = shadow_value.blur() / 4;
+    const gfx::InsetsF shadow_insets =
         gfx::InsetsF::TLBR(tiled_edges.top ? 0 : shadow_radius,
                            tiled_edges.left ? 0 : shadow_radius,
                            tiled_edges.bottom ? 0 : shadow_radius,
@@ -70,10 +70,10 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
   }
 
   // The border must be at least as large as the input region.
-  auto insets = gfx::Insets::TLBR(tiled_edges.top ? 0 : kResizeBorder,
-                                  tiled_edges.left ? 0 : kResizeBorder,
-                                  tiled_edges.bottom ? 0 : kResizeBorder,
-                                  tiled_edges.right ? 0 : kResizeBorder);
+  const auto insets = gfx::Insets::TLBR(tiled_edges.top ? 0 : kResizeBorder,
+                                        tiled_edges.left ? 0 : kResizeBorder,
+                                        tiled_edges.bottom ? 0 : kResizeBorder,
+                                        tiled_edges.right ? 0 : kResizeBorder);
   gfx::Rect input_extents;
   input_extents.Inset(-insets);
   frame_extents.Union(input_extents);

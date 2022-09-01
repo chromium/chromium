@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -93,6 +94,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
   virtual void OnWindowStateChanged(PlatformWindowState old_state,
                                     PlatformWindowState new_state) = 0;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Notifies the delegate that the tiled state of the window edges has changed.
+  virtual void OnWindowTiledStateChanged(WindowTiledEdges new_tiled_edges);
+#endif
 
   virtual void OnLostCapture() = 0;
 

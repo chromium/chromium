@@ -174,11 +174,19 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
     // later steps.
     // See https://crbug.com/1287212 for details.
     const auto window_state = window->GetPlatformWindowState();
-    const gfx::Insets insets =
-        (window_state == ui::PlatformWindowState::kUnknown ||
-         window_state == ui::PlatformWindowState::kNormal)
-            ? layout->MirroredFrameBorderInsets()
-            : gfx::Insets();
+    gfx::Insets insets = (window_state == ui::PlatformWindowState::kUnknown ||
+                          window_state == ui::PlatformWindowState::kNormal)
+                             ? layout->MirroredFrameBorderInsets()
+                             : gfx::Insets();
+    const auto tiled_edges = browser_frame_->tiled_edges();
+    if (tiled_edges.left)
+      insets.set_left(0);
+    if (tiled_edges.right)
+      insets.set_right(0);
+    if (tiled_edges.top)
+      insets.set_top(0);
+    if (tiled_edges.bottom)
+      insets.set_bottom(0);
     const gfx::Insets insets_px = gfx::ScaleToCeiledInsets(insets, scale);
     window->SetDecorationInsets(showing_frame ? &insets_px : nullptr);
 
@@ -314,6 +322,12 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
     browser_view_->FullscreenStateChanging();
   }
 
+  UpdateFrameHints();
+}
+
+void BrowserDesktopWindowTreeHostLinux::OnWindowTiledStateChanged(
+    ui::WindowTiledEdges new_tiled_edges) {
+  browser_frame_->set_tiled_edges(new_tiled_edges);
   UpdateFrameHints();
 }
 

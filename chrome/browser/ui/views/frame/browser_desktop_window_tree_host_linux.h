@@ -82,6 +82,7 @@ class BrowserDesktopWindowTreeHostLinux
   void OnBoundsChanged(const BoundsChange& change) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
+  void OnWindowTiledStateChanged(ui::WindowTiledEdges new_tiled_edges) override;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;

@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window_state.h"
-#include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

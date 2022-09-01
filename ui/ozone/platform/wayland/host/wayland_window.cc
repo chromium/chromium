@@ -677,6 +677,12 @@ gfx::Vector2d WaylandWindow::GetWindowGeometryOffsetInDIP() const {
 
 void WaylandWindow::UpdateDecorations() {}
 
+gfx::Insets WaylandWindow::GetDecorationInsetsInDIP() const {
+  return frame_insets_px_.has_value()
+             ? gfx::ScaleToRoundedInsets(*frame_insets_px_, 1.f / window_scale_)
+             : gfx::Insets{};
+}
+
 WaylandWindow* WaylandWindow::GetRootParentWindow() {
   return parent_window_ ? parent_window_->GetRootParentWindow() : this;
 }

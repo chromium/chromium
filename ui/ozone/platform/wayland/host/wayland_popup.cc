@@ -252,14 +252,9 @@ bool WaylandPopup::IsSurfaceConfigured() {
 
 void WaylandPopup::SetWindowGeometry(gfx::Rect bounds_dip) {
   DCHECK(shell_popup_);
-  gfx::Point p;
-  // TODO(crbug.com/1306688): Use DIP for frame insets.
-  if (frame_insets_px() && !frame_insets_px()->IsEmpty()) {
-    p = gfx::ScaleToRoundedPoint(
-        {frame_insets_px()->left(), frame_insets_px()->top()},
-        1.f / window_scale());
-  }
-  shell_popup_->SetWindowGeometry({p, bounds_dip.size()});
+  const auto insets = GetDecorationInsetsInDIP();
+  shell_popup_->SetWindowGeometry(
+      {{insets.left(), insets.top()}, bounds_dip.size()});
 }
 
 void WaylandPopup::AckConfigure(uint32_t serial) {

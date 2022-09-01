@@ -15,6 +15,11 @@ PlatformWindowDelegate::PlatformWindowDelegate() = default;
 
 PlatformWindowDelegate::~PlatformWindowDelegate() = default;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void PlatformWindowDelegate::OnWindowTiledStateChanged(
+    WindowTiledEdges new_tiled_edges) {}
+#endif
+
 absl::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
   return absl::nullopt;
 }

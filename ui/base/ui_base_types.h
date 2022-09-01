@@ -9,6 +9,8 @@
 #include <type_traits>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -34,6 +36,21 @@ enum WindowShowState {
   SHOW_STATE_FULLSCREEN = 5,
   SHOW_STATE_END = 6  // The end of show state enum.
 };
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Specifies which edges of the window are tiled.
+struct WindowTiledEdges {
+  bool left{false};
+  bool right{false};
+  bool top{false};
+  bool bottom{false};
+
+  bool operator!=(const WindowTiledEdges& other) const {
+    return left != other.left || right != other.right || top != other.top ||
+           bottom != other.bottom;
+  }
+};
+#endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
 // Dialog button identifiers used to specify which buttons to show the user.
 enum DialogButton {

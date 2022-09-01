@@ -400,6 +400,14 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   const bool did_active_change = is_active_ != window_states.is_activated;
   is_active_ = window_states.is_activated;
 
+  // The tiled state affects the window geometry, so apply it here.
+  if (window_states.tiled_edges != tiled_state_) {
+    // This configure changes the decoration insets.  We should adjust the
+    // bounds appropriately.
+    tiled_state_ = window_states.tiled_edges;
+    delegate()->OnWindowTiledStateChanged(window_states.tiled_edges);
+  }
+
   // Rather than call SetBounds here for every configure event, just save the
   // most recent bounds, and have WaylandConnection call ApplyPendingBounds
   // when it has finished processing events. We may get many configure events
@@ -417,10 +425,9 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   gfx::Rect bounds_dip(pending_bounds_dip());
   if (width_dip > 1 && height_dip > 1) {
     bounds_dip.SetRect(x, y, width_dip, height_dip);
-    // TODO(crbug.com/3651999): Change SetDecorationInsets to take DIP.
-    if (ShouldSetBounds(state_) && frame_insets_px()) {
-      bounds_dip.Inset(
-          -gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
+    const auto insets = GetDecorationInsetsInDIP();
+    if (ShouldSetBounds(state_) && !insets.IsEmpty()) {
+      bounds_dip.Inset(-insets);
       bounds_dip.set_origin({x, y});
     }
   } else if (ShouldSetBounds(state_)) {
@@ -547,10 +554,9 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Rect bounds_dip) {
 
   gfx::Rect geometry_dip(bounds_dip.size());
 
-  if (state_ == PlatformWindowState::kNormal && frame_insets_px()) {
-    geometry_dip.Inset(
-        gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
-  }
+  const auto insets = GetDecorationInsetsInDIP();
+  if (state_ == PlatformWindowState::kNormal && !insets.IsEmpty())
+    geometry_dip.Inset(insets);
   shell_toplevel_->SetWindowGeometry(geometry_dip);
 }
 

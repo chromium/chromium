@@ -12,7 +12,10 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
 
-class BrowserDesktopWindowTreeHost;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/base/ui_base_types.h"
+#endif
+
 class BrowserNonClientFrameView;
 class BrowserRootView;
 enum class BrowserThemeChangeType;
@@ -59,6 +62,14 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   BrowserFrame& operator=(const BrowserFrame&) = delete;
 
   ~BrowserFrame() override;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns which edges of the frame are tiled.
+  const ui::WindowTiledEdges& tiled_edges() const { return tiled_edges_; }
+  void set_tiled_edges(ui::WindowTiledEdges tiled_edges) {
+    tiled_edges_ = tiled_edges;
+  }
+#endif
 
   // Initialize the frame (creates the underlying native window).
   void InitBrowserFrame();
@@ -143,11 +154,6 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
     return native_browser_frame_;
   }
 
-  void set_browser_desktop_window_tree_host(
-      BrowserDesktopWindowTreeHost* browser_desktop_window_tree_host) {
-    browser_desktop_window_tree_host_ = browser_desktop_window_tree_host;
-  }
-
   void SetTabDragKind(TabDragKind tab_drag_kind);
   TabDragKind tab_drag_kind() const { return tab_drag_kind_; }
 
@@ -192,9 +198,6 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
           base::BindRepeating(&BrowserFrame::OnTouchUiChanged,
                               base::Unretained(this)));
 
-  raw_ptr<BrowserDesktopWindowTreeHost> browser_desktop_window_tree_host_ =
-      nullptr;
-
   // Indicates the drag state for this window. The value can be kWindowDrag
   // if the accociated browser is the dragged browser or kTabDrag
   // if this is the source browser that the drag window originates from. During
@@ -202,6 +205,10 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // may change, the fast resize strategy will be used to resize its web
   // contents for smoother dragging.
   TabDragKind tab_drag_kind_ = TabDragKind::kNone;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  ui::WindowTiledEdges tiled_edges_;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Store the number of virtual desks that currently exist. Used to determine

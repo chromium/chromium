@@ -224,6 +224,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Contains the previous state of the window.
   PlatformWindowState previous_state_ = PlatformWindowState::kUnknown;
 
+  // Contains the current state of the tiled edges.
+  WindowTiledEdges tiled_state_;
+
   bool is_active_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

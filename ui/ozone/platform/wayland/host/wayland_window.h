@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/event_target.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/insets.h"
@@ -150,11 +151,6 @@ class WaylandWindow : public PlatformWindow,
   // The pixel size of the buffer for the surface.
   gfx::Size visual_size_px() const { return visual_size_px_; }
 
-  absl::optional<gfx::Insets> frame_insets_px() const {
-    return frame_insets_px_;
-  }
-  void set_frame_insets_px(gfx::Insets insets) { frame_insets_px_ = insets; }
-
   bool received_configure_event() const { return received_configure_event_; }
 
   // Remove WaylandOutput associated with WaylandSurface of this window.
@@ -229,12 +225,7 @@ class WaylandWindow : public PlatformWindow,
     bool is_snapped_primary = false;
     bool is_snapped_secondary = false;
     bool is_floated = false;
-    struct {
-      bool left = false;
-      bool right = false;
-      bool top = false;
-      bool bottom = false;
-    } tiled_edges;
+    WindowTiledEdges tiled_edges;
   };
 
   virtual void HandleToplevelConfigure(int32_t width,
@@ -296,6 +287,9 @@ class WaylandWindow : public PlatformWindow,
 
   // Updates the window decorations, if possible at the moment.
   virtual void UpdateDecorations();
+
+  // Returns the effective decoration insets.
+  gfx::Insets GetDecorationInsetsInDIP() const;
 
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
