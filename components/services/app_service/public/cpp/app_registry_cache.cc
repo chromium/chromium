@@ -291,7 +291,7 @@ void AppRegistryCache::OnAppTypeInitialized() {
     return;
   }
 
-  // In observer's OnAppTypeInitialized callback, `OnApp` might be call  to
+  // In observer's OnAppTypeInitialized callback, `OnApp` might be called to
   // update the app, then this OnAppTypeInitialized might be called again. So we
   // need to check the initialized `app_type` first, and remove it from
   // `in_progress_initialized_app_types_` to prevent the dead loop.

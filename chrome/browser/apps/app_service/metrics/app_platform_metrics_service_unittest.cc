@@ -198,25 +198,6 @@ apps::AppPtr MakeApp(const std::string& app_id,
   return app;
 }
 
-void AddMojomApp(
-    apps::AppRegistryCache& cache,
-    const std::string& app_id,
-    apps::mojom::AppType app_type,
-    const std::string& publisher_id,
-    apps::mojom::Readiness readiness,
-    apps::mojom::InstallReason install_reason,
-    apps::mojom::InstallSource install_source,
-    bool should_notify_initialized,
-    apps::mojom::OptionalBool is_platform_app =
-        apps::mojom::OptionalBool::kUnknown,
-    apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kUnknown) {
-  std::vector<apps::mojom::AppPtr> deltas;
-  deltas.push_back(MakeApp(app_id, app_type, publisher_id, readiness,
-                           install_reason, install_source, is_platform_app,
-                           window_mode));
-  cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
-}
-
 void AddApp(apps::AppRegistryCache& cache,
             const std::string& app_id,
             apps::AppType app_type,
@@ -232,13 +213,6 @@ void AddApp(apps::AppRegistryCache& cache,
                            install_reason, install_source, is_platform_app,
                            window_mode));
   cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
-
-  AddMojomApp(cache, app_id, apps::ConvertAppTypeToMojomAppType(app_type),
-              publisher_id, apps::ConvertReadinessToMojomReadiness(readiness),
-              apps::ConvertInstallReasonToMojomInstallReason(install_reason),
-              apps::ConvertInstallSourceToMojomInstallSource(install_source),
-              should_notify_initialized, GetMojomOptionalBool(is_platform_app),
-              ConvertWindowModeToMojomWindowMode(window_mode));
 }
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
@@ -424,30 +398,6 @@ class AppPlatformMetricsServiceTest : public testing::Test,
         /*app_id=*/"subapp", AppType::kWeb, "", Readiness::kReady,
         InstallReason::kSubApp, InstallSource::kUnknown));
     cache.OnApps(std::move(deltas), AppType::kUnknown,
-                 false /* should_notify_initialized */);
-
-    std::vector<apps::mojom::AppPtr> mojom_deltas;
-    mojom_deltas.push_back(MakeApp(
-        /*app_id=*/"u", apps::mojom::AppType::kUnknown, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUnknown,
-        apps::mojom::InstallSource::kUnknown));
-    mojom_deltas.push_back(MakeApp(
-        /*app_id=*/"m", apps::mojom::AppType::kMacOs, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUnknown,
-        apps::mojom::InstallSource::kUnknown));
-    mojom_deltas.push_back(MakeApp(
-        /*app_id=*/"p", apps::mojom::AppType::kPluginVm, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser,
-        apps::mojom::InstallSource::kUnknown));
-    mojom_deltas.push_back(MakeApp(
-        /*app_id=*/"r", apps::mojom::AppType::kRemote, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kPolicy,
-        apps::mojom::InstallSource::kUnknown));
-    mojom_deltas.push_back(MakeApp(
-        /*app_id=*/"subapp", apps::mojom::AppType::kWeb, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSubApp,
-        apps::mojom::InstallSource::kUnknown));
-    cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
 

@@ -18,7 +18,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"

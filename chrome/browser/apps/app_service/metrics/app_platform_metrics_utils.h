@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Profile;
 
