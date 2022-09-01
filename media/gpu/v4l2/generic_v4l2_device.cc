@@ -36,15 +36,13 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
-#if BUILDFLAG(USE_LIBV4L2)
 // Auto-generated for dlopen libv4l2 libraries
 #include "media/gpu/v4l2/v4l2_stubs.h"
 #include "third_party/v4l-utils/lib/include/libv4l2.h"
 
-using media_gpu_v4l2::kModuleV4l2;
 using media_gpu_v4l2::InitializeStubs;
+using media_gpu_v4l2::kModuleV4l2;
 using media_gpu_v4l2::StubPathMap;
-#endif
 
 namespace media {
 
@@ -75,9 +73,7 @@ uint32_t V4L2PixFmtToDrmFormat(uint32_t format) {
 }  // namespace
 
 GenericV4L2Device::GenericV4L2Device() {
-#if BUILDFLAG(USE_LIBV4L2)
   use_libv4l2_ = false;
-#endif
 }
 
 GenericV4L2Device::~GenericV4L2Device() {
@@ -86,10 +82,10 @@ GenericV4L2Device::~GenericV4L2Device() {
 
 int GenericV4L2Device::Ioctl(int request, void* arg) {
   DCHECK(device_fd_.is_valid());
-#if BUILDFLAG(USE_LIBV4L2)
+
   if (use_libv4l2_)
     return HANDLE_EINTR(v4l2_ioctl(device_fd_.get(), request, arg));
-#endif
+
   return HANDLE_EINTR(ioctl(device_fd_.get(), request, arg));
 }
 
@@ -440,42 +436,34 @@ bool GenericV4L2Device::OpenDevicePath(const std::string& path, Type type) {
   if (!device_fd_.is_valid())
     return false;
 
-#if BUILDFLAG(USE_LIBV4L2)
-  if (type == Type::kEncoder &&
-      HANDLE_EINTR(v4l2_fd_open(device_fd_.get(), V4L2_DISABLE_CONVERSION)) !=
-          -1) {
-    DVLOGF(3) << "Using libv4l2 for " << path;
-    use_libv4l2_ = true;
+  if (V4L2Device::UseLibV4L2()) {
+    if (type == Type::kEncoder &&
+        HANDLE_EINTR(v4l2_fd_open(device_fd_.get(), V4L2_DISABLE_CONVERSION)) !=
+            -1) {
+      DVLOGF(3) << "Using libv4l2 for " << path;
+      use_libv4l2_ = true;
+    }
   }
-#endif
   return true;
 }
 
 void GenericV4L2Device::CloseDevice() {
   DVLOGF(3);
-#if BUILDFLAG(USE_LIBV4L2)
   if (use_libv4l2_ && device_fd_.is_valid())
     v4l2_close(device_fd_.release());
-#endif
   device_fd_.reset();
 }
 
 // static
 bool GenericV4L2Device::PostSandboxInitialization() {
-#if BUILDFLAG(USE_LIBV4L2)
-  static const base::FilePath::CharType kV4l2Lib[] =
-#if defined(ARCH_CPU_64_BITS)
-      FILE_PATH_LITERAL("/usr/lib64/libv4l2.so");
-#else
-      FILE_PATH_LITERAL("/usr/lib/libv4l2.so");
-#endif  // defined(ARCH_CPU_64_BITS)
-  StubPathMap paths;
-  paths[kModuleV4l2].push_back(kV4l2Lib);
+  if (V4L2Device::UseLibV4L2()) {
+    StubPathMap paths;
+    paths[kModuleV4l2].push_back(V4L2Device::kLibV4l2Path);
 
-  return InitializeStubs(paths);
-#else
-  return true;
-#endif
+    return InitializeStubs(paths);
+  } else {
+    return true;
+  }
 }
 
 void GenericV4L2Device::EnumerateDevicesForType(Type type) {

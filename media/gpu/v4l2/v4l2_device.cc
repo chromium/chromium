@@ -4,10 +4,12 @@
 
 #include "media/gpu/v4l2/v4l2_device.h"
 
+#include <errno.h>
 #include <fcntl.h>
-#include <poll.h>
 #include <linux/media.h>
+#include <poll.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <set>
@@ -128,6 +130,20 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
                                     TRACE_ID_LOCAL(timestamp), "timestamp",
                                     timestamp);
   }
+}
+
+bool LibV4L2Exists() {
+#if BUILDFLAG(USE_LIBV4L2)
+  return true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (access(V4L2Device::kLibV4l2Path, F_OK) == 0)
+    return true;
+  PLOG_IF(FATAL, errno != ENOENT)
+      << "access() failed for a reason other than ENOENT";
+  return false;
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -1961,6 +1977,12 @@ size_t V4L2Device::GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt) {
     return VideoFrame::NumPlanes(fourcc->ToVideoPixelFormat());
   }
   return 1u;
+}
+
+// static
+bool V4L2Device::UseLibV4L2() {
+  static const bool use_libv4l2 = LibV4L2Exists();
+  return use_libv4l2;
 }
 
 void V4L2Device::GetSupportedResolution(uint32_t pixelformat,
