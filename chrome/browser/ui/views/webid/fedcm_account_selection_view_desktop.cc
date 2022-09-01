@@ -4,13 +4,11 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
-#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
@@ -50,10 +48,7 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 
 void FedCmAccountSelectionView::Show(
     const std::string& rp_etld_plus_one,
-    const std::string& idp_etld_plus_one,
-    const std::vector<Account>& accounts,
-    const content::IdentityProviderMetadata& idp_metadata,
-    const content::ClientIdData& client_data,
+    const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
@@ -61,11 +56,16 @@ void FedCmAccountSelectionView::Show(
   if (browser)
     browser->tab_strip_model()->AddObserver(this);
 
-  idp_etld_plus_one_ = base::UTF8ToUTF16(idp_etld_plus_one);
-  idp_metadata_ = idp_metadata;
-  client_data_ = std::make_unique<content::ClientIdData>(client_data);
-  account_list_ = std::vector<content::IdentityRequestAccount>(accounts.begin(),
-                                                               accounts.end());
+  // TODO(crbug.com/1351137): Temporarily support only the first IDP, extend to
+  // support multiple IDPs.
+  idp_etld_plus_one_ =
+      base::UTF8ToUTF16(identity_provider_data[0].idp_for_display);
+  idp_metadata_ = identity_provider_data[0].idp_metadata;
+  client_data_ = std::make_unique<content::ClientIdData>(
+      identity_provider_data[0].client_id_data);
+  account_list_ = std::vector<content::IdentityRequestAccount>(
+      identity_provider_data[0].accounts.begin(),
+      identity_provider_data[0].accounts.end());
   state_ =
       (account_list_.size() == 1u) ? State::PERMISSION : State::ACCOUNT_PICKER;
 
@@ -73,8 +73,9 @@ void FedCmAccountSelectionView::Show(
                                 idp_etld_plus_one_)
                        ->GetWeakPtr();
   GetBubbleView()->ShowAccountPicker(idp_etld_plus_one_,
-                                     /*show_back_button=*/false, accounts,
-                                     idp_metadata, client_data);
+                                     /*show_back_button=*/false, account_list_,
+                                     idp_metadata_,
+                                     identity_provider_data[0].client_id_data);
   bubble_widget_->Show();
   bubble_widget_->AddObserver(this);
 }

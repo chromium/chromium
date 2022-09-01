@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -29,7 +28,6 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/render_frame_host_test_support.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -38,7 +36,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -767,9 +764,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         // even though the bit is set we may not exercise the AutoSignIn flow.
         // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
         // case, it's up to the test to expect this mock function call.
-        EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _))
+        EXPECT_CALL(*mock_dialog_controller_,
+                    ShowAccountsDialog(_, _, _, _, _, _))
             .WillOnce(Invoke(
                 [&](content::WebContents* rp_web_contents,
+                    const std::string& rp_for_display,
                     const std::vector<IdentityProviderData>&
                         identity_provider_data,
                     SignInMode sign_in_mode,
@@ -789,7 +788,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                 }));
       }
     } else {
-      EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _))
+      EXPECT_CALL(*mock_dialog_controller_,
+                  ShowAccountsDialog(_, _, _, _, _, _))
           .Times(0);
     }
   }
@@ -1295,9 +1295,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInForReturningUser) {
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
               const std::vector<IdentityProviderData>& identity_provider_data,
               SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
@@ -1327,9 +1328,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
       {{features::kFedCmAutoSigninFieldTrialParamName, "true"}});
 
   AccountList displayed_accounts;
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
               const std::vector<IdentityProviderData>& identity_provider_data,
               SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
@@ -1369,9 +1371,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
               const std::vector<IdentityProviderData>& identity_provider_data,
               SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
@@ -1439,9 +1442,10 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
   base::HistogramTester histogram_tester_;
 
   AccountList displayed_accounts;
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
               const std::vector<IdentityProviderData>& identity_provider_data,
               SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
@@ -1501,9 +1505,10 @@ TEST_F(FederatedAuthRequestImplTest, UIIsIgnored) {
   EXPECT_CALL(*mock_dialog_controller(), DestructorCalled()).Times(0);
 
   AccountList displayed_accounts;
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
               const std::vector<IdentityProviderData>& identity_provider_data,
               SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
@@ -1792,9 +1797,10 @@ TEST_F(FederatedAuthRequestImplTest, RequestEmbargo) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
 
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
               const std::vector<IdentityProviderData>& identity_provider_data,
               SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
@@ -1889,9 +1895,10 @@ TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
 TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   base::HistogramTester histogram_tester_;
 
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
+              const std::string& rp_for_display,
               const std::vector<IdentityProviderData>& identity_provider_data,
               SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
@@ -2042,7 +2049,7 @@ TEST_F(FederatedAuthRequestImplTest, NavigateDuringAccountFetchBFCacheEnabled) {
       std::make_unique<IdpNetworkRequestManagerAccountListTaskRunner>(
           base::BindOnce(&NavigateToUrl, web_contents(), GURL(kRpOtherUrl))));
 
-  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _))
       .Times(0);
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
@@ -2067,7 +2074,7 @@ TEST_F(FederatedAuthRequestImplTest,
       std::make_unique<IdpNetworkRequestManagerAccountListTaskRunner>(
           base::BindOnce(&NavigateToUrl, web_contents(), GURL(kRpOtherUrl))));
 
-  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _))
       .Times(0);
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
@@ -2135,7 +2142,7 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false))
       .Times(1);
-  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _, _)).Times(0);
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_response = FetchStatus::kInvalidResponseError;
   RequestExpectations expectations = {
@@ -2154,9 +2161,10 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
       features::kFedCm,
       {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
 
-  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _))
+  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _, _))
       .WillOnce(
-          Invoke([&](content::WebContents* rp_web_contents, const GURL& idp_url,
+          Invoke([&](content::WebContents* rp_web_contents,
+                     const std::string& rp_url, const std::string& idp_url,
                      IdentityRequestDialogController::DismissCallback
                          dismiss_callback) {
             std::move(dismiss_callback).Run(DismissReason::CLOSE_BUTTON);
@@ -2189,7 +2197,7 @@ TEST_F(FederatedAuthRequestImplTest,
               GetIdpSigninStatus(OriginFromString(kProviderUrlFull)))
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _, _)).Times(0);
   MockConfiguration configuration = kConfigurationValid;
   RequestExpectations expectations = {RequestTokenStatus::kError,
                                       FederatedAuthRequestResult::kError,

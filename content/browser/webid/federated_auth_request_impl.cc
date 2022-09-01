@@ -14,11 +14,11 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/flags.h"
-#include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
@@ -29,8 +29,9 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_visibility_state.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "url/url_constants.h"
@@ -280,6 +281,23 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
 // collected.
 base::TimeDelta GetRandomRejectionTime() {
   return kMaxRejectionTime * base::RandDouble();
+}
+
+std::string FormatUrlForDisplay(const GURL& url) {
+  // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
+  // our UI intentionally shows only the eTLD+1, as it makes for a shorter text
+  // that is also clearer to users. The identity provider's root manifest is in
+  // the root of the eTLD+1, and sign-in status within identity provider and
+  // relying party can be domain-wide because it relies on cookies.
+  std::string formatted_url_str =
+      net::IsLocalhost(url)
+          ? url.host()
+          : net::registry_controlled_domains::GetDomainAndRegistry(
+                url,
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+      GURL(url.scheme() + "://" + formatted_url_str),
+      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
 }
 
 bool ShouldFailIfNotSignedInWithIdp(
@@ -805,7 +823,9 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
 
   request_dialog_controller_->ShowFailureDialog(
-      rp_web_contents, idp_url,
+      rp_web_contents,
+      FormatUrlForDisplay(rp_web_contents->GetLastCommittedURL()),
+      FormatUrlForDisplay(idp_url),
       base::BindOnce(
           &FederatedAuthRequestImpl::OnDismissFailureDialog,
           weak_ptr_factory_.GetWeakPtr(), FederatedAuthRequestResult::kError,
@@ -883,13 +903,17 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                                                    start_time_);
 
       std::vector<IdentityProviderData> identity_providers_data;
-      IdentityProviderData identity_provider_data(idp_info.provider.config_url,
-                                                  accounts, *idp_info.metadata,
-                                                  client_id_data);
+
+      std::string idp_for_display =
+          FormatUrlForDisplay(idp_info.provider.config_url);
+      IdentityProviderData identity_provider_data(
+          idp_for_display, accounts, *idp_info.metadata, client_id_data);
       identity_providers_data.push_back(identity_provider_data);
 
+      std::string rp_url_for_display =
+          FormatUrlForDisplay(rp_web_contents->GetLastCommittedURL());
       request_dialog_controller_->ShowAccountsDialog(
-          rp_web_contents, identity_providers_data,
+          rp_web_contents, rp_url_for_display, identity_providers_data,
           is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr(),

@@ -52,11 +52,11 @@ IdentityProviderMetadata::IdentityProviderMetadata(
     const IdentityProviderMetadata& other) = default;
 
 IdentityProviderData::IdentityProviderData(
-    const GURL& idp_config_url,
+    const std::string& idp_for_display,
     const std::vector<IdentityRequestAccount>& accounts,
     const IdentityProviderMetadata& idp_metadata,
     const ClientIdData& client_id_data)
-    : idp_config_url{idp_config_url},
+    : idp_for_display{idp_for_display},
       accounts{accounts},
       idp_metadata{idp_metadata},
       client_id_data{client_id_data} {}
@@ -75,6 +75,7 @@ int IdentityRequestDialogController::GetBrandIconMinimumSize() {
 
 void IdentityRequestDialogController::ShowAccountsDialog(
     WebContents* rp_web_contents,
+    const std::string& rp_for_display,
     const std::vector<IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected,
@@ -84,7 +85,8 @@ void IdentityRequestDialogController::ShowAccountsDialog(
 
 void IdentityRequestDialogController::ShowFailureDialog(
     WebContents* rp_web_contents,
-    const GURL& idp_for_display,
+    const std::string& rp_for_display,
+    const std::string& idp_for_display,
     DismissCallback dismiss_callback) {
   std::move(dismiss_callback).Run(DismissReason::OTHER);
 }

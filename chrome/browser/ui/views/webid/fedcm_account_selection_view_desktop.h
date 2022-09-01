@@ -32,12 +32,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   ~FedCmAccountSelectionView() override;
 
   // AccountSelectionView:
-  void Show(const std::string& rp_etld_plus_one,
-            const std::string& idp_etld_plus_one,
-            const std::vector<Account>& accounts,
-            const content::IdentityProviderMetadata& idp_metadata,
-            const content::ClientIdData& client_data,
-            Account::SignInMode sign_in_mode) override;
+  void Show(
+      const std::string& rp_etld_plus_one,
+      const std::vector<content::IdentityProviderData>& identity_provider_data,
+      Account::SignInMode sign_in_mode) override;
   void ShowFailureDialog(const std::string& rp_etld_plus_one,
                          const std::string& idp_etld_plus_one) override;
 

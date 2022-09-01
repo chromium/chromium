@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -143,10 +142,11 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       accounts.emplace_back(account_info.first, "", "", "", GURL::EmptyGURL(),
                             account_info.second);
     }
-    controller->Show(kRpEtldPlusOne, kIdpEtldPlusOne, accounts,
-                     content::IdentityProviderMetadata(),
-                     content::ClientIdData(GURL(), GURL()),
-                     SignInMode::kExplicit);
+    controller->Show(
+        kRpEtldPlusOne,
+        {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
+          content::ClientIdData(GURL(), GURL())}},
+        SignInMode::kExplicit);
     return controller;
   }
 

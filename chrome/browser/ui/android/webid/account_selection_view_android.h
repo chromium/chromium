@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 
@@ -20,12 +19,10 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   ~AccountSelectionViewAndroid() override;
 
   // AccountSelectionView:
-  void Show(const std::string& rp_for_display,
-            const std::string& idp_for_display,
-            const std::vector<Account>& accounts,
-            const content::IdentityProviderMetadata& idp_metadata,
-            const content::ClientIdData& client_data,
-            Account::SignInMode sign_in_mode) override;
+  void Show(
+      const std::string& rp_for_display,
+      const std::vector<content::IdentityProviderData>& identity_provider_data,
+      Account::SignInMode sign_in_mode) override;
   void ShowFailureDialog(const std::string& rp_for_display,
                          const std::string& idp_for_display) override;
 

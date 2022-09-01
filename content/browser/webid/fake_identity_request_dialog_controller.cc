@@ -15,6 +15,7 @@ FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
 
 void FakeIdentityRequestDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
+    const std::string& rp_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected,

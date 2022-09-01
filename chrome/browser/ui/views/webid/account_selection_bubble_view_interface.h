@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_
 
+#include <string>
+
+#include "base/containers/span.h"
+
 namespace content {
 struct ClientIdData;
 struct IdentityProviderMetadata;
