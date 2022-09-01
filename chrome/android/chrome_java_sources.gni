@@ -459,6 +459,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabIntentDataProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/NavigationInfoCaptureTrigger.java",
   "java/src/org/chromium/chrome/browser/customtabs/PageLoadMetricsObserver.java",
+  "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabHandleStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabHeightStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabInputMethodWrapper.java",
   "java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabTabObserver.java",

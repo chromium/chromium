@@ -11,7 +11,6 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -22,10 +21,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -40,7 +36,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.MotionEventCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -49,7 +44,6 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import org.chromium.base.Consumer;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
@@ -68,7 +62,8 @@ import java.lang.annotation.RetentionPolicy;
  * owned by the CustomTabActivity.
  */
 public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
-        implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener {
+        implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener,
+                   PartialCustomTabHandleStrategy.DragEventCallback {
     @VisibleForTesting
     static final long SPINNER_TIMEOUT_MS = 500;
     /**
@@ -86,11 +81,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
 
-    private static final int FLING_VELOCITY_PIXELS_PER_MS = 1000;
-
     @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION})
     @Retention(RetentionPolicy.SOURCE)
-    private @interface HeightStatus {
+    @interface HeightStatus {
         int TOP = 0;
         int INITIAL_HEIGHT = 1;
         int TRANSITION = 2;
@@ -146,6 +139,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     // Y offset when a dragging gesture starts.
     private int mDraggingStartY;
+    private float mOffsetY;
 
     // Method to invoke to animate the tab. Animates by altering top y position by default,
     // but using height for the close animation.
@@ -171,158 +165,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     // The current height used to trigger onResizedCallback when it is resized.
+    // Used in 'window-above-navbar' version only.
     private int mHeight;
-
-    /**
-     * Handling touch events for resizing the Window.
-     */
-    @VisibleForTesting
-    /* package */ class PartialCustomTabHandleStrategy
-            extends GestureDetector.SimpleOnGestureListener
-            implements CustomTabToolbar.HandleStrategy {
-        /**
-         * The base duration of the settling animation of the sheet. 218 ms is a spec for material
-         * design (this is the minimum time a user is guaranteed to pay attention to something).
-         */
-        private static final long BASE_ANIMATION_DURATION_MS = 218;
-
-        private static final int FLING_THRESHOLD_PX = 100;
-
-        private GestureDetector mGestureDetector;
-        private float mLastPosY;
-        private float mOffsetY;
-        private float mDeltaY;
-        private boolean mSeenFirstMoveOrDown;
-        private VelocityTracker mVelocityTracker;
-        private Runnable mCloseHandler;
-
-        public PartialCustomTabHandleStrategy(Context context) {
-            mGestureDetector = new GestureDetector(context, this, ThreadUtils.getUiThreadHandler());
-            mVelocityTracker = VelocityTracker.obtain();
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(MotionEvent event) {
-            return isFullHeight() ? false : mGestureDetector.onTouchEvent(event);
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            if (!ChromeFeatureList.sCctResizableAllowResizeByUserGesture.isEnabled()) {
-                return false;
-            }
-
-            if (mStatus == HeightStatus.TRANSITION) {
-                return true;
-            }
-            // We will get events directly even when onInterceptTouchEvent() didn't return true,
-            // because the sub View tree might not want this event, so check orientation and
-            // multi-window flags here again.
-            if (isFullHeight()) {
-                return true;
-            }
-
-            float y = event.getRawY();
-            switch (MotionEventCompat.getActionMasked(event)) {
-                case MotionEvent.ACTION_DOWN:
-                case MotionEvent.ACTION_MOVE:
-                    if (!mSeenFirstMoveOrDown) {
-                        mSeenFirstMoveOrDown = true;
-                        mVelocityTracker.clear();
-                        onMoveStart();
-                        mDraggingStartY = mActivity.getWindow().getAttributes().y;
-                        mOffsetY = mDraggingStartY - y;
-                        mLastPosY = y;
-                        mStopShowingSpinner = false;
-                    } else {
-                        mVelocityTracker.addMovement(event);
-                        updateWindowPos((int) (y + mOffsetY));
-                    }
-                    mDeltaY = y - mLastPosY;
-                    mLastPosY = y;
-                    return true;
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
-                    if (mSeenFirstMoveOrDown) {
-                        mVelocityTracker.computeCurrentVelocity(FLING_VELOCITY_PIXELS_PER_MS);
-                        float v = Math.abs(mVelocityTracker.getYVelocity());
-                        int flingDist = Math.abs(v) < FLING_THRESHOLD_PX ? 0 : getFlingDistance(v);
-                        int direction = (int) Math.signum(mDeltaY);
-                        if (!handleAnimation(flingDist * direction)) mCloseHandler.run();
-                        mSeenFirstMoveOrDown = false;
-                    }
-                    return true;
-                default:
-                    return true;
-            }
-        }
-
-        @Override
-        public void setCloseClickHandler(Runnable handler) {
-            mCloseHandler = handler;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            // Always intercept scroll events.
-            return true;
-        }
-
-        /**
-         * Gets the distance of a fling based on the velocity and the base animation time. This
-         * formula assumes the deceleration curve is quadratic (t^2), hence the displacement formula
-         * should be: displacement = initialVelocity * duration / 2.
-         * @param velocity The velocity of the fling.
-         * @return The distance the fling would cover.
-         */
-        private int getFlingDistance(float velocity) {
-            // This includes conversion from seconds to ms.
-            return (int) (velocity * BASE_ANIMATION_DURATION_MS / 2000f);
-        }
-
-        private boolean handleAnimation(int flingDistance) {
-            int currentY = mActivity.getWindow().getAttributes().y;
-            int finalY = currentY + flingDistance;
-            int topY = getFullyExpandedYWithAdjustment();
-            int initialY = initialY();
-            int bottomY = mDisplayHeight - mNavbarHeight;
-
-            int start = 0;
-            int end = 0;
-            boolean playAnimation = true;
-
-            if (finalY == initialY) return false;
-
-            if (finalY < initialY) { // Move up
-                if (Math.abs(topY - finalY) < Math.abs(finalY - initialY)) {
-                    start = currentY;
-                    end = topY;
-                    mTargetStatus = HeightStatus.TOP;
-                } else {
-                    start = currentY;
-                    end = initialY;
-                    mTargetStatus = HeightStatus.INITIAL_HEIGHT;
-                }
-            } else { // Move down
-                // Prevents skipping initial state when swiping from the top.
-                if (mStatus == HeightStatus.TOP) finalY = Math.min(initialY, finalY);
-
-                if (Math.abs(initialY - finalY) < Math.abs(finalY - bottomY)) {
-                    start = currentY;
-                    end = initialY;
-                    mTargetStatus = HeightStatus.INITIAL_HEIGHT;
-                } else {
-                    playAnimation = false;
-                }
-            }
-            if (playAnimation) {
-                mAnimator.setIntValues(start, end);
-                mStatus = HeightStatus.TRANSITION;
-                mAnimator.start();
-            }
-            return playAnimation;
-        }
-    }
 
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             Integer navigationBarColor, Integer navigationBarDividerColor, boolean isFixedHeight,
@@ -337,6 +181,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mAnimator = new ValueAnimator();
         mAnimator.setDuration(SCROLL_DURATION_MS);
         mAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mStatus = HeightStatus.TRANSITION;
+            }
             @Override
             public void onAnimationEnd(Animator animation) {
                 mStatus = mTargetStatus;
@@ -406,7 +254,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         int start = mActivity.getWindow().getAttributes().y;
         int end = getFullyExpandedYWithAdjustment();
         mAnimator.setIntValues(start, end);
-        mStatus = HeightStatus.TRANSITION;
         mTargetStatus = HeightStatus.TOP;
         mAnimator.start();
     }
@@ -477,11 +324,13 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mToolbarView = toolbar;
         mToolbarColor = toolbar.getBackground().getColor();
         roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
-        toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(mActivity));
+        toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(
+                mActivity, this::isFullHeight, () -> mStatus, this));
         updateDragBarVisibility();
     }
 
     // ConfigurationChangedObserver implementation.
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         boolean isInMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
@@ -1013,6 +862,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return getFullyExpandedY() + mFullyExpandedAdjustmentHeight;
     }
 
+    // CustomTabHeightStrategy implementation
+
     @Override
     public boolean changeBackgroundColorForResizing() {
         // Need to return true to keep the transparent background we set in the init step.
@@ -1045,6 +896,58 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return !mWindowAboveNavbar && !isFullHeight();
     }
 
+    // DragEventCallback implementation
+
+    @Override
+    public void onDragStart(int y) {
+        onMoveStart();
+        Window window = mActivity.getWindow();
+        mDraggingStartY = window.getAttributes().y;
+        mOffsetY = mDraggingStartY - y;
+        mStopShowingSpinner = false;
+    }
+
+    @Override
+    public void onDragMove(int y) {
+        updateWindowPos((int) (y + mOffsetY));
+    }
+
+    @Override
+    public boolean onDragEnd(int flingDistance) {
+        int currentY = mActivity.getWindow().getAttributes().y;
+        int finalY = currentY + flingDistance;
+        int topY = getFullyExpandedYWithAdjustment();
+        int initialY = initialY();
+        int bottomY = mDisplayHeight - mNavbarHeight;
+        int animateEndY = -1;
+
+        if (finalY == initialY) return false;
+
+        if (finalY < initialY) { // Move up
+            if (Math.abs(topY - finalY) < Math.abs(finalY - initialY)) {
+                mTargetStatus = HeightStatus.TOP;
+                animateEndY = topY;
+            } else {
+                mTargetStatus = HeightStatus.INITIAL_HEIGHT;
+                animateEndY = initialY;
+            }
+        } else { // Move down
+            // Prevents skipping initial state when swiping from the top.
+            if (mStatus == HeightStatus.TOP) finalY = Math.min(initialY, finalY);
+
+            if (Math.abs(initialY - finalY) < Math.abs(finalY - bottomY)) {
+                mTargetStatus = HeightStatus.INITIAL_HEIGHT;
+                animateEndY = initialY;
+            }
+        }
+
+        if (animateEndY < 0) return false;
+
+        mAnimator.setIntValues(currentY, animateEndY);
+        mAnimator.start();
+        return true;
+    }
+
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
             CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator) {
@@ -1066,5 +969,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     @VisibleForTesting
     void setWindowAboveNavbarForTesting(boolean windowAboveNavbar) {
         mWindowAboveNavbar = windowAboveNavbar;
+    }
+
+    @VisibleForTesting
+    PartialCustomTabHandleStrategy createHandleStrategyForTesting() {
+        // Pass null for context because we don't depend on the GestureDetector inside as we invoke
+        // MotionEvents directly in the tests.
+        return new PartialCustomTabHandleStrategy(null, this::isFullHeight, () -> mStatus, this);
     }
 }
