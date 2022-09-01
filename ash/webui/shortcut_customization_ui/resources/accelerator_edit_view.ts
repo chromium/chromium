@@ -155,5 +155,11 @@ export class AcceleratorEditViewElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'accelerator-edit-view': AcceleratorEditViewElement;
+  }
+}
+
 customElements.define(
     AcceleratorEditViewElement.is, AcceleratorEditViewElement);

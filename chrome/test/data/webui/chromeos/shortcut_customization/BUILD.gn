@@ -19,10 +19,10 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "accelerator_edit_dialog_test.js",
-    "accelerator_edit_view_test.js",
-    "accelerator_lookup_manager_test.js",
-    "accelerator_row_test.js",
+    "accelerator_edit_dialog_test.ts",
+    "accelerator_edit_view_test.ts",
+    "accelerator_lookup_manager_test.ts",
+    "accelerator_row_test.ts",
     "accelerator_subsection_test.js",
     "accelerator_view_test.js",
     "fake_shortcut_provider_test.js",

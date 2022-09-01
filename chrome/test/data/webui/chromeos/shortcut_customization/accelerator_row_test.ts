@@ -7,26 +7,31 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/accelerator_row.js';
-import {AcceleratorSource, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {InputKeyElement} from 'chrome://shortcut-customization/input_key.js';
+import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {createUserAccelerator} from './shortcut_customization_test_util.js';
 
 suite('acceleratorRowTest', function() {
-  /** @type {?AcceleratorRowElement} */
-  let rowElement = null;
+  let rowElement: AcceleratorRowElement|null = null;
 
   setup(() => {
-    rowElement = /** @type {!AcceleratorRowElement} */ (
-        document.createElement('accelerator-row'));
+    rowElement = document.createElement('accelerator-row');
     document.body.appendChild(rowElement);
   });
 
   teardown(() => {
-    rowElement.remove();
+    if (rowElement) {
+      rowElement.remove();
+    }
     rowElement = null;
   });
+
+  //   function getInputKey() {
+
+  //   }
 
   test('LoadsBasicRow', async () => {
     const acceleratorInfo1 = createUserAccelerator(
@@ -34,7 +39,6 @@ suite('acceleratorRowTest', function() {
         /*key=*/ 71,
         /*keyDisplay=*/ 'g');
 
-    /** @type {!AcceleratorInfo} */
     const acceleratorInfo2 = createUserAccelerator(
         Modifier.CONTROL,
         /*key=*/ 67,
@@ -43,36 +47,39 @@ suite('acceleratorRowTest', function() {
     const accelerators = [acceleratorInfo1, acceleratorInfo2];
     const description = 'test shortcut';
 
-    rowElement.acceleratorInfos = accelerators;
-    rowElement.description = description;
+    rowElement!.acceleratorInfos = accelerators;
+    rowElement!.description = description;
     await flush();
     const acceleratorElements =
-        rowElement.shadowRoot.querySelectorAll('accelerator-view');
+        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(2, acceleratorElements.length);
     assertEquals(
         description,
-        rowElement.shadowRoot.querySelector('#descriptionText')
-            .textContent.trim());
+        rowElement!.shadowRoot!.querySelector(
+                                   '#descriptionText')!.textContent!.trim());
 
-    const keys1 =
-        acceleratorElements[0].shadowRoot.querySelectorAll('input-key');
+    const keys1: NodeListOf<InputKeyElement> =
+        acceleratorElements[0]!.shadowRoot!.querySelectorAll('input-key');
     // SHIFT + CONTROL + g
     assertEquals(3, keys1.length);
     assertEquals(
-        'shift', keys1[0].shadowRoot.querySelector('#key').textContent.trim());
+        'shift',
+        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'ctrl', keys1[1].shadowRoot.querySelector('#key').textContent.trim());
+        'ctrl',
+        keys1[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'g', keys1[2].shadowRoot.querySelector('#key').textContent.trim());
+        'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
 
     const keys2 =
-        acceleratorElements[1].shadowRoot.querySelectorAll('input-key');
+        acceleratorElements[1]!.shadowRoot!.querySelectorAll('input-key');
     // CONTROL + c
     assertEquals(2, keys2.length);
     assertEquals(
-        'ctrl', keys2[0].shadowRoot.querySelector('#key').textContent.trim());
+        'ctrl',
+        keys2[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'c', keys2[1].shadowRoot.querySelector('#key').textContent.trim());
+        'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
   });
 
   test('LockIcon', async () => {
@@ -84,19 +91,22 @@ suite('acceleratorRowTest', function() {
     const accelerators = [acceleratorInfo1];
     const description = 'test shortcut';
 
-    rowElement.acceleratorInfos = accelerators;
-    rowElement.description = description;
-    rowElement.source = AcceleratorSource.BROWSER;
+    rowElement!.acceleratorInfos = accelerators;
+    rowElement!.description = description;
+    rowElement!.source = AcceleratorSource.BROWSER;
     await flushTasks();
 
     // Expected the lock icon to appear if the source is kBrowser.
-    assertFalse(
-        rowElement.shadowRoot.querySelector('#lockIconContainer').hidden);
+    let lockItemContainer = rowElement!.shadowRoot!.querySelector(
+                                '#lockIconContainer') as HTMLDivElement;
+    assertFalse(lockItemContainer.hidden);
 
     // Update source to be kAsh, lock icon should no longer appear.
-    rowElement.source = AcceleratorSource.ASH;
+    rowElement!.source = AcceleratorSource.ASH;
     await flushTasks();
-    assertTrue(
-        rowElement.shadowRoot.querySelector('#lockIconContainer').hidden);
+    lockItemContainer = rowElement!.shadowRoot!.querySelector(
+                            '#lockIconContainer') as HTMLDivElement;
+
+    assertTrue(lockItemContainer.hidden);
   });
 });

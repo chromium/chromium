@@ -10,126 +10,113 @@ import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/accele
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDefaultAccelerator, createUserAccelerator} from './shortcut_customization_test_util.js';
 
 suite('acceleratorEditViewTest', function() {
-  /** @type {?AcceleratorEditViewElement} */
-  let editViewElement = null;
-
-  /** @type {?AcceleratorLookupManager} */
-  let manager = null;
+  let editViewElement: AcceleratorEditViewElement|null = null;
+  let manager: AcceleratorLookupManager|null = null;
 
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
     manager.setAcceleratorLookup(fakeAcceleratorConfig);
     manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
 
-    editViewElement = /** @type {!AcceleratorEditViewElement} */ (
-        document.createElement('accelerator-edit-view'));
+    editViewElement = document.createElement('accelerator-edit-view');
     document.body.appendChild(editViewElement);
   });
 
   teardown(() => {
-    manager.reset();
-    editViewElement.remove();
+    if (manager) {
+      manager.reset();
+    }
+    editViewElement!.remove();
     editViewElement = null;
   });
 
+  function getElementById(id: string): HTMLElement {
+    assertTrue(!!editViewElement);
+    const element = editViewElement.shadowRoot!.getElementById(id);
+    assertTrue(!!element);
+    return element as HTMLElement;
+  }
+
   test('LoadsBasicEditView', async () => {
-    /** @type {!AcceleratorInfo} */
     const acceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*keyDisplay=*/ 'g');
 
-    editViewElement.acceleratorInfo = acceleratorInfo;
+    editViewElement!.acceleratorInfo = acceleratorInfo;
     await flush();
 
     // Check that the edit buttons are visible.
-    assertFalse(
-        editViewElement.shadowRoot.querySelector('#editButtonsContainer')
-            .hidden);
-    assertTrue(
-        editViewElement.shadowRoot.querySelector('#cancelButtonContainer')
-            .hidden);
+    assertTrue(isVisible(getElementById('editButtonsContainer')));
+    assertFalse(isVisible(getElementById('cancelButtonContainer')));
+
 
     // Click on the edit button.
-    editViewElement.shadowRoot.querySelector('#editButton').click();
+    getElementById('editButton')!.click();
 
     // Only the Cancel button should now be visible.
-    assertTrue(editViewElement.shadowRoot.querySelector('#editButtonsContainer')
-                   .hidden);
-    assertFalse(
-        editViewElement.shadowRoot.querySelector('#cancelButtonContainer')
-            .hidden);
+    assertFalse(isVisible(getElementById('editButtonsContainer')));
+    assertTrue(isVisible(getElementById('cancelButtonContainer')));
+
 
     // Click on the Cancel button and expect the edit buttons to be available.
-    editViewElement.shadowRoot.querySelector('#cancelButton').click();
-    assertFalse(
-        editViewElement.shadowRoot.querySelector('#editButtonsContainer')
-            .hidden);
-    assertTrue(
-        editViewElement.shadowRoot.querySelector('#cancelButtonContainer')
-            .hidden);
+    getElementById('cancelButton')!.click();
+    assertTrue(isVisible(getElementById('editButtonsContainer')));
+    assertFalse(isVisible(getElementById('cancelButtonContainer')));
   });
 
   test('LockedAccelerator', async () => {
-    /** @type {!AcceleratorInfo} */
     const acceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*keyDisplay=*/ 'g',
         /*locked=*/ true);
 
-    editViewElement.acceleratorInfo = acceleratorInfo;
+    editViewElement!.acceleratorInfo = acceleratorInfo;
     await flush();
 
     // Check that the edit buttons are not visible.
     assertFalse(
-        !!editViewElement.shadowRoot.querySelector('#editButtonsContainer'));
+        !!editViewElement!.shadowRoot!.querySelector('#editButtonsContainer'));
     assertFalse(
-        !!editViewElement.shadowRoot.querySelector('#cancelButtonContainer'));
+        !!editViewElement!.shadowRoot!.querySelector('#cancelButtonContainer'));
     // Lock icon should be visible.
-    assertFalse(
-        editViewElement.shadowRoot.querySelector('#lockContainer').hidden);
+    assertTrue(isVisible(getElementById('lockContainer')));
   });
 
   test('DetectShortcutConflict', async () => {
-    /** @type {!AcceleratorInfo} */
     const acceleratorInfo = createDefaultAccelerator(
         Modifier.ALT,
         /*key=*/ 221,
         /*keyDisplay=*/ ']');
 
-    editViewElement.acceleratorInfo = acceleratorInfo;
-    editViewElement.source = AcceleratorSource.ASH;
-    editViewElement.action = 1;
+    editViewElement!.acceleratorInfo = acceleratorInfo;
+    editViewElement!.source = AcceleratorSource.ASH;
+    editViewElement!.action = 1;
     await flushTasks();
 
     // Check that the edit buttons are visible.
-    assertFalse(
-        editViewElement.shadowRoot.querySelector('#editButtonsContainer')
-            .hidden);
-    assertTrue(
-        editViewElement.shadowRoot.querySelector('#cancelButtonContainer')
-            .hidden);
+    assertTrue(isVisible(getElementById('editButtonsContainer')));
+    assertFalse(isVisible(getElementById('cancelButtonContainer')));
 
     // Assert that no error has occurred.
-    assertFalse(editViewElement.hasError);
+    assertFalse(editViewElement!.hasError);
 
     // Click on the edit button.
-    editViewElement.shadowRoot.querySelector('#editButton').click();
+    getElementById('editButton')!.click();
 
     // Press 'Snap Window left' key, expect an error due since it is a
     // pre-existing shortcut.
-    const viewElement =
-        editViewElement.shadowRoot.querySelector('#acceleratorItem');
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+    const viewElement = getElementById('acceleratorItem');
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
       key: '[',
-      keyCode: '219',
+      keyCode: 219,
       code: 'Key[',
       ctrlKey: false,
       altKey: true,
@@ -138,12 +125,12 @@ suite('acceleratorEditViewTest', function() {
     }));
 
     await flushTasks();
-    assertTrue(editViewElement.hasError);
+    assertTrue(editViewElement!.hasError);
 
     // Press another shortcut, expect no error.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'e',
-      keyCode: '69',
+      keyCode: 69,
       code: 'KeyE',
       ctrlKey: true,
       altKey: true,
@@ -152,6 +139,6 @@ suite('acceleratorEditViewTest', function() {
     }));
 
     await flushTasks();
-    assertFalse(editViewElement.hasError);
+    assertFalse(editViewElement!.hasError);
   });
 });

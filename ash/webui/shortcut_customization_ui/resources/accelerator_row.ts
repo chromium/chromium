@@ -113,4 +113,10 @@ export class AcceleratorRowElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'accelerator-row': AcceleratorRowElement;
+  }
+}
+
 customElements.define(AcceleratorRowElement.is, AcceleratorRowElement);
