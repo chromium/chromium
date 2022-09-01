@@ -113,6 +113,9 @@ struct VideoCaptureImpl::BufferContext
   VideoFrameBufferHandleType buffer_type() const { return buffer_type_; }
   const uint8_t* data() const { return data_; }
   size_t data_size() const { return data_size_; }
+  const base::ReadOnlySharedMemoryRegion* read_only_shmem_region() const {
+    return &read_only_shmem_region_;
+  }
   const Vector<gpu::MailboxHolder>& mailbox_holders() const {
     return mailbox_holders_;
   }
@@ -194,6 +197,7 @@ struct VideoCaptureImpl::BufferContext
     DCHECK(read_only_mapping_.IsValid());
     data_ = read_only_mapping_.GetMemoryAsSpan<uint8_t>().data();
     data_size_ = read_only_mapping_.size();
+    read_only_shmem_region_ = std::move(region);
   }
 
   void InitializeFromMailbox(
@@ -230,6 +234,7 @@ struct VideoCaptureImpl::BufferContext
   base::WritableSharedMemoryMapping writable_mapping_;
 
   // Only valid for |buffer_type_ == READ_ONLY_SHMEM_REGION|.
+  base::ReadOnlySharedMemoryRegion read_only_shmem_region_;
   base::ReadOnlySharedMemoryMapping read_only_mapping_;
 
   // Only valid for |buffer_type == GPU_MEMORY_BUFFER_HANDLE|
@@ -333,6 +338,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
           frame_info_->visible_rect.size(),
           const_cast<uint8_t*>(buffer_context_->data()),
           buffer_context_->data_size(), frame_info_->timestamp);
+      frame_->BackWithSharedMemory(buffer_context_->read_only_shmem_region());
       break;
     case VideoFrameBufferHandleType::kSharedMemoryViaRawFileDescriptor:
       NOTREACHED();
