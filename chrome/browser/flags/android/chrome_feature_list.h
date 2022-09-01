@@ -185,7 +185,6 @@ extern const base::Feature kVoiceSearchAudioCapturePolicy;
 extern const base::Feature kVoiceButtonInTopToolbar;
 extern const base::Feature kVrBrowsingFeedback;
 extern const base::Feature kWebOtpCrossDeviceSimpleString;
-extern const base::Feature kWebApkInstallCompleteNotification;
 extern const base::Feature kWebApkInstallService;
 extern const base::Feature kWebApkTrampolineOnInitialIntent;
 
