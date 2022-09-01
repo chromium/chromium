@@ -186,6 +186,7 @@ public class StatusView extends LinearLayout {
                     .alpha(0.0f)
                     .withEndAction(() -> {
                         mIconView.setVisibility(View.GONE);
+                        mIconView.setAlpha(1f);
                         mAnimatingStatusIconHide = false;
                         allowBrowserControlsHide();
                         updateTouchDelegate();
