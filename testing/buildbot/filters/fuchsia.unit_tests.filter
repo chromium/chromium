@@ -5,6 +5,7 @@
 -DiagnosticsModelTest.Run*
 -DialServiceImplTest.TestMultiple*
 -DialServiceImplTest.TestSend*
+-DownloadItemModelTest.GetBubbleStatusMessageWithBytes
 -EnterpriseHardwarePlatformAPITest.GetHardwarePlatformInfoAllowed
 -ExtensionInstalledBubbleModelTest.Extension*
 -ExtensionServiceTest.InstallTheme
@@ -28,6 +29,12 @@
 -ToolbarActionViewUnitTest.Basic*
 -UDPSocketUnitTest.TestUDPMulticastJoin*
 -UDPSocketUnitTest.TestUDPMulticastRecv
+-UserNoteUICoordinatorTest.AddNoteEndUserSidePanel
+-UserNoteUICoordinatorTest.AddNoteMiddleUserSidePanel
+-UserNoteUICoordinatorTest.PopulateUserNoteSidePanel
+-UserNoteUICoordinatorTest.RemoveAllNoteUserSidePanel
+-UserNoteUICoordinatorTest.RemoveEndUserSidePanel
+-UserNoteUICoordinatorTest.RemoveMiddleUserSidePanel
 
 # https://crbug.com/851641
 -DevToolsFileWatcher*
