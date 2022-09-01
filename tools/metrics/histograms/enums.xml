@@ -54070,7 +54070,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
     Hash values of language codes that correspond to a Language Pack. The hash
     is created by computing base::PersistentHash() of the label, then cast to
     int32. To generate new values in a way that is consistent, use the unit test
-    at chromeos/language/language_packs/metrics_unittest.cc.
+    at chromeos/ash/components/language/language_packs/metrics_unittest.cc.
   </summary>
   <int value="-1954182822" label="et"/>
   <int value="-1902856059" label="tr"/>

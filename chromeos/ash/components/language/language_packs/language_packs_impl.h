@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_
-#define CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_
 
 #include <string>
 
-#include "chromeos/language/language_packs/language_pack_manager.h"
-#include "chromeos/language/public/mojom/language_packs.mojom.h"
+#include "chromeos/ash/components/language/language_packs/language_pack_manager.h"
+#include "chromeos/ash/components/language/public/mojom/language_packs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -44,4 +44,4 @@ class LanguagePacksImpl : public chromeos::language::mojom::LanguagePacks {
 
 }  // namespace chromeos::language_packs
 
-#endif  // CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_

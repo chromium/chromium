@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 static_library("language_packs") {
   sources = [
@@ -13,9 +15,9 @@ static_library("language_packs") {
   ]
   deps = [
     "//base",
+    "//chromeos/ash/components/language/public/mojom",
     "//chromeos/dbus/dlcservice:dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
-    "//chromeos/language/public/mojom",
   ]
 }
 

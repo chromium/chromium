@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
-#define CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
 
 #include <string>
 
@@ -173,4 +173,4 @@ class LanguagePackManager : public DlcserviceClient::Observer {
 
 }  // namespace chromeos::language_packs
 
-#endif  // CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_

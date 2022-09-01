@@ -121,7 +121,6 @@ test("chromeos_unittests") {
       "//chromeos/crosapi/cpp:unit_tests",
       "//chromeos/crosapi/mojom:unit_tests",
       "//chromeos/dbus:unit_tests",
-      "//chromeos/language/language_packs:unit_tests",
       "//chromeos/login/login_state:unit_tests",
       "//chromeos/printing:unit_tests",
       "//chromeos/process_proxy:unit_tests",
