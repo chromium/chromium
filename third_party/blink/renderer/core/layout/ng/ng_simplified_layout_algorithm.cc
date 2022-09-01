@@ -156,8 +156,8 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   if (physical_fragment.IsHiddenForPaint())
     container_builder_.SetIsHiddenForPaint(true);
 
-  if (auto baseline = physical_fragment.Baseline())
-    container_builder_.SetBaseline(*baseline);
+  if (auto first_baseline = physical_fragment.FirstBaseline())
+    container_builder_.SetBaseline(*first_baseline);
   if (auto last_baseline = physical_fragment.LastBaseline())
     container_builder_.SetLastBaseline(*last_baseline);
   if (physical_fragment.IsTableNGPart())

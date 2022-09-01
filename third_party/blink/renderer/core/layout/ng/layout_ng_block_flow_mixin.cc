@@ -140,7 +140,7 @@ LayoutUnit LayoutNGBlockFlowMixin<Base>::FirstLineBoxBaseline() const {
   // |OffsetFromOwnerLayoutBox| is not needed here, because the block offset of
   // all fragments are 0 for multicol.
   for (const NGPhysicalBoxFragment& fragment : Base::PhysicalFragments()) {
-    if (const absl::optional<LayoutUnit> offset = fragment.Baseline())
+    if (const absl::optional<LayoutUnit> offset = fragment.FirstBaseline())
       return *offset;
   }
 
@@ -173,7 +173,7 @@ LayoutUnit LayoutNGBlockFlowMixin<Base>::InlineBlockBaseline(
   if (Base::PhysicalFragmentCount()) {
     const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
     DCHECK(fragment);
-    if (absl::optional<LayoutUnit> offset = fragment->Baseline())
+    if (absl::optional<LayoutUnit> offset = fragment->FirstBaseline())
       return *offset;
   }
 

@@ -666,7 +666,9 @@ const NGLayoutResult* NGBlockNode::SimplifiedLayout(
   // to perform a full layout.
   if (old_fragment.Size() != new_fragment.Size())
     return nullptr;
-  if (old_fragment.Baseline() != new_fragment.Baseline())
+  if (old_fragment.FirstBaseline() != new_fragment.FirstBaseline())
+    return nullptr;
+  if (old_fragment.LastBaseline() != new_fragment.LastBaseline())
     return nullptr;
 
 #if DCHECK_IS_ON()

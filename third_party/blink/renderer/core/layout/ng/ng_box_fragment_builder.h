@@ -549,9 +549,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     custom_layout_data_ = std::move(custom_layout_data);
   }
 
-  // Sets the alignment baseline for this fragment.
-  void SetBaseline(LayoutUnit baseline) { baseline_ = baseline; }
-  absl::optional<LayoutUnit> Baseline() const { return baseline_; }
+  // Sets the first baseline for this fragment.
+  void SetBaseline(LayoutUnit baseline) { first_baseline_ = baseline; }
+  absl::optional<LayoutUnit> Baseline() const { return first_baseline_; }
 
   // Sets the last baseline for this fragment.
   void SetLastBaseline(LayoutUnit baseline) {
@@ -757,7 +757,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // The appeal of breaking inside this container.
   NGBreakAppeal break_appeal_ = kBreakAppealPerfect;
 
-  absl::optional<LayoutUnit> baseline_;
+  absl::optional<LayoutUnit> first_baseline_;
   absl::optional<LayoutUnit> last_baseline_;
   LayoutUnit math_italic_correction_;
 

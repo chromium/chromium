@@ -133,9 +133,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return const_has_fragment_items_ ? ComputeItemsAddress() : nullptr;
   }
 
-  absl::optional<LayoutUnit> Baseline() const {
-    if (has_baseline_)
-      return baseline_;
+  absl::optional<LayoutUnit> FirstBaseline() const {
+    if (has_first_baseline_)
+      return first_baseline_;
     return absl::nullopt;
   }
 
@@ -617,7 +617,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   const wtf_size_t const_num_children_;
 
-  LayoutUnit baseline_;
+  LayoutUnit first_baseline_;
   LayoutUnit last_baseline_;
   NGInkOverflow ink_overflow_;
   NGLink children_[];

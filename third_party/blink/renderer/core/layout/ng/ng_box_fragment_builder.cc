@@ -362,8 +362,8 @@ void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   if (delta == LayoutUnit())
     return;
 
-  if (baseline_)
-    *baseline_ += delta;
+  if (first_baseline_)
+    *first_baseline_ += delta;
   if (last_baseline_)
     *last_baseline_ += delta;
 

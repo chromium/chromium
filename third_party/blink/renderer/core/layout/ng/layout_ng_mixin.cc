@@ -453,7 +453,7 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   // The baseline of SVG <text> doesn't affect other boxes.
   if (is_layout_root && previous_result && !Base::IsNGSVGText()) {
     if (To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment())
-            .Baseline() != physical_fragment.Baseline()) {
+            .FirstBaseline() != physical_fragment.FirstBaseline()) {
       if (auto* containing_block = Base::ContainingBlock()) {
         containing_block->SetNeedsLayout(
             layout_invalidation_reason::kChildChanged, kMarkContainerChain);

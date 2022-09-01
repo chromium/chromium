@@ -59,7 +59,7 @@ void NGMathMLPainter::PaintFractionBar(
   if (!line_thickness)
     return;
   LayoutUnit axis_height = MathAxisHeight(style);
-  if (auto baseline = box_fragment_.Baseline()) {
+  if (auto baseline = box_fragment_.FirstBaseline()) {
     auto borders = box_fragment_.Borders();
     auto padding = box_fragment_.Padding();
     PhysicalRect bar_rect = {
@@ -119,10 +119,10 @@ void NGMathMLPainter::PaintRadicalSymbol(
   auto vertical = GetRadicalVerticalParameters(style, has_index);
 
   auto radical_base_ascent =
-      base_child.Baseline().value_or(base_child.Size().height) +
+      base_child.FirstBaseline().value_or(base_child.Size().height) +
       parameters.radical_base_margins.inline_start;
   LayoutUnit block_offset =
-      box_fragment_.Baseline().value_or(box_fragment_.Size().height) -
+      box_fragment_.FirstBaseline().value_or(box_fragment_.Size().height) -
       vertical.vertical_gap - radical_base_ascent;
 
   auto borders = box_fragment_.Borders();

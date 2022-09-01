@@ -382,7 +382,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         // We've been provided a new alignment baseline, just check that it
         // matches the previously generated baseline.
         if (!old_alignment_baseline) {
-          if (*new_alignment_baseline != physical_fragment.Baseline())
+          if (*new_alignment_baseline != physical_fragment.FirstBaseline())
             return NGLayoutCacheStatus::kNeedsLayout;
           break;
         }

@@ -29,7 +29,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
         physical_fragment_.Style().GetWritingMode())
       return absl::nullopt;
 
-    return PhysicalBoxFragment().Baseline();
+    return PhysicalBoxFragment().FirstBaseline();
   }
 
   LayoutUnit FirstBaselineOrSynthesize(FontBaseline baseline_type) const {
@@ -37,7 +37,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
       return *first_baseline;
 
     if (baseline_type == kAlphabeticBaseline)
-      return BlockSize();
+      return writing_direction_.IsFlippedLines() ? LayoutUnit() : BlockSize();
 
     return BlockSize() / 2;
   }
@@ -54,7 +54,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     if (auto last_baseline = PhysicalBoxFragment().LastBaseline())
       return last_baseline;
 
-    return PhysicalBoxFragment().Baseline();
+    return PhysicalBoxFragment().FirstBaseline();
   }
 
   LayoutUnit BaselineOrSynthesize(FontBaseline baseline_type) const {

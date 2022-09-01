@@ -356,7 +356,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       is_legacy_layout_root_(false),
       is_painted_atomically_(false),
       has_collapsed_borders_(builder->has_collapsed_borders_),
-      has_baseline_(false),
+      has_first_baseline_(false),
       has_last_baseline_(false),
       has_fragmented_out_of_flow_data_(
           !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
@@ -445,7 +445,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       is_legacy_layout_root_(other.is_legacy_layout_root_),
       is_painted_atomically_(other.is_painted_atomically_),
       has_collapsed_borders_(other.has_collapsed_borders_),
-      has_baseline_(other.has_baseline_),
+      has_first_baseline_(other.has_first_baseline_),
       has_last_baseline_(other.has_last_baseline_),
       has_fragmented_out_of_flow_data_(other.has_fragmented_out_of_flow_data_),
       has_out_of_flow_fragment_child_(other.has_out_of_flow_fragment_child_),

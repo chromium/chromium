@@ -421,12 +421,12 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 
   const bool allow_baseline = !layout_object_->ShouldApplyLayoutContainment() ||
                               layout_object_->IsTableCell();
-  if (allow_baseline && builder->baseline_.has_value()) {
-    has_baseline_ = true;
-    baseline_ = *builder->baseline_;
+  if (allow_baseline && builder->first_baseline_.has_value()) {
+    has_first_baseline_ = true;
+    first_baseline_ = *builder->first_baseline_;
   } else {
-    has_baseline_ = false;
-    baseline_ = LayoutUnit::Min();
+    has_first_baseline_ = false;
+    first_baseline_ = LayoutUnit::Min();
   }
   if (allow_baseline && builder->last_baseline_.has_value()) {
     has_last_baseline_ = true;
@@ -466,7 +466,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       has_descendants_for_table_part_(other.has_descendants_for_table_part_),
       is_fragmentation_context_root_(other.is_fragmentation_context_root_),
       const_num_children_(other.const_num_children_),
-      baseline_(other.baseline_),
+      first_baseline_(other.first_baseline_),
       last_baseline_(other.last_baseline_),
       ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
   // Shallow-clone the children.
@@ -1757,7 +1757,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
 
   // Legacy layout can (incorrectly) shift baseline position(s) during
   // "simplified" layout.
-  DCHECK(IsLegacyLayoutRoot() || Baseline() == other.Baseline());
+  DCHECK(IsLegacyLayoutRoot() || FirstBaseline() == other.FirstBaseline());
   if (check_same_block_size) {
     DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline());
   } else {
