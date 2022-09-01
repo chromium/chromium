@@ -559,6 +559,12 @@ const FeatureEntry::FeatureVariation kOpenInDownloadVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kAutofillBrandingIOSMonotone[] = {
+    {autofill::features::kAutofillBrandingIOSParam, "true"}};
+const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
+    {"(Monotone)", kAutofillBrandingIOSMonotone,
+     std::size(kAutofillBrandingIOSMonotone), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1141,7 +1147,8 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableNewCardUnmaskPromptViewName,
      flag_descriptions::kAutofillEnableNewCardUnmaskPromptViewDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAutofillEnableNewCardUnmaskPromptView)},
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableNewCardUnmaskPromptView)},
     {"omnibox-paste-button", flag_descriptions::kOmniboxPasteButtonName,
      flag_descriptions::kOmniboxPasteButtonDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kOmniboxPasteButton,
@@ -1200,7 +1207,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableOpenInDownload,
                                     kOpenInDownloadVariations,
                                     "EnableOpenInDownload")},
-};
+    {"ios-autofill-branding", flag_descriptions::kAutofillBrandingIOSName,
+     flag_descriptions::kAutofillBrandingIOSDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillBrandingIOS,
+                                    kAutofillBrandingIOSVariations,
+                                    "AutofillBrandingIOS")}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

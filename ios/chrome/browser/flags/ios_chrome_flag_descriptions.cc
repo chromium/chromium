@@ -16,6 +16,11 @@ const char kAdaptiveSuggestionsCountDescription[] =
     "Allows Omnibox to dynamically adjust number of offered suggestions to "
     "fill in the space between Omnibox and the soft keyboard.";
 
+const char kAutofillBrandingIOSName[] = "Autofill Branding on iOS";
+const char kAutofillBrandingIOSDescription[] =
+    "Adds the Chrome logo in the form input suggestions bar. Full color by "
+    "default.";
+
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =

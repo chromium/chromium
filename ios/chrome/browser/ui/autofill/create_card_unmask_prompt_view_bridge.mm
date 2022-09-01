@@ -19,7 +19,8 @@ namespace autofill {
 CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
     CardUnmaskPromptController* unmask_controller,
     UIViewController* base_view_controller) {
-  if (base::FeatureList::IsEnabled(kAutofillEnableNewCardUnmaskPromptView)) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewCardUnmaskPromptView)) {
     return new CardUnmaskPromptViewBridge(unmask_controller,
                                           base_view_controller);
   }

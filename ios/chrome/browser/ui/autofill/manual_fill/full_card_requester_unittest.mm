@@ -150,7 +150,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
 // respectively.
 TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissLegacyPrompt) {
   scoped_feature_list_.InitAndDisableFeature(
-      kAutofillEnableNewCardUnmaskPromptView);
+      autofill::features::kAutofillEnableNewCardUnmaskPromptView);
 
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   ScopedKeyWindow scoped_key_window_;
@@ -203,7 +203,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissLegacyPrompt) {
 TEST_F(PaymentRequestFullCardRequesterTest,
        DISABLED_PresentAndDismissNewPrompt) {
   scoped_feature_list_.InitAndEnableFeature(
-      kAutofillEnableNewCardUnmaskPromptView);
+      autofill::features::kAutofillEnableNewCardUnmaskPromptView);
 
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   ScopedKeyWindow scoped_key_window_;
