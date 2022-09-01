@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Process a key returned from the input method.
   [[nodiscard]] virtual ui::EventDispatchDetails ProcessKeyEventPostIME(
       ui::KeyEvent* event,
-      bool handled,
+      ui::ime::KeyEventHandledState handled_state,
       bool stopped_propagation);
 
   // Resets context and abandon all pending results and key events.

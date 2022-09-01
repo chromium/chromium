@@ -64,20 +64,20 @@ class TestableInputMethodAsh : public InputMethodAsh {
   struct ProcessKeyEventPostIMEArgs {
     ProcessKeyEventPostIMEArgs()
         : event(ET_UNKNOWN, VKEY_UNKNOWN, DomCode::NONE, EF_NONE),
-          handled(false) {}
+          handled_state(ui::ime::KeyEventHandledState::kNotHandled) {}
     ui::KeyEvent event;
-    bool handled;
+    ui::ime::KeyEventHandledState handled_state;
   };
 
   // Overridden from InputMethodAsh:
   ui::EventDispatchDetails ProcessKeyEventPostIME(
       ui::KeyEvent* key_event,
-      bool handled,
+      ui::ime::KeyEventHandledState handled_state,
       bool stopped_propagation) override {
     ui::EventDispatchDetails details = InputMethodAsh::ProcessKeyEventPostIME(
-        key_event, handled, stopped_propagation);
+        key_event, handled_state, stopped_propagation);
     process_key_event_post_ime_args_.event = *key_event;
-    process_key_event_post_ime_args_.handled = handled;
+    process_key_event_post_ime_args_.handled_state = handled_state;
     ++process_key_event_post_ime_call_count_;
     return details;
   }
@@ -1035,7 +1035,8 @@ TEST_F(InputMethodAshKeyEventTest, KeyEventDelayResponseTest) {
       input_method_ash_->process_key_event_post_ime_args().event;
   EXPECT_EQ(ui::VKEY_A, stored_event.key_code());
   EXPECT_EQ(kFlags, stored_event.flags());
-  EXPECT_TRUE(input_method_ash_->process_key_event_post_ime_args().handled);
+  EXPECT_EQ(input_method_ash_->process_key_event_post_ime_args().handled_state,
+            ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(L'A', inserted_char_);
 }
@@ -1091,7 +1092,8 @@ TEST_F(InputMethodAshKeyEventTest, MultiKeyEventDelayResponseTest) {
       input_method_ash_->process_key_event_post_ime_args().event;
   EXPECT_EQ(ui::VKEY_B, stored_event.key_code());
   EXPECT_EQ(kFlags, stored_event.flags());
-  EXPECT_TRUE(input_method_ash_->process_key_event_post_ime_args().handled);
+  EXPECT_EQ(input_method_ash_->process_key_event_post_ime_args().handled_state,
+            ui::ime::KeyEventHandledState::kHandledByIME);
   EXPECT_EQ(0, inserted_char_);
 
   // Do callback for second key event.
@@ -1103,7 +1105,8 @@ TEST_F(InputMethodAshKeyEventTest, MultiKeyEventDelayResponseTest) {
   stored_event = input_method_ash_->process_key_event_post_ime_args().event;
   EXPECT_EQ(ui::VKEY_C, stored_event.key_code());
   EXPECT_EQ(kFlags, stored_event.flags());
-  EXPECT_FALSE(input_method_ash_->process_key_event_post_ime_args().handled);
+  EXPECT_EQ(input_method_ash_->process_key_event_post_ime_args().handled_state,
+            ui::ime::KeyEventHandledState::kNotHandled);
 
   EXPECT_EQ(L'C', inserted_char_);
 }
@@ -1147,7 +1150,8 @@ TEST_F(InputMethodAshKeyEventTest, DeadKeyPressTest) {
                       DomCode::BRACKET_LEFT, 0,
                       DomKey::DeadKeyFromCombiningCharacter('^'),
                       EventTimeForNow());
-  input_method_ash_->ProcessKeyEventPostIME(&eventA, true, true);
+  input_method_ash_->ProcessKeyEventPostIME(
+      &eventA, ui::ime::KeyEventHandledState::kHandledByIME, true);
 
   const ui::KeyEvent& key_event = dispatched_key_event_;
 

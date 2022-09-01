@@ -132,9 +132,9 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
       if (ExecuteCharacterComposer(*event)) {
         // Treating as PostIME event if character composer handles key event and
         // generates some IME event,
-        return ProcessKeyEventPostIME(event,
-                                      /* handled */ true,
-                                      /* stopped_propagation */ true);
+        return ProcessKeyEventPostIME(
+            event, ui::ime::KeyEventHandledState::kHandledByIME,
+            /* stopped_propagation */ true);
       }
       return ProcessUnfilteredKeyPressEvent(event);
     }
@@ -154,18 +154,15 @@ void InputMethodAsh::ProcessKeyEventDone(
     ui::KeyEvent* event,
     ui::ime::KeyEventHandledState handled_state) {
   DCHECK(event);
-  bool is_handled =
-      (handled_state == ui::ime::KeyEventHandledState::kHandledByIME);
-
   if (event->type() == ET_KEY_PRESSED) {
-    if (is_handled) {
+    if (handled_state == ui::ime::KeyEventHandledState::kHandledByIME) {
       // IME event has a priority to be handled, so that character composer
       // should be reset.
       character_composer_.Reset();
     } else {
       // If IME does not handle key event, passes keyevent to character composer
       // to be able to compose complex characters.
-      is_handled = ExecuteCharacterComposer(*event);
+      bool is_handled = ExecuteCharacterComposer(*event);
 
       if (!is_handled &&
           !KeycodeConverter::IsDomKeyForModifier(event->GetDomKey())) {
@@ -180,7 +177,7 @@ void InputMethodAsh::ProcessKeyEventDone(
     }
   }
   if (event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED) {
-    std::ignore = ProcessKeyEventPostIME(event, is_handled,
+    std::ignore = ProcessKeyEventPostIME(event, handled_state,
                                          /* stopped_propagation */ false);
   }
   handling_key_event_ = false;
@@ -560,8 +557,9 @@ void InputMethodAsh::UpdateContextFocusState() {
 
 ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
     ui::KeyEvent* event,
-    bool handled,
+    ui::ime::KeyEventHandledState handled_state,
     bool stopped_propagation) {
+  bool handled = (handled_state != ui::ime::KeyEventHandledState::kNotHandled);
   TextInputClient* client = GetTextInputClient();
   if (!client) {
     // As ibus works asynchronously, there is a chance that the focused client
