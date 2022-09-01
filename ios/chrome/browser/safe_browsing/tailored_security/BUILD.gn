@@ -53,6 +53,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/safe_browsing/tailored_security/test",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
