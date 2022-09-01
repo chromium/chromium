@@ -33,6 +33,7 @@ extern const char kIosShareChromeLastShare[];
 extern const char kIosDiscoverFeedLastRefreshTime[];
 extern const char kIosPromosManagerActivePromos[];
 extern const char kIosPromosManagerImpressions[];
+extern const char kIosPromosManagerSingleDisplayActivePromos[];
 extern const char kIosSettingsPromoAlreadySeen[];
 extern const char kIosSettingsSigninPromoDisplayedCount[];
 extern const char kIosNtpFeedTopPromoAlreadySeen[];
