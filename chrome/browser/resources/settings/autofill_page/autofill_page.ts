@@ -152,6 +152,7 @@ export class SettingsAutofillPageElement extends
             params.set(PasswordViewPageUrlParams.ID, String(id));
             Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
           }
+          PasswordManagerImpl.getInstance().extendAuthValidity();
         })
         .catch(() => {
           if (Router.getInstance().getCurrentRoute() === routes.PASSWORD_VIEW) {
