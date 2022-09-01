@@ -8,12 +8,15 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_mapper.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/components/onc/onc_signature.h"
+
+namespace chromeos::onc {
+struct OncValueSignature;
+}
 
 namespace ash::onc {
 
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer
+    : public chromeos::onc::Mapper {
  public:
   explicit Normalizer(bool remove_recommended_fields);
 
@@ -31,12 +34,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
   // is set, but the field "HexSSID" is not, the contents of the "SSID" field is
   // converted to UTF-8 encoding, a hex representation of the byte sequence is
   // created and stored in the field "HexSSID".
-  base::Value NormalizeObject(const OncValueSignature* object_signature,
-                              const base::Value& onc_object);
+  base::Value NormalizeObject(
+      const chromeos::onc::OncValueSignature* object_signature,
+      const base::Value& onc_object);
 
  private:
   // Dispatch to the right normalization function according to |signature|.
-  base::Value MapObject(const OncValueSignature& signature,
+  base::Value MapObject(const chromeos::onc::OncValueSignature& signature,
                         const base::Value& onc_object,
                         bool* error) override;
 

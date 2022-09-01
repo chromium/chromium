@@ -49,14 +49,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
 
   // CertificateImporter overrides
   void ImportAllCertificatesUserInitiated(
-      const std::vector<OncParsedCertificates::ServerOrAuthorityCertificate>&
+      const std::vector<
+          chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
           server_or_authority_certificates,
-      const std::vector<OncParsedCertificates::ClientCertificate>&
+      const std::vector<
+          chromeos::onc::OncParsedCertificates::ClientCertificate>&
           client_certificates,
       DoneCallback done_callback) override;
 
   void ImportClientCertificates(
-      const std::vector<OncParsedCertificates::ClientCertificate>&
+      const std::vector<
+          chromeos::onc::OncParsedCertificates::ClientCertificate>&
           client_certificates,
       DoneCallback done_callback) override;
 
@@ -74,7 +77,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   // Synchronously imports |client_certificates| into |nssdb|. This will be
   // executed on the |io_task_runner_|.
   static bool StoreClientCertificates(
-      const std::vector<OncParsedCertificates::ClientCertificate>&
+      const std::vector<
+          chromeos::onc::OncParsedCertificates::ClientCertificate>&
           client_certificates,
       net::NSSCertDatabase* nssdb);
 
@@ -82,20 +86,24 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   // |certificates| into |nssdb|. This will be executed on the
   // |io_task_runner_|.
   static bool StoreAllCertificatesUserInitiated(
-      const std::vector<OncParsedCertificates::ServerOrAuthorityCertificate>&
+      const std::vector<
+          chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
           server_or_authority_certificates,
-      const std::vector<OncParsedCertificates::ClientCertificate>&
+      const std::vector<
+          chromeos::onc::OncParsedCertificates::ClientCertificate>&
           client_certificates,
       net::NSSCertDatabase* nssdb);
 
   // Imports the Server or CA certificate |certificate|. Web trust is only
   // applied if the certificate requests the TrustBits attribute "Web".
   static bool StoreServerOrCaCertificateUserInitiated(
-      const OncParsedCertificates::ServerOrAuthorityCertificate& certificate,
+      const chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate&
+          certificate,
       net::NSSCertDatabase* nssdb);
 
   static bool StoreClientCertificate(
-      const OncParsedCertificates::ClientCertificate& certificate,
+      const chromeos::onc::OncParsedCertificates::ClientCertificate&
+          certificate,
       net::NSSCertDatabase* nssdb);
 
   // The task runner to use for NSSCertDatabase accesses.

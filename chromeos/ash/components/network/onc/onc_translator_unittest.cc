@@ -29,8 +29,8 @@ TEST_P(ONCTranslatorOncToShillTest, Translate) {
   base::Value expected_shill_network =
       test_utils::ReadTestDictionaryValue(result_shill_filename);
 
-  base::Value translation =
-      TranslateONCObjectToShill(&kNetworkConfigurationSignature, onc_network);
+  base::Value translation = TranslateONCObjectToShill(
+      &chromeos::onc::kNetworkConfigurationSignature, onc_network);
 
   EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
 }
@@ -106,8 +106,8 @@ TEST_P(ONCTranslatorShillToOncTest, Translate) {
       test_utils::ReadTestDictionaryValue(result_onc_filename);
 
   base::Value translation = TranslateShillServiceToONCPart(
-      shill_network, ::onc::ONC_SOURCE_NONE, &kNetworkWithStateSignature,
-      nullptr /* network_state */);
+      shill_network, ::onc::ONC_SOURCE_NONE,
+      &chromeos::onc::kNetworkWithStateSignature, nullptr /* network_state */);
 
   EXPECT_TRUE(test_utils::Equals(&expected_onc_network, &translation));
 }

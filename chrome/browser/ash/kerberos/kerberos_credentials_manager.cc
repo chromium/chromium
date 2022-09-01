@@ -314,7 +314,8 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
   substitutions[kLoginId] =
       primary_user->GetAccountName(false /* use_display_email */);
   substitutions[kLoginEmail] = primary_user->GetAccountId().GetUserEmail();
-  principal_expander_ = std::make_unique<VariableExpander>(substitutions);
+  principal_expander_ =
+      std::make_unique<chromeos::VariableExpander>(substitutions);
 
   // Connect to a signal that indicates when Kerberos files change.
   kerberos_file_changed_signal_subscription_ =

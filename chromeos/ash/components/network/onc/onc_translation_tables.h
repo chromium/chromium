@@ -57,7 +57,7 @@ extern const FieldTranslationEntry kCellularDeviceTable[];
 extern const FieldTranslationEntry kIPsecIKEv2Table[];
 
 const FieldTranslationEntry* GetFieldTranslationTable(
-    const OncValueSignature& onc_signature);
+    const chromeos::onc::OncValueSignature& onc_signature);
 
 // Returns the translation table for EAP.Inner based on the value of EAP.Outer
 // represented in Shill, or nullptr if no translation table is available for
@@ -76,7 +76,7 @@ const StringTranslationEntry* GetEapInnerTranslationTableForOncOuter(
 // The default is that values are stored directly in the top level of the Shill
 // dictionary.
 std::vector<std::string> GetPathToNestedShillDictionary(
-    const OncValueSignature& onc_signature);
+    const chromeos::onc::OncValueSignature& onc_signature);
 
 bool GetShillPropertyName(const std::string& onc_field_name,
                           const FieldTranslationEntry table[],

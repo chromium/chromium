@@ -278,22 +278,23 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
   // Validate the ONC dictionary. We are liberal and ignore unknown field
   // names. User settings are only partial ONC, thus we ignore missing fields.
-  onc::Validator validator(false,  // Ignore unknown fields.
-                           false,  // Ignore invalid recommended field names.
-                           false,  // Ignore missing fields.
-                           false,  // This ONC does not come from policy.
-                           true);  // Log warnings.
+  chromeos::onc::Validator validator(
+      false,  // Ignore unknown fields.
+      false,  // Ignore invalid recommended field names.
+      false,  // Ignore missing fields.
+      false,  // This ONC does not come from policy.
+      true);  // Log warnings.
 
-  onc::Validator::Result validation_result;
-  base::Value validated_user_settings =
-      validator.ValidateAndRepairObject(&onc::kNetworkConfigurationSignature,
-                                        user_settings_copy, &validation_result);
-  if (validation_result == onc::Validator::INVALID) {
+  chromeos::onc::Validator::Result validation_result;
+  base::Value validated_user_settings = validator.ValidateAndRepairObject(
+      &chromeos::onc::kNetworkConfigurationSignature, user_settings_copy,
+      &validation_result);
+  if (validation_result == chromeos::onc::Validator::INVALID) {
     InvokeErrorCallback(service_path, std::move(error_callback),
                         kInvalidUserSettings);
     return;
   }
-  if (validation_result == onc::Validator::VALID_WITH_WARNINGS)
+  if (validation_result == chromeos::onc::Validator::VALID_WITH_WARNINGS)
     NET_LOG(USER) << "Validation of ONC user settings produced warnings.";
   DCHECK(validated_user_settings.is_dict());
 
@@ -307,8 +308,8 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
   }
 
   // Fill in HexSSID field from contents of SSID field if not set already.
-  onc::FillInHexSSIDFieldsInOncObject(onc::kNetworkConfigurationSignature,
-                                      &validated_user_settings);
+  onc::FillInHexSSIDFieldsInOncObject(
+      chromeos::onc::kNetworkConfigurationSignature, &validated_user_settings);
 
   const base::Value* network_policy = policies->GetPolicyByGuid(guid);
   if (network_policy)
@@ -371,27 +372,29 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
 
   // Validate the ONC dictionary. We are liberal and ignore unknown field
   // names. User settings are only partial ONC, thus we ignore missing fields.
-  onc::Validator validator(false,   // Ignore unknown fields.
-                           false,   // Ignore invalid recommended field names.
-                           false,   // Ignore missing fields.
-                           false,   // This ONC does not come from policy.
-                           false);  // Don't log warnings.
+  chromeos::onc::Validator validator(
+      false,   // Ignore unknown fields.
+      false,   // Ignore invalid recommended field names.
+      false,   // Ignore missing fields.
+      false,   // This ONC does not come from policy.
+      false);  // Don't log warnings.
 
-  onc::Validator::Result validation_result;
+  chromeos::onc::Validator::Result validation_result;
   base::Value validated_properties = validator.ValidateAndRepairObject(
-      &onc::kNetworkConfigurationSignature, properties, &validation_result);
-  if (validation_result == onc::Validator::INVALID) {
+      &chromeos::onc::kNetworkConfigurationSignature, properties,
+      &validation_result);
+  if (validation_result == chromeos::onc::Validator::INVALID) {
     InvokeErrorCallback("", std::move(error_callback), kInvalidUserSettings);
     return;
   }
-  if (validation_result == onc::Validator::VALID_WITH_WARNINGS)
+  if (validation_result == chromeos::onc::Validator::VALID_WITH_WARNINGS)
     NET_LOG(DEBUG) << "Validation of ONC user settings produced warnings.";
   DCHECK(validated_properties.is_dict());
 
   // Fill in HexSSID field from contents of SSID field if not set already - this
   // is required to properly match the configuration against existing policies.
-  onc::FillInHexSSIDFieldsInOncObject(onc::kNetworkConfigurationSignature,
-                                      &validated_properties);
+  onc::FillInHexSSIDFieldsInOncObject(
+      chromeos::onc::kNetworkConfigurationSignature, &validated_properties);
 
   // Make sure the network is not configured through a user policy.
   const ProfilePolicies* policies = nullptr;
@@ -1239,7 +1242,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
   ::onc::ONCSource onc_source;
   FindPolicyByGUID(userhash, *guid, &onc_source);
   base::Value onc_network = onc::TranslateShillServiceToONCPart(
-      *shill_properties, onc_source, &onc::kNetworkWithStateSignature,
+      *shill_properties, onc_source, &chromeos::onc::kNetworkWithStateSignature,
       network_state);
 
   if (properties_type == PropertiesType::kUnmanaged) {

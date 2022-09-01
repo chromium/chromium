@@ -78,8 +78,8 @@ TEST(ONCPasswordVariable, PasswordAvailable) {
   const auto wifi_onc = test_utils::ReadTestDictionaryValue(
       "wifi_eap_ttls_with_password_variable.onc");
 
-  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(kNetworkConfigurationSignature,
-                                                 &wifi_onc));
+  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(
+      chromeos::onc::kNetworkConfigurationSignature, &wifi_onc));
 }
 
 TEST(ONCPasswordVariable, PasswordNotAvailable) {
@@ -87,7 +87,7 @@ TEST(ONCPasswordVariable, PasswordNotAvailable) {
       test_utils::ReadTestDictionaryValue("wifi_eap_ttls.onc");
 
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(
-      kNetworkConfigurationSignature, &wifi_onc));
+      chromeos::onc::kNetworkConfigurationSignature, &wifi_onc));
 }
 
 TEST(ONCPasswordVariable, PasswordHarcdoded) {
@@ -95,7 +95,7 @@ TEST(ONCPasswordVariable, PasswordHarcdoded) {
       "wifi_eap_ttls_with_hardcoded_password.onc");
 
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(
-      kNetworkConfigurationSignature, &wifi_onc));
+      chromeos::onc::kNetworkConfigurationSignature, &wifi_onc));
 }
 
 TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailable) {

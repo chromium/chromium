@@ -38,7 +38,7 @@ std::string GetString(const base::Value& dict, const char* key) {
 
 // Removes all kFakeCredential values from sensitive fields (determined by
 // onc::FieldIsCredential) of |onc_object|.
-void RemoveFakeCredentials(const onc::OncValueSignature& signature,
+void RemoveFakeCredentials(const chromeos::onc::OncValueSignature& signature,
                            base::Value* onc_object) {
   std::vector<std::string> entries_to_remove;
   for (auto iter : onc_object->DictItems()) {
@@ -47,8 +47,8 @@ void RemoveFakeCredentials(const onc::OncValueSignature& signature,
 
     // If |value| is a dictionary, recurse.
     if (value->is_dict()) {
-      const onc::OncFieldSignature* field_signature =
-          onc::GetFieldSignature(signature, field_name);
+      const chromeos::onc::OncFieldSignature* field_signature =
+          chromeos::onc::GetFieldSignature(signature, field_name);
       if (field_signature)
         RemoveFakeCredentials(*field_signature->value_signature, value);
       else
@@ -57,7 +57,8 @@ void RemoveFakeCredentials(const onc::OncValueSignature& signature,
     }
 
     // If |value| is a string, check if it is a fake credential.
-    if (value->is_string() && onc::FieldIsCredential(signature, field_name)) {
+    if (value->is_string() &&
+        chromeos::onc::FieldIsCredential(signature, field_name)) {
       if (value->GetString() == kFakeCredential) {
         // The value wasn't modified by the UI, thus we remove the field to keep
         // the existing value that is stored in Shill.
@@ -177,7 +178,7 @@ base::Value CreateManagedONC(const base::Value* global_policy,
 
   // This call also removes credentials from policies.
   base::Value augmented_onc_network = onc::MergeSettingsAndPoliciesToAugmented(
-      onc::kNetworkConfigurationSignature, user_policy, device_policy,
+      chromeos::onc::kNetworkConfigurationSignature, user_policy, device_policy,
       nonshared_user_settings, shared_user_settings, active_settings);
 
   // If present, apply the Autoconnect policy only to networks that are not
@@ -263,17 +264,18 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
     NOTREACHED();
   }
 
-  RemoveFakeCredentials(onc::kNetworkConfigurationSignature, &effective);
+  RemoveFakeCredentials(chromeos::onc::kNetworkConfigurationSignature,
+                        &effective);
 
   effective.SetKey(::onc::network_config::kGUID, base::Value(guid));
 
   // Remove irrelevant fields.
   onc::Normalizer normalizer(true /* remove recommended fields */);
-  effective = normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
-                                         effective);
+  effective = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, effective);
 
   base::Value shill_dictionary = onc::TranslateONCObjectToShill(
-      &onc::kNetworkConfigurationSignature, effective);
+      &chromeos::onc::kNetworkConfigurationSignature, effective);
   shill_dictionary.SetKey(shill::kProfileProperty, base::Value(profile.path));
 
   // If AutoConnect is enabled by policy, set the ManagedCredentials property to
@@ -319,7 +321,8 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
     const std::string credential_mask =
         saving_credentials ? kFakeCredential : std::string();
     base::Value sanitized_user_settings = onc::MaskCredentialsInOncObject(
-        onc::kNetworkConfigurationSignature, *user_settings, credential_mask);
+        chromeos::onc::kNetworkConfigurationSignature, *user_settings,
+        credential_mask);
     ui_data->SetUserSettingsDictionary(std::move(sanitized_user_settings));
   }
 

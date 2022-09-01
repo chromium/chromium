@@ -22,7 +22,7 @@ Normalizer::Normalizer(bool remove_recommended_fields)
 Normalizer::~Normalizer() = default;
 
 base::Value Normalizer::NormalizeObject(
-    const OncValueSignature* object_signature,
+    const chromeos::onc::OncValueSignature* object_signature,
     const base::Value& onc_object) {
   CHECK(object_signature != nullptr);
   bool error = false;
@@ -32,10 +32,12 @@ base::Value Normalizer::NormalizeObject(
   return result;
 }
 
-base::Value Normalizer::MapObject(const OncValueSignature& signature,
-                                  const base::Value& onc_object,
-                                  bool* error) {
-  base::Value normalized = Mapper::MapObject(signature, onc_object, error);
+base::Value Normalizer::MapObject(
+    const chromeos::onc::OncValueSignature& signature,
+    const base::Value& onc_object,
+    bool* error) {
+  base::Value normalized =
+      chromeos::onc::Mapper::MapObject(signature, onc_object, error);
 
   if (normalized.is_none())
     return {};
@@ -43,23 +45,23 @@ base::Value Normalizer::MapObject(const OncValueSignature& signature,
   if (remove_recommended_fields_)
     normalized.RemoveKey(::onc::kRecommended);
 
-  if (&signature == &kCertificateSignature)
+  if (&signature == &chromeos::onc::kCertificateSignature)
     NormalizeCertificate(&normalized);
-  else if (&signature == &kEAPSignature)
+  else if (&signature == &chromeos::onc::kEAPSignature)
     NormalizeEAP(&normalized);
-  else if (&signature == &kEthernetSignature)
+  else if (&signature == &chromeos::onc::kEthernetSignature)
     NormalizeEthernet(&normalized);
-  else if (&signature == &kIPsecSignature)
+  else if (&signature == &chromeos::onc::kIPsecSignature)
     NormalizeIPsec(&normalized);
-  else if (&signature == &kNetworkConfigurationSignature)
+  else if (&signature == &chromeos::onc::kNetworkConfigurationSignature)
     NormalizeNetworkConfiguration(&normalized);
-  else if (&signature == &kOpenVPNSignature)
+  else if (&signature == &chromeos::onc::kOpenVPNSignature)
     NormalizeOpenVPN(&normalized);
-  else if (&signature == &kProxySettingsSignature)
+  else if (&signature == &chromeos::onc::kProxySettingsSignature)
     NormalizeProxySettings(&normalized);
-  else if (&signature == &kVPNSignature)
+  else if (&signature == &chromeos::onc::kVPNSignature)
     NormalizeVPN(&normalized);
-  else if (&signature == &kWiFiSignature)
+  else if (&signature == &chromeos::onc::kWiFiSignature)
     NormalizeWiFi(&normalized);
 
   return normalized;

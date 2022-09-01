@@ -24,13 +24,13 @@ namespace {
 
 // Returns true if the field is the identifier of a configuration, i.e. the GUID
 // of a network or a certificate, the ICCID of a cellular.
-bool IsIdentifierField(const OncValueSignature& value_signature,
+bool IsIdentifierField(const chromeos::onc::OncValueSignature& value_signature,
                        const std::string& field_name) {
-  if (&value_signature == &kNetworkConfigurationSignature)
+  if (&value_signature == &chromeos::onc::kNetworkConfigurationSignature)
     return field_name == ::onc::network_config::kGUID;
-  if (&value_signature == &kCertificateSignature)
+  if (&value_signature == &chromeos::onc::kCertificateSignature)
     return field_name == ::onc::certificate::kGUID;
-  if (&value_signature == &kCellularSignature)
+  if (&value_signature == &chromeos::onc::kCellularSignature)
     return field_name == ::onc::cellular::kICCID;
   return false;
 }
@@ -38,11 +38,11 @@ bool IsIdentifierField(const OncValueSignature& value_signature,
 // Identifier fields and other read-only fields (specifically Type) are
 // handled specially during merging because they are always identical for the
 // various setting sources.
-bool IsReadOnlyField(const OncValueSignature& value_signature,
+bool IsReadOnlyField(const chromeos::onc::OncValueSignature& value_signature,
                      const std::string& field_name) {
   if (IsIdentifierField(value_signature, field_name))
     return true;
-  if (&value_signature == &kNetworkConfigurationSignature)
+  if (&value_signature == &chromeos::onc::kNetworkConfigurationSignature)
     return field_name == ::onc::network_config::kType;
   return false;
 }
@@ -61,7 +61,7 @@ void MarkRecommendedFieldnames(const base::Value& policy, base::Value* result) {
 }
 
 // Returns the default value for ONC field specified by |field|.
-base::Value GetDefaultValue(const OncFieldSignature* field) {
+base::Value GetDefaultValue(const chromeos::onc::OncFieldSignature* field) {
   if (field->default_value_setter)
     return field->default_value_setter();
 
@@ -339,12 +339,13 @@ class MergeToAugmented : public MergeToEffective {
   MergeToAugmented(const MergeToAugmented&) = delete;
   MergeToAugmented& operator=(const MergeToAugmented&) = delete;
 
-  base::Value MergeDictionaries(const OncValueSignature& signature,
-                                const base::Value* user_policy,
-                                const base::Value* device_policy,
-                                const base::Value* user_settings,
-                                const base::Value* shared_settings,
-                                const base::Value* active_settings) {
+  base::Value MergeDictionaries(
+      const chromeos::onc::OncValueSignature& signature,
+      const base::Value* user_policy,
+      const base::Value* device_policy,
+      const base::Value* user_settings,
+      const base::Value* shared_settings,
+      const base::Value* active_settings) {
     signature_ = &signature;
     return MergeToEffective::MergeDictionaries(user_policy, device_policy,
                                                user_settings, shared_settings,
@@ -355,9 +356,9 @@ class MergeToAugmented : public MergeToEffective {
   // MergeSettingsAndPolicies override.
   base::Value MergeValues(const std::string& key,
                           const ValueParams& values) override {
-    const OncFieldSignature* field = nullptr;
+    const chromeos::onc::OncFieldSignature* field = nullptr;
     if (signature_)
-      field = GetFieldSignature(*signature_, key);
+      field = chromeos::onc::GetFieldSignature(*signature_, key);
 
     if (!field) {
       // This field is not part of the provided ONCSignature, thus it cannot be
@@ -408,7 +409,7 @@ class MergeToAugmented : public MergeToEffective {
     // User/shared credentials are not stored separately, so they cannot
     // leak here.
     // User and Shared settings are already replaced with |kFakeCredential|.
-    bool is_credential = onc::FieldIsCredential(*signature_, key);
+    bool is_credential = chromeos::onc::FieldIsCredential(*signature_, key);
     if (is_credential) {
       // Set |kFakeCredential| to notify UI that credential is saved.
       if (values.user_policy) {
@@ -478,11 +479,11 @@ class MergeToAugmented : public MergeToEffective {
   base::Value MergeNestedDictionaries(const std::string& key,
                                       const ValuePtrs& dicts) override {
     if (signature_) {
-      const OncValueSignature* enclosing_signature = signature_;
+      const chromeos::onc::OncValueSignature* enclosing_signature = signature_;
       signature_ = nullptr;
 
-      const OncFieldSignature* field =
-          GetFieldSignature(*enclosing_signature, key);
+      const chromeos::onc::OncFieldSignature* field =
+          chromeos::onc::GetFieldSignature(*enclosing_signature, key);
       if (field)
         signature_ = field->value_signature;
       base::Value result =
@@ -494,7 +495,7 @@ class MergeToAugmented : public MergeToEffective {
   }
 
  private:
-  const OncValueSignature* signature_;
+  const chromeos::onc::OncValueSignature* signature_;
 };
 
 }  // namespace
@@ -510,7 +511,7 @@ base::Value MergeSettingsAndPoliciesToEffective(
 }
 
 base::Value MergeSettingsAndPoliciesToAugmented(
-    const OncValueSignature& signature,
+    const chromeos::onc::OncValueSignature& signature,
     const base::Value* user_policy,
     const base::Value* device_policy,
     const base::Value* user_settings,

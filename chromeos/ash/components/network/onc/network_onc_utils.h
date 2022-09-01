@@ -14,8 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
@@ -24,6 +22,10 @@ class PrefService;
 
 namespace base {
 class Value;
+}
+
+namespace chromeos::onc {
+struct OncValueSignature;
 }
 
 namespace user_manager {
@@ -86,8 +88,9 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
 // Checks whether a WiFi dictionary object has the ${PASSWORD} substitution
 // variable set as the password.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
-                                        const base::Value* onc_object);
+bool HasUserPasswordSubsitutionVariable(
+    const chromeos::onc::OncValueSignature& signature,
+    const base::Value* onc_object);
 
 // Checks whether a list of network objects has at least one network with the
 // ${PASSWORD} substitution variable set as the password.

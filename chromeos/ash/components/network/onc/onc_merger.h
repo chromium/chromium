@@ -6,11 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_MERGER_H_
 
 #include "base/component_export.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/components/onc/onc_signature.h"
 
 namespace base {
 class Value;
+}
+
+namespace chromeos::onc {
+struct OncValueSignature;
 }
 
 namespace ash::onc {
@@ -40,7 +42,7 @@ base::Value MergeSettingsAndPoliciesToEffective(
 // result.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value MergeSettingsAndPoliciesToAugmented(
-    const OncValueSignature& signature,
+    const chromeos::onc::OncValueSignature& signature,
     const base::Value* user_policy,
     const base::Value* device_policy,
     const base::Value* user_settings,

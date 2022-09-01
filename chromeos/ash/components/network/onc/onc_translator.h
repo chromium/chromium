@@ -6,12 +6,14 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_TRANSLATOR_H_
 
 #include "base/component_export.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/components/onc/onc_signature.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
 class Value;
+}
+
+namespace chromeos::onc {
+struct OncValueSignature;
 }
 
 namespace ash {
@@ -28,8 +30,9 @@ namespace onc {
 // This function is used to translate network settings from ONC to Shill's
 // format before sending them to Shill.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value TranslateONCObjectToShill(const OncValueSignature* signature,
-                                      const base::Value& onc_object);
+base::Value TranslateONCObjectToShill(
+    const chromeos::onc::OncValueSignature* signature,
+    const base::Value& onc_object);
 
 // Translates a |shill_dictionary| (a Value of type DICTIONARY) to an ONC object
 // according to the given |onc_signature|. |onc_signature| must point to a
@@ -47,7 +50,7 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value TranslateShillServiceToONCPart(
     const base::Value& shill_dictionary,
     ::onc::ONCSource onc_source,
-    const OncValueSignature* onc_signature,
+    const chromeos::onc::OncValueSignature* onc_signature,
     const NetworkState* network_state);
 
 }  // namespace onc

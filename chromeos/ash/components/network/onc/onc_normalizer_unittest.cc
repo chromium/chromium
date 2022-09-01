@@ -23,8 +23,8 @@ TEST(ONCNormalizerTest, RemoveUnnecessaryAddressStaticIPConfigFields) {
   const base::Value* expected_normalized =
       data.FindDictKey("unnecessary-address-staticipconfig-normalized");
 
-  base::Value actual_normalized =
-      normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
+  base::Value actual_normalized = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, *original);
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
@@ -41,8 +41,8 @@ TEST(ONCNormalizerTest, RetainExtraStaticIPConfigFields) {
   const base::Value* expected_normalized =
       data.FindDictKey("unnecessary-address-staticipconfig-normalized");
 
-  base::Value actual_normalized =
-      normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
+  base::Value actual_normalized = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, *original);
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
@@ -58,8 +58,8 @@ TEST(ONCNormalizerTest, RemoveStaticIPConfigFields) {
   const base::Value* expected_normalized =
       data.FindDictKey("irrelevant-staticipconfig-fields-normalized");
 
-  base::Value actual_normalized =
-      normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
+  base::Value actual_normalized = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, *original);
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
@@ -74,8 +74,8 @@ TEST(ONCNormalizerTest, RemoveNameServers) {
   const base::Value* expected_normalized =
       data.FindDictKey("irrelevant-nameservers-normalized");
 
-  base::Value actual_normalized =
-      normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
+  base::Value actual_normalized = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, *original);
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
@@ -90,8 +90,8 @@ TEST(ONCNormalizerTest, RemoveIPFieldsForIncompleteConfig) {
   const base::Value* expected_normalized =
       data.FindDictKey("missing-ip-fields-normalized");
 
-  base::Value actual_normalized =
-      normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
+  base::Value actual_normalized = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, *original);
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 // This test case is about validating valid ONC objects.
@@ -104,8 +104,8 @@ TEST(ONCNormalizerTest, NormalizeNetworkConfigurationEthernetAndVPN) {
   const base::Value* expected_normalized =
       data.FindDictKey("ethernet-and-vpn-normalized");
 
-  base::Value actual_normalized =
-      normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
+  base::Value actual_normalized = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, *original);
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
@@ -118,8 +118,8 @@ TEST(ONCNormalizerTest, NormalizeNetworkConfigurationWifi) {
   const base::Value* original = data.FindDictKey("wifi");
   const base::Value* expected_normalized = data.FindDictKey("wifi-normalized");
 
-  base::Value actual_normalized =
-      normalizer.NormalizeObject(&kNetworkConfigurationSignature, *original);
+  base::Value actual_normalized = normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, *original);
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 

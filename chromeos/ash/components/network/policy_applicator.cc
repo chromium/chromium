@@ -186,7 +186,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
 
   base::Value onc_part = onc::TranslateShillServiceToONCPart(
       entry_properties, ::onc::ONC_SOURCE_UNKNOWN,
-      &onc::kNetworkWithStateSignature, nullptr /* network_state */);
+      &chromeos::onc::kNetworkWithStateSignature, nullptr /* network_state */);
 
   std::string old_guid = GetGUIDFromONCPart(onc_part);
   std::unique_ptr<NetworkUIData> ui_data =

@@ -343,7 +343,8 @@ void ExpandStringPlaceholdersInNetworksForUser(const user_manager::User* user,
 
   // Note: It is OK for the placeholders to be replaced with empty strings if
   // that is what the getters on |user| provide.
-  VariableExpander variable_expander(GetVariableExpansionsForUser(user));
+  chromeos::VariableExpander variable_expander(
+      GetVariableExpansionsForUser(user));
   chromeos::onc::ExpandStringsInNetworks(variable_expander, network_configs);
 }
 
@@ -516,12 +517,12 @@ int ImportNetworksForUser(const user_manager::User* user,
     // Remove irrelevant fields.
     onc::Normalizer normalizer(true /* remove recommended fields */);
     base::Value normalized_network = normalizer.NormalizeObject(
-        &onc::kNetworkConfigurationSignature, network);
+        &chromeos::onc::kNetworkConfigurationSignature, network);
 
     // TODO(b/235297258): Use ONC and ManagedNetworkConfigurationHandler
     // instead.
     base::Value shill_dict = onc::TranslateONCObjectToShill(
-        &onc::kNetworkConfigurationSignature, normalized_network);
+        &chromeos::onc::kNetworkConfigurationSignature, normalized_network);
 
     std::unique_ptr<NetworkUIData> ui_data(
         NetworkUIData::CreateFromONC(::onc::ONC_SOURCE_USER_IMPORT));
@@ -604,16 +605,17 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
   return policy != nullptr;
 }
 
-bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
-                                        const base::Value* onc_object) {
+bool HasUserPasswordSubsitutionVariable(
+    const chromeos::onc::OncValueSignature& signature,
+    const base::Value* onc_object) {
   DCHECK(onc_object->is_dict());
-  if (&signature == &kEAPSignature) {
+  if (&signature == &chromeos::onc::kEAPSignature) {
     const std::string* password_field =
         onc_object->FindStringKey(::onc::eap::kPassword);
     return password_field &&
            *password_field == ::onc::substitutes::kPasswordPlaceholderVerbatim;
   }
-  if (&signature == &kL2TPSignature) {
+  if (&signature == &chromeos::onc::kL2TPSignature) {
     const std::string* password_field =
         onc_object->FindStringKey(::onc::l2tp::kPassword);
     return password_field &&
@@ -625,8 +627,8 @@ bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
     if (!it.second.is_dict())
       continue;
 
-    const OncFieldSignature* field_signature =
-        GetFieldSignature(signature, it.first);
+    const chromeos::onc::OncFieldSignature* field_signature =
+        chromeos::onc::GetFieldSignature(signature, it.first);
     if (!field_signature)
       continue;
 
@@ -643,7 +645,7 @@ bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs) {
   for (auto& network : network_configs->GetListDeprecated()) {
     DCHECK(network.is_dict());
     bool result = HasUserPasswordSubsitutionVariable(
-        kNetworkConfigurationSignature, &network);
+        chromeos::onc::kNetworkConfigurationSignature, &network);
     if (result)
       return true;
   }

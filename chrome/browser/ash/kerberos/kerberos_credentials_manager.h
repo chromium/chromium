@@ -16,18 +16,20 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): forward declare when moved ash.
-#include "chromeos/components/onc/variable_expander.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
 class PrefChangeRegistrar;
 class Profile;
+
+namespace chromeos {
+class VariableExpander;
+}
 
 namespace policy {
 class PolicyMap;
@@ -285,7 +287,7 @@ class KerberosCredentialsManager : public KeyedService,
   std::vector<std::unique_ptr<KerberosAddAccountRunner>> add_account_runners_;
 
   // Variable expander for the principal name (replaces ${LOGIN_ID} etc.).
-  std::unique_ptr<VariableExpander> principal_expander_;
+  std::unique_ptr<chromeos::VariableExpander> principal_expander_;
 
   // List of objects that observe this instance.
   base::ObserverList<Observer, true /* check_empty */> observers_;

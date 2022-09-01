@@ -144,8 +144,8 @@ TEST_F(ONCMergerTest, MergeToAugmented) {
   base::Value expected_augmented =
       test_utils::ReadTestDictionaryValue("augmented_merge.json");
   base::Value merged(MergeSettingsAndPoliciesToAugmented(
-      kNetworkConfigurationSignature, &policy_, &device_policy_, &user_,
-      nullptr, &active_));
+      chromeos::onc::kNetworkConfigurationSignature, &policy_, &device_policy_,
+      &user_, nullptr, &active_));
   EXPECT_TRUE(test_utils::Equals(&expected_augmented, &merged));
 }
 

@@ -272,16 +272,17 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   void SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
                  base::Value policy) {
-    onc::Validator validator(true,   // error_on_unknown_field
-                             true,   // error_on_wrong_recommended
-                             false,  // error_on_missing_field
-                             true,   // managed_onc
-                             true);  // log_warnings
+    chromeos::onc::Validator validator(true,   // error_on_unknown_field
+                                       true,   // error_on_wrong_recommended
+                                       false,  // error_on_missing_field
+                                       true,   // managed_onc
+                                       true);  // log_warnings
     validator.SetOncSource(onc_source);
-    onc::Validator::Result validation_result;
+    chromeos::onc::Validator::Result validation_result;
     base::Value validated_policy = validator.ValidateAndRepairObject(
-        &onc::kToplevelConfigurationSignature, policy, &validation_result);
-    if (validation_result == onc::Validator::INVALID) {
+        &chromeos::onc::kToplevelConfigurationSignature, policy,
+        &validation_result);
+    if (validation_result == chromeos::onc::Validator::INVALID) {
       ADD_FAILURE() << "Network configuration invalid.";
       return;
     }

@@ -281,41 +281,43 @@ const FieldTranslationEntry static_or_saved_ipconfig_fields[] = {
     {nullptr}};
 
 struct OncValueTranslationEntry {
-  const OncValueSignature* onc_signature;
+  const chromeos::onc::OncValueSignature* onc_signature;
   const FieldTranslationEntry* field_translation_table;
 };
 
 const OncValueTranslationEntry onc_value_translation_table[] = {
-    {&kEAPSignature, eap_fields},
-    {&kIPsecSignature, ipsec_fields},
-    {&kL2TPSignature, l2tp_fields},
-    {&kXAUTHSignature, xauth_fields},
-    {&kOpenVPNSignature, openvpn_fields},
-    {&kWireGuardSignature, wireguard_fields},
-    {&kWireGuardPeerSignature, wireguard_peer_fields},
-    {&kARCVPNSignature, arc_vpn_fields},
-    {&kVerifyX509Signature, verify_x509_fields},
-    {&kVPNSignature, vpn_fields},
-    {&kTetherSignature, tether_fields},
-    {&kTetherWithStateSignature, tether_fields},
-    {&kWiFiSignature, wifi_fields},
-    {&kWiFiWithStateSignature, wifi_fields},
-    {&kCellularApnSignature, cellular_apn_fields},
-    {&kCellularFoundNetworkSignature, cellular_found_network_fields},
-    {&kCellularPaymentPortalSignature, cellular_payment_portal_fields},
-    {&kCellularProviderSignature, cellular_provider_fields},
-    {&kSIMLockStatusSignature, sim_lock_status_fields},
-    {&kCellularSignature, cellular_fields},
-    {&kCellularWithStateSignature, cellular_fields},
-    {&kNetworkWithStateSignature, network_fields},
-    {&kNetworkConfigurationSignature, network_fields},
-    {&kIPConfigSignature, ipconfig_fields},
-    {&kSavedIPConfigSignature, static_or_saved_ipconfig_fields},
-    {&kStaticIPConfigSignature, static_or_saved_ipconfig_fields},
+    {&chromeos::onc::kEAPSignature, eap_fields},
+    {&chromeos::onc::kIPsecSignature, ipsec_fields},
+    {&chromeos::onc::kL2TPSignature, l2tp_fields},
+    {&chromeos::onc::kXAUTHSignature, xauth_fields},
+    {&chromeos::onc::kOpenVPNSignature, openvpn_fields},
+    {&chromeos::onc::kWireGuardSignature, wireguard_fields},
+    {&chromeos::onc::kWireGuardPeerSignature, wireguard_peer_fields},
+    {&chromeos::onc::kARCVPNSignature, arc_vpn_fields},
+    {&chromeos::onc::kVerifyX509Signature, verify_x509_fields},
+    {&chromeos::onc::kVPNSignature, vpn_fields},
+    {&chromeos::onc::kTetherSignature, tether_fields},
+    {&chromeos::onc::kTetherWithStateSignature, tether_fields},
+    {&chromeos::onc::kWiFiSignature, wifi_fields},
+    {&chromeos::onc::kWiFiWithStateSignature, wifi_fields},
+    {&chromeos::onc::kCellularApnSignature, cellular_apn_fields},
+    {&chromeos::onc::kCellularFoundNetworkSignature,
+     cellular_found_network_fields},
+    {&chromeos::onc::kCellularPaymentPortalSignature,
+     cellular_payment_portal_fields},
+    {&chromeos::onc::kCellularProviderSignature, cellular_provider_fields},
+    {&chromeos::onc::kSIMLockStatusSignature, sim_lock_status_fields},
+    {&chromeos::onc::kCellularSignature, cellular_fields},
+    {&chromeos::onc::kCellularWithStateSignature, cellular_fields},
+    {&chromeos::onc::kNetworkWithStateSignature, network_fields},
+    {&chromeos::onc::kNetworkConfigurationSignature, network_fields},
+    {&chromeos::onc::kIPConfigSignature, ipconfig_fields},
+    {&chromeos::onc::kSavedIPConfigSignature, static_or_saved_ipconfig_fields},
+    {&chromeos::onc::kStaticIPConfigSignature, static_or_saved_ipconfig_fields},
     {nullptr}};
 
 struct NestedShillDictionaryEntry {
-  const OncValueSignature* onc_signature;
+  const chromeos::onc::OncValueSignature* onc_signature;
   // nullptr terminated list of Shill property keys.
   const char* const* shill_property_path;
 };
@@ -327,8 +329,8 @@ const char* static_ip_config_path_entries[] = {shill::kStaticIPConfigProperty,
                                                nullptr};
 
 const NestedShillDictionaryEntry nested_shill_dictionaries[] = {
-    {&kCellularApnSignature, cellular_apn_path_entries},
-    {&kStaticIPConfigSignature, static_ip_config_path_entries},
+    {&chromeos::onc::kCellularApnSignature, cellular_apn_path_entries},
+    {&chromeos::onc::kStaticIPConfigSignature, static_ip_config_path_entries},
     {nullptr}};
 
 // Translation of the EAP.Inner field in case of EAP.Outer == PEAP
@@ -463,7 +465,7 @@ const FieldTranslationEntry kIPsecIKEv2Table[] = {
     {nullptr}};
 
 const FieldTranslationEntry* GetFieldTranslationTable(
-    const OncValueSignature& onc_signature) {
+    const chromeos::onc::OncValueSignature& onc_signature) {
   for (const OncValueTranslationEntry* it = onc_value_translation_table;
        it->onc_signature != nullptr; ++it) {
     if (it->onc_signature == &onc_signature)
@@ -497,7 +499,7 @@ const StringTranslationEntry* GetEapInnerTranslationTableForOncOuter(
 }
 
 std::vector<std::string> GetPathToNestedShillDictionary(
-    const OncValueSignature& onc_signature) {
+    const chromeos::onc::OncValueSignature& onc_signature) {
   std::vector<std::string> shill_property_path;
   for (const NestedShillDictionaryEntry* it = nested_shill_dictionaries;
        it->onc_signature != nullptr; ++it) {

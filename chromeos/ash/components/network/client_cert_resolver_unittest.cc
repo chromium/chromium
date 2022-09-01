@@ -72,7 +72,8 @@ void OnListCertsDone(base::OnceClosure loop_quit_closure,
 // Returns a |OncParsedCertificates| which contains exactly one client
 // certificate with the contents of |client_cert_pkcs12_file| and the GUID
 // |guid|. Returns nullptr if the file could not be read.
-std::unique_ptr<onc::OncParsedCertificates> OncParsedCertificatesForPkcs12File(
+std::unique_ptr<chromeos::onc::OncParsedCertificates>
+OncParsedCertificatesForPkcs12File(
     const base::FilePath& client_cert_pkcs12_file,
     base::StringPiece guid) {
   std::string pkcs12_raw;
@@ -88,7 +89,8 @@ std::unique_ptr<onc::OncParsedCertificates> OncParsedCertificatesForPkcs12File(
   onc_certificate.SetKey("PKCS12", base::Value(pkcs12_base64_encoded));
   base::Value onc_certificates(base::Value::Type::LIST);
   onc_certificates.Append(std::move(onc_certificate));
-  return std::make_unique<onc::OncParsedCertificates>(onc_certificates);
+  return std::make_unique<chromeos::onc::OncParsedCertificates>(
+      onc_certificates);
 }
 
 std::string GetString(const base::Value& dict, const char* key) {
