@@ -90,7 +90,7 @@ void DeskModelWrapper::DeleteEntry(const base::GUID& uuid,
 void DeskModelWrapper::DeleteAllEntries(
     DeskModel::DeleteEntryCallback callback) {
   DeskModel::DeleteEntryStatus desk_template_delete_status =
-      GetDeskTemplateModel()->DeleteAllEntries();
+      GetDeskTemplateModel()->DeleteAllEntriesSync();
   if (desk_template_delete_status != DeskModel::DeleteEntryStatus::kOk) {
     std::move(callback).Run(desk_template_delete_status);
     return;

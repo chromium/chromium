@@ -1180,11 +1180,11 @@ void DeskSyncBridge::DeleteEntry(const base::GUID& uuid,
 }
 
 void DeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
-  DeleteEntryStatus status = DeleteAllEntries();
+  DeleteEntryStatus status = DeleteAllEntriesSync();
   std::move(callback).Run(status);
 }
 
-DeskModel::DeleteEntryStatus DeskSyncBridge::DeleteAllEntries() {
+DeskModel::DeleteEntryStatus DeskSyncBridge::DeleteAllEntriesSync() {
   if (!IsReady()) {
     // This sync bridge has not finished initializing.
     // Cannot delete anything.

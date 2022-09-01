@@ -102,11 +102,13 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   const ash::DeskTemplate* GetUserEntryByUUID(const base::GUID& uuid) const;
 
-  DeskModel::DeleteEntryStatus DeleteAllEntries();
-
  private:
+  friend class DeskModelWrapper;
+
   using DeskEntries =
       base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+
+  DeskModel::DeleteEntryStatus DeleteAllEntriesSync();
 
   // Notify all observers that the model is loaded;
   void NotifyDeskModelLoaded();
