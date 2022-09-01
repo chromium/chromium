@@ -45,6 +45,7 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 @synthesize window = _window;
 
 - (void)dealloc {
+  [_window release];
   [super dealloc];
 }
 

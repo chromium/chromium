@@ -123,6 +123,8 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 }
 
 - (void)dealloc {
+  [_connectedToField release];
+  [_disconnectButton release];
   [super dealloc];
 }
 
