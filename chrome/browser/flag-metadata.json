@@ -6114,6 +6114,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "sync-access-handle-all-sync-surface",
+    "owners": [ "dslee@google.com", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "sync-android-limit-ntp-promo-impressions",
     "owners": ["mmrashad@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 109

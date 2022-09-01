@@ -1648,5 +1648,8 @@ const base::Feature kThrottleIntersectionObserverUMA{
 const base::Feature kWebRtcMetronome{"WebRtcMetronome",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSyncAccessHandleAllSyncSurface{
+    "SyncAccessHandleAllSyncSurface", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

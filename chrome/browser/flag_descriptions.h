@@ -1509,6 +1509,9 @@ extern const char kSystemKeyboardLockDescription[];
 extern const char kSuggestionsWithSubStringMatchName[];
 extern const char kSuggestionsWithSubStringMatchDescription[];
 
+extern const char kSyncAccessHandleAllSyncSurfaceName[];
+extern const char kSyncAccessHandleAllSyncSurfaceDescription[];
+
 extern const char kSyncEnableHistoryDataTypeName[];
 extern const char kSyncEnableHistoryDataTypeDescription[];
 

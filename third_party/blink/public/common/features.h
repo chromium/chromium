@@ -904,6 +904,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kThrottleIntersectionObserverUMA;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcMetronome;
 
+// If enabled, all of FileSystemAccessSyncAccessHandle methods are synchronous.
+BLINK_COMMON_EXPORT extern const base::Feature kSyncAccessHandleAllSyncSurface;
+
 }  // namespace features
 }  // namespace blink
 
