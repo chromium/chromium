@@ -201,15 +201,15 @@ TEST_F(NodeLinkMemoryTest, OversizedAllocation) {
 
 TEST_F(NodeLinkMemoryTest, NewBlockSizes) {
   // NodeLinkMemory begins life with a fixed set of block allocators available
-  // for certain common block sizes. These are capped out at 2 kB blocks, but
+  // for certain common block sizes. These are capped out at 64 kB blocks, but
   // NodeLinkMemory still supports block allocation of larger blocks as well --
-  // at least up to 16 kB in size. Verify that we can trigger new capacity for
+  // at least up to 1 MB in size. Verify that we can trigger new capacity for
   // such sizes by attempting to allocate them.
 
-  constexpr size_t kPrettyBig = 16 * 1024;
+  constexpr size_t kPrettyBig = 512 * 1024;
   Fragment fragment = memory_a().AllocateFragment(kPrettyBig);
 
-  // No initial capacity for 16 kB fragments.
+  // No initial capacity for 256 kB fragments.
   EXPECT_TRUE(fragment.is_null());
 
   // But the failure above should have triggered expansion of capacity for that

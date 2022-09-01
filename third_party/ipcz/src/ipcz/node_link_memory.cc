@@ -27,8 +27,8 @@ namespace {
 
 constexpr BufferId kPrimaryBufferId{0};
 
-// Fixed allocation size for each NodeLink's primary shared buffer.
-constexpr size_t kPrimaryBufferSize = 64 * 1024;
+// Fixed allocation size for each NodeLink's primary shared buffer. (2 MB)
+constexpr size_t kPrimaryBufferSize = 2 * 1024 * 1024;
 
 // The front of the primary buffer is reserved for special current and future
 // uses which require synchronous availability throughout a link's lifetime.
@@ -49,7 +49,7 @@ constexpr size_t kMinBlockAllocatorCapacity = 8;
 // given fragment size within the BufferPool. This is not a hard cap on capacity
 // per fragment size, but it sets a limit on how large the pool will grow
 // automatically in response to failed allocation requests.
-constexpr size_t kMaxBlockAllocatorCapacityPerFragmentSize = 256 * 1024;
+constexpr size_t kMaxBlockAllocatorCapacityPerFragmentSize = 2 * 1024 * 1024;
 
 // The minimum fragment size (in bytes) to support with dedicated BufferPool
 // capacity. All fragment sizes are powers of two. Fragment allocations below
@@ -59,7 +59,7 @@ constexpr size_t kMinFragmentSize = 64;
 // The maximum fragment size to support with dedicated BlockAllocator capacity
 // within the BufferPool. Allocations beyond this size must fail or fall back
 // onto a different allocation scheme which does not use a BlockAllocator.
-constexpr size_t kMaxFragmentSizeForBlockAllocation = 16 * 1024;
+constexpr size_t kMaxFragmentSizeForBlockAllocation = 1024 * 1024;
 
 // The minimum fallback fragment size to attempt for best-effort allocations
 // when the requested size cannot be accommodated.
@@ -118,11 +118,15 @@ struct IPCZ_ALIGN(8) NodeLinkMemory::PrimaryBuffer {
   // Reserved memory for a series of fixed block allocators. Additional
   // allocators may be adopted by a NodeLinkMemory over its lifetime, but these
   // ones remain fixed within the primary buffer.
-  std::array<uint8_t, 4096> mem_for_64_byte_blocks;
-  std::array<uint8_t, 12288> mem_for_256_byte_blocks;
-  std::array<uint8_t, 15360> mem_for_512_byte_blocks;
-  std::array<uint8_t, 11264> mem_for_1024_byte_blocks;
-  std::array<uint8_t, 16384> mem_for_2048_byte_blocks;
+  std::array<uint8_t, 64 * 64> mem_for_64_byte_blocks;
+  std::array<uint8_t, 256 * 48> mem_for_256_byte_blocks;
+  std::array<uint8_t, 512 * 30> mem_for_512_byte_blocks;
+  std::array<uint8_t, 1024 * 11> mem_for_1k_blocks;
+  std::array<uint8_t, 2048 * 8> mem_for_2k_blocks;
+  std::array<uint8_t, 4096 * 16> mem_for_4k_blocks;
+  std::array<uint8_t, 16384 * 16> mem_for_16k_blocks;
+  std::array<uint8_t, 32768 * 8> mem_for_32k_blocks;
+  std::array<uint8_t, 65536 * 22> mem_for_64k_blocks;
 
   BlockAllocator block_allocator_64() {
     return BlockAllocator(absl::MakeSpan(mem_for_64_byte_blocks), 64);
@@ -136,12 +140,28 @@ struct IPCZ_ALIGN(8) NodeLinkMemory::PrimaryBuffer {
     return BlockAllocator(absl::MakeSpan(mem_for_512_byte_blocks), 512);
   }
 
-  BlockAllocator block_allocator_1024() {
-    return BlockAllocator(absl::MakeSpan(mem_for_1024_byte_blocks), 1024);
+  BlockAllocator block_allocator_1k() {
+    return BlockAllocator(absl::MakeSpan(mem_for_1k_blocks), 1024);
   }
 
-  BlockAllocator block_allocator_2048() {
-    return BlockAllocator(absl::MakeSpan(mem_for_2048_byte_blocks), 2048);
+  BlockAllocator block_allocator_2k() {
+    return BlockAllocator(absl::MakeSpan(mem_for_2k_blocks), 2 * 1024);
+  }
+
+  BlockAllocator block_allocator_4k() {
+    return BlockAllocator(absl::MakeSpan(mem_for_4k_blocks), 4 * 1024);
+  }
+
+  BlockAllocator block_allocator_16k() {
+    return BlockAllocator(absl::MakeSpan(mem_for_16k_blocks), 16 * 1024);
+  }
+
+  BlockAllocator block_allocator_32k() {
+    return BlockAllocator(absl::MakeSpan(mem_for_32k_blocks), 32 * 1024);
+  }
+
+  BlockAllocator block_allocator_64k() {
+    return BlockAllocator(absl::MakeSpan(mem_for_64k_blocks), 64 * 1024);
   }
 };
 
@@ -160,8 +180,12 @@ NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
       primary_buffer_.block_allocator_64(),
       primary_buffer_.block_allocator_256(),
       primary_buffer_.block_allocator_512(),
-      primary_buffer_.block_allocator_1024(),
-      primary_buffer_.block_allocator_2048(),
+      primary_buffer_.block_allocator_1k(),
+      primary_buffer_.block_allocator_2k(),
+      primary_buffer_.block_allocator_4k(),
+      primary_buffer_.block_allocator_16k(),
+      primary_buffer_.block_allocator_32k(),
+      primary_buffer_.block_allocator_64k(),
   };
 
   buffer_pool_.AddBlockBuffer(kPrimaryBufferId,
@@ -219,8 +243,12 @@ DriverMemoryWithMapping NodeLinkMemory::AllocateMemory(
   primary_buffer.block_allocator_64().InitializeRegion();
   primary_buffer.block_allocator_256().InitializeRegion();
   primary_buffer.block_allocator_512().InitializeRegion();
-  primary_buffer.block_allocator_1024().InitializeRegion();
-  primary_buffer.block_allocator_2048().InitializeRegion();
+  primary_buffer.block_allocator_1k().InitializeRegion();
+  primary_buffer.block_allocator_2k().InitializeRegion();
+  primary_buffer.block_allocator_4k().InitializeRegion();
+  primary_buffer.block_allocator_16k().InitializeRegion();
+  primary_buffer.block_allocator_32k().InitializeRegion();
+  primary_buffer.block_allocator_64k().InitializeRegion();
 
   return {std::move(memory), std::move(mapping)};
 }
