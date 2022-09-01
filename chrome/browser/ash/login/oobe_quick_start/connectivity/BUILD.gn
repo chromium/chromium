@@ -8,6 +8,7 @@ assert(is_chromeos_ash)
 
 source_set("connectivity") {
   deps = [
+    ":decoder",
     "//base",
     "//components/cbor",
     "//crypto",
@@ -37,6 +38,21 @@ source_set("connectivity") {
   ]
 }
 
+source_set("decoder") {
+  sources = [
+    "quick_start_decoder.cc",
+    "quick_start_decoder.h",
+  ]
+
+  deps = [
+    "//ash/services/nearby/public/mojom",
+    "//base",
+    "//components/cbor",
+    "//mojo/public/cpp/bindings",
+    "//sandbox/policy",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   public_deps = [ ":connectivity" ]
@@ -51,16 +67,20 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":connectivity",
+    ":decoder",
+    "//ash/services/nearby/public/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/constants",
     "//components/cbor",
     "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings",
     "//url",
   ]
   sources = [
     "fast_pair_advertiser_unittest.cc",
     "incoming_connection_unittest.cc",
+    "quick_start_decoder_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",
     "target_fido_controller_unittest.cc",
   ]
