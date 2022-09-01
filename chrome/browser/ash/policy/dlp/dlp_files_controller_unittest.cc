@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -39,6 +40,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -69,9 +71,36 @@ constexpr char kExample2[] = "https://example2.com/";
 constexpr char kExample3[] = "https://example3.com/";
 constexpr char kExampleNotRestricted[] = "https://example4.com/";
 
+constexpr char kFilePath1[] = "test1.txt";
+constexpr char kFilePath2[] = "test2.txt";
+constexpr char kFilePath3[] = "test3.txt";
+
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
 }
+
+struct DialogChoiceResult {
+  DialogChoiceResult(bool should_action_proceed,
+                     std::vector<std::string> disallowed_file_sources)
+      : should_action_proceed(should_action_proceed),
+        disallowed_file_sources(disallowed_file_sources) {}
+
+  bool should_action_proceed;
+  std::vector<std::string> disallowed_file_sources;
+};
+
+struct FilesTransferInfo {
+  FilesTransferInfo(DlpWarnDialog::FilesAction files_action,
+                    std::vector<std::string> file_sources,
+                    std::vector<std::string> file_paths)
+      : files_action(files_action),
+        file_sources(file_sources),
+        file_paths(file_paths) {}
+
+  DlpWarnDialog::FilesAction files_action;
+  std::vector<std::string> file_sources;
+  std::vector<std::string> file_paths;
+};
 
 }  // namespace
 
@@ -163,21 +192,21 @@ class DlpFilesControllerTest : public testing::Test {
 
     const base::FilePath path = temp_dir_.GetPath();
 
-    const base::FilePath file1 = path.AppendASCII("test1.txt");
+    const base::FilePath file1 = path.AppendASCII(kFilePath1);
     ASSERT_TRUE(CreateDummyFile(file1));
     dlp::AddFileRequest add_file_req1;
     add_file_req1.set_file_path(file1.value());
     add_file_req1.set_source_url(kExample1);
     chromeos::DlpClient::Get()->AddFile(add_file_req1, add_file_cb.Get());
 
-    const base::FilePath file2 = path.AppendASCII("test2.txt");
+    const base::FilePath file2 = path.AppendASCII(kFilePath2);
     ASSERT_TRUE(CreateDummyFile(file2));
     dlp::AddFileRequest add_file_req2;
     add_file_req2.set_file_path(file2.value());
     add_file_req2.set_source_url(kExample2);
     chromeos::DlpClient::Get()->AddFile(add_file_req2, add_file_cb.Get());
 
-    const base::FilePath file3 = path.AppendASCII("test3.txt");
+    const base::FilePath file3 = path.AppendASCII(kFilePath3);
     ASSERT_TRUE(CreateDummyFile(file3));
     dlp::AddFileRequest add_file_req3;
     add_file_req3.set_file_path(file3.value());
@@ -751,24 +780,24 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
   }
 }
 
-class DlpFilesWarningDialogTest
+class DlpFilesWarningDialogChoiceTest
     : public DlpFilesControllerTest,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, std::vector<std::string>>> {};
+      public ::testing::WithParamInterface<DialogChoiceResult> {};
 
 INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
-    DlpFilesWarningDialogTest,
+    DlpFilesWarningDialogChoiceTest,
     ::testing::Values(
-        std::make_tuple(true, std::vector<std::string>({kExample1})),
-        std::make_tuple(false,
-                        std::vector<std::string>({kExample1, kExample2}))));
+        DialogChoiceResult(/*should_action_proceed=*/true,
+                           std::vector<std::string>({kExample1})),
+        DialogChoiceResult(/*should_action_proceed=*/false,
+                           std::vector<std::string>({kExample1, kExample2}))));
 
-TEST_P(DlpFilesWarningDialogTest,
+TEST_P(DlpFilesWarningDialogChoiceTest,
        IsFilesTransferRestricted_FileDownloadWarned) {
-  auto [should_proceed, disallowed_sources_str] = GetParam();
+  auto choice_result = GetParam();
   std::vector<DlpFilesController::FileDaemonInfo> disallowed_files;
-  for (const auto& source : disallowed_sources_str)
+  for (const auto& source : choice_result.disallowed_file_sources)
     disallowed_files.emplace_back(base::FilePath(), source);
   std::vector<DlpFilesController::FileDaemonInfo> transferred_files(
       {{base::FilePath(), kExample1},
@@ -785,7 +814,8 @@ TEST_P(DlpFilesWarningDialogTest,
       base::FilePath(file_manager::util::kRemovableMediaPath)));
 
   std::unique_ptr<MockDlpWarnNotifier> wrapper =
-      std::make_unique<MockDlpWarnNotifier>(should_proceed);
+      std::make_unique<MockDlpWarnNotifier>(
+          choice_result.should_action_proceed);
   MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
   files_controller_->SetWarnNotifierForTesting(std::move(wrapper));
 
@@ -809,6 +839,86 @@ TEST_P(DlpFilesWarningDialogTest,
       transferred_files,
       DlpFilesController::DlpFileDestination(dst_url.path().value()),
       DlpWarnDialog::FilesAction::kDownload, cb.Get());
+
+  storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+}
+
+class DlpFilesWarningDialogContentTest
+    : public DlpFilesControllerTest,
+      public ::testing::WithParamInterface<FilesTransferInfo> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesWarningDialogContentTest,
+    ::testing::Values(
+        FilesTransferInfo(DlpWarnDialog::FilesAction::kDownload,
+                          std::vector<std::string>({kExample1}),
+                          std::vector<std::string>({kFilePath1})),
+        FilesTransferInfo(DlpWarnDialog::FilesAction::kTransfer,
+                          std::vector<std::string>({kExample1}),
+                          std::vector<std::string>({kFilePath1})),
+        FilesTransferInfo(DlpWarnDialog::FilesAction::kTransfer,
+                          std::vector<std::string>({kExample1, kExample2}),
+                          std::vector<std::string>({kFilePath1, kFilePath2}))));
+
+TEST_P(DlpFilesWarningDialogContentTest,
+       IsFilesTransferRestricted_WarningDialogContent) {
+  auto transfer_info = GetParam();
+  std::vector<DlpFilesController::FileDaemonInfo> warned_files;
+  for (int i = 0; i < transfer_info.file_sources.size(); ++i) {
+    warned_files.emplace_back(base::FilePath(transfer_info.file_paths[i]),
+                              transfer_info.file_sources[i]);
+  }
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  mount_points->RevokeAllFileSystems();
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(),
+      base::FilePath(file_manager::util::kRemovableMediaPath)));
+  AddFilesToDlpClient();
+
+  std::unique_ptr<MockDlpWarnNotifier> wrapper =
+      std::make_unique<MockDlpWarnNotifier>(false);
+  MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
+  files_controller_->SetWarnNotifierForTesting(std::move(wrapper));
+  DlpConfidentialContents expected_contents;
+
+  if (transfer_info.files_action != DlpWarnDialog::FilesAction::kDownload) {
+    for (int i = 0; i < transfer_info.file_sources.size(); ++i) {
+      expected_contents.Add(
+          chromeos::GetIconForPath(
+              base::FilePath(std::string(transfer_info.file_paths[i])),
+              /*dark_background=*/false),
+          base::UTF8ToUTF16(transfer_info.file_paths[i]),
+          GURL(transfer_info.file_sources[i]));
+    }
+  }
+  DlpWarnDialog::DlpWarnDialogOptions expected_dialog_options(
+      DlpWarnDialog::Restriction::kFiles, expected_contents,
+      transfer_info.files_action);
+
+  EXPECT_CALL(*rules_manager_,
+              IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
+      .WillRepeatedly(testing::Return(DlpRulesManager::Level::kWarn));
+
+  EXPECT_CALL(*mock_dlp_warn_notifier,
+              ShowDlpWarningDialog(_, expected_dialog_options))
+      .Times(1);
+
+  MockIsFilesTransferRestrictedCallback cb;
+  EXPECT_CALL(cb, Run(warned_files)).Times(1);
+
+  auto dst_url = mount_points->CreateExternalFileSystemURL(
+      blink::StorageKey(), "removable",
+      base::FilePath("MyUSB/path/in/removable"));
+  ASSERT_TRUE(dst_url.is_valid());
+
+  files_controller_->IsFilesTransferRestricted(
+      warned_files,
+      DlpFilesController::DlpFileDestination(dst_url.path().value()),
+      transfer_info.files_action, cb.Get());
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }

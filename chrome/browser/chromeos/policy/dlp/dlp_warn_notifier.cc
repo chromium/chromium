@@ -54,10 +54,12 @@ void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
 
 void DlpWarnNotifier::ShowDlpFilesWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
+    const DlpConfidentialContents& confidential_contents,
     DlpWarnDialog::FilesAction files_action) {
-  ShowDlpWarningDialog(std::move(callback),
-                       DlpWarnDialog::DlpWarnDialogOptions(
-                           DlpWarnDialog::Restriction::kFiles, files_action));
+  ShowDlpWarningDialog(
+      std::move(callback),
+      DlpWarnDialog::DlpWarnDialogOptions(DlpWarnDialog::Restriction::kFiles,
+                                          confidential_contents, files_action));
 }
 
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpScreenShareWarningDialog(

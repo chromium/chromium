@@ -52,7 +52,9 @@ class DlpWarnDialog : public views::DialogDelegateView {
     DlpWarnDialogOptions(Restriction restriction,
                          DlpConfidentialContents confidential_contents,
                          const std::u16string& application_title);
-    DlpWarnDialogOptions(Restriction restriction, FilesAction files_action);
+    DlpWarnDialogOptions(Restriction restriction,
+                         DlpConfidentialContents confidential_contents,
+                         FilesAction files_action);
     DlpWarnDialogOptions(const DlpWarnDialogOptions& other);
     DlpWarnDialogOptions& operator=(const DlpWarnDialogOptions& other);
     ~DlpWarnDialogOptions();

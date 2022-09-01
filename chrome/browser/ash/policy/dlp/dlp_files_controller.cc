@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -19,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
@@ -321,6 +324,7 @@ void DlpFilesController::IsFilesTransferRestricted(
 
   std::vector<FileDaemonInfo> restricted_files;
   std::vector<FileDaemonInfo> warned_files;
+  DlpConfidentialContents dialog_files;
   for (const auto& file : transferred_files) {
     DlpRulesManager::Level level;
     if (dst_component.has_value()) {
@@ -340,10 +344,17 @@ void DlpFilesController::IsFilesTransferRestricted(
                        DlpFileDestination(*destination.url_or_path), level);
     }
 
-    if (level == DlpRulesManager::Level::kBlock)
+    if (level == DlpRulesManager::Level::kBlock) {
       restricted_files.push_back(file);
-    else if (level == DlpRulesManager::Level::kWarn)
+    } else if (level == DlpRulesManager::Level::kWarn) {
       warned_files.push_back(file);
+      if (files_action != DlpWarnDialog::FilesAction::kDownload) {
+        dialog_files.Add(
+            // TODO(crbug.com/1357593): Pass the proper |dark_background|
+            chromeos::GetIconForPath(file.path, /*dark_background=*/false),
+            file.path.BaseName().LossyDisplayName(), GURL(file.source_url));
+      }
+    }
   }
   if (warned_files.empty()) {
     std::move(result_callback).Run(std::move(restricted_files));
@@ -355,7 +366,7 @@ void DlpFilesController::IsFilesTransferRestricted(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(restricted_files), std::move(warned_files),
                      std::move(result_callback)),
-      files_action);
+      std::move(dialog_files), files_action);
 }
 
 std::vector<DlpFilesController::DlpFileRestrictionDetails>

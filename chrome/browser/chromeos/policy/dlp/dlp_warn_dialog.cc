@@ -99,7 +99,8 @@ const std::u16string GetTitleForFiles(DlpWarnDialog::FilesAction files_action,
   switch (files_action) {
     case DlpWarnDialog::FilesAction::kDownload:
       return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, files_number);
+          // Download action is only allowed for one file.
+          IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, 1);
     case DlpWarnDialog::FilesAction::kTransfer:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE, files_number);
@@ -113,15 +114,16 @@ const std::u16string GetMessageForFiles(DlpWarnDialog::FilesAction files_action,
     case DlpWarnDialog::FilesAction::kDownload:
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
-              IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, files_number),
-          // TODO(crbug.com/1350978) Change to the actual destination string
+              // Download action is only allowed for one file.
+              IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
+          // TODO(crbug.com/1350978) Change to the actual destination string.
           u"External storage",
           /*offset=*/nullptr);
     case DlpWarnDialog::FilesAction::kTransfer:
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE, files_number),
-          // TODO(crbug.com/1350978) Change to the actual destination string
+          // TODO(crbug.com/1350978) Change to the actual destination string.
           u"External storage",
           /*offset=*/nullptr);
   }
@@ -178,8 +180,9 @@ const std::u16string GetTitle(DlpWarnDialog::DlpWarnDialogOptions options) {
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_WARN_TITLE);
     case DlpWarnDialog::Restriction::kFiles:
       DCHECK(options.files_action.has_value());
-      // TODO(crbug.com/1351744) Pass the number of files
-      return GetTitleForFiles(options.files_action.value(), 1);
+      return GetTitleForFiles(
+          options.files_action.value(),
+          options.confidential_contents.GetContents().size());
   }
 }
 
@@ -201,8 +204,9 @@ const std::u16string GetMessage(DlpWarnDialog::DlpWarnDialogOptions options) {
           options.application_title.value());
     case DlpWarnDialog::Restriction::kFiles:
       DCHECK(options.files_action.has_value());
-      // TODO(crbug.com/1351744) Pass the number of files
-      return GetMessageForFiles(options.files_action.value(), 1);
+      return GetMessageForFiles(
+          options.files_action.value(),
+          options.confidential_contents.GetContents().size());
   }
 }
 
@@ -365,8 +369,11 @@ DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
 
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     Restriction restriction,
+    DlpConfidentialContents confidential_contents,
     FilesAction files_action)
-    : restriction(restriction), files_action(files_action) {}
+    : restriction(restriction),
+      confidential_contents(confidential_contents),
+      files_action(files_action) {}
 
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     const DlpWarnDialogOptions& other) = default;

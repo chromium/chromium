@@ -47,10 +47,12 @@ class DlpWarnNotifier : public views::WidgetObserver {
       const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that |files_action| on
-  // selected files is not recommended. Calls |callback| and passes user's
-  // choice of whether to proceed or not.
-  void ShowDlpFilesWarningDialog(OnDlpRestrictionCheckedCallback callback,
-                                 DlpWarnDialog::FilesAction files_action);
+  // selected |confidential_contents| files is not recommended. Calls |callback|
+  // and passes user's choice of whether to proceed or not.
+  void ShowDlpFilesWarningDialog(
+      OnDlpRestrictionCheckedCallback callback,
+      const DlpConfidentialContents& confidential_contents,
+      DlpWarnDialog::FilesAction files_action);
 
   // Shows a warning dialog that informs the user that screen sharing is not
   // recommended due to |confidential_contents| visible. Calls |callback| and

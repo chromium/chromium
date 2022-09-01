@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
