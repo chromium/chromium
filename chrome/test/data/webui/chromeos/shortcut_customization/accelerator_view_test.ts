@@ -9,91 +9,97 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/accelerator_view.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
-import {AcceleratorSource, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/input_key.js';
+import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createDefaultAccelerator, createUserAccelerator} from './shortcut_customization_test_util.js';
 
 suite('acceleratorViewTest', function() {
-  /** @type {?AcceleratorViewElement} */
-  let viewElement = null;
+  let viewElement: AcceleratorViewElement|null = null;
 
-  /** @type {?AcceleratorLookupManager} */
-  let manager = null;
+  let manager: AcceleratorLookupManager|null = null;
 
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
     manager.setAcceleratorLookup(fakeAcceleratorConfig);
     manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
 
-    viewElement = /** @type {!AcceleratorViewElement} */ (
-        document.createElement('accelerator-view'));
+    viewElement = document.createElement('accelerator-view');
     document.body.appendChild(viewElement);
   });
 
   teardown(() => {
-    manager.reset();
+    if (manager) {
+      manager.reset();
+    }
 
-    viewElement.remove();
+    viewElement!.remove();
     viewElement = null;
   });
 
+  function getInputKey(selector: string): InputKeyElement {
+    const element = viewElement!.shadowRoot!.querySelector(selector);
+    assertTrue(!!element);
+    return element as InputKeyElement;
+  }
+
   test('LoadsBasicAccelerator', async () => {
-    /** @type {!AcceleratorInfo} */
     const acceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*keyDisplay=*/ 'g');
 
 
-    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement!.acceleratorInfo = acceleratorInfo;
     await flush();
-    const keys = viewElement.shadowRoot.querySelectorAll('input-key');
+    const keys = viewElement!.shadowRoot!.querySelectorAll('input-key');
     // Three keys: shift, control, g
     assertEquals(3, keys.length);
 
     assertEquals(
-        'shift', keys[0].shadowRoot.querySelector('#key').textContent.trim());
+        'shift',
+        keys[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'ctrl', keys[1].shadowRoot.querySelector('#key').textContent.trim());
+        'ctrl',
+        keys[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'g', keys[2].shadowRoot.querySelector('#key').textContent.trim());
+        'g', keys[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
   });
 
   test('EditableAccelerator', async () => {
-    /** @type {!AcceleratorInfo} */
     const acceleratorInfo = createDefaultAccelerator(
         Modifier.ALT,
         /*key=*/ 221,
         /*keyDisplay=*/ ']');
 
-    viewElement.acceleratorInfo = acceleratorInfo;
-    viewElement.source = AcceleratorSource.ASH;
-    viewElement.action = 1;
+    viewElement!.acceleratorInfo = acceleratorInfo;
+    viewElement!.source = AcceleratorSource.ASH;
+    viewElement!.action = 1;
     await flush();
     // Enable the edit view.
-    viewElement.viewState = ViewState.EDIT;
+    viewElement!.viewState = ViewState.EDIT;
 
     await flush();
 
-    const ctrlKey = viewElement.shadowRoot.querySelector('#ctrlKey');
-    const altKey = viewElement.shadowRoot.querySelector('#altKey');
-    const shiftKey = viewElement.shadowRoot.querySelector('#shiftKey');
-    const metaKey = viewElement.shadowRoot.querySelector('#searchKey');
-    const pendingKey = viewElement.shadowRoot.querySelector('#pendingKey');
+    const ctrlKey = getInputKey('#ctrlKey');
+    const altKey = getInputKey('#altKey');
+    const shiftKey = getInputKey('#shiftKey');
+    const metaKey = getInputKey('#searchKey');
+    const pendingKey = getInputKey('#pendingKey');
 
     // By default, no keys should be registered.
-    assertEquals('not-selected', ctrlKey.keyState);
-    assertEquals('not-selected', altKey.keyState);
-    assertEquals('not-selected', shiftKey.keyState);
-    assertEquals('not-selected', metaKey.keyState);
-    assertEquals('not-selected', pendingKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
     assertEquals('key', pendingKey.key);
 
     // Simulate Ctrl + Alt + e.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'e',
-      keyCode: '69',
+      keyCode: 69,
       code: 'KeyE',
       ctrlKey: true,
       altKey: true,

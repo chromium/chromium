@@ -33,12 +33,12 @@ suite('acceleratorEditDialogTest', function() {
     const acceleratorInfo1: AcceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
-        /*key_display=*/ 'g');
+        /*keyDisplay=*/ 'g');
 
     const acceleratorInfo2: AcceleratorInfo = createUserAccelerator(
         Modifier.CONTROL,
         /*key=*/ 67,
-        /*key_display=*/ 'c');
+        /*keyDisplay=*/ 'c');
 
     const accelerators = [acceleratorInfo1, acceleratorInfo2];
 
@@ -92,12 +92,12 @@ suite('acceleratorEditDialogTest', function() {
     const acceleratorInfo1: AcceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
-        /*key_display=*/ 'g');
+        /*keyDisplay=*/ 'g');
 
     const acceleratorInfo2: AcceleratorInfo = createUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 67,
-        /*key_display=*/ 'c');
+        /*keyDisplay=*/ 'c');
 
     const acceleratorInfos = [acceleratorInfo1, acceleratorInfo2];
     const description = 'test shortcut';

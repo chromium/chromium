@@ -472,4 +472,10 @@ export class AcceleratorViewElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'accelerator-view': AcceleratorViewElement;
+  }
+}
+
 customElements.define(AcceleratorViewElement.is, AcceleratorViewElement);

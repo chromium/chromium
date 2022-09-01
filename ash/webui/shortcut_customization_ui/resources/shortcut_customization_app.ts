@@ -200,5 +200,11 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'shortcut-customization-app': ShortcutCustomizationAppElement;
+  }
+}
+
 customElements.define(
     ShortcutCustomizationAppElement.is, ShortcutCustomizationAppElement);
