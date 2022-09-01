@@ -160,7 +160,10 @@ const CGFloat kSpotlightCornerRadius = 7;
     if (guide.constrainedView != self)
       guide.constrainedView = self;
 
-    [self.layoutGuideCenter referenceView:self underName:self.guideName];
+    // [M105 Only]: This breaks the NTP in various ways when building M105 with
+    // Xcode 13.2.1. For 105 only, skip this call. See crbug.com/1350976
+    // for details.
+    // [self.layoutGuideCenter referenceView:self underName:self.guideName];
   }
 }
 
