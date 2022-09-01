@@ -158,6 +158,11 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
       fatal_error_message_ = kBoundsRectNanOrInf;
     } else {
       window_->UpdateVisualSize(gfx::ToRoundedSize(config.bounds_rect.size()));
+      // During a tab dragging session, UpdateVisualSize() can implicitly invoke
+      // Hide(). |pending_frames_| will be cleared and we should return
+      // directly.
+      if (pending_frames_.empty())
+        return;
     }
   }
 
