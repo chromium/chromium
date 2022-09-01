@@ -66,6 +66,8 @@ class WellKnownChangePasswordNavigationThrottle
       well_known_change_password_state_{this};
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
   raw_ptr<password_manager::AffiliationService> affiliation_service_ = nullptr;
+  base::WeakPtrFactory<password_manager::WellKnownChangePasswordState>
+      weak_ptr_factory_{&well_known_change_password_state_};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_NAVIGATION_THROTTLE_H_
