@@ -79,6 +79,24 @@ void FedCmAccountSelectionView::Show(
   bubble_widget_->AddObserver(this);
 }
 
+void FedCmAccountSelectionView::ShowFailureDialog(
+    const std::string& rp_etld_plus_one,
+    const std::string& idp_etld_plus_one) {
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
+  // `browser` is null in unit tests.
+  if (browser)
+    browser->tab_strip_model()->AddObserver(this);
+
+  bubble_widget_ = CreateBubble(browser, base::UTF8ToUTF16(rp_etld_plus_one),
+                                base::UTF8ToUTF16(idp_etld_plus_one))
+                       ->GetWeakPtr();
+  GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(rp_etld_plus_one),
+                                     base::UTF8ToUTF16(idp_etld_plus_one));
+  bubble_widget_->Show();
+  bubble_widget_->AddObserver(this);
+}
+
 void FedCmAccountSelectionView::OnVisibilityChanged(
     content::Visibility visibility) {
   if (!bubble_widget_)

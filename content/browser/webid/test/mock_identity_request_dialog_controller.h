@@ -31,6 +31,8 @@ class MockIdentityRequestDialogController
                     AccountSelectionCallback,
                     DismissCallback));
   MOCK_METHOD0(DestructorCalled, void());
+  MOCK_METHOD3(ShowFailureDialog,
+               void(WebContents*, const GURL&, DismissCallback));
 };
 
 }  // namespace content

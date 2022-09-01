@@ -38,6 +38,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
             const content::IdentityProviderMetadata& idp_metadata,
             const content::ClientIdData& client_data,
             Account::SignInMode sign_in_mode) override;
+  void ShowFailureDialog(const std::string& rp_etld_plus_one,
+                         const std::string& idp_etld_plus_one) override;
 
   // content::WebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;

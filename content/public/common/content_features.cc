@@ -354,6 +354,10 @@ const base::Feature kFedCmManifestValidation{"FedCmManifestValidation",
 const base::Feature kFedCmMultipleIdentityProviders{
     "FedCmMultipleIdentityProviders", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Field trial boolean parameter which indicates whether IdpSigninStatus API is
+// used in FedCM API.
+const char kFedCmIdpSigninStatusFieldTrialParamName[] = "IdpSigninStatus";
+
 // Enables usage of First Party Sets to determine cookie availability.
 constexpr base::Feature kFirstPartySets{"FirstPartySets",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

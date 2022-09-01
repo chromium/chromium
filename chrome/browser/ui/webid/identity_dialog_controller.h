@@ -38,12 +38,16 @@ class IdentityDialogController
   int GetBrandIconMinimumSize() override;
   int GetBrandIconIdealSize() override;
 
+  // content::IdentityRequestDialogController
   void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback) override;
+  void ShowFailureDialog(content::WebContents* rp_web_contents,
+                         const GURL& idp_url,
+                         DismissCallback dismiss_callback) override;
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const Account& account) override;

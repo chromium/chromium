@@ -26,6 +26,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
             const content::IdentityProviderMetadata& idp_metadata,
             const content::ClientIdData& client_data,
             Account::SignInMode sign_in_mode) override;
+  void ShowFailureDialog(const std::string& rp_for_display,
+                         const std::string& idp_for_display) override;
 
   void OnAccountSelected(
       JNIEnv* env,

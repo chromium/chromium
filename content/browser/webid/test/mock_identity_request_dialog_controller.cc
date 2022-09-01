@@ -4,8 +4,6 @@
 
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 
-#include "url/gurl.h"
-
 namespace content {
 
 MockIdentityRequestDialogController::MockIdentityRequestDialogController() =

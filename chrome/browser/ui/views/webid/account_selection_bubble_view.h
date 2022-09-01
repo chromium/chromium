@@ -68,6 +68,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata) override;
+  void ShowFailureDialog(const std::u16string& rp_for_display,
+                         const std::u16string& idp_for_display) override;
 
  private:
   gfx::Rect GetBubbleBounds() override;

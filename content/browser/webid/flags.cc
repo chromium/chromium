@@ -30,4 +30,10 @@ bool IsFedCmMultipleIdentityProvidersEnabled() {
       features::kFedCmMultipleIdentityProviders);
 }
 
+bool IsFedCmIdpSigninStatusEnabled() {
+  return GetFieldTrialParamByFeatureAsBool(
+      features::kFedCm, features::kFedCmIdpSigninStatusFieldTrialParamName,
+      false);
+}
+
 }  // namespace content

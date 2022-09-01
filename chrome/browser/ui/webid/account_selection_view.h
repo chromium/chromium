@@ -66,6 +66,12 @@ class AccountSelectionView {
                     const content::ClientIdData& client_data,
                     Account::SignInMode sign_in_mode) = 0;
 
+  // Shows a failure UI when the accounts fetch is failed such that it is
+  // observable by users. This could happen when an IDP claims that the user is
+  // signed in but not respond with any user account during browser fetches.
+  virtual void ShowFailureDialog(const std::string& rp_for_display,
+                                 const std::string& idp_for_display) = 0;
+
  protected:
   raw_ptr<Delegate> delegate_ = nullptr;
 };

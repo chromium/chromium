@@ -28,6 +28,10 @@ class AccountSelectionBubbleViewInterface {
   virtual void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
+
+  // Updates the FedCM bubble to show the "failure" sheet.
+  virtual void ShowFailureDialog(const std::u16string& rp_for_display,
+                                 const std::u16string& idp_for_display) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_

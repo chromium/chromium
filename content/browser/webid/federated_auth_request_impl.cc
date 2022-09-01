@@ -449,6 +449,14 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
+  if (IsFedCmIdpSigninStatusEnabled() && idp_signin_status_.has_value() &&
+      !idp_signin_status_.value()) {
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             TokenStatus::kNotSignedInWithIdp,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
   request_dialog_controller_ = CreateDialogController();
 
   idp_info_[idp_ptr->config_url].provider = *idp_ptr;
@@ -718,11 +726,7 @@ void FederatedAuthRequestImpl::OnManifestReady(
             weak_ptr_factory_.GetWeakPtr(),
             idp_info_[idp_info.provider.config_url]));
   } else {
-    network_manager_->SendAccountsRequest(
-        idp_info.endpoints.accounts, idp_info.provider.client_id,
-        base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       idp_info_[idp_info.provider.config_url]));
+    MaybeFetchAccounts(idp_info);
   }
 }
 
@@ -733,11 +737,61 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
   // TODO(yigu): Clean up the client metadata related errors for metrics and
   // console logs.
   client_metadata_ = data;
+  MaybeFetchAccounts(idp_info);
+}
+
+void FederatedAuthRequestImpl::MaybeFetchAccounts(
+    const IdentityProviderInfo& idp_info) {
+  // Make sure that we don't fetch accounts if the IDP sign-in bit is reset to
+  // false during the API call. e.g. by the login/logout HEADER.
+  if (IsFedCmIdpSigninStatusEnabled() && idp_signin_status_.has_value() &&
+      !idp_signin_status_.value()) {
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             TokenStatus::kNotSignedInWithIdp,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
   network_manager_->SendAccountsRequest(
       idp_info.endpoints.accounts, idp_info.provider.client_id,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info_[idp_info.provider.config_url]));
+}
+
+void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
+    const GURL& idp_url,
+    blink::mojom::FederatedAuthRequestResult result,
+    absl::optional<TokenStatus> token_status) {
+  if (!IsFedCmIdpSigninStatusEnabled()) {
+    CompleteRequestWithError(result, token_status,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
+  // Ensures that we only fetch accounts unconditionally once.
+  if (!idp_signin_status_.has_value()) {
+    idp_signin_status_ = false;
+    CompleteRequestWithError(result, token_status,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
+  DCHECK(*idp_signin_status_);
+  idp_signin_status_ = false;
+  // TODO(crbug.com/1357790): we should figure out how to handle multiple IDP
+  // w.r.t. showing a static failure UI. e.g. one IDP is always successful and
+  // one always returns 404.
+  WebContents* rp_web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
+
+  request_dialog_controller_->ShowFailureDialog(
+      rp_web_contents, idp_url,
+      base::BindOnce(
+          &FederatedAuthRequestImpl::OnDismissFailureDialog,
+          weak_ptr_factory_.GetWeakPtr(), FederatedAuthRequestResult::kError,
+          TokenStatus::kNotSignedInWithIdp, /*should_delay_callback=*/true));
 }
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
@@ -746,27 +800,29 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     IdpNetworkRequestManager::AccountList accounts) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
-      CompleteRequestWithError(
+      HandleAccountsFetchFailure(
+          idp_info.provider.config_url,
           FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound,
-          TokenStatus::kAccountsHttpNotFound,
-          /*should_delay_callback=*/true);
+          TokenStatus::kAccountsHttpNotFound);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
-      CompleteRequestWithError(
+      HandleAccountsFetchFailure(
+          idp_info.provider.config_url,
           FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
-          TokenStatus::kAccountsNoResponse,
-          /*should_delay_callback=*/true);
+          TokenStatus::kAccountsNoResponse);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      CompleteRequestWithError(
+      HandleAccountsFetchFailure(
+          idp_info.provider.config_url,
           FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
-          TokenStatus::kAccountsInvalidResponse,
-          /*should_delay_callback=*/true);
+          TokenStatus::kAccountsInvalidResponse);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+      idp_signin_status_ = true;
+
       bool is_visible = (render_frame_host().IsActive() &&
                          render_frame_host().GetVisibilityState() ==
                              content::PageVisibilityState::kVisible);
@@ -907,6 +963,14 @@ void FederatedAuthRequestImpl::OnAccountSelected(
                                      is_sign_in),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), idp_info.provider));
+}
+
+void FederatedAuthRequestImpl::OnDismissFailureDialog(
+    blink::mojom::FederatedAuthRequestResult result,
+    absl::optional<TokenStatus> token_status,
+    bool should_delay_callback,
+    IdentityRequestDialogController::DismissReason dismiss_reason) {
+  CompleteRequest(result, token_status, /*token=*/"", should_delay_callback);
 }
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
@@ -1078,7 +1142,7 @@ void FederatedAuthRequestImpl::CompleteRequestWithError(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
     bool should_delay_callback) {
-  CompleteRequest(result, token_status, /*id_token=*/"", should_delay_callback);
+  CompleteRequest(result, token_status, /*token=*/"", should_delay_callback);
 }
 
 void FederatedAuthRequestImpl::CompleteRequest(

@@ -990,6 +990,10 @@
       status: "test",
     },
     {
+      name: "FedCmIdpSigninStatus",
+      status: "test",
+    },
+    {
       name: "FedCmIdpSignout",
       status: "test",
     },

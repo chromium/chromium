@@ -608,6 +608,11 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
             false)) {
       WebRuntimeFeatures::EnableFedCmIframeSupport(true);
     }
+    if (base::GetFieldTrialParamByFeatureAsBool(
+            features::kFedCm,
+            features::kFedCmIdpSigninStatusFieldTrialParamName, false)) {
+      WebRuntimeFeatures::EnableFedCmIdpSigninStatus(true);
+    }
   }
 
   // (b/239679616) kWebGPUService can be controlled by finch. So switching off

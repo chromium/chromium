@@ -56,6 +56,9 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
     account_ids_ = {account.id};
   }
 
+  void ShowFailureDialog(const std::u16string& rp_for_display,
+                         const std::u16string& idp_for_display) override {}
+
   bool show_back_button_{false};
   bool show_verifying_sheet_{false};
   std::vector<std::string> account_ids_;

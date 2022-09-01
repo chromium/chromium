@@ -2516,6 +2516,8 @@ const FeatureEntry::FeatureParam kFedCmVariationIdpSignout[] = {
     {features::kFedCmIdpSignoutFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureParam kFedCmVariationIframe[] = {
     {features::kFedCmIframeSupportFieldTrialParamName, "true"}};
+const FeatureEntry::FeatureParam kFedCmVariationIdpSigninStatus[] = {
+    {features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
     {"- with FedCM auto sign-in", kFedCmVariationAutoSignin,
      std::size(kFedCmVariationAutoSignin), nullptr},
@@ -2523,6 +2525,8 @@ const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
      std::size(kFedCmVariationIdpSignout), nullptr},
     {"- with iframe support", kFedCmVariationIframe,
      std::size(kFedCmVariationIframe), nullptr},
+    {"- with FedCM IDP sign-in status", kFedCmVariationIdpSigninStatus,
+     std::size(kFedCmVariationIdpSigninStatus), nullptr},
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

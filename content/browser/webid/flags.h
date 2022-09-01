@@ -21,6 +21,9 @@ bool IsFedCmManifestValidationEnabled();
 // Whether multiple identity providers are enabled.
 bool IsFedCmMultipleIdentityProvidersEnabled();
 
+// Whether IdpSigninStatus is enabled.
+bool IsFedCmIdpSigninStatusEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

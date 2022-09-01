@@ -425,6 +425,17 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   has_sheet_ = true;
 }
 
+void AccountSelectionBubbleView::ShowFailureDialog(
+    const std::u16string& rp_for_display,
+    const std::u16string& idp_for_display) {
+  const std::u16string title = l10n_util::GetStringFUTF16(
+      IDS_FAILURE_DIALOG_TITLE, rp_for_display, idp_for_display);
+  title_label_->SetText(title);
+
+  SizeToContents();
+  PreferredSizeChanged();
+}
+
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   // The bubble initially looks like this relative to the contents_web_view:
   //                        |--------|

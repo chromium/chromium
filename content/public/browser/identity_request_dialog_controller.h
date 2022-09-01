@@ -143,11 +143,18 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // is called with the selected account id or empty string otherwise.
   // |sign_in_mode| represents whether this is an auto sign in flow.
   virtual void ShowAccountsDialog(
-      content::WebContents* rp_web_contents,
+      WebContents* rp_web_contents,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback);
+
+  // Shows a failure UI when the accounts fetch is failed such that it is
+  // observable by users. This could happen when an IDP claims that the user is
+  // signed in but not respond with any user account during browser fetches.
+  virtual void ShowFailureDialog(WebContents* rp_web_contents,
+                                 const GURL& idp_for_display,
+                                 DismissCallback dismiss_callback);
 };
 
 }  // namespace content

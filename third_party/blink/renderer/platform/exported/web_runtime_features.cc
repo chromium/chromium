@@ -667,6 +667,10 @@ void WebRuntimeFeatures::EnableFedCmMultipleIdentityProviders(bool enable) {
   RuntimeEnabledFeatures::SetFedCmMultipleIdentityProvidersEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableFedCmIdpSigninStatus(bool enable) {
+  RuntimeEnabledFeatures::SetFedCmIdpSigninStatusEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableDocumentTransition(bool enable) {
   RuntimeEnabledFeatures::SetDocumentTransitionEnabled(enable);
 }

@@ -145,6 +145,12 @@ void AccountSelectionViewAndroid::Show(
       sign_in_mode == Account::SignInMode::kAuto);
 }
 
+void AccountSelectionViewAndroid::ShowFailureDialog(
+    const std::string& rp_for_display,
+    const std::string& idp_for_display) {
+  // TODO(crbug.com/1357790): add support on Android.
+}
+
 void AccountSelectionViewAndroid::OnAccountSelected(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& account_string_fields,

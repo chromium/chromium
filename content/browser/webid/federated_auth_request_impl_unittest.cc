@@ -2100,4 +2100,43 @@ TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
   EXPECT_EQ(multiple_accounts[2].id, "other_account_id");
 }
 
+// Test that first API call with a given IDP is not affected by the
+// IdpSigninStatus bit.
+TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  checker->SetExpectations(
+      kDefaultRequestParameters.identity_providers[0].client_id,
+      kConfigurationValid.accounts[0].id);
+  SetNetworkRequestManager(std::move(checker));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+}
+
+// Test that first API call with a given IDP will not show a UI in case of
+// failure during fetching accounts.
+TEST_F(FederatedAuthRequestImplTest,
+       IdpSigninStatusTestFirstTimeFetchNoFailureUi) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _)).Times(0);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_response = FetchStatus::kInvalidResponseError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
 }  // namespace content

@@ -75,6 +75,20 @@ void IdentityDialogController::ShowAccountsDialog(
                       client_data, sign_in_mode);
 }
 
+void IdentityDialogController::ShowFailureDialog(
+    content::WebContents* rp_web_contents,
+    const GURL& idp_url,
+    DismissCallback dismiss_callback) {
+  const GURL rp_url = rp_web_contents->GetLastCommittedURL();
+  const std::string rp_for_display = FormatUrlForDisplay(rp_url);
+  const std::string idp_for_display = FormatUrlForDisplay(idp_url);
+  rp_web_contents_ = rp_web_contents;
+  on_dismiss_ = std::move(dismiss_callback);
+  if (!account_view_)
+    account_view_ = AccountSelectionView::Create(this);
+  account_view_->ShowFailureDialog(rp_for_display, idp_for_display);
+}
+
 void IdentityDialogController::OnAccountSelected(const Account& account) {
   on_dismiss_.Reset();
   std::move(on_account_selection_)

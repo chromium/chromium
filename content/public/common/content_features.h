@@ -90,6 +90,7 @@ CONTENT_EXPORT extern const base::Feature kFedCm;
 CONTENT_EXPORT extern const char kFedCmAutoSigninFieldTrialParamName[];
 CONTENT_EXPORT extern const char kFedCmIdpSignoutFieldTrialParamName[];
 CONTENT_EXPORT extern const char kFedCmIframeSupportFieldTrialParamName[];
+CONTENT_EXPORT extern const char kFedCmIdpSigninStatusFieldTrialParamName[];
 CONTENT_EXPORT extern const base::Feature kFedCmManifestValidation;
 CONTENT_EXPORT extern const base::Feature kFedCmMultipleIdentityProviders;
 CONTENT_EXPORT extern const base::Feature kFirstPartySets;
