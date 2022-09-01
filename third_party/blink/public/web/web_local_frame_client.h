@@ -77,7 +77,6 @@
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document_loader.h"
-#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
@@ -328,10 +327,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // These notifications bracket any loading that occurs in the WebFrame.
   virtual void DidStartLoading() {}
   virtual void DidStopLoading() {}
-
-  // A form submission has been requested, but the page's submit event handler
-  // hasn't yet had a chance to run (and possibly alter/interrupt the submit.)
-  virtual void WillSendSubmitEvent(const WebFormElement&) {}
 
   // A datasource has been created for a new navigation.  The given
   // datasource will become the provisional datasource for the frame.

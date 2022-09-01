@@ -36,6 +36,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -531,6 +533,12 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   virtual void Trace(Visitor*) const;
 
+  // Functions to add and remove observers for this object.
+  void AddObserver(WebLocalFrameObserver* observer);
+  void RemoveObserver(WebLocalFrameObserver* observer);
+
+  void WillSendSubmitEvent(const WebFormElement& form);
+
  protected:
   // WebLocalFrame protected overrides:
   void AddMessageToConsoleImpl(const WebConsoleMessage&,
@@ -658,6 +666,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool has_scrolled_focused_editable_node_into_rect_ = false;
 
   WebHistoryItem current_history_item_;
+
+  // All the registered observers.
+  base::ObserverList<WebLocalFrameObserver, true> observers_;
 };
 
 template <>

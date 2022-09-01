@@ -343,6 +343,7 @@ source_set("blink_headers") {
     "web/web_lifecycle_update.h",
     "web/web_local_frame.h",
     "web/web_local_frame_client.h",
+    "web/web_local_frame_observer.h",
     "web/web_manifest_manager.h",
     "web/web_meaningful_layout.h",
     "web/web_media_inspector.h",

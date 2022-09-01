@@ -3612,11 +3612,6 @@ void RenderFrameImpl::DidAddMessageToConsole(
   }
 }
 
-void RenderFrameImpl::WillSendSubmitEvent(const blink::WebFormElement& form) {
-  for (auto& observer : observers_)
-    observer.WillSendSubmitEvent(form);
-}
-
 void RenderFrameImpl::DidCreateDocumentLoader(
     blink::WebDocumentLoader* document_loader) {
   DocumentState* document_state =

@@ -526,7 +526,6 @@ class CONTENT_EXPORT RenderFrameImpl
                               unsigned source_line,
                               const blink::WebString& stack_trace) override;
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
-  void WillSendSubmitEvent(const blink::WebFormElement& form) override;
   void DidCreateDocumentLoader(
       blink::WebDocumentLoader* document_loader) override;
   bool SwapIn(blink::WebFrame* previous_web_frame) override;

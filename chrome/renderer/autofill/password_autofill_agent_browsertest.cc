@@ -781,7 +781,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   void SaveAndSubmitForm(const WebFormElement& form_element) {
     FormTracker* tracker = autofill_agent_->form_tracker_for_testing();
-    static_cast<content::RenderFrameObserver*>(tracker)->WillSendSubmitEvent(
+    static_cast<blink::WebLocalFrameObserver*>(tracker)->WillSendSubmitEvent(
         form_element);
     static_cast<content::RenderFrameObserver*>(tracker)->WillSubmitForm(
         form_element);

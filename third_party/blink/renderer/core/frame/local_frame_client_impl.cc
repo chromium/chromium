@@ -662,8 +662,7 @@ void LocalFrameClientImpl::BeginNavigation(
 }
 
 void LocalFrameClientImpl::DispatchWillSendSubmitEvent(HTMLFormElement* form) {
-  if (web_frame_->Client())
-    web_frame_->Client()->WillSendSubmitEvent(WebFormElement(form));
+  web_frame_->WillSendSubmitEvent(WebFormElement(form));
 }
 
 void LocalFrameClientImpl::DidStartLoading() {

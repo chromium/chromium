@@ -25,7 +25,8 @@ namespace autofill {
 using mojom::SubmissionSource;
 
 FormTracker::FormTracker(content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame) {
+    : content::RenderFrameObserver(render_frame),
+      blink::WebLocalFrameObserver(render_frame->GetWebFrame()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
 }
 
@@ -210,6 +211,11 @@ void FormTracker::WillSubmitForm(const WebFormElement& form) {
 }
 
 void FormTracker::OnDestruct() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  ResetLastInteractedElements();
+}
+
+void FormTracker::OnFrameDetached() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   ResetLastInteractedElements();
 }
