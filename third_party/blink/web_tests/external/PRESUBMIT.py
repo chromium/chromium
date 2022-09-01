@@ -52,7 +52,7 @@ def _LintWPT(input_api, output_api):
         if abs_path.endswith(input_api.os_path.relpath(abs_path, wpt_path)):
             paths_in_wpt.append(abs_path)
 
-    # If there are changes in LayoutTests/external that aren't in wpt, e.g.
+    # If there are changes in web_tests/external that aren't in wpt, e.g.
     # changes to wpt_automation or this presubmit script, then we can return
     # to avoid running the linter on all files in wpt (which is slow).
     if not paths_in_wpt:
@@ -70,6 +70,7 @@ def _LintWPT(input_api, output_api):
         'lint',
         '--repo-root=%s' % wpt_path,
         '--ignore-glob=*-expected.txt',
+        '--ignore-glob=*.ini',
         '--ignore-glob=*DIR_METADATA',
         '--ignore-glob=*OWNERS',
         '--paths-file=%s' % paths_name,
