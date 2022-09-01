@@ -14,7 +14,6 @@ dice.png
 animated.gif
 jxl/3x3.png
 jxl/3x3a.png
-cat.jpg
 ```
 Then we run:
 ```
@@ -74,6 +73,7 @@ for i in $(seq 0 9); do J=$(printf '%03d' $i); convert -fill black -size 500x500
 convert -delay 20 *.png count.gif
 cjxl count.gif count.jxl
 
-cjxl --lossless_jpeg 0 --group_order 1 --distance 1 cat.jpg cat.jxl
-dd bs=1 count=30000 if=cat.jxl of=partial_cat.jxl
+convert -size 680x420 xc:black black.png
+cjxl --group_order 1 -d 0 black.png black.jxl
+dd bs=1 count=46 if=black.jxl of=partial_black.jxl
 ```
