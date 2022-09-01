@@ -4432,6 +4432,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SpdySession.AlpsDecoderStatus.Bypassed"
+    enum="AlpsDecoderError" expires_after="2023-09-11">
+  <owner>arichiv@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Net.SpdySession.AlpsDecoderStatus records errors returned by the AlpsDecoder
+    class in HTTP/2 responses. Errors logged to that histogram cause a session
+    termination, which isn't always desired. This histogram records errors that
+    we want to note, but that shouldn't stop the connection.
+  </summary>
+</histogram>
+
 <histogram name="Net.SpdySession.AlpsSettingParameterCount" units="parameters"
     expires_after="2023-05-11">
   <owner>bnc@chromium.org</owner>

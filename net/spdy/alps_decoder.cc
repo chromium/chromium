@@ -5,6 +5,7 @@
 #include "net/spdy/alps_decoder.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/features.h"
 
 namespace net {
@@ -144,8 +145,18 @@ void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {
     base::StringPiece value;
     if (!ReadUint16PrefixedStringPiece(&payload, &origin) ||
         !ReadUint16PrefixedStringPiece(&payload, &value)) {
-      error_ = Error::kAcceptChMalformed;
-      return;
+      if (base::FeatureList::IsEnabled(
+              features::kShouldKillSessionOnAcceptChMalformed)) {
+        // This causes a session termination.
+        error_ = Error::kAcceptChMalformed;
+        return;
+      } else {
+        // This logs that a session termination was bypassed.
+        base::UmaHistogramEnumeration(
+            "Net.SpdySession.AlpsDecoderStatus.Bypassed",
+            Error::kAcceptChMalformed);
+        return;
+      }
     }
     accept_ch_.push_back(
         spdy::AcceptChOriginValuePair{std::string(origin), std::string(value)});

@@ -299,5 +299,8 @@ const base::Feature kAlpsParsing{"AlpsParsing",
 const base::Feature kAlpsClientHintParsing{"AlpsClientHintParsing",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kShouldKillSessionOnAcceptChMalformed{
+    "ShouldKillSessionOnAcceptChMalformed", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net
