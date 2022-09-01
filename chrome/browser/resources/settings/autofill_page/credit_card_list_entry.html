@@ -29,14 +29,21 @@
       #virtualCardLabel {
         margin-inline-start: 8px;
       }
+
+      #cardImage {
+        margin-inline-end: 16px;
+      }
     </style>
     <div class="list-item">
       <div class="type-column">
+        <template is="dom-if" if="[[virtualCardMetadataEnabled_]]">
+          <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
+        </template>
         <div class="summary-column">
-          <div id = "summaryLabel" class="ellipses">
+          <div id="summaryLabel" class="ellipses">
             [[creditCard.metadata.summaryLabel]]
           </div>
-          <div id = "summarySublabel"
+          <div id="summarySublabel"
             hidden$="[[!shouldShowSecondarySublabel_()]]" class="ellipses">
             [[getSecondarySublabel_(creditCard.metadata)]]
           </div>

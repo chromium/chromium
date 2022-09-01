@@ -179,6 +179,9 @@ namespace autofillPrivate {
     // Credit card's network.
     DOMString? network;
 
+    // Credit card's image source.
+    DOMString? imageSrc;
+
     AutofillMetadata? metadata;
   };
 
