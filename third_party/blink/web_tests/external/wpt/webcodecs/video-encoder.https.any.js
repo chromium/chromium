@@ -83,7 +83,9 @@ promise_test(async t => {
 
   assert_equals(output_chunks.length, 2);
   assert_equals(output_chunks[0].timestamp, frame1.timestamp);
+  assert_equals(output_chunks[0].duration, frame1.duration);
   assert_equals(output_chunks[1].timestamp, frame2.timestamp);
+  assert_equals(output_chunks[1].duration, frame2.duration);
 }, 'Test successful configure(), encode(), and flush()');
 
 promise_test(async t => {

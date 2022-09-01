@@ -25,6 +25,7 @@
 #include "media/base/mime_util.h"
 #include "media/base/offloading_video_encoder.h"
 #include "media/base/svc_scalability_mode.h"
+#include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
@@ -448,7 +449,8 @@ VideoEncoder* VideoEncoder::Create(ScriptState* script_state,
 VideoEncoder::VideoEncoder(ScriptState* script_state,
                            const VideoEncoderInit* init,
                            ExceptionState& exception_state)
-    : Base(script_state, init, exception_state) {
+    : Base(script_state, init, exception_state),
+      frame_metadata_(128) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 }
@@ -808,6 +810,11 @@ void VideoEncoder::ProcessEncode(Request* request) {
     frame = media::WrapAsI420VideoFrame(std::move(frame));
   }
 
+  if (frame->metadata().frame_duration) {
+    frame_metadata_.Put(frame->timestamp(),
+                        FrameMetadata{*frame->metadata().frame_duration});
+  }
+
   --requested_encodes_;
   ScheduleDequeueEvent();
   media_encoder_->Encode(frame, keyframe, std::move(encode_done_callback));
@@ -969,6 +976,15 @@ void VideoEncoder::CallOutputCallback(
       media::DecoderBuffer::FromArray(std::move(output.data), output.size);
   buffer->set_timestamp(output.timestamp);
   buffer->set_is_key_frame(output.key_frame);
+
+  // Get duration from |frame_metadata_|.
+  const auto it = frame_metadata_.Get(output.timestamp);
+  if (it != frame_metadata_.end()) {
+    const auto duration = it->second.duration;
+    if (!duration.is_zero() && duration != media::kNoTimestamp)
+      buffer->set_duration(duration);
+  }
+
   auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(std::move(buffer));
 
   auto* metadata = EncodedVideoChunkMetadata::Create();

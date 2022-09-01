@@ -78,20 +78,22 @@ function validateBlackDots(frame, count) {
 }
 
 function createFrame(width, height, ts = 0) {
+  let duration = 33333;  // 30fps
   let text = ts.toString();
   let cnv = new OffscreenCanvas(width, height);
   var ctx = cnv.getContext('2d');
   fourColorsFrame(ctx, width, height, text);
-  return new VideoFrame(cnv, { timestamp: ts });
+  return new VideoFrame(cnv, { timestamp: ts, duration });
 }
 
 function createDottedFrame(width, height, dots, ts) {
   if (ts === undefined)
     ts = dots;
+  let duration = 33333;  // 30fps
   let text = ts.toString();
   let cnv = new OffscreenCanvas(width, height);
   var ctx = cnv.getContext('2d');
   fourColorsFrame(ctx, width, height, text);
   putBlackDots(ctx, width, height, dots);
-  return new VideoFrame(cnv, { timestamp: ts });
+  return new VideoFrame(cnv, { timestamp: ts, duration });
 }

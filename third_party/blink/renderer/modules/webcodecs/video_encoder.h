@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/containers/lru_cache.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
@@ -144,6 +146,12 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // The number of encoding requests currently handled by |media_encoder_|
   // Should not exceed |kMaxActiveEncodes|.
   int active_encodes_ = 0;
+
+  // Per-frame metadata to be applied to outputs, linked by timestamp.
+  struct FrameMetadata {
+    base::TimeDelta duration;
+  };
+  base::LRUCache<base::TimeDelta, FrameMetadata> frame_metadata_;
 
   // The color space corresponding to the last emitted output. Used to update
   // emitted VideoDecoderConfig when necessary.
