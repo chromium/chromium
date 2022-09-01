@@ -264,7 +264,7 @@ class DisplayMetricsChangeObserver : public display::DisplayObserver {
   }
   ~DisplayMetricsChangeObserver() override {
     display::Screen::GetScreen()->RemoveObserver(this);
-  };
+  }
 
   DisplayMetricsChangeObserver(const DisplayMetricsChangeObserver&) = delete;
   DisplayMetricsChangeObserver& operator=(const DisplayMetricsChangeObserver&) =
@@ -292,8 +292,8 @@ class DisplayMetricsChangeObserver : public display::DisplayObserver {
     if (run_loop_.running())
       run_loop_.Quit();
   }
-  void OnDisplayAdded(const display::Display& new_display) override{};
-  void OnDisplayRemoved(const display::Display& old_display) override{};
+  void OnDisplayAdded(const display::Display& new_display) override {}
+  void OnDisplayRemoved(const display::Display& old_display) override {}
 
   const int64_t display_id_;
   const gfx::Size size_;

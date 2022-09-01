@@ -39,7 +39,7 @@ class AX_EXPORT AXElementWrapper final {
   // BrowserAccessibilityCocoa).
   static std::string DOMIdOf(const id node);
 
-  AXElementWrapper(const id node) : node_(node){};
+  AXElementWrapper(const id node) : node_(node) {}
 
   // Returns true if the object is either an NSAccessibilityElement or
   // AXUIElement.

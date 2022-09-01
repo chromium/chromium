@@ -61,7 +61,7 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
   }
 }
 
-};  // namespace
+}  // namespace
 
 @implementation HistoryMenuCocoaController
 
