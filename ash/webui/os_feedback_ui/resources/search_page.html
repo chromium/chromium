@@ -68,7 +68,11 @@
             [[i18n('feedbackHelpLinkLabel')]]
         </a>
       </div>
-      <textarea id="descriptionText" aria-labelledby="descriptionTitle"
+      <span id="suggestionExplainAriaLabel" aria-hidden="true" hidden>
+        [[i18n('helpContentLabelTooltip')]]
+      </span>
+      <textarea id="descriptionText"
+          aria-labelledby="descriptionTitle suggestionExplainAriaLabel"
           aria-required="true" on-input="handleInputChanged_"
           placeholder="[[i18n('descriptionHint')]]" tabindex="1">
       </textarea>
