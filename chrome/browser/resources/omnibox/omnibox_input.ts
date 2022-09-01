@@ -4,7 +4,7 @@
 
 import {OmniboxElement} from './omnibox_element.js';
 
-interface QueryInputs {
+export interface QueryInputs {
   inputText: string;
   resetAutocompleteController: boolean;
   cursorLock: boolean;
@@ -16,7 +16,7 @@ interface QueryInputs {
   pageClassification: number;
 }
 
-interface DisplayInputs {
+export interface DisplayInputs {
   showIncompleteResults: boolean;
   showDetails: boolean;
   showAllProviders: boolean;

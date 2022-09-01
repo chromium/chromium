@@ -10,7 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 ts_files = [
   "omnibox_element.ts",
   "omnibox_input.ts",
-  "omnibox.js",
+  "omnibox.ts",
   "omnibox_output.js",
 ]
 

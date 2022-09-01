@@ -6,9 +6,9 @@ import './strings.m.js';
 import './omnibox_input.js';
 import './omnibox_output.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
 
 import {OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse} from './omnibox.mojom-webui.js';
 import {DisplayInputs, OmniboxInput, QueryInputs} from './omnibox_input.js';
@@ -16,60 +16,66 @@ import {OmniboxOutput} from './omnibox_output.js';
 
 /**
  * Javascript for omnibox.html, served from chrome://omnibox/
- * This is used to debug omnibox ranking.  The user enters some text
- * into a box, submits it, and then sees lots of debug information
- * from the autocompleter that shows what omnibox would do with that
- * input.
+ * This is used to debug omnibox ranking. The user enters some text into a box,
+ * submits it, and then sees lots of debug information from the autocompleter
+ * that shows what omnibox would do with that input.
  *
- * The simple object defined in this javascript file listens for
- * certain events on omnibox.html, sends (when appropriate) the
- * input text to C++ code to start the omnibox autcomplete controller
- * working, and listens from callbacks from the C++ code saying that
- * results are available.  When results (possibly intermediate ones)
- * are available, the Javascript formats them and displays them.
+ * The simple object defined in this javascript file listens for contain events
+ * on omnibox.html, sends (when appropriate) the input text to C++ code to start
+ * the omnibox autcomplete controller working, and listens from callbacks from
+ * the C++ code saying that results are available. When results (possibly
+ * intermediate ones) are available, the Javascript formats them and displays
+ * them.
  */
 
-/**
- * @typedef {{
- *   inputText: string,
- *   callback: function(!OmniboxResponse):Promise,
- *   display: boolean,
- * }}
- */
-let OmniboxRequest;
+declare global {
+  interface HTMLElementEventMap {
+    'query-inputs-changed': CustomEvent<QueryInputs>;
+    'display-inputs-changed': CustomEvent<DisplayInputs>;
+    'filter-input-changed': CustomEvent<string>;
+    'import': CustomEvent<OmniboxExport>;
+    'process-batch': CustomEvent<BatchSpecifier>;
+    'response-select': CustomEvent<number>;
+    'responses-count-changed': CustomEvent<number>;
+  }
 
-/**
- * @typedef {{
- *   batchMode: string,
- *   batchQueryInputs: Array<QueryInputs>,
- * }}
- */
-let BatchSpecifier;
+  interface HTMLElementTagNameMap {
+    'OmniboxInput': OmniboxInput;
+    'OmniboxOutput': OmniboxOutput;
+  }
+}
 
-/**
- * @typedef {{
- *   queryInputs: QueryInputs,
- *   displayInputs: DisplayInputs,
- *   responsesHistory: !Array<!Array<!OmniboxResponse>>,
- * }}
- */
-let OmniboxExport;
+interface OmniboxRequest {
+  inputText: string;
+  callback: (omniboxResponse: OmniboxResponse) => void;
+  display: boolean;
+}
 
-/** @type {!BrowserProxy} */
-let browserProxy;
-/** @type {!OmniboxInput} */
-let omniboxInput;
-/** @type {!OmniboxOutput} */
-let omniboxOutput;
-/** @type {!ExportDelegate} */
-let exportDelegate;
+interface BatchSpecifier {
+  batchName: string;
+  batchMode: string;
+  batchQueryInputs: QueryInputs[];
+}
+
+interface OmniboxExport {
+  versionDetails: Record<string, string>;
+  queryInputs: QueryInputs;
+  displayInputs: DisplayInputs;
+  responsesHistory: OmniboxResponse[][];
+}
+
+let browserProxy: BrowserProxy;
+let omniboxInput: OmniboxInput;
+let omniboxOutput: OmniboxOutput;
+let exportDelegate: ExportDelegate;
 
 class BrowserProxy {
-  /** @param {!OmniboxOutput} omniboxOutput */
-  constructor(omniboxOutput) {
-    /** @private {!OmniboxPageCallbackRouter} */
-    this.callbackRouter_ = new OmniboxPageCallbackRouter();
+  private callbackRouter_: OmniboxPageCallbackRouter =
+      new OmniboxPageCallbackRouter();
+  private handler_: OmniboxPageHandlerRemote;
+  private lastRequest: OmniboxRequest | null = null;
 
+  constructor(omniboxOutput: OmniboxOutput) {
     this.callbackRouter_.handleNewAutocompleteResponse.addListener(
         this.handleNewAutocompleteResponse.bind(this));
     this.callbackRouter_.handleNewAutocompleteQuery.addListener(
@@ -77,20 +83,13 @@ class BrowserProxy {
     this.callbackRouter_.handleAnswerImageData.addListener(
         omniboxOutput.updateAnswerImage.bind(omniboxOutput));
 
-    /** @private {!OmniboxPageHandlerRemote} */
     this.handler_ = OmniboxPageHandler.getRemote();
     this.handler_.setClientPage(
         this.callbackRouter_.$.bindNewPipeAndPassRemote());
-
-    /** @private {?OmniboxRequest} */
-    this.lastRequest;
   }
 
-  /**
-   * @param {!OmniboxResponse} response
-   * @param {boolean} isPageController
-   */
-  handleNewAutocompleteResponse(response, isPageController) {
+  private handleNewAutocompleteResponse(
+      response: OmniboxResponse, isPageController: boolean) {
     const isForLastPageRequest =
         this.isForLastPageRequest(response.inputText, isPageController);
 
@@ -99,51 +98,39 @@ class BrowserProxy {
     // in order to prevent the previous non-empty response from being
     // hidden and because these results wouldn't normally be displayed by
     // the browser window omnibox.
-    if (isForLastPageRequest && this.lastRequest.display ||
+    if (isForLastPageRequest && this.lastRequest!.display ||
         omniboxInput.connectWindowOmnibox && !isPageController &&
-            response.combinedResults.length) {
+        response.combinedResults.length) {
       omniboxOutput.addAutocompleteResponse(response);
     }
 
-    // TODO(orinj|manukh): If |response.done| but not |isForLastPageRequest|
-    // then callback is being dropped. We should guarantee that callback is
-    // always called because some callers await promises.
+    // TODO(orinj|manukh): If `response.done` but not `isForLastPageRequest`
+    //  then callback is being dropped. We should guarantee that callback is
+    //  always called because some callers await promises.
     if (isForLastPageRequest && response.done) {
+      assert(this.lastRequest);
       this.lastRequest.callback(response);
       this.lastRequest = null;
     }
   }
 
-  /**
-   * @param {boolean} isPageController
-   * @param {string} inputText
-   */
-  handleNewAutocompleteQuery(isPageController, inputText) {
+  private handleNewAutocompleteQuery(
+      isPageController: boolean, inputText: string) {
     // If the request originated from the debug page and is not for display,
     // then we don't want to clear the omniboxOutput.
     if (this.isForLastPageRequest(inputText, isPageController) &&
-            this.lastRequest.display ||
+        this.lastRequest!.display ||
         omniboxInput.connectWindowOmnibox && !isPageController) {
       omniboxOutput.prepareNewQuery();
     }
   }
 
-  /**
-   * @param {string} inputText
-   * @param {boolean} resetAutocompleteController
-   * @param {number} cursorPosition
-   * @param {boolean} zeroSuggest
-   * @param {boolean} preventInlineAutocomplete
-   * @param {boolean} preferKeyword
-   * @param {string} currentUrl
-   * @param {number} pageClassification
-   * @param {boolean} display
-   * @return {!Promise}
-   */
   makeRequest(
-      inputText, resetAutocompleteController, cursorPosition, zeroSuggest,
-      preventInlineAutocomplete, preferKeyword, currentUrl, pageClassification,
-      display) {
+      inputText: string, resetAutocompleteController: boolean,
+      cursorPosition: number, zeroSuggest: boolean,
+      preventInlineAutocomplete: boolean, preferKeyword: boolean,
+      currentUrl: string, pageClassification: number,
+      display: boolean): Promise<OmniboxResponse> {
     return new Promise(resolve => {
       this.lastRequest = {inputText, callback: resolve, display};
       this.handler_.startOmniboxQuery(
@@ -153,26 +140,20 @@ class BrowserProxy {
     });
   }
 
-  /**
-   * @param {string} inputText
-   * @param {boolean} isPageController
-   * @return {boolean}
-   */
-  isForLastPageRequest(inputText, isPageController) {
+  isForLastPageRequest(inputText: string, isPageController: boolean): boolean {
     // Note: Using inputText is a sufficient fix for the way this is used today,
     // but in principle it would be better to associate requests with responses
     // using a unique session identifier, for example by rolling an integer each
     // time a request is made. Doing so would require extra bookkeeping on the
     // host side, so for now we keep it simple.
-    return isPageController && this.lastRequest !== null &&
-        this.lastRequest.inputText.trimStart() === inputText;
+    return isPageController && !!this.lastRequest &&
+        this.lastRequest!.inputText.trimStart() === inputText;
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  omniboxInput = /** @type {!OmniboxInput} */ ($('omnibox-input'));
-  omniboxOutput =
-      /** @type {!OmniboxOutput} */ ($('omnibox-output'));
+  omniboxInput = document.querySelector('omnibox-input')!;
+  omniboxOutput = document.querySelector('omnibox-output')!;
   browserProxy = new BrowserProxy(omniboxOutput);
   exportDelegate = new ExportDelegate(omniboxOutput, omniboxInput);
 
@@ -206,27 +187,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 class ExportDelegate {
-  /**
-   * @param {!OmniboxOutput} omniboxOutput
-   * @param {!OmniboxInput} omniboxInput
-   */
-  constructor(omniboxOutput, omniboxInput) {
-    /** @private {!OmniboxInput} */
+  private omniboxInput_: OmniboxInput;
+  private omniboxOutput_: OmniboxOutput;
+
+  constructor(omniboxOutput: OmniboxOutput, omniboxInput: OmniboxInput) {
     this.omniboxInput_ = omniboxInput;
-    /** @private {!OmniboxOutput} */
     this.omniboxOutput_ = omniboxOutput;
   }
 
   /**
-   * Import a single data item previously exported.
-   * @param {OmniboxExport} importData
-   * @return {boolean} true if a single data item was imported for viewing;
-   * false if import failed.
+   * Import a single data item previously exported. Returns true if a single
+   * data item was imported for viewing; false if import failed.
    */
-  import(importData) {
-    if (!validateImportData_(importData)) {
-      // TODO(manukh): Make use of this return value to fix the UI state
-      // bug in omnibox_input.js -- see the related TODO there.
+  import(importData: OmniboxExport): boolean {
+    if (!validateImportData(importData)) {
+      // TODO(manukh): Make use of this return value to fix the UI state bug in
+      //  omnibox_input.js -- see the related TODO there.
       return false;
     }
     this.omniboxInput_.queryInputs = importData.queryInputs;
@@ -239,26 +215,25 @@ class ExportDelegate {
   /**
    * This is the worker function that transforms query inputs to accumulate
    * batch exports, then finally initiates a download for the complete set.
-   * @param {!Array<!QueryInputs>} batchQueryInputs
-   * @param {string} batchName
    */
-  async processBatch(batchQueryInputs, batchName) {
+  private async processBatch(
+      batchQueryInputs: QueryInputs[], batchName: string) {
     const batchExports = [];
     for (const queryInputs of batchQueryInputs) {
-    const omniboxResponse = await browserProxy.makeRequest(
-        queryInputs.inputText, queryInputs.resetAutocompleteController,
-        queryInputs.cursorPosition, queryInputs.zeroSuggest,
-        queryInputs.preventInlineAutocomplete, queryInputs.preferKeyword,
-        queryInputs.currentUrl, queryInputs.pageClassification, false);
-    const exportData = {
-      queryInputs,
-      // TODO(orinj|manukh): Make the schema consistent and remove
-      // the extra level of array nesting.  [[This]] is done for now
-      // so that elements can be extracted in the form import expects.
-      responsesHistory: [[omniboxResponse]],
-      displayInputs: this.omniboxInput_.displayInputs,
-    };
-    batchExports.push(exportData);
+      const omniboxResponse = await browserProxy.makeRequest(
+          queryInputs.inputText, queryInputs.resetAutocompleteController,
+          queryInputs.cursorPosition, queryInputs.zeroSuggest,
+          queryInputs.preventInlineAutocomplete, queryInputs.preferKeyword,
+          queryInputs.currentUrl, queryInputs.pageClassification, false);
+      const exportData = {
+        queryInputs,
+        // TODO(orinj|manukh): Make the schema consistent and remove the extra
+        //  level of array nesting. [[This]] is done for now so that elements
+        //  can be extracted in the form import expects.
+        responsesHistory: [[omniboxResponse]],
+        displayInputs: this.omniboxInput_.displayInputs,
+      };
+      batchExports.push(exportData);
     }
     const variationInfo =
         await sendWithPromise('requestVariationInfo', true);
@@ -275,75 +250,68 @@ class ExportDelegate {
       description: '',
       authorTool: 'chrome://omnibox',
       batchName,
-      versionDetails: ExportDelegate.getVersionDetails_(),
+      versionDetails: ExportDelegate.getVersionDetails(),
       variationInfo,
       pathInfo,
       appVersion: navigator.appVersion,
       batchExports,
     };
-    ExportDelegate.download_(batchData, fileName);
+    ExportDelegate.download(batchData, fileName);
   }
 
   /**
    * Event handler for uploaded batch processing specifier data, kicks off
    * the processBatch asynchronous pipeline.
-   * @param {!BatchSpecifier} processBatchData
    */
-  processBatchData(processBatchData) {
+  processBatchData(processBatchData: BatchSpecifier) {
     if (processBatchData.batchMode && processBatchData.batchQueryInputs &&
         processBatchData.batchName) {
       this.processBatch(
           processBatchData.batchQueryInputs, processBatchData.batchName);
     } else {
-    const expected = {
-      batchMode: 'combined',
-      batchName: 'name for this batch of queries',
-      batchQueryInputs: [{
-        inputText: 'example input text',
-        cursorPosition: 18,
-        resetAutocompleteController: false,
-        cursorLock: false,
-        zeroSuggest: false,
-        preventInlineAutocomplete: false,
-        preferKeyword: false,
-        currentUrl: '',
-        pageClassification: '4',
-      }],
-    };
-    console.error(`Invalid batch specifier data.  Expected format: \n${
-        JSON.stringify(expected, null, 2)}`);
+      const expected = {
+        batchMode: 'combined',
+        batchName: 'name for this batch of queries',
+        batchQueryInputs: [{
+          inputText: 'example input text',
+          cursorPosition: 18,
+          resetAutocompleteController: false,
+          cursorLock: false,
+          zeroSuggest: false,
+          preventInlineAutocomplete: false,
+          preferKeyword: false,
+          currentUrl: '',
+          pageClassification: '4',
+        }],
+      };
+      console.error(`Invalid batch specifier data.  Expected format: \n${
+          JSON.stringify(expected, null, 2)}`);
     }
   }
 
   exportClipboard() {
-    navigator.clipboard.writeText(JSON.stringify(this.exportData_, null, 2))
+    navigator.clipboard.writeText(JSON.stringify(this.exportData, null, 2))
         .catch(error => console.error('unable to export to clipboard:', error));
   }
 
   exportFile() {
-    const exportData = this.exportData_;
+    const exportData = this.exportData;
     const timeStamp = ExportDelegate.getTimeStamp();
     const fileName =
         `omnibox_debug_export_${exportData.queryInputs.inputText}_${timeStamp}.json`;
-    ExportDelegate.download_(exportData, fileName);
+    ExportDelegate.download(exportData, fileName);
   }
 
-  /** @private @return {OmniboxExport} */
-  get exportData_() {
+  private get exportData(): OmniboxExport {
     return {
-      versionDetails: ExportDelegate.getVersionDetails_(),
+      versionDetails: ExportDelegate.getVersionDetails(),
       queryInputs: this.omniboxInput_.queryInputs,
       displayInputs: this.omniboxInput_.displayInputs,
       responsesHistory: this.omniboxOutput_.responsesHistory,
     };
   }
 
-  /**
-   * @private
-   * @param {Object} object
-   * @param {string} fileName
-   */
-  static download_(object, fileName) {
+  private static download(object: Object, fileName: string) {
     const content = JSON.stringify(object, null, 2);
     const blob = new Blob([content], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
@@ -354,31 +322,26 @@ class ExportDelegate {
   }
 
   /**
-   * @param {Date=} date
-   * @return {string} A sortable timestamp string for use in filenames.
+   * Returns a sortable timestamp string for use in filenames.
    */
-  static getTimeStamp(date) {
-    if (!date) {
-      date = new Date();
-    }
+  private static getTimeStamp(date: Date = new Date()): string {
     const iso = date.toISOString();
-    return iso.replace(/:/g, '').split('.')[0];
+    return iso.replace(/:/g, '').split('.')[0]!;
   }
 
-  /** @private @return {Object} */
-  static getVersionDetails_() {
+  private static getVersionDetails(): Record<string, string> {
     const loadTimeDataKeys = ['cl', 'command_line', 'executable_path',
       'language', 'official', 'os_type', 'profile_path', 'useragent',
       'version', 'version_processor_variation', 'version_modifier'];
     return Object.fromEntries(
         loadTimeDataKeys.map(key => {
-    let valueOrError;
-    try {
-      valueOrError = loadTimeData.getValue(key);
-    } catch (e) {
-      valueOrError = e.toString();
-    }
-    return [key, valueOrError];
+          let valueOrError;
+          try {
+            valueOrError = loadTimeData.getValue(key);
+          } catch (e) {
+            valueOrError = (e as Error).toString();
+          }
+          return [key, valueOrError];
         }));
   }
 }
@@ -388,11 +351,8 @@ class ExportDelegate {
  * Invalid importData that passes validation will be processed with a
  * best-attempt; e.g. if responses are missing 'relevance' values, then those
  * cells will be left blank.
- * @private
- * @param {OmniboxExport} importData
- * @return {boolean}
  */
-function validateImportData_(importData) {
+function validateImportData(importData: OmniboxExport): boolean {
   const EXPECTED_FORMAT = {
     queryInputs: {},
     displayInputs: {},
