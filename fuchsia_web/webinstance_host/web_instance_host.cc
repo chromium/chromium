@@ -36,7 +36,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "components/fuchsia_component_support/config_reader.h"
 #include "components/fuchsia_component_support/feedback_registration.h"
 #include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/webengine/features.h"
