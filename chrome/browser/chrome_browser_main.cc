@@ -118,6 +118,7 @@
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/printing/printing_init.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
@@ -315,11 +316,6 @@
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
 #include "printing/printed_document.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(IS_WIN)
-#include "chrome/common/printing/printer_capabilities.h"
-#include "printing/backend/win_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -1700,9 +1696,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(IS_WIN)
-  printing::SetGetDisplayNameFunction(&printing::GetUserFriendlyName);
-#endif
+  printing::InitializeProcessForPrinting();
 
   HandleTestParameters(*base::CommandLine::ForCurrentProcess());
 

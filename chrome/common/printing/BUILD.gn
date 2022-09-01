@@ -35,6 +35,8 @@ source_set("printing") {
   sources = [
     "printer_capabilities.cc",
     "printer_capabilities.h",
+    "printing_init.cc",
+    "printing_init.h",
   ]
 
   public_deps = [
