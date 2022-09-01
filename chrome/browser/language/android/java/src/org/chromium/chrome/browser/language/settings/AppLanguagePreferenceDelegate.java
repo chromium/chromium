@@ -133,7 +133,7 @@ public class AppLanguagePreferenceDelegate {
         Snackbar snackbar =
                 Snackbar.make(resources.getString(R.string.languages_infobar_ready, displayName),
                                 mStackbarController, Snackbar.TYPE_PERSISTENT,
-                                Snackbar.UMA_TAB_CLOSE_UNDO)
+                                Snackbar.UMA_LANGUAGE_SPLIT_RESTART)
                         .setAction(resources.getString(R.string.languages_infobar_restart), null);
         snackbar.setSingleLine(false);
         if (mSnackbarManager.canShowSnackbar()) {
