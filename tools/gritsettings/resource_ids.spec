@@ -435,6 +435,10 @@
   "components/resources/dev_ui_components_resources.grd": {
     "includes": [2560],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/indexed_db/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2570],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/media/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2580],

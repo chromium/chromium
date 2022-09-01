@@ -13,7 +13,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
-#include "content/grit/dev_ui_content_resources.h"
+#include "content/grit/indexed_db_resources.h"
+#include "content/grit/indexed_db_resources_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -45,11 +46,9 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
   source->UseStringsJs();
-  source->AddResourcePath("indexeddb_internals.js",
-                          IDR_INDEXED_DB_INTERNALS_JS);
-  source->AddResourcePath("indexeddb_internals.css",
-                          IDR_INDEXED_DB_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_INDEXED_DB_INTERNALS_HTML);
+  source->AddResourcePaths(
+      base::make_span(kIndexedDbResources, kIndexedDbResourcesSize));
+  source->AddResourcePath("", IDR_INDEXED_DB_INDEXEDDB_INTERNALS_HTML);
 }
 
 IndexedDBInternalsUI::~IndexedDBInternalsUI() = default;
@@ -84,26 +83,25 @@ void IndexedDBInternalsHandler::GetAllBuckets(const base::Value::List& args) {
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
 
-  browser_context->ForEachStoragePartition(
-      base::BindRepeating(
-          [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-             StoragePartition* partition) {
-            if (!handler)
-              return;
-            auto& control = partition->GetIndexedDBControl();
-            control.GetAllBucketsDetails(base::BindOnce(
-                [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-                   base::FilePath partition_path, bool incognito,
-                   base::Value::List info_list) {
-                  if (!handler)
-                    return;
+  browser_context->ForEachStoragePartition(base::BindRepeating(
+      [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+         StoragePartition* partition) {
+        if (!handler)
+          return;
+        auto& control = partition->GetIndexedDBControl();
+        control.GetAllBucketsDetails(base::BindOnce(
+            [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+               base::FilePath partition_path, bool incognito,
+               base::Value::List info_list) {
+              if (!handler)
+                return;
 
-                  handler->OnBucketsReady(
-                      info_list, incognito ? base::FilePath() : partition_path);
-                },
-                handler, partition->GetPath()));
-          },
-          weak_factory_.GetWeakPtr()));
+              handler->OnBucketsReady(
+                  info_list, incognito ? base::FilePath() : partition_path);
+            },
+            handler, partition->GetPath()));
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 void IndexedDBInternalsHandler::OnBucketsReady(

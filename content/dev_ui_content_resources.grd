@@ -39,9 +39,6 @@ files that belong there instead.
       <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_HTML_JS" file="${root_gen_dir}/content/browser/resources/gpu/info_view_table_row.html.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_JS" file="browser/resources/gpu/info_view_table_row.js" type="BINDATA" />
       <include name="IDR_GPU_VULKAN_INFO_JS" file="browser/resources/gpu/vulkan_info.js" type="BINDATA" />
-      <include name="IDR_INDEXED_DB_INTERNALS_HTML" file="browser/resources/indexed_db/indexeddb_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_INDEXED_DB_INTERNALS_JS" file="browser/resources/indexed_db/indexeddb_internals.js" type="BINDATA" />
-      <include name="IDR_INDEXED_DB_INTERNALS_CSS" file="browser/resources/indexed_db/indexeddb_internals.css" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_HTML" file="browser/resources/net/network_errors_listing.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_JS" file="browser/resources/net/network_errors_listing.js" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_CSS" file="browser/resources/net/network_errors_listing.css" type="BINDATA" />

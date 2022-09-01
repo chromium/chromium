@@ -3,5 +3,8 @@
 # found in the LICENSE file.
 
 group("resources") {
-  public_deps = [ "quota:resources" ]
+  public_deps = [
+    "indexed_db:resources",
+    "quota:resources",
+  ]
 }
