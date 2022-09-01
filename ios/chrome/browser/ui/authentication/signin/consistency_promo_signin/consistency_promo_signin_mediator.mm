@@ -7,6 +7,7 @@
 #import "base/cancelable_callback.h"
 #import "base/threading/thread_task_runner_handle.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -234,6 +235,13 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 - (void)onAccountsInCookieUpdated:
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
+  if (base::FeatureList::IsEnabled(signin::kEnableUnicornAccountSupport) &&
+      _authenticationFlow) {
+    // Ignore if `_authenticationFlow` is in progress since
+    // `onAccountsInCookieUpdated` may be called when data is cleared on
+    // sign-in.
+    return;
+  }
   if (!self.signingIdentity) {
     // TODO(crbug.com/1204528): This case should not happen, but
     // `onAccountsInCookieUpdated:error:` can be called twice when there is an

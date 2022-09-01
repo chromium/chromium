@@ -57,6 +57,9 @@ enum AuthenticationState {
 // Whether this flow is curently handling an error.
 @property(nonatomic, assign) BOOL handlingError;
 
+// The action to perform following account sign-in.
+@property(nonatomic, assign) PostSignInAction postSignInAction;
+
 // Indicates how to handle existing data when the signed in account is being
 // switched. Possible values:
 //   * User choice: present an alert view asking the user whether the data
@@ -85,7 +88,6 @@ enum AuthenticationState {
 @end
 
 @implementation AuthenticationFlow {
-  PostSignInAction _postSignInAction;
   UIViewController* _presentingViewController;
   CompletionCallback _signInCompletion;
   AuthenticationFlowPerformer* _performer;
@@ -217,8 +219,8 @@ enum AuthenticationState {
       return CHECK_MERGE_CASE;
     case CHECK_MERGE_CASE:
       // If the user enabled Sync, expect the data clearing strategy to be set.
-      DCHECK(_postSignInAction == POST_SIGNIN_ACTION_NONE ||
-             (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC &&
+      DCHECK(self.postSignInAction == POST_SIGNIN_ACTION_NONE ||
+             (self.postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC &&
               self.localDataClearingStrategy != SHOULD_CLEAR_DATA_USER_CHOICE));
       if (_shouldShowManagedConfirmation)
         return SHOW_MANAGED_CONFIRMATION;
@@ -242,7 +244,7 @@ enum AuthenticationState {
     case CLEAR_DATA:
       return SIGN_IN;
     case SIGN_IN:
-      switch (_postSignInAction) {
+      switch (self.postSignInAction) {
         case POST_SIGNIN_ACTION_COMMIT_SYNC:
           return COMMIT_SYNC;
         case POST_SIGNIN_ACTION_NONE:
@@ -293,32 +295,34 @@ enum AuthenticationState {
                          forIdentity:_identityToSignIn];
       return;
 
-    case CHECK_MERGE_CASE:
+    case CHECK_MERGE_CASE: {
       DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
-      if (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC) {
-        if (base::FeatureList::IsEnabled(
-                signin::kEnableUnicornAccountSupport)) {
-          ios::ChromeIdentityService* identity_service =
-              ios::GetChromeBrowserProvider().GetChromeIdentityService();
-          __weak AuthenticationFlow* weakSelf = self;
-          identity_service->IsSubjectToParentalControls(
-              _identityToSignIn, ^(ios::ChromeIdentityCapabilityResult result) {
-                if (result == ios::ChromeIdentityCapabilityResult::kTrue) {
-                  weakSelf.localDataClearingStrategy =
-                      SHOULD_CLEAR_DATA_CLEAR_DATA;
-                  [weakSelf continueSignin];
-                  return;
-                }
+      __weak AuthenticationFlow* weakSelf = self;
+      ios::CapabilitiesCallback callback =
+          ^(ios::ChromeIdentityCapabilityResult result) {
+            if (result == ios::ChromeIdentityCapabilityResult::kTrue) {
+              [weakSelf didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
+              return;
+            }
+            switch (weakSelf.postSignInAction) {
+              case POST_SIGNIN_ACTION_COMMIT_SYNC:
                 [weakSelf checkMergeCaseForUnsupervisedAccounts];
-              });
-        } else {
-          [self checkMergeCaseForUnsupervisedAccounts];
-        }
-        return;
+                break;
+              case POST_SIGNIN_ACTION_NONE:
+                [weakSelf continueSignin];
+                break;
+            }
+          };
+      if (base::FeatureList::IsEnabled(signin::kEnableUnicornAccountSupport)) {
+        ios::ChromeIdentityService* identity_service =
+            ios::GetChromeBrowserProvider().GetChromeIdentityService();
+        identity_service->IsSubjectToParentalControls(_identityToSignIn,
+                                                      callback);
+      } else {
+        callback(ios::ChromeIdentityCapabilityResult::kFalse);
       }
-      [self continueSignin];
       return;
-
+    }
     case SHOW_MANAGED_CONFIRMATION:
       [_performer
           showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
@@ -436,7 +440,7 @@ enum AuthenticationState {
     bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
     signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSignin,
                                             isManagedAccount);
-    if (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)
+    if (self.postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)
       signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSync,
                                               isManagedAccount);
   }
@@ -511,7 +515,7 @@ enum AuthenticationState {
   DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
   _shouldShowManagedConfirmation =
       [hostedDomain length] > 0 &&
-      (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC);
+      (self.postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC);
   _identityToSignInHostedDomain = hostedDomain;
   _shouldFetchUserPolicy = YES;
   [self continueSignin];
