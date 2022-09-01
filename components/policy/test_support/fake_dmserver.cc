@@ -31,6 +31,7 @@ constexpr char kUsernameKey[] = "username";
 constexpr char kStateKeysKey[] = "state_keys";
 constexpr char kAllowedPolicyTypesKey[] = "allowed_policy_types";
 constexpr char kPoliciesKey[] = "policies";
+constexpr char kExternalPoliciesKey[] = "external_policies";
 constexpr char kManagedUsersKey[] = "managed_users";
 constexpr char kPolicyUserKey[] = "policy_user";
 
@@ -157,7 +158,7 @@ bool FakeDMServer::SetPolicyPayload(const std::string* policy_type,
                                     const std::string* entity_id,
                                     const std::string* serialized_proto) {
   if (!policy_type || !serialized_proto) {
-    LOG(ERROR) << "Coudln't find the policy type or value fields";
+    LOG(ERROR) << "Couldn't find the policy type or value fields";
     return false;
   }
   std::string decoded_proto;
@@ -171,6 +172,25 @@ bool FakeDMServer::SetPolicyPayload(const std::string* policy_type,
   } else {
     policy_storage()->SetPolicyPayload(*policy_type, decoded_proto);
   }
+  return true;
+}
+
+bool FakeDMServer::SetExternalPolicyPayload(
+    const std::string* policy_type,
+    const std::string* entity_id,
+    const std::string* serialized_raw_policy) {
+  if (!policy_type || !entity_id || !serialized_raw_policy) {
+    LOG(ERROR) << "Couldn't find the policy type or entity id or value fields";
+    return false;
+  }
+  std::string decoded_raw_policy;
+  if (!base::Base64Decode(*serialized_raw_policy, &decoded_raw_policy)) {
+    LOG(ERROR) << "Unable to base64 decode validation value from "
+               << *serialized_raw_policy;
+    return false;
+  }
+  EmbeddedPolicyTestServer::UpdateExternalPolicy(*policy_type, *entity_id,
+                                                 decoded_raw_policy);
   return true;
 }
 
@@ -230,6 +250,23 @@ bool FakeDMServer::ReadPolicyBlobFile() {
                             policy.GetDict().FindString(kEntityIdKey),
                             policy.GetDict().FindString(kPolicyValueKey))) {
         LOG(ERROR) << "Failed to set the policy";
+        return false;
+      }
+    }
+  }
+
+  base::Value::List* external_policies = dict.FindList(kExternalPoliciesKey);
+  if (external_policies) {
+    for (const base::Value& policy : *external_policies) {
+      if (!policy.is_dict()) {
+        LOG(ERROR) << "The current external policy isn't dict";
+        return false;
+      }
+      if (!SetExternalPolicyPayload(
+              policy.GetDict().FindString(kPolicyTypeKey),
+              policy.GetDict().FindString(kEntityIdKey),
+              policy.GetDict().FindString(kPolicyValueKey))) {
+        LOG(ERROR) << "Failed to set the external policy";
         return false;
       }
     }

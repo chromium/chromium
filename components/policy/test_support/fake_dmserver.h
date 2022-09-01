@@ -29,14 +29,21 @@ Example:
       "policy_type" : "google/chromeos/user",
       "value" : "base64 encoded proto message",
     },
-        {
+    {
       "policy_type" : "google/chromeos/device",
       "value" : "base64 encoded proto message",
     },
-        {
+    {
       "policy_type" : "google/chromeos/publicaccount",
       "entity_id" : "accountid@managedchrome.com",
       "value" : "base64 encoded proto message",
+    }
+  ],
+  "external_policies" : [
+    {
+      "policy_type" : "google/chrome/extension",
+      "entity_id" : "extension_id",
+      "value" : "base64 encoded raw json value",
     }
   ],
   "managed_users" : [
@@ -90,6 +97,11 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   bool SetPolicyPayload(const std::string* policy_type,
                         const std::string* entity_id,
                         const std::string* serialized_proto);
+  // Sets the external policy payload in the policy storage, it will return true
+  // if it's able to set the policy and false otherwise.
+  bool SetExternalPolicyPayload(const std::string* policy_type,
+                                const std::string* entity_id,
+                                const std::string* serialized_raw_policy);
   // Reads and sets the values in the policy blob file, it will return true if
   // the policy blob file doesn't exist yet or all the values are read
   // correctly, and false otherwise.
