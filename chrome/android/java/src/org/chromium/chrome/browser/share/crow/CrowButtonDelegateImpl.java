@@ -18,8 +18,11 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -91,19 +94,28 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
 
     @Override
     public void launchCustomTab(
-            Context currentContext, GURL pageUrl, GURL canonicalUrl, boolean isFollowing) {
-        String customTabUrl = buildServerUrl(new GURL(getServerUrl()), pageUrl, canonicalUrl,
-                getPublicationId(pageUrl), areMetricsEnabled(), isFollowing);
+            Tab tab, Context currentContext, GURL pageUrl, GURL canonicalUrl, boolean isFollowing) {
+        String customTabUrl = getUrlForWebFlow(pageUrl, canonicalUrl, isFollowing);
 
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setShowTitle(true);
-        builder.setColorScheme(ColorUtils.inNightMode(currentContext)
-                        ? CustomTabsIntent.COLOR_SCHEME_DARK
-                        : CustomTabsIntent.COLOR_SCHEME_LIGHT);
-        builder.setShareState(CustomTabsIntent.SHARE_STATE_OFF);
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.intent.setClassName(currentContext, CustomTabActivity.class.getName());
-        customTabsIntent.launchUrl(currentContext, Uri.parse(customTabUrl));
+        // Experiment flag: open in standard new tab.
+        if (ChromeFeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON_LAUNCH_TAB)) {
+            // TabLaunchType.FROM_LINK will allow back to navigate back to the
+            // current tab.
+            LoadUrlParams loadUrlParams = new LoadUrlParams(customTabUrl);
+            new TabDelegate(false).createNewTab(loadUrlParams, TabLaunchType.FROM_LINK, tab);
+        } else {
+            // Default to custom tab.
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            builder.setShowTitle(true);
+            builder.setColorScheme(ColorUtils.inNightMode(currentContext)
+                            ? CustomTabsIntent.COLOR_SCHEME_DARK
+                            : CustomTabsIntent.COLOR_SCHEME_LIGHT);
+            builder.setShareState(CustomTabsIntent.SHARE_STATE_OFF);
+            CustomTabsIntent customTabsIntent = builder.build();
+            customTabsIntent.intent.setClassName(currentContext, CustomTabActivity.class.getName());
+            customTabsIntent.launchUrl(currentContext, Uri.parse(customTabUrl));
+        }
     }
 
     public boolean isCrowEnabled() {
@@ -187,8 +199,14 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
                         Profile.getLastUsedRegularProfile()));
     }
 
+    @Override
+    public String getUrlForWebFlow(GURL pageUrl, GURL canonicalPageUrl, boolean isFollowing) {
+        return buildServerUrlInternal(new GURL(getServerUrl()), pageUrl, canonicalPageUrl,
+                getPublicationId(pageUrl), areMetricsEnabled(), isFollowing);
+    }
+
     @VisibleForTesting
-    public String buildServerUrl(GURL serverUrl, GURL pageUrl, GURL canonicalPageUrl,
+    public String buildServerUrlInternal(GURL serverUrl, GURL pageUrl, GURL canonicalPageUrl,
             String publicationId, boolean allowMetrics, boolean isFollowing) {
         String serverSpec = serverUrl.getSpec();
         if (serverSpec.isEmpty()) return "";

@@ -4203,7 +4203,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kChromeShareLongScreenshot,
                                     kLongScreenshotVariations,
                                     "ChromeShareLongScreenshot")},
-
+    {"chrome-sharing-crow-launch-tab",
+     flag_descriptions::kChromeSharingCrowLaunchTabName,
+     flag_descriptions::kChromeSharingCrowLaunchTabDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(share::kCrowLaunchTab)},
     {"chrome-sharing-hub-launch-adjacent",
      flag_descriptions::kChromeSharingHubLaunchAdjacentName,
      flag_descriptions::kChromeSharingHubLaunchAdjacentDescription, kOsAndroid,

@@ -1910,6 +1910,9 @@ extern const char kChimeAndroidSdkName[];
 extern const char kChromeShareLongScreenshotName[];
 extern const char kChromeShareLongScreenshotDescription[];
 
+extern const char kChromeSharingCrowLaunchTabName[];
+extern const char kChromeSharingCrowLaunchTabDescription[];
+
 extern const char kChromeSharingHubLaunchAdjacentName[];
 extern const char kChromeSharingHubLaunchAdjacentDescription[];
 

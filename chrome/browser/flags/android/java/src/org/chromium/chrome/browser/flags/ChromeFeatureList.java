@@ -526,6 +526,7 @@ public abstract class ChromeFeatureList {
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SHARE_BUTTON_IN_TOP_TOOLBAR = "ShareButtonInTopToolbar";
     public static final String SHARE_CROW_BUTTON = "ShareCrowButton";
+    public static final String SHARE_CROW_BUTTON_LAUNCH_TAB = "ShareCrowLaunchTab";
     public static final String SHARED_HIGHLIGHTING_AMP = "SharedHighlightingAmp";
     public static final String SHOPPING_LIST = "ShoppingList";
     public static final String SHOW_EXTENDED_PRELOADING_SETTING = "ShowExtendedPreloadingSetting";

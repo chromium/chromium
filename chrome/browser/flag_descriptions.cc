@@ -3392,6 +3392,12 @@ const char kChromeShareLongScreenshotName[] = "Chrome Share Long Screenshots";
 const char kChromeShareLongScreenshotDescription[] =
     "Enables UI to edit and share long screenshots on Android";
 
+const char kChromeSharingCrowLaunchTabName[] =
+    "Launch Thank Creator actions in standard tab";
+const char kChromeSharingCrowLaunchTabDescription[] =
+    "Launches Thank Creator actions in a traditional  new tab; default is a "
+    "custom tab. For internal debugging.";
+
 const char kChromeSharingHubLaunchAdjacentName[] =
     "Launch new share hub actions in adjacent window";
 const char kChromeSharingHubLaunchAdjacentDescription[] =

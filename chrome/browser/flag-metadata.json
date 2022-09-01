@@ -918,6 +918,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "chrome-sharing-crow-launch-tab",
+    "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "chrome-sharing-hub-launch-adjacent",
     "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 109

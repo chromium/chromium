@@ -56260,6 +56260,7 @@ from previous Chrome versions.
   <int value="-1993730028" label="CrostiniPortForwarding:enabled"/>
   <int value="-1992999120" label="composite-after-paint"/>
   <int value="-1992488524" label="AutofillAcrossIframes:disabled"/>
+  <int value="-1991935790" label="ShareCrowLaunchTab:enabled"/>
   <int value="-1990614981" label="StoragePressureUI:disabled"/>
   <int value="-1990238241" label="ChromeOSHWVBREncoding:enabled"/>
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
@@ -62692,6 +62693,7 @@ from previous Chrome versions.
   <int value="1978548617" label="FilesZipMount:enabled"/>
   <int value="1978570295" label="RawDraw:disabled"/>
   <int value="1979222611" label="XRSandbox:disabled"/>
+  <int value="1979252604" label="ShareCrowLaunchTab:disabled"/>
   <int value="1979472169" label="TabGroupsFeedback:disabled"/>
   <int value="1979536751" label="lacros-availability-policy"/>
   <int value="1980011075" label="debug-packed-apps"/>

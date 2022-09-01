@@ -31,11 +31,11 @@ public interface CrowButtonDelegate {
      *                        entry point.
      * @param pageUrl URL for the page; passed in rather than derived from currentTab
      *     or WebContents's lastCommittedURL as it was used to construct UI in the caller.
-     * @param canonicalUrl Canonical URL for 'pageUrl.' May be empty.
+     * @param canonicalPageUrl Canonical URL for 'pageUrl.' May be empty.
      * @param isFollowing Whether the user is following the associated host in the feed.
      */
-    void launchCustomTab(
-            Context currentContext, GURL pageUrl, GURL canonicalUrl, boolean isFollowing);
+    void launchCustomTab(Tab tab, Context currentContext, GURL pageUrl, GURL canonicalPageUrl,
+            boolean isFollowing);
 
     /**
      * @return experiment-configured chip text.
@@ -48,4 +48,13 @@ public interface CrowButtonDelegate {
      * @param Callback<String> callback returning the canonical URL, or empty.
      */
     void requestCanonicalUrl(Tab tab, Callback<GURL> url);
+
+    /**
+     * Returns a URL that can be loaded for the web-hosted piece of this feature.
+     *
+     * @param pageUrl the URL of the page with content.
+     * @param canonicalPageUrl canonical URL for |pageUrl|, may be an empty GURL.
+     * @param isFollowing whether the user is following |pageUrl|'s site on the feed.
+     */
+    String getUrlForWebFlow(GURL pageUrl, GURL canonicalPageUrl, boolean isFollowing);
 }

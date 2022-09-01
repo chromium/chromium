@@ -19,6 +19,10 @@ extern const base::Feature kUpcomingSharingFeatures;
 extern const base::Feature kShareToGoogleCollections;
 extern const base::Feature kCormorant;
 
+#if BUILDFLAG(IS_ANDROID)
+extern const base::Feature kCrowLaunchTab;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const base::Feature kDesktopSharePreview;
 
