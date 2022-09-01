@@ -3333,6 +3333,36 @@
                     "enable_features": [
                         "CriticalPersistedTabData"
                     ]
+                },
+                {
+                    "name": "Enabled_Save_On_Deferred_Startup",
+                    "params": {
+                        "critical_persisted_tab_data_save_only": "false",
+                        "delay_saves_until_deferred_startup": "true"
+                    },
+                    "enable_features": [
+                        "CriticalPersistedTabData"
+                    ]
+                },
+                {
+                    "name": "Enabled_Save_And_Restore",
+                    "params": {
+                        "critical_persisted_tab_data_save_only": "false",
+                        "delay_saves_until_deferred_startup": "false"
+                    },
+                    "enable_features": [
+                        "CriticalPersistedTabData"
+                    ]
+                },
+                {
+                    "name": "Enabled_Save_Only",
+                    "params": {
+                        "critical_persisted_tab_data_save_only": "true",
+                        "delay_saves_until_deferred_startup": "false"
+                    },
+                    "enable_features": [
+                        "CriticalPersistedTabData"
+                    ]
                 }
             ]
         }
