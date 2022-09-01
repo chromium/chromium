@@ -6,7 +6,12 @@
 #define ASH_GLANCEABLES_GLANCEABLES_RESTORE_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/image_button.h"
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace ash {
 
@@ -18,6 +23,11 @@ class ASH_EXPORT GlanceablesRestoreView : public views::ImageButton {
   GlanceablesRestoreView(const GlanceablesRestoreView&) = delete;
   GlanceablesRestoreView& operator=(const GlanceablesRestoreView&) = delete;
   ~GlanceablesRestoreView() override;
+
+ private:
+  void OnSignoutScreenshotDecoded(const gfx::ImageSkia& image);
+
+  base::WeakPtrFactory<GlanceablesRestoreView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

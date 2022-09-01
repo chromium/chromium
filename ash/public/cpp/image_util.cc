@@ -70,23 +70,25 @@ gfx::ImageSkia CreateEmptyImage(const gfx::Size& size) {
 }
 
 void DecodeImageFile(DecodeImageCallback callback,
-                     const base::FilePath& file_path) {
+                     const base::FilePath& file_path,
+                     data_decoder::mojom::ImageCodec codec) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ReadFileToString, file_path),
-      base::BindOnce(&DecodeImageData, std::move(callback)));
+      base::BindOnce(&DecodeImageData, std::move(callback), codec));
 }
 
-void DecodeImageData(DecodeImageCallback callback, const std::string& data) {
+void DecodeImageData(DecodeImageCallback callback,
+                     data_decoder::mojom::ImageCodec codec,
+                     const std::string& data) {
   if (data.empty()) {
     std::move(callback).Run(gfx::ImageSkia());
     return;
   }
   data_decoder::DecodeImageIsolated(
-      base::as_bytes(base::make_span(data)),
-      data_decoder::mojom::ImageCodec::kDefault,
+      base::as_bytes(base::make_span(data)), codec,
       /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&ToImageSkia, std::move(callback)));

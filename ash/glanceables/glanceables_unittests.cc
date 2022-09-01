@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -26,14 +28,22 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_state.h"
+#include "base/base_paths.h"
 #include "base/check.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/test_event.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -235,6 +245,38 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
 
   EXPECT_EQ(std::get<0>(items[1])->GetText(), u"Future event, later today");
   EXPECT_EQ(std::get<1>(items[1])->GetText(), u"21:30 – 22:30");
+}
+
+TEST_F(GlanceablesTest, RestoreViewRendersScreenshot) {
+  data_decoder::test::InProcessDataDecoder data_decoder;
+  const SkColor expected_color = SK_ColorYELLOW;
+
+  // Override home directory.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride home_dir_override(base::DIR_HOME,
+                                             temp_dir.GetPath());
+
+  // Simulate that shutdown screenshot is there.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(400, 300);
+  bitmap.eraseColor(expected_color);
+  std::vector<unsigned char> png_data;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &png_data);
+  ASSERT_TRUE(base::WriteFile(
+      temp_dir.GetPath().AppendASCII("signout_screenshot.png"), png_data));
+
+  controller_->CreateUi();
+  GlanceablesRestoreView* restore_view = GetRestoreView();
+  ASSERT_TRUE(restore_view);
+
+  // Wait for `image_util::DecodeImageFile` callback to run.
+  base::RunLoop().RunUntilIdle();
+  gfx::ImageSkia image = restore_view->GetImage(views::Button::STATE_NORMAL);
+  EXPECT_FALSE(image.isNull());
+  EXPECT_GT(image.width(), 0);
+  EXPECT_GT(image.height(), 0);
+  EXPECT_EQ(image.bitmap()->getColor(150, 100), expected_color);
 }
 
 TEST_F(GlanceablesTest, ClickOnSessionRestore) {

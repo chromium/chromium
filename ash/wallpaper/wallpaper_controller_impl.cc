@@ -77,6 +77,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -1160,7 +1161,9 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
         .Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  image_util::DecodeImageData(std::move(decoded_callback), image_data);
+  image_util::DecodeImageData(std::move(decoded_callback),
+                              data_decoder::mojom::ImageCodec::kDefault,
+                              image_data);
 }
 
 void WallpaperControllerImpl::SetGooglePhotosWallpaper(
@@ -1334,7 +1337,8 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  image_util::DecodeImageData(std::move(callback), data);
+  image_util::DecodeImageData(std::move(callback),
+                              data_decoder::mojom::ImageCodec::kDefault, data);
 }
 
 void WallpaperControllerImpl::SetDevicePolicyWallpaperPath(
