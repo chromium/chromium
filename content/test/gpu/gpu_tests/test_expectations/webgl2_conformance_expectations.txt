@@ -849,7 +849,7 @@ crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 crbug.com/1218607 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
-crbug.com/1221365 [ chromeos chromeos-board-amd64-generic ] deqp/data/gles3/shaders/swizzles.html [ Failure ]
+crbug.com/1221365 [ chromeos chromeos-board-amd64-generic ] deqp/data/gles3/shaders/swizzles* [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies

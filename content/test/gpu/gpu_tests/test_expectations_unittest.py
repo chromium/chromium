@@ -302,7 +302,8 @@ class GpuTestExpectationsValidation(unittest.TestCase):
       if not 'WebglExtension_' in pattern:
         full_path = os.path.normpath(
             os.path.join(webgl_test_util.conformance_path, pattern))
-        self.assertTrue(os.path.exists(full_path))
+        self.assertTrue(os.path.exists(full_path),
+                        '%s does not exist' % full_path)
 
     webgl_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
