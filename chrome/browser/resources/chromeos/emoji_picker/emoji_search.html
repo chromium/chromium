@@ -171,7 +171,7 @@
   </template>
 </div>
 
-<template is="dom-if" if="[[search]]">
+<template is="dom-if" if="[[searchNotEmpty(searchResults)]]">
   <div id="results" on-scroll="onSearchScroll">
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results

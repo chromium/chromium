@@ -55,8 +55,6 @@ export class EmojiPicker extends PolymerElement {
       categoriesHistory: {type: Object, value: () => ({})},
       /** @private {number} */
       pagination: {type: Number, value: 1, observer: 'onPaginationChanged'},
-      /** @private {string} */
-      search: {type: String, value: '', observer: 'onSearchChanged'},
       /** @private {boolean} */
       searchLazyIndexing: {type: Boolean, value: true},
       /** @private {boolean} */
@@ -122,6 +120,7 @@ export class EmojiPicker extends PolymerElement {
     this.addEventListener(
       events.CATEGORY_BUTTON_CLICK,
       ev => this.onCategoryButtonClick(ev.detail.categoryName));
+    this.addEventListener('search', ev => this.onSearchChanged(ev.detail));
   }
 
   /**
@@ -600,11 +599,6 @@ export class EmojiPicker extends PolymerElement {
    * @param {boolean} updateTabsScroll
    */
   updateActiveGroup(updateTabsScroll) {
-    // no need to update scroll state if search is showing.
-    if (this.search) {
-      return;
-    }
-
     const activeGroupId = this.getActiveGroupIdFromScrollPosition();
     this.set('pagination', this.getPaginationFromGroupId(activeGroupId));
     this.updateChevrons();

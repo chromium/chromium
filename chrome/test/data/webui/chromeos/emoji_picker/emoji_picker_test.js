@@ -383,16 +383,17 @@ suite('<emoji-picker>', () => {
       const search = findInEmojiPicker('emoji-search');
       // This particular emoji only appears in the third tab of the test
       // ordering
-      search.search = 'face with tears of joy';
+      search.$['search'].setValue('face with tears of joy');
 
-      await waitForCondition(
-          () => search.getNumSearchResults() > 0, 'no search get any results',
-          1000);
+      await waitForCondition(() => search.searchResults);
       assertGT(search.getNumSearchResults(), 0);
     });
     test('finds no results for garbage search', async () => {
       const search = findInEmojiPicker('emoji-search');
-      search.search = 'THIS string should not match anything';
+      search.$['search'].setValue('THIS string should not match anything');
+
+      await waitForCondition(
+          () => findInEmojiPicker('emoji-search', '.no-result'));
       assertEquals(search.getNumSearchResults(), 0);
     });
   });
