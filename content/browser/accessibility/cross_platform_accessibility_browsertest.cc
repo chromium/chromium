@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       BrowserAccessibilityManager::FromID(iframe_tree_id);
   ASSERT_NE(nullptr, iframe_manager);
 
-  const ui::AXNode* sub_document = iframe_manager->GetRootAsAXNode();
+  const ui::AXNode* sub_document = iframe_manager->GetRoot();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, sub_document->data().role);
   ASSERT_EQ(1u, sub_document->children().size());
 

@@ -92,7 +92,7 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   update.nodes = {root_data, link_data, text1_data, text2_data};
 
   Init(update);
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* link_node = root_node->children()[0];
   AXNode* text2_node = link_node->children()[1];
   AXPlatformNodeWin* owner =
@@ -196,7 +196,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
   AXNode* empty_text_node = root_node->children()[1];
   AXPlatformNodeWin* owner =
@@ -323,7 +323,7 @@ TEST_F(AXPlatformNodeTextProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* dialog_node = root_node->children()[0];
   AXPlatformNodeWin* owner =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
@@ -376,7 +376,7 @@ TEST_F(AXPlatformNodeTextProviderTest, NearestTextIndexToPoint) {
 
   Init(root_data, text_data);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
 
   struct NearestTextIndexTestData {
@@ -727,7 +727,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   selected_tree_data.sel_anchor_offset = 1;
   selected_tree_data.sel_focus_offset = 1;
 
-  AXNode* text_edit_node = GetRootAsAXNode()->children()[1];
+  AXNode* text_edit_node = GetRoot()->children()[1];
 
   ComPtr<IRawElementProviderSimple> text_edit_com =
       QueryInterfaceFromNode<IRawElementProviderSimple>(text_edit_node);

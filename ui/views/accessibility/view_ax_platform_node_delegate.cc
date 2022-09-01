@@ -462,8 +462,8 @@ ViewAXPlatformNodeDelegate::CreateTextPositionAt(
         ->Unserialize(update);
   }
 
-  return ui::AXNodePosition::CreatePosition(
-      *dummy_tree_manager_->GetRootAsAXNode(), offset, affinity);
+  return ui::AXNodePosition::CreatePosition(*dummy_tree_manager_->GetRoot(),
+                                            offset, affinity);
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNSWindow() {

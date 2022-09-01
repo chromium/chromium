@@ -25,7 +25,7 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     Init(root);
 
     TestAXNodeWrapper* wrapper =
-        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
+        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
     if (!wrapper)
       NOTREACHED();
     AXPlatformNodeAuraLinux::SetApplication(wrapper->ax_platform_node());
@@ -40,7 +40,7 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
 
   void TearDown() override {
     TestAXNodeWrapper* wrapper =
-        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
+        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
     if (!wrapper)
       NOTREACHED();
     g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
@@ -78,7 +78,7 @@ TEST_F(AtkUtilAuraLinuxTest, KeySnooping) {
   EXPECT_EQ(keyval_seen, 55);
 
   TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
+      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
   DCHECK(wrapper);
   AXMode prev_mode = wrapper->ax_platform_node()->ax_mode_;
   // Disables AX mode.

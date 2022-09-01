@@ -1434,7 +1434,7 @@ AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetRootDelegate(
     const ui::AXTreeID tree_id) {
   const AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
   DCHECK(ax_tree_manager);
-  AXNode* root_node = ax_tree_manager->GetRootAsAXNode();
+  AXNode* root_node = ax_tree_manager->GetRoot();
   const AXPlatformNode* root_platform_node =
       GetOwner()->GetDelegate()->GetFromTreeIDAndNodeID(tree_id,
                                                         root_node->id());

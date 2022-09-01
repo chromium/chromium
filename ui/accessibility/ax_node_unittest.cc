@@ -374,10 +374,10 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
   auto tree_2 = std::make_unique<AXTree>(initial_state_2);
   TestAXTreeManager tree_manager_2(std::move(tree_2));
 
-  const AXNode* root_node_1 = tree_manager_1.GetRootAsAXNode();
+  const AXNode* root_node_1 = tree_manager_1.GetRoot();
   ASSERT_EQ(root_1.id, root_node_1->id());
 
-  const AXNode* root_node_2 = tree_manager_2.GetRootAsAXNode();
+  const AXNode* root_node_2 = tree_manager_2.GetRoot();
   ASSERT_EQ(root_2.id, root_node_2->id());
 
   EXPECT_EQ(0u, root_node_1->GetChildCount());

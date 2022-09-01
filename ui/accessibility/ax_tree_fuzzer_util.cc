@@ -215,8 +215,8 @@ bool AXTreeFuzzerGenerator::GenerateTreeUpdate(FuzzerData& fuzz_data,
                                                size_t node_count) {
   ui::AXTreeUpdate tree_update;
   std::set<ui::AXNodeID> updated_nodes;
-  RecursiveGenerateUpdate(tree_manager_.GetRootAsAXNode(), tree_update,
-                          fuzz_data, updated_nodes);
+  RecursiveGenerateUpdate(tree_manager_.GetRoot(), tree_update, fuzz_data,
+                          updated_nodes);
   return GetTree()->Unserialize(tree_update);
 }
 

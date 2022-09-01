@@ -1017,7 +1017,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderClone) {
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetRootAsAXNode()->children()[0]);
+                                   GetRoot()->children()[0]);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text");
 
   ComPtr<ITextRangeProvider> text_range_provider_clone;
@@ -1047,7 +1047,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                          false /* build_word_boundaries_offsets */,
                          true /* place_text_on_one_line */));
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   // Get the textRangeProvider for the document,
   // which contains text "some textmore text".
@@ -1128,7 +1128,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderExpandToEnclosingCharacter) {
   ui::AXTreeUpdate update = BuildTextDocument({"some text", "more text"});
   Init(update);
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -1208,7 +1208,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetRootAsAXNode()->children()[1]);
+                                   GetRoot()->children()[1]);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"definitely not text");
 
   // Start endpoint is already on a word's start boundary.
@@ -1256,7 +1256,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetRootAsAXNode()->children()[0]);
+                                   GetRoot()->children()[0]);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"line #1");
 
   // Start endpoint is already on a line's start boundary.
@@ -1301,7 +1301,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderExpandToEnclosingParagraph) {
   Init(BuildAXTreeForMove());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -1365,7 +1365,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderExpandToEnclosingFormat) {
   Init(BuildAXTreeForMoveByFormat());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
   ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider_internal;
@@ -1644,7 +1644,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
 
@@ -1672,7 +1672,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderExpandToEnclosingDocument) {
   Init(BuildTextDocument({"some text", "more text", "even more text"}));
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
   AXNode* more_text_node = root_node->children()[1];
   AXNode* even_more_text_node = root_node->children()[2];
@@ -1780,7 +1780,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
 
@@ -1808,7 +1808,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     Init(BuildTextDocument({}));
 
     ComPtr<ITextRangeProvider> text_range_provider;
-    GetTextRangeProviderFromTextNode(text_range_provider, GetRootAsAXNode());
+    GetTextRangeProviderFromTextNode(text_range_provider, GetRoot());
 
     DestroyTree();
     ComPtr<ITextRangeProvider> text_range_provider_clone;
@@ -1845,7 +1845,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     Init(BuildTextDocument({}));
 
     ComPtr<ITextRangeProvider> this_provider;
-    GetTextRangeProviderFromTextNode(this_provider, GetRootAsAXNode());
+    GetTextRangeProviderFromTextNode(this_provider, GetRoot());
 
     ComPtr<ITextRangeProvider> other_provider_different_type;
     MockAXPlatformNodeTextRangeProviderWin::CreateMockTextRangeProvider(
@@ -1869,7 +1869,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetText) {
   Init(BuildTextDocument({"some text", "more text"}));
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -1919,7 +1919,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetText) {
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveCharacter) {
   Init(BuildAXTreeForMove());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2003,7 +2003,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
   Init(BuildAXTreeForMoveByFormat());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2133,7 +2133,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMovePage) {
   Init(BuildAXTreeForMoveByPage());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2209,7 +2209,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMovePage) {
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveWord) {
   Init(BuildAXTreeForMove());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2300,7 +2300,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveWord) {
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveLine) {
   Init(BuildAXTreeForMove());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2376,7 +2376,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveLine) {
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveParagraph) {
   Init(BuildAXTreeForMove());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2548,7 +2548,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveDocument) {
   Init(BuildAXTreeForMove());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2599,7 +2599,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMove) {
   Init(BuildAXTreeForMove());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -2610,7 +2610,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMove) {
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveEndpointByDocument) {
   Init(BuildTextDocument({"some text", "more text", "even more text"}));
-  AXNode* text_node = GetRootAsAXNode()->children()[1];
+  AXNode* text_node = GetRoot()->children()[1];
 
   // Run the test twice, one for TextUnit_Document and once for TextUnit_Page,
   // since they should have identical behavior.
@@ -2692,7 +2692,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetRootAsAXNode()->children()[0]);
+                                   GetRoot()->children()[0]);
 
   // Verify MoveEndpointByUnit with zero count has no effect
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"hey");
@@ -2789,7 +2789,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetRootAsAXNode()->children()[1]);
+                                   GetRoot()->children()[1]);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"more text");
 
   // Moving with zero count does not alter the range.
@@ -2886,7 +2886,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetRootAsAXNode()->children()[3]);
+                                   GetRoot()->children()[3]);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"3");
 
   // Moving with zero count does not alter the range.
@@ -3045,7 +3045,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Init(update);
 
   // Set up variables from the tree for testing.
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0]->children()[0];
 
   ComPtr<ITextRangeProvider> text_range_provider;
@@ -3123,7 +3123,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveEndpointByFormat) {
   Init(BuildAXTreeForMoveByFormat());
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
@@ -3183,7 +3183,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderCompare) {
   Init(BuildTextDocument({"some text", "some text"}));
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   // Get the textRangeProvider for the document,
   // which contains text "some textsome text".
@@ -3226,7 +3226,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelection) {
   Init(BuildTextDocument({"some text"}));
 
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(text_range_provider, GetRootAsAXNode());
+  GetTextRangeProviderFromTextNode(text_range_provider, GetRoot());
 
   ASSERT_UIA_INVALIDOPERATION(text_range_provider->AddToSelection());
   ASSERT_UIA_INVALIDOPERATION(text_range_provider->RemoveFromSelection());
@@ -3243,7 +3243,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Expected bounding rects:
   // <button>Button</button><input type="checkbox">Line 1<br>Line 2
   // |---------------------||---------------------||----|   |------|
-  GetTextRangeProviderFromTextNode(text_range_provider, GetRootAsAXNode());
+  GetTextRangeProviderFromTextNode(text_range_provider, GetRoot());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   std::vector<double> expected_values = {20,  20, 200, 30, /* button */
@@ -3422,7 +3422,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Init(update);
 
   // Set up variables from the tree for testing.
-  AXNode* paragraph_node = GetRootAsAXNode()->children()[0];
+  AXNode* paragraph_node = GetRoot()->children()[0];
   AXNode* static_text_node1 = paragraph_node->children()[0];
   AXNode* link_node = paragraph_node->children()[1];
   AXNode* inline_text_node1 = static_text_node1->children()[0];
@@ -3601,10 +3601,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Init(update);
 
   // Set up variables from the tree for testing.
-  AXNode* button_1_node = GetRootAsAXNode()->children()[0];
+  AXNode* button_1_node = GetRoot()->children()[0];
   AXNode* static_text_1_node = button_1_node->children()[0];
   AXNode* inline_text_1_node = static_text_1_node->children()[0];
-  AXNode* button_2_node = GetRootAsAXNode()->children()[1];
+  AXNode* button_2_node = GetRoot()->children()[1];
   AXNode* heading_node = button_2_node->children()[0];
   AXNode* static_text_2_node = heading_node->children()[0];
   AXNode* inline_text_2_node = static_text_2_node->children()[0];
@@ -3659,7 +3659,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveEndpointByRange) {
   Init(BuildTextDocument({"some text", "more text"}));
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
   AXNode* more_text_node = root_node->children()[1];
   AXPlatformNodeWin* owner =
@@ -4115,7 +4115,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
   AXNode* heading_node = root_node->children()[1];
   AXNode* heading_text_node = heading_node->children()[0];
@@ -4611,7 +4611,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* annotation_target_node = root_node->children()[0];
   AXNode* comment1_node = root_node->children()[1];
   AXNode* comment2_node = root_node->children()[2];
@@ -4741,7 +4741,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* highlighted_node = root_node->children()[0];
   AXNode* readonly_text_node = root_node->children()[1];
   AXNode* comment1_node = root_node->children()[2];
@@ -4848,7 +4848,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Init(update);
 
   ComPtr<ITextRangeProvider> document_range_provider;
-  GetTextRangeProviderFromTextNode(document_range_provider, GetRootAsAXNode());
+  GetTextRangeProviderFromTextNode(document_range_provider, GetRoot());
 
   EXPECT_UIA_TEXTATTRIBUTE_NOTSUPPORTED(document_range_provider,
                                         UIA_AfterParagraphSpacingAttributeId);
@@ -4958,7 +4958,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelect) {
   Init(BuildTextDocument({"some text", "more text2"}));
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   // Text range for the document, which contains text "some textmore text2".
   ComPtr<IRawElementProviderSimple> root_node_raw =
@@ -5165,7 +5165,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes = {root_data,   list_data,        list_item_data,
                   list_marker, static_text_data, list_item_text_data};
   Init(update);
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   // Text range related to "1. ".
   AXNode* list_node = root_node->children()[0];
@@ -5196,7 +5196,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderFindText) {
                          false /* build_word_boundaries_offsets */,
                          true /* place_text_on_one_line */));
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXPlatformNodeWin* owner =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
   ASSERT_NE(owner, nullptr);
@@ -5305,7 +5305,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
 
@@ -5331,7 +5331,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Init(BuildTextDocument({"text", "some", "text"},
                          false /* build_word_boundaries_offsets */,
                          true /* place_text_on_one_line */));
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
 
   ComPtr<ITextRangeProvider> root_range_provider;
   GetTextRangeProviderFromTextNode(root_range_provider, root_node);
@@ -5405,8 +5405,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     V_VT(&is_hidden_attr_val) = VT_BOOL;
     ComPtr<ITextRangeProvider> matched_range_provider;
     ComPtr<ITextRangeProvider> document_range_provider;
-    GetTextRangeProviderFromTextNode(document_range_provider,
-                                     GetRootAsAXNode());
+    GetTextRangeProviderFromTextNode(document_range_provider, GetRoot());
 
     // Search forward, look for IsHidden=true.
     // Expected: nullptr
@@ -5494,8 +5493,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     V_VT(&is_hidden_attr_val) = VT_BOOL;
     ComPtr<ITextRangeProvider> matched_range_provider;
     ComPtr<ITextRangeProvider> document_range_provider;
-    GetTextRangeProviderFromTextNode(document_range_provider,
-                                     GetRootAsAXNode());
+    GetTextRangeProviderFromTextNode(document_range_provider, GetRoot());
 
     // Search forward, look for IsHidden=true.
     // Expected: "text1"
@@ -5583,8 +5581,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     V_VT(&is_hidden_attr_val) = VT_BOOL;
     ComPtr<ITextRangeProvider> matched_range_provider;
     ComPtr<ITextRangeProvider> document_range_provider;
-    GetTextRangeProviderFromTextNode(document_range_provider,
-                                     GetRootAsAXNode());
+    GetTextRangeProviderFromTextNode(document_range_provider, GetRoot());
 
     // Search forward, look for IsHidden=true.
     // Expected: nullptr
@@ -5693,8 +5690,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     V_VT(&is_hidden_attr_val) = VT_BOOL;
     ComPtr<ITextRangeProvider> matched_range_provider;
     ComPtr<ITextRangeProvider> document_range_provider;
-    GetTextRangeProviderFromTextNode(document_range_provider,
-                                     GetRootAsAXNode());
+    GetTextRangeProviderFromTextNode(document_range_provider, GetRoot());
 
     // Search forward, look for IsHidden=true.
     // Expected: "text2text3"
@@ -5811,8 +5807,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     V_VT(&is_hidden_attr_val) = VT_BOOL;
     ComPtr<ITextRangeProvider> matched_range_provider;
     ComPtr<ITextRangeProvider> document_range_provider;
-    GetTextRangeProviderFromTextNode(document_range_provider,
-                                     GetRootAsAXNode());
+    GetTextRangeProviderFromTextNode(document_range_provider, GetRoot());
 
     // Search forward, look for IsHidden=true.
     // Expected: "text2text3text4"
@@ -5875,7 +5870,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, ElementNotAvailable) {
   Init(root_ax_node_data);
 
   ComPtr<IRawElementProviderSimple> raw_element_provider_simple =
-      QueryInterfaceFromNode<IRawElementProviderSimple>(GetRootAsAXNode());
+      QueryInterfaceFromNode<IRawElementProviderSimple>(GetRoot());
   ASSERT_NE(nullptr, raw_element_provider_simple.Get());
 
   ComPtr<ITextProvider> text_provider;
@@ -7126,7 +7121,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNodePosition::AXPositionInstance range_start =
       AXNodePosition::CreateTreePosition(tree_data.tree_id,
                                          generic_container_2.id,

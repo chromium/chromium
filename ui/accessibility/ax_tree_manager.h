@@ -50,7 +50,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   virtual AXTreeID GetParentTreeID() const;
 
   // Returns the AXNode that is at the root of the current tree.
-  AXNode* GetRootAsAXNode() const;
+  AXNode* GetRoot() const;
 
   // If this tree has a parent tree, returns the node in the parent tree that
   // hosts the current tree. Returns nullptr if this tree doesn't have a parent

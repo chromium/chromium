@@ -106,7 +106,7 @@ AXNode* AXNode::GetChildAtIndexCrossingTreeBoundary(size_t index) const {
     DCHECK_EQ(index, 0u)
         << "A node cannot be hosting both a child tree and other nodes as "
            "children.";
-    return child_tree_manager->GetRootAsAXNode();
+    return child_tree_manager->GetRoot();
   }
 
   return GetChildAtIndex(index);
@@ -136,7 +136,7 @@ AXNode* AXNode::GetUnignoredChildAtIndexCrossingTreeBoundary(
         << "A node cannot be hosting both a child tree and other nodes as "
            "children.";
     // A child tree is never ignored.
-    return child_tree_manager->GetRootAsAXNode();
+    return child_tree_manager->GetRoot();
   }
 
   return GetUnignoredChildAtIndex(index);
@@ -216,7 +216,7 @@ AXNode* AXNode::GetFirstUnignoredChildCrossingTreeBoundary() const {
 
   const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager)
-    return child_tree_manager->GetRootAsAXNode();
+    return child_tree_manager->GetRoot();
 
   return ComputeFirstUnignoredChildRecursive();
 }
@@ -247,7 +247,7 @@ AXNode* AXNode::GetLastUnignoredChildCrossingTreeBoundary() const {
 
   const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager)
-    return child_tree_manager->GetRootAsAXNode();
+    return child_tree_manager->GetRoot();
 
   return ComputeLastUnignoredChildRecursive();
 }
@@ -960,7 +960,7 @@ const std::string& AXNode::GetNameUTF8() const {
     const AXTreeManager* child_tree_manager =
         AXTreeManager::ForChildTree(*this);
     if (child_tree_manager)
-      node = child_tree_manager->GetRootAsAXNode();
+      node = child_tree_manager->GetRoot();
   }
 
   return node->GetStringAttribute(ax::mojom::StringAttribute::kName);

@@ -81,7 +81,7 @@ AXTreeID AXTreeManager::GetParentTreeID() const {
   return ax_tree_ ? ax_tree_->data().parent_tree_id : AXTreeIDUnknown();
 }
 
-AXNode* AXTreeManager::GetRootAsAXNode() const {
+AXNode* AXTreeManager::GetRoot() const {
   return ax_tree_ ? ax_tree_->root() : nullptr;
 }
 

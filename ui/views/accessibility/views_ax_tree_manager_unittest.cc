@@ -147,7 +147,7 @@ void ViewsAXTreeManagerTest::CloseWidget() {
 ui::AXNode* ViewsAXTreeManagerTest::FindNode(
     const ax::mojom::Role role,
     const std::string& name_or_value) const {
-  ui::AXNode* root = manager()->GetRootAsAXNode();
+  ui::AXNode* root = manager()->GetRoot();
 
   // If the manager has been closed, it will return nullptr as root.
   if (!root)

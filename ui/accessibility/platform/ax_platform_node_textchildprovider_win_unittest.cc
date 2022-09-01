@@ -79,7 +79,7 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
 
     Init(update);
 
-    AXNode* root_node = GetRootAsAXNode();
+    AXNode* root_node = GetRoot();
     AXNode* nontext_child_of_root_node = root_node->children()[0];
     AXNode* text_child_of_root_node = root_node->children()[1];
     AXNode* nontext_child_of_nontext_node =
@@ -278,8 +278,8 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       nontext_child_of_root_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
-  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetRootAsAXNode()));
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
   ASSERT_NE(nullptr, owner);
   SetOwner(owner, text_range_provider.Get());
 
@@ -303,8 +303,8 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       text_child_of_root_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
-  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetRootAsAXNode()));
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
   ASSERT_NE(nullptr, owner);
   SetOwner(owner, text_range_provider.Get());
 
@@ -326,8 +326,8 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       nontext_child_of_nontext_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
-  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetRootAsAXNode()));
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
   ASSERT_NE(nullptr, owner);
   SetOwner(owner, text_range_provider.Get());
 
@@ -349,8 +349,8 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       text_child_of_nontext_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
-  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetRootAsAXNode()));
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
   ASSERT_NE(nullptr, owner);
   SetOwner(owner, text_range_provider.Get());
 
@@ -372,8 +372,8 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
       text_child_of_text_text_child_provider_->get_TextRange(
           &text_range_provider));
   ASSERT_NE(nullptr, text_range_provider.Get());
-  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetRootAsAXNode()));
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetRoot()));
   ASSERT_NE(nullptr, owner);
   SetOwner(owner, text_range_provider.Get());
 

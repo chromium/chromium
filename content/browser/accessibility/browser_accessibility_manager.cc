@@ -357,7 +357,7 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
 
 BrowserAccessibility* BrowserAccessibilityManager::GetBrowserAccessibilityRoot()
     const {
-  ui::AXNode* root = GetRootAsAXNode();
+  ui::AXNode* root = GetRoot();
   return root ? GetFromAXNode(root) : nullptr;
 }
 
@@ -1706,7 +1706,7 @@ ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
   if (!parent_manager)
     return nullptr;
 
-  DCHECK(GetRootAsAXNode());
+  DCHECK(GetRoot());
 
   std::set<int32_t> host_node_ids =
       parent_manager->ax_tree()->GetNodeIdsForChildTreeId(ax_tree_id_);
@@ -1830,7 +1830,7 @@ ui::AXTreeUpdate BrowserAccessibilityManager::SnapshotAXTreeForTesting() {
       ax_serializable_tree()->CreateTreeSource());
   ui::AXTreeSerializer<const ui::AXNode*> serializer(tree_source.get());
   ui::AXTreeUpdate update;
-  serializer.SerializeChanges(GetRootAsAXNode(), &update);
+  serializer.SerializeChanges(GetRoot(), &update);
   return update;
 }
 
