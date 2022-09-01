@@ -1568,6 +1568,35 @@ export const ENTRIES = {
     sizeText: '51 bytes',
     typeText: 'Plain text',
   }),
+
+  trashRootDirectory: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: '.Trash',
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    nameText: '.Trash',
+    sizeText: '--',
+    typeText: 'Folder',
+  }),
+
+  trashInfoDirectory: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: '.Trash/info',
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    nameText: 'info',
+    sizeText: '--',
+    typeText: 'Folder',
+  }),
+
+  oldTrashInfoFile: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'old_file.trashinfo',
+    targetPath: '.Trash/info/hello.txt.trashinfo',
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    mimeType: 'text/plan',
+    nameText: 'hello.txt.trashinfo',
+    sizeText: '64 bytes',
+    typeText: 'TRASHINFO',
+  }),
 };
 
 

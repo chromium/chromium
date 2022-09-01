@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DialogType} from '../dialog_type.js';
-import {addEntries, RootPath} from '../test_util.js';
+import {addEntries, ENTRIES, RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -677,4 +677,47 @@ testcase.trashDontShowTrashRootWhenOpeningAsAndroidFilePicker = async () => {
   // Ensure the Trash root entry is not visible on the page.
   await remoteCall.waitForElementLost(
       appId, '#directory-tree [entry-label="Trash"]');
+};
+
+/**
+ * Tests that a trashed file with a deletion date >30 days gets permanently
+ * removed.
+ */
+testcase.trashEnsureOldEntriesArePeriodicallyRemoved = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const fileNameSelector = '#file-list [file-name="hello.txt"]';
+
+  // Select hello.txt and make sure a default task is executed when double
+  // clicking.
+  await remoteCall.waitAndClickElement(appId, fileNameSelector);
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await remoteCall.waitForElementLost(appId, fileNameSelector);
+
+  // Navigate to /Trash and ensure the file is there and has not been deleted,
+  // the deletion date is well within the periodic deletion boundaries.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitForElement(appId, fileNameSelector);
+
+  // Navigate away from /Trash (to /My files) as the periodic removal will only
+  // be kicked off on initial directory scan.
+  await navigateWithDirectoryTree(appId, '/My files');
+
+  // Overwrite the existing .trashinfo file with an older one that is outside
+  // the 30 day window and should trigger periodic removal.
+  await addEntries(['local'], [
+    ENTRIES.trashRootDirectory,
+    ENTRIES.trashInfoDirectory,
+    ENTRIES.oldTrashInfoFile,
+  ]);
+
+  // Navigate to /Trash and ensure the file has been removed.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitForElement(appId, `[scan-completed="Trash"]`);
+  await remoteCall.waitForElementLost(appId, fileNameSelector);
+
+  // Expect no feedback panel element to appear as the IOTask was kicked off
+  // with notifications disabled.
+  await remoteCall.waitForElementLost(
+      appId, ['#progress-panel', 'xf-panel-item']);
 };

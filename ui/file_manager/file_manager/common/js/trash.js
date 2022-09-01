@@ -22,7 +22,7 @@
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {parseTrashInfoFiles} from './api.js';
+import {parseTrashInfoFiles, startIOTask} from './api.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {metrics} from './metrics.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
@@ -86,6 +86,11 @@ TrashConfig.CONFIG = [
         'Computers': 'DRIVE_COMPUTERS_LABEL',
       }),
 ];
+
+/**
+ * Interval (ms) until items in trash are permanently deleted. 30 days.
+ */
+export const AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
  * Returns a list of strings that represent volumes that are enabled for Trash.
@@ -369,8 +374,7 @@ class TrashDirectoryReader {
    * @return {?TrashEntry}
    */
   createTrashEntry_(parsedEntry, infoEntry) {
-    const filesEntry = this.filesEntries_[parsedEntry.trashInfoFileName];
-    delete this.filesEntries_[parsedEntry.trashInfoFileName];
+    const filesEntry = this.getFilesEntry(parsedEntry.trashInfoFileName);
 
     // Ignore any .trashinfo file with no matching file entry.
     if (!filesEntry) {
@@ -383,6 +387,18 @@ class TrashDirectoryReader {
     return new TrashEntry(
         parsedEntry.restoreEntry.name, deletionDate, filesEntry, infoEntry,
         parsedEntry.restoreEntry);
+  }
+
+  /**
+   * Returns the Entry from the cached files entries.
+   * @param {string} trashInfoFileName The .trashinfo filename that keys the
+   *     files entry.
+   * @returns {?Entry} The files entry if one exists, null otherwise.
+   */
+  getFilesEntry(trashInfoFileName) {
+    const filesEntry = this.filesEntries_[trashInfoFileName];
+    delete this.filesEntries_[trashInfoFileName];
+    return filesEntry;
   }
 
   /**
@@ -435,6 +451,8 @@ class TrashDirectoryReader {
     // Consume infoReader which is initialized in the first call. Read from
     // .Trash/info until we have at least 1 result, or end of stream.
     const result = [];
+    const entriesToDelete = [];
+    const dateNow = Date.now();
     while (true) {
       let entries = [];
       try {
@@ -460,6 +478,16 @@ class TrashDirectoryReader {
         return;
       }
       for (const parsedEntry of parsedEntries) {
+        // In the event the parsed entry was deleted more than 30 days ago,
+        // schedule them for deletion and don't render them in the view.
+        if (parsedEntry.deletionDate < (dateNow - AUTO_DELETE_INTERVAL_MS)) {
+          entriesToDelete.push(infoEntryMap[parsedEntry.trashInfoFileName]);
+          const trashEntry = this.getFilesEntry(parsedEntry.trashInfoFileName);
+          if (trashEntry) {
+            entriesToDelete.push(trashEntry);
+          }
+          continue;
+        }
         const trashEntry = this.createTrashEntry_(
             parsedEntry, infoEntryMap[parsedEntry.trashInfoFileName]);
         if (trashEntry) {
@@ -471,6 +499,12 @@ class TrashDirectoryReader {
       }
     }
     success(result);
+
+    if (entriesToDelete.length > 0) {
+      startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.DELETE, entriesToDelete,
+          {showNotification: false});
+    }
 
     // Record the amount of files seen for this particularly directory reader.
     metrics.recordMediumCount(

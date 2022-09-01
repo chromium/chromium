@@ -1333,7 +1333,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashTraversingFolderShowsDisallowedDialog").EnableTrash(),
         TestCase("trashDontShowTrashRootOnSelectFileDialog").EnableTrash(),
         TestCase("trashDontShowTrashRootWhenOpeningAsAndroidFilePicker")
-            .EnableTrash()));
+            .EnableTrash(),
+        TestCase("trashEnsureOldEntriesArePeriodicallyRemoved").EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */
