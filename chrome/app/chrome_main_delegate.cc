@@ -197,10 +197,10 @@
 #include "chrome/child/pdf_child_init.h"
 #endif
 
-// #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/process_singleton.h"
-// #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
 #include "components/gwp_asan/client/gwp_asan.h"  // nogncheck

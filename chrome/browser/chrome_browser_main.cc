@@ -1317,10 +1317,8 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   // Allow ProcessSingleton to process messages.
   // This is done here instead of just relying on the main message loop's start
   // to avoid rendezvous in RunLoops that may precede MainMessageLoopRun.
-  if (!ChromeProcessSingleton::IsEarlySingletonFeatureEnabled()) {
-    ChromeProcessSingleton::GetInstance()->Unlock(base::BindRepeating(
-        &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
-  }
+  ChromeProcessSingleton::GetInstance()->Unlock(base::BindRepeating(
+      &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   // Set up a task to delete old WebRTC log files for all profiles. Use a delay
@@ -1837,14 +1835,6 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  if (ChromeProcessSingleton::IsEarlySingletonFeatureEnabled()) {
-    // Allow ProcessSingleton to process messages.
-    ChromeProcessSingleton::GetInstance()->Unlock(base::BindRepeating(
-        &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
-  }
-#endif
 }
 
 void ChromeBrowserMainParts::OnFirstIdle() {
