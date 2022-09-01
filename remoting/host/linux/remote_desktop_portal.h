@@ -40,6 +40,7 @@ class RemoteDesktopPortal
 
   // ScreenCapturePortalInterface overrides.
   void Start() override;
+  void Stop() override;
   void OnPortalDone(webrtc::xdg_portal::RequestResponse result) override;
   webrtc::xdg_portal::SessionDetails GetSessionDetails() override;
   void RequestSession(GDBusProxy* proxy) override;
@@ -51,7 +52,6 @@ class RemoteDesktopPortal
   void OnScreenCastSessionClosed() override;
 
  private:
-  void Cleanup();
   void UnsubscribeSignalHandlers();
   void RequestSources();
   void SelectDevices();
