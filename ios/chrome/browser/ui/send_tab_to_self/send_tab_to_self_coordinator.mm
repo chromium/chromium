@@ -64,9 +64,9 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
   using GetDisplayReasonCallback = base::RepeatingCallback<
       absl::optional<send_tab_to_self::EntryPointDisplayReason>()>;
 
-  // Queries |get_display_reason_callback| until it indicates the device list is
+  // Queries `get_display_reason_callback` until it indicates the device list is
   // known (i.e. until it returns kOfferFeature or kInformNoTargetDevice), then
-  // calls |on_list_known_callback|. Destroying the object aborts the waiting.
+  // calls `on_list_known_callback`. Destroying the object aborts the waiting.
   TargetDeviceListWaiter(
       syncer::SyncService* sync_service,
       const GetDisplayReasonCallback& get_display_reason_callback,
