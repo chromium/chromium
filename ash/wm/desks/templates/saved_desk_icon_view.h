@@ -81,6 +81,11 @@ class SavedDeskIconView : public views::View {
   // load an icon.
   void LoadDefaultIcon();
 
+  // Moves this icon view to the back of icons (excluding invisible icons and
+  // the overflow counter) in the parent SavedDeskIconContainer. This is
+  // currently only called when this is showing a default icon.
+  void MoveIconViewToBack();
+
   // The identifier for an icon. For a favicon, this will be a url. For an app,
   // this will be an app id.
   std::string icon_identifier_;
@@ -88,6 +93,9 @@ class SavedDeskIconView : public views::View {
   // The number of instances of this icon's respective app/url stored in this's
   // respective SavedDesk.
   int count_ = 0;
+
+  // True if this icon view is showing the default (fallback) icon.
+  bool is_showing_default_icon_ = false;
 
   // Owned by the views hierarchy.
   views::Label* count_label_ = nullptr;

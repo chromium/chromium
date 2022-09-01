@@ -132,6 +132,10 @@ void SavedDeskIconView::OnThemeChanged() {
     count_label_->SetEnabledColor(color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
+
+  // The default icon is theme dependent, so it needs to be reloaded.
+  if (is_showing_default_icon_)
+    LoadDefaultIcon();
 }
 
 void SavedDeskIconView::CreateChildViews(
@@ -215,10 +219,14 @@ void SavedDeskIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
         CreateResizedImageToIconSize(icon, /*is_default=*/false));
     return;
   }
+
   LoadDefaultIcon();
+  MoveIconViewToBack();
 }
 
 void SavedDeskIconView::LoadDefaultIcon() {
+  is_showing_default_icon_ = true;
+
   const ui::NativeTheme* native_theme =
       ui::NativeTheme::GetInstanceForNativeUi();
   // Use a higher resolution image as it will look better after resizing.
@@ -233,7 +241,9 @@ void SavedDeskIconView::LoadDefaultIcon() {
           AshColorProvider::Get()->GetContentLayerColor(
               AshColorProvider::ContentLayerType::kIconColorPrimary)),
       /*is_default=*/true));
+}
 
+void SavedDeskIconView::MoveIconViewToBack() {
   // Move `this` to the back of the visible icons, i.e. before any invisible
   // siblings and before the overflow counter. Notify the a11y API so that the
   // spoken feedback order matches the view order.
