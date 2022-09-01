@@ -72,13 +72,6 @@ trust_anchors {
   ev_policy_oids: "1.3.6.1.4.1.13177.10.1.3.10"
 }
 
-# Baltimore CyberTrust Root
-# https://secure.omniroot.com/repository/
-trust_anchors {
-  sha256_hex: "16af57a9f676b0ab126095aa5ebadef22ab31119d644ac95cd4b93dbf3f26aeb"
-  ev_policy_oids: "1.3.6.1.4.1.6334.1.100.1"
-}
-
 # Buypass Class 3 Root CA
 # https://valid.evident.ca23.ssl.buypass.no/
 trust_anchors {
@@ -110,15 +103,6 @@ trust_anchors {
 # COMODO Certification Authority
 # https://secure.comodo.com/
 trust_anchors {
-  sha256_hex: "0c2cd63df7806fa399ede809116b575bf87989f06518f9808c860503178baf66"
-
-  ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
-}
-
-# COMODO Certification Authority (reissued certificate with NotBefore of
-# Jan 1 00:00:00 2011 GMT)
-# https://secure.comodo.com/
-trust_anchors {
   sha256_hex: "1a0d20445de5ba1862d19ef880858cbce50102b36e8f0a040c3c69e74522fe6e"
 
   ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
@@ -140,14 +124,6 @@ trust_anchors {
   ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
 }
 
-# DigiCert Assured ID Root CA
-# https://assured-id-root-ca.chain-demos.digicert.com/
-trust_anchors {
-  sha256_hex: "3e9099b5015e8f486c00bcea9d111ee721faba355a89bcf1df69561e3dc6325c"
-
-  ev_policy_oids: "2.16.840.1.114412.2.1"
-}
-
 # DigiCert Assured ID Root G2
 # https://assured-id-root-g2.chain-demos.digicert.com/
 trust_anchors {
@@ -160,14 +136,6 @@ trust_anchors {
 # https://assured-id-root-g3.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2"
-
-  ev_policy_oids: "2.16.840.1.114412.2.1"
-}
-
-# DigiCert Global Root CA
-# https://global-root-ca.chain-demos.digicert.com/
-trust_anchors {
-  sha256_hex: "4348a0e9444c78cb265e058d5e8944b4d84f9662bd26db257f8934a443c70161"
 
   ev_policy_oids: "2.16.840.1.114412.2.1"
 }
@@ -361,37 +329,11 @@ trust_anchors {
   ev_policy_oids: "1.3.6.1.4.1.14777.6.1.2"
 }
 
-# Izenpe.com - SHA1 root
-# Windows XP finds this, SHA1, root instead. The policy OIDs are the same
-# as for the SHA256 root, above.
-trust_anchors {
-  sha256_hex: "23804203ca45d8cde716b8c13bf3b448457fa06cc10250997fa01458317c41e5"
-
-  ev_policy_oids: "1.3.6.1.4.1.14777.6.1.1"
-  ev_policy_oids: "1.3.6.1.4.1.14777.6.1.2"
-}
-
-# LuxTrust Global Root 2
-# https://ltsslca5.trustme.lu/
-trust_anchors {
-  sha256_hex: "54455f7129c20b1447c418f997168f24c58fc5023bf5da5be2eb6e1dd8902ed5"
-
-  ev_policy_oids: "1.3.171.1.1.10.5.2"
-}
-
 # NetLock Arany (Class Gold) Főtanúsítvány
 # https://valid.ev.tanusitvany.hu
 trust_anchors {
   sha256_hex: "6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98"
   ev_policy_oids: "2.23.140.1.1"
-}
-
-# Network Solutions Certificate Authority
-# https://www.networksolutions.com/website-packages/index.jsp
-trust_anchors {
-  sha256_hex: "15f0ba00a3ac7af3ac884c072b1011a077bd77c097f40164b2f8598abd83860c"
-
-  ev_policy_oids: "1.3.6.1.4.1.782.1.2.1.8.1"
 }
 
 # Network Solutions Certificate Authority (reissued certificate with
@@ -441,14 +383,6 @@ trust_anchors {
   sha256_hex: "4200f5043ac8590ebb527d209ed1503029fbcbd41ca1b506ec27f15ade7dac69"
 
   ev_policy_oids: "2.16.840.1.114404.1.1.2.4.1"
-}
-
-# Security Communication RootCA1
-# https://www.secomtrust.net/contact/form.html
-trust_anchors {
-  sha256_hex: "e75e72ed9f560eec6eb4800073a43fc3ad19195a392282017895974a99026b6c"
-
-  ev_policy_oids: "1.2.392.200091.100.721.1"
 }
 
 # Security Communication EV RootCA2
