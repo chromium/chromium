@@ -19,6 +19,10 @@ config("runtime_library") {
   ldflags = []
   libs = []
 
+  # Fixed libc++ configuration macros are in
+  # buildtools/third_party/libc++/__config_site. This config only has defines
+  # that vary depending on gn args, and non-define flags.
+
   if (!libcxx_is_shared) {
     # Don't leak any symbols on a static build.
     defines += [ "_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
@@ -26,8 +30,6 @@ config("runtime_library") {
       defines += [ "_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS" ]
     }
   }
-
-  defines += [ "_LIBCPP_ENABLE_NODISCARD_EXT" ]
 
   include_dirs += [ "//buildtools/third_party/libc++" ]
 
@@ -52,12 +54,6 @@ config("runtime_library") {
 
     cflags_cc +=
         [ "-I" + rebase_path("$libcxx_prefix/include", root_build_dir) ]
-
-    # Prevent libc++ from embedding linker flags to try to automatically link
-    # against its runtime library. This is unnecessary with our build system,
-    # and can also result in build failures if libc++'s name for a library
-    # does not match ours.
-    defines += [ "_LIBCPP_NO_AUTO_LINK" ]
 
     # Add a debug visualizer for Microsoft's debuggers so that they can display
     # libc++ types well.
