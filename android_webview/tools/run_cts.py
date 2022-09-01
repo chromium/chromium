@@ -39,11 +39,13 @@ _TEST_RUNNER_PATH = os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir,
     'build', 'android', 'test_runner.py')
 
-_WEBVIEW_CTS_GCS_PATH_FILE = os.path.join(
-    os.path.dirname(__file__), 'cts_config', 'webview_cts_gcs_path.json')
 _ARCH_SPECIFIC_CTS_INFO = ["filename", "unzip_dir", "_origin"]
 
-_CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), 'cts_archive')
+_DEFAULT_CTS_GCS_PATH_FILE = os.path.join(os.path.dirname(__file__),
+                                          'cts_config',
+                                          'webview_cts_gcs_path.json')
+_DEFAULT_CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__),
+                                        'cts_archive')
 
 _CTS_WEBKIT_PACKAGES = ["com.android.cts.webkit", "android.webkit.cts"]
 
@@ -81,12 +83,14 @@ _SUPPORTED_ARCH_DICT = {
 
 TEST_FILTER_OPT = '--test-filter'
 
-def GetCtsInfo(arch, cts_release, item):
-  """Gets contents of CTS Info for arch and cts_release.
 
-  See _WEBVIEW_CTS_GCS_PATH_FILE
+def GetCtsInfo(cts_gcs_path, arch, cts_release, item):
+  """Gets contents of CTS Info for arch and cts_release from the
+  CTS configuration file.
+
+  See --cts-gcs-path
   """
-  with open(_WEBVIEW_CTS_GCS_PATH_FILE) as f:
+  with open(cts_gcs_path) as f:
     cts_gcs_path_info = json.load(f)
   try:
     if item in _ARCH_SPECIFIC_CTS_INFO:
@@ -99,9 +103,11 @@ def GetCtsInfo(arch, cts_release, item):
                     (item, arch, cts_release))
 
 
-def GetCTSModuleNames(arch, cts_release):
-  """Gets the module apk name of the arch and cts_release"""
-  test_runs = GetCtsInfo(arch, cts_release, 'test_runs')
+def GetCTSModuleNames(cts_gcs_path, arch, cts_release):
+  """Gets the module apk name of the arch and cts_release from the CTS
+  configuration file.
+  """
+  test_runs = GetCtsInfo(cts_gcs_path, arch, cts_release, 'test_runs')
   return [os.path.basename(r['apk']) for r in test_runs]
 
 
@@ -214,7 +220,7 @@ def MergeTestResults(existing_results_json, additional_results_json):
 def ExtractCTSZip(args, arch, cts_release):
   """Extract the CTS tests for cts_release.
 
-  Extract the CTS zip file from _CTS_ARCHIVE_DIR to
+  Extract the CTS zip file from --cts-archive-dir to
   apk_dir if specified, or a new temporary directory if not.
   Returns following tuple (local_cts_dir, base_cts_dir, delete_cts_dir):
     local_cts_dir - CTS extraction location for current arch and cts_release
@@ -224,7 +230,8 @@ def ExtractCTSZip(args, arch, cts_release):
   """
   base_cts_dir = None
   delete_cts_dir = False
-  relative_cts_zip_path = GetCtsInfo(arch, cts_release, 'filename')
+  relative_cts_zip_path = GetCtsInfo(args.cts_gcs_path, arch, cts_release,
+                                     'filename')
 
   if args.apk_dir:
     base_cts_dir = args.apk_dir
@@ -232,11 +239,10 @@ def ExtractCTSZip(args, arch, cts_release):
     base_cts_dir = tempfile.mkdtemp()
     delete_cts_dir = True
 
-  cts_zip_path = os.path.join(_CTS_ARCHIVE_DIR, relative_cts_zip_path)
-  local_cts_dir = os.path.join(base_cts_dir,
-                               GetCtsInfo(arch, cts_release,
-                                          'unzip_dir')
-                              )
+  cts_zip_path = os.path.join(args.cts_archive_dir, relative_cts_zip_path)
+  local_cts_dir = os.path.join(
+      base_cts_dir, GetCtsInfo(args.cts_gcs_path, arch, cts_release,
+                               'unzip_dir'))
   zf = zipfile.ZipFile(cts_zip_path, 'r')
   zf.extractall(local_cts_dir)
   return (local_cts_dir, base_cts_dir, delete_cts_dir)
@@ -252,12 +258,13 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
   returns the failure code of the last failing
   test.
   """
-  local_cts_dir, base_cts_dir, delete_cts_dir = ExtractCTSZip(args, arch,
-                                                              cts_release)
+  local_cts_dir, base_cts_dir, delete_cts_dir = ExtractCTSZip(
+      args, arch, cts_release)
   cts_result = 0
   json_results_file = args.json_results_file
   try:
-    cts_test_runs = GetCtsInfo(arch, cts_release, 'test_runs')
+    cts_test_runs = GetCtsInfo(args.cts_gcs_path, arch, cts_release,
+                               'test_runs')
     cts_results_json = {}
     for cts_test_run in cts_test_runs:
       iteration_cts_result = 0
@@ -445,18 +452,32 @@ def main():
       help='If set, will dump results in JSON form to the specified file. '
            'Note that this will also trigger saving per-test logcats to '
            'logdog.')
-  parser.add_argument(
-      '-m',
-      '--module-apk',
-      dest='module_apk',
-      help='CTS module apk name in ' + _WEBVIEW_CTS_GCS_PATH_FILE +
-      ' file, without the path prefix.')
+  parser.add_argument('-m',
+                      '--module-apk',
+                      dest='module_apk',
+                      help='CTS module apk name in the --cts-gcs-path'
+                      ' file, without the path prefix.')
   parser.add_argument(
       '--avd-config',
       type=os.path.realpath,
       help='Path to the avd config textpb. '
            '(See //tools/android/avd/proto for message definition'
            ' and existing textpb files.)')
+  # The CTS config and archive paths are suitable defaults that
+  # normally won't need to change, this is available for if we
+  # want to re-use the run_cts.py script with alternative configurations.
+  parser.add_argument(
+      '--cts-gcs-path',
+      type=os.path.realpath,
+      default=_DEFAULT_CTS_GCS_PATH_FILE,
+      help='Path to the JSON file used to configure WebView CTS '
+      'test suites per Android version. Defaults to: ' +
+      _DEFAULT_CTS_GCS_PATH_FILE)
+  parser.add_argument('--cts-archive-dir',
+                      type=os.path.realpath,
+                      default=_DEFAULT_CTS_ARCHIVE_DIR,
+                      help='Path to where CTS archives are stored. '
+                      'Defaults to: ' + _DEFAULT_CTS_ARCHIVE_DIR)
   # We are re-using this argument that is used by our test runner
   # to detect if we are testing against an instant app
   # This allows us to know if we should filter tests based off the app
@@ -493,7 +514,7 @@ def main():
       if not args.module_apk:
         args.module_apk = 'CtsWebkitTestCases.apk'
 
-    platform_modules = GetCTSModuleNames(arch, cts_release)
+    platform_modules = GetCTSModuleNames(args.cts_gcs_path, arch, cts_release)
     if args.module_apk and args.module_apk not in platform_modules:
       raise Exception('--module-apk for arch==' + arch + 'and cts_release=='
                       + cts_release + ' must be one of: '
