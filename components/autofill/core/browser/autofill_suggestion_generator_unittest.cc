@@ -7,6 +7,7 @@
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -728,6 +730,61 @@ TEST_F(AutofillSuggestionGeneratorTest,
       absl::holds_alternative<GURL>(promo_code_suggestions[0].payload));
   EXPECT_EQ(promo_code_suggestions[0].frontend_id,
             POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+}
+
+TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndInternalIdMappings) {
+  // Test that internal ID retrieval with an invalid backend ID works correctly.
+  Suggestion::BackendId backend_id = Suggestion::BackendId();
+  EXPECT_FALSE(suggestion_generator()->BackendIdToInternalId(backend_id));
+
+  // Test that internal ID retrieval with valid backend IDs works correctly.
+  std::string valid_guid_digits = "00000000-0000-0000-0000-000000000000";
+  for (int i = 1; i <= 2; i++) {
+    valid_guid_digits.back() = base::NumberToString(i)[0];
+    backend_id = Suggestion::BackendId(valid_guid_digits);
+
+    // Check that querying AutofillSuggestionGenerator::BackendIdToInternalId(~)
+    // with a new backend id creates a new entry in the
+    // |backend_to_internal_map_| and |internal_to_backend_map_| maps.
+    const InternalId& internal_id =
+        suggestion_generator()->BackendIdToInternalId(backend_id);
+    EXPECT_TRUE(internal_id);
+    EXPECT_EQ(static_cast<int>(
+                  suggestion_generator()->backend_to_internal_map_.size()),
+              i);
+    EXPECT_EQ(static_cast<int>(
+                  suggestion_generator()->internal_to_backend_map_.size()),
+              i);
+
+    // Check that querying AutofillSuggestionGenerator::BackendIdToInternalId(~)
+    // again returns the previously added entry, and does not create a new entry
+    // in the |backend_to_internal_map_| and |internal_to_backend_map_| maps.
+    EXPECT_TRUE(suggestion_generator()->BackendIdToInternalId(backend_id) ==
+                internal_id);
+    EXPECT_EQ(static_cast<int>(
+                  suggestion_generator()->backend_to_internal_map_.size()),
+              i);
+    EXPECT_EQ(static_cast<int>(
+                  suggestion_generator()->internal_to_backend_map_.size()),
+              i);
+  }
+
+  // The test cases below are run after the
+  // AutofillSuggestionGenerator::BackendIdToInternalId(~) test cases to ensure
+  // the maps |backend_to_internal_map_| and |internal_to_backend_map_| are
+  // populated.
+
+  // Test that backend ID retrieval with an invalid internal ID works correctly.
+  EXPECT_TRUE(
+      suggestion_generator()->InternalIdToBackendId(InternalId())->empty());
+
+  // Test that backend ID retrieval with valid internal IDs works correctly.
+  for (int i = 1; i <= 2; i++) {
+    backend_id = suggestion_generator()->InternalIdToBackendId(InternalId(i));
+    EXPECT_FALSE(backend_id->empty());
+    valid_guid_digits.back() = base::NumberToString(i)[0];
+    EXPECT_EQ(*backend_id, valid_guid_digits);
+  }
 }
 
 }  // namespace autofill

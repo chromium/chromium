@@ -299,7 +299,7 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
 // word and profile IDs are sent in the low word.
 int AutofillSuggestionGenerator::MakeFrontendId(
     const Suggestion::BackendId& cc_backend_id,
-    const Suggestion::BackendId& profile_backend_id) const {
+    const Suggestion::BackendId& profile_backend_id) {
   InternalId cc_int_id = BackendIdToInternalId(cc_backend_id);
   InternalId profile_int_id = BackendIdToInternalId(profile_backend_id);
 
@@ -320,16 +320,15 @@ int AutofillSuggestionGenerator::MakeFrontendId(
 void AutofillSuggestionGenerator::SplitFrontendId(
     int frontend_id,
     Suggestion::BackendId* cc_backend_id,
-    Suggestion::BackendId* profile_backend_id) const {
+    Suggestion::BackendId* profile_backend_id) {
   InternalId cc_int_id =
       InternalId((frontend_id >> std::numeric_limits<uint16_t>::digits) &
                  std::numeric_limits<uint16_t>::max());
   InternalId profile_int_id =
       InternalId(frontend_id & std::numeric_limits<uint16_t>::max());
 
-  *cc_backend_id = Suggestion::BackendId(InternalIdToBackendId(cc_int_id));
-  *profile_backend_id =
-      Suggestion::BackendId(InternalIdToBackendId(profile_int_id));
+  *cc_backend_id = InternalIdToBackendId(cc_int_id);
+  *profile_backend_id = InternalIdToBackendId(profile_int_id);
 }
 
 Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
@@ -499,30 +498,28 @@ const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
 }
 
 InternalId AutofillSuggestionGenerator::BackendIdToInternalId(
-    const Suggestion::BackendId& backend_id) const {
-  if (!base::IsValidGUID(backend_id.value()))
-    return InternalId(0);
+    const Suggestion::BackendId& backend_id) {
+  if (!base::IsValidGUID(*backend_id))
+    return InternalId();
 
-  const auto found = backend_to_int_map_.find(backend_id.value());
-  if (found == backend_to_int_map_.end()) {
-    // Unknown one, make a new entry.
-    InternalId int_id = InternalId(backend_to_int_map_.size() + 1);
-    backend_to_int_map_[backend_id.value()] = int_id;
-    int_to_backend_map_[int_id] = backend_id.value();
-    return int_id;
+  InternalId& internal_id = backend_to_internal_map_[backend_id];
+  if (!internal_id) {
+    internal_id = InternalId(backend_to_internal_map_.size());
+    internal_to_backend_map_[internal_id] = backend_id;
   }
-  return InternalId(found->second);
+  DCHECK_EQ(internal_to_backend_map_.size(), backend_to_internal_map_.size());
+  return internal_id;
 }
 
-std::string AutofillSuggestionGenerator::InternalIdToBackendId(
-    InternalId int_id) const {
-  if (int_id.value() == 0)
-    return std::string();
+Suggestion::BackendId AutofillSuggestionGenerator::InternalIdToBackendId(
+    InternalId internal_id) {
+  if (!internal_id)
+    return Suggestion::BackendId();
 
-  const auto found = int_to_backend_map_.find(int_id);
-  if (found == int_to_backend_map_.end()) {
+  const auto found = internal_to_backend_map_.find(internal_id);
+  if (found == internal_to_backend_map_.end()) {
     NOTREACHED();
-    return std::string();
+    return Suggestion::BackendId();
   }
   return found->second;
 }
