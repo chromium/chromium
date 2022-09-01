@@ -14,6 +14,10 @@ bool HasPinnedHomeTab(TabStripModel* tab_strip_model) {
   return tab_strip_model->IsTabPinned(0);
 }
 
+bool IsPinnedHomeTab(TabStripModel* tab_strip_model, int index) {
+  return HasPinnedHomeTab(tab_strip_model) && index == 0;
+}
+
 bool IsPinnedHomeTabUrl(const WebAppRegistrar& registrar,
                         const AppId& app_id,
                         GURL launch_url) {

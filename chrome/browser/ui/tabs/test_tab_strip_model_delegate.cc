@@ -111,3 +111,7 @@ void TestTabStripModelDelegate::FollowSite(content::WebContents* web_contents) {
 
 void TestTabStripModelDelegate::UnfollowSite(
     content::WebContents* web_contents) {}
+
+bool TestTabStripModelDelegate::IsForWebApp() {
+  return false;
+}

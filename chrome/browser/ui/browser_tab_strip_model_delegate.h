@@ -62,6 +62,7 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
           web_contents) override;
   void FollowSite(content::WebContents* web_contents) override;
   void UnfollowSite(content::WebContents* web_contents) override;
+  bool IsForWebApp() override;
 
   void CloseFrame();
 

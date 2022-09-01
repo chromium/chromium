@@ -15,6 +15,9 @@ namespace web_app {
 // Returns whether the web apps tab strip contains a pinned home tab.
 bool HasPinnedHomeTab(TabStripModel* tab_strip_model);
 
+// Returns whether the tab at the given index is the pinned home tab.
+bool IsPinnedHomeTab(TabStripModel* tab_strip_model, int index);
+
 // Returns whether the given launch_url should be treated as the home tab URL.
 bool IsPinnedHomeTabUrl(const WebAppRegistrar& registrar,
                         const AppId& app_id,

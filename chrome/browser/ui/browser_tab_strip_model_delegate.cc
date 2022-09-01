@@ -244,8 +244,7 @@ void BrowserTabStripModelDelegate::AddToReadLater(
 }
 
 bool BrowserTabStripModelDelegate::SupportsReadLater() {
-  return !browser_->profile()->IsGuestSession() &&
-         !web_app::AppBrowserController::IsWebApp(browser_);
+  return !browser_->profile()->IsGuestSession() && !IsForWebApp();
 }
 
 void BrowserTabStripModelDelegate::CacheWebContents(
@@ -285,6 +284,10 @@ void BrowserTabStripModelDelegate::FollowSite(
 void BrowserTabStripModelDelegate::UnfollowSite(
     content::WebContents* web_contents) {
   chrome::UnfollowSite(web_contents);
+}
+
+bool BrowserTabStripModelDelegate::IsForWebApp() {
+  return web_app::AppBrowserController::IsWebApp(browser_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -56,6 +56,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
           web_contents) override;
   void FollowSite(content::WebContents* web_contents) override;
   void UnfollowSite(content::WebContents* web_contents) override;
+  bool IsForWebApp() override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TEST_TAB_STRIP_MODEL_DELEGATE_H_
