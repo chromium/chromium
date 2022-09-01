@@ -11,26 +11,18 @@
 #include <tuple>
 #include <type_traits>
 
+#include "base/containers/contains.h"
+
 namespace base {
 
 // Checks if any of the elements in |ilist| is true.
-// Similar to std::any_of for the case of constexpr initializer_list.
 inline constexpr bool any_of(std::initializer_list<bool> ilist) {
-  for (auto c : ilist) {
-    if (c)
-      return true;
-  }
-  return false;
+  return base::Contains(ilist, true);
 }
 
 // Checks if all of the elements in |ilist| are true.
-// Similar to std::all_of for the case of constexpr initializer_list.
 inline constexpr bool all_of(std::initializer_list<bool> ilist) {
-  for (auto c : ilist) {
-    if (!c)
-      return false;
-  }
-  return true;
+  return !base::Contains(ilist, false);
 }
 
 // Counts the elements in |ilist| that are equal to |value|.

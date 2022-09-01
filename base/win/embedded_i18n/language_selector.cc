@@ -13,6 +13,7 @@
 #include <functional>
 
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/i18n.h"
@@ -46,11 +47,10 @@ struct AvailableLanguageAliases {
 bool IsArraySortedAndLowerCased(span<const LangToOffset> languages_to_offset) {
   return std::is_sorted(languages_to_offset.begin(),
                         languages_to_offset.end()) &&
-         std::all_of(languages_to_offset.begin(), languages_to_offset.end(),
-                     [](const auto& lang) {
-                       auto language = AsStringPiece16(lang.first);
-                       return ToLowerASCII(language) == language;
-                     });
+         base::ranges::all_of(languages_to_offset, [](const auto& lang) {
+           auto language = AsStringPiece16(lang.first);
+           return ToLowerASCII(language) == language;
+         });
 }
 #endif  // DCHECK_IS_ON()
 
