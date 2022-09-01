@@ -19,11 +19,13 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_list.h"
@@ -37,6 +39,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-shared.h"
 #include "url/url_constants.h"
 
 using blink::mojom::DirectSocketFailureType;
@@ -69,6 +72,12 @@ network::mojom::NetworkContext*& GetNetworkContextForTesting() {
   return network_context;
 }
 
+bool IsFrameSufficientlyIsolated(content::RenderFrameHost* frame) {
+  return frame->GetWebExposedIsolationLevel() >=
+         content::RenderFrameHost::WebExposedIsolationLevel::
+             kMaybeIsolatedApplication;
+}
+
 }  // namespace
 
 DirectSocketsServiceImpl::DirectSocketsServiceImpl(RenderFrameHost& frame_host)
@@ -79,12 +88,18 @@ DirectSocketsServiceImpl::~DirectSocketsServiceImpl() = default;
 
 // static
 void DirectSocketsServiceImpl::CreateForFrame(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost* frame,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!IsFrameSufficientlyIsolated(frame)) {
+    return;
+  }
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<DirectSocketsServiceImpl>(*render_frame_host),
-      std::move(receiver));
+      std::make_unique<DirectSocketsServiceImpl>(*frame), std::move(receiver));
+}
+
+content::DirectSocketsDelegate* DirectSocketsServiceImpl::GetDelegate() {
+  return GetContentClient()->browser()->GetDirectSocketsDelegate();
 }
 
 void DirectSocketsServiceImpl::OpenTcpSocket(
@@ -92,15 +107,24 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
     mojo::PendingRemote<network::mojom::SocketObserver> observer,
     OpenTcpSocketCallback callback) {
-  if (!frame_host_ || frame_host_->GetWebExposedIsolationLevel() <
-                          RenderFrameHost::WebExposedIsolationLevel::
-                              kMaybeIsolatedApplication) {
-    mojo::ReportBadMessage("Insufficient isolation to open socket.");
+  if (!GetNetworkContext()) {
+    mojo::ReportBadMessage("Invalid request to open socket");
     return;
   }
 
-  if (!GetNetworkContext()) {
-    mojo::ReportBadMessage("Invalid request to open socket");
+  if (!IsFrameSufficientlyIsolated(frame_host_)) {
+    mojo::ReportBadMessage("Insufficient isolation to open socket");
+    return;
+  }
+
+  if (auto* delegate = GetDelegate();
+      delegate &&
+      !delegate->ValidateAddressAndPort(
+          frame_host_, options->remote_hostname, options->remote_port,
+          blink::mojom::DirectSocketProtocolType::kTcp)) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED, absl::nullopt,
+                            absl::nullopt, mojo::ScopedDataPipeConsumerHandle(),
+                            mojo::ScopedDataPipeProducerHandle());
     return;
   }
 
@@ -115,15 +139,23 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
     mojo::PendingReceiver<blink::mojom::DirectUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenUdpSocketCallback callback) {
-  if (!frame_host_ || frame_host_->GetWebExposedIsolationLevel() <
-                          RenderFrameHost::WebExposedIsolationLevel::
-                              kMaybeIsolatedApplication) {
-    mojo::ReportBadMessage("Insufficient isolation to open socket.");
+  if (!GetNetworkContext()) {
+    mojo::ReportBadMessage("Invalid request to open socket");
     return;
   }
 
-  if (!GetNetworkContext()) {
-    mojo::ReportBadMessage("Invalid request to open socket");
+  if (!IsFrameSufficientlyIsolated(frame_host_)) {
+    mojo::ReportBadMessage("Insufficient isolation to open socket");
+    return;
+  }
+
+  if (auto* delegate = GetDelegate();
+      delegate &&
+      !delegate->ValidateAddressAndPort(
+          frame_host_, options->remote_hostname, options->remote_port,
+          blink::mojom::DirectSocketProtocolType::kUdp)) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED, absl::nullopt,
+                            absl::nullopt);
     return;
   }
 

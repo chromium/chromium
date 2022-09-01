@@ -997,10 +997,8 @@ void PopulateBinderMapWithContext(
         base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
   }
 #if !BUILDFLAG(IS_ANDROID)
-  if (SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
-    map->Add<blink::mojom::DirectSocketsService>(
-        base::BindRepeating(&DirectSocketsServiceImpl::CreateForFrame));
-  }
+  map->Add<blink::mojom::DirectSocketsService>(
+      base::BindRepeating(&DirectSocketsServiceImpl::CreateForFrame));
   map->Add<media::mojom::SpeechRecognitionContext>(base::BindRepeating(
       &EmptyBinderForFrame<media::mojom::SpeechRecognitionContext>));
   map->Add<media::mojom::SpeechRecognitionClientBrowserInterface>(

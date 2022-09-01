@@ -148,7 +148,7 @@ class MediaPermission;
 namespace url {
 class Origin;
 class SchemeHostPort;
-}
+}  // namespace url
 
 namespace content {
 
@@ -441,7 +441,7 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
-      const blink::ParsedPermissionsPolicy& permissions_policy,
+      const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
@@ -1292,17 +1292,19 @@ class CONTENT_EXPORT RenderFrameImpl
   //   1.) RenderFrameHostImpl::BeginNavigation() accepts an always-bound remote
   //       to the RenderFrameImpl's `navigation_client_impl_`.
   //   2.) In `NavigationRequest::ctor()`, the request consumes the
-  //       NavigationClient remote, and `NavigationRequest::SetNavigationClient()`
-  //       assigns `NavigationRequest::request_navigation_client_` to it.
-  //   3.) Eventually, `NavigationRequest` picks a `RenderFrameHostImpl` to commit
+  //       NavigationClient remote, and
+  //       `NavigationRequest::SetNavigationClient()` assigns
+  //       `NavigationRequest::request_navigation_client_` to it.
+  //   3.) Eventually, `NavigationRequest` picks a `RenderFrameHostImpl` to
+  //   commit
   //       to. In `NavigationRequest::CommitNavigation()`, the request needs to
   //       set its `commit_navigation_client_` to the `NavigationClient`
   //       implementation in the target RenderFrameImpl. If we detect that the
   //       navigation will commit to the same frame that
   //       `NavigationRequest::request_navigation_client_` points to, then the
   //       browser will reuse the request navigation client as the commit one.
-  //       Otherwise, it requests a *new* client from the renderer, to act as the
-  //       target RenderFrameImpl's `NavigationClient`.
+  //       Otherwise, it requests a *new* client from the renderer, to act as
+  //       the target RenderFrameImpl's `NavigationClient`.
   //
   // ## Navigation Cancellation ##
   // Cancellation is signalled by closing the NavigationClient message pipe.

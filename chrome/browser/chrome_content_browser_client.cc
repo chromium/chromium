@@ -443,6 +443,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
@@ -1601,6 +1602,13 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
       content::StoragePartitionConfig::CreateDefault(browser_context);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (site.SchemeIs(extensions::kExtensionScheme)) {
+    // The host in an extension site URL is the extension_id.
+    CHECK(site.has_host());
+    return extensions::util::GetStoragePartitionConfigForExtensionId(
+        site.host(), browser_context);
+  }
+
   // TODO(crbug.com/1212263): Isolated PWAs are tracked by origin, but this
   // function takes a site, so it will only work correctly when the site equals
   // the full origin.
@@ -1616,13 +1624,6 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
         browser_context, *isolation_key,
         /*partition_name=*/std::string(),
         /*in_memory=*/false);
-  }
-
-  if (site.SchemeIs(extensions::kExtensionScheme)) {
-    // The host in an extension site URL is the extension_id.
-    CHECK(site.has_host());
-    return extensions::util::GetStoragePartitionConfigForExtensionId(
-        site.host(), browser_context);
   }
 #endif
 
@@ -2053,11 +2054,17 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 #endif
 }
 
-blink::ParsedPermissionsPolicy
+absl::optional<blink::ParsedPermissionsPolicy>
 ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
 #if !BUILDFLAG(IS_ANDROID)
+  // Extensions are exempt from manifest policy enforcement and retain the
+  // default frame permissions policy.
+  if (app_origin.scheme() == extensions::kExtensionScheme) {
+    return absl::nullopt;
+  }
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto& registrar =
       web_app::WebAppProvider::GetForWebApps(profile)->registrar();
@@ -2211,6 +2218,11 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
     const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    return !!extensions::ExtensionRegistry::Get(browser_context)
+                 ->enabled_extensions()
+                 .GetExtensionOrAppByURL(url);
+  }
   if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
     return web_app::GetStorageIsolationKey(profile->GetPrefs(),
@@ -5731,6 +5743,14 @@ content::UsbDelegate* ChromeContentBrowserClient::GetUsbDelegate() {
   if (!usb_delegate_)
     usb_delegate_ = std::make_unique<ChromeUsbDelegate>();
   return usb_delegate_.get();
+}
+
+content::DirectSocketsDelegate*
+ChromeContentBrowserClient::GetDirectSocketsDelegate() {
+  if (!direct_sockets_delegate_) {
+    direct_sockets_delegate_ = std::make_unique<ChromeDirectSocketsDelegate>();
+  }
+  return direct_sockets_delegate_.get();
 }
 
 content::WebAuthenticationDelegate*

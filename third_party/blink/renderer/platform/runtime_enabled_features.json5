@@ -836,7 +836,7 @@
     },
     {
       name: "DirectSockets",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "DisableDifferentOriginSubframeDialogSuppression",

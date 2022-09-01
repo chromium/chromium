@@ -52,6 +52,7 @@
 #include "services/network/test/test_udp_socket.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 #include "url/gurl.h"
 
 // The tests in this file use a mock implementation of NetworkContext, to test
@@ -63,8 +64,10 @@ namespace content {
 
 namespace {
 
+using ProtocolType = blink::mojom::DirectSocketProtocolType;
+
 struct RecordedCall {
-  DirectSocketsServiceImpl::ProtocolType protocol_type;
+  ProtocolType protocol_type;
 
   std::string remote_address;
   uint16_t remote_port;
@@ -177,8 +180,7 @@ class MockOpenNetworkContext : public content::test::MockNetworkContext {
       CreateTCPConnectedSocketCallback callback) override {
     const net::IPEndPoint& peer_addr = remote_addr_list.front();
     Record(RecordedCall{
-        DirectSocketsServiceImpl::ProtocolType::kTcp,
-        peer_addr.address().ToString(), peer_addr.port(),
+        ProtocolType::kTcp, peer_addr.address().ToString(), peer_addr.port(),
         tcp_connected_socket_options->send_buffer_size,
         tcp_connected_socket_options->receive_buffer_size,
         tcp_connected_socket_options->no_delay,
@@ -220,13 +222,12 @@ class MockOpenUDPSocket : public content::test::MockUDPSocket {
     const net::Error result = (remote_addr.port() == 0)
                                   ? net::ERR_INVALID_ARGUMENT
                                   : network_context_->result();
-    network_context_->Record(
-        RecordedCall{DirectSocketsServiceImpl::ProtocolType::kUdp,
-                     remote_addr.address().ToString(),
-                     remote_addr.port(),
-                     socket_options->send_buffer_size,
-                     socket_options->receive_buffer_size,
-                     {}});
+    network_context_->Record(RecordedCall{ProtocolType::kUdp,
+                                          remote_addr.address().ToString(),
+                                          remote_addr.port(),
+                                          socket_options->send_buffer_size,
+                                          socket_options->receive_buffer_size,
+                                          {}});
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -304,8 +305,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
               ::testing::HasSubstr("keepAliveDelay must be no less than"));
 }
 
-using ProtocolType = DirectSocketsServiceImpl::ProtocolType;
-
 class DirectSocketsOpenCannotConnectBrowserTest
     : public DirectSocketsOpenBrowserTest,
       public testing::WithParamInterface<ProtocolType> {
@@ -333,15 +332,13 @@ class DirectSocketsOpenCannotConnectBrowserTest
 
   void RunTest() {
     const auto protocol = GetParam();
-    const std::string type =
-        protocol == DirectSocketsServiceImpl::ProtocolType::kTcp ? "Tcp"
-                                                                 : "Udp";
+    const std::string type = protocol == ProtocolType::kTcp ? "Tcp" : "Udp";
     const std::string expected_result = base::StringPrintf(
         "open%s failed: NetworkError: Network Error.", type.c_str());
 
     const std::string example_hostname = "mail.example.com";
     const std::string script =
-        protocol == DirectSocketsServiceImpl::ProtocolType::kTcp
+        protocol == ProtocolType::kTcp
             ? base::StringPrintf("openTcp('%s', 993)", example_hostname.c_str())
             : base::StringPrintf(
                   "openUdp({ remoteAddress: '%s', remotePort: 993 })",
@@ -406,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
 
   DCHECK_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
+  EXPECT_EQ(ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("12.34.56.78", call.remote_address);
   EXPECT_EQ(9012, call.remote_port);
   EXPECT_EQ(3456, call.send_buffer_size);
@@ -443,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
 
   DCHECK_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
+  EXPECT_EQ(ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
   EXPECT_EQ(1243, call.send_buffer_size);
@@ -474,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
 
   ASSERT_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
+  EXPECT_EQ(ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
   EXPECT_EQ(1243, call.send_buffer_size);
@@ -538,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
 
   ASSERT_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kUdp, call.protocol_type);
+  EXPECT_EQ(ProtocolType::kUdp, call.protocol_type);
   EXPECT_EQ("12.34.56.78", call.remote_address);
   EXPECT_EQ(9012, call.remote_port);
   EXPECT_EQ(3456, call.send_buffer_size);
@@ -568,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
 
   DCHECK_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kUdp, call.protocol_type);
+  EXPECT_EQ(ProtocolType::kUdp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
   EXPECT_EQ(1243, call.send_buffer_size);

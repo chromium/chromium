@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "content/browser/direct_sockets/direct_udp_socket_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,11 +38,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService,
       public WebContentsObserver {
  public:
-  enum class ProtocolType { kTcp, kUdp };
-
-  using PermissionCallback = base::RepeatingCallback<net::Error(
-      const blink::mojom::DirectSocketOptions&)>;
-
   explicit DirectSocketsServiceImpl(RenderFrameHost& frame_host);
   ~DirectSocketsServiceImpl() override;
 
@@ -49,8 +45,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   DirectSocketsServiceImpl& operator=(const DirectSocketsServiceImpl&) = delete;
 
   static void CreateForFrame(
-      RenderFrameHost* render_frame_host,
+      RenderFrameHost* frame,
       mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  static content::DirectSocketsDelegate* GetDelegate();
 
   // blink::mojom::DirectSocketsService override:
   void OpenTcpSocket(

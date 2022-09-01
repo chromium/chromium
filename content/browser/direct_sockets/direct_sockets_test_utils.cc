@@ -209,7 +209,7 @@ bool IsolatedAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return true;
 }
 
-blink::ParsedPermissionsPolicy
+absl::optional<blink::ParsedPermissionsPolicy>
 IsolatedAppContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {

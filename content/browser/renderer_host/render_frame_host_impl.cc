@@ -305,7 +305,7 @@ const base::Feature kEvictOnAXEvents {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
-}
+}  // namespace features
 
 namespace content {
 
@@ -9174,11 +9174,13 @@ void RenderFrameHostImpl::CommitNavigation(
     auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
     RenderFrameHostImpl* parent_frame_host = GetParentOrOuterDocument();
 
-    blink::ParsedPermissionsPolicy manifest_policy;
+    absl::optional<blink::ParsedPermissionsPolicy> manifest_policy;
     if (!parent_frame_host && isolation_info.is_isolated_application()) {
-      manifest_policy =
-          GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
-              GetBrowserContext(), isolation_info.origin());
+      if (auto isolated_app_permissions_policy =
+              GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
+                  GetBrowserContext(), isolation_info.origin())) {
+        manifest_policy = std::move(isolated_app_permissions_policy);
+      }
     }
 
     // TODO(crbug.com/1126305): Once the Prerender2 moves to use the MPArch, we
@@ -10431,12 +10433,13 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
   if (!parent_frame_host && isolation_info.is_isolated_application()) {
     // In Isolated Apps, the top level frame should use the policy declared in
     // the Web App Manifest.
-    blink::ParsedPermissionsPolicy manifest_policy =
-        GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
-            GetBrowserContext(), isolation_info.origin());
-    permissions_policy_ = blink::PermissionsPolicy::CreateFromParsedPolicy(
-        manifest_policy, last_committed_origin_);
-    return;
+    if (auto isolated_app_permissions_policy =
+            GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
+                GetBrowserContext(), isolation_info.origin())) {
+      permissions_policy_ = blink::PermissionsPolicy::CreateFromParsedPolicy(
+          *isolated_app_permissions_policy, last_committed_origin_);
+      return;
+    }
   }
 
   const blink::PermissionsPolicy* parent_policy =
@@ -12239,7 +12242,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
-    const blink::ParsedPermissionsPolicy& permissions_policy,
+    const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");

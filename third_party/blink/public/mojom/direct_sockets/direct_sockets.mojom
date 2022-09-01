@@ -25,11 +25,16 @@ enum DirectSocketFailureType {
   kEnterprisePolicy = 6
 };
 
+enum DirectSocketProtocolType {
+  kTcp = 0,
+  kUdp = 1,
+};
+
 struct DirectSocketOptions {
   string? local_hostname;
   uint16 local_port = 0;
 
-  string? remote_hostname;
+  string remote_hostname;
   uint16 remote_port = 0;
 
   int32 send_buffer_size = 0;

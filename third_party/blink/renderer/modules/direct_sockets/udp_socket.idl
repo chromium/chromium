@@ -8,6 +8,7 @@
     Exposed=(Window,Worker),
     ActiveScriptWrappable,
     SecureContext,
+    RuntimeEnabled=DirectSockets,
     IsolatedApplication
 ] interface UDPSocket {
   [CallWith=ScriptState, RaisesException]

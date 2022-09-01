@@ -248,7 +248,7 @@ size_t ContentBrowserClient::GetProcessCountToIgnoreForLimit() {
   return 0;
 }
 
-blink::ParsedPermissionsPolicy
+absl::optional<blink::ParsedPermissionsPolicy>
 ContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
@@ -638,6 +638,12 @@ TtsControllerDelegate* ContentBrowserClient::GetTtsControllerDelegate() {
 TtsPlatform* ContentBrowserClient::GetTtsPlatform() {
   return nullptr;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+DirectSocketsDelegate* ContentBrowserClient::GetDirectSocketsDelegate() {
+  return nullptr;
+}
+#endif
 
 base::FilePath ContentBrowserClient::GetDefaultDownloadDirectory() {
   return base::FilePath();
@@ -1342,14 +1348,6 @@ std::unique_ptr<PrefetchServiceDelegate>
 ContentBrowserClient::CreatePrefetchServiceDelegate(
     BrowserContext* browser_context) {
   return nullptr;
-}
-
-void ContentBrowserClient::ShowDirectSocketsConnectionDialog(
-    content::RenderFrameHost* owner,
-    const std::string& address,
-    base::OnceCallback<void(bool, const std::string&, const std::string&)>
-        callback) {
-  std::move(callback).Run(false, std::string(), std::string());
 }
 
 bool ContentBrowserClient::IsFindInPageDisabledForOrigin(

@@ -203,6 +203,7 @@ class BrowserURLHandler;
 class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
+class DirectSocketsDelegate;
 class DocumentOverlayWindow;
 class DocumentPictureInPictureWindowController;
 class FeatureObserverClient;
@@ -538,10 +539,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual size_t GetProcessCountToIgnoreForLimit();
 
   // Returns the base permissions policy that is declared in an isolated app's
-  // Web App Manifest.
-  virtual blink::ParsedPermissionsPolicy GetPermissionsPolicyForIsolatedApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin);
+  // Web App Manifest. The embedder might choose to return an absl::nullopt in
+  // specific cases -- then the default non-isolated permissions policy will be
+  // applied.
+  virtual absl::optional<blink::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedApp(content::BrowserContext* browser_context,
+                                     const url::Origin& app_origin);
 
   // Returns whether a new process should be created or an existing one should
   // be reused based on the URL we want to load. This should return false,
@@ -1021,6 +1024,12 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to return a TTS platform implementation.
   virtual TtsPlatform* GetTtsPlatform();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Allows the embedder to return a DirectSocketsDelegate
+  // implementation.
+  virtual DirectSocketsDelegate* GetDirectSocketsDelegate();
+#endif
 
   // Called by WebContents to override the WebKit preferences that are used by
   // the renderer. The content layer will add its own settings, and then it's up
@@ -2250,17 +2259,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // to make prefetches.
   virtual std::unique_ptr<PrefetchServiceDelegate>
   CreatePrefetchServiceDelegate(BrowserContext* browser_context);
-
-  // Allows the embedder to show a dialog that will be used to control whether a
-  // connection through the Direct Sockets API is permitted. If the connection
-  // is permitted, the remote address and port that the user input will be sent
-  // back to the caller through callback.
-  virtual void ShowDirectSocketsConnectionDialog(
-      RenderFrameHost* owner,
-      const std::string& address,
-      base::OnceCallback<void(bool accepted,
-                              const std::string& address,
-                              const std::string& port)> callback);
 
   // Returns true if find-in-page should be disabled for a given `origin`.
   virtual bool IsFindInPageDisabledForOrigin(const url::Origin& origin);

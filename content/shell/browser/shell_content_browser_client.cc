@@ -760,14 +760,14 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
   }
 }
 
-blink::ParsedPermissionsPolicy
+absl::optional<blink::ParsedPermissionsPolicy>
 ShellContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration decl(
       blink::mojom::PermissionsPolicyFeature::kDirectSockets, {app_origin},
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
-  return {decl};
+  return {{decl}};
 }
 
 }  // namespace content
