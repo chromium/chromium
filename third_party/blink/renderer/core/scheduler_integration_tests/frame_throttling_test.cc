@@ -1464,7 +1464,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
 
   mojom::blink::ViewportIntersectionState intersection;
   intersection.main_frame_intersection = gfx::Rect(0, 0, 100, 100);
-  intersection.main_frame_viewport_size = gfx::Size(100, 100);
+  intersection.outermost_main_frame_size = gfx::Size(100, 100);
   intersection.viewport_intersection = gfx::Rect(0, 0, 100, 100);
   LocalFrameRoot().FrameWidget()->Resize(gfx::Size(300, 200));
   static_cast<WebFrameWidgetImpl*>(LocalFrameRoot().FrameWidget())

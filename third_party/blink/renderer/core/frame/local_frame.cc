@@ -2131,22 +2131,20 @@ void LocalFrame::SetViewportIntersectionFromParent(
   }
 }
 
-gfx::Size LocalFrame::GetMainFrameViewportSize() const {
+gfx::Size LocalFrame::GetOutermostMainFrameSize() const {
   LocalFrame& local_root = LocalFrameRoot();
-  return local_root.IsMainFrame()
-             ? local_root.View()
-                   ->GetScrollableArea()
-                   ->VisibleContentRect()
-                   .size()
-             : local_root.intersection_state_.main_frame_viewport_size;
+  return local_root.IsOutermostMainFrame()
+             ? local_root.View()->LayoutViewport()->VisibleContentRect().size()
+             : local_root.intersection_state_.outermost_main_frame_size;
 }
 
-gfx::Point LocalFrame::GetMainFrameScrollPosition() const {
+gfx::Point LocalFrame::GetOutermostMainFrameScrollPosition() const {
   LocalFrame& local_root = LocalFrameRoot();
-  return local_root.IsMainFrame()
+  return local_root.IsOutermostMainFrame()
              ? gfx::ToFlooredPoint(
                    local_root.View()->LayoutViewport()->ScrollPosition())
-             : local_root.intersection_state_.main_frame_scroll_position;
+             : local_root.intersection_state_
+                   .outermost_main_frame_scroll_position;
 }
 
 void LocalFrame::SetOpener(Frame* opener_frame) {

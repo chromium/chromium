@@ -1065,8 +1065,8 @@ void LocalFrameView::RunIntersectionObserverSteps() {
         To<LayoutBox>(layout_object)->PhysicalLayoutOverflowRect().size));
     GetFrame().Client()->OnMainFrameIntersectionChanged(main_frame_dimensions);
     GetFrame().Client()->OnMainFrameViewportRectangleChanged(
-        gfx::Rect(frame_->GetMainFrameScrollPosition(),
-                  frame_->GetMainFrameViewportSize()));
+        gfx::Rect(frame_->GetOutermostMainFrameScrollPosition(),
+                  frame_->GetOutermostMainFrameSize()));
   }
 
   TRACE_EVENT0("blink,benchmark",

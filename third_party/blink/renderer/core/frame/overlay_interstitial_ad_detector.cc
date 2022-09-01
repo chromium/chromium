@@ -88,8 +88,10 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
   started_detection_ = true;
   last_detection_time_ = current_time;
 
-  gfx::Size outermost_main_frame_size =
-      outermost_main_frame->GetMainFrameViewportSize();
+  gfx::Size outermost_main_frame_size = outermost_main_frame->View()
+                                            ->LayoutViewport()
+                                            ->VisibleContentRect()
+                                            .size();
 
   if (outermost_main_frame_size != last_detection_outermost_main_frame_size_) {
     // Reset the candidate when the the viewport size has changed. Changing
@@ -148,7 +150,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
     // If the main frame scrolling position hasn't changed since the candidate's
     // appearance, we consider it to be a overlay interstitial; otherwise, we
     // skip that candidate because it could be a parallax/scroller ad.
-    if (outermost_main_frame->GetMainFrameScrollPosition().y() ==
+    if (outermost_main_frame->GetOutermostMainFrameScrollPosition().y() ==
         candidate_start_outermost_main_frame_scroll_position_) {
       OnPopupDetected(outermost_main_frame, candidate_is_ad_);
     }
@@ -205,7 +207,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
     candidate_id_ = element_id;
     candidate_is_ad_ = is_ad;
     candidate_start_outermost_main_frame_scroll_position_ =
-        outermost_main_frame->GetMainFrameScrollPosition().y();
+        outermost_main_frame->GetOutermostMainFrameScrollPosition().y();
   } else {
     last_unqualified_element_id_ = element_id;
   }

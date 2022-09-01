@@ -780,18 +780,18 @@ void RemoteFrame::UpdateOpener(
   }
 }
 
-gfx::Size RemoteFrame::GetMainFrameViewportSize() const {
+gfx::Size RemoteFrame::GetOutermostMainFrameSize() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   DCHECK(owner);
   DCHECK(owner->GetDocument().GetFrame());
-  return owner->GetDocument().GetFrame()->GetMainFrameViewportSize();
+  return owner->GetDocument().GetFrame()->GetOutermostMainFrameSize();
 }
 
-gfx::Point RemoteFrame::GetMainFrameScrollPosition() const {
+gfx::Point RemoteFrame::GetOutermostMainFrameScrollPosition() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   DCHECK(owner);
   DCHECK(owner->GetDocument().GetFrame());
-  return owner->GetDocument().GetFrame()->GetMainFrameScrollPosition();
+  return owner->GetDocument().GetFrame()->GetOutermostMainFrameScrollPosition();
 }
 
 void RemoteFrame::SetOpener(Frame* opener_frame) {

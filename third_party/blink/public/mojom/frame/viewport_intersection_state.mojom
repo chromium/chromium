@@ -41,11 +41,13 @@ struct ViewportIntersectionState {
   // Occlusion state, as described above.
   FrameOcclusionState occlusion_state = FrameOcclusionState.kUnknown;
 
-  // Main frame's size.
-  gfx.mojom.Size main_frame_viewport_size;
+  // Outermost main frame's size. Is not affected by
+  // pinch-zoom/visual-viewport.
+  gfx.mojom.Size outermost_main_frame_size;
 
-  // Main frame's scrolling position.
-  gfx.mojom.Point main_frame_scroll_position;
+  // Outermost main frame's scroll position. Is not affected by
+  // pinch-zoom/visual-viewport.
+  gfx.mojom.Point outermost_main_frame_scroll_position;
 
   // Child frame's transform to the coordinate system of the main frame.
   gfx.mojom.Transform main_frame_transform;
