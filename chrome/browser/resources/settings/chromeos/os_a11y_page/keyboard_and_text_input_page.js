@@ -51,6 +51,17 @@ const SettingsKeyboardAndTextInputPageElementBase = mixinBehaviors(
     ],
     PolymerElement);
 
+/**
+ * @typedef {{
+ * name: string,
+ * value: string,
+ * worksOffline: boolean,
+ * installed: boolean,
+ * recommended: boolean
+ * }}
+ */
+let LocaleInfo;
+
 /** @polymer */
 class SettingsKeyboardAndTextInputPageElement extends
     SettingsKeyboardAndTextInputPageElementBase {
@@ -83,6 +94,46 @@ class SettingsKeyboardAndTextInputPageElement extends
         },
       },
 
+      /** @protected */
+      dictationLocaleMenuSubtitle_: {
+        type: String,
+        computed: 'computeDictationLocaleSubtitle_(' +
+            'dictationLocaleOptions_, ' +
+            'prefs.settings.a11y.dictation_locale.value, ' +
+            'dictationLocaleSubtitleOverride_)',
+      },
+
+      /**
+       * @type {!Array<!LocaleInfo>}
+       * @protected
+       */
+      dictationLocaleOptions_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /** @protected */
+      dictationLocalesList_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /** @protected */
+      showDictationLocaleMenu_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @protected */
+      dictationLearnMoreUrl_: {
+        type: String,
+        value: 'https://support.google.com/chromebook?p=text_dictation_m100',
+      },
+
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
        * @type {!Set<!Setting>}
@@ -111,11 +162,23 @@ class SettingsKeyboardAndTextInputPageElement extends
     /** @private {!KeyboardAndTextInputPageBrowserProxy} */
     this.keyboardAndTextInputBrowserProxy_ =
         KeyboardAndTextInputPageBrowserProxyImpl.getInstance();
+
+    /** @private {string} */
+    this.dictationLocaleSubtitleOverride_ = '';
+
+    /** @private {boolean} */
+    this.useDictationLocaleSubtitleOverride_ = false;
   }
 
   /** @override */
   ready() {
     super.ready();
+    this.addWebUIListener(
+        'dictation-locale-menu-subtitle-changed',
+        (result) => this.onDictationLocaleMenuSubtitleChanged_(result));
+    this.addWebUIListener(
+        'dictation-locales-set',
+        (locales) => this.onDictationLocalesSet_(locales));
     this.keyboardAndTextInputBrowserProxy_.keyboardAndTextInputPageReady();
 
     const r = routes;
@@ -165,6 +228,97 @@ class SettingsKeyboardAndTextInputPageElement extends
       chrome.metricsPrivate.recordUserAction(
           'Accessibility.CaretBrowsing.DisableWithSettings');
     }
+  }
+
+  /**
+   * @param {string} subtitle
+   * @private
+   */
+  onDictationLocaleMenuSubtitleChanged_(subtitle) {
+    this.useDictationLocaleSubtitleOverride_ = true;
+    this.dictationLocaleSubtitleOverride_ = subtitle;
+  }
+
+
+  /**
+   * Saves a list of locales and updates the UI to reflect the list.
+   * @param {!Array<!LocaleInfo>} locales
+   * @private
+   */
+  onDictationLocalesSet_(locales) {
+    this.dictationLocalesList_ = locales;
+    this.onDictationLocalesChanged_();
+  }
+
+  /**
+   * Converts an array of locales and their human-readable equivalents to
+   * an array of menu options.
+   * TODO(crbug.com/1195916): Use 'offline' to indicate to the user which
+   * locales work offline with an icon in the select options.
+   * @private
+   */
+  onDictationLocalesChanged_() {
+    const currentLocale =
+        this.get('prefs.settings.a11y.dictation_locale.value');
+    this.dictationLocaleOptions_ =
+        this.dictationLocalesList_.map((localeInfo) => {
+          return {
+            name: localeInfo.name,
+            value: localeInfo.value,
+            worksOffline: localeInfo.worksOffline,
+            installed: localeInfo.installed,
+            recommended:
+                localeInfo.recommended || localeInfo.value === currentLocale,
+          };
+        });
+  }
+
+  /**
+   * Calculates the Dictation locale subtitle based on the current
+   * locale from prefs and the offline availability of that locale.
+   * @return {string}
+   * @private
+   */
+  computeDictationLocaleSubtitle_() {
+    if (this.useDictationLocaleSubtitleOverride_) {
+      // Only use the subtitle override once, since we still want the subtitle
+      // to repsond to changes to the dictation locale.
+      this.useDictationLocaleSubtitleOverride_ = false;
+      return this.dictationLocaleSubtitleOverride_;
+    }
+
+    const currentLocale =
+        this.get('prefs.settings.a11y.dictation_locale.value');
+    const locale = this.dictationLocaleOptions_.find(
+        (element) => element.value === currentLocale);
+    if (!locale) {
+      return '';
+    }
+
+    if (!locale.worksOffline) {
+      // If a locale is not supported offline, then use the network subtitle.
+      return this.i18n('dictationLocaleSubLabelNetwork', locale.name);
+    }
+
+    if (!locale.installed) {
+      // If a locale is supported offline, but isn't installed, then use the
+      // temporary network subtitle.
+      return this.i18n(
+          'dictationLocaleSubLabelNetworkTemporarily', locale.name);
+    }
+
+    // If we get here, we know a locale is both supported offline and installed.
+    return this.i18n('dictationLocaleSubLabelOffline', locale.name);
+  }
+
+  /** @private */
+  onChangeDictationLocaleButtonClicked_() {
+    this.showDictationLocaleMenu_ = true;
+  }
+
+  /** @private */
+  onChangeDictationLocalesDialogClosed_() {
+    this.showDictationLocaleMenu_ = false;
   }
 }
 
