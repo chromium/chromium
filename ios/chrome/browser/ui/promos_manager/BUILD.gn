@@ -8,8 +8,10 @@ source_set("promos") {
     "promo_protocol.h",
     "promos_manager_scene_availability_observer.h",
     "standard_promo_display_handler.h",
+    "standard_promo_view_provider.h",
   ]
   frameworks = [ "UIKit.framework" ]
+  public_deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
   deps = [
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:types",
