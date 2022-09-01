@@ -1121,7 +1121,7 @@
     },
     {
       name: "FractionalScrollOffsets",
-      status: "experimental",
+      implied_by: ["PercentBasedScrolling"],
     },
     {
       name: "FreezeFramesOnVisibility",

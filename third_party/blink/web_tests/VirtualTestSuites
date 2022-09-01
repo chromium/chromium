@@ -208,7 +208,8 @@
   {
     "prefix": "fractional-scroll-offsets",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/css/css-position/sticky/"],
+    "bases": ["external/wpt/css/css-position/sticky/",
+              "fast/scrolling/"],
     "args": ["--enable-blink-features=FractionalScrollOffsets"]
   },
   {
