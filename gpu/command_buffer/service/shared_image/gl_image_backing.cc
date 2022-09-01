@@ -172,7 +172,8 @@ sk_sp<SkSurface> SkiaGLCommonRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
-    std::vector<GrBackendSemaphore>* end_semaphores) {
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
   CheckContext();
   if (client_) {
     DCHECK(context_state_->GrContextIsGL());
@@ -232,7 +233,8 @@ void SkiaGLCommonRepresentation::EndWriteAccess(sk_sp<SkSurface> surface) {
 
 sk_sp<SkPromiseImageTexture> SkiaGLCommonRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
-    std::vector<GrBackendSemaphore>* end_semaphores) {
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
   CheckContext();
   if (client_) {
     DCHECK(context_state_->GrContextIsGL());

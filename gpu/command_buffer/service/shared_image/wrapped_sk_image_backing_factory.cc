@@ -357,7 +357,8 @@ class WrappedSkImage::SkiaImageRepresentationImpl
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     auto surface = wrapped_sk_image()->GetSkSurface(
         final_msaa_count, surface_props, context_state_);
     if (!surface)
@@ -388,7 +389,8 @@ class WrappedSkImage::SkiaImageRepresentationImpl
 
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     DCHECK(!write_surface_);
     return wrapped_sk_image()->promise_texture();
   }

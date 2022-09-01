@@ -184,16 +184,6 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
                                       begin_semaphores, end_semaphores,
                                       end_state);
   }
-  sk_sp<SkSurface> BeginWriteAccess(
-      int final_msaa_count,
-      const SkSurfaceProps& surface_props,
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) final {
-    compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
-                                          AccessMode::kWrite);
-    return wrapped_->BeginWriteAccess(final_msaa_count, surface_props,
-                                      begin_semaphores, end_semaphores);
-  }
   sk_sp<SkPromiseImageTexture> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
@@ -215,13 +205,6 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
                                           AccessMode::kRead);
     return wrapped_->BeginReadAccess(begin_semaphores, end_semaphores,
                                      end_state);
-  }
-  sk_sp<SkPromiseImageTexture> BeginReadAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) final {
-    compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
-                                          AccessMode::kRead);
-    return wrapped_->BeginReadAccess(begin_semaphores, end_semaphores);
   }
   void EndReadAccess() final { wrapped_->EndReadAccess(); }
 

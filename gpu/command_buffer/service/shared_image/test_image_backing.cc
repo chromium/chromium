@@ -68,7 +68,8 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
@@ -90,7 +91,8 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
   void EndWriteAccess(sk_sp<SkSurface> surface) override {}
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
+      std::vector<GrBackendSemaphore>* end_semaphores,
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
