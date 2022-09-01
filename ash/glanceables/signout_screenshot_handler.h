@@ -10,6 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/geometry/size.h"
+
+namespace gfx {
+class Image;
+}  // namespace gfx
 
 namespace ash {
 
@@ -32,8 +37,12 @@ class ASH_EXPORT SignoutScreenshotHandler {
     screenshot_path_for_test_ = path;
   }
 
+  gfx::Size screenshot_size_for_test() { return screenshot_size_; }
+
  private:
-  void OnScreenshotTaken(scoped_refptr<base::RefCountedMemory> png_data);
+  // Callback invoked when the screenshot is taken. gfx::Image is cheap to pass
+  // by value.
+  void OnScreenshotTaken(gfx::Image image);
 
   // Saves the screenshot to disk.
   void SaveScreenshot(scoped_refptr<base::RefCountedMemory> png_data);
@@ -49,6 +58,9 @@ class ASH_EXPORT SignoutScreenshotHandler {
 
   // Invoked when the screenshot is done.
   base::OnceClosure done_callback_;
+
+  // Size of the output screenshot.
+  gfx::Size screenshot_size_;
 
   base::FilePath screenshot_path_for_test_;
 

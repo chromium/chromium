@@ -8,7 +8,9 @@
 
 #include <memory>
 
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -41,6 +43,13 @@ TEST_F(SignoutScreenshotHandlerTest, TakeScreenshotWithWindowOpen) {
   base::RunLoop run_loop;
   handler.TakeScreenshot(run_loop.QuitClosure());
   run_loop.Run();
+
+  // Screenshot is half the size of the desk container in each dimension.
+  gfx::Size screenshot_size = handler.screenshot_size_for_test();
+  aura::Window* active_desk =
+      desks_util::GetActiveDeskContainerForRoot(Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(screenshot_size.width(), active_desk->bounds().width() / 2);
+  EXPECT_EQ(screenshot_size.height(), active_desk->bounds().height() / 2);
 
   // Screenshot was taken and is not empty.
   EXPECT_TRUE(base::PathExists(screenshot_path_));

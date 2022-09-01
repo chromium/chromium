@@ -17,6 +17,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/snapshot/snapshot.h"
 
 namespace ash {
@@ -34,6 +36,12 @@ void WriteScreenshotOnBlockingPool(
 // Deletes the file at `file_path`.
 void DeleteScreenshotOnBlockingPool(const base::FilePath& file_path) {
   base::DeleteFile(file_path);
+}
+
+scoped_refptr<base::RefCountedMemory> EncodeImageAsPngOnThreadPool(
+    const gfx::Image& image) {
+  DCHECK(!image.IsEmpty());
+  return image.As1xPNGBytes();
 }
 
 }  // namespace
@@ -60,28 +68,42 @@ void SignoutScreenshotHandler::TakeScreenshot(base::OnceClosure done_callback) {
     DeleteScreenshot();
     return;
   }
-  // TODO(crbug.com/1353119): Resize the image to be smaller before encoding to
-  // PNG, since the glanceables preview on login is not full-size.
-  ui::GrabWindowSnapshotAsyncPNG(
+  gfx::Size source_size = active_desk->bounds().size();
+  // Capture the screenshot at a smaller size than the desk. This speeds up PNG
+  // encoding and writing to disk.
+  screenshot_size_ =
+      gfx::Size(source_size.width() / 2, source_size.height() / 2);
+  // Snapshot scaling uses skia::ImageOperations::RESIZE_GOOD which should be
+  // fast. See SnapshotAsync::ScaleCopyOutputResult().
+  ui::GrabWindowSnapshotAndScaleAsync(
       active_desk,
-      /*source_rect=*/gfx::Rect(gfx::Point(), active_desk->bounds().size()),
+      /*source_rect=*/gfx::Rect(gfx::Point(), source_size), screenshot_size_,
       base::BindOnce(&SignoutScreenshotHandler::OnScreenshotTaken,
                      weak_factory_.GetWeakPtr()));
 }
 
-void SignoutScreenshotHandler::OnScreenshotTaken(
-    scoped_refptr<base::RefCountedMemory> png_data) {
-  if (!png_data) {
+void SignoutScreenshotHandler::OnScreenshotTaken(gfx::Image image) {
+  if (image.IsEmpty()) {
     // If the screenshot failed, delete any existing screenshot so we don't show
     // a stale image on startup.
     DeleteScreenshot();
     return;
   }
-  SaveScreenshot(png_data);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&EncodeImageAsPngOnThreadPool, std::move(image)),
+      base::BindOnce(&SignoutScreenshotHandler::SaveScreenshot,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SignoutScreenshotHandler::SaveScreenshot(
     scoped_refptr<base::RefCountedMemory> png_data) {
+  if (!png_data) {
+    // If PNG encoding failed failed, delete any existing screenshot so we don't
+    // show a stale image on startup.
+    DeleteScreenshot();
+    return;
+  }
   base::FilePath file_path = GetScreenshotPath();
   // Use priority USER_BLOCKING since the user is waiting for logout/shutdown.
   base::ThreadPool::PostTaskAndReply(
