@@ -31,12 +31,6 @@ proto_library("test_proto") {
   sources = [ "parse_jspb_test.proto" ]
 }
 
-# TODO(crbug.com/1344231): Remove once this config is no longer used in this
-# file.
-config("allowshadowing") {
-  cflags = [ "-Wno-shadow" ]
-}
-
 static_library("browser") {
   sources = [
     "actions/action.cc",
@@ -409,10 +403,6 @@ static_library("browser") {
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/re2",
   ]
-
-  # TODO(crbug.com/1344231): Remove once all files in this target can compile
-  # with -Wshadow. Placed last to take precedence over the noshadowing config.
-  configs += [ ":allowshadowing" ]
 }
 
 static_library("unit_test_support") {

@@ -164,9 +164,6 @@ void NoRoundTripService::GetActions(
     return;
   }
 
-  ServiceRequestSender::ResponseInfo response_info;
-  response_info.encoded_body_length = 0;
-
   for (const auto& routine : script_store_->GetRoutines()) {
     if (!routine.has_script_path() || routine.script_path() != script_path) {
       continue;
