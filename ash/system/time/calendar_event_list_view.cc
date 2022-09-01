@@ -210,7 +210,14 @@ void CalendarEventListView::UpdateListItems() {
       empty_list_view_container->AddChildView(
           std::make_unique<CalendarEmptyEventListView>(
               calendar_view_controller_));
-  DCHECK(calendar_view_controller_->selected_date().has_value());
+
+  // There is a corner case when user closes the event list view before this
+  // line of code is executed. Then `selected_date_` is absl::nullopt and
+  // getting its value leads to a crash. Only set accessible name when
+  // `selected_date_` has value, since if `event_list_view_` is closed, there'll
+  // be no need to set the accessible name.
+  if (!calendar_view_controller_->selected_date().has_value())
+    return;
   empty_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION,
       calendar_utils::GetMonthNameAndDayOfMonth(
