@@ -123,6 +123,9 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
   if (detect_updated_region) {
     desktop_capture_options_.set_detect_updated_region(*detect_updated_region);
   }
+#if defined(WEBRTC_USE_PIPEWIRE)
+  desktop_capture_options_.set_allow_pipewire(true);
+#endif  // defined(WEBRTC_USE_PIPEWIRE)
 }
 
 }  // namespace remoting
