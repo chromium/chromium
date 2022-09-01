@@ -169,15 +169,15 @@ or take a look at one of the existing examples such as
 
 Architectural:
 
-<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfmp0cW1VcE5XVWNxZndxelV5T19kT2NFSndYZlNFbkFpc3pSa2VDN0hlMm8">
+<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfmp0cW1VcE5XVWNxZndxelV5T19kT2NFSndYZlNFbkFpc3pSa2VDN0hlMm8&resourcekey=0-ROo3GFIuBBIGakbTlSKZuw">
 </iframe>
 
 Chrome-side design docs:
 
-<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfndSa2dleUQtMnZDeWpPZk1JV0QtbVM5STkwWms4YThzQ0pGTmU1QU9kNVk">
+<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfndSa2dleUQtMnZDeWpPZk1JV0QtbVM5STkwWms4YThzQ0pGTmU1QU9kNVk&resourcekey=0-_pVIubJkVbp5xAPQ0WKsvA">
 </iframe>
 
 Catapult-side design docs:
 
-<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfm10bXd5YmRNWUpKOElOWS0xdU1tMmV1S3F4aHo0ZDJLTmtGRy1qVnQtVWM">
+<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfm10bXd5YmRNWUpKOElOWS0xdU1tMmV1S3F4aHo0ZDJLTmtGRy1qVnQtVWM&resourcekey=0-GvJpfCIKyDiXaERBTvoKhg">
 </iframe>
