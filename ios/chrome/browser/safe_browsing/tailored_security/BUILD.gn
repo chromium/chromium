@@ -25,6 +25,19 @@ source_set("tailored_security") {
   ]
 }
 
+source_set("infobar_delegates") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tailored_security_service_infobar_delegate.h",
+    "tailored_security_service_infobar_delegate.mm",
+  ]
+
+  deps = [
+    "//components/infobars/core",
+    "//ios/chrome/app/strings:ios_strings",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
