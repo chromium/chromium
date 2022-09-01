@@ -204,6 +204,8 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
       GetAnalysisConnectorProviders(enterprise_connectors::FILE_DOWNLOADED);
   info.on_bulk_data_entry_providers =
       GetAnalysisConnectorProviders(enterprise_connectors::BULK_DATA_ENTRY);
+  info.on_print_providers =
+      GetAnalysisConnectorProviders(enterprise_connectors::PRINT);
   info.realtime_url_check_mode = GetRealtimeUrlCheckMode();
   info.on_security_event_providers = GetOnSecurityEventProviders();
   info.browser_version = version_info::GetVersionNumber();

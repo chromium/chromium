@@ -450,15 +450,15 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
   constexpr char kChromeCleanupEnabledType[] = "boolean";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   constexpr char kThirdPartyBlockingEnabledType[] = "boolean";
-  constexpr char kCount[] = "17";
+  constexpr char kCount[] = "18";
 #else
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "16";
+  constexpr char kCount[] = "17";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #else
   constexpr char kChromeCleanupEnabledType[] = "undefined";
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "15";
+  constexpr char kCount[] = "16";
 #endif  // BUILDFLAG(IS_WIN)
 
   constexpr char kTest[] = R"(
@@ -474,6 +474,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
       chrome.test.assertTrue(info.onFileAttachedProviders instanceof Array);
       chrome.test.assertTrue(info.onFileDownloadedProviders instanceof Array);
       chrome.test.assertTrue(info.onBulkDataEntryProviders instanceof Array);
+      chrome.test.assertTrue(info.onPrintProviders instanceof Array);
       chrome.test.assertEq(typeof info.realtimeUrlCheckMode, 'string');
       chrome.test.assertTrue(info.onSecurityEventProviders instanceof Array);
       chrome.test.assertEq(typeof info.browserVersion, 'string');

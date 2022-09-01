@@ -71,6 +71,7 @@ namespace enterprise.reportingPrivate {
     DOMString[] onFileAttachedProviders;
     DOMString[] onFileDownloadedProviders;
     DOMString[] onBulkDataEntryProviders;
+    DOMString[] onPrintProviders;
     RealtimeUrlCheckMode realtimeUrlCheckMode;
     DOMString[] onSecurityEventProviders;
     DOMString browserVersion;

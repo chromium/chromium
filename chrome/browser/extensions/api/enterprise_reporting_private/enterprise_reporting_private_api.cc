@@ -83,6 +83,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
       std::move(signals.on_file_downloaded_providers);
   info.on_bulk_data_entry_providers =
       std::move(signals.on_bulk_data_entry_providers);
+  info.on_print_providers = std::move(signals.on_print_providers);
   info.on_security_event_providers =
       std::move(signals.on_security_event_providers);
   info.site_isolation_enabled = signals.site_isolation_enabled;
