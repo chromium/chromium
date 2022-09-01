@@ -4635,7 +4635,8 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
       main_thread_scrolling_reason));
   auto scroll_state =
-      ScrollState1(PropertyTreeState::Root(), main_thread_scrolling_reason);
+      ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
+                   main_thread_scrolling_reason);
 
   WTF::Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
   scroll_translation_nodes.push_back(&scroll_state.Transform());

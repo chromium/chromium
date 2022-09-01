@@ -730,12 +730,8 @@ void PaintArtifactCompositor::Update(
     // state but can be created via the scroll offset translation node.
     const auto& scroll_translation =
         NearestScrollTranslationForLayer(pending_layer);
-    // TODO(ScrollUnification): We may combine the following two calls to
-    // property_tree_manager.SetCcScrollNodeIsComposited(scroll_translation);
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollNode(scroll_translation);
-    if (unification_enabled)
-      property_tree_manager.SetCcScrollNodeIsComposited(scroll_id);
 
     layer_list_builder.Add(&layer);
 

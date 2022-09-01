@@ -301,7 +301,8 @@ class PropertyTreeManager {
   // creating the associated scroll offset transform node.
   void CreateCompositorScrollNode(
       const ScrollPaintPropertyNode&,
-      const cc::TransformNode& scroll_offset_translation);
+      const cc::TransformNode& scroll_offset_translation,
+      bool is_composited);
 
   void UpdatePixelMovingFilterClipExpanders();
 

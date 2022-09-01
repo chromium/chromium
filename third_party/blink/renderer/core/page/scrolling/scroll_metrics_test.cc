@@ -387,19 +387,12 @@ TEST_F(ScrollMetricsTest, NestedScrollersTest) {
     Compositor().BeginFrame();
     Scroll(box, WebGestureDevice::kTouchpad);
 
-    // The second scroll latches to the non-composited parent.  It relies on
-    // main for repaint, but incorrectly reports kNotScrollingOnMain again,
-    // because the ScrollNode for the parent has is_composited == true.
-    //
-    // TODO(crbug.com/1358316): Fix ScrollNode::is_composited, and report this
-    // case correctly.
-    EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
-    EXPECT_WHEEL_TOTAL(1);
-    // EXPECT_WHEEL_BUCKET(
-    //     BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
-    // EXPECT_WHEEL_BUCKET(
-    //     cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    // EXPECT_WHEEL_TOTAL(2);
+    // The second scroll latches to the non-composited parent.
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(2);
   } else {
     // Scrolling the inner box will gather reasons from the scrolling chain. The
     // inner box itself has no reason because it's composited. Other scrollable
