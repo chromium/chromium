@@ -25,6 +25,7 @@
 #include "base/win/win_util.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
+#include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -167,7 +168,7 @@ int Setup(UpdaterScope scope) {
   VLOG(1) << "Setup succeeded.";
 
   CheckComInterfaceTypeLib(scope, true);
-  MarshalUpdaterInternal();
+  MarshalInterface<IUpdaterInternal, UpdaterInternalImpl>();
 
   return 0;
 }
