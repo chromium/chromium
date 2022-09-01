@@ -54,6 +54,10 @@ VIZ_COMMON_EXPORT extern const base::Feature kMacCAOverlayQuad;
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kMacCAOverlayQuadMaxNum;
 #endif
 
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+VIZ_COMMON_EXPORT extern const base::Feature kCanSkipRenderPassOverlay;
+#endif
+
 VIZ_COMMON_EXPORT extern const base::Feature kDrawPredictedInkPoint;
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];

@@ -169,6 +169,11 @@ const base::FeatureParam<int> kMacCAOverlayQuadMaxNum{
     &kMacCAOverlayQuad, "MacCAOverlayQuadMaxNum", -1};
 #endif
 
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+const base::Feature kCanSkipRenderPassOverlay{"CanSkipRenderPassOverlay",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);

@@ -795,6 +795,10 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
                      resource_provider,
                      overlay_processor),
       skia_output_surface_(skia_output_surface),
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+      can_skip_render_pass_overlay_(
+          base::FeatureList::IsEnabled(features::kCanSkipRenderPassOverlay)),
+#endif
       is_using_raw_draw_(features::IsUsingRawDraw()) {
   DCHECK(skia_output_surface_);
   lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
@@ -3168,6 +3172,9 @@ bool SkiaRenderer::CanSkipRenderPassOverlay(
   // damage and is skipped in DirectRender and (2) the parameters of drawing the
   // render pass has not changed.
 
+  if (!can_skip_render_pass_overlay_)
+    return false;
+
   // Check if the render pass has been re-drawn.
   if (skipped_render_pass_ids_.count(render_pass_id) == 0)
     return false;
@@ -3247,7 +3254,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     const AggregatedRenderPassDrawQuad* rpdq,
     ResourceFormat buffer_format,
     gfx::ColorSpace color_space,
-    gfx::Size buffer_size) {
+    const gfx::Size& buffer_size) {
   RenderPassOverlayParams overlay_params;
   auto it = std::find_if(available_render_pass_overlay_backings_.begin(),
                          available_render_pass_overlay_backings_.end(),

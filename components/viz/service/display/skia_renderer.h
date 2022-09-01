@@ -287,7 +287,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const AggregatedRenderPassDrawQuad* rpdq,
       ResourceFormat buffer_format,
       gfx::ColorSpace color_space,
-      gfx::Size buffer_size);
+      const gfx::Size& buffer_size);
 
   void PrepareRenderPassOverlay(
       OverlayProcessorInterface::PlatformOverlayCandidate* overlay);
@@ -346,8 +346,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // Specific for SkDDL.
   const raw_ptr<SkiaOutputSurface> skia_output_surface_;
-
-  const bool is_using_raw_draw_;
 
   // Lock set for resources that are used for the current frame. All resources
   // in this set will be unlocked with a sync token when the frame is done in
@@ -440,7 +438,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // RenderPassBacking.generate_mipmap is not used.
   std::vector<RenderPassOverlayParams> in_flight_render_pass_overlay_backings_;
   std::vector<RenderPassOverlayParams> available_render_pass_overlay_backings_;
+
+  // A feature flag that allows unchanged render pass draw quad in the overlay
+  // list to skip.
+  const bool can_skip_render_pass_overlay_;
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+
+  const bool is_using_raw_draw_;
 
   gfx::ColorConversionSkFilterCache color_filter_cache_;
 
