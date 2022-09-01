@@ -386,7 +386,7 @@ def DownloadRPMalloc():
 
 
 def DownloadPinnedClang():
-  PINNED_CLANG_VERSION = 'llvmorg-16-init-572-gdde41c6c-3'
+  PINNED_CLANG_VERSION = 'llvmorg-16-init-3375-gfed71b04-1'
   DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
                            PINNED_CLANG_VERSION)
 
