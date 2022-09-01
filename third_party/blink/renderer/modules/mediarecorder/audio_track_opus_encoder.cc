@@ -110,7 +110,7 @@ void AudioTrackOpusEncoder::OnSetFormat(
   // opus_encoder_create()): force |converted_params_| to at most those.
   converted_params_ = media::AudioParameters(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::GuessChannelLayout(std::min(input_params_.channels(), 2)),
+      media::ChannelLayoutConfig::Guess(std::min(input_params_.channels(), 2)),
       kOpusPreferredSamplingRate, kOpusPreferredFramesPerBuffer);
   DVLOG(1) << "|input_params_|:" << input_params_.AsHumanReadableString()
            << " -->|converted_params_|:"

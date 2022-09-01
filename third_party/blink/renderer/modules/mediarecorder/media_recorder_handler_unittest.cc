@@ -432,8 +432,8 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
   const std::unique_ptr<media::AudioBus> audio_bus2 = NextAudioBus();
 
   media::AudioParameters params(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_STEREO,
-      kTestAudioSampleRate,
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Stereo(), kTestAudioSampleRate,
       kTestAudioSampleRate * kTestAudioBufferDurationMs / 1000);
   SetAudioFormatForTesting(params);
 
