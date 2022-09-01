@@ -95,7 +95,7 @@ class FastPairRepositoryImpl : public FastPairRepository,
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
                             CheckAccountKeysCallback callback,
-                            bool refresh_cache_on_miss);
+                            bool allow_cache_refresh);
   void OnMetadataFetched(
       const std::string& normalized_model_id,
       DeviceMetadataCallback callback,
@@ -106,6 +106,10 @@ class FastPairRepositoryImpl : public FastPairRepository,
                       nearby::fastpair::GetObservedDeviceResponse response,
                       gfx::Image image);
   void RetryCheckAccountKeys(
+      const AccountKeyFilter& account_key_filter,
+      CheckAccountKeysCallback callback,
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+  void UpdateCacheAndRetryCheckAccountKeys(
       const AccountKeyFilter& account_key_filter,
       CheckAccountKeysCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);

@@ -327,6 +327,92 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match) {
   run_loop->Run();
 }
 
+TEST_F(FastPairRepositoryImplTest, UpdateStaleUserDeviceCache) {
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata metadata(response, gfx::Image());
+
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+
+  // Check for the device, this will also load the device into the cache
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/true));
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the device directly from footprints. This is equivalent to the
+  // device being removed on an Android phone or another Chromebook
+  footprints_fetcher_->DeleteUserDevice(base::HexEncode(kAccountKey1),
+                                        base::DoNothing());
+
+  // 29 minutes later, device is still in the cache
+  task_environment()->FastForwardBy(base::Minutes(29));
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/true));
+  base::RunLoop().RunUntilIdle();
+
+  // After >30 minutes, cache will have gone stale so device will be removed
+  task_environment()->FastForwardBy(base::Seconds(61));
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/false));
+  run_loop->Run();
+}
+
+TEST_F(FastPairRepositoryImplTest, UseStaleCache) {
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata metadata(response, gfx::Image());
+
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+
+  // Check for the device, this will also load the device into the cache
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/true));
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the device directly from footprints. This is equivalent to the
+  // device being removed on an Android phone or another Chromebook
+  footprints_fetcher_->DeleteUserDevice(base::HexEncode(kAccountKey1),
+                                        base::DoNothing());
+
+  // Set the response to replicate an error getting devices from the server
+  footprints_fetcher_->SetGetUserDevicesResponse(absl::nullopt);
+
+  // After >30 minutes, cache is stale but we will fail to get devices from
+  // the server so we use the stale cache with the device still present
+  task_environment()->FastForwardBy(base::Minutes(31));
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/true));
+  run_loop->Run();
+}
+
 TEST_F(FastPairRepositoryImplTest, AssociateAccountKey_InvalidId) {
   auto device = base::MakeRefCounted<Device>(kInvalidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);

@@ -34,6 +34,7 @@
 namespace {
 
 constexpr base::TimeDelta kOfflineRetryTimeout = base::Minutes(1);
+constexpr base::TimeDelta kCacheInvalidationTime = base::Minutes(30);
 
 // Checks if the mac address of a FastPairDevice is the same as the given
 // |mac_address| by checking if the SHA256 from the given |device| equals to
@@ -213,14 +214,25 @@ void FastPairRepositoryImpl::CheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
     CheckAccountKeysCallback callback) {
   CheckAccountKeysImpl(account_key_filter, std::move(callback),
-                       /*refresh_cache_on_miss=*/true);
+                       /*allow_cache_refresh=*/true);
 }
 
 void FastPairRepositoryImpl::CheckAccountKeysImpl(
     const AccountKeyFilter& account_key_filter,
     CheckAccountKeysCallback callback,
-    bool refresh_cache_on_miss) {
+    bool allow_cache_refresh) {
   QP_LOG(INFO) << __func__;
+  if (allow_cache_refresh &&
+      (base::Time::Now() - footprints_last_updated_) > kCacheInvalidationTime) {
+    // If it has been >30 minutes since the cache was updated, try to get
+    // user devices from the server before proceeding.
+    footprints_fetcher_->GetUserDevices(base::BindOnce(
+        &FastPairRepositoryImpl::UpdateCacheAndRetryCheckAccountKeys,
+        weak_ptr_factory_.GetWeakPtr(), account_key_filter,
+        std::move(callback)));
+    return;
+  }
+
   for (const auto& info : user_devices_cache_.fast_pair_info()) {
     if (info.has_device()) {
       const std::string& string_key = info.device().account_key();
@@ -242,7 +254,9 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
     }
   }
 
-  if (refresh_cache_on_miss &&
+  // On cache miss, query the server to make sure the device isn't saved to the
+  // account unless we've already queried the server in the past minute.
+  if (allow_cache_refresh &&
       (base::Time::Now() - footprints_last_updated_) > base::Minutes(1)) {
     footprints_fetcher_->GetUserDevices(
         base::BindOnce(&FastPairRepositoryImpl::RetryCheckAccountKeys,
@@ -266,7 +280,22 @@ void FastPairRepositoryImpl::RetryCheckAccountKeys(
 
   UpdateUserDevicesCache(user_devices);
   CheckAccountKeysImpl(account_key_filter, std::move(callback),
-                       /*refresh_cache_on_miss=*/false);
+                       /*allow_cache_refresh=*/false);
+}
+
+void FastPairRepositoryImpl::UpdateCacheAndRetryCheckAccountKeys(
+    const AccountKeyFilter& account_key_filter,
+    CheckAccountKeysCallback callback,
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  QP_LOG(INFO) << __func__;
+  if (!user_devices) {
+    QP_LOG(INFO) << __func__
+                 << "Failed to update user devices cache. Using stale cache";
+  } else {
+    UpdateUserDevicesCache(user_devices);
+  }
+  CheckAccountKeysImpl(account_key_filter, std::move(callback),
+                       /*allow_cache_refresh=*/false);
 }
 
 void FastPairRepositoryImpl::CompleteAccountKeyLookup(
