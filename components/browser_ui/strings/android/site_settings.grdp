@@ -364,6 +364,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_ADDITION" desc="Additional text used to explain the block third-party cookies option in settings">
     Features on some sites may not work
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_FPS_ADDITION" desc="Additional text used to explain the block third-party cookies option in settings when First Party Sets are enables.">
+    Related sites may remember you across sites
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_ADDITION" desc="Additional text used to explain the block cookies option in settings">
     Features on many sites may not work
   </message>

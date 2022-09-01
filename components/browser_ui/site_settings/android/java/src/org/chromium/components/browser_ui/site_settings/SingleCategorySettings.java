@@ -1088,6 +1088,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
         params.isPrivacySandboxFirstPartySetsUIEnabled =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled();
+        params.isFirstPartySetsDataAccessEnabled =
+                getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled();
         fourStateCookieToggle.setState(params);
     }
 

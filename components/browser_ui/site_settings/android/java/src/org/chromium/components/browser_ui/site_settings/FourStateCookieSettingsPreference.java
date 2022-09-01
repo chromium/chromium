@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -64,8 +65,10 @@ public class FourStateCookieSettingsPreference extends Preference
 
         // Whether the cookies content setting is enforced.
         public boolean cookiesContentSettingEnforced;
-        //  Whether third-party blocking is enforced.
+        // Whether third-party blocking is enforced.
         public boolean cookieControlsModeEnforced;
+        // Whether First Party Sets are enabled.
+        public boolean isFirstPartySetsDataAccessEnabled;
     }
 
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
@@ -147,6 +150,7 @@ public class FourStateCookieSettingsPreference extends Preference
                     R.id.block_third_party_with_aux);
             mBlockThirdPartyIncognitoButton.setVisibility(View.VISIBLE);
             mBlockThirdPartyButton.setVisibility(View.VISIBLE);
+            setBlockThirdPartyCookieDescription();
             // TODO(crbug.com/1349370): Change the buttons class into a
             // RadioButtonWithDescriptionAndAuxButton and remove the following casts when the
             // PrivacySandboxFirstPartySetsUI feature is launched
@@ -174,6 +178,21 @@ public class FourStateCookieSettingsPreference extends Preference
 
         if (mInitializationParams != null) {
             configureRadioButtons(mInitializationParams);
+        }
+    }
+
+    private void setBlockThirdPartyCookieDescription() {
+        Resources resources = getContext().getResources();
+        String defaultDescription = resources.getString(
+                R.string.website_settings_category_cookie_block_third_party_addition);
+        if (mInitializationParams.isFirstPartySetsDataAccessEnabled) {
+            String fpsAdditionalDescription = resources.getString(
+                    R.string.website_settings_category_cookie_block_third_party_fps_addition);
+            String description = resources.getString(R.string.concat_two_strings_with_periods,
+                    defaultDescription, fpsAdditionalDescription);
+            mBlockThirdPartyButton.setDescriptionText(description);
+        } else {
+            mBlockThirdPartyButton.setDescriptionText(defaultDescription);
         }
     }
 
