@@ -27,7 +27,7 @@ config("runtime_library") {
     }
   }
 
-  defines += [ "_LIBCPP_ENABLE_NODISCARD" ]
+  defines += [ "_LIBCPP_ENABLE_NODISCARD_EXT" ]
 
   include_dirs += [ "//buildtools/third_party/libc++" ]
 
