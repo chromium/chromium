@@ -29,6 +29,11 @@
     width: 320px;
   }
 
+  #rsuCodeDialogLink {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
+
   #qrCodeCanvas {
       border: 1px solid;
       border-color: var(--google-grey-200);
@@ -50,9 +55,7 @@
   <div slot="left-pane">
     <h1>[[i18n('rsuCodePageTitleText')]]</h1>
     <div class="instructions">
-      <localized-link id="rsuCodeDialogLink"
-          localized-string="[[rsuInstructionsText_]]">
-      </localized-link>
+      <span inner-h-t-m-l="[[rsuInstructionsText_]]"></span>
     </div>
     <div id="inputContainer">
       <cr-input

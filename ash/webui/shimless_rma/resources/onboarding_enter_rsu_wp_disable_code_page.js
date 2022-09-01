@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './shimless_rma_fonts_css.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
@@ -233,9 +232,9 @@ export class OnboardingEnterRsuWpDisableCodePage extends
 
   /** @private */
   setRsuInstructionsText_() {
-    this.rsuInstructionsText_ = this.i18nAdvanced('rsuCodeInstructionsText');
-    const linkElement = this.shadowRoot.querySelector('#rsuCodeDialogLink')
-                            .shadowRoot.querySelector('a');
+    this.rsuInstructionsText_ =
+        this.i18nAdvanced('rsuCodeInstructionsText', {attrs: ['id']});
+    const linkElement = this.shadowRoot.querySelector('#rsuCodeDialogLink');
     linkElement.setAttribute('href', '#');
     linkElement.addEventListener('click', () => {
       if (this.allButtonsDisabled) {
