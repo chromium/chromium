@@ -1292,6 +1292,8 @@
     "hwb",
     "lab",
     "oklab",
+    "lch",
+    "oklch",
     "-internal-light-dark",
 
     // transform

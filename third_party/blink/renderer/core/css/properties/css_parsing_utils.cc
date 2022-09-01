@@ -1174,8 +1174,8 @@ CSSPrimitiveValue* ConsumeAngle(
   return ConsumeMathFunctionAngle(range, context);
 }
 
-// ConsumeHue takes an angle as input (as angle or as plain number in degrees)
-// and returns a number in the range [0.0, 6.0].
+// ConsumeHue takes an angle as input (as angle in radians or in degrees, or as
+// plain number in degrees) and returns a plain number in degrees.
 CSSPrimitiveValue* ConsumeHue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -1191,7 +1191,7 @@ CSSPrimitiveValue* ConsumeHue(
     angle_value = value->ComputeDegrees();
   }
   return CSSNumericLiteralValue::Create(
-      fmod(fmod(angle_value, 360.0) + 360.0, 360.0) / 60.0,
+      fmod(fmod(angle_value, 360.0) + 360.0, 360.0),
       CSSPrimitiveValue::UnitType::kNumber);
 }
 
@@ -1447,7 +1447,9 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
   if (!hsl_value)
     return false;
   double color_array[3];
-  color_array[0] = hsl_value->GetDoubleValue();
+  // HSL expects a hue in the range [0.0, 6.0]
+  // https://www.w3.org/TR/css-color-4/#typedef-hue
+  color_array[0] = hsl_value->GetDoubleValue() / 60.0;
 
   bool requires_commas = false;
   for (int i = 1; i < 3; i++) {
@@ -1494,11 +1496,12 @@ static bool ParseHWBParameters(CSSParserTokenRange& range,
                                Color& result) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kHwb);
   CSSParserTokenRange args = ConsumeFunction(range);
-  // Consume hue, an angle.
   CSSPrimitiveValue* value = ConsumeHue(args, context, absl::nullopt);
   if (!value)
     return false;
-  double hue = value->GetDoubleValue();
+  // HWB expects a hue in the range [0.0, 6.0]
+  // https://www.w3.org/TR/css-color-4/#typedef-hue
+  double hue = value->GetDoubleValue() / 60.0;
 
   // Consume two percentage values.
   double percentages[2];
@@ -1532,9 +1535,8 @@ static bool ParseHWBParameters(CSSParserTokenRange& range,
 static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
                                       const CSSParserContext& context,
                                       Color& result) {
-  bool is_lab = (range.Peek().FunctionId() == CSSValueID::kLab);
-  bool is_ok_lab = (range.Peek().FunctionId() == CSSValueID::kOklab);
-  DCHECK(is_lab || is_ok_lab);
+  CSSValueID function_id = range.Peek().FunctionId();
+  DCHECK(function_id == CSSValueID::kLab || function_id == CSSValueID::kOklab);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume lightness, either a percentage or a number
   CSSPrimitiveValue* value =
@@ -1569,10 +1571,59 @@ static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
     alpha = ClampTo<double>(alpha, 0.0, 1.0);
   }
 
-  if (is_ok_lab)
+  if (function_id == CSSValueID::kOklab)
     result = Color::FromOKLab(lightness, ab[0], ab[1], alpha);
   else
     result = Color::FromLab(lightness, ab[0], ab[1], alpha);
+  return args.AtEnd();
+}
+
+static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
+                                      const CSSParserContext& context,
+                                      Color& result) {
+  CSSValueID function_id = range.Peek().FunctionId();
+  DCHECK(function_id == CSSValueID::kLch || function_id == CSSValueID::kOklch);
+  CSSParserTokenRange args = ConsumeFunction(range);
+  // Consume lightness, either a percentage or a number
+  CSSPrimitiveValue* value =
+      ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!value) {
+    value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+  }
+  if (!value)
+    return false;
+  double lightness = value->GetDoubleValue();
+  lightness = std::max(0.0, lightness);
+
+  value = ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!value)
+    return false;
+  double chroma = value->GetDoubleValue();
+  chroma = std::max(0.0, chroma);
+
+  value = ConsumeHue(args, context, absl::nullopt);
+  if (!value)
+    return false;
+  double hue = value->GetDoubleValue();
+
+  // If present, consume the alpha value.
+  double alpha = 1.0;
+  if (ConsumeSlashIncludingWhitespace(args)) {
+    if (!ConsumeNumberRaw(args, context, alpha)) {
+      CSSPrimitiveValue* alpha_percent =
+          ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+      if (!alpha_percent)
+        return false;
+      else
+        alpha = alpha_percent->GetDoubleValue() / 100.0;
+    }
+    alpha = ClampTo<double>(alpha, 0.0, 1.0);
+  }
+
+  if (function_id == CSSValueID::kOklch)
+    result = Color::FromOKLCH(lightness, chroma, hue, alpha);
+  else
+    result = Color::FromLCH(lightness, chroma, hue, alpha);
   return args.AtEnd();
 }
 
@@ -1635,6 +1686,12 @@ static bool ParseColorFunction(CSSParserTokenRange& range,
     case CSSValueID::kOklab:
       if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
           !ParseLABOrOKLABParameters(color_range, context, result))
+        return false;
+      break;
+    case CSSValueID::kLch:
+    case CSSValueID::kOklch:
+      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
+          !ParseLCHOrOKLCHParameters(color_range, context, result))
         return false;
       break;
     default:

@@ -499,9 +499,16 @@ String Color::SerializeAsCSSColor() const {
 
     case SerializationType::kLab:
     case SerializationType::kOKLab:
+    case SerializationType::kLCH:
+    case SerializationType::kOKLCH:
+      if (serialization_type_ == SerializationType::kLab)
+        result.Append("lab(");
       if (serialization_type_ == SerializationType::kOKLab)
-        result.Append("ok");
-      result.Append("lab(");
+        result.Append("oklab(");
+      if (serialization_type_ == SerializationType::kLCH)
+        result.Append("lch(");
+      if (serialization_type_ == SerializationType::kOKLCH)
+        result.Append("oklch(");
       result.AppendNumber(param0_);
       result.Append("% ");
       result.AppendNumber(param1_);
@@ -517,8 +524,6 @@ String Color::SerializeAsCSSColor() const {
     // TODO(https://crbug.com/1333988): Implement CSS Color level 4
     // serialization.
     case SerializationType::kColor:
-    case SerializationType::kLCH:
-    case SerializationType::kOKLCH:
     default:
       NOTIMPLEMENTED();
       return "rgb(0, 0, 0)";
