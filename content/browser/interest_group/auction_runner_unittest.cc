@@ -7860,6 +7860,16 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
 // using its priority vector is negative, so it should be filtered out, and
 // there should be no winner.
 TEST_F(AuctionRunnerTest, PriorityVectorFiltersOnlyGroup) {
+  // Only include bidder 1. Having a second bidder results in following a
+  // slightly different path. With two bidders, the first bidder loads an
+  // interest group, which is filtered, and then the bidder is deleted. Then the
+  // second bidder loads no interest groups, and the auction is deleted. With a
+  // single bidder, the auction is deleted immediately after filtering out the
+  // bidders, which potentially affects the dangling pointer detection code,
+  // since the discarded BuyerHelper must be deleted before the
+  // InterestGroupAuction it has a pointer to.
+  interest_group_buyers_ = {{kBidder1}};
+
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
                                          MakeBidScriptSupportsTie());
   std::vector<StorageInterestGroup> bidders;
