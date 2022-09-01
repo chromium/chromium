@@ -93,7 +93,6 @@ if (include_polymer) {
       "policy/cr_policy_indicator.js",
       "policy/cr_policy_pref_indicator.js",
       "policy/cr_tooltip_icon.js",
-      "shared_style_css.m.js",
       "shared_vars_css.m.js",
     ]
 
@@ -121,12 +120,6 @@ if (include_polymer) {
     html_type = "custom-style"
   }
 
-  polymer_modulizer("shared_style_css") {
-    js_file = "shared_style_css.m.js"
-    html_file = "shared_style_css.html"
-    html_type = "style-module"
-  }
-
   polymer_modulizer("hidden_style_css") {
     js_file = "hidden_style_css.m.js"
     html_file = "hidden_style_css.html"
@@ -152,7 +145,6 @@ if (include_polymer) {
       ":cr_icons_css_module",
       ":hidden_style_css_module",
       ":icons_module",
-      ":shared_style_css_module",
       ":shared_vars_css_module",
       "policy:web_components",
     ]

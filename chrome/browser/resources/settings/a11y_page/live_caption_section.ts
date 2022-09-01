@@ -10,7 +10,7 @@
  * other versions of Windows.
  */
 
-import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 

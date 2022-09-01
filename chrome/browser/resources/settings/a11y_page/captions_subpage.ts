@@ -8,7 +8,7 @@
  * chrome://os-settings/manageAccessibility/captions on Chrome OS).
  */
 
-import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 import './live_caption_section.js';

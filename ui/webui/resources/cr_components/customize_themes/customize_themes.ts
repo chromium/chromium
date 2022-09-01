@@ -8,7 +8,7 @@ import '../../cr_elements/cr_icon_button/cr_icon_button.js';
 import '../../cr_elements/cr_icons_css.m.js';
 import '../../cr_elements/cr_grid/cr_grid.js';
 import '../../cr_elements/shared_vars_css.m.js';
-import '../../cr_elements/shared_style_css.m.js';
+import '../../cr_elements/cr_shared_style.css.js';
 import './theme_icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 

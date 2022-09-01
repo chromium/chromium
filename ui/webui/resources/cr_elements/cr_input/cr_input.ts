@@ -4,7 +4,7 @@
 
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../hidden_style_css.m.js';
-import '../shared_style_css.m.js';
+import '../cr_shared_style.css.js';
 import '../shared_vars_css.m.js';
 import './cr_input_style.css.js';
 

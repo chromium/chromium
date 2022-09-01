@@ -622,6 +622,7 @@ polymer_modulizer("network_shared_css") {
   js_file = "network_shared_css.m.js"
   html_file = "network_shared_css.html"
   html_type = "style-module"
+  migrated_imports = cr_components_migrated_imports
 }
 
 polymer_modulizer("network_siminfo") {

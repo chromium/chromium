@@ -12,7 +12,7 @@
  */
 
 import './passwords_list_handler.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 import './avatar_icon.js';
 import './passwords_shared.css.js';

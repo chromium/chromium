@@ -17,7 +17,7 @@ import './password_move_to_account_dialog.js';
 import './password_remove_dialog.js';
 import './password_list_item.js';
 import './password_edit_dialog.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';

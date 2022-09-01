@@ -9,7 +9,7 @@
  */
 
 import './bluetooth_base_page.js';
-import '../../../cr_elements/shared_style_css.m.js';
+import '../../../cr_elements/cr_shared_style.css.js';
 import '../../../cr_elements/cr_input/cr_input.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';

@@ -7,7 +7,7 @@
  * 'settings-basic-page' is the settings page containing the actual settings.
  */
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../appearance_page/appearance_page.js';
@@ -22,13 +22,13 @@ import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
-
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
 // </if>
 
 // <if expr="not chromeos_ash">
 import '../languages_page/languages.js';
+
 // </if>
 
 import {assert} from 'chrome://resources/js/assert_ts.js';

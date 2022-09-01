@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_dialog.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_ui.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import './strings.m.js';

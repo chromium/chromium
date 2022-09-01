@@ -17,7 +17,7 @@
 import '../cr_input/cr_input.js';
 import '../hidden_style_css.m.js';
 import '../icons.m.js';
-import '../shared_style_css.m.js';
+import '../cr_shared_style.css.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';

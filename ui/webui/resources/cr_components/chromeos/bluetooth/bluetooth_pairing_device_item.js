@@ -7,7 +7,7 @@
  * UI element to show a list of discovered Bluetooth devices and initiate
  * pairing to a device.
  */
-import '../../../cr_elements/shared_style_css.m.js';
+import '../../../cr_elements/cr_shared_style.css.js';
 import './bluetooth_icon.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';

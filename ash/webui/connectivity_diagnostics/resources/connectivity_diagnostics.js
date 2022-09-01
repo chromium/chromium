@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics.js';
 import 'chrome://resources/cr_components/chromeos/network_health/network_health_summary.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.js';

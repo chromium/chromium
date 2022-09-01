@@ -6,7 +6,7 @@
  * @fileoverview
  * 'settings-on-startup-page' is a settings page.
  */
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/extension_controlled_indicator.js';

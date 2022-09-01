@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../icons.m.js';
-import '../shared_style_css.m.js';
+import '../cr_shared_style.css.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';

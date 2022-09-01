@@ -8,7 +8,7 @@
  * picture or a camera image preview.
  */
 
-import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './cr_camera.js';
 
