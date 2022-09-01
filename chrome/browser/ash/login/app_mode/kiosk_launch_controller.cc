@@ -559,7 +559,13 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
 
-  if (kiosk_app_id_.type == KioskAppType::kWebApp) {
+  // App Service launcher requires the web app to be installed. Temporary issues
+  // like URL redirection should not stop the app from being installed as
+  // placeholder. Force launching the app is not possible in case installation
+  // fails.
+  if (kiosk_app_id_.type == KioskAppType::kWebApp &&
+      (!base::FeatureList::IsEnabled(features::kKioskEnableAppService) ||
+       crosapi::browser_util::IsLacrosEnabled())) {
     HandleWebAppInstallFailed();
     return;
   }
