@@ -16,7 +16,7 @@ template("ios_toolchain") {
 
     sdk_developer_dir = ios_sdk_developer_dir
     deployment_target = ios_deployment_target
-    sdk_name = ios_sdk_name
+    target_environment = target_environment
     bin_path = ios_bin_path
     strip_with_lipo = true
 

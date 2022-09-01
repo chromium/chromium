@@ -678,10 +678,12 @@ template("apple_toolchain") {
         }
 
         command =
-            "$_env_vars $python_path $_tool -p \"${invoker.sdk_name}\" " +
-            "-t \"${invoker.deployment_target}\" " +
-            "-T \"{{bundle_product_type}}\" " +
-            "-P \"{{bundle_partial_info_plist}}\" " + "-o {{output}} {{inputs}}"
+            "$_env_vars $python_path $_tool " +
+            "-p '${toolchain_args.current_os}' " +
+            "-e '${invoker.target_environment}' " +
+            "-t '${invoker.deployment_target}' " +
+            "-T '{{bundle_product_type}}' " +
+            "-P '{{bundle_partial_info_plist}}' " + "-o {{output}} {{inputs}}"
 
         description = "COMPILE_XCASSETS {{output}}"
         pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"
