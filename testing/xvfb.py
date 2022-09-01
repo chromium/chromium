@@ -23,6 +23,8 @@ import psutil
 
 import test_env
 
+DEFAULT_XVFB_WHD = '1280x800x24'
+
 # pylint: disable=useless-object-inheritance
 
 
@@ -90,7 +92,8 @@ def launch_dbus(env): # pylint: disable=inconsistent-return-statements
 
 # TODO(crbug.com/949194): Encourage setting flags to False.
 def run_executable(
-    cmd, env, stdoutfile=None, use_openbox=True, use_xcompmgr=True):
+    cmd, env, stdoutfile=None, use_openbox=True, use_xcompmgr=True,
+    xvfb_whd=None):
   """Runs an executable within Weston or Xvfb on Linux or normally on other
      platforms.
 
@@ -108,6 +111,7 @@ def run_executable(
       Some ChromeOS tests need a window manager.
     use_xcompmgr: A flag to use xcompmgr process.
       Some tests need a compositing wm to make use of transparent visuals.
+    xvfb_whd: WxHxD to pass to xvfb or DEFAULT_XVFB_WHD if None
 
   Returns:
     the exit code of the specified commandline, or 1 on failure.
@@ -135,13 +139,14 @@ def run_executable(
     cmd.remove('--use-weston')
 
   if sys.platform.startswith('linux') and use_xvfb:
-    return _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr)
+    return _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
+      xvfb_whd or DEFAULT_XVFB_WHD)
   if use_weston:
     return _run_with_weston(cmd, env, stdoutfile)
   return test_env.run_executable(cmd, env, stdoutfile)
 
 
-def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
+def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr, xvfb_whd):
   openbox_proc = None
   openbox_ready = MutableBoolean()
   def set_openbox_ready(*_):
@@ -178,7 +183,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
       xvfb_ready.setvalue(False)
       display = find_display()
 
-      xvfb_cmd = ['Xvfb', display, '-screen', '0', '1280x800x24', '-ac',
+      xvfb_cmd = ['Xvfb', display, '-screen', '0', xvfb_whd, '-ac',
                   '-nolisten', 'tcp', '-dpi', '96', '+extension', 'RANDR']
       if '-maxclients' in xvfb_help:
         xvfb_cmd += ['-maxclients', '512']
