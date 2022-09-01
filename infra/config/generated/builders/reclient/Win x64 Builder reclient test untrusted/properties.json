@@ -44,6 +44,7 @@
     }
   },
   "$build/reclient": {
+    "enable_deps_cache_on_win": true,
     "instance": "rbe-chromium-untrusted-test",
     "metrics_project": "chromium-reclient-metrics"
   },

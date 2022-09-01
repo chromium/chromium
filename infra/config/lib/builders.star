@@ -283,7 +283,7 @@ def _code_coverage_property(
 
     return code_coverage or None
 
-def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, bootstrap_env):
+def _reclient_property(*, bucket, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, bootstrap_env):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
     if not instance:
@@ -321,6 +321,11 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
     ensure_verified = defaults.get_value("reclient_ensure_verified", ensure_verified)
     if ensure_verified:
         reclient["ensure_verified"] = True
+
+    # TODO(crbug.com/1350867): remove this after performance check with
+    # deps cache.
+    if bucket == "reclient":
+        reclient["enable_deps_cache_on_win"] = True
     return reclient
 
 ################################################################################
@@ -742,6 +747,9 @@ def builder(
         publish_trace = reclient_publish_trace,
         cache_silo = reclient_cache_silo,
         ensure_verified = reclient_ensure_verified,
+        # TODO(crbug.com/1350867): remove this after performance check with
+        # deps cache.
+        bucket = bucket,
     )
     if reclient != None:
         properties["$build/reclient"] = reclient
