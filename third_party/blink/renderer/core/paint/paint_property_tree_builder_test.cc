@@ -6042,10 +6042,12 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   EXPECT_EQ(3u, NumFragments(fixed));
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed, i);
-    // We don't composite and create PaintOffsetTranslation for the
-    // fixed-position element during printing.
-    EXPECT_EQ(PhysicalOffset(20, 400 * i - 180), fragment.PaintOffset());
-    EXPECT_FALSE(fragment.PaintProperties());
+    auto* properties = fragment.PaintProperties();
+    ASSERT_TRUE(properties);
+    ASSERT_TRUE(properties->PaintOffsetTranslation());
+    EXPECT_EQ(gfx::Vector2dF(20, 400 * i - 180),
+              properties->PaintOffsetTranslation()->Translation2D());
+    EXPECT_EQ(PhysicalOffset(), fragment.PaintOffset());
     EXPECT_EQ(LayoutUnit(400 * i), fragment.LogicalTopInFlowThread());
   }
 

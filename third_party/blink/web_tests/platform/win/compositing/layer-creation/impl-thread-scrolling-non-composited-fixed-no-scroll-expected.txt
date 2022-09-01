@@ -9,19 +9,8 @@ TEST
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [36, 20],
-      "transform": 1
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [10, 10, 0, 1]
-      ]
+      "position": [10, 10],
+      "bounds": [36, 20]
     }
   ]
 }

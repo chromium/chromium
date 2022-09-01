@@ -2314,6 +2314,19 @@ TEST_P(VisualViewportTest, EnsureOverscrollElasticityTransformNode) {
   UpdateAllLifecyclePhases();
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
+  EXPECT_EQ(visual_viewport.GetOverscrollType() == OverscrollType::kTransform,
+            !!visual_viewport.GetOverscrollElasticityTransformNode());
+
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kNone);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(visual_viewport.GetOverscrollElasticityTransformNode());
+
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kFilter);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(visual_viewport.GetOverscrollElasticityTransformNode());
+
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
+  UpdateAllLifecyclePhases();
   EXPECT_TRUE(visual_viewport.GetOverscrollElasticityTransformNode());
 }
 

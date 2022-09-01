@@ -471,7 +471,8 @@ static bool NeedsAnchorScrollTranslation(const LayoutObject& object) {
 
 static bool NeedsPaintOffsetTranslation(
     const LayoutObject& object,
-    CompositingReasons direct_compositing_reasons) {
+    CompositingReasons direct_compositing_reasons,
+    const LayoutObject* container_for_fixed_position) {
   if (!object.IsBoxModelObject())
     return false;
 
@@ -516,6 +517,11 @@ static bool NeedsPaintOffsetTranslation(
       (object.StyleRef().Filter().HasReferenceFilter() ||
        object.HasReflection()))
     return true;
+
+  if (auto* box = DynamicTo<LayoutBox>(box_model)) {
+    if (box->IsFixedToView(container_for_fixed_position))
+      return true;
+  }
 
   // Though we don't treat hidden backface as a direct compositing reason, it's
   // very likely that the object will be composited, so a paint offset
@@ -568,8 +574,9 @@ bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
 
 void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     absl::optional<gfx::Vector2d>& paint_offset_translation) {
-  if (!NeedsPaintOffsetTranslation(
-          object_, full_context_.direct_compositing_reasons))
+  if (!NeedsPaintOffsetTranslation(object_,
+                                   full_context_.direct_compositing_reasons,
+                                   full_context_.container_for_fixed_position))
     return;
 
   // We should use the same subpixel paint offset values for snapping regardless
@@ -635,12 +642,14 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
     state.direct_compositing_reasons =
         full_context_.direct_compositing_reasons &
         CompositingReason::kDirectReasonsForPaintOffsetTranslationProperty;
-    if (state.direct_compositing_reasons & CompositingReason::kFixedPosition &&
-        object_.View()->FirstFragment().PaintProperties()->Scroll()) {
-      state.scroll_translation_for_fixed = object_.View()
-                                               ->FirstFragment()
-                                               .PaintProperties()
-                                               ->ScrollTranslation();
+    if (auto* box = DynamicTo<LayoutBox>(object_)) {
+      if (box->IsFixedToView(full_context_.container_for_fixed_position) &&
+          object_.View()->FirstFragment().PaintProperties()->Scroll()) {
+        state.scroll_translation_for_fixed = object_.View()
+                                                 ->FirstFragment()
+                                                 .PaintProperties()
+                                                 ->ScrollTranslation();
+      }
     }
 
     if (IsA<LayoutView>(object_)) {
@@ -3915,8 +3924,8 @@ void PaintPropertyTreeBuilder::UpdateFragments() {
       // If DCHECK is not on, use fast path for text.
       !object_.IsText() &&
 #endif
-      (NeedsPaintOffsetTranslation(object_,
-                                   context_.direct_compositing_reasons) ||
+      (NeedsPaintOffsetTranslation(object_, context_.direct_compositing_reasons,
+                                   context_.container_for_fixed_position) ||
        NeedsStickyTranslation(object_) ||
        NeedsAnchorScrollTranslation(object_) ||
        NeedsTranslate(object_, context_.direct_compositing_reasons) ||

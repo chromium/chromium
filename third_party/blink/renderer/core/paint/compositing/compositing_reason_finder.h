@@ -26,7 +26,8 @@ class CORE_EXPORT CompositingReasonFinder {
   // PaintLayerScrollableArea needs the result of this function to determine
   // composited scrolling status.
   static CompositingReasons DirectReasonsForPaintPropertiesExceptScrolling(
-      const LayoutObject&);
+      const LayoutObject&,
+      const LayoutObject* container_for_fixed_position = nullptr);
 
   static bool ShouldForcePreferCompositingToLCDText(
       const LayoutObject&,
@@ -46,9 +47,6 @@ class CORE_EXPORT CompositingReasonFinder {
   static CompositingReasons PotentialCompositingReasonsFor3DTransform(
       const ComputedStyle&);
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
-
-  static CompositingReasons CompositingReasonsForScrollDependentPosition(
-      const PaintLayer&);
 };
 
 }  // namespace blink

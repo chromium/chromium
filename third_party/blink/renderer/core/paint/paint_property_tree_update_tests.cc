@@ -1734,24 +1734,24 @@ TEST_P(PaintPropertyTreeUpdateTest, FixedPositionCompositing) {
     <div id="fixed" style="position: fixed; top: 50px; left: 60px">Fixed</div>
   )HTML");
 
-  // Still paint properties because we composite fixed-position elements to
-  // avoid overscroll.
-  EXPECT_TRUE(PaintPropertiesForElement("fixed"));
-
-  auto* space = GetDocument().getElementById("space");
-  space->setAttribute(html_names::kStyleAttr, "height: 2000px");
-  UpdateAllLifecyclePhasesForTest();
   auto* properties = PaintPropertiesForElement("fixed");
   ASSERT_TRUE(properties);
   auto* paint_offset_translation = properties->PaintOffsetTranslation();
   ASSERT_TRUE(paint_offset_translation);
+  EXPECT_EQ(gfx::Vector2dF(60, 50), paint_offset_translation->Translation2D());
+  EXPECT_FALSE(paint_offset_translation->HasDirectCompositingReasons());
+
+  auto* space = GetDocument().getElementById("space");
+  space->setAttribute(html_names::kStyleAttr, "height: 2000px");
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Vector2dF(60, 50), paint_offset_translation->Translation2D());
   EXPECT_TRUE(paint_offset_translation->HasDirectCompositingReasons());
   EXPECT_FALSE(properties->Transform());
 
   space->setAttribute(html_names::kStyleAttr, "height: 100px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(PaintPropertiesForElement("fixed"));
+  EXPECT_EQ(gfx::Vector2dF(60, 50), paint_offset_translation->Translation2D());
+  EXPECT_FALSE(paint_offset_translation->HasDirectCompositingReasons());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {

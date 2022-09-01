@@ -35,10 +35,10 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='yellow fixed'",
+      "position": [200, 13],
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFF00",
-      "transform": 2
+      "backgroundColor": "#FFFF00"
     }
   ],
   "transforms": [
@@ -49,15 +49,6 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 13, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [200, 13, 0, 1]
       ]
     }
   ]

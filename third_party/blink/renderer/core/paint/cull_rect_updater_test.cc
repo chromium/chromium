@@ -217,8 +217,6 @@ TEST_P(CullRectUpdaterTest, FixedPositionInNonScrollableViewCullRect) {
     </div>
   )HTML");
 
-  // The cull rect is inflated when scrolling, because fixed elements don't
-  // participate in overscroll.
   EXPECT_EQ(gfx::Rect(-200, -100, 800, 600), GetCullRect("target").Rect());
 }
 

@@ -8079,8 +8079,17 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
   return paint_location;
 }
 
-bool LayoutBox::IsFixedToView() const {
-  return IsFixedPositioned() && Container() == View();
+bool LayoutBox::IsFixedToView(
+    const LayoutObject* container_for_fixed_position) const {
+  if (!IsFixedPositioned())
+    return false;
+
+  const auto* container = container_for_fixed_position;
+  if (!container)
+    container = Container();
+  else
+    DCHECK_EQ(container, Container());
+  return container->IsLayoutView();
 }
 
 PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {

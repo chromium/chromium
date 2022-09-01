@@ -637,8 +637,6 @@ static void UpdateCompositorViewportProperties(
     }
   }
 
-  property_tree_manager.SetFixedElementsDontOverscroll(
-      RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled());
   layer_tree_host->RegisterViewportPropertyIds(ids);
 }
 

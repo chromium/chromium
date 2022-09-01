@@ -94,7 +94,7 @@ struct CC_EXPORT TransformNode {
 
   bool scrolls : 1;
 
-  bool is_fixed_to_viewport : 1;
+  bool should_undo_overscroll : 1;
 
   bool should_be_snapped : 1;
 

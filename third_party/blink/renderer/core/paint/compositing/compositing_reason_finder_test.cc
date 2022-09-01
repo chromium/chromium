@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -92,7 +93,7 @@ TEST_P(CompositingReasonFinderTest, DontPromoteTrivial3DWithLowEndDevice) {
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
 }
 
-TEST_P(CompositingReasonFinderTest, FixedElementShouldHaveCompositingReason) {
+TEST_P(CompositingReasonFinderTest, UndoOverscroll) {
   SetBodyInnerHTML(R"HTML(
     <style>
     .fixedDivStyle {
@@ -107,9 +108,25 @@ TEST_P(CompositingReasonFinderTest, FixedElementShouldHaveCompositingReason) {
     </body>
   )HTML");
 
-  ScopedFixedElementsDontOverscrollForTest fixed_elements_dont_overscroll(true);
+  auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
+  auto default_overscroll_type = visual_viewport.GetOverscrollType();
   EXPECT_REASONS(
-      CompositingReason::kFixedPosition | CompositingReason::kFixedToViewport,
+      default_overscroll_type == OverscrollType::kTransform
+          ? CompositingReason::kFixedPosition |
+                CompositingReason::kUndoOverscroll
+          : CompositingReason::kNone,
+      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("fixedDiv")));
+
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kNone);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(
+      CompositingReason::kNone,
+      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("fixedDiv")));
+
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(
+      CompositingReason::kFixedPosition | CompositingReason::kUndoOverscroll,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("fixedDiv")));
 }
 
@@ -176,30 +193,25 @@ TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
     < div style='height: 2000px;"></div>
   )HTML");
 
-  EXPECT_REASONS(
-      CompositingReason::kStickyPosition,
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *GetPaintLayerByElementId("sticky-scrolling")));
+  EXPECT_REASONS(CompositingReason::kStickyPosition,
+                 DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("sticky-scrolling")));
 
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *GetPaintLayerByElementId("sticky-no-scrolling")));
+  EXPECT_REASONS(CompositingReason::kNone,
+                 DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("sticky-no-scrolling")));
 
-  EXPECT_REASONS(
-      CompositingReason::kStickyPosition,
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *GetPaintLayerByElementId("overflow-hidden-scrolling")));
+  EXPECT_REASONS(CompositingReason::kStickyPosition,
+                 DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("overflow-hidden-scrolling")));
 
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *GetPaintLayerByElementId("overflow-hidden-no-scrolling")));
+  EXPECT_REASONS(CompositingReason::kNone,
+                 DirectReasonsForPaintProperties(*GetLayoutObjectByElementId(
+                     "overflow-hidden-no-scrolling")));
 
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *GetPaintLayerByElementId("under-fixed")));
+  EXPECT_REASONS(CompositingReason::kNone,
+                 DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("under-fixed")));
 }
 
 void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(

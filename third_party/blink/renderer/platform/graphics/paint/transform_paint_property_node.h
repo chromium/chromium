@@ -382,7 +382,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool RequiresCompositingForFixedToViewport() const {
-    return DirectCompositingReasons() & CompositingReason::kFixedToViewport;
+    return DirectCompositingReasons() & CompositingReason::kUndoOverscroll;
   }
 
   bool RequiresCompositingForStickyPosition() const {

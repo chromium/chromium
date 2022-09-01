@@ -7,24 +7,11 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='test'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
-      "invalidations": [
-        [50, 50, 75, 75]
-      ],
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "position": [50, 50],
-      "bounds": [75, 75],
-      "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "invalidations": [
-        [0, 0, 75, 75]
-      ]
+      "transform": 1
     }
   ],
   "transforms": [
@@ -34,7 +21,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [200, 100, 0, 1]
+        [0, 60, 0, 1]
       ]
     }
   ]

@@ -1521,12 +1521,14 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 
     const auto& paint_chunks = ContentPaintChunks();
     bool found_root_scrollbar = false;
+    const auto* parent_transform =
+        visual_viewport.GetOverscrollElasticityTransformNode()
+            ? visual_viewport.GetOverscrollElasticityTransformNode()->Parent()
+            : visual_viewport.GetPageScaleNode()->Parent();
     for (const auto& chunk : paint_chunks) {
       if (chunk.id == PaintChunk::Id(root_scrollable->VerticalScrollbar()->Id(),
                                      DisplayItem::kScrollbarHitTest)) {
-        EXPECT_EQ(
-            &chunk.properties.Transform(),
-            visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
+        EXPECT_EQ(parent_transform, &chunk.properties.Transform());
         found_root_scrollbar = true;
       }
     }

@@ -199,7 +199,7 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
 // Tests that the transform for fixed elements is translated based on the
 // overscroll nodes scroll_offset and that the clip node has an outset based on
 // the overscroll distance.
-TEST(PropertyTreeTest, FixedElementInverseTranslation) {
+TEST(PropertyTreeTest, UndoOverscroll) {
   FakeProtectedSequenceSynchronizer synchronizer;
   PropertyTrees property_trees(synchronizer);
 
@@ -225,13 +225,9 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
   overscroll_node.id = transform_tree.Insert(overscroll_node, 1);
   viewport_property_ids.overscroll_elasticity_transform = overscroll_node.id;
 
-  transform_tree.set_fixed_elements_dont_overscroll(true);
-
   TransformNode fixed_node;
-  fixed_node.is_fixed_to_viewport = true;
+  fixed_node.should_undo_overscroll = true;
   fixed_node.id = transform_tree.Insert(fixed_node, 2);
-
-  EXPECT_TRUE(transform_tree.ShouldUndoOverscroll(&fixed_node));
 
   transform_tree.UpdateTransforms(2,
                                   &viewport_property_ids);  // overscroll_node

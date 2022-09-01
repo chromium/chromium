@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='overflow fixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='overflow fixed'",
       "bounds": [800, 600],
       "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='overflow fixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='overflow fixed'",
       "bounds": [785, 600],
       "drawsContent": false,
       "transform": 1
@@ -27,18 +27,18 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='overflow fixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='overflow fixed'",
       "bounds": [100, 1000],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='yellow fixed'",
-      "position": [200, 13],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='yellow fixed'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFF00"
+      "backgroundColor": "#FFFF00",
+      "transform": 2
     }
   ],
   "transforms": [
@@ -49,6 +49,15 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 13, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 13, 0, 1]
       ]
     }
   ]
