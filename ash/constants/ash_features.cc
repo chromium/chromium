@@ -331,10 +331,6 @@ const base::Feature kCellularBypassESimInstallationConnectivityCheck{
 const base::Feature kCellularCustomAPNProfiles{
     "CellularCustomAPNProfiles", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, send the LTE attach APN configuration to the modem.
-const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, use second the Euicc that is exposed by Hermes in Cellular Setup
 // and Settings.
 const base::Feature kCellularUseSecondEuicc{"CellularUseSecondEuicc",
@@ -2587,10 +2583,6 @@ bool ShouldArcAndGuestOsFileTasksUseAppService() {
 
 bool ShouldShowPlayStoreInDemoMode() {
   return base::FeatureList::IsEnabled(kShowPlayInDemoMode);
-}
-
-bool ShouldUseAttachApn() {
-  return base::FeatureList::IsEnabled(kCellularUseAttachApn);
 }
 
 bool ShouldUseV1DeviceSync() {

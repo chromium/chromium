@@ -108,7 +108,6 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
     get featureList() {
       return {
         enabled: [
-          'chromeos::features::kCellularUseAttachApn',
           'chromeos::features::kSimLockPolicy',
           'ash::features::kBluetoothRevamp',
         ],

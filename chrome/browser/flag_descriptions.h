@@ -2765,9 +2765,6 @@ extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 extern const char kCellularCustomAPNProfilesName[];
 extern const char kCellularCustomAPNProfilesDescription[];
 
-extern const char kCellularUseAttachApnName[];
-extern const char kCellularUseAttachApnDescription[];
-
 extern const char kCellularUseSecondEuiccName[];
 extern const char kCellularUseSecondEuiccDescription[];
 

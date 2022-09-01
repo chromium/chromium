@@ -4835,12 +4835,6 @@ const char kCellularCustomAPNProfilesDescription[] =
     "If enabled, the Settings UI will allow the user to create, edit, and "
     "delete custom APN profiles for a Cellular network.";
 
-const char kCellularUseAttachApnName[] = "Cellular use Attach APN";
-const char kCellularUseAttachApnDescription[] =
-    "Use the mobile operator database to set explicitly an Attach APN "
-    "for the LTE connections rather than letting the modem decide which "
-    "attach APN to use or retrieve it from the network";
-
 const char kCellularUseSecondEuiccName[] = "Use second Euicc";
 const char kCellularUseSecondEuiccDescription[] =
     "When enabled Cellular Setup and Settings UI will use the second available "

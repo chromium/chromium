@@ -60,21 +60,19 @@
             edit-field-types="[[otherApnEditTypes_]]" prefix="cellular.apn."
             disabled="[[disabled]]">
         </network-property-list-mojo>
-        <template is="dom-if" if="[[isAttachApnAllowed_]]">
-          <div id="attachApnPropertyRow" class="property-box horizontal center">
-            <div id="attachApnDescription" class="start" aria-hidden="true">
-              <span id="attachApnTitle">[[i18n('OncCellular-APN-Attach')]]</span>
-              <cr-tooltip-icon id="attachApnTooltip" tooltip-position="right"
-                  icon-class="cr:help-outline"
-                  tooltip-text="[[i18n('OncCellular-APN-Attach_TooltipText')]]">
-              </cr-tooltip-icon>
-            </div>
-            <cr-toggle id="attachApnControl" aria-labelledby="attachApnTitle"
-                aria-describedby="attachApnTooltip"
-                checked="{{isAttachApnToggleEnabled_}}">
-            </cr-toggle>
+        <div id="attachApnPropertyRow" class="property-box horizontal center">
+          <div id="attachApnDescription" class="start" aria-hidden="true">
+            <span id="attachApnTitle">[[i18n('OncCellular-APN-Attach')]]</span>
+            <cr-tooltip-icon id="attachApnTooltip" tooltip-position="right"
+                icon-class="cr:help-outline"
+                tooltip-text="[[i18n('OncCellular-APN-Attach_TooltipText')]]">
+            </cr-tooltip-icon>
           </div>
-        </template>
+          <cr-toggle id="attachApnControl" aria-labelledby="attachApnTitle"
+              aria-describedby="attachApnTooltip"
+              checked="{{isAttachApnToggleEnabled_}}">
+          </cr-toggle>
+        </div>
         <cr-button id="saveButton" class="action-button"
             on-click="onSaveOtherTap_" disabled="[[disabled]]">
           [[i18n('save')]]

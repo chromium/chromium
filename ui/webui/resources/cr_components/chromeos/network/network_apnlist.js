@@ -101,15 +101,6 @@ Polymer({
     },
 
     /** @private */
-    isAttachApnAllowed_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('useAttachApn') &&
-            loadTimeData.getBoolean('useAttachApn');
-      },
-    },
-
-    /** @private */
     isAttachApnToggleEnabled_: {
       type: Boolean,
       value: false,
@@ -319,7 +310,7 @@ Polymer({
    * @private
    */
   onSaveOtherTap_() {
-    if (this.sendApnChange_(this.selectedApn_) && this.isAttachApnAllowed_) {
+    if (this.sendApnChange_(this.selectedApn_)) {
       chrome.metricsPrivate.recordBoolean(
           USE_ATTACH_APN_ON_SAVE_METRIC_NAME, this.isAttachApnToggleEnabled_);
     }

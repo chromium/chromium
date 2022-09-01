@@ -3337,21 +3337,6 @@
             ]
         }
     ],
-    "CrosCellularUseAttachApn": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210713",
-                    "enable_features": [
-                        "CellularUseAttachApn"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosDeviceActiveCountingMonthlyCheckMembership": [
         {
             "platforms": [

@@ -896,11 +896,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "cellular-use-attach-apn",
-    "owners": [ "andrewlassalle", "ejcaruso", "chromeos-cellular-platform@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "cellular-use-second-euicc",
     "owners": [ "azeemarshad", "khorimoto", "cros-connectivity@google.com" ],
     // Never expires. This used in ChromeOS to switch to removable EUICC for
