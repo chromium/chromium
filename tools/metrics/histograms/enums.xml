@@ -9427,6 +9427,10 @@ others/histograms.xml -->
   <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
   <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
   <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
+  <int value="123" label="PHONE_HOME_NUMBER_PREFIX"/>
+  <int value="124" label="PHONE_HOME_NUMBER_SUFFIX"/>
+  <int value="125" label="IBAN_VALUE"/>
+  <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">

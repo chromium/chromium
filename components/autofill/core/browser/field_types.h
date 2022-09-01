@@ -248,6 +248,8 @@ enum ServerFieldType {
   CREDIT_CARD_STANDALONE_VERIFICATION_CODE = 126,
   // No new types can be added without a corresponding change to the Autofill
   // server.
+  // Please update enum `AutofillServerFieldType` in
+  // `tools/metrics/histogram/enums.xml` for metrics tracking.
   MAX_VALID_FIELD_TYPE = 127,
 };
 
