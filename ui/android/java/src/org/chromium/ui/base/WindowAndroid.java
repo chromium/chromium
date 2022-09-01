@@ -1064,7 +1064,8 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     @CalledByNative
     private @OverlayTransform int getOverlayTransform() {
         int overlayTransform = OverlayTransform.INVALID;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
+                && mOverlayTransformApiHelper != null) {
             overlayTransform = mOverlayTransformApiHelper.getOverlayTransform();
         }
         // Fallback to display rotation
