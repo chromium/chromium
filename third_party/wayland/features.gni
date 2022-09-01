@@ -9,7 +9,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 declare_args() {
   # This variable is deprecated.  use_system_libwayland_client should be used
   # instead.
-  use_system_libwayland = is_linux && !is_castos &&
+  use_system_libwayland = is_linux && !is_castos && !is_msan &&
                           default_toolchain != "//build/toolchain/cros:target"
 
   # Controls whether the build should use the version of Wayland
