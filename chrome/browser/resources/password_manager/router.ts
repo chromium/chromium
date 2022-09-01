@@ -14,6 +14,15 @@ export enum Page {
   SETTINGS = 'settings',
 }
 
+export enum UrlParam {
+  SEARCH_TERM = 'q',
+}
+
+export class Route {
+  page: Page;
+  queryParameters: URLSearchParams;
+}
+
 /**
  * A helper object to manage in-page navigations. Since the Password Manager
  * page needs to support different urls for different subpages (like the checkup
@@ -24,7 +33,8 @@ export class Router {
     return routerInstance || (routerInstance = new Router());
   }
 
-  private currentPage_: Page = Page.PASSWORDS;
+  private currentRoute_:
+      Route = {page: Page.PASSWORDS, queryParameters: new URLSearchParams()};
   private routeObservers_: Set<RouteObserverMixinInterface> = new Set();
 
   constructor() {
@@ -44,51 +54,84 @@ export class Router {
     assert(this.routeObservers_.delete(observer));
   }
 
-  get currentPage(): Page {
-    return this.currentPage_;
+  get currentRoute(): Route {
+    return this.currentRoute_;
   }
 
   /**
    * Navigates to a page and pushes a new history entry.
    */
   navigateTo(page: Page) {
-    if (page === this.currentPage_) {
+    if (page === this.currentRoute_.page) {
       return;
     }
 
-    this.currentPage_ = page;
+    const oldRoute = this.currentRoute_;
+    this.currentRoute_ = {
+      page: page,
+      queryParameters: new URLSearchParams(),
+    };
     const path = '/' + page;
     const state = {url: path};
     history.pushState(state, '', path);
-    this.notifyObservers_();
+    this.notifyObservers_(oldRoute);
   }
 
-  private notifyObservers_() {
-    this.routeObservers_.forEach((observer) => {
-      observer.currentRouteChanged(this.currentPage_);
-    });
+  /**
+   * Updates the URL parameters of the current route via replacing the
+   * window history state. This changes location.search but doesn't
+   * change the page itself, hence does not push a new route history entry.
+   * Notifies routeObservers_.
+   */
+  updateRouterParams(params: URLSearchParams) {
+    let url: string = this.currentRoute_.page;
+    const queryString = params.toString();
+    if (queryString) {
+      url += '?' + queryString;
+    }
+    window.history.replaceState(window.history.state, '', url);
+
+    const oldRoute = this.currentRoute_;
+    this.currentRoute_ = {
+      page: oldRoute.page,
+      queryParameters: params,
+    };
+    this.notifyObservers_(oldRoute);
+  }
+
+  private notifyObservers_(oldRoute: Route) {
+    assert(oldRoute !== this.currentRoute_);
+
+    for (const observer of this.routeObservers_) {
+      observer.currentRouteChanged(this.currentRoute_, oldRoute);
+    }
   }
 
   /**
    * Helper function to set the current page and notify all observers.
    */
   private processRoute_() {
+    const oldRoute = this.currentRoute_;
+    this.currentRoute_ = {
+      page: oldRoute.page,
+      queryParameters: new URLSearchParams(location.search),
+    };
     const section = location.pathname.substring(1).split('/')[0] || '';
 
     switch (section) {
       case Page.PASSWORDS:
-        this.currentPage_ = Page.PASSWORDS;
+        this.currentRoute_.page = Page.PASSWORDS;
         break;
       case Page.CHECKUP:
-        this.currentPage_ = Page.CHECKUP;
+        this.currentRoute_.page = Page.CHECKUP;
         break;
       case Page.SETTINGS:
-        this.currentPage_ = Page.SETTINGS;
+        this.currentRoute_.page = Page.SETTINGS;
         break;
       default:
-        history.replaceState({}, '', this.currentPage_);
+        history.replaceState({}, '', this.currentRoute_.page);
     }
-    this.notifyObservers_();
+    this.notifyObservers_(oldRoute);
   }
 }
 
@@ -105,7 +148,9 @@ export const RouteObserverMixin = dedupingMixin(
 
           Router.getInstance().addObserver(this);
 
-          this.currentRouteChanged(Router.getInstance().currentPage);
+          this.currentRouteChanged(
+              Router.getInstance().currentRoute,
+              Router.getInstance().currentRoute);
         }
 
         override disconnectedCallback() {
@@ -114,7 +159,7 @@ export const RouteObserverMixin = dedupingMixin(
           Router.getInstance().removeObserver(this);
         }
 
-        currentRouteChanged(_: Page): void {
+        currentRouteChanged(_newRoute: Route, _oldRoute: Route): void {
           assertNotReached();
         }
       }
@@ -123,5 +168,5 @@ export const RouteObserverMixin = dedupingMixin(
     });
 
 export interface RouteObserverMixinInterface {
-  currentRouteChanged(page: Page): void;
+  currentRouteChanged(newRoute: Route, oldRoute: Route): void;
 }

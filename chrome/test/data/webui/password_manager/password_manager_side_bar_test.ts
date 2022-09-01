@@ -29,18 +29,18 @@ suite('PasswordManagerSideBarTest', function() {
         const differentPage =
             page === Page.PASSWORDS ? Page.CHECKUP : Page.PASSWORDS;
         Router.getInstance().navigateTo(differentPage);
-        assertEquals(differentPage, Router.getInstance().currentPage);
+        assertEquals(differentPage, Router.getInstance().currentRoute.page);
 
         const element =
             sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
         element.click();
-        assertEquals(page, Router.getInstance().currentPage);
+        assertEquals(page, Router.getInstance().currentRoute.page);
       }));
 
   [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
       page => test(`navigating to ${page} updates selected item`, function() {
         Router.getInstance().navigateTo(page);
-        assertEquals(page, Router.getInstance().currentPage);
+        assertEquals(page, Router.getInstance().currentRoute.page);
         assertEquals(page, (sidebar.$.menu.selectedItem as HTMLElement).id);
       }));
 });

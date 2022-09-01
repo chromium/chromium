@@ -5,17 +5,52 @@
 import './shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
+import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './toolbar.html.js';
 
-export class PasswordManagerToolbarElement extends PolymerElement {
+export interface PasswordManagerToolbarElement {
+  $: {
+    mainToolbar: CrToolbarElement,
+  };
+}
+
+export class PasswordManagerToolbarElement extends RouteObserverMixin
+(PolymerElement) {
   static get is() {
     return 'password-manager-toolbar';
   }
 
   static get template() {
     return getTemplate();
+  }
+
+  override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
+    this.updateSearchTerm(newRoute.queryParameters);
+  }
+
+  get searchField(): CrToolbarSearchFieldElement {
+    return this.$.mainToolbar.getSearchField();
+  }
+
+  private onSearchChanged_(event: CustomEvent<string>) {
+    const newParams = Router.getInstance().currentRoute.queryParameters;
+    if (event.detail) {
+      newParams.set(UrlParam.SEARCH_TERM, event.detail);
+    } else {
+      newParams.delete(UrlParam.SEARCH_TERM);
+    }
+    Router.getInstance().updateRouterParams(newParams);
+  }
+
+  private updateSearchTerm(query: URLSearchParams) {
+    const searchTerm = query.get(UrlParam.SEARCH_TERM) || '';
+    if (searchTerm !== this.searchField.getValue()) {
+      this.searchField.setValue(searchTerm);
+    }
   }
 }
 
