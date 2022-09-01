@@ -60,7 +60,7 @@ absl::optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
       net::SchemefulSite::CreateIfHasRegisterableDomain(origin);
   if (!site.has_value()) {
     if (emit_errors) {
-      LOG(ERROR) << "First-Party Set origin" << origin_string
+      LOG(ERROR) << "First-Party Set origin " << origin_string
                  << " does not have a valid registered domain; ignoring.";
     }
     return absl::nullopt;
