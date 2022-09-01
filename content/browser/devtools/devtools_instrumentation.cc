@@ -318,6 +318,11 @@ void BackForwardCacheNotUsed(
 
 void DidActivatePrerender(const NavigationRequest& nav_request) {
   FrameTreeNode* ftn = nav_request.frame_tree_node();
+  WebContentsImpl* web_contents = WebContentsImpl::FromFrameTreeNode(ftn);
+  // Record prerender activation here because users don't necessarily open
+  // DevTools when the activation is triggered. If the DevTools is not opened at
+  // the moment, recording the activation here will still preserve the signal.
+  web_contents->set_last_navigation_was_prerender_activation_for_devtools();
   DispatchToAgents(ftn, &protocol::PageHandler::DidActivatePrerender,
                    nav_request);
 }

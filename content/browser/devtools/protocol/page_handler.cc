@@ -346,6 +346,7 @@ void PageHandler::DidCloseJavaScriptDialog(bool success,
 
 Response PageHandler::Enable() {
   enabled_ = true;
+  RetrievePrerenderActivationFromWebContents();
   return Response::FallThrough();
 }
 
@@ -1939,6 +1940,7 @@ void PageHandler::BackForwardCacheNotUsed(
 }
 
 void PageHandler::DidActivatePrerender(const NavigationRequest& nav_request) {
+  has_dispatched_stored_prerender_activation_ = false;
   if (!enabled_)
     return;
   FrameTreeNode* ftn = nav_request.frame_tree_node();
@@ -1953,6 +1955,7 @@ void PageHandler::DidCancelPrerender(const GURL& prerendering_url,
                                      const std::string& initiating_frame_id,
                                      PrerenderHost::FinalStatus status,
                                      const std::string& reason_details) {
+  has_dispatched_stored_prerender_activation_ = false;
   if (!enabled_)
     return;
   DCHECK_NE(status, PrerenderHost::FinalStatus::kActivated);
@@ -1966,6 +1969,22 @@ void PageHandler::DidCancelPrerender(const GURL& prerendering_url,
 
 bool PageHandler::ShouldBypassCSP() {
   return enabled_ && bypass_csp_;
+}
+
+void PageHandler::RetrievePrerenderActivationFromWebContents() {
+  if (!host_)
+    return;
+  WebContentsImpl* web_contents =
+      WebContentsImpl::FromRenderFrameHostImpl(host_);
+  if (web_contents->last_navigation_was_prerender_activation_for_devtools() &&
+      !has_dispatched_stored_prerender_activation_) {
+    std::string frame_token =
+        host_->frame_tree_node()->devtools_frame_token().ToString();
+    has_dispatched_stored_prerender_activation_ = true;
+    frontend_->PrerenderAttemptCompleted(
+        frame_token, host_->GetLastCommittedURL().spec(),
+        Page::PrerenderFinalStatusEnum::Activated);
+  }
 }
 
 }  // namespace protocol

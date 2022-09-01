@@ -1344,6 +1344,16 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     return mouse_lock_widget_;
   }
 
+  // Record a prerender activation for DevTools.
+  void set_last_navigation_was_prerender_activation_for_devtools() {
+    last_navigation_was_prerender_activation_for_devtools_ = true;
+  }
+
+  // Check if prerender was just activated.
+  bool last_navigation_was_prerender_activation_for_devtools() {
+    return last_navigation_was_prerender_activation_for_devtools_;
+  }
+
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
   using RenderViewHostIterationCallback =
@@ -2348,6 +2358,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool pip_lock_aspect_ratio_ = false;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;
+
+  // Stores the information whether last navigation was prerender activation for
+  // DevTools. Set when a prerender activation completes, and cleared when
+  // either DevTools is opened and consults this value or when a non-prerendered
+  // navigation commits in the primary main frame.
+  bool last_navigation_was_prerender_activation_for_devtools_ = false;
 
   bool prerender2_disabled_ = false;
 

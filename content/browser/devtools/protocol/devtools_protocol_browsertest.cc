@@ -223,9 +223,18 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
         prerender_helper_->GetPrerenderedMainFrameHost(host_id));
   }
 
- private:
+  void NavigatePrimaryPage(const GURL& url) {
+    prerender_helper_->NavigatePrimaryPage(url);
+  }
+
+  // WebContentsDelegate overrides.
+  bool IsPrerender2Supported(WebContents& web_contents) override {
+    return true;
+  }
+
   WebContents* web_contents() const { return shell()->web_contents(); }
 
+ private:
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
@@ -3385,6 +3394,65 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
+                       RemoveStoredPrerenderActivationIfNavigateAway) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+
+  Attach();
+  SendCommandSync("Page.enable");
+  SendCommandSync("Runtime.enable");
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  WaitForNotification("Page.prerenderAttemptCompleted", true);
+
+  // Navigate away from the prerendered page, and this should trigger the
+  // mechanism of removing the stored prerender activation.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_FALSE(web_contents_impl
+                   ->last_navigation_was_prerender_activation_for_devtools());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
+                       NewPrerenderActivationOverrideTheOldOne) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  const GURL kPrerenderingUrl2 = GetUrl("/title1.html?prerender2");
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+
+  Attach();
+  SendCommandSync("Page.enable");
+  SendCommandSync("Runtime.enable");
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  WaitForNotification("Page.prerenderAttemptCompleted", true);
+
+  // Trigger another prerender activation.
+  AddPrerender(kPrerenderingUrl2);
+  NavigatePrimaryPage(kPrerenderingUrl2);
+  ASSERT_TRUE(web_contents_impl
+                  ->last_navigation_was_prerender_activation_for_devtools());
 }
 
 }  // namespace content
