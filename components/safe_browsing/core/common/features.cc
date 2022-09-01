@@ -31,14 +31,8 @@ const base::Feature kBetterTelemetryAcrossReports{
     "SafeBrowsingBetterTelemetryAcrossReports",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable only for Android
-#if BUILDFLAG(IS_ANDROID)
 const base::Feature kClientSideDetectionModelIsFlatBuffer{
     "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_ENABLED_BY_DEFAULT};
-#else
-const base::Feature kClientSideDetectionModelIsFlatBuffer{
-    "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 extern const base::Feature kClientSideDetectionModelTag{
     "ClientSideDetectionTag", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -251,7 +245,7 @@ std::string GetClientSideDetectionTag() {
 #if BUILDFLAG(IS_ANDROID)
   return "android_1";
 #else
-  return "desktop_1";
+  return "desktop_1_flatbuffer";
 #endif
 }
 

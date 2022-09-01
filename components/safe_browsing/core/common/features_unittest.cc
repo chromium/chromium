@@ -15,7 +15,7 @@ TEST(SafeBrowsingFeatures, ClientSideDetectionTagDefault) {
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(GetClientSideDetectionTag(), "android_1");
 #else
-  EXPECT_EQ(GetClientSideDetectionTag(), "desktop_1");
+  EXPECT_EQ(GetClientSideDetectionTag(), "desktop_1_flatbuffer");
 #endif
 }
 
