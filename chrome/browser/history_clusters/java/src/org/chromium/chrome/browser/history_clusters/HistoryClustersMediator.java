@@ -346,19 +346,26 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         VisitMetadata visitMetadata = mVisitMetadataMap.get(visit);
         if (visitMetadata == null) return;
         ListItem visitListItem = visitMetadata.visitListItem;
+        List<ListItem> visitsAndRelatedSearches = visitMetadata.visitsAndRelatedSearches;
+        boolean deletedModelHadDivider =
+                visitListItem.model.get(HistoryClustersItemProperties.DIVIDER_VISIBLE);
         assert mModelList.indexOf(visitListItem) != -1
-                && visitMetadata.visitsAndRelatedSearches.indexOf(visitListItem) != -1;
+                && visitsAndRelatedSearches.indexOf(visitListItem) != -1;
         mModelList.remove(visitListItem);
-        visitMetadata.visitsAndRelatedSearches.remove(visitListItem);
-        if (visitMetadata.visitsAndRelatedSearches.size() == 1
-                && visitMetadata.visitsAndRelatedSearches.get(0).type
-                        == ItemType.RELATED_SEARCHES) {
-            mModelList.remove(visitMetadata.visitsAndRelatedSearches.get(0));
-            visitMetadata.visitsAndRelatedSearches.clear();
+        visitsAndRelatedSearches.remove(visitListItem);
+        if (visitsAndRelatedSearches.size() == 1
+                && visitsAndRelatedSearches.get(0).type == ItemType.RELATED_SEARCHES) {
+            mModelList.remove(visitsAndRelatedSearches.get(0));
+            visitsAndRelatedSearches.clear();
         }
 
-        if (visitMetadata.visitsAndRelatedSearches.isEmpty()) {
+        if (visitsAndRelatedSearches.isEmpty()) {
             mModelList.remove(visitMetadata.clusterListItem);
+        } else if (deletedModelHadDivider) {
+            PropertyModel modelOfNewLastVisit =
+                    visitsAndRelatedSearches.get(visitsAndRelatedSearches.size() - 1).model;
+            modelOfNewLastVisit.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, true);
+            modelOfNewLastVisit.set(HistoryClustersItemProperties.DIVIDER_IS_THICK, true);
         }
 
         mVisitMetadataMap.remove(visit);

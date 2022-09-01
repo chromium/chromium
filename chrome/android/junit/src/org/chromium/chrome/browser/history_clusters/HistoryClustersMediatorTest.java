@@ -118,6 +118,8 @@ public class HistoryClustersMediatorTest {
     @Mock
     private GURL mGurl3;
     @Mock
+    private GURL mGurl4;
+    @Mock
     private Tab mTab;
     @Mock
     private Tab mTab2;
@@ -148,6 +150,8 @@ public class HistoryClustersMediatorTest {
     private ClusterVisit mVisit2;
     private ClusterVisit mVisit3;
     private ClusterVisit mVisit4;
+    private ClusterVisit mVisit5;
+    private ClusterVisit mVisit6;
     private HistoryCluster mCluster1;
     private HistoryCluster mCluster2;
     private HistoryCluster mCluster3;
@@ -256,6 +260,7 @@ public class HistoryClustersMediatorTest {
         doReturn("http://spec1.com").when(mGurl1).getSpec();
         doReturn("http://spec2.com").when(mGurl2).getSpec();
         doReturn("http://spec3.com").when(mGurl3).getSpec();
+        doReturn("http://spec3.com").when(mGurl4).getSpec();
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
@@ -268,11 +273,15 @@ public class HistoryClustersMediatorTest {
                 new ArrayList<>(), mGurl3, 123L, new ArrayList<>());
         mVisit4 = new ClusterVisit(1.0F, mGurl3, "Title 4", "url3.com/foo", new ArrayList<>(),
                 new ArrayList<>(), mGurl3, 123L, new ArrayList<>());
+        mVisit5 = new ClusterVisit(1.0F, mGurl3, "Title 5", "url5.com/", new ArrayList<>(),
+                new ArrayList<>(), mGurl4, 123L, new ArrayList<>());
+        mVisit6 = new ClusterVisit(1.0F, mGurl4, "Title 6", "url6.com/", new ArrayList<>(),
+                new ArrayList<>(), mGurl4, 123L, new ArrayList<>());
         mCluster1 = new HistoryCluster(Arrays.asList(mVisit1, mVisit2), "\"label1\"", "label1",
                 new ArrayList<>(), 456L, Arrays.asList("search 1", "search 2"));
         mCluster2 = new HistoryCluster(Arrays.asList(mVisit3, mVisit4), "hostname.com",
                 "hostname.com", new ArrayList<>(), 123L, Collections.emptyList());
-        mCluster3 = new HistoryCluster(Arrays.asList(mVisit1, mVisit4), "\"label3\"", "label3",
+        mCluster3 = new HistoryCluster(Arrays.asList(mVisit5, mVisit6), "\"label3\"", "label3",
                 new ArrayList<>(), 789L, Collections.EMPTY_LIST);
         mClusterSingle = new HistoryCluster(Arrays.asList(mVisit1), "\"label1\"", "label1",
                 new ArrayList<>(), 789L, Collections.EMPTY_LIST);
@@ -895,9 +904,33 @@ public class HistoryClustersMediatorTest {
         // The previously last cluster should now have a divider.
         assertTrue(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
         assertTrue(visitModel.get(HistoryClustersItemProperties.DIVIDER_IS_THICK));
+    }
 
-        visitModel = mModelList.get(7).model;
+    @Test
+    public void testDividers_deletedLastItem() {
+        Promise promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        Promise<HistoryClustersResult> secondPromise = new Promise();
+        doReturn(secondPromise).when(mBridge).loadMoreClusters("query");
+        mMediator.onScrolled(mRecyclerView, 1, 1);
+        ShadowLooper.idleMainLooper();
+        fulfillPromise(secondPromise, mHistoryClustersFollowupResultWithQuery);
+
+        PropertyModel visitModel = mModelList.get(5).model;
         assertFalse(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        visitModel = mModelList.get(6).model;
+        assertTrue(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        assertTrue(visitModel.get(HistoryClustersItemProperties.DIVIDER_IS_THICK));
+
+        mMediator.deleteVisits(
+                Arrays.asList(visitModel.get(HistoryClustersItemProperties.CLUSTER_VISIT)));
+        visitModel = mModelList.get(5).model;
+        assertTrue(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        assertTrue(visitModel.get(HistoryClustersItemProperties.DIVIDER_IS_THICK));
     }
 
     @Test
