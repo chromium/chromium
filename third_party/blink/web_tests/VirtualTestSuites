@@ -1217,5 +1217,13 @@
       "fast/encoding/css-charset-default.xhtml"
     ],
     "args": ["--enable-features=PretokenizeCSS"]
+  },
+  {
+    "prefix": "close-watcher",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/close-watcher"
+    ],
+    "args": ["--enable-blink-features=CloseWatcher"]
   }
 ]

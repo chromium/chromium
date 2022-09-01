@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL normal event listeners come before CloseWatcher promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+Harness: the test ran to completion.
+

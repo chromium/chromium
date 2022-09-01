@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS already-aborted AbortSignal then close() fires no events
+PASS abortController.abort() then close() fires no events
+PASS close() then abortController.abort() fires only one close event
+PASS already-aborted AbortSignal then Esc key fires no events
+PASS abortController.abort() then close via Esc key fires no events
+PASS Esc key then abortController.abort() fires only one close event
+PASS abortController.abort()ing a free CloseWatcher allows a new one to be created without a user activation
+PASS abortController.abort() inside oncancel
+PASS abortController.abort() inside onclose is benign
+Harness: the test ran to completion.
+

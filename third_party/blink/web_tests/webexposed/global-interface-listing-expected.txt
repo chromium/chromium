@@ -1264,15 +1264,6 @@ interface CloseEvent : Event
     getter reason
     getter wasClean
     method constructor
-interface CloseWatcher : EventTarget
-    attribute @@toStringTag
-    getter oncancel
-    getter onclose
-    method close
-    method constructor
-    method destroy
-    setter oncancel
-    setter onclose
 interface Comment : CharacterData
     attribute @@toStringTag
     method constructor

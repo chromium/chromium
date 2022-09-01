@@ -387,7 +387,6 @@
     },
     {
       name: "CloseWatcher",
-      status: "experimental",
     },
     {
       name: "CLSScrollAnchoring",

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL close() with no user activation only fires close CloseWatcher is not defined
+FAIL destroy() then close() fires no events CloseWatcher is not defined
+FAIL close() then destroy() fires only one close event CloseWatcher is not defined
+FAIL Esc key does not count as user activation, so it fires close but not cancel promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL destroy() then close via Esc key fires no events promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL Esc key then destroy() fires only one close event promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL close via synthesized escape key should not work CloseWatcher is not defined
+FAIL destroy inside oncancel promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL destroy inside onclose is benign CloseWatcher is not defined
+FAIL close inside oncancel should not trigger an infinite loop promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+FAIL close inside onclose should not trigger an infinite loop CloseWatcher is not defined
+FAIL close with events added via addEventListener promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+Harness: the test ran to completion.
+
