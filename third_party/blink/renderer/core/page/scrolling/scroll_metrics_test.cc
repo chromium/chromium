@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -15,20 +16,20 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
-#define EXPECT_WHEEL_BUCKET(index, count)                                      \
-  histogram_tester.ExpectBucketCount("Renderer4.MainThreadWheelScrollReason2", \
-                                     index, count);
+#define EXPECT_WHEEL_BUCKET(index, count) \
+  histogram_tester->ExpectBucketCount(    \
+      "Renderer4.MainThreadWheelScrollReason2", index, count);
 
 #define EXPECT_TOUCH_BUCKET(index, count) \
-  histogram_tester.ExpectBucketCount(     \
+  histogram_tester->ExpectBucketCount(    \
       "Renderer4.MainThreadGestureScrollReason2", index, count);
 
-#define EXPECT_WHEEL_TOTAL(count)                                             \
-  histogram_tester.ExpectTotalCount("Renderer4.MainThreadWheelScrollReason2", \
-                                    count);
+#define EXPECT_WHEEL_TOTAL(count)                                              \
+  histogram_tester->ExpectTotalCount("Renderer4.MainThreadWheelScrollReason2", \
+                                     count);
 
-#define EXPECT_TOUCH_TOTAL(count)    \
-  histogram_tester.ExpectTotalCount( \
+#define EXPECT_TOUCH_TOTAL(count)     \
+  histogram_tester->ExpectTotalCount( \
       "Renderer4.MainThreadGestureScrollReason2", count);
 
 namespace blink {
@@ -51,7 +52,7 @@ class ScrollBeginEventBuilder : public WebGestureEvent {
                           WebGestureDevice device)
       : WebGestureEvent(WebInputEvent::Type::kGestureScrollBegin,
                         WebInputEvent::kNoModifiers,
-                        base::TimeTicks::Now(),
+                        WebInputEvent::GetStaticTimeStampForTests(),
                         device) {
     SetPositionInWidget(position);
     SetPositionInScreen(position);
@@ -62,20 +63,26 @@ class ScrollBeginEventBuilder : public WebGestureEvent {
 
 class ScrollUpdateEventBuilder : public WebGestureEvent {
  public:
-  ScrollUpdateEventBuilder() : WebGestureEvent() {
-    type_ = WebInputEvent::Type::kGestureScrollUpdate;
+  explicit ScrollUpdateEventBuilder(WebGestureDevice device)
+      : WebGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
+                        WebInputEvent::kNoModifiers,
+                        WebInputEvent::GetStaticTimeStampForTests(),
+                        device) {
     data.scroll_update.delta_x = 0.0f;
-    data.scroll_update.delta_y = 1.0f;
+    data.scroll_update.delta_y = -1.0f;
     data.scroll_update.velocity_x = 0;
-    data.scroll_update.velocity_y = 1;
+    data.scroll_update.velocity_y = -1;
     frame_scale_ = 1;
   }
 };
 
 class ScrollEndEventBuilder : public WebGestureEvent {
  public:
-  ScrollEndEventBuilder() : WebGestureEvent() {
-    type_ = WebInputEvent::Type::kGestureScrollEnd;
+  explicit ScrollEndEventBuilder(WebGestureDevice device)
+      : WebGestureEvent(WebInputEvent::Type::kGestureScrollEnd,
+                        WebInputEvent::kNoModifiers,
+                        WebInputEvent::GetStaticTimeStampForTests(),
+                        device) {
     frame_scale_ = 1;
   }
 };
@@ -92,17 +99,20 @@ void ScrollMetricsTest::Scroll(Element* element,
   ScrollBeginEventBuilder scroll_begin(
       gfx::PointF(rect->left() + rect->width() / 2,
                   rect->top() + rect->height() / 2),
-      gfx::PointF(0.f, 1.f), device);
-  ScrollUpdateEventBuilder scroll_update;
-  ScrollEndEventBuilder scroll_end;
-  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(scroll_begin);
-  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(scroll_update);
-  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(scroll_end);
-  ASSERT_GT(scroll_update.DeltaYInRootFrame(), 0);
+      gfx::PointF(0.f, -1.f), device);
+  ScrollUpdateEventBuilder scroll_update(device);
+  ScrollEndEventBuilder scroll_end(device);
+  GetWebFrameWidget().DispatchThroughCcInputHandler(scroll_begin);
+  GetWebFrameWidget().DispatchThroughCcInputHandler(scroll_update);
+  GetWebFrameWidget().DispatchThroughCcInputHandler(scroll_end);
+
+  // Negative delta in the gesture event corresponds to positive delta to the
+  // scroll offset (see CreateScrollStateForGesture).
+  ASSERT_LT(scroll_update.DeltaYInRootFrame(), 0);
 }
 
 void ScrollMetricsTest::SetUpHtml(const char* html_content) {
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  ResizeView(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(html_content);
@@ -125,33 +135,75 @@ TEST_F(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById("box");
-  HistogramTester histogram_tester;
+  absl::optional<HistogramTester> histogram_tester;
+  histogram_tester.emplace();
 
   // Test touch scroll.
   Scroll(box, WebGestureDevice::kTouchscreen);
-  EXPECT_TOUCH_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  EXPECT_TOUCH_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_TOUCH_TOTAL(2);
 
-  Scroll(box, WebGestureDevice::kTouchscreen);
-  EXPECT_TOUCH_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      2);
-  EXPECT_TOUCH_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
-  EXPECT_TOUCH_TOTAL(4);
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    // cc reports the below reasons because #box is not composited.
+    EXPECT_TOUCH_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+    EXPECT_TOUCH_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+    EXPECT_TOUCH_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_TOUCH_TOTAL(3);
+  } else {
+    // cc reports the following reasons, because #box is not composited:
+    //   kNonFastScrollableRegion
+    //   kScrollingOnMainForAnyReason
+    //
+    // Then main reports these reasons when handling the forwarded event:
+    //   kNotOpaqueForTextAndLCDText
+    //   kScrollingOnMainForAnyReason (again)
+    //
+    EXPECT_TOUCH_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
+    EXPECT_TOUCH_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+    EXPECT_TOUCH_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
+    EXPECT_TOUCH_TOTAL(4);
+  }
+
+  // Reset histogram tester.
+  histogram_tester.emplace();
 
   // Test wheel scroll.
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  EXPECT_WHEEL_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(2);
+
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    // cc reports the below reasons because #box is not composited.
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(3);
+  } else {
+    // cc reports the following reasons, because #box is not composited:
+    //   kNonFastScrollableRegion
+    //   kScrollingOnMainForAnyReason
+    //
+    // Then main reports these reasons when handling the forwarded event:
+    //   kNotOpaqueForTextAndLCDText
+    //   kScrollingOnMainForAnyReason (again)
+    //
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
+    EXPECT_WHEEL_TOTAL(4);
+  }
 }
 
 TEST_F(ScrollMetricsTest, CompositedScrollableAreaTest) {
@@ -167,27 +219,52 @@ TEST_F(ScrollMetricsTest, CompositedScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById("box");
-  HistogramTester histogram_tester;
+  absl::optional<HistogramTester> histogram_tester;
+  histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  EXPECT_WHEEL_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(2);
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    // cc reports the below reasons because #box is not composited.
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(3);
+  } else {
+    // cc reports the following reasons, because #box is not composited:
+    //   kNonFastScrollableRegion
+    //   kScrollingOnMainForAnyReason
+    //
+    // Then main reports these reasons when handling the forwarded event:
+    //   kNotOpaqueForTextAndLCDText
+    //   kScrollingOnMainForAnyReason (again)
+    //
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
+    EXPECT_WHEEL_TOTAL(4);
+  }
+
+  // Reset histogram tester.
+  histogram_tester.emplace();
 
   box->setAttribute("class", "composited transform box");
-  UpdateAllLifecyclePhases();
+  Compositor().BeginFrame();
   Scroll(box, WebGestureDevice::kTouchpad);
   EXPECT_FALSE(To<LayoutBox>(box->GetLayoutObject())
                    ->GetScrollableArea()
                    ->GetNonCompositedMainThreadScrollingReasons());
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  // EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
-  EXPECT_WHEEL_TOTAL(2);
+
+  // Now that #box is composited, cc reports that we do not scroll on main.
+  EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
+  EXPECT_WHEEL_TOTAL(1);
 }
 
 TEST_F(ScrollMetricsTest, NotScrollableAreaTest) {
@@ -202,25 +279,75 @@ TEST_F(ScrollMetricsTest, NotScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById("box");
-  HistogramTester histogram_tester;
+  absl::optional<HistogramTester> histogram_tester;
+  histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  EXPECT_WHEEL_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(2);
+
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    // cc reports the below reasons because #box is not composited.
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(3);
+  } else {
+    // cc reports the following reasons, because #box is not composited:
+    //   kNonFastScrollableRegion
+    //   kScrollingOnMainForAnyReason
+    //
+    // Then main reports these reasons when handling the forwarded event:
+    //   kNotOpaqueForTextAndLCDText
+    //   kScrollingOnMainForAnyReason (again)
+    //
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
+    EXPECT_WHEEL_TOTAL(4);
+  }
+
+  // Reset histogram tester.
+  histogram_tester.emplace();
 
   box->setAttribute("class", "hidden transform box");
   UpdateAllLifecyclePhases();
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  EXPECT_WHEEL_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(2);
+
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    // The overflow: hidden element is still a non-fast scroll region, so cc
+    // reports the following for the second scroll:
+    //   kFailedHitTest
+    //   kScrollingOnMainForAnyReason
+    //
+    // Since #box is overflow: hidden, the hit test returns the viewport, and
+    // so we do not log kNoScrollingLayer again.
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(2);
+  } else {
+    // The overflow: hidden element is still a non-fast scroll region, so cc
+    // reports the following for the second scroll:
+    //   kNonFastScrollableRegion
+    //   kScrollingOnMainForAnyReason
+    //
+    // Main does not scroll anything, because #box is overflow: hidden and the
+    // viewport does not overflow.
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(2);
+  }
 }
 
 TEST_F(ScrollMetricsTest, NestedScrollersTest) {
@@ -245,18 +372,56 @@ TEST_F(ScrollMetricsTest, NestedScrollersTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById("inner");
-  HistogramTester histogram_tester;
+  absl::optional<HistogramTester> histogram_tester;
+  histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
-  // Scrolling the inner box will gather reasons from the scrolling chain. The
-  // inner box itself has no reason because it's composited. Other scrollable
-  // areas from the chain have corresponding reasons.
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  EXPECT_WHEEL_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(2);
+
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    // The gesture latches to #inner, which is composited.
+    EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
+    EXPECT_WHEEL_TOTAL(1);
+
+    histogram_tester.emplace();
+    box->scrollBy(0, 1000);
+    Compositor().BeginFrame();
+    Scroll(box, WebGestureDevice::kTouchpad);
+
+    // The second scroll latches to the non-composited parent.  It relies on
+    // main for repaint, but incorrectly reports kNotScrollingOnMain again,
+    // because the ScrollNode for the parent has is_composited == true.
+    //
+    // TODO(crbug.com/1358316): Fix ScrollNode::is_composited, and report this
+    // case correctly.
+    EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
+    EXPECT_WHEEL_TOTAL(1);
+    // EXPECT_WHEEL_BUCKET(
+    //     BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+    // EXPECT_WHEEL_BUCKET(
+    //     cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    // EXPECT_WHEEL_TOTAL(2);
+  } else {
+    // Scrolling the inner box will gather reasons from the scrolling chain. The
+    // inner box itself has no reason because it's composited. Other scrollable
+    // areas from the chain have corresponding reasons.
+    //
+    // cc reports the following reasons:
+    //   kNoScrollingLayer (because the parent is not composited)
+    //   kScrollingOnMainForAnyReason
+    //
+    // Then main reports these reasons when handling the forwarded event:
+    //   kNotOpaqueForTextAndLCDText (because ancestors are not composited)
+    //   kScrollingOnMainForAnyReason (again)
+    //
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
+    EXPECT_WHEEL_TOTAL(4);
+  }
 }
 
 }  // namespace
