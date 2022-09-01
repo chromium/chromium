@@ -282,6 +282,22 @@ base::TimeDelta GetRandomRejectionTime() {
   return kMaxRejectionTime * base::RandDouble();
 }
 
+bool ShouldFailIfNotSignedInWithIdp(
+    const GURL& idp_url,
+    FederatedIdentitySharingPermissionContextDelegate*
+        sharing_permission_delegate) {
+  if (!IsFedCmIdpSigninStatusEnabled())
+    return false;
+
+  const url::Origin idp_origin = url::Origin::Create(idp_url);
+  const absl::optional<bool> idp_signin_status =
+      sharing_permission_delegate->GetIdpSigninStatus(idp_origin);
+  if (!idp_signin_status.value_or(true))
+    return true;
+
+  return false;
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo() =
@@ -449,8 +465,8 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  if (IsFedCmIdpSigninStatusEnabled() && idp_signin_status_.has_value() &&
-      !idp_signin_status_.value()) {
+  if (ShouldFailIfNotSignedInWithIdp(idp_ptr->config_url,
+                                     sharing_permission_delegate_)) {
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kNotSignedInWithIdp,
                              /*should_delay_callback=*/true);
@@ -744,8 +760,8 @@ void FederatedAuthRequestImpl::MaybeFetchAccounts(
     const IdentityProviderInfo& idp_info) {
   // Make sure that we don't fetch accounts if the IDP sign-in bit is reset to
   // false during the API call. e.g. by the login/logout HEADER.
-  if (IsFedCmIdpSigninStatusEnabled() && idp_signin_status_.has_value() &&
-      !idp_signin_status_.value()) {
+  if (ShouldFailIfNotSignedInWithIdp(idp_info.provider.config_url,
+                                     sharing_permission_delegate_)) {
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kNotSignedInWithIdp,
                              /*should_delay_callback=*/true);
@@ -769,16 +785,18 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     return;
   }
 
+  const url::Origin idp_origin = url::Origin::Create(idp_url);
+  const absl::optional<bool> idp_signin_status =
+      sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
   // Ensures that we only fetch accounts unconditionally once.
-  if (!idp_signin_status_.has_value()) {
-    idp_signin_status_ = false;
+  if (!idp_signin_status.has_value()) {
+    sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, false);
     CompleteRequestWithError(result, token_status,
                              /*should_delay_callback=*/true);
     return;
   }
 
-  DCHECK(*idp_signin_status_);
-  idp_signin_status_ = false;
+  sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, false);
   // TODO(crbug.com/1357790): we should figure out how to handle multiple IDP
   // w.r.t. showing a static failure UI. e.g. one IDP is always successful and
   // one always returns 404.
@@ -821,7 +839,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
-      idp_signin_status_ = true;
+      const url::Origin idp_origin =
+          url::Origin::Create(idp_info.provider.config_url);
+      sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, true);
 
       bool is_visible = (render_frame_host().IsActive() &&
                          render_frame_host().GetVisibilityState() ==

@@ -28,6 +28,23 @@ void ShellFederatedPermissionContext::RecordDismissAndEmbargo(
 void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
     const url::Origin& relying_party_embedder) {}
 
+absl::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
+    const url::Origin& idp_origin) {
+  auto idp_signin_status = idp_signin_status_.find(idp_origin.Serialize());
+  if (idp_signin_status != idp_signin_status_.end()) {
+    return idp_signin_status->second;
+  } else {
+    return absl::nullopt;
+  }
+}
+
+void ShellFederatedPermissionContext::SetIdpSigninStatus(
+    const url::Origin& idp_origin,
+    bool idp_signin_status) {
+  idp_signin_status_.insert(
+      std::pair(idp_origin.Serialize(), idp_signin_status));
+}
+
 bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,

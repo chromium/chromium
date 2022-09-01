@@ -2108,6 +2108,10 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
       features::kFedCm,
       {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
 
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true))
+      .Times(1);
+
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectations(
@@ -2128,6 +2132,9 @@ TEST_F(FederatedAuthRequestImplTest,
       features::kFedCm,
       {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
 
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false))
+      .Times(1);
   EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _)).Times(0);
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_response = FetchStatus::kInvalidResponseError;
@@ -2136,6 +2143,57 @@ TEST_F(FederatedAuthRequestImplTest,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+// Test that a failure UI will be displayed if the accounts fetch is failed but
+// the IdpSigninStatus claims that the user is signed in.
+TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _))
+      .WillOnce(
+          Invoke([&](content::WebContents* rp_web_contents, const GURL& idp_url,
+                     IdentityRequestDialogController::DismissCallback
+                         dismiss_callback) {
+            std::move(dismiss_callback).Run(DismissReason::CLOSE_BUTTON);
+          }));
+
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              GetIdpSigninStatus(OriginFromString(kProviderUrlFull)))
+      .WillRepeatedly(Return(true));
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_response = FetchStatus::kInvalidResponseError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+// Test that API calls will fail before sending any network request if
+// IdpSigninStatus shows that the user is not signed in with the IDP. No failure
+// UI is displayed.
+TEST_F(FederatedAuthRequestImplTest,
+       IdpSigninStatusTestApiFailedIfUserNotSignedInWithIdp) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              GetIdpSigninStatus(OriginFromString(kProviderUrlFull)))
+      .WillOnce(Return(false));
+
+  EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _)).Times(0);
+  MockConfiguration configuration = kConfigurationValid;
+  RequestExpectations expectations = {RequestTokenStatus::kError,
+                                      FederatedAuthRequestResult::kError,
+                                      /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 

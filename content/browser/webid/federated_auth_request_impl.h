@@ -248,10 +248,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
   LogoutRpsCallback logout_callback_;
 
-  // TODO(crbug.com/1357790): this bit should be stored and updated in
-  // `FederatedIdentityApiPermissionContextDelegate`.
-  absl::optional<bool> idp_signin_status_;
-
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
 

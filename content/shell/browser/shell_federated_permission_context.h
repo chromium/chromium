@@ -5,6 +5,7 @@
 #ifndef CONTENT_SHELL_BROWSER_SHELL_FEDERATED_PERMISSION_CONTEXT_H_
 #define CONTENT_SHELL_BROWSER_SHELL_FEDERATED_PERMISSION_CONTEXT_H_
 
+#include <map>
 #include <set>
 #include <string>
 #include <tuple>
@@ -33,6 +34,10 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_embedder) override;
   void RemoveEmbargoAndResetCounts(
       const url::Origin& relying_party_embedder) override;
+  absl::optional<bool> GetIdpSigninStatus(
+      const url::Origin& idp_origin) override;
+  void SetIdpSigninStatus(const url::Origin& idp_origin,
+                          bool idp_signin_status) override;
 
   // FederatedIdentitySharingPermissionContextDelegate
   bool HasSharingPermission(const url::Origin& relying_party_requester,
@@ -65,6 +70,8 @@ class ShellFederatedPermissionContext
       sharing_permissions_;
   // Tuples of <RP requester, IDP, Account>
   std::set<std::tuple<std::string, std::string, std::string>> active_sessions_;
+  // Map of <IDP, IDPSigninStatus>
+  std::map<std::string, absl::optional<bool>> idp_signin_status_;
 };
 
 }  // namespace content

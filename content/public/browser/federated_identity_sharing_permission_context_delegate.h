@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_SHARING_PERMISSION_CONTEXT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_SHARING_PERMISSION_CONTEXT_DELEGATE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -32,6 +33,17 @@ class FederatedIdentitySharingPermissionContextDelegate {
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
       const std::string& account_id) = 0;
+
+  // Returns whether the user is signed in with the IDP. If unknown, return
+  // absl::nullopt.
+  virtual absl::optional<bool> GetIdpSigninStatus(
+      const url::Origin& idp_origin) = 0;
+
+  // Updates the IDP sign-in status. This could be called by
+  //   1. IdpSigninStatus API
+  //   2. fetching accounts response callback
+  virtual void SetIdpSigninStatus(const url::Origin& idp_origin,
+                                  bool idp_signin_status) = 0;
 };
 
 }  // namespace content
