@@ -11,6 +11,9 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_component.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -24,6 +27,7 @@ class HoldingSpaceTray;
 class ImeMenuTray;
 class LogoutButtonTray;
 class MediaTray;
+class NotificationCenterTray;
 class OverviewButtonTray;
 class PaletteTray;
 class PhoneHubTray;
@@ -44,6 +48,7 @@ class EcheTray;
 // on secondary monitors at the login screen).
 class ASH_EXPORT StatusAreaWidget : public SessionObserver,
                                     public ShelfComponent,
+                                    public views::ViewObserver,
                                     public views::Widget {
  public:
   // Whether the status area is collapsed or expanded. Currently, this is only
@@ -123,6 +128,9 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
     return status_area_widget_delegate_;
   }
   UnifiedSystemTray* unified_system_tray() { return unified_system_tray_; }
+  NotificationCenterTray* notification_center_tray() {
+    return notification_center_tray_;
+  }
   DateTray* date_tray() { return date_tray_; }
   DictationButtonTray* dictation_button_tray() {
     return dictation_button_tray_;
@@ -214,6 +222,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // changed.
   absl::optional<LayoutInputs> layout_inputs_;
 
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
+
   // views::Widget:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -240,6 +252,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // current conditions.
   CollapseState CalculateCollapseState() const;
 
+  // Update rounded corners for the date tray. The corner behavior for date
+  // tray depends on the visibility of the notification center tray.
+  void UpdateDateTrayRoundedCorners();
+
   // Gets the collapse available width based on if the date tray is shown.
   // If `force_collapsible`, returns a fixed width which is not based on the
   // shelf width.
@@ -247,10 +263,13 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   StatusAreaWidgetDelegate* const status_area_widget_delegate_;
 
+  // All tray items are owned by StatusAreaWidgetDelegate, and destroyed
+  // explicitly in a shutdown call in the StatusAreaWidget dtor.
   StatusAreaOverflowButtonTray* overflow_button_tray_ = nullptr;
   OverviewButtonTray* overview_button_tray_ = nullptr;
   DictationButtonTray* dictation_button_tray_ = nullptr;
   MediaTray* media_tray_ = nullptr;
+  NotificationCenterTray* notification_center_tray_ = nullptr;
   DateTray* date_tray_ = nullptr;
   UnifiedSystemTray* unified_system_tray_ = nullptr;
   LogoutButtonTray* logout_button_tray_ = nullptr;

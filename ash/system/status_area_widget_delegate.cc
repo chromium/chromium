@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/date_tray.h"
@@ -33,7 +34,7 @@ namespace ash {
 namespace {
 
 constexpr int kPaddingBetweenItems = 8;
-constexpr int kPaddingOffsetBetweenDateAndSystemTray = -4;
+constexpr int kSystemTraysRightPaddingOffset = -4;
 
 class StatusAreaWidgetDelegateAnimationSettings
     : public ui::ScopedLayerAnimationSettings {
@@ -260,11 +261,14 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   // is enabled).
   int right_edge = kPaddingBetweenItems;
 
-  // If this view is `DateTray`, apply the offset
-  // `kPaddingOffsetBetweenDateAndSystemTray` between it and
-  // `UnifiedSystemTray`.
-  if (child->GetClassName() == DateTray::kViewClassName) {
-    right_edge += kPaddingOffsetBetweenDateAndSystemTray;
+  // TODO(crbug/1354354): Refactor this hack to make it more efficient and less
+  // of a hack.
+  // If this view is `DateTray` or `NotificationCenterTray`, apply
+  // the offset `kSystemTraysRightPaddingOffset` between it and the tray on it's
+  // right.
+  if (child->GetClassName() == DateTray::kViewClassName ||
+      child->GetClassName() == NotificationCenterTray::kViewClassName) {
+    right_edge += kSystemTraysRightPaddingOffset;
   }
 
   if (is_child_on_edge) {

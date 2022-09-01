@@ -4,6 +4,9 @@
 
 #include "ash/system/status_area_widget.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -23,6 +26,7 @@
 #include "ash/system/media/media_tray.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
@@ -45,6 +49,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_types.h"
 
 namespace ash {
 
@@ -136,6 +142,12 @@ void StatusAreaWidget::Initialize() {
     phone_hub_tray_ = AddTrayButton(std::make_unique<PhoneHubTray>(shelf_));
   }
 
+  if (chromeos::features::IsQsRevampEnabled()) {
+    notification_center_tray_ =
+        AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
+    notification_center_tray_->AddObserver(this);
+  }
+
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
   if (features::IsCalendarViewEnabled()) {
@@ -175,6 +187,8 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  if (features::IsQsRevampEnabled())
+    notification_center_tray_->RemoveObserver(this);
   status_area_widget_delegate_->Shutdown();
 }
 
@@ -193,14 +207,18 @@ void StatusAreaWidget::UpdateAfterLoginStatusChange(LoginStatus login_status) {
 }
 
 void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
-  TrayBackgroundView* tray = unified_system_tray_;
-  tray->SetVisiblePreferred(visible);
+  unified_system_tray_->SetVisiblePreferred(visible);
+
   if (features::IsCalendarViewEnabled())
     date_tray_->SetVisiblePreferred(visible);
+
+  if (features::IsQsRevampEnabled())
+    notification_center_tray_->OnSystemTrayVisibilityChanged(visible);
+
   if (visible) {
     Show();
   } else {
-    tray->CloseBubble();
+    unified_system_tray_->CloseBubble();
     Hide();
   }
 }
@@ -238,6 +256,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
     if (tray_button == overflow_button_tray_ ||
         tray_button == overview_button_tray_ ||
         tray_button == unified_system_tray_ || tray_button == date_tray_ ||
+        tray_button == notification_center_tray_ ||
         !tray_button->GetVisible()) {
       continue;
     }
@@ -573,6 +592,14 @@ bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {
   return true;
 }
 
+void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,
+                                               views::View* starting_view) {
+  if (observed_view != notification_center_tray_)
+    return;
+
+  UpdateDateTrayRoundedCorners();
+}
+
 void StatusAreaWidget::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsMouseWheelEvent()) {
     ui::MouseWheelEvent* mouse_wheel_event = event->AsMouseWheelEvent();
@@ -646,6 +673,16 @@ StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
   return {target_bounds_, CalculateCollapseState(),
           shelf_->shelf_layout_manager()->GetOpacity(),
           child_visibility_bitmask, should_animate};
+}
+
+void StatusAreaWidget::UpdateDateTrayRoundedCorners() {
+  if (!features::IsQsRevampEnabled() || !date_tray_)
+    return;
+
+  date_tray_->SetRoundedCornerBehavior(
+      notification_center_tray_->GetVisible()
+          ? TrayBackgroundView::RoundedCornerBehavior::kNotRounded
+          : TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
 }
 
 int StatusAreaWidget::GetCollapseAvailableWidth(bool force_collapsible) const {

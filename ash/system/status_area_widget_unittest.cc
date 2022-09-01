@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -23,17 +24,20 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -625,6 +629,47 @@ TEST_F(StatusAreaWidgetCollapseStateTest, AllTraysFitInCollapsedState) {
   dictation_button_->SetVisiblePreferred(false);
   EXPECT_EQ(StatusAreaWidget::CollapseState::NOT_COLLAPSIBLE, collapse_state());
   EXPECT_FALSE(overflow_button_->GetVisible());
+}
+
+class StatusAreaWidgetQSRevampTest : public AshTestBase {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({ash::features::kQsRevamp}, {});
+    AshTestBase::SetUp();
+  }
+
+  TrayBackgroundView::RoundedCornerBehavior GetTrayCornerBehavior(
+      TrayBackgroundView* tray) {
+    return tray->corner_behavior_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The corner radius of the date tray changes based on the visibility of the
+// `NotificationCenterTray`. The date tray should have rounded corners on the
+// left if the `NotificationCenterTray` is not visible and no rounded corners
+// otherwise.
+TEST_F(StatusAreaWidgetQSRevampTest, DateTrayRoundedCornerBehavior) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kQsRevamp);
+
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  EXPECT_FALSE(status_area->notification_center_tray()->GetVisible());
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
+
+  status_area->notification_center_tray()->SetVisiblePreferred(true);
+
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kNotRounded);
+
+  status_area->notification_center_tray()->SetVisiblePreferred(false);
+
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
 }
 
 }  // namespace ash
