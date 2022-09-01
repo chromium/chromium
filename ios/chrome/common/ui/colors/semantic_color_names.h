@@ -62,9 +62,9 @@ extern NSString* const kBlueColor;
 // shortcuts on the NTP).
 extern NSString* const kBlueHaloColor;
 
-// Other shades of blue from the palette.
+// Blue palette
 extern NSString* const kBlue500Color;
-// Blue 700 light/ Blue 200 dark.
+extern NSString* const kBlue600Color;
 extern NSString* const kBlue700Color;
 
 // Standard green color.
@@ -81,6 +81,9 @@ extern NSString* const kRedColor;
 
 // Other shades of red from the palette.
 extern NSString* const kRed500Color;
+
+// Pink palette.
+extern NSString* const kPink400Color;
 
 // Purple 600.
 extern NSString* const kPurple600Color;

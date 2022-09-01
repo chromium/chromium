@@ -8,6 +8,7 @@ group("resources") {
   deps = [
     ":background_color",
     ":blue_500_color",
+    ":blue_600_color",
     ":blue_700_color",
     ":blue_color",
     ":blue_halo_color",
@@ -34,6 +35,7 @@ group("resources") {
     ":mdc_ink_color",
     ":mdc_secondary_ink_color",
     ":orange_500_color",
+    ":pink_400_color",
     ":placeholder_image_tint_color",
     ":primary_background_color",
     ":purple_600_color",
@@ -75,6 +77,10 @@ colorset("blue_halo_color") {
 
 colorset("blue_500_color") {
   sources = [ "blue_500_color.colorset/Contents.json" ]
+}
+
+colorset("blue_600_color") {
+  sources = [ "blue_600_color.colorset/Contents.json" ]
 }
 
 colorset("blue_700_color") {
@@ -203,6 +209,10 @@ colorset("solid_primary_color") {
 
 colorset("table_view_row_highlight_color") {
   sources = [ "table_view_row_highlight_color.colorset/Contents.json" ]
+}
+
+colorset("pink_400_color") {
+  sources = [ "pink_400_color.colorset/Contents.json" ]
 }
 
 colorset("tertiary_background_color") {
