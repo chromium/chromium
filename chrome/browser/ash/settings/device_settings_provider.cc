@@ -809,7 +809,7 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
           reporting_policy.report_device_audio_status_checking_rate_ms());
     }
     if (reporting_policy.has_report_signal_strength_event_driven_telemetry()) {
-      base::ListValue signal_strength_telemetry_list;
+      base::Value::List signal_strength_telemetry_list;
       for (const std::string& telemetry_entry :
            reporting_policy.report_signal_strength_event_driven_telemetry()
                .entries()) {
@@ -817,7 +817,7 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       }
       new_values_cache->SetValue(
           kReportDeviceSignalStrengthEventDrivenTelemetry,
-          std::move(signal_strength_telemetry_list));
+          base::Value(std::move(signal_strength_telemetry_list)));
     }
   }
 }

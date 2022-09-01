@@ -786,12 +786,14 @@ TEST_F(DeviceSettingsProviderTest,
 
   BuildAndInstallDevicePolicy();
 
-  base::ListValue signal_strength_telemetry_list;
+  base::Value::List signal_strength_telemetry_list;
   signal_strength_telemetry_list.Append("https_latency");
   signal_strength_telemetry_list.Append("network_telemetry");
+  base::Value signal_strength_telemetry_list_value =
+      base::Value(std::move(signal_strength_telemetry_list));
 
   VerifyPolicyValue(kReportDeviceSignalStrengthEventDrivenTelemetry,
-                    &signal_strength_telemetry_list);
+                    &signal_strength_telemetry_list_value);
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodeHeartbeatSettings) {

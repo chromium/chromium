@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -364,7 +365,7 @@ TEST_F(DevicePolicyDecoderTest,
   DecodeUnsetDevicePolicyTestHelper(
       device_policy, key::kReportDeviceSignalStrengthEventDrivenTelemetry);
 
-  base::ListValue signal_strength_telemetry_list;
+  base::Value::List signal_strength_telemetry_list;
   signal_strength_telemetry_list.Append("network_telemetry");
   signal_strength_telemetry_list.Append("https_latency");
   device_policy.mutable_device_reporting()
@@ -376,7 +377,7 @@ TEST_F(DevicePolicyDecoderTest,
 
   DecodeDevicePolicyTestHelper(
       device_policy, key::kReportDeviceSignalStrengthEventDrivenTelemetry,
-      std::move(signal_strength_telemetry_list));
+      base::Value(std::move(signal_strength_telemetry_list)));
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
