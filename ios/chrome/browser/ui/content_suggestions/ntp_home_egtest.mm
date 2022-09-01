@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/feed/core/v2/public/ios/pref_names.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
@@ -1147,7 +1149,76 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that content suggestions are hidden for supervised users on sign-in.
+// When the supervised user signs out the active policy should apply to the NTP.
+- (void)testFeedHiddenForSupervisedUser {
+  // Disable trending queries experiment to ensure that the Discover feed is
+  // visible when first opening the NTP.
+  // TODO(crbug.com/1350826): Adapt the test with launch of trending queries.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_disabled.push_back(kTrendingQueriesModule);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
+
+  // Ensure that label is visible with correct text for enabled feed, and that
+  // the NTP is scrollable.
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
+
+  // Opens settings menu and ensures that Discover setting is present.
+  [self checkDiscoverSettingsToggleVisible:YES];
+
+  // The identity must exist in the test storage to be able to set capabilities
+  // through the fake identity service.
+  FakeChromeIdentity* identity = [FakeChromeIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:identity];
+
+  NSDictionary* capabilities = @{
+    @(kIsSubjectToParentalControlsCapabilityName) : [NSNumber
+        numberWithInt:(int)ios::ChromeIdentityCapabilityResult::kTrue],
+  };
+  [SigninEarlGrey setCapabilities:capabilities forIdentity:identity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:identity];
+
+  // Check feed label and if NTP is scrollable.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  [self checkIfNTPIsScrollable];
+
+  // Opens settings menu and ensures that Discover setting is not present.
+  [self checkDiscoverSettingsToggleVisible:NO];
+
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+
+  // The feed label should be visible on sign-out.
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
+
+  // Opens settings menu and ensures that Discover setting is present.
+  [self checkDiscoverSettingsToggleVisible:YES];
+}
+
 #pragma mark - Helpers
+
+// Opens the Settings menu and ensures that the visibility of the Discover
+// option matches the `visible` parameter.
+- (void)checkDiscoverSettingsToggleVisible:(BOOL)visible {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                           kSettingsArticleSuggestionsCellId)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
+      onElementWithMatcher:grey_allOf(
+                               grey_accessibilityID(kSettingsTableViewId),
+                               grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:visible ? grey_notNil() : grey_nil()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+}
 
 - (void)addMostVisitedTile {
   self.testServer->RegisterRequestHandler(
@@ -1220,6 +1291,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Check that NTP is scrollable by scrolling and comparing offsets, then return
 // to top.
 - (void)checkIfNTPIsScrollable {
+  // The custom tab strip on iPad causes an infinite animation that blocks
+  // EarlGrey from continuing.
+  // TODO(crbug.com/1358829): Remove iPad condition when scrolling is fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    return;
+  }
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
   CGFloat yOffsetBeforeScroll = collectionView.contentOffset.y;
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]

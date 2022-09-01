@@ -75,4 +75,7 @@ void IOSChromeContentSuggestionsServiceFactory::RegisterBrowserStatePrefs(
   registry->RegisterBooleanPref(
       prefs::kNTPContentSuggestionsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kNTPContentSuggestionsForSupervisedUserEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }

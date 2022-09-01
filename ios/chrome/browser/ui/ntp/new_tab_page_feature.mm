@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -66,4 +67,9 @@ bool IsDiscoverFeedTopSyncPromoCompact() {
 
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
+}
+
+bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
+  return pref_service->GetBoolean(
+      prefs::kNTPContentSuggestionsForSupervisedUserEnabled);
 }

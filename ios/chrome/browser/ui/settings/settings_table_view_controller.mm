@@ -232,6 +232,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   PrefBackedBoolean* _allowChromeSigninPreference;
   // PrefBackedBoolean for ArticlesForYou switch enabling.
   PrefBackedBoolean* _contentSuggestionPolicyEnabled;
+  // PrefBackedBoolean that overrides ArticlesForYou switch for supervised
+  // users.
+  PrefBackedBoolean* _contentSuggestionForSupervisedUsersEnabled;
   // The item related to the switch for the show suggestions setting.
   TableViewSwitchItem* _showMemoryDebugToolsItem;
   // The item related to the safety check.
@@ -371,6 +374,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                    prefName:prefs::kNTPContentSuggestionsEnabled];
     [_contentSuggestionPolicyEnabled setObserver:self];
 
+    _contentSuggestionForSupervisedUsersEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:prefs::
+                                kNTPContentSuggestionsForSupervisedUserEnabled];
+    [_contentSuggestionForSupervisedUsersEnabled setObserver:self];
+
     _voiceLocaleCode.Init(prefs::kVoiceSearchLocale, prefService);
 
     _prefChangeRegistrar.Init(prefService);
@@ -414,6 +423,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [_articlesEnabled setObserver:nil];
   [_allowChromeSigninPreference setObserver:nil];
   [_contentSuggestionPolicyEnabled setObserver:nil];
+  [_contentSuggestionForSupervisedUsersEnabled setObserver:nil];
 }
 
 #pragma mark View lifecycle
@@ -473,7 +483,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
-  if (!IsFeedAblationEnabled()) {
+  if (!IsFeedAblationEnabled() &&
+      IsContentSuggestionsForSupervisedUserEnabled(_browserState->GetPrefs())) {
     if ([_contentSuggestionPolicyEnabled value]) {
       [model addItem:self.feedSettingsItem
           toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -1894,6 +1905,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   _allowChromeSigninPreference = nil;
   [_contentSuggestionPolicyEnabled stop];
   _contentSuggestionPolicyEnabled = nil;
+  [_contentSuggestionForSupervisedUsersEnabled stop];
+  _contentSuggestionForSupervisedUsersEnabled = nil;
 
   _voiceLocaleCode.Destroy();
 
@@ -1905,7 +1918,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (void)onSyncStateChanged {
   [self updateSigninSection];
-  [self updateDiscoverSection];
   // The Identity section may be added or removed depending on sign-in is
   // allowed. Reload all sections in the model to account for the change.
   [self.tableView reloadData];
@@ -1979,6 +1991,26 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                             atIndex:itemIndexPath.row];
     [self.tableView reloadRowsAtIndexPaths:@[ itemIndexPath ]
                           withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else if (observableBoolean == _contentSuggestionForSupervisedUsersEnabled) {
+    if ([_contentSuggestionForSupervisedUsersEnabled value]) {
+      // Reset Feed settings back on the content suggestion policy.
+      [self booleanDidChange:_contentSuggestionPolicyEnabled];
+      return;
+    }
+    NSInteger itemTypeToRemove;
+    if ([self.tableViewModel hasItem:self.feedSettingsItem]) {
+      itemTypeToRemove = SettingsItemTypeArticlesForYou;
+    } else if ([self.tableViewModel hasItem:self.managedFeedSettingsItem]) {
+      itemTypeToRemove = SettingsItemTypeManagedArticlesForYou;
+    } else {
+      return;
+    }
+    [self.tableViewModel removeItemWithType:itemTypeToRemove
+                  fromSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    NSUInteger index = [self.tableViewModel
+        sectionForSectionIdentifier:SettingsSectionIdentifierAdvanced];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
   } else {
     NOTREACHED();
   }

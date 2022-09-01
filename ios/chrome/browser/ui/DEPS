@@ -1,4 +1,5 @@
 include_rules = [
+"+components/signin/internal/identity_manager/account_capabilities_constants.h",
 "+ios/chrome/browser/ui",
 ]
 

@@ -17,6 +17,7 @@
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -106,6 +107,7 @@ namespace {
                                      FeedManagementNavigationDelegate,
                                      FeedMenuCommands,
                                      FeedWrapperViewControllerDelegate,
+                                     IdentityManagerObserverBridgeDelegate,
                                      NewTabPageContentDelegate,
                                      NewTabPageDelegate,
                                      NewTabPageFollowDelegate,
@@ -119,6 +121,10 @@ namespace {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+
+  // Observes changes in the IdentityManager.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityObserverBridge;
 
   // Observes changes in the DiscoverFeed.
   std::unique_ptr<DiscoverFeedObserverBridge> _discoverFeedObserverBridge;
@@ -270,11 +276,14 @@ namespace {
   // Start observing Prefs.
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(_prefService);
-  _prefObserverBridge.reset(new PrefObserverBridge(self));
+  _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
+      _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,
       _prefChangeRegistrar.get());
@@ -283,6 +292,14 @@ namespace {
                  prefName:feed::prefs::kArticlesListVisible];
   // Observer is necessary for multiwindow NTPs to remain in sync.
   [self.feedExpandedPref setObserver:self];
+
+  // Start observing IdentityManager.
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  _identityObserverBridge =
+      std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                              self);
 
   // Start observing DiscoverFeedService.
   _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
@@ -337,6 +354,9 @@ namespace {
   if ([self isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
   }
+
+  // Updates feed asynchronously if the account is subject to parental controls.
+  [self updateFeedVisibilityForSupervision];
 
   [self configureNTPViewController];
 
@@ -402,6 +422,7 @@ namespace {
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
   _discoverFeedObserverBridge.reset();
+  _identityObserverBridge.reset();
 
   self.started = NO;
 }
@@ -436,6 +457,26 @@ namespace {
                               base::TimeTicks::Now() - self.didAppearTime);
       self.didAppearTime = base::TimeTicks();
     }
+  }
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  // An account change may trigger after the coordinator has been stopped.
+  // In this case do not process the event.
+  if (!self.started) {
+    return;
+  }
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      [self updateFeedVisibilityForSupervision];
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
   }
 }
 
@@ -1015,7 +1056,8 @@ namespace {
     return;
   }
   if (preferenceName == prefs::kArticlesForYouEnabled ||
-      preferenceName == prefs::kNTPContentSuggestionsEnabled) {
+      preferenceName == prefs::kNTPContentSuggestionsEnabled ||
+      preferenceName == prefs::kNTPContentSuggestionsForSupervisedUserEnabled) {
     [self updateNTPForFeed];
   }
   if (preferenceName ==
@@ -1043,6 +1085,21 @@ namespace {
 }
 
 #pragma mark - Private
+
+// Updates the feed visibility or content based on the supervision state
+// of the account defined in `value`.
+- (void)updateFeedWithIsSupervisedUser:(BOOL)value {
+  // This may be called asynchronously after the NTP has
+  // been stopped and the object has been stopped. Ignore
+  // the invocation.
+  PrefService* prefService = self.prefService;
+  if (!prefService) {
+    return;
+  }
+
+  prefService->SetBoolean(prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
+                          !value);
+}
 
 // Updates the NTP to take into account a new feed, or a change in feed
 // visibility.
@@ -1119,7 +1176,8 @@ namespace {
 - (BOOL)isFeedHeaderVisible {
   return self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
          self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
-         !IsFeedAblationEnabled();
+         !IsFeedAblationEnabled() &&
+         IsContentSuggestionsForSupervisedUserEnabled(self.prefService);
 }
 
 // Returns `YES` if the feed is currently visible on the NTP.
@@ -1177,6 +1235,29 @@ namespace {
   viewControllerConfig.previewDelegate = self;
 
   return viewControllerConfig;
+}
+
+// Updates the visibility of the content suggestions on the NTP if the account
+// is subject to parental controls.
+- (void)updateFeedVisibilityForSupervision {
+  DCHECK(self.prefService);
+  DCHECK(self.authService);
+
+  ios::ChromeIdentityService* identity_service =
+      ios::GetChromeBrowserProvider().GetChromeIdentityService();
+  ChromeIdentity* identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity) {
+    [self updateFeedWithIsSupervisedUser:NO];
+    return;
+  }
+
+  __weak NewTabPageCoordinator* weakSelf = self;
+  identity_service->IsSubjectToParentalControls(
+      identity, ^(ios::ChromeIdentityCapabilityResult result) {
+        [weakSelf updateFeedWithIsSupervisedUser:
+                      result == ios::ChromeIdentityCapabilityResult::kTrue];
+      });
 }
 
 // Handles how the NTP reacts when the default search engine is changed.

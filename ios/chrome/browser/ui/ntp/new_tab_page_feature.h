@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_
 
 #include "base/feature_list.h"
+#include "components/prefs/pref_service.h"
 
 // Feature flag to enable showing a live preview for Discover feed when opening
 // the feed context menu.
@@ -69,5 +70,8 @@ bool IsFeedAblationEnabled();
 // Whether the ghost cards should be shown when refreshing Discover feed
 // content.
 bool IsDiscoverFeedGhostCardsEnabled();
+
+// Whether content suggestions are enabled for supervised users.
+bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

@@ -39,6 +39,7 @@ extern const char kIosNtpFeedTopPromoAlreadySeen[];
 extern const char kIosNtpFeedTopSigninPromoDisplayedCount[];
 extern const char kLinkPreviewEnabled[];
 extern const char kNTPContentSuggestionsEnabled[];
+extern const char kNTPContentSuggestionsForSupervisedUserEnabled[];
 extern const char kNTPFollowingFeedSortType[];
 extern const char kOverflowMenuDestinationUsageHistory[];
 extern const char kPrintingEnabled[];
