@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
@@ -254,6 +256,10 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       prefs::kEnableReferrers, profile_prefs,
       base::BindRepeating(&ProfileNetworkContextService::UpdateReferrersEnabled,
                           base::Unretained(this)));
+  preload_allowed_.Init(
+      prefs::kNetworkPredictionOptions, profile_prefs,
+      base::BindRepeating(&ProfileNetworkContextService::UpdatePreconnect,
+                          base::Unretained(this)));
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
   cookie_settings_observation_.Observe(cookie_settings_.get());
   privacy_sandbox_settings_observer_.Observe(
@@ -295,6 +301,10 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateCorsNonWildcardRequestHeadersSupport,
                           base::Unretained(this)));
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
+#endif
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -398,6 +408,15 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
       block_third_party_cookies));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void ProfileNetworkContextService::OnExtensionInstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    bool is_update) {
+  UpdatePreconnect();
+}
+#endif
+
 void ProfileNetworkContextService::OnTrustTokenBlockingChanged(
     bool block_trust_tokens) {
   profile_->ForEachStoragePartition(base::BindRepeating(
@@ -431,6 +450,17 @@ void ProfileNetworkContextService::UpdateReferrersEnabled() {
             enable_referrers);
       },
       enable_referrers_.GetValue()));
+}
+
+void ProfileNetworkContextService::UpdatePreconnect() {
+  bool enable_preconnect =
+      ChromeContentBrowserClient::ShouldPreconnect(profile_);
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool enable_preconnect, content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetEnablePreconnect(
+            enable_preconnect);
+      },
+      enable_preconnect));
 }
 
 network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {

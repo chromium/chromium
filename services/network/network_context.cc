@@ -1329,6 +1329,10 @@ void NetworkContext::SetEnableReferrers(bool enable_referrers) {
   network_delegate_->set_enable_referrers(enable_referrers);
 }
 
+void NetworkContext::SetEnablePreconnect(bool enable_preconnect) {
+  params_->enable_preconnect = enable_preconnect;
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 void NetworkContext::UpdateAdditionalCertificates(
     mojom::AdditionalCertificatesPtr additional_certificates) {

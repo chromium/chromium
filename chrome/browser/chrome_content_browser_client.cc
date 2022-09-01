@@ -6650,7 +6650,7 @@ void ChromeContentBrowserClient::OnKeepaliveTimerFired(
 }
 #endif
 
-bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
+bool ChromeContentBrowserClient::ShouldPreconnect(
     content::BrowserContext* browser_context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // An extension could be blocking connections for privacy reasons, so skip
@@ -6667,6 +6667,11 @@ bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
   // the Finch setting here.
   return prefetch::IsSomePreloadingEnabledIgnoringFinch(
       *Profile::FromBrowserContext(browser_context)->GetPrefs());
+}
+
+bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
+    content::BrowserContext* browser_context) {
+  return ShouldPreconnect(browser_context);
 }
 
 bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(

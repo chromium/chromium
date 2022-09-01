@@ -31,7 +31,7 @@
 namespace network {
 
 class URLLoaderFactory;
-class NetworkServiceMemoryCache;
+class NetworkContext;
 
 namespace cors {
 
@@ -65,16 +65,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       mojom::URLLoaderFactory* network_loader_factory,
       URLLoaderFactory* sync_network_loader_factory,
       const OriginAccessList* origin_access_list,
-      PreflightController* preflight_controller,
-      const base::flat_set<std::string>* allowed_exempt_headers,
       bool allow_any_cors_exempt_header,
-      NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
       HasFactoryOverride has_factory_override,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
-      NetworkServiceMemoryCache* memory_cache,
-      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
+      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      NetworkContext* context);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
   CorsURLLoader& operator=(const CorsURLLoader&) = delete;
@@ -256,15 +253,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Outlives `this`.
   const raw_ptr<const OriginAccessList> origin_access_list_;
-  raw_ptr<PreflightController> preflight_controller_;
-  raw_ptr<const base::flat_set<std::string>> allowed_exempt_headers_;
 
   // Flag to specify if the CORS-enabled scheme check should be applied.
   const bool skip_cors_enabled_scheme_check_;
 
   const bool allow_any_cors_exempt_header_;
 
-  const NonWildcardRequestHeadersSupport non_wildcard_request_headers_support_;
   const HasFactoryOverride has_factory_override_;
 
   net::IsolationInfo isolation_info_;
@@ -280,8 +274,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   raw_ptr<const mojom::ClientSecurityState> factory_client_security_state_ =
       nullptr;
 
-  // Outlives `this`, or nullptr when the in-memory cache is disabled.
-  const raw_ptr<NetworkServiceMemoryCache> memory_cache_;
   // True when `network_loader_` is bound to a URLLoader that serves response
   // from `memory_cache_`.
   bool memory_cache_was_used_ = false;
@@ -311,6 +303,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   net::NetLogWithSource net_log_;
+
+  const raw_ptr<NetworkContext> context_;
 
   // Used to provide weak pointers of this class for synchronously calling
   // URLLoaderClient methods. This should be reset any time

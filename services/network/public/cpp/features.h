@@ -120,6 +120,9 @@ extern const base::Feature kDisableResourceScheduler;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kPrivateNetworkAccessPreflightShortTimeout;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kPreconnectInNetworkService;
+
 }  // namespace features
 }  // namespace network
 

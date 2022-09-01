@@ -288,5 +288,10 @@ const base::Feature kPrivateNetworkAccessPreflightShortTimeout = {
     "PrivateNetworkAccessPreflightReduceTimeout",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Handle the Link header DNS prefetches and preconnects in the network
+// service instead of through the renderer process.
+const base::Feature kPreconnectInNetworkService = {
+    "PreconnectInNetworkService", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network
