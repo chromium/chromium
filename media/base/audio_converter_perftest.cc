@@ -55,9 +55,10 @@ TEST(AudioConverterPerfTest, ConvertBenchmark) {
   // Create input and output parameters to convert between the two most common
   // sets of parameters (as indicated via UMA data).
   AudioParameters input_params(AudioParameters::AUDIO_PCM_LINEAR,
-                               CHANNEL_LAYOUT_MONO, 48000, 2048);
+                               media::ChannelLayoutConfig::Mono(), 48000, 2048);
   AudioParameters output_params(AudioParameters::AUDIO_PCM_LINEAR,
-                                CHANNEL_LAYOUT_STEREO, 44100, 440);
+                                media::ChannelLayoutConfig::Stereo(), 44100,
+                                440);
 
   RunConvertBenchmark(input_params, output_params, false, "convert");
 }
@@ -66,11 +67,11 @@ TEST(AudioConverterPerfTest, ConvertBenchmarkFIFO) {
   // Create input and output parameters to convert between common buffer sizes
   // without any resampling for the FIFO vs no FIFO benchmarks.
   AudioParameters input_params(AudioParameters::AUDIO_PCM_LINEAR,
-                               CHANNEL_LAYOUT_STEREO,
-                               44100,
+                               media::ChannelLayoutConfig::Stereo(), 44100,
                                2048);
   AudioParameters output_params(AudioParameters::AUDIO_PCM_LINEAR,
-                                CHANNEL_LAYOUT_STEREO, 44100, 440);
+                                media::ChannelLayoutConfig::Stereo(), 44100,
+                                440);
 
   RunConvertBenchmark(input_params, output_params, true, "convert_fifo_only");
   RunConvertBenchmark(input_params, output_params, false,

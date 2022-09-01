@@ -105,19 +105,17 @@ TEST_P(ChannelMixerTest, Mixing) {
   int input_channels = GetParam().input_channels;
   std::unique_ptr<AudioBus> input_bus =
       AudioBus::Create(input_channels, kFrames);
-  AudioParameters input_audio(AudioParameters::AUDIO_PCM_LINEAR, input_layout,
+  AudioParameters input_audio(AudioParameters::AUDIO_PCM_LINEAR,
+                              {input_layout, input_channels},
                               AudioParameters::kAudioCDSampleRate, kFrames);
-  if (input_layout == CHANNEL_LAYOUT_DISCRETE)
-    input_audio.set_channels_for_discrete(input_channels);
 
   ChannelLayout output_layout = GetParam().output_layout;
   int output_channels = GetParam().output_channels;
   std::unique_ptr<AudioBus> output_bus =
       AudioBus::Create(output_channels, kFrames);
-  AudioParameters output_audio(AudioParameters::AUDIO_PCM_LINEAR, output_layout,
+  AudioParameters output_audio(AudioParameters::AUDIO_PCM_LINEAR,
+                               {output_layout, output_channels},
                                AudioParameters::kAudioCDSampleRate, kFrames);
-  if (output_layout == CHANNEL_LAYOUT_DISCRETE)
-    output_audio.set_channels_for_discrete(output_channels);
 
   const float* channel_values = GetParam().channel_values;
   ASSERT_EQ(input_bus->channels(), GetParam().num_channel_values);

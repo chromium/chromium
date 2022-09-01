@@ -20,7 +20,7 @@ MockAudioRendererSink::MockAudioRendererSink(const std::string& device_id,
           device_id,
           device_status,
           AudioParameters(AudioParameters::AUDIO_FAKE,
-                          CHANNEL_LAYOUT_STEREO,
+                          ChannelLayoutConfig::Stereo(),
                           AudioParameters::kTelephoneSampleRate,
                           1)) {}
 

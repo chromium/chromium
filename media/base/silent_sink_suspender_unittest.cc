@@ -19,7 +19,10 @@ namespace media {
 class SilentSinkSuspenderTest : public testing::Test {
  public:
   SilentSinkSuspenderTest()
-      : params_(AudioParameters::AUDIO_FAKE, CHANNEL_LAYOUT_MONO, 44100, 128),
+      : params_(AudioParameters::AUDIO_FAKE,
+                ChannelLayoutConfig::Mono(),
+                44100,
+                128),
         mock_sink_(new testing::StrictMock<MockAudioRendererSink>()),
         fake_callback_(0.1, params_.sample_rate()),
         temp_bus_(AudioBus::Create(params_)),

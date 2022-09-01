@@ -134,7 +134,7 @@ std::unique_ptr<AudioBus> ConvertingAudioFifo::EnsureExpectedChannelCount(
     // Both the format and the sample rate are unused for mixing, but we still
     // need to pass a value below.
     mixer_input_params_.Reset(input_params_.format(),
-                              GuessChannelLayout(incoming_channels),
+                              ChannelLayoutConfig::Guess(incoming_channels),
                               incoming_channels, input_params_.sample_rate());
 
     mixer_ = std::make_unique<ChannelMixer>(mixer_input_params_, input_params_);

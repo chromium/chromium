@@ -24,7 +24,7 @@
 namespace media {
 
 static const int kChannels = 6;
-static const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_5_1;
+static constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_5_1;
 // Use a buffer size which is intentionally not a multiple of kChannelAlignment.
 static const int kFrameCount = media::AudioBus::kChannelAlignment * 32 - 1;
 static const int kSampleRate = 48000;
@@ -141,7 +141,8 @@ TEST_F(AudioBusTest, Create) {
 // Verify Create(...) using AudioParameters works as advertised.
 TEST_F(AudioBusTest, CreateUsingAudioParameters) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(
-      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, kChannelLayout,
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                      ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                       kSampleRate, kFrameCount));
   VerifyChannelAndFrameCount(bus.get());
   VerifyReadWriteAndAlignment(bus.get());
@@ -187,7 +188,8 @@ TEST_F(AudioBusTest, WrapVector) {
 
 // Verify an AudioBus created via wrapping a memory block works as advertised.
 TEST_F(AudioBusTest, WrapMemory) {
-  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR, kChannelLayout,
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                          kSampleRate, kFrameCount);
   int data_size = AudioBus::CalculateMemorySize(params);
   std::unique_ptr<float, base::AlignedFreeDeleter> data(static_cast<float*>(
@@ -215,7 +217,8 @@ TEST_F(AudioBusTest, WrapMemory) {
 TEST_F(AudioBusTest, CopyTo) {
   // Create one bus with AudioParameters and the other through direct values to
   // test for parity between the Create() functions.
-  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR, kChannelLayout,
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                          kSampleRate, kFrameCount);
   std::unique_ptr<AudioBus> bus1 = AudioBus::Create(kChannels, kFrameCount);
   std::unique_ptr<AudioBus> bus2 = AudioBus::Create(params);

@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -29,7 +30,7 @@ struct TestAudioParams {
 
 const AudioParameters kDefaultParams =
     AudioParameters(AudioParameters::Format::AUDIO_PCM_LINEAR,
-                    GuessChannelLayout(kDefaultChannels),
+                    ChannelLayoutConfig::Guess(kDefaultChannels),
                     kInputSampleRate,
                     kDefaultFrames);
 
@@ -52,7 +53,7 @@ class ConvertingAudioFifoTest
 
   AudioParameters TestOutputParams() {
     return AudioParameters(AudioParameters::Format::AUDIO_PCM_LINEAR,
-                           GuessChannelLayout(output_channels()),
+                           ChannelLayoutConfig::Guess(output_channels()),
                            output_sample_rate(), output_frames());
   }
 

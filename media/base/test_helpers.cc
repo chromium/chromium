@@ -308,7 +308,7 @@ int TestAudioConfig::HighSampleRateValue() {
 // static
 AudioParameters TestAudioParameters::Normal() {
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, 48000, 2048);
+                         ChannelLayoutConfig::Stereo(), 48000, 2048);
 }
 
 template <class T>

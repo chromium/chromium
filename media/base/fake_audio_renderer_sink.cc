@@ -14,7 +14,7 @@ namespace media {
 FakeAudioRendererSink::FakeAudioRendererSink()
     : FakeAudioRendererSink(
           AudioParameters(AudioParameters::AUDIO_FAKE,
-                          CHANNEL_LAYOUT_STEREO,
+                          ChannelLayoutConfig::Stereo(),
                           AudioParameters::kTelephoneSampleRate,
                           1)) {}
 
