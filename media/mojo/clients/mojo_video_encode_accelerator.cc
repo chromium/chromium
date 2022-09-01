@@ -16,7 +16,6 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/clients/mojo_media_log_service.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/mojo/mojom/video_encoder_info.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -159,8 +158,8 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                frame->timestamp());
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  size_t num_planes = VideoFrame::NumPlanes(frame->format());
-  DCHECK_EQ(num_planes, frame->layout().num_planes());
+  DCHECK_EQ(VideoFrame::NumPlanes(frame->format()),
+            frame->layout().num_planes());
   DCHECK(vea_.is_bound());
 
   if (frame->format() != PIXEL_FORMAT_I420 &&
@@ -170,44 +169,8 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  scoped_refptr<VideoFrame> mojo_frame;
-  switch (frame->storage_type()) {
-    case VideoFrame::VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-      // GPU memory path: Pass-through.
-      mojo_frame = frame;
-      break;
-    case VideoFrame::STORAGE_SHMEM: {
-      std::vector<uint32_t> offsets(num_planes);
-      std::vector<int32_t> strides(num_planes);
-      for (size_t i = 0; i < num_planes; ++i) {
-        strides[i] = frame->stride(i);
-        // This offset computation is safe because the planes are in the single
-        // buffer, a single SharedMemoryBuffer. The first plane data must lie
-        // in the beginning of the buffer.
-        offsets[i] =
-            base::saturated_cast<uint32_t>(frame->data(i) - frame->data(0));
-      }
-      mojo_frame = MojoSharedBufferVideoFrame::Create(
-          frame->format(), frame->coded_size(), frame->visible_rect(),
-          frame->natural_size(), frame->shm_region()->Duplicate(), offsets,
-          strides, frame->timestamp());
-    } break;
-    case VideoFrame::STORAGE_UNOWNED_MEMORY:
-      mojo_frame = MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame);
-      break;
-    default:
-      DLOG(ERROR) << "Unexpected storage type: "
-                  << VideoFrame::StorageTypeToString(frame->storage_type());
-      return;
-  }
-
-  if (!mojo_frame) {
-    DLOG(ERROR) << "Failed creating MojoSharedBufferVideoFrame from YUV";
-    return;
-  }
-  vea_->Encode(
-      std::move(mojo_frame), force_keyframe,
-      base::BindOnce([](scoped_refptr<VideoFrame>) {}, std::move(frame)));
+  vea_->Encode(frame, force_keyframe,
+               base::BindOnce([](scoped_refptr<VideoFrame>) {}, frame));
 }
 
 void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(

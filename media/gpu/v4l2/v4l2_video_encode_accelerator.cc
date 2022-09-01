@@ -431,7 +431,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
 
   VideoFrame::StorageType input_storage_type =
       native_input_mode_ ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
-                         : VideoFrame::STORAGE_MOJO_SHARED_BUFFER;
+                         : VideoFrame::STORAGE_SHMEM;
   auto input_config = VideoFrameLayoutToPortConfig(
       *ip_input_layout, input_visible_rect, {input_storage_type});
   if (!input_config) {

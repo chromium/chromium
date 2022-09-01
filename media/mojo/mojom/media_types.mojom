@@ -383,7 +383,7 @@ struct VideoFrame {
 // Possible choices for storing VideoFrame data.
 union VideoFrameData {
   EosVideoFrameData eos_data;
-  SharedBufferVideoFrameData shared_buffer_data;
+  SharedMemoryVideoFrameData shared_memory_data;
   GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
   MailboxVideoFrameData mailbox_data;
 };
@@ -392,8 +392,8 @@ union VideoFrameData {
 struct EosVideoFrameData {
 };
 
-// This defines video frame data stored in a Mojo shared buffer.
-struct SharedBufferVideoFrameData {
+// This defines video frame data for STORAGE_SHMEM VideoFrame.
+struct SharedMemoryVideoFrameData {
   // Shared memory region for the frame data.
   mojo_base.mojom.ReadOnlySharedMemoryRegion frame_data;
 

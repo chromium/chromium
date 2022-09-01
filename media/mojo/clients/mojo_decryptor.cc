@@ -16,7 +16,6 @@
 #include "media/base/video_frame.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/mojo/mojom/decryptor.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 

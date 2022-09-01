@@ -19,7 +19,6 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/parsers/vp8_parser.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -407,7 +406,7 @@ AlignedDataHelper::AlignedDataHelper(const std::vector<uint8_t>& stream,
     InitializeGpuMemoryBufferFrames(stream, pixel_format, src_coded_size,
                                     dst_coded_size);
   } else {
-    LOG_ASSERT(storage_type == VideoFrame::STORAGE_MOJO_SHARED_BUFFER);
+    LOG_ASSERT(storage_type == VideoFrame::STORAGE_SHMEM);
     InitializeAlignedMemoryFrames(stream, pixel_format, src_coded_size,
                                   dst_coded_size);
   }
@@ -489,19 +488,18 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
       LOG(ERROR) << "Failed duplicating shmem region";
       return nullptr;
     }
+    base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
+    uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
+    uint8_t* data[3] = {};
+    for (size_t i = 0; layout_->planes().size(); i++)
+      data[i] = buf + layout_->planes()[i].offset;
 
-    std::vector<uint32_t> offsets(layout_->planes().size());
-    std::vector<int32_t> strides(layout_->planes().size());
-    for (size_t i = 0; i < layout_->planes().size(); i++) {
-      offsets[i] = layout_->planes()[i].offset;
-      strides[i] = layout_->planes()[i].stride;
-    }
-    const size_t video_frame_size =
-        layout_->planes().back().offset + layout_->planes().back().size;
-    DCHECK_EQ(video_frame_size, dup_region.GetSize());
-    return MojoSharedBufferVideoFrame::Create(
-        layout_->format(), layout_->coded_size(), visible_rect_, natural_size_,
-        std::move(dup_region), offsets, strides, frame_timestamp);
+    auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
+        *layout_, visible_rect_, natural_size_, data[0], data[1], data[2],
+        frame_timestamp);
+    DCHECK(frame);
+    frame->BackWithOwnedSharedMemory(std::move(dup_region), std::move(mapping));
+    return frame;
   }
 }
 

@@ -433,7 +433,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                                  base::ReadOnlySharedMemoryMapping mapping);
 
   // Valid for shared memory backed VideoFrames.
-  const base::ReadOnlySharedMemoryRegion* shm_region() {
+  const base::ReadOnlySharedMemoryRegion* shm_region() const {
     DCHECK(IsValidSharedMemoryFrame());
     DCHECK(storage_type_ == STORAGE_SHMEM);
     return shm_region_;

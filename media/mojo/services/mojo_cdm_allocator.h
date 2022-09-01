@@ -40,14 +40,17 @@ class MEDIA_MOJO_EXPORT MojoCdmAllocator final : public CdmAllocator {
   // Map of available buffers. Done as a mapping of capacity to shmem regions to
   // make it efficient to find an available buffer of a particular size.
   // Regions in the map are unmapped.
-  using AvailableRegionMap = std::multimap<size_t, base::MappedReadOnlyRegion>;
+  using AvailableRegionMap =
+      std::multimap<size_t, std::unique_ptr<base::MappedReadOnlyRegion>>;
 
   // Allocates a shmem region of at least |capacity| bytes.
-  base::MappedReadOnlyRegion AllocateNewRegion(size_t capacity);
+  std::unique_ptr<base::MappedReadOnlyRegion> AllocateNewRegion(
+      size_t capacity);
 
   // Returns |region| to the map of available buffers, ready to be used the
   // next time CreateCdmBuffer() is called.
-  void AddRegionToAvailableMap(base::MappedReadOnlyRegion region);
+  void AddRegionToAvailableMap(
+      std::unique_ptr<base::MappedReadOnlyRegion> region);
 
   // Returns the base::MappedReadOnlyRegion for a cdm::Buffer allocated by this
   // class.
