@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "services/device/public/mojom/input_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Enable VLOG level 1.
@@ -140,14 +142,11 @@ bool HIDDetectionScreen::CanShowScreen() {
   }
 }
 
-HIDDetectionScreen::HIDDetectionScreen(HIDDetectionView* view,
+HIDDetectionScreen::HIDDetectionScreen(base::WeakPtr<HIDDetectionView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(HIDDetectionView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-
   if (ash::features::IsOobeHidDetectionRevampEnabled()) {
     const auto& hid_detection_manager_override =
         GetHidDetectionManagerOverrideForTesting();
@@ -167,14 +166,11 @@ HIDDetectionScreen::HIDDetectionScreen(HIDDetectionView* view,
 
 HIDDetectionScreen::~HIDDetectionScreen() {
   if (ash::features::IsOobeHidDetectionRevampEnabled()) {
-    if (view_)
-      view_->Unbind();
     return;
   }
 
   adapter_initially_powered_.reset();
-  if (view_)
-    view_->Unbind();
+
   if (discovery_session_.get())
     discovery_session_->Stop();
   if (adapter_.get())
@@ -212,11 +208,6 @@ void HIDDetectionScreen::CleanupOnExit() {
       adapter_initially_powered_ && !(*adapter_initially_powered_);
   if (adapter_is_powered && need_switching_off)
     PowerOff();
-}
-
-void HIDDetectionScreen::OnViewDestroyed(HIDDetectionView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 bool HIDDetectionScreen::ShouldEnableContinueButton() {
@@ -289,17 +280,15 @@ void HIDDetectionScreen::HideImpl() {
     if (adapter_)
       adapter_->RemoveObserver(this);
   }
-
-  if (view_)
-    view_->Hide();
 }
 
-void HIDDetectionScreen::OnUserActionDeprecated(const std::string& action_id) {
+void HIDDetectionScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
     OnContinueButtonClicked();
-  } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    return;
   }
+  BaseScreen::OnUserAction(args);
 }
 
 void HIDDetectionScreen::RequestPinCode(device::BluetoothDevice* device) {

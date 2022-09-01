@@ -128,8 +128,9 @@ class HIDDetectionScreenChromeboxTest
 
   HIDDetectionScreen* hid_detection_screen() { return hid_detection_screen_; }
   HIDDetectionScreenHandler* handler() {
-    return static_cast<HIDDetectionScreenHandler*>(
-        hid_detection_screen()->view_);
+    return LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetHandler<HIDDetectionScreenHandler>();
   }
 
   void ContinueToWelcomeScreen() {

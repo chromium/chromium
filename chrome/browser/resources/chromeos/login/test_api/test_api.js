@@ -117,7 +117,7 @@ class HIDDetectionScreenTester extends ScreenElementApi {
 
   // Must be called to enable the next button
   emulateDevicesConnected() {
-    chrome.send('HIDDetectionScreen.emulateDevicesConnectedForTesting');
+    chrome.send('OobeTestApi.emulateDevicesForTesting');
   }
 
   touchscreenDetected() {

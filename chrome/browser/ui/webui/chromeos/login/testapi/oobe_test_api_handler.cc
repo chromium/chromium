@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "components/account_id/account_id.h"
+#include "services/device/public/mojom/input_service.mojom.h"
 
 namespace chromeos {
 
@@ -52,6 +54,8 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
   // this one you need to add a function into login/test_api/test_api.js.
   AddCallback("OobeTestApi.getPrimaryDisplayName",
               &OobeTestAPIHandler::HandleGetPrimaryDisplayName);
+  AddCallback("OobeTestApi.emulateDevicesForTesting",
+              &OobeTestAPIHandler::EmulateDevicesConnectedForTesting);
 }
 
 void OobeTestAPIHandler::InitializeDeprecated() {}
@@ -124,6 +128,32 @@ void OobeTestAPIHandler::SkipToLoginForTesting() {
     return;
   }
   controller->SkipToLoginForTesting();  // IN-TEST
+}
+
+void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
+  HIDDetectionScreen* screen_ = static_cast<HIDDetectionScreen*>(
+      ash::WizardController::default_controller()->GetScreen(
+          HIDDetectionView::kScreenId));
+  auto touchscreen = device::mojom::InputDeviceInfo::New();
+  touchscreen->id = "fake_touchscreen";
+  touchscreen->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
+  touchscreen->type = device::mojom::InputDeviceType::TYPE_UNKNOWN;
+  touchscreen->is_touchscreen = true;
+  screen_->InputDeviceAddedForTesting(std::move(touchscreen));  // IN-TEST
+
+  auto mouse = device::mojom::InputDeviceInfo::New();
+  mouse->id = "fake_mouse";
+  mouse->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
+  mouse->type = device::mojom::InputDeviceType::TYPE_USB;
+  mouse->is_mouse = true;
+  screen_->InputDeviceAddedForTesting(std::move(mouse));  // IN-TEST
+
+  auto keyboard = device::mojom::InputDeviceInfo::New();
+  keyboard->id = "fake_keyboard";
+  keyboard->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
+  keyboard->type = device::mojom::InputDeviceType::TYPE_USB;
+  keyboard->is_keyboard = true;
+  screen_->InputDeviceAddedForTesting(std::move(keyboard));  // IN-TEST
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {

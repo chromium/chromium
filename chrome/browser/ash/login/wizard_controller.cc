@@ -658,7 +658,7 @@ WizardController::CreateScreens() {
 
   if (HIDDetectionScreen::CanShowScreen()) {
     append(std::make_unique<HIDDetectionScreen>(
-        oobe_ui->GetView<HIDDetectionScreenHandler>(),
+        oobe_ui->GetView<HIDDetectionScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnHidDetectionScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
