@@ -20,7 +20,7 @@
 
 // Designated initializer.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                           andHandler:(id<PromosManagerCommands>)handler
+                              handler:(id<PromosManagerCommands>)handler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

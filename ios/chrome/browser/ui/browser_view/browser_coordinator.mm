@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
@@ -112,6 +113,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
@@ -292,6 +294,9 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 // Used to display the Print UI. Nil if not visible.
 // TODO(crbug.com/910017): Convert to coordinator.
 @property(nonatomic, strong) PrintController* printController;
+
+// Coordinator for app-wide promos.
+@property(nonatomic, strong) PromosManagerCoordinator* promosManagerCoordinator;
 
 // Coordinator for the QR scanner.
 @property(nonatomic, strong) QRScannerLegacyCoordinator* qrScannerCoordinator;
@@ -855,6 +860,13 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   self.printController =
       [[PrintController alloc] initWithBaseViewController:self.viewController];
 
+  if (IsFullscreenPromosManagerEnabled()) {
+    self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [self.promosManagerCoordinator start];
+  }
+
   // Help should only show in regular, non-incognito.
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     [self.popupMenuCoordinator startPopupMenuHelpCoordinator];
@@ -972,6 +984,11 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   self.passwordSuggestionCoordinator = nil;
 
   self.printController = nil;
+
+  if (IsFullscreenPromosManagerEnabled()) {
+    [self.promosManagerCoordinator stop];
+    self.promosManagerCoordinator = nil;
+  }
 
   [self.readingListCoordinator stop];
   self.readingListCoordinator = nil;

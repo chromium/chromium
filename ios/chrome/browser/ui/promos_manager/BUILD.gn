@@ -36,6 +36,8 @@ source_set("promos_manager_scene_agent") {
 source_set("promos_manager") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "promos_manager_coordinator.h",
+    "promos_manager_coordinator.mm",
     "promos_manager_mediator.h",
     "promos_manager_mediator.mm",
   ]
@@ -43,9 +45,14 @@ source_set("promos_manager") {
     ":promos",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
   ]
   deps = [
+    ":promos_manager_scene_agent",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//third_party/abseil-cpp:absl",
   ]
 }

@@ -14,7 +14,7 @@
 @implementation PromosManagerMediator
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                           andHandler:(id<PromosManagerCommands>)handler {
+                              handler:(id<PromosManagerCommands>)handler {
   if (self = [super init]) {
     _promosManager = promosManager;
     _handler = handler;
