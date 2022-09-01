@@ -210,7 +210,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kObjectPosition:
       return a.ObjectPosition() == b.ObjectPosition();
     case CSSPropertyID::kObjectViewBox:
-      return a.ObjectViewBox() == b.ObjectViewBox();
+      return base::ValuesEquivalent(a.ObjectViewBox(), b.ObjectViewBox());
     case CSSPropertyID::kOffsetAnchor:
       return a.OffsetAnchor() == b.OffsetAnchor();
     case CSSPropertyID::kOffsetDistance:
