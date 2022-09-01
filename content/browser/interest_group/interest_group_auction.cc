@@ -1364,8 +1364,14 @@ void InterestGroupAuction::OnInterestGroupRead(
       std::make_unique<BuyerHelper>(this, std::move(interest_groups));
 
   // BuyerHelper may filter out additional interest groups on construction.
-  if (buyer_helper->has_potential_bidder())
+  if (buyer_helper->has_potential_bidder()) {
     buyer_helpers_.emplace_back(std::move(buyer_helper));
+  } else {
+    // `buyer_helper` has a raw pointer to `this`, so if it's not added to
+    // buyer_helpers_, delete it now to avoid a dangling pointer, since
+    // OnOneLoadCompleted() could result in deleting `this`.
+    buyer_helper.reset();
+  }
 
   OnOneLoadCompleted();
 }
