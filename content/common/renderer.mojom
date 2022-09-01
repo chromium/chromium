@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/values.mojom";
 import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
@@ -163,4 +164,10 @@ interface Renderer {
   // agents, not both.
   // This is called at most once. This is called earlier than any frame commit.
   SetIsCrossOriginIsolated(bool value);
+
+  // A single API call to convey record/replay events
+  // from the browser to the renderer.
+  RecordReplayBrowserEvent(
+      string name,
+      mojo_base.mojom.DictionaryValue params);
 };

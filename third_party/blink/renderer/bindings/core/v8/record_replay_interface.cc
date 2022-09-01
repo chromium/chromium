@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 
 #include "base/record_replay.h"
+#include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/v8_value_converter.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -35,6 +37,7 @@ const char* gRecordReplayScript = R""""(
 const {
   log,
   setCDPMessageCallback,
+  setBrowserEventsCallback,
   sendCDPMessage,
   setCommandCallback,
   setClearPauseDataCallback,
@@ -75,6 +78,7 @@ function assert(v) {
 
 function initMessages() {
   setCDPMessageCallback(messageCallback);
+  setBrowserEventsCallback(browserEventsCallback);
 }
 
 let gNextMessageId = 1;
@@ -112,6 +116,11 @@ function messageCallback(message) {
   } catch (e) {
     log(`Message callback exception: ${e}`);
   }
+}
+
+function browserEventsCallback(name, info) {
+  const infoStr = JSON.stringify(info);
+  log(`KVKV: browserEventsCallback(${name}, ${infoStr})`);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1003,12 +1012,23 @@ static void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 // Function to invoke on CDP responses and events.
 static v8::Eternal<v8::Function>* gCDPMessageCallback;
 
+// Function to invoke on incoming browser events.
+static v8::Eternal<v8::Function>* gBrowserEventsCallback;
+
 static void SetCDPMessageCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(!gCDPMessageCallback);
   v8::Isolate* isolate = args.GetIsolate();
   CHECK(args[0]->IsFunction());
   v8::Local<v8::Function> callback = args[0].As<v8::Function>();
   gCDPMessageCallback = new v8::Eternal<v8::Function>(isolate, callback);
+}
+
+static void SetBrowserEventsCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(!gBrowserEventsCallback);
+  v8::Isolate* isolate = args.GetIsolate();
+  CHECK(args[0]->IsFunction());
+  v8::Local<v8::Function> callback = args[0].As<v8::Function>();
+  gBrowserEventsCallback = new v8::Eternal<v8::Function>(isolate, callback);
 }
 
 static void SendMessageToFrontend(const v8_inspector::StringView& message) {
@@ -1059,6 +1079,37 @@ void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector) {
                                             new InspectorChannel(),
                                             v8_inspector::StringView()).release();
   }
+}
+
+void RecordReplayDispatchBrowserEvent(
+  const std::string& name, base::DictionaryValue* info) {
+  CHECK(v8::IsMainThread());
+
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  if (!isolate->InContext() || ScriptForbiddenScope::IsScriptForbidden()) {
+    // We're never interested in browser events sent at these times.
+    return;
+  }
+
+  // Convert name to v8 string
+  v8::HandleScope scope(isolate);
+  v8::Local<v8::Value> args[2];
+  args[0] = v8::String::NewFromUtf8(
+      isolate,
+      name.c_str(),
+      v8::NewStringType::kNormal,
+      name.length()
+  ).ToLocalChecked();
+
+  // Convert params to v8 json object
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  std::unique_ptr<content::V8ValueConverter> converter =
+      content::V8ValueConverter::Create();
+  args[1] = converter->ToV8Value(info, context);
+
+  v8::Local<v8::Function> callback = gBrowserEventsCallback->Get(isolate);
+  v8::MaybeLocal<v8::Value> rv = callback->Call(context, v8::Undefined(isolate), 2, args);
+  CHECK(!rv.IsEmpty());
 }
 
 static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -1193,6 +1244,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       LogCallback);
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
                       SetCDPMessageCallback);
+  SetFunctionProperty(isolate, args, "setBrowserEventsCallback",
+                      SetBrowserEventsCallback);
   SetFunctionProperty(isolate, args, "sendCDPMessage",
                       SendCDPMessage);
   SetFunctionProperty(isolate, args, "setCommandCallback",
