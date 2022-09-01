@@ -47,6 +47,18 @@ source_set("remoting_constants") {
   sources = [ "remoting_constants.h" ]
 }
 
+source_set("remoting_device_capability") {
+  sources = [
+    "device_capability_checker.cc",
+    "device_capability_checker.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
 source_set("remoting_renderer") {
   sources = [
     "receiver.cc",
@@ -73,6 +85,7 @@ source_set("remoting_renderer") {
 source_set("media_remoting_tests") {
   testonly = true
   sources = [
+    "device_capability_checker_unittest.cc",
     "fake_remoter.cc",
     "fake_remoter.h",
     "mock_receiver_controller.cc",
@@ -85,6 +98,7 @@ source_set("media_remoting_tests") {
   ]
 
   deps = [
+    ":remoting_device_capability",
     ":remoting_renderer",
     ":remoting_sender",
     "//base",

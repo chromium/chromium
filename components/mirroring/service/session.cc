@@ -45,6 +45,7 @@
 #include "media/cast/sender/video_sender.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
+#include "media/remoting/device_capability_checker.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/ip_endpoint.h"
@@ -290,13 +291,10 @@ bool ShouldQueryForRemotingCapabilities(
     return false;
   }
 
-  // This is a workaround for Nest Hub devices, which do not support remoting.
-  // TODO(crbug.com/1198616): filtering hack should be removed. See
-  // issuetracker.google.com/135725157 for more information.
-  return base::StartsWith(receiver_model_name, "Chromecast",
-                          base::CompareCase::SENSITIVE) ||
-         base::StartsWith(receiver_model_name, "Eureka Dongle",
-                          base::CompareCase::SENSITIVE);
+  // This is a workaround to only query capabilities to Chromecast devices.
+  // TODO(crbug.com/1198616): filtering hack should be removed. See b/135725157
+  // for more information.
+  return media::remoting::IsChromecast(receiver_model_name);
 }
 
 }  // namespace

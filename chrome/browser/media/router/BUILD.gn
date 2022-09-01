@@ -104,6 +104,7 @@ static_library("router") {
       "//components/mirroring/mojom:service",
       "//components/ukm/content:content",
       "//components/version_info:version_info",
+      "//media/remoting:remoting_device_capability",
       "//mojo/public/cpp/bindings",
       "//services/metrics/public/cpp:ukm_builders",
       "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",

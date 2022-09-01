@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
@@ -18,6 +20,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using testing::Mock;
 using ::testing::NiceMock;
 using testing::WithArg;
 
@@ -56,6 +60,14 @@ base::Value::Dict MakeReceiverStatus() {
           "transportId": "theTransportId",
         }],
       })");
+}
+
+MediaSinkInternal CreateCastSinkWithModelName(const std::string model_name) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  auto cast_data = cast_sink.cast_data();
+  cast_data.model_name = model_name;
+  cast_sink.set_cast_data(cast_data);
+  return cast_sink;
 }
 }  // namespace
 
@@ -301,4 +313,71 @@ TEST_F(CastMediaRouteProviderTest, GetState) {
   }));
 }
 
+TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {
+  MediaSinkInternal cc = CreateCastSinkWithModelName("Chromecast");
+  MediaSinkInternal cc_ultra = CreateCastSinkWithModelName("Chromecast Ultra");
+  MediaSinkInternal nest = CreateCastSinkWithModelName("Nest");
+
+  // It should not update sinks for RemotePlayback MediaSource when the feature
+  // is disabled.
+  EXPECT_CALL(mock_router_, OnSinksReceived(_, _, _, _)).Times(0);
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+
+  // Enable the feature and it should return sinks compatible with the
+  // RemotePlayback MediaSource.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMediaRemotingWithoutFullscreen);
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{cc, cc_ultra}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=h264&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{cc_ultra}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=hevc&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+#else
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=h264&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{cc, cc_ultra}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec=opus",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+#endif
+
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec="
+      "invalid",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+}
 }  // namespace media_router

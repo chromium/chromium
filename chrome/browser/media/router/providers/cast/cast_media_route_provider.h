@@ -90,6 +90,9 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   void GetState(GetStateCallback callback) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CastMediaRouteProviderTest,
+                           GetRemotePlaybackCompatibleSinks);
+
   void Init(mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,
             mojo::PendingRemote<mojom::MediaRouter> media_router,
             CastSessionTracker* session_tracker,

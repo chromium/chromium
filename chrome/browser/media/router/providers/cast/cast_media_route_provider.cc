@@ -10,6 +10,8 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
@@ -20,6 +22,10 @@
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
+#include "media/remoting/device_capability_checker.h"
+#include "net/base/url_util.h"
 #include "url/origin.h"
 
 namespace media_router {
@@ -51,6 +57,63 @@ std::vector<url::Origin> GetOrigins(const MediaSource::Id& source_id) {
       allowed_origins.push_back(url::Origin::Create(GURL(origin)));
   }
   return allowed_origins;
+}
+
+media::VideoCodec ParseVideoCodec(const MediaSource& media_source) {
+  std::string video_codec;
+  if (!net::GetValueForKeyInQuery(media_source.url(), "video_codec",
+                                  &video_codec)) {
+    return media::VideoCodec::kUnknown;
+  }
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // `StringToVideoCodec()` does not parse custom strings like "hevc" and
+  // "h264".
+  if (video_codec == "hevc") {
+    return media::VideoCodec::kHEVC;
+  }
+  if (video_codec == "h264") {
+    return media::VideoCodec::kH264;
+  }
+#endif
+  return media::StringToVideoCodec(video_codec);
+}
+
+media::AudioCodec ParseAudioCodec(const MediaSource& media_source) {
+  std::string audio_codec;
+  if (!net::GetValueForKeyInQuery(media_source.url(), "audio_codec",
+                                  &audio_codec)) {
+    return media::AudioCodec::kUnknown;
+  }
+  if (audio_codec == "aac") {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    return media::AudioCodec::kAAC;
+#else
+    return media::AudioCodec::kUnknown;
+#endif
+  }
+  return media::StringToAudioCodec(audio_codec);
+}
+
+std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(
+    const MediaSource& media_source,
+    const std::vector<MediaSinkInternal>& sinks) {
+  DCHECK(media_source.IsRemotePlaybackSource());
+  std::vector<MediaSinkInternal> compatible_sinks;
+  auto video_codec = ParseVideoCodec(media_source);
+  auto audio_codec = ParseAudioCodec(media_source);
+  if (video_codec == media::VideoCodec::kUnknown ||
+      audio_codec == media::AudioCodec::kUnknown) {
+    return compatible_sinks;
+  }
+
+  for (const auto& sink : sinks) {
+    const std::string& model_name = sink.cast_data().model_name;
+    if (media::remoting::IsVideoCodecCompatible(model_name, video_codec) &&
+        media::remoting::IsAudioCodecCompatible(model_name, audio_codec)) {
+      compatible_sinks.push_back(sink);
+    }
+  }
+  return compatible_sinks;
 }
 
 }  // namespace
@@ -293,8 +356,22 @@ void CastMediaRouteProvider::GetState(GetStateCallback callback) {
 void CastMediaRouteProvider::OnSinkQueryUpdated(
     const MediaSource::Id& source_id,
     const std::vector<MediaSinkInternal>& sinks) {
-  media_router_->OnSinksReceived(mojom::MediaRouteProviderId::CAST, source_id,
-                                 sinks, GetOrigins(source_id));
+  auto media_source = MediaSource(source_id);
+  // Do not check compatibility for non-RemotePlayback MediaSource.
+  if (!media_source.IsRemotePlaybackSource()) {
+    media_router_->OnSinksReceived(mojom::MediaRouteProviderId::CAST, source_id,
+                                   sinks, GetOrigins(source_id));
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(kMediaRemotingWithoutFullscreen)) {
+    return;
+  }
+
+  // Check sinks' video/audio compatibility for RemotePlayback MediaSource.
+  media_router_->OnSinksReceived(
+      mojom::MediaRouteProviderId::CAST, source_id,
+      GetRemotePlaybackMediaSourceCompatibleSinks(media_source, sinks),
+      GetOrigins(source_id));
 }
 
 void CastMediaRouteProvider::BroadcastMessageToSinks(

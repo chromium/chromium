@@ -61,6 +61,7 @@ component("mirroring_service") {
     "//media/mojo/common:common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
+    "//media/remoting:remoting_device_capability",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
