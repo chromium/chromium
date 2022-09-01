@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -19,10 +17,10 @@ FastCheckoutControllerImpl::FastCheckoutControllerImpl(
 
 FastCheckoutControllerImpl::~FastCheckoutControllerImpl() = default;
 
-void FastCheckoutControllerImpl::Show() {
-  GetOrCreateView()->Show(GetPersonalDataManager()->GetProfilesToSuggest(),
-                          GetPersonalDataManager()->GetCreditCardsToSuggest(
-                              /* include_server_cards= */ true));
+void FastCheckoutControllerImpl::Show(
+    const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+    const std::vector<autofill::CreditCard*>& credit_cards) {
+  GetOrCreateView()->Show(autofill_profiles, credit_cards);
 }
 
 void FastCheckoutControllerImpl::OnOptionsSelected(
@@ -42,14 +40,6 @@ FastCheckoutView* FastCheckoutControllerImpl::GetOrCreateView() {
     view_ = FastCheckoutView::Create(weak_ptr_factory_.GetWeakPtr());
   }
   return view_.get();
-}
-
-autofill::PersonalDataManager*
-FastCheckoutControllerImpl::GetPersonalDataManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  return autofill::PersonalDataManagerFactory::GetForProfile(
-      profile->GetOriginalProfile());
 }
 
 void FastCheckoutControllerImpl::OpenAutofillProfileSettings() {

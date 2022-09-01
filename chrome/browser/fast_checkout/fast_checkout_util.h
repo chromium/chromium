@@ -25,6 +25,11 @@ autofill_assistant::external::ProfileProto CreateProfileProto(
 autofill_assistant::external::CreditCardProto CreateCreditCardProto(
     const autofill::CreditCard& credit_card);
 
+// Complete = contains name, street address, country code, zip code, email and
+// phone number.
+bool IsCompleteAddressProfile(const autofill::AutofillProfile* profile,
+                              const std::string& app_locale);
+
 }  // namespace fast_checkout
 
 #endif

@@ -5,11 +5,9 @@
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 #include <memory>
 
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,8 +25,8 @@ struct MockFastCheckoutView : FastCheckoutView {
 
   MOCK_METHOD(void,
               Show,
-              (const std::vector<autofill::AutofillProfile*>&,
-               const std::vector<autofill::CreditCard*>&),
+              (const std::vector<AutofillProfile*>&,
+               const std::vector<CreditCard*>&),
               (override));
 };
 
@@ -46,24 +44,16 @@ struct MockFastCheckoutImplDelegate : FastCheckoutControllerImpl::Delegate {
 
 class TestFastCheckoutControllerImpl : public FastCheckoutControllerImpl {
  public:
-  TestFastCheckoutControllerImpl(
-      content::WebContents* web_contents,
-      Delegate* delegate,
-      FastCheckoutView* view,
-      autofill::PersonalDataManager* personal_manager)
-      : FastCheckoutControllerImpl(web_contents, delegate),
-        view_(view),
-        personal_manager_(personal_manager) {}
+  TestFastCheckoutControllerImpl(content::WebContents* web_contents,
+                                 Delegate* delegate,
+                                 FastCheckoutView* view)
+      : FastCheckoutControllerImpl(web_contents, delegate), view_(view) {}
   ~TestFastCheckoutControllerImpl() override = default;
 
   FastCheckoutView* GetOrCreateView() override { return view_; }
-  autofill::PersonalDataManager* GetPersonalDataManager() override {
-    return personal_manager_;
-  }
 
  private:
   FastCheckoutView* view_;
-  autofill::PersonalDataManager* personal_manager_;
 };
 
 }  // namespace
@@ -78,17 +68,11 @@ class FastCheckoutControllerImplTest : public ChromeRenderViewHostTestHarness {
 
     fast_checkout_controller_ =
         std::make_unique<TestFastCheckoutControllerImpl>(
-            web_contents(), &delegate_, &mock_view_,
-            &test_personal_data_manager_);
-
-    test_personal_data_manager_.SetAutofillProfileEnabled(true);
-    test_personal_data_manager_.SetAutofillCreditCardEnabled(true);
-    test_personal_data_manager_.SetAutofillWalletImportEnabled(true);
+            web_contents(), &delegate_, &mock_view_);
   }
 
   MockFastCheckoutView mock_view_;
   MockFastCheckoutImplDelegate delegate_;
-  autofill::TestPersonalDataManager test_personal_data_manager_;
   // The object to be tested.
   std::unique_ptr<TestFastCheckoutControllerImpl> fast_checkout_controller_;
 };
@@ -96,20 +80,19 @@ class FastCheckoutControllerImplTest : public ChromeRenderViewHostTestHarness {
 TEST_F(FastCheckoutControllerImplTest, Show) {
   AutofillProfile profile1 = autofill::test::GetFullProfile();
   AutofillProfile profile2 = autofill::test::GetFullProfile2();
-  test_personal_data_manager_.AddProfile(profile1);
-  test_personal_data_manager_.AddProfile(profile2);
+  std::vector<autofill::AutofillProfile*> profiles = {&profile1, &profile2};
 
   CreditCard credit_card1 = autofill::test::GetCreditCard();
   CreditCard credit_card2 = autofill::test::GetCreditCard2();
-  test_personal_data_manager_.AddCreditCard(credit_card1);
-  test_personal_data_manager_.AddCreditCard(credit_card2);
+  std::vector<autofill::CreditCard*> credit_cards = {&credit_card1,
+                                                     &credit_card2};
 
   EXPECT_CALL(
       mock_view_,
       Show(UnorderedElementsAre(Pointee(profile1), Pointee(profile2)),
            UnorderedElementsAre(Pointee(credit_card1), Pointee(credit_card2))));
 
-  fast_checkout_controller_->Show();
+  fast_checkout_controller_->Show(profiles, credit_cards);
 }
 
 TEST_F(FastCheckoutControllerImplTest, OnOptionsSelected) {

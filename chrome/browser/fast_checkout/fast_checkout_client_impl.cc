@@ -3,10 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
+
 #include "base/feature_list.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
+#include "chrome/browser/fast_checkout/fast_checkout_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/fast_checkout_delegate.h"
@@ -20,6 +25,34 @@ constexpr char kTrue[] = "true";
 // TODO(crbug.com/1338521): Define and specify proper caller(s) and source(s).
 constexpr char kCaller[] = "7";  // run was started from within Chromium
 constexpr char kSource[] = "1";  // run was started organically
+
+std::vector<autofill::CreditCard*> GetValidCreditCardsToSuggest(
+    autofill::PersonalDataManager* pdm) {
+  // TODO(crbug.com/1334642): Check on autofill_client whether server credit
+  // cards are supported.
+  std::vector<autofill::CreditCard*> cards_to_suggest =
+      pdm->GetCreditCardsToSuggest(true);
+  base::EraseIf(cards_to_suggest, [](const autofill::CreditCard* card) {
+    return !card->IsCompleteValidCard();
+  });
+
+  return cards_to_suggest;
+}
+
+std::vector<autofill::AutofillProfile*> GetValidAddressProfilesToSuggest(
+    autofill::PersonalDataManager* pdm) {
+  // Trigger only if there is at least 1 complete address profile on file.
+  std::vector<autofill::AutofillProfile*> profiles_to_suggest =
+      pdm->GetProfilesToSuggest();
+
+  base::EraseIf(profiles_to_suggest,
+                [&pdm](const autofill::AutofillProfile* profile) {
+                  return !fast_checkout::IsCompleteAddressProfile(
+                      profile, pdm->app_locale());
+                });
+  return profiles_to_suggest;
+}
+
 }  // namespace
 
 FastCheckoutClientImpl::FastCheckoutClientImpl(
@@ -37,9 +70,20 @@ bool FastCheckoutClientImpl::Start(
   if (is_running_)
     return false;
 
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager();
+  DCHECK(pdm);
+  // Trigger only if there is at least 1 complete valid credit card on file.
+  if (GetValidCreditCardsToSuggest(pdm).empty() ||
+      GetValidAddressProfilesToSuggest(pdm).empty()) {
+    // TODO(crbug.com/1334642): Add to metric that tracks reasons why FC was not
+    // shown.
+    return false;
+  }
+
   is_running_ = true;
   url_ = url;
   delegate_ = std::move(delegate);
+  personal_data_manager_observation_.Observe(GetPersonalDataManager());
 
   base::flat_map<std::string, std::string> params_map{
       {autofill_assistant::public_script_parameters::kIntentParameterName,
@@ -78,7 +122,13 @@ bool FastCheckoutClientImpl::Start(
 
 void FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully() {
   fast_checkout_controller_ = CreateFastCheckoutController();
-  fast_checkout_controller_->Show();
+  ShowFastCheckoutUI();
+}
+
+void FastCheckoutClientImpl::ShowFastCheckoutUI() {
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager();
+  fast_checkout_controller_->Show(GetValidAddressProfilesToSuggest(pdm),
+                                  GetValidCreditCardsToSuggest(pdm));
 }
 
 void FastCheckoutClientImpl::OnRunComplete(
@@ -91,6 +141,7 @@ void FastCheckoutClientImpl::Stop() {
   external_script_controller_.reset();
   fast_checkout_controller_.reset();
   is_running_ = false;
+  personal_data_manager_observation_.Reset();
 }
 
 bool FastCheckoutClientImpl::IsRunning() const {
@@ -136,6 +187,19 @@ void FastCheckoutClientImpl::OnOptionsSelected(
 void FastCheckoutClientImpl::OnDismiss() {
   OnHidden();
   Stop();
+}
+
+autofill::PersonalDataManager*
+FastCheckoutClientImpl::GetPersonalDataManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  return autofill::PersonalDataManagerFactory::GetForProfile(
+      profile->GetOriginalProfile());
+}
+
+void FastCheckoutClientImpl::OnPersonalDataChanged() {
+  // TODO(crbug.com/1334642): Refresh UI data or stop the flow if data is not
+  // valid anymore.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FastCheckoutClientImpl);

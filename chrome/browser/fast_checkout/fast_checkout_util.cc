@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 
 namespace fast_checkout {
 
@@ -57,6 +58,23 @@ autofill_assistant::external::CreditCardProto CreateCreditCardProto(
   }
 
   return card_proto;
+}
+
+bool IsCompleteAddressProfile(const autofill::AutofillProfile* profile,
+                              const std::string& app_locale) {
+  std::string country_code =
+      base::UTF16ToASCII(profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+  if (country_code.empty()) {
+    return false;
+  }
+
+  autofill::AutofillCountry country(country_code, app_locale);
+  return !profile->GetInfo(autofill::NAME_FULL, app_locale).empty() &&
+         !profile->GetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS).empty() &&
+         (!country.requires_zip() ||
+          profile->HasRawInfo(autofill::ADDRESS_HOME_ZIP)) &&
+         !profile->GetRawInfo(autofill::EMAIL_ADDRESS).empty() &&
+         !profile->GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER).empty();
 }
 
 }  // namespace fast_checkout

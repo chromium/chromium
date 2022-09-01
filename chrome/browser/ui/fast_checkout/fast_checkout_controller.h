@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_FAST_CHECKOUT_FAST_CHECKOUT_CONTROLLER_H_
 #define CHROME_BROWSER_UI_FAST_CHECKOUT_FAST_CHECKOUT_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -20,7 +22,9 @@ class FastCheckoutController {
 
   // Instructs the controller to show the stored autofill profiles and
   // credit cards to the user.
-  virtual void Show() = 0;
+  virtual void Show(
+      const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+      const std::vector<autofill::CreditCard*>& credit_cards) = 0;
 
   // Informs the controller that the user has made a selection.
   virtual void OnOptionsSelected(
