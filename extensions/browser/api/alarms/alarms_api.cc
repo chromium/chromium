@@ -39,8 +39,9 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
     *error = kBothRelativeAndAbsoluteTime;
     return false;
   }
-  if (create_info.delay_in_minutes == NULL && create_info.when == NULL &&
-      create_info.period_in_minutes == NULL) {
+  if (!create_info.delay_in_minutes.has_value() &&
+      !create_info.when.has_value() &&
+      !create_info.period_in_minutes.has_value()) {
     *error = kNoScheduledTime;
     return false;
   }
