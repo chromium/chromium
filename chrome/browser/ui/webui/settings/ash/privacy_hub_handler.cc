@@ -28,12 +28,14 @@ PrivacyHubHandler::PrivacyHubHandler()
     : camera_privacy_switch_state_(media::CameraHalDispatcherImpl::GetInstance()
                                        ->AddCameraPrivacySwitchObserver(this)) {
   ui::MicrophoneMuteSwitchMonitor::Get()->AddObserver(this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 PrivacyHubHandler::~PrivacyHubHandler() {
   media::CameraHalDispatcherImpl::GetInstance()
       ->RemoveCameraPrivacySwitchObserver(this);
   ui::MicrophoneMuteSwitchMonitor::Get()->RemoveObserver(this);
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 void PrivacyHubHandler::RegisterMessages() {
@@ -46,6 +48,24 @@ void PrivacyHubHandler::RegisterMessages() {
       base::BindRepeating(
           &PrivacyHubHandler::HandleInitialMicrophoneSwitchState,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getInitialAvailabilityOfMicrophoneForSimpleUsage",
+      base::BindRepeating(
+          &PrivacyHubHandler::
+              HandleInitialAvailabilityOfMicrophoneForSimpleUsage,
+          base::Unretained(this)));
+}
+
+void PrivacyHubHandler::OnAudioNodesChanged() {
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener(
+        "availability-of-microphone-for-simple-usage-changed",
+        base::Value(
+            CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage()));
+  } else {
+    DVLOG(1) << "JS disabled. Skip updating the availability of microphone for "
+                "simple usage until enabled";
+  }
 }
 
 void PrivacyHubHandler::OnCameraHWPrivacySwitchStatusChanged(
@@ -92,6 +112,19 @@ void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
   const auto& callback_id = args[0];
   const base::Value value = base::Value(
       ui::MicrophoneMuteSwitchMonitor::Get()->microphone_mute_switch_on());
+
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  DCHECK_GE(1U, args.size()) << ": Did not expect arguments";
+  DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
+  const auto& callback_id = args[0];
+  const base::Value value = base::Value(
+      CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage());
 
   ResolveJavascriptCallback(callback_id, value);
 }

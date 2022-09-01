@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRIVACY_HUB_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRIVACY_HUB_HANDLER_H_
 
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "ui/events/devices/microphone_mute_switch_monitor.h"
@@ -13,7 +14,8 @@ namespace chromeos::settings {
 
 class PrivacyHubHandler : public content::WebUIMessageHandler,
                           public media::CameraPrivacySwitchObserver,
-                          public ui::MicrophoneMuteSwitchMonitor::Observer {
+                          public ui::MicrophoneMuteSwitchMonitor::Observer,
+                          public CrasAudioHandler::AudioObserver {
  public:
   PrivacyHubHandler();
   ~PrivacyHubHandler() override;
@@ -26,6 +28,9 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   // content::WebUIMessageHandler
   void RegisterMessages() override;
 
+  // CrasAudioHandler::AudioObserver overrides
+  void OnAudioNodesChanged() override;
+
   // media::CameraPrivacySwitchObserver
   void OnCameraHWPrivacySwitchStatusChanged(
       int32_t camera_id,
@@ -37,6 +42,9 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   void HandleInitialCameraSwitchState(const base::Value::List& args);
 
   void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
+
+  void HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
+      const base::Value::List& args);
 
  private:
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_;

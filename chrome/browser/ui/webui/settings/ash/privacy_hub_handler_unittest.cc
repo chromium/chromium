@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,8 +17,10 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
  public:
   using content::WebUIMessageHandler::set_web_ui;
 
+  using PrivacyHubHandler::HandleInitialAvailabilityOfMicrophoneForSimpleUsage;
   using PrivacyHubHandler::HandleInitialCameraSwitchState;
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
+  using PrivacyHubHandler::OnAudioNodesChanged;
   using PrivacyHubHandler::OnCameraHWPrivacySwitchStatusChanged;
 };
 
@@ -31,6 +34,12 @@ class PrivacyHubHandlerTest : public testing::Test {
   // task_environment. Initialization order of the members takes care
   // of providing this before privacy_hub_handler_ is constructed.
   base::test::SingleThreadTaskEnvironment task_environment_;
+
+  // This has to go before privacy_hub_handler_ because PrivacyHubHandler
+  // constructor  requires CrasAudioHandler to be initialized.
+  // ScopedCrasAudioHandlerForTesting is a helper class that initializes
+  // CrasAudioHandler in it's constructor.
+  ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
 
   // Has to go before privacy_hub_handler_ as it references its
   // address and destruction order guarantees no invalid pointers.
@@ -170,6 +179,15 @@ TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
   ExpectValueMatchesBoolParam(data);
 }
 
+TEST_F(PrivacyHubHandlerMicrophoneTest, OnAudioNodesChanged) {
+  privacy_hub_handler_.OnAudioNodesChanged();
+
+  const base::Value data = GetLastWebUIListenerData(
+      "availability-of-microphone-for-simple-usage-changed");
+
+  EXPECT_FALSE(data.is_none());
+}
+
 INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
                          PrivacyHubHandlerMicrophoneTest,
                          testing::Values(true, false),
@@ -209,6 +227,28 @@ TEST_F(PrivacyHubHandlerDeathTest, HandleInitialMicrophoneSwitchStateWithArgs) {
 
   EXPECT_DEATH(privacy_hub_handler_.HandleInitialMicrophoneSwitchState(args),
                ".*Did not expect arguments.*");
+}
+
+TEST_F(PrivacyHubHandlerDeathTest,
+       HandleInitialAvailabilityOfMicrophoneForSimpleUsageNoCallbackId) {
+  base::Value::List args;
+
+  EXPECT_DEATH(
+      privacy_hub_handler_.HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
+          args),
+      ".*Callback ID is required.*");
+}
+
+TEST_F(PrivacyHubHandlerDeathTest,
+       HandleInitialAvailabilityOfMicrophoneForSimpleUsageWithArgs) {
+  base::Value::List args;
+  args.Append(this_test_name_);
+  args.Append(base::Value());
+
+  EXPECT_DEATH(
+      privacy_hub_handler_.HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
+          args),
+      ".*Did not expect arguments.*");
 }
 #endif
 }  // namespace chromeos::settings

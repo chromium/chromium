@@ -21,9 +21,11 @@ class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
     super([
       'getInitialCameraHardwareToggleState',
       'getInitialMicrophoneHardwareToggleState',
+      'getInitialAvailabilityOfMicrophoneForSimpleUsage',
     ]);
     this.cameraToggleIsEnabled = false;
     this.microphoneToggleIsEnabled = false;
+    this.microphoneForSimpleUsageAvailable = false;
   }
 
   /** override */
@@ -37,7 +39,14 @@ class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
     this.methodCalled('getInitialMicrophoneHardwareToggleState');
     return Promise.resolve(this.microphoneToggleIsEnabled);
   }
+
+  /** override */
+  getInitialAvailabilityOfMicrophoneForSimpleUsage() {
+    this.methodCalled('getInitialAvailabilityOfMicrophoneForSimpleUsage');
+    return Promise.resolve(this.microphoneForSimpleUsageAvailable);
+  }
 }
+
 
 suite('PrivacyHubSubpageTests', function() {
   /** @type {SettingsPrivacyHubPage} */
@@ -160,9 +169,12 @@ suite('PrivacyHubSubpageTests', function() {
     params.append('settingId', '1117');
 
     privacyHubBrowserProxy.microphoneToggleIsEnabled = false;
+    privacyHubBrowserProxy.microphoneForSimpleUsageAvailable = false;
 
     await privacyHubBrowserProxy.whenCalled(
         'getInitialMicrophoneHardwareToggleState');
+    await privacyHubBrowserProxy.whenCalled(
+        'getInitialAvailabilityOfMicrophoneForSimpleUsage');
     Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
 
     flush();
@@ -174,9 +186,12 @@ suite('PrivacyHubSubpageTests', function() {
     await waitAfterNextRender(subLabel);
 
     chai.assert.match(
-        subLabel.textContent, /^\s*$/,
-        'The sublabel should only consist of whitespace');
+        subLabel.textContent, /^\s*No microphone connected\s*$/,
+        'The sublabel should contain the hint about no microphone being ' +
+            'connected.');
 
+    webUIListenerCallback(
+        'availability-of-microphone-for-simple-usage-changed', true);
     webUIListenerCallback('microphone-hardware-toggle-changed', true);
 
     await waitAfterNextRender(subLabel);
@@ -184,8 +199,12 @@ suite('PrivacyHubSubpageTests', function() {
     chai.assert.match(
         subLabel.textContent,
         /^\s*All microphones disabled by devices hardware switch\s*$/,
-        'The sublabel should contain the hint about the internal camera');
+        'The sublabel should contain the hint about the microphone hardware ' +
+            'switch being active.');
 
+
+    webUIListenerCallback(
+        'availability-of-microphone-for-simple-usage-changed', true);
     webUIListenerCallback('microphone-hardware-toggle-changed', false);
 
     await waitAfterNextRender(subLabel);
@@ -193,5 +212,17 @@ suite('PrivacyHubSubpageTests', function() {
     chai.assert.match(
         subLabel.textContent, /^\s*$/,
         'The sublabel should only consist of whitespace');
+
+    webUIListenerCallback(
+        'availability-of-microphone-for-simple-usage-changed', false);
+    webUIListenerCallback('microphone-hardware-toggle-changed', true);
+
+    await waitAfterNextRender(subLabel);
+
+    chai.assert.match(
+        subLabel.textContent,
+        /^\s*All microphones disabled by devices hardware switch\s*$/,
+        'The sublabel should contain the hint about the microphone hardware ' +
+            'switch being active.');
   });
 });

@@ -11,6 +11,9 @@ export class PrivacyHubBrowserProxy {
 
   /** @return {!Promise<boolean>} */
   getInitialMicrophoneHardwareToggleState() {}
+
+  /** @return {!Promise<boolean>} */
+  getInitialAvailabilityOfMicrophoneForSimpleUsage() {}
 }
 
 /**
@@ -25,6 +28,11 @@ export class PrivacyHubBrowserProxyImpl {
   /** @override */
   getInitialMicrophoneHardwareToggleState() {
     return sendWithPromise('getInitialMicrophoneHardwareToggleState');
+  }
+
+  /** @override */
+  getInitialAvailabilityOfMicrophoneForSimpleUsage() {
+    return sendWithPromise('getInitialAvailabilityOfMicrophoneForSimpleUsage');
   }
 
   /** @return {!PrivacyHubBrowserProxy} */

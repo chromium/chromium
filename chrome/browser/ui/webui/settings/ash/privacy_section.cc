@@ -329,8 +329,10 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"cameraToggleSublabelActive",
        IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_HARDWARE_TOGGLE_ACTIVE_SUBTEXT},
       {"microphoneToggleTitle", IDS_OS_SETTINGS_MICROPHONE_TOGGLE_TITLE},
-      {"microphoneToggleSublabelActive",
+      {"microphoneToggleSublabelHWToggleActive",
        IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_HARDWARE_TOGGLE_ACTIVE_SUBTEXT},
+      {"microphoneToggleSublabelNoMicConnected",
+       IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_NO_MICROPHONE_CONNECTED_SUBTEXT},
       {"geolocationToggleTitle", IDS_OS_SETTINGS_GEOLOCATION_TOGGLE_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

@@ -74,6 +74,14 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
         (enabled) => {
           this.setMicrophoneHardwareToggleState_(enabled);
         });
+    this.addWebUIListener(
+        'availability-of-microphone-for-simple-usage-changed', (available) => {
+          this.setMicrophoneForSimpleUsageAvailable_(available);
+        });
+    this.browserProxy_.getInitialAvailabilityOfMicrophoneForSimpleUsage().then(
+        (available) => {
+          this.setMicrophoneForSimpleUsageAvailable_(available);
+        });
   }
 
   static get properties() {
@@ -112,10 +120,25 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
       },
 
       /** @private {string} */
-      microphoneHardwareToggleActiveSubLabel_: {
+      microphoneToggleSubLabel_: {
         type: String,
-        computed: 'computeMicrophoneHardwareToggleSubLabel_(' +
-            'microphoneHardwareToggleActive_)',
+        computed: 'computeMicrophoneToggleSubLabel_(' +
+            'microphoneHardwareToggleActive_, ' +
+            'microphoneForSimpleUsageAvailable_)',
+      },
+
+      /** @private {boolean} */
+      microphoneForSimpleUsageAvailable_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      shouldDisableMicrophoneToggle_: {
+        type: Boolean,
+        computed: 'computeShouldDisableMicrophoneToggle_(' +
+            'microphoneHardwareToggleActive_, ' +
+            'microphoneForSimpleUsageAvailable_)',
       },
     };
   }
@@ -157,12 +180,34 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
   }
 
   /**
+   * @return {string} The microphone toggle sublabel.
    * @private
    */
-  computeMicrophoneHardwareToggleSubLabel_() {
-    return this.microphoneHardwareToggleActive_ ?
-        this.i18n('microphoneToggleSublabelActive') :
-        '';
+  computeMicrophoneToggleSubLabel_() {
+    if (this.microphoneHardwareToggleActive_) {
+      return this.i18n('microphoneToggleSublabelHWToggleActive');
+    } else if (!this.microphoneForSimpleUsageAvailable_) {
+      return this.i18n('microphoneToggleSublabelNoMicConnected');
+    } else {
+      return '';
+    }
+  }
+
+  /**
+   * @param {boolean} available
+   * @private
+   */
+  setMicrophoneForSimpleUsageAvailable_(available) {
+    this.microphoneForSimpleUsageAvailable_ = available;
+  }
+
+  /**
+   * @return {boolean} Whether privacy hub microphone toggle should be disabled.
+   * @private
+   */
+  computeShouldDisableMicrophoneToggle_() {
+    return this.microphoneHardwareToggleActive_ ||
+        !this.microphoneForSimpleUsageAvailable_;
   }
 }
 
