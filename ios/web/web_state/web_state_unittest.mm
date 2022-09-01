@@ -67,6 +67,11 @@ using wk_navigation_util::IsWKInternalUrl;
 
 // Test fixture for web::WebTest class.
 class WebStateTest : public FakeWebClient, public WebTestWithWebState {
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+    web::IgnoreOverRealizationCheck();
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
 };
