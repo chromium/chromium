@@ -64,36 +64,20 @@ public class WebappDefaultOfflineTest {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         assertEquals("\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        tab.getWebContents(), "document.getElementById('app-name').textContent;"));
+                        tab.getWebContents(), "document.title;"));
         assertEquals("\"No internet\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
         assertEquals("\"data:image/png;base64," + WebappActivityTestRule.TEST_ICON + "\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.getElementById('icon').src;"));
-        assertEquals("\" #00FF00\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--customized-background-color');"));
-        assertEquals("\" #00FF00\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--dark-mode-background-color');"));
-        assertEquals("\" #0000FF\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--theme-color');"));
-        assertEquals("\" #0000FF\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--dark-mode-theme-color');"));
     }
 
     private WebappInfo getDefaultWebappInfo(String url) {
         String id = "webapp_id";
         String name = "longName";
         String shortName = "shortname";
-        long backgroundColor = Color.argb(0xff, 0, 0xff, 0);
+        long backgroundColor = Color.argb(0xff, 0x0, 0xff, 0x0);
         long themeColor = Color.argb(0xff, 0, 0, 0xff);
 
         Intent intent = new Intent();

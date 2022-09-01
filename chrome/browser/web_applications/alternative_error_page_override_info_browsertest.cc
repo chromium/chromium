@@ -70,53 +70,6 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Testing app manifest with no theme or background color.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest, Manifest) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      GetErrorPageInfo("/banners/manifest_no_service_worker.html");
-
-  // Expect mojom struct with default background and theme colors.
-  EXPECT_TRUE(info);
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("customized_background_color"),
-      white_);
-  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"), black_);
-}
-
-// Testing app manifest with theme color.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
-                       ManifestWithThemeColor) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      GetErrorPageInfo("/banners/theme-color.html");
-
-  // Expect mojom struct with customized theme color and default background
-  // color.
-  EXPECT_TRUE(info);
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("customized_background_color"),
-      white_);
-  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
-            skia::SkColorToHexString(SkColorSetRGB(0xAA, 0xCC, 0xEE)));
-}
-
-// Testing app manifest with background color.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
-                       ManifestWithBackgroundColor) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      GetErrorPageInfo("/banners/background-color.html");
-
-  // Expect mojom struct with default theme color and customized background
-  // color.
-  EXPECT_TRUE(info);
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("customized_background_color"),
-      blue_);
-  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"), black_);
-}
-
 // Testing url outside the scope of an installed app.
 IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
                        NoManifest) {
@@ -200,56 +153,6 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
             base::UTF16ToUTF8(url_formatter::FormatUrl(app_url)));
-}
-
-// Testing app with manifest and no service worker.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
-                       ManifestAndNoServiceWorker) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      GetErrorPageInfo("/banners/no-sw-with-colors.html");
-
-  // Expect mojom struct with custom theme and background color.
-  EXPECT_TRUE(info);
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("customized_background_color"),
-      yellow_);
-  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"), green_);
-}
-
-// Testing app manifest with dark mode theme and background colors.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
-                       ManifestWithDarkModeThemeAndBackgroundColor) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
-  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      GetErrorPageInfo("/web_apps/get_manifest.html?color_scheme_dark.json");
-
-  // Expect mojom struct with dark mode theme color and dark mode background
-  // color.
-  EXPECT_TRUE(info);
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("dark_mode_background_color"),
-      red_);
-  EXPECT_EQ(*info->alternative_error_page_params.Find("dark_mode_theme_color"),
-            red_);
-}
-
-// Testing app manifest with no dark mode theme or background color.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
-                       ManifestWithNoDarkModeThemeAndBackgroundColor) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
-  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      GetErrorPageInfo("/banners/no-sw-with-colors.html");
-
-  // Expect mojom struct light mode background and theme color stored.
-  EXPECT_TRUE(info);
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("dark_mode_background_color"),
-      yellow_);
-  EXPECT_EQ(*info->alternative_error_page_params.Find("dark_mode_theme_color"),
-            green_);
 }
 
 // Testing manifest with icon.

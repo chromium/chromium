@@ -52,11 +52,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
   using webapps::WebApkDetailsForDefaultOfflinePage;
   const std::vector<int> fields = {
       (int)WebApkDetailsForDefaultOfflinePage::SHORT_NAME,
-      (int)WebApkDetailsForDefaultOfflinePage::ICON,
-      (int)WebApkDetailsForDefaultOfflinePage::BACKGROUND_COLOR,
-      (int)WebApkDetailsForDefaultOfflinePage::BACKGROUND_COLOR_DARK_MODE,
-      (int)WebApkDetailsForDefaultOfflinePage::THEME_COLOR,
-      (int)WebApkDetailsForDefaultOfflinePage::THEME_COLOR_DARK_MODE};
+      (int)WebApkDetailsForDefaultOfflinePage::ICON};
   const std::vector<std::string> resource_strings = GetOfflinePageInfoJava(
       fields, url.spec(), browser_context,
       content::WebContents::FromRenderFrameHost(render_frame_host));
@@ -79,19 +75,6 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
         // Converting to GURL is necessary to correctly interpret the data url,
         // in case it contains embedded carriage returns, etc.
         dict.Set(default_offline::kIconUrl, GURL(resource_strings[i]).spec());
-        break;
-      case WebApkDetailsForDefaultOfflinePage::BACKGROUND_COLOR:
-        dict.Set(default_offline::kBackgroundColor, resource_strings[i]);
-        break;
-      case WebApkDetailsForDefaultOfflinePage::BACKGROUND_COLOR_DARK_MODE:
-        dict.Set(default_offline::kDarkModeBackgroundColor,
-                 resource_strings[i]);
-        break;
-      case WebApkDetailsForDefaultOfflinePage::THEME_COLOR:
-        dict.Set(default_offline::kThemeColor, resource_strings[i]);
-        break;
-      case WebApkDetailsForDefaultOfflinePage::THEME_COLOR_DARK_MODE:
-        dict.Set(default_offline::kDarkModeThemeColor, resource_strings[i]);
         break;
     }
   }

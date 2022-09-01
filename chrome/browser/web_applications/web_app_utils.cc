@@ -265,36 +265,17 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
       content::mojom::AlternativeErrorPageOverrideInfo::New();
   // TODO(crbug.com/1285128): Ensure sufficient contrast.
   base::Value::Dict dict;
-  std::string theme_color = skia::SkColorToHexString(
-      web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK));
-  std::string background_color = skia::SkColorToHexString(
-      web_app_registrar.GetAppBackgroundColor(*app_id).value_or(SK_ColorWHITE));
-  dict.Set(default_offline::kThemeColor, theme_color);
-  dict.Set(default_offline::kBackgroundColor, background_color);
   dict.Set(default_offline::kAppShortName,
            web_app_registrar.GetAppShortName(*app_id));
   dict.Set(
       default_offline::kMessage,
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
+  // TODO(crbug.com/1285723): The FavIcon is not the right icon to use here, as
+  // the design calls for showing an icon around ten times that size. This will
+  // probably need to be changed to fetch the right icon asynchronously.
   SkBitmap bitmap = web_app_provider->icon_manager().GetFavicon(*app_id);
   std::string icon_url = EncodeIconAsUrl(bitmap).spec();
   dict.Set(default_offline::kIconUrl, icon_url);
-  absl::optional<SkColor> dark_mode_theme_color =
-      web_app_registrar.GetAppDarkModeThemeColor(*app_id);
-  if (dark_mode_theme_color) {
-    dict.Set(default_offline::kDarkModeThemeColor,
-             skia::SkColorToHexString(dark_mode_theme_color.value()));
-  } else {
-    dict.Set(default_offline::kDarkModeThemeColor, theme_color);
-  }
-  absl::optional<SkColor> dark_mode_background_color =
-      web_app_registrar.GetAppDarkModeThemeColor(*app_id);
-  if (dark_mode_background_color) {
-    dict.Set(default_offline::kDarkModeBackgroundColor,
-             skia::SkColorToHexString(dark_mode_background_color.value()));
-  } else {
-    dict.Set(default_offline::kDarkModeBackgroundColor, background_color);
-  }
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
   return alternative_error_page_info;

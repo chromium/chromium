@@ -4,28 +4,42 @@
 
 @media (prefers-color-scheme: light) {
   body {
-    background-color: var(--customized-background-color);
+    background-color: rgb(255, 255, 255);
   }
-  h2 {
-    color: var(--theme-color);
+  div {
+    color: rgb(32, 33, 36);
   }
  }
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: var(--dark-mode-background-color);
+    background-color: rgb(32, 33, 36);
   }
-  h2 {
-    color: var(--dark-mode-theme-color);
+  div {
+    color: rgb(255, 255, 255);
   }
 }
 
-h2 {
-  height: 200px;
+.center {
   left: 50%;
-  margin-inline-start: -200px;
-  margin-top: -100px;
   position: fixed;
   top: 50%;
-  width: 400px;
+  transform: translate(-50%, -50%);
 }
+.center-bottom {
+  left: 50%;
+  position: fixed;
+  top: 90%;
+  transform: translate(-50%, -50%);
+}
+.icon {
+  border-radius: 50%;
+  height: 160px;
+  width: 160px;
+}
+.message {
+  font-family: 'Google Sans';
+  text-align: center;
+  width: 80%;
+}
+

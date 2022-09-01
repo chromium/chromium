@@ -152,7 +152,7 @@ public class WebappDefaultOfflineTwaTest {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         assertEquals("\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        tab.getWebContents(), "document.getElementById('app-name').textContent;"));
+                        tab.getWebContents(), "document.title;"));
         assertEquals("\"No internet\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
@@ -171,22 +171,5 @@ public class WebappDefaultOfflineTwaTest {
         String expectedString =
                 BitmapHelper.encodeBitmapAsString(expectedDrawable.getBitmap()).trim();
         assertTrue(imageAsString.equals(expectedString));
-
-        assertEquals("\" #00FF00\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--customized-background-color');"));
-        assertEquals("\" #00FF00\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--dark-mode-background-color');"));
-        assertEquals("\" #FFFFFF\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--theme-color');"));
-        assertEquals("\" #FFFFFF\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                        "getComputedStyle(document.documentElement).getPropertyValue("
-                                + "'--dark-mode-theme-color');"));
     }
 }

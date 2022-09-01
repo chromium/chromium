@@ -89,10 +89,6 @@ enum class WebApkInstallResult {
 enum class WebApkDetailsForDefaultOfflinePage {
   SHORT_NAME = 0,
   ICON,
-  BACKGROUND_COLOR,
-  BACKGROUND_COLOR_DARK_MODE,
-  THEME_COLOR,
-  THEME_COLOR_DARK_MODE,
 };
 
 }  // namespace webapps

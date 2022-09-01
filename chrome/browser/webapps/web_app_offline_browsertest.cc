@@ -281,14 +281,14 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
             .ExtractBool());
     EXPECT_EQ(
         EvalJs(web_contents,
-               "window.getComputedStyle(document.querySelector('h2')).color")
+               "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(255, 0, 0)");
+        "rgb(255, 255, 255)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
                   .ExtractString(),
-              "rgb(255, 0, 0)");
+              "rgb(32, 33, 36)");
   } else {
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -296,14 +296,14 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
             .ExtractBool());
     EXPECT_EQ(
         EvalJs(web_contents,
-               "window.getComputedStyle(document.querySelector('h2')).color")
+               "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(0, 0, 255)");
+        "rgb(32, 33, 36)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
                   .ExtractString(),
-              "rgb(0, 0, 255)");
+              "rgb(255, 255, 255)");
   }
 }
 
@@ -328,14 +328,14 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
             .ExtractBool());
     EXPECT_EQ(
         EvalJs(web_contents,
-               "window.getComputedStyle(document.querySelector('h2')).color")
+               "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(255, 0, 0)");
+        "rgb(255, 255, 255)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
                   .ExtractString(),
-              "rgb(255, 0, 0)");
+              "rgb(32, 33, 36)");
   } else {
     // Expect that the default offline page is showing with light mode colors.
     EXPECT_TRUE(
@@ -344,14 +344,14 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
             .ExtractBool());
     EXPECT_EQ(
         EvalJs(web_contents,
-               "window.getComputedStyle(document.querySelector('h2')).color")
+               "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(0, 0, 255)");
+        "rgb(32, 33, 36)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
                   .ExtractString(),
-              "rgb(0, 0, 255)");
+              "rgb(255, 255, 255)");
   }
 }
 
@@ -371,23 +371,33 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
         EvalJs(web_contents,
                "window.matchMedia('(prefers-color-scheme: dark)').matches")
             .ExtractBool());
+    EXPECT_EQ(
+        EvalJs(web_contents,
+               "window.getComputedStyle(document.querySelector('div')).color")
+            .ExtractString(),
+        "rgb(255, 255, 255)");
+    EXPECT_EQ(EvalJs(web_contents,
+                     "window.getComputedStyle(document.querySelector('body'))."
+                     "backgroundColor")
+                  .ExtractString(),
+              "rgb(32, 33, 36)");
   } else {
     // Expect that the default offline page is showing with light mode colors.
     EXPECT_TRUE(
         EvalJs(web_contents,
                "window.matchMedia('(prefers-color-scheme: light)').matches")
             .ExtractBool());
+    EXPECT_EQ(
+        EvalJs(web_contents,
+               "window.getComputedStyle(document.querySelector('div')).color")
+            .ExtractString(),
+        "rgb(32, 33, 36)");
+    EXPECT_EQ(EvalJs(web_contents,
+                     "window.getComputedStyle(document.querySelector('body'))."
+                     "backgroundColor")
+                  .ExtractString(),
+              "rgb(255, 255, 255)");
   }
-  EXPECT_EQ(
-      EvalJs(web_contents,
-             "window.getComputedStyle(document.querySelector('h2')).color")
-          .ExtractString(),
-      "rgb(0, 255, 0)");
-  EXPECT_EQ(EvalJs(web_contents,
-                   "window.getComputedStyle(document.querySelector('body'))."
-                   "backgroundColor")
-                .ExtractString(),
-            "rgb(255, 255, 0)");
 }
 
 INSTANTIATE_TEST_SUITE_P(
