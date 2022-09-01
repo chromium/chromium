@@ -510,6 +510,8 @@ static_library("common") {
       "linux/remote_desktop_portal_injector.h",
       "linux/wayland_desktop_capturer.cc",
       "linux/wayland_desktop_capturer.h",
+      "linux/wayland_manager.cc",
+      "linux/wayland_manager.h",
     ]
     public_deps += [ "//third_party/wayland-protocols:xdg_shell_protocol" ]
   }

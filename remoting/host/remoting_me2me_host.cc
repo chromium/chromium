@@ -152,6 +152,10 @@
 #include "remoting/host/win/session_desktop_environment.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/wayland_manager.h"
+#endif  // defined(REMOTING_USE_WAYLAND)
+
 using remoting::protocol::PairingRegistry;
 using remoting::protocol::NetworkSettings;
 
@@ -936,6 +940,10 @@ void HostProcess::StartOnUiThread() {
   policy_watcher_->StartWatching(
       base::BindRepeating(&HostProcess::OnPolicyUpdate, base::Unretained(this)),
       base::BindRepeating(&HostProcess::OnPolicyError, base::Unretained(this)));
+
+#if defined(REMOTING_USE_WAYLAND)
+  WaylandManager::Get()->Init(context_->ui_task_runner());
+#endif  // defined(REMOTING_USE_WAYLAND
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // If an audio pipe is specific on the command-line then initialize

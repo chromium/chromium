@@ -28,6 +28,7 @@
 #include "remoting/host/input_injector_metadata.h"
 #include "remoting/host/linux/remote_desktop_portal_injector.h"
 #include "remoting/host/linux/unicode_to_keysym.h"
+#include "remoting/host/linux/wayland_manager.h"
 #include "remoting/proto/internal.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -195,6 +196,16 @@ class InputInjectorWayland : public InputInjector {
 InputInjectorWayland::InputInjectorWayland(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   core_ = new Core(task_runner);
+
+  // Register callback with the wayland manager so that it can get details
+  // about the desktop capture metadata (which include session details of the
+  // portal).
+  auto converting_cb =
+      base::BindRepeating([](const webrtc::DesktopCaptureMetadata metadata) {
+        return metadata.session_details;
+      });
+  WaylandManager::Get()->AddCapturerMetadataCallback(
+      converting_cb.Then(base::BindRepeating(&Core::SetSessionDetails, core_)));
 }
 
 InputInjectorWayland::~InputInjectorWayland() {}

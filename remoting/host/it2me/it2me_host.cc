@@ -42,6 +42,10 @@
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/wayland_manager.h"
+#endif  // defined(REMOTING_USE_WAYLAND)
+
 namespace remoting {
 
 using protocol::ErrorCode;
@@ -133,6 +137,10 @@ void It2MeHost::Connect(
   confirmation_dialog_factory_ = std::move(dialog_factory);
 
   OnPolicyUpdate(std::move(policies));
+
+#if defined(REMOTING_USE_WAYLAND)
+  WaylandManager::Get()->Init(host_context_->ui_task_runner());
+#endif  // defined(REMOTING_USE_WAYLAND)
 
   desktop_environment_factory_ =
       std::make_unique<It2MeDesktopEnvironmentFactory>(

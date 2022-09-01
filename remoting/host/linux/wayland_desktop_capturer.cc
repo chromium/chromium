@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/remote_desktop_portal.h"
+#include "remoting/host/linux/wayland_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_session_details.h"
@@ -47,21 +48,12 @@ bool WaylandDesktopCapturer::SelectSource(SourceId id) {
 
 #if defined(WEBRTC_USE_GIO)
 webrtc::DesktopCaptureMetadata WaylandDesktopCapturer::GetMetadata() {
-  constexpr base::TimeDelta kMetadataTimeout = base::Seconds(3);
-  base::Time start_time = base::Time::Now();
-  do {
-    SessionDetails session_details =
-        base_capturer_pipewire_.GetSessionDetails();
-    if (session_details.proxy && session_details.cancellable &&
-        !session_details.session_handle.empty() &&
-        session_details.pipewire_stream_node_id > 0) {
-      return {.session_details = std::move(session_details)};
-    }
-    base::PlatformThread::Sleep(base::Milliseconds(10));
-  } while (base::Time::Now() - start_time < kMetadataTimeout);
-  LOG(ERROR) << "Unable to retrievel portal session details in time: "
-             << kMetadataTimeout << ". CRD session will fail.";
-  return {};
+  SessionDetails session_details = base_capturer_pipewire_.GetSessionDetails();
+  DCHECK(session_details.proxy);
+  DCHECK(session_details.cancellable);
+  DCHECK(!session_details.session_handle.empty());
+  DCHECK(session_details.pipewire_stream_node_id > 0);
+  return {.session_details = std::move(session_details)};
 }
 #endif
 
@@ -69,6 +61,12 @@ void WaylandDesktopCapturer::OnScreenCastRequestResult(RequestResponse result,
                                                        uint32_t stream_node_id,
                                                        int fd) {
   base_capturer_pipewire_.OnScreenCastRequestResult(result, stream_node_id, fd);
+  if (result == RequestResponse::kSuccess) {
+    WaylandManager::Get()->OnDesktopCapturerMetadata(GetMetadata());
+  } else {
+    LOG(WARNING) << "Screen cast request didn't succeed, injector won't be "
+                    "enabled";
+  }
 }
 
 void WaylandDesktopCapturer::OnScreenCastSessionClosed() {

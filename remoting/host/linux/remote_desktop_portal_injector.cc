@@ -139,10 +139,6 @@ void RemoteDesktopPortalInjector::SetSessionDetails(
     webrtc::xdg_portal::SessionDetails session_details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HOST_LOG << "Desktop portal session details received";
-  DCHECK(session_details.proxy);
-  DCHECK(session_details.cancellable);
-  DCHECK(!session_details.session_handle.empty());
-  DCHECK(session_details.pipewire_stream_node_id);
   proxy_ = session_details.proxy;
   cancellable_ = session_details.cancellable;
   session_handle_ = session_details.session_handle;

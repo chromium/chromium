@@ -268,11 +268,6 @@ class ClientSession : public protocol::HostStub,
   // display).
   bool IsValidDisplayIndex(webrtc::ScreenId index) const;
 
-#if defined(WEBRTC_USE_GIO)
-  void ExtractAndSetInputInjectorMetadata(
-      webrtc::DesktopCaptureMetadata capture_metadata);
-#endif
-
   raw_ptr<EventHandler> event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.
