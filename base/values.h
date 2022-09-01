@@ -729,27 +729,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::List::Append()`.
   void Append(std::string&& value);
 
-  // Erases the Value pointed to by `iter`. Returns false if `iter` is out of
-  // bounds.
-  //
-  // DEPRECATED: prefer `Value::List::erase(iter)`.
-  bool EraseListIter(CheckedContiguousConstIterator<Value> iter);
-
-  // Erases all Values that compare equal to `val`. Returns the number of
-  // deleted Values.
-  //
-  // DEPRECATED: prefer `Value::List::EraseValue(val)`.
-  size_t EraseListValue(const Value& val);
-
-  // Erases all Values for which `pred` returns true. Returns the number of
-  // deleted Values.
-  //
-  // DEPRECATED: prefer `Value::List::EraseIf(pred)`.
-  template <typename Predicate>
-  size_t EraseListValueIf(Predicate pred) {
-    return base::EraseIf(list(), pred);
-  }
-
   // Erases all Values from the list.
   //
   // DEPRECATED: prefer `Value::List::clear()`.

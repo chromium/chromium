@@ -735,65 +735,43 @@ TEST(ValuesTest, ListEraseRange) {
   EXPECT_EQ(next_it, list.end());
 }
 
-TEST(ValuesTest, EraseListIter) {
-  ListValue value;
-  value.Append(1);
-  value.Append(2);
-  value.Append(3);
+TEST(ValuesTest, ListEraseValue) {
+  Value::List list;
+  list.Append(1);
+  list.Append(2);
+  list.Append(2);
+  list.Append(3);
 
-  EXPECT_TRUE(value.EraseListIter(value.GetListDeprecated().begin() + 1));
-  EXPECT_EQ(2u, value.GetListDeprecated().size());
-  EXPECT_EQ(1, value.GetListDeprecated()[0].GetInt());
-  EXPECT_EQ(3, value.GetListDeprecated()[1].GetInt());
+  EXPECT_EQ(2u, list.EraseValue(Value(2)));
+  EXPECT_EQ(2u, list.size());
+  EXPECT_EQ(1, list[0]);
+  EXPECT_EQ(3, list[1]);
 
-  EXPECT_TRUE(value.EraseListIter(value.GetListDeprecated().begin()));
-  EXPECT_EQ(1u, value.GetListDeprecated().size());
-  EXPECT_EQ(3, value.GetListDeprecated()[0].GetInt());
+  EXPECT_EQ(1u, list.EraseValue(Value(1)));
+  EXPECT_EQ(1u, list.size());
+  EXPECT_EQ(3, list[0]);
 
-  EXPECT_TRUE(value.EraseListIter(value.GetListDeprecated().begin()));
-  EXPECT_TRUE(value.GetListDeprecated().empty());
+  EXPECT_EQ(1u, list.EraseValue(Value(3)));
+  EXPECT_TRUE(list.empty());
 
-  EXPECT_FALSE(value.EraseListIter(value.GetListDeprecated().begin()));
+  EXPECT_EQ(0u, list.EraseValue(Value(3)));
 }
 
-TEST(ValuesTest, EraseListValue) {
-  ListValue value;
-  value.Append(1);
-  value.Append(2);
-  value.Append(2);
-  value.Append(3);
+TEST(ValuesTest, ListEraseIf) {
+  Value::List list;
+  list.Append(1);
+  list.Append(2);
+  list.Append(2);
+  list.Append(3);
 
-  EXPECT_EQ(2u, value.EraseListValue(Value(2)));
-  EXPECT_EQ(2u, value.GetListDeprecated().size());
-  EXPECT_EQ(1, value.GetListDeprecated()[0].GetInt());
-  EXPECT_EQ(3, value.GetListDeprecated()[1].GetInt());
+  EXPECT_EQ(3u, list.EraseIf([](const auto& val) { return val >= Value(2); }));
+  EXPECT_EQ(1u, list.size());
+  EXPECT_EQ(1, list[0]);
 
-  EXPECT_EQ(1u, value.EraseListValue(Value(1)));
-  EXPECT_EQ(1u, value.GetListDeprecated().size());
-  EXPECT_EQ(3, value.GetListDeprecated()[0].GetInt());
+  EXPECT_EQ(1u, list.EraseIf([](const auto& val) { return true; }));
+  EXPECT_TRUE(list.empty());
 
-  EXPECT_EQ(1u, value.EraseListValue(Value(3)));
-  EXPECT_TRUE(value.GetListDeprecated().empty());
-
-  EXPECT_EQ(0u, value.EraseListValue(Value(3)));
-}
-
-TEST(ValuesTest, EraseListValueIf) {
-  ListValue value;
-  value.Append(1);
-  value.Append(2);
-  value.Append(2);
-  value.Append(3);
-
-  EXPECT_EQ(3u, value.EraseListValueIf(
-                    [](const auto& val) { return val >= Value(2); }));
-  EXPECT_EQ(1u, value.GetListDeprecated().size());
-  EXPECT_EQ(1, value.GetListDeprecated()[0].GetInt());
-
-  EXPECT_EQ(1u, value.EraseListValueIf([](const auto& val) { return true; }));
-  EXPECT_TRUE(value.GetListDeprecated().empty());
-
-  EXPECT_EQ(0u, value.EraseListValueIf([](const auto& val) { return true; }));
+  EXPECT_EQ(0u, list.EraseIf([](const auto& val) { return true; }));
 }
 
 TEST(ValuesTest, ClearList) {

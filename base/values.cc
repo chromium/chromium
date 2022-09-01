@@ -1071,20 +1071,6 @@ void Value::Append(Value&& value) {
   GetList().Append(std::move(value));
 }
 
-bool Value::EraseListIter(CheckedContiguousConstIterator<Value> iter) {
-  const auto offset = iter - ListView(list()).begin();
-  auto list_iter = list().begin() + offset;
-  if (list_iter == list().end())
-    return false;
-
-  list().erase(list_iter);
-  return true;
-}
-
-size_t Value::EraseListValue(const Value& val) {
-  return GetList().EraseValue(val);
-}
-
 void Value::ClearList() {
   GetList().clear();
 }
