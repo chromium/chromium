@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/common/constants.h"
@@ -119,18 +118,17 @@ void ExtensionAction::SetIcon(int tab_id, const gfx::Image& image) {
 }
 
 ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     gfx::ImageSkia* icon) {
-  for (base::DictionaryValue::Iterator iter(dict); !iter.IsAtEnd();
-       iter.Advance()) {
+  for (const auto item : dict) {
     std::string byte_string;
     const void* bytes = nullptr;
     size_t num_bytes = 0;
-    if (iter.value().is_blob()) {
-      bytes = iter.value().GetBlob().data();
-      num_bytes = iter.value().GetBlob().size();
-    } else if (iter.value().is_string()) {
-      if (!base::Base64Decode(iter.value().GetString(), &byte_string))
+    if (item.second.is_blob()) {
+      bytes = item.second.GetBlob().data();
+      num_bytes = item.second.GetBlob().size();
+    } else if (item.second.is_string()) {
+      if (!base::Base64Decode(item.second.GetString(), &byte_string))
         return IconParseResult::kDecodeFailure;
       bytes = byte_string.c_str();
       num_bytes = byte_string.length();

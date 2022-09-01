@@ -29,18 +29,17 @@ ExtensionFunction::ResponseAction SystemIndicatorSetIconFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() == 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
 
-  const base::Value& set_icon_details = args()[0];
+  const base::Value::Dict& set_icon_details = args()[0].GetDict();
 
   // NOTE: For historical reasons, this code is primarily taken from
   // ExtensionActionSetIconFunction.
   // setIcon can take a variant argument: either a dictionary of canvas
   // ImageData, or an icon index.
-  if (const base::Value* canvas_set = set_icon_details.FindKeyOfType(
-          "imageData", base::Value::Type::DICTIONARY)) {
+  if (const base::Value::Dict* canvas_set =
+          set_icon_details.FindDict("imageData")) {
     gfx::ImageSkia icon;
     EXTENSION_FUNCTION_VALIDATE(
-        ExtensionAction::ParseIconFromCanvasDictionary(
-            static_cast<const base::DictionaryValue&>(*canvas_set), &icon) ==
+        ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) ==
         ExtensionAction::IconParseResult::kSuccess);
 
     if (icon.isNull())
@@ -48,8 +47,7 @@ ExtensionFunction::ResponseAction SystemIndicatorSetIconFunction::Run() {
 
     SystemIndicatorManagerFactory::GetForContext(browser_context())
         ->SetSystemIndicatorDynamicIcon(*extension(), gfx::Image(icon));
-  } else if (set_icon_details.FindKeyOfType("iconIndex",
-                                            base::Value::Type::INTEGER)) {
+  } else if (set_icon_details.FindInt("iconIndex")) {
     // Obsolete argument: ignore it.
     // TODO(devlin): Do we need this here? Does any systemIndicator extension
     // use it?

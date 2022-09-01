@@ -929,7 +929,7 @@ void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
     ExtensionInfoGenerator::ExtensionInfoList list) {
   DCHECK_LE(1u, list.size());
   Respond(list.empty() ? Error(kNoSuchExtensionError)
-                       : OneArgument(base::Value::FromUniquePtrValue(
+                       : WithArguments(base::Value::FromUniquePtrValue(
                              list[0].ToValue())));
 }
 
@@ -960,7 +960,7 @@ DeveloperPrivateGetExtensionSizeFunction::Run() {
 
 void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
     const std::u16string& size) {
-  Respond(OneArgument(base::Value(size)));
+  Respond(WithArguments(size));
 }
 
 DeveloperPrivateGetItemsInfoFunction::DeveloperPrivateGetItemsInfoFunction() {}
@@ -1007,7 +1007,7 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
     PerformVerificationCheck(browser_context());
 
   return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(info->ToValue())));
+      WithArguments(base::Value::FromUniquePtrValue(info->ToValue())));
 }
 
 DeveloperPrivateUpdateProfileConfigurationFunction::
@@ -1187,7 +1187,7 @@ void DeveloperPrivateReloadFunction::OnGotManifestError(
   // ExtensionService::ReloadExtension doesn't behave well with an extension
   // that failed to reload, and untangling that mess is quite significant.
   // See https://crbug.com/792277.
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
+  Respond(WithArguments(base::Value::FromUniquePtrValue(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid)
           .ToValue())));
 }
@@ -1339,7 +1339,7 @@ void DeveloperPrivateLoadUnpackedFunction::OnGotManifestError(
     size_t line_number,
     const std::string& manifest) {
   DCHECK(!retry_guid_.empty());
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
+  Respond(WithArguments(base::Value::FromUniquePtrValue(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid_)
           .ToValue())));
 }
@@ -1459,7 +1459,7 @@ void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
   response.message = base::UTF16ToUTF8(
       PackExtensionJob::StandardSuccessMessage(crx_file, pem_file));
   response.status = developer::PACK_STATUS_SUCCESS;
-  Respond(OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
   pack_job_.reset();
   Release();  // Balanced in Run().
 }
@@ -1477,7 +1477,7 @@ void DeveloperPrivatePackDirectoryFunction::OnPackFailure(
   } else {
     response.status = developer::PACK_STATUS_ERROR;
   }
-  Respond(OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
   pack_job_.reset();
   Release();  // Balanced in Run().
 }
@@ -1507,7 +1507,7 @@ ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
 
     response.status = developer::PACK_STATUS_ERROR;
     return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
+        WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
   }
 
   if (!key_path_str_.empty() && key_file.empty()) {
@@ -1515,7 +1515,7 @@ ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
         IDS_EXTENSION_PACK_DIALOG_ERROR_KEY_INVALID);
     response.status = developer::PACK_STATUS_ERROR;
     return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
+        WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
   }
 
   AddRef();  // Balanced in OnPackSuccess / OnPackFailure.
@@ -1635,7 +1635,7 @@ void DeveloperPrivateLoadDirectoryFunction::Load() {
 
   // TODO(grv) : The unpacked installer should fire an event when complete
   // and return the extension_id.
-  Respond(OneArgument(base::Value("-1")));
+  Respond(WithArguments("-1"));
 }
 
 void DeveloperPrivateLoadDirectoryFunction::ClearExistingDirectoryContent(
@@ -1813,7 +1813,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
 
 void DeveloperPrivateChoosePathFunction::FileSelected(
     const base::FilePath& path) {
-  Respond(OneArgument(base::Value(path.LossyDisplayName())));
+  Respond(WithArguments(path.LossyDisplayName()));
   Release();
 }
 
@@ -1828,8 +1828,8 @@ DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
-  return RespondNow(OneArgument(
-      base::Value(Profile::FromBrowserContext(browser_context())->IsChild())));
+  return RespondNow(
+      WithArguments(Profile::FromBrowserContext(browser_context())->IsChild()));
 }
 
 DeveloperPrivateIsProfileManagedFunction::
@@ -1905,7 +1905,7 @@ void DeveloperPrivateRequestFileSourceFunction::Finish(
   response.highlight = highlighter->GetFeature();
   response.after_highlight = highlighter->GetAfterFeature();
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
 }
 
 DeveloperPrivateOpenDevToolsFunction::DeveloperPrivateOpenDevToolsFunction() {}
@@ -2255,7 +2255,7 @@ DeveloperPrivateGetUserSiteSettingsFunction::Run() {
   developer::UserSiteSettings user_site_settings = ConvertToUserSiteSettings(
       PermissionsManager::Get(browser_context())->GetUserPermissionsSettings());
 
-  return RespondNow(OneArgument(
+  return RespondNow(WithArguments(
       base::Value::FromUniquePtrValue(user_site_settings.ToValue())));
 }
 

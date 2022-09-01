@@ -257,7 +257,7 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
   base::Value::Dict result;
   result.Set(kFontIdKey, font_name);
   result.Set(kLevelOfControlKey, level_of_control);
-  return RespondNow(OneArgument(base::Value(std::move(result))));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
@@ -318,7 +318,7 @@ FontSettingsGetFontListFunction::CopyFontsToResult(
     result.Append(std::move(font_name));
   }
 
-  return OneArgument(base::Value(std::move(result)));
+  return WithArguments(std::move(result));
 }
 
 ExtensionFunction::ResponseAction ClearFontPrefExtensionFunction::Run() {
@@ -348,7 +348,7 @@ ExtensionFunction::ResponseAction GetFontPrefExtensionFunction::Run() {
   base::Value::Dict result;
   result.Set(GetKey(), pref->GetValue()->Clone());
   result.Set(kLevelOfControlKey, level_of_control);
-  return RespondNow(OneArgument(base::Value(std::move(result))));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {
@@ -359,7 +359,7 @@ ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
   const base::Value& details = args()[0];
-  const base::Value* value = details.FindKey(GetKey());
+  const base::Value* value = details.GetDict().Find(GetKey());
   EXTENSION_FUNCTION_VALIDATE(value);
 
   PreferenceAPI::Get(profile)->SetExtensionControlledPref(

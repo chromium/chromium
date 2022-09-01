@@ -105,7 +105,7 @@ void EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult(
             std::make_unique<std::string>(ipv6_address->ToString());
       }
 
-      Respond(OneArgument(
+      Respond(WithArguments(
           base::Value::FromUniquePtrValue(network_details.ToValue())));
       return;
   }

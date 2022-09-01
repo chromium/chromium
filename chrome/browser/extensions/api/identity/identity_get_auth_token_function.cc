@@ -307,7 +307,7 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
       granted_scopes.begin(), granted_scopes.end());
 
   CompleteAsyncRun(
-      OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+      WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
 void IdentityGetAuthTokenFunction::CompleteFunctionWithError(

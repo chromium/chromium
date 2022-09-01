@@ -415,11 +415,11 @@ class ImeObserverChromeOS
     base::Value::List bounds_list;
     bounds_list.reserve(bounds.size());
     for (const auto& bound : bounds) {
-      base::Value bounds_value(base::Value::Type::DICTIONARY);
-      bounds_value.SetIntKey("x", bound.x());
-      bounds_value.SetIntKey("y", bound.y());
-      bounds_value.SetIntKey("w", bound.width());
-      bounds_value.SetIntKey("h", bound.height());
+      base::Value::Dict bounds_value;
+      bounds_value.Set("x", bound.x());
+      bounds_value.Set("y", bound.y());
+      bounds_value.Set("w", bound.width());
+      bounds_value.Set("h", bound.height());
       bounds_list.Append(std::move(bounds_value));
     }
 
@@ -1047,7 +1047,7 @@ InputImeSetAssistiveWindowPropertiesFunction::Run() {
                                        &error);
   if (!error.empty())
     return RespondNow(Error(InformativeError(error, static_function_name())));
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 ExtensionFunction::ResponseAction
@@ -1155,7 +1155,7 @@ InputImeSetCandidateWindowPropertiesFunction::Run() {
     engine->SetCandidateWindowProperty(params.engine_id, properties_out);
   }
 
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
@@ -1352,7 +1352,7 @@ InputMethodPrivateGetCompositionBoundsFunction::Run() {
     bounds_list.Append(std::move(bounds_value));
   }
 
-  return RespondNow(OneArgument(base::Value(std::move(bounds_list))));
+  return RespondNow(WithArguments(std::move(bounds_list)));
 }
 
 void InputImeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,

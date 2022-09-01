@@ -30,18 +30,20 @@ ExtensionFunction::ResponseAction IdltestSendArrayBufferFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(has_args() && !args().empty());
   const auto& value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(value.is_blob());
-  return RespondNow(OneArgument(CopyBinaryValueToIntegerList(value.GetBlob())));
+  return RespondNow(
+      WithArguments(CopyBinaryValueToIntegerList(value.GetBlob())));
 }
 
 ExtensionFunction::ResponseAction IdltestSendArrayBufferViewFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(has_args() && !args().empty());
   const auto& value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(value.is_blob());
-  return RespondNow(OneArgument(CopyBinaryValueToIntegerList(value.GetBlob())));
+  return RespondNow(
+      WithArguments(CopyBinaryValueToIntegerList(value.GetBlob())));
 }
 
 ExtensionFunction::ResponseAction IdltestGetArrayBufferFunction::Run() {
   static constexpr base::StringPiece kHello = "hello world";
   return RespondNow(
-      OneArgument(base::Value(base::as_bytes(base::make_span(kHello)))));
+      WithArguments(base::Value(base::as_bytes(base::make_span(kHello)))));
 }

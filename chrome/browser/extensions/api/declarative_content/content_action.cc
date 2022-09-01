@@ -415,10 +415,9 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   // base::Value::Dict and checking for base::Value::Type::DICTIONARY should be
   // removed. This is a temporary solution to prevent content_action base::Value
   // migration from expanding across too many locations.
-  const base::Value* canvas_set = dict->Find("imageData");
-  if (canvas_set && canvas_set->type() == base::Value::Type::DICTIONARY &&
-      ExtensionAction::ParseIconFromCanvasDictionary(
-          base::Value::AsDictionaryValue(*canvas_set), &icon) !=
+  const base::Value::Dict* canvas_set = dict->FindDict("imageData");
+  if (canvas_set &&
+      ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
           ExtensionAction::IconParseResult::kSuccess) {
     *error = kInvalidIconDictionary;
     return nullptr;

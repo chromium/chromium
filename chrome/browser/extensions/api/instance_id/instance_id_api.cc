@@ -81,7 +81,7 @@ ExtensionFunction::ResponseAction InstanceIDGetIDFunction::DoWork() {
 }
 
 void InstanceIDGetIDFunction::GetIDCompleted(const std::string& id) {
-  Respond(OneArgument(base::Value(id)));
+  Respond(WithArguments(id));
 }
 
 InstanceIDGetCreationTimeFunction::InstanceIDGetCreationTimeFunction() {}
@@ -96,7 +96,7 @@ ExtensionFunction::ResponseAction InstanceIDGetCreationTimeFunction::DoWork() {
 
 void InstanceIDGetCreationTimeFunction::GetCreationTimeCompleted(
     const base::Time& creation_time) {
-  Respond(OneArgument(base::Value(creation_time.ToDoubleT())));
+  Respond(WithArguments(creation_time.ToDoubleT()));
 }
 
 InstanceIDGetTokenFunction::InstanceIDGetTokenFunction() {}

@@ -37,7 +37,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   base::ListValue infos;
 
   if (accounts.empty()) {
-    return RespondNow(OneArgument(std::move(infos)));
+    return RespondNow(WithArguments(std::move(infos)));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -71,7 +71,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
     }
   }
 
-  return RespondNow(OneArgument(std::move(infos)));
+  return RespondNow(WithArguments(std::move(infos)));
 }
 
 }  // namespace extensions

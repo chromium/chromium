@@ -169,7 +169,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
@@ -189,7 +189,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {

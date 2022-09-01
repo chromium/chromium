@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/values.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -349,10 +348,9 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
 
     case base::Value::Type::DICTIONARY: {
       // Found the details argument.
-      details_ = static_cast<base::DictionaryValue*>(&first_arg);
+      details_ = &first_arg.GetDict();
       // Still need to check for the tabId within details.
-      base::Value* tab_id_value = NULL;
-      if (details_->Get("tabId", &tab_id_value)) {
+      if (base::Value* tab_id_value = details_->Find("tabId")) {
         switch (tab_id_value->type()) {
           case base::Value::Type::NONE:
             // OK; tabId is optional, leave it default.
@@ -435,13 +433,12 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
 
   // setIcon can take a variant argument: either a dictionary of canvas
   // ImageData, or an icon index.
-  base::Value* canvas_set = details_->FindDictKey("imageData");
+  base::Value::Dict* canvas_set = details_->FindDict("imageData");
   if (canvas_set) {
     gfx::ImageSkia icon;
 
     ExtensionAction::IconParseResult parse_result =
-        ExtensionAction::ParseIconFromCanvasDictionary(
-            base::Value::AsDictionaryValue(*canvas_set), &icon);
+        ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon);
 
     if (parse_result != ExtensionAction::IconParseResult::kSuccess) {
       switch (parse_result) {
@@ -471,7 +468,7 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
       return RespondNow(Error("Icon not sufficiently visible."));
 
     extension_action_->SetIcon(tab_id_, icon_image);
-  } else if (details_->FindIntKey("iconIndex")) {
+  } else if (details_->FindInt("iconIndex")) {
     // Obsolete argument: ignore it.
     return RespondNow(NoArguments());
   } else {
@@ -485,7 +482,7 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
 ExtensionFunction::ResponseAction
 ExtensionActionSetTitleFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
-  const std::string* title = details_->GetDict().FindString("title");
+  const std::string* title = details_->FindString("title");
   EXTENSION_FUNCTION_VALIDATE(title);
   extension_action_->SetTitle(tab_id_, *title);
   NotifyChange();
@@ -495,12 +492,12 @@ ExtensionActionSetTitleFunction::RunExtensionAction() {
 ExtensionFunction::ResponseAction
 ExtensionActionSetPopupFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
-  std::string popup_string;
-  EXTENSION_FUNCTION_VALIDATE(details_->GetString("popup", &popup_string));
+  std::string* popup_string = details_->FindString("popup");
+  EXTENSION_FUNCTION_VALIDATE(popup_string);
 
   GURL popup_url;
-  if (!popup_string.empty())
-    popup_url = extension()->GetResourceURL(popup_string);
+  if (!popup_string->empty())
+    popup_url = extension()->GetResourceURL(*popup_string);
 
   extension_action_->SetPopupUrl(tab_id_, popup_url);
   NotifyChange();
@@ -511,9 +508,9 @@ ExtensionFunction::ResponseAction
 ExtensionActionSetBadgeTextFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
 
-  std::string badge_text;
-  if (details_->GetString("text", &badge_text))
-    extension_action_->SetBadgeText(tab_id_, badge_text);
+  std::string* badge_text = details_->FindString("text");
+  if (badge_text)
+    extension_action_->SetBadgeText(tab_id_, *badge_text);
   else
     extension_action_->ClearBadgeText(tab_id_);
 
@@ -524,11 +521,11 @@ ExtensionActionSetBadgeTextFunction::RunExtensionAction() {
 ExtensionFunction::ResponseAction
 ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
-  base::Value* color_value = details_->FindKey("color");
+  base::Value* color_value = details_->Find("color");
   EXTENSION_FUNCTION_VALIDATE(color_value);
   SkColor color = 0;
   if (color_value->is_list()) {
-    base::Value::ConstListView list = color_value->GetListDeprecated();
+    const base::Value::List& list = color_value->GetList();
 
     EXTENSION_FUNCTION_VALIDATE(list.size() == 4);
 
@@ -553,14 +550,13 @@ ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ExtensionActionGetTitleFunction::RunExtensionAction() {
-  return RespondNow(
-      OneArgument(base::Value(extension_action_->GetTitle(tab_id_))));
+  return RespondNow(WithArguments(extension_action_->GetTitle(tab_id_)));
 }
 
 ExtensionFunction::ResponseAction
 ExtensionActionGetPopupFunction::RunExtensionAction() {
   return RespondNow(
-      OneArgument(base::Value(extension_action_->GetPopupUrl(tab_id_).spec())));
+      WithArguments(extension_action_->GetPopupUrl(tab_id_).spec()));
 }
 
 ExtensionFunction::ResponseAction
@@ -577,12 +573,12 @@ ExtensionActionGetBadgeTextFunction::RunExtensionAction() {
   if (is_dnr_action_count_active &&
       !declarative_net_request::HasDNRFeedbackPermission(extension(),
                                                          tab_id_)) {
-    return RespondNow(OneArgument(base::Value(
-        std::move(declarative_net_request::kActionCountPlaceholderBadgeText))));
+    return RespondNow(WithArguments(
+        std::move(declarative_net_request::kActionCountPlaceholderBadgeText)));
   }
 
-  return RespondNow(OneArgument(
-      base::Value(extension_action_->GetDisplayBadgeText(tab_id_))));
+  return RespondNow(
+      WithArguments(extension_action_->GetDisplayBadgeText(tab_id_)));
 }
 
 ExtensionFunction::ResponseAction
@@ -593,7 +589,7 @@ ExtensionActionGetBadgeBackgroundColorFunction::RunExtensionAction() {
   list.Append(static_cast<int>(SkColorGetG(color)));
   list.Append(static_cast<int>(SkColorGetB(color)));
   list.Append(static_cast<int>(SkColorGetA(color)));
-  return RespondNow(OneArgument(base::Value(std::move(list))));
+  return RespondNow(WithArguments(std::move(list)));
 }
 
 ActionGetUserSettingsFunction::ActionGetUserSettingsFunction() = default;
@@ -618,10 +614,10 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
   // TODO(devlin): Today, no action APIs are compiled. Unfortunately, this
   // means we miss out on the compiled types, which would be rather helpful
   // here.
-  base::Value ui_settings(base::Value::Type::DICTIONARY);
-  ui_settings.SetBoolKey("isOnToolbar", is_pinned);
+  base::Value::Dict ui_settings;
+  ui_settings.Set("isOnToolbar", is_pinned);
 
-  return RespondNow(OneArgument(std::move(ui_settings)));
+  return RespondNow(WithArguments(std::move(ui_settings)));
 }
 
 ActionOpenPopupFunction::ActionOpenPopupFunction() = default;
@@ -640,7 +636,7 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
   // detect things like navigations).
   int window_id = extension_misc::kCurrentWindowId;
   if (options.is_dict()) {
-    const base::Value* window_value = options.FindKey("windowId");
+    const base::Value* window_value = options.GetDict().Find("windowId");
     if (window_value) {
       EXTENSION_FUNCTION_VALIDATE(window_value->is_int());
       window_id = window_value->GetInt();

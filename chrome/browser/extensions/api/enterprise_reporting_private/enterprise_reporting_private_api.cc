@@ -202,7 +202,7 @@ EnterpriseReportingPrivateGetDeviceIdFunction::Run() {
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
   if (client_id.empty())
     return RespondNow(Error(enterprise_reporting::kDeviceIdNotFound));
-  return RespondNow(OneArgument(base::Value(client_id)));
+  return RespondNow(WithArguments(client_id));
 }
 
 EnterpriseReportingPrivateGetDeviceIdFunction::
@@ -253,9 +253,9 @@ void EnterpriseReportingPrivateGetPersistentSecretFunction::SendResponse(
     int32_t status) {
   if (status == 0) {  // Success.
     VLOG(1) << "The Endpoint Verification secret was retrieved.";
-    Respond(OneArgument(base::Value(base::Value::BlobStorage(
+    Respond(WithArguments(base::Value::BlobStorage(
         reinterpret_cast<const uint8_t*>(data.data()),
-        reinterpret_cast<const uint8_t*>(data.data() + data.size())))));
+        reinterpret_cast<const uint8_t*>(data.data() + data.size()))));
   } else {
     VLOG(1) << "Endpoint Verification secret retrieval error: " << status;
     Respond(Error(base::StringPrintf("%d", status)));
@@ -305,13 +305,13 @@ void EnterpriseReportingPrivateGetDeviceDataFunction::SendResponse(
   switch (status) {
     case RetrieveDeviceDataStatus::kSuccess:
       VLOG(1) << "The Endpoint Verification data was retrieved.";
-      Respond(OneArgument(base::Value(base::Value::BlobStorage(
+      Respond(WithArguments(base::Value::BlobStorage(
           reinterpret_cast<const uint8_t*>(data.data()),
-          reinterpret_cast<const uint8_t*>(data.data() + data.size())))));
+          reinterpret_cast<const uint8_t*>(data.data() + data.size()))));
       return;
     case RetrieveDeviceDataStatus::kDataRecordNotFound:
       VLOG(1) << "The Endpoint Verification data is not present.";
-      Respond(OneArgument(base::Value(base::Value::BlobStorage())));
+      Respond(WithArguments(base::Value::BlobStorage()));
       return;
     default:
       VLOG(1) << "Endpoint Verification data retrieval error: "
@@ -435,7 +435,7 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 
 void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
     const enterprise_signals::DeviceInfo& device_signals) {
-  Respond(OneArgument(
+  Respond(WithArguments(
       base::Value::FromUniquePtrValue(ToDeviceInfo(device_signals).ToValue())));
 }
 
@@ -467,7 +467,7 @@ EnterpriseReportingPrivateGetContextInfoFunction::Run() {
 
 void EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved(
     enterprise_signals::ContextInfo context_info) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
+  Respond(WithArguments(base::Value::FromUniquePtrValue(
       ToContextInfo(std::move(context_info)).ToValue())));
 }
 
@@ -494,7 +494,7 @@ EnterpriseReportingPrivateGetCertificateFunction::Run() {
     ret.status = extensions::api::enterprise_reporting_private::
         CERTIFICATE_STATUS_POLICY_UNSET;
     return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(ret.ToValue())));
+        WithArguments(base::Value::FromUniquePtrValue(ret.ToValue())));
   }
 
   client_cert_fetcher_ =
@@ -523,7 +523,7 @@ void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
         der_cert.begin(), der_cert.end());
   }
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(ret.ToValue())));
+  Respond(WithArguments(base::Value::FromUniquePtrValue(ret.ToValue())));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

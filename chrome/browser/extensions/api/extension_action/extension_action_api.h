@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_action.h"
@@ -17,10 +18,6 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 class BrowserContext;
@@ -138,7 +135,7 @@ class ExtensionActionFunction : public ExtensionFunction {
 
   // All the extension action APIs take a single argument called details that
   // is a dictionary.
-  raw_ptr<base::DictionaryValue> details_;
+  raw_ptr<base::Value::Dict> details_;
 
   // The tab id the extension action function should apply to, if any, or
   // kDefaultTabId if none was specified.

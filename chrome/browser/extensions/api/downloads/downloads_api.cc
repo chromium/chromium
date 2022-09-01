@@ -1106,7 +1106,7 @@ void DownloadsDownloadFunction::OnStarted(
   VLOG(1) << __func__ << " " << item << " " << interrupt_reason;
   if (item) {
     DCHECK_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason);
-    Respond(OneArgument(base::Value(static_cast<int>(item->GetId()))));
+    Respond(WithArguments(static_cast<int>(item->GetId())));
     if (!creator_suggested_filename.empty() ||
         (creator_conflict_action !=
          downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY)) {
@@ -1171,7 +1171,7 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
     json_results.Append(std::move(json_item));
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_SEARCH);
-  return RespondNow(OneArgument(base::Value(std::move(json_results))));
+  return RespondNow(WithArguments(std::move(json_results)));
 }
 
 DownloadsPauseFunction::DownloadsPauseFunction() {}
@@ -1263,7 +1263,7 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_ERASE);
   return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(json_results))));
+      WithArguments(base::Value::FromUniquePtrValue(std::move(json_results))));
 }
 
 DownloadsRemoveFileFunction::DownloadsRemoveFileFunction() {}
@@ -1652,7 +1652,7 @@ void DownloadsGetFileIconFunction::OnIconURLExtracted(const std::string& url) {
     return;
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_GET_FILE_ICON);
-  Respond(OneArgument(base::Value(url)));
+  Respond(WithArguments(url));
 }
 
 ExtensionDownloadsEventRouter::ExtensionDownloadsEventRouter(
