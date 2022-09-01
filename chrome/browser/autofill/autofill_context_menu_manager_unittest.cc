@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/autofill_context_menu_manager.h"
+#include <memory>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -21,7 +22,7 @@ using testing::_;
 namespace {
 // Generates a ContextMenuParams for the Autofill context menu options.
 static content::ContextMenuParams CreateContextMenuParams(
-    autofill::FieldRendererId field_render_id) {
+    autofill::FieldRendererId field_render_id = autofill::FieldRendererId(0)) {
   content::ContextMenuParams rv;
   rv.is_editable = true;
   rv.page_url = GURL("http://test.page/");
@@ -75,7 +76,8 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<AutofillContextMenuManager>(
             personal_data_manager_.get(), nullptr, menu_model_.get(), nullptr,
             main_rfh());
-
+    autofill_context_menu_manager()->set_params_for_testing(
+        CreateContextMenuParams());
     autofill_context_menu_manager_->AppendItems();
   }
 
@@ -195,12 +197,14 @@ TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
         LocalFrameToken(main_rfh()->GetFrameToken().value()),
         field_renderer_id};
 
+    autofill_context_menu_manager()->set_params_for_testing(
+        CreateContextMenuParams(field_renderer_id));
+    autofill_context_menu_manager()->set_content_autofill_driver_for_testing(
+        autofill_driver());
+
     EXPECT_CALL(*autofill_driver(), RendererShouldFillFieldWithValue(
                                         field_global_id, map_value.fill_value));
-    autofill_context_menu_manager()->ExecuteCommand(
-        command_id, autofill_driver(),
-        CreateContextMenuParams(field_renderer_id),
-        main_rfh()->GetFrameToken());
+    autofill_context_menu_manager()->ExecuteCommand(command_id);
   }
 }
 

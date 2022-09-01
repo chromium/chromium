@@ -2577,7 +2577,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
   if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
           autofill::AutofillContextMenuManager::CommandId(id))) {
     autofill_context_menu_manager_.ExecuteCommand(
-        autofill::AutofillContextMenuManager::CommandId(id), params_);
+        autofill::AutofillContextMenuManager::CommandId(id));
     return;
   }
 

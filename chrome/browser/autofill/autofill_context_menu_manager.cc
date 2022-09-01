@@ -62,7 +62,7 @@ bool AutofillContextMenuManager::IsAutofillCustomCommandId(
 
 AutofillContextMenuManager::AutofillContextMenuManager(
     PersonalDataManager* personal_data_manager,
-    ui::SimpleMenuModel::Delegate* delegate,
+    RenderViewContextMenuBase* delegate,
     ui::SimpleMenuModel* menu_model,
     Browser* browser,
     content::RenderFrameHost* render_frame_host)
@@ -72,6 +72,10 @@ AutofillContextMenuManager::AutofillContextMenuManager(
       browser_(browser),
       render_frame_host_(render_frame_host) {
   DCHECK(render_frame_host_);
+  content_autofill_driver_ =
+      ContentAutofillDriver::GetForRenderFrameHost(render_frame_host_);
+  if (delegate_)
+    params_ = delegate_->params();
 }
 
 AutofillContextMenuManager::~AutofillContextMenuManager() {
@@ -127,23 +131,10 @@ bool AutofillContextMenuManager::IsCommandIdEnabled(
   return true;
 }
 
-void AutofillContextMenuManager::ExecuteCommand(
-    CommandId command_id,
-    const content::ContextMenuParams& params) {
-  ContentAutofillDriver* driver =
-      ContentAutofillDriver::GetForRenderFrameHost(render_frame_host_);
-  if (!driver)
+void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
+  if (!content_autofill_driver_)
     return;
 
-  ExecuteCommand(command_id, driver, params,
-                 render_frame_host_->GetFrameToken());
-}
-
-void AutofillContextMenuManager::ExecuteCommand(
-    CommandId command_id,
-    ContentAutofillDriver* driver,
-    const content::ContextMenuParams& params,
-    const blink::LocalFrameToken local_frame_token) {
   auto it = command_id_to_menu_item_value_mapper_.find(command_id);
   if (it == command_id_to_menu_item_value_mapper_.end())
     return;
@@ -153,7 +144,7 @@ void AutofillContextMenuManager::ExecuteCommand(
   // Field Renderer id should be present because the context menu is triggered
   // on a input field. Otherwise, Autofill context menu models would not have
   // been added to the context menu.
-  if (!params.field_renderer_id)
+  if (!params_.field_renderer_id)
     return;
 
   if (it->second.is_manage_item) {
@@ -176,9 +167,9 @@ void AutofillContextMenuManager::ExecuteCommand(
     return;
   }
 
-  driver->RendererShouldFillFieldWithValue(
-      {LocalFrameToken(local_frame_token.value()),
-       FieldRendererId(params.field_renderer_id.value())},
+  content_autofill_driver_->RendererShouldFillFieldWithValue(
+      {LocalFrameToken(render_frame_host_->GetFrameToken().value()),
+       FieldRendererId(params_.field_renderer_id.value())},
       it->second.fill_value);
 
   // TODO(crbug.com/1325811): Use `it->second.sub_menu_type` to record the usage
