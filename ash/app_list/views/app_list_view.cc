@@ -1096,6 +1096,8 @@ AppsGridView* AppListView::GetFolderAppsGridView() {
 
 AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
     AppListViewState target_state) const {
+  // TODO(https://crbug.com/1356661): Remove peeking and half launcher
+  // transitions.
   switch (app_list_state_) {
     case AppListViewState::kClosed:
       // CLOSED->X transitions are not useful for UMA.
@@ -1113,8 +1115,6 @@ AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
           // failed state transition. Not useful for UMA.
           return kMaxAppListStateTransition;
         case AppListViewState::kFullscreenSearch:
-          // PEEKING->FULLSCREEN_SEARCH is not a valid transition.
-          NOTREACHED();
           return kMaxAppListStateTransition;
       }
     case AppListViewState::kHalf:

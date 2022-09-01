@@ -260,14 +260,6 @@ TEST_F(AssistantPageNonBubbleTest, ShouldStartInPeekingState) {
   EXPECT_EQ(AppListViewState::kPeeking, app_list_view()->app_list_state());
 }
 
-TEST_F(AssistantPageNonBubbleTest, ShouldStartInHalfState) {
-  SetOnboardingMode(AssistantOnboardingMode::kEducation);
-
-  ShowAssistantUi();
-
-  EXPECT_EQ(AppListViewState::kHalf, app_list_view()->app_list_state());
-}
-
 TEST_F(AssistantPageNonBubbleTest, ShouldStartAtMinimumHeight) {
   DoNotShowOnboardingViews();
 
