@@ -86,8 +86,18 @@ void WebStateListMetricsBrowserAgent::WebStateDetachedAt(
     int index) {
   if (metric_collection_paused_)
     return;
-  base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
   session_metrics_->OnWebStateDetached();
+}
+
+void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index,
+    bool user_action) {
+  if (metric_collection_paused_)
+    return;
+  if (user_action)
+    base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
 }
 
 void WebStateListMetricsBrowserAgent::WebStateActivatedAt(

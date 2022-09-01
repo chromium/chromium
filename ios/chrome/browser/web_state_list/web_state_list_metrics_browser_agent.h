@@ -70,6 +70,12 @@ class WebStateListMetricsBrowserAgent
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
 
+  // WebStateListObserver:
+  void WillCloseWebStateAt(WebStateList* web_state_list,
+                           web::WebState* web_state,
+                           int index,
+                           bool user_action) override;
+
   // The WebStateList containing all the monitored tabs.
   WebStateList* web_state_list_ = nullptr;
 
