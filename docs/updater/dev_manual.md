@@ -11,14 +11,27 @@ including tips and tricks.
 quickly.
 ### Adding Builders
 * Update files as needed:
-  * `testing/buildbot/chromium.updater.json`
-  * `testing/buildbot/waterfalls.pyl`
-  * `infra/config/subprojects/chromium/ci/chromium.updater.star`
-* Run the following command to generate LUCI config files:
-    ```
-    lucicfg infra\config\main.star
-    ```
-* Reference CL: https://crrev.com/c/3472270
+  - `testing/buildbot/waterfalls.pyl`
+  - `infra/config/subprojects/chromium/ci/chromium.updater.star`
+* Re-generate `chromium.updater.json`:
+```
+vpython3 .\testing\buildbot\generate_buildbot_json.py
+```
+
+* (Optional) Re-format the builder definition file if necessary.
+```
+lucicfg fmt .\infra\config\subprojects\chromium\ci\chromium.updater.star
+```
+
+* Generate builder property and configuration files:
+
+```
+lucicfg infra\config\main.star
+git add .
+```
+
+* Reference CL: https://crrev.com/c/3864352
+
 ### Update builder configuration
 Each builder has a configuration that governs the GN args. The mapping is
 defined in file `tools/mb/mb_config.pyl`. Steps to update the config:
