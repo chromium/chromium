@@ -1923,6 +1923,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "enable-cros-touch-text-editing-redesign",
+    "owners": [ "michellegc", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-cros-virtual-keyboard-api",
     "owners": [ "keithlee", "essential-inputs-team@google.com" ],
     "expiry_milestone": 97

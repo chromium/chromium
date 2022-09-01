@@ -1590,6 +1590,10 @@ const base::Feature kTerminalMultiProfile{"TerminalMultiProfile",
 const base::Feature kTerminalTmuxIntegration{"TerminalTmuxIntegration",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable new touch text editing features on ChromeOS.
+const base::Feature kTouchTextEditingRedesign{
+    "TouchTextEditingRedesign", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the TrafficCountersHandler class to auto-reset traffic counters
 // and shows Data Usage in the Celluar Settings UI.
 const base::Feature kTrafficCountersEnabled{"TrafficCountersEnabled",
