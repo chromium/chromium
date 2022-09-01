@@ -17,9 +17,9 @@
 // removed, or replaced.
 class AllWebStateObservationForwarder : public WebStateListObserver {
  public:
-  // Creates an object which forwards observation methods to |observer| and
-  // tracks the set of WebStates in |web_state_list|. |web_state_list| and
-  // |observer| must both outlive this object.
+  // Creates an object which forwards observation methods to `observer` and
+  // tracks the set of WebStates in `web_state_list`. `web_state_list` and
+  // `observer` must both outlive this object.
   AllWebStateObservationForwarder(WebStateList* web_state_list,
                                   web::WebStateObserver* observer);
 

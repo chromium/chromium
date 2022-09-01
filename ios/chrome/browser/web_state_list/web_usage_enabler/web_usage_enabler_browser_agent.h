@@ -32,10 +32,10 @@ class WebUsageEnablerBrowserAgent
 
   // Sets the WebUsageEnabled property for all WebStates in the list.  When new
   // WebStates are added to the list, their web usage will be set to the
-  // |web_usage_enabled| as well. Initially |false|.
+  // `web_usage_enabled` as well. Initially `false`.
   void SetWebUsageEnabled(bool web_usage_enabled);
 
-  // The current value set with |SetWebUsageEnabled|.
+  // The current value set with `SetWebUsageEnabled`.
   bool IsWebUsageEnabled() const;
 
  private:
@@ -44,11 +44,11 @@ class WebUsageEnablerBrowserAgent
 
   explicit WebUsageEnablerBrowserAgent(Browser* browser);
 
-  // Updates the web usage enabled status of all WebStates in |browser_|'s web
-  // state list to |web_usage_enabled_|.
+  // Updates the web usage enabled status of all WebStates in `browser_`'s web
+  // state list to `web_usage_enabled_`.
   void UpdateWebUsageForAllWebStates();
-  // Updates the web usage enabled status of |web_state|, triggering the initial
-  // load if |triggers_initial_load| is true.
+  // Updates the web usage enabled status of `web_state`, triggering the initial
+  // load if `triggers_initial_load` is true.
   void UpdateWebUsageForAddedWebState(web::WebState* web_state,
                                       bool triggers_initial_load);
 
@@ -75,7 +75,7 @@ class WebUsageEnablerBrowserAgent
   // The browser whose WebStates' web usage is being managed.
   Browser* browser_ = nullptr;
 
-  // Whether web usage is enabled for the WebState in |web_state_list_|.
+  // Whether web usage is enabled for the WebState in `web_state_list_`.
   bool web_usage_enabled_ = false;
 
   // Scoped observations of Browser, WebStateList and WebStates.

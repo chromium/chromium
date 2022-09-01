@@ -18,7 +18,7 @@ class WebState;
 }  // namespace web
 
 @protocol WebStateFaviconDriverObserver
-// Forward the call from |driver| OnFaviconUpdated method.
+// Forward the call from `driver` OnFaviconUpdated method.
 - (void)faviconDriver:(favicon::FaviconDriver*)driver
     didUpdateFaviconForWebState:(web::WebState*)webState;
 @end
@@ -62,8 +62,8 @@ class WebStateListFaviconDriverObserver
                         const gfx::Image& image) override;
 
  private:
-  // Observes the FaviconDriver for |web_state| and updates the
-  // |driver_to_web_state_map_|.
+  // Observes the FaviconDriver for `web_state` and updates the
+  // `driver_to_web_state_map_`.
   void AddNewWebState(web::WebState* web_state);
 
   // The WebStateFaviconDriverObserver to which the FaviconDriver notification

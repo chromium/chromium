@@ -96,7 +96,7 @@ class WebStateList {
   web::WebState* GetActiveWebState() const;
 
   // Returns the WebState at the specified index. It is invalid to call this
-  // with an index such that |ContainsIndex(index)| returns false.
+  // with an index such that `ContainsIndex(index)` returns false.
   web::WebState* GetWebStateAt(int index) const;
 
   // Returns the index of the specified WebState or kInvalidIndex if the
@@ -104,34 +104,34 @@ class WebStateList {
   int GetIndexOfWebState(const web::WebState* web_state) const;
 
   // Returns the index of the first WebState in the model whose visible URL is
-  // |url| or kInvalidIndex if no WebState with that URL exists.
+  // `url` or kInvalidIndex if no WebState with that URL exists.
   int GetIndexOfWebStateWithURL(const GURL& url) const;
 
   // Returns the index of the first WebState, ignoring the currently active
-  // WebState, in the model whose visible URL is |url| or kInvalidIndex if no
+  // WebState, in the model whose visible URL is `url` or kInvalidIndex if no
   // non-active WebState with that URL exists.
   int GetIndexOfInactiveWebStateWithURL(const GURL& url) const;
 
   // Returns information about the opener of the WebState at the specified
-  // index. The structure |opener| will be null if there is no opener.
+  // index. The structure `opener` will be null if there is no opener.
   WebStateOpener GetOpenerOfWebStateAt(int index) const;
 
   // Stores information about the opener of the WebState at the specified
-  // index. The WebStateOpener |opener| must be non-null and the WebState
+  // index. The WebStateOpener `opener` must be non-null and the WebState
   // must be in WebStateList.
   void SetOpenerOfWebStateAt(int index, WebStateOpener opener);
 
   // Returns the index of the next WebState in the sequence of WebStates opened
-  // from the specified WebState after |start_index|, or kInvalidIndex if there
-  // are no such WebState. If |use_group| is true, the opener's navigation index
+  // from the specified WebState after `start_index`, or kInvalidIndex if there
+  // are no such WebState. If `use_group` is true, the opener's navigation index
   // is used to detect navigation changes within the same session.
   int GetIndexOfNextWebStateOpenedBy(const web::WebState* opener,
                                      int start_index,
                                      bool use_group) const;
 
   // Returns the index of the last WebState in the sequence of WebStates opened
-  // from the specified WebState after |start_index|, or kInvalidIndex if there
-  // are no such WebState. If |use_group| is true, the opener's navigation index
+  // from the specified WebState after `start_index`, or kInvalidIndex if there
+  // are no such WebState. If `use_group` is true, the opener's navigation index
   // is used to detect navigation changes within the same session.
   int GetIndexOfLastWebStateOpenedBy(const web::WebState* opener,
                                      int start_index,
@@ -139,7 +139,7 @@ class WebStateList {
 
   // Inserts the specified WebState at the best position in the WebStateList
   // given the specified opener, recommended index, insertion flags, ... The
-  // |insertion_flags| is a bitwise combination of InsertionFlags values.
+  // `insertion_flags` is a bitwise combination of InsertionFlags values.
   // Returns the effective insertion index.
   int InsertWebState(int index,
                      std::unique_ptr<web::WebState> web_state,
@@ -160,11 +160,11 @@ class WebStateList {
   // to the caller (abandon ownership of the returned WebState).
   std::unique_ptr<web::WebState> DetachWebStateAt(int index);
 
-  // Closes and destroys the WebState at the specified index. The |close_flags|
+  // Closes and destroys the WebState at the specified index. The `close_flags`
   // is a bitwise combination of ClosingFlags values.
   void CloseWebStateAt(int index, int close_flags);
 
-  // Closes and destroys all WebStates. The |close_flags| is a bitwise
+  // Closes and destroys all WebStates. The `close_flags` is a bitwise
   // combination of ClosingFlags values.
   void CloseAllWebStates(int close_flags);
 
@@ -179,7 +179,7 @@ class WebStateList {
 
   // Performs mutating operations on the WebStateList as batched operation.
   // The observers will be notified by WillBeginBatchOperation() before the
-  // |operation| callback is executed and by BatchOperationEnded() after it
+  // `operation` callback is executed and by BatchOperationEnded() after it
   // has completed.
   void PerformBatchOperation(base::OnceCallback<void(WebStateList*)> operation);
 
@@ -196,7 +196,7 @@ class WebStateList {
 
   // Inserts the specified WebState at the best position in the WebStateList
   // given the specified opener, recommended index, insertion flags, ... The
-  // |insertion_flags| is a bitwise combination of InsertionFlags values.
+  // `insertion_flags` is a bitwise combination of InsertionFlags values.
   // Returns the effective insertion index.
   //
   // Assumes that the WebStateList is locked.
@@ -225,13 +225,13 @@ class WebStateList {
   // Assumes that the WebStateList is locked.
   std::unique_ptr<web::WebState> DetachWebStateAtImpl(int index);
 
-  // Closes and destroys the WebState at the specified index. The |close_flags|
+  // Closes and destroys the WebState at the specified index. The `close_flags`
   // is a bitwise combination of ClosingFlags values.
   //
   // Assumes that the WebStateList is locked.
   void CloseWebStateAtImpl(int index, int close_flags);
 
-  // Closes and destroys all WebStates. The |close_flags| is a bitwise
+  // Closes and destroys all WebStates. The `close_flags` is a bitwise
   // combination of ClosingFlags values.
   //
   // Assumes that the WebStateList is locked.
@@ -246,16 +246,16 @@ class WebStateList {
   // specified index to null.
   void ClearOpenersReferencing(int index);
 
-  // Notify the observers if the active WebState change. |reason| is the value
+  // Notify the observers if the active WebState change. `reason` is the value
   // passed to the WebStateListObservers.
   void NotifyIfActiveWebStateChanged(web::WebState* old_web_state,
                                      ActiveWebStateChangeReason reason);
 
-  // Returns the index of the |n|-th WebState (with n > 0) in the sequence of
+  // Returns the index of the `n`-th WebState (with n > 0) in the sequence of
   // WebStates opened from the specified WebState starting the search from
-  // |start_index| (the returned index may be smaller than |start_index| if
+  // `start_index` (the returned index may be smaller than `start_index` if
   // the element have been rearranged), or kInvalidIndex if there are no such
-  // WebState. If |use_group| is true, the opener's navigation index is used
+  // WebState. If `use_group` is true, the opener's navigation index is used
   // to detect navigation changes within the same session.
   int GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
                                     int start_index,
@@ -267,7 +267,7 @@ class WebStateList {
   WebStateWrapper* GetActiveWebStateWrapper() const;
 
   // Returns the wrapper of the WebState at the specified index. It is invalid
-  // to call this with an index such that |ContainsIndex(index)| returns false.
+  // to call this with an index such that `ContainsIndex(index)` returns false.
   WebStateWrapper* GetWebStateWrapperAt(int index) const;
 
   // The WebStateList delegate.

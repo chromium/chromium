@@ -18,7 +18,7 @@
 
 namespace {
 
-// Find the index of next non-removed WebState opened by |web_state|. It
+// Find the index of next non-removed WebState opened by `web_state`. It
 // may return WebStateList::kInvalidIndex if there is no such indexes.
 int FindIndexOfNextNonRemovedWebStateOpenedBy(
     const WebStateListRemovingIndexes& removing_indexes,

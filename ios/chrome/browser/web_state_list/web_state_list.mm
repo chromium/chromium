@@ -65,7 +65,7 @@ class WebStateList::WebStateWrapper {
   bool ShouldResetOpenerOnActiveWebStateChange() const;
   void SetShouldResetOpenerOnActiveWebStateChange(bool should_reset_opener);
 
-  // Returns whether |opener| spawned the wrapped WebState. If |use_group| is
+  // Returns whether `opener` spawned the wrapped WebState. If `use_group` is
   // true, also use the opener navigation index to detect navigation changes
   // during the same session.
   bool WasOpenedBy(const web::WebState* opener,

@@ -16,7 +16,7 @@
 @optional
 
 // Invoked after a new WebState has been added to the WebStateList at the
-// specified index. |activating| will be YES if the WebState will become
+// specified index. `activating` will be YES if the WebState will become
 // the new active WebState after the insertion.
 - (void)webStateList:(WebStateList*)webStateList
     didInsertWebState:(web::WebState*)webState
@@ -50,15 +50,15 @@
 
 // Invoked before the specified WebState is destroyed via the WebStateList.
 // The WebState is still valid but is no longer in the WebStateList. If the
-// WebState is closed due to user action, |userAction| will be true.
+// WebState is closed due to user action, `userAction` will be true.
 - (void)webStateList:(WebStateList*)webStateList
     willCloseWebState:(web::WebState*)webState
               atIndex:(int)atIndex
            userAction:(BOOL)userAction;
 
-// Invoked after |newWebState| was activated at the specified index. Both
+// Invoked after `newWebState` was activated at the specified index. Both
 // WebState are either valid or null (if there was no selection or there is
-// no selection). See ChangeReason enum for possible values for |reason|.
+// no selection). See ChangeReason enum for possible values for `reason`.
 - (void)webStateList:(WebStateList*)webStateList
     didChangeActiveWebState:(web::WebState*)newWebState
                 oldWebState:(web::WebState*)oldWebState

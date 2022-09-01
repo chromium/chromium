@@ -74,10 +74,10 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver,
   // The class which installs/uninstalls dependencies in response to changes to
   // the WebStateList
   DependencyInstaller* dependency_installer_;
-  // Automatically detaches |this| from the WebStateList when destroyed
+  // Automatically detaches `this` from the WebStateList when destroyed
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};
-  // Automatically detaches |this| from the WebStates when destroyed.
+  // Automatically detaches `this` from the WebStates when destroyed.
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       web_state_observations_{this};
 };

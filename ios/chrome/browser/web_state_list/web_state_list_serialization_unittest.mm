@@ -49,9 +49,9 @@ std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
   return web_state;
 }
 
-// Compares whether both WebStateList |original| and |restored| have the same
-// opener-opened relationship. The |restored| WebStateList may have additional
-// WebState, so only indices from |restored_index| to |count()| are compared.
+// Compares whether both WebStateList `original` and `restored` have the same
+// opener-opened relationship. The `restored` WebStateList may have additional
+// WebState, so only indices from `restored_index` to `count()` are compared.
 void ExpectRelationshipIdenticalFrom(int restored_index,
                                      WebStateList* original,
                                      WebStateList* restored) {

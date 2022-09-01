@@ -16,9 +16,9 @@
 // changes.
 class ActiveWebStateObservationForwarder : public WebStateListObserver {
  public:
-  // Creates an object which forwards observation methods to |observer| and
-  // tracks |web_state_list| to keep track of the currently-active WebState.
-  // |web_state_list| and |observer| must both outlive this object.
+  // Creates an object which forwards observation methods to `observer` and
+  // tracks `web_state_list` to keep track of the currently-active WebState.
+  // `web_state_list` and `observer` must both outlive this object.
   ActiveWebStateObservationForwarder(WebStateList* web_state_list,
                                      web::WebStateObserver* observer);
 

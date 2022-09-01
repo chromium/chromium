@@ -63,21 +63,21 @@ TEST_F(WebStateListOrderControllerTest, DetermineInsertionIndex) {
   InsertNewWebState(1, WebStateOpener());
   web::WebState* opener = web_state_list_.GetWebStateAt(0);
 
-  // Verify that first child WebState is inserted after |opener| if there are
+  // Verify that first child WebState is inserted after `opener` if there are
   // no other children.
   EXPECT_EQ(1, order_controller_.DetermineInsertionIndex(opener));
 
   // Verify that  WebState is inserted at the end if it has no opener.
   EXPECT_EQ(2, order_controller_.DetermineInsertionIndex(nullptr));
 
-  // Add a child WebState to |opener|, and verify that a second child would be
+  // Add a child WebState to `opener`, and verify that a second child would be
   // inserted after the first.
   InsertNewWebState(2, WebStateOpener(opener));
 
   EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(opener));
 
-  // Add a grand-child to |opener|, and verify that adding another child to
-  // |opener| would be inserted before the grand-child.
+  // Add a grand-child to `opener`, and verify that adding another child to
+  // `opener` would be inserted before the grand-child.
   InsertNewWebState(3, WebStateOpener(web_state_list_.GetWebStateAt(1)));
 
   EXPECT_EQ(3, order_controller_.DetermineInsertionIndex(opener));
