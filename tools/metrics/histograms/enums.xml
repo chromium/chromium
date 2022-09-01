@@ -24481,6 +24481,7 @@ Called by update_debug_scenarios.py.-->
   <int value="49" label="Projector"/>
   <int value="50" label="Calculator"/>
   <int value="51" label="FirmwareUpdateApp"/>
+  <int value="52" label="Google TV"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">

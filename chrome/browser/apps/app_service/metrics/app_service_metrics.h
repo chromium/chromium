@@ -68,9 +68,10 @@ enum class DefaultAppName {
   kProjector = 49,
   kCalculator = 50,
   kFirmwareUpdateApp = 51,
+  kGoogleTv = 52,
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFirmwareUpdateApp,
+  kMaxValue = kGoogleTv,
 };
 
 // The built-in app's histogram name. This is used for logging so do not change

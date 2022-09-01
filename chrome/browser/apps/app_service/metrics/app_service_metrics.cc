@@ -288,6 +288,8 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kProjector, launch_source);
   } else if (app_id == web_app::kFirmwareUpdateAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kFirmwareUpdateApp, launch_source);
+  } else if (app_id == arc::kGoogleTVAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleTv, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
