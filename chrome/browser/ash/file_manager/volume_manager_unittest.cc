@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -51,8 +52,11 @@
 namespace file_manager {
 namespace {
 
+using ::ash::MountType;
 using ::ash::disks::Disk;
 using ::ash::disks::DiskMountManager;
+using ::ash::disks::MountCondition;
+using base::FilePath;
 
 std::vector<std::string> arc_volume_ids = {
     arc::kImagesRootDocumentId, arc::kVideosRootDocumentId,
@@ -377,6 +381,23 @@ class VolumeManagerTest : public testing::Test {
   arc::FakeFileSystemInstance file_system_instance_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
 };
+
+TEST(VolumeTest, CreateForRemovable) {
+  const std::unique_ptr<Volume> volume = Volume::CreateForRemovable(
+      {"/source/path", "/mount/path", MountType::kDevice,
+       MountCondition::kUnknownFilesystem},
+      nullptr);
+  ASSERT_TRUE(volume);
+  EXPECT_EQ(volume->source_path(), FilePath("/source/path"));
+  EXPECT_EQ(volume->mount_path(), FilePath("/mount/path"));
+  EXPECT_EQ(volume->type(), VOLUME_TYPE_REMOVABLE_DISK_PARTITION);
+  EXPECT_EQ(volume->mount_condition(), MountCondition::kUnknownFilesystem);
+  EXPECT_EQ(volume->volume_id(), "removable:path");
+  EXPECT_EQ(volume->volume_label(), "path");
+  EXPECT_EQ(volume->source(), SOURCE_DEVICE);
+  EXPECT_FALSE(volume->is_read_only());
+  EXPECT_TRUE(volume->watchable());
+}
 
 TEST_F(VolumeManagerTest, OnDriveFileSystemMountAndUnmount) {
   LoggingObserver observer;
