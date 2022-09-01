@@ -41,8 +41,6 @@
 namespace app_list {
 namespace {
 
-using ThrottleInterval = ZeroStateDriveProvider::ThrottleInterval;
-
 constexpr char kSchema[] = "zero_state_drive://";
 
 // How long to wait before making the first request for results from the
@@ -66,21 +64,6 @@ enum class Status {
   kDriveDisabled = 5,
   kMaxValue = kDriveDisabled,
 };
-
-ThrottleInterval MinutesToThrottleInterval(const int minutes) {
-  switch (minutes) {
-    case 5:
-      return ThrottleInterval::kFiveMinutes;
-    case 10:
-      return ThrottleInterval::kTenMinutes;
-    case 15:
-      return ThrottleInterval::kFifteenMinutes;
-    case 30:
-      return ThrottleInterval::kThirtyMinutes;
-    default:
-      return ThrottleInterval::kUnknown;
-  }
-}
 
 void LogStatus(Status status) {
   base::UmaHistogramEnumeration("Apps.AppList.DriveZeroStateProvider.Status",
@@ -196,8 +179,6 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
 ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
 
 void ZeroStateDriveProvider::OnFileSystemMounted() {
-  MaybeLogHypotheticalQuery();
-
   static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
       ash::features::kProductivityLauncher,
       "itemsuggest_query_on_filesystem_mounted", true);
@@ -216,12 +197,11 @@ void ZeroStateDriveProvider::OnSessionStateChanged() {
       ash::features::kProductivityLauncher,
       "itemsuggest_query_on_session_state_changed", true);
 
-  // Perform a hypothetical query if the user has logged in.
+  // Update cache if the user has logged in.
   if (session_manager_->session_state() ==
-      session_manager::SessionState::ACTIVE) {
-    MaybeLogHypotheticalQuery();
-    if (kUpdateCache)
-      MaybeUpdateCache();
+          session_manager::SessionState::ACTIVE &&
+      kUpdateCache) {
+    MaybeUpdateCache();
   }
 }
 
@@ -231,18 +211,15 @@ void ZeroStateDriveProvider::ScreenIdleStateChanged(
       ash::features::kProductivityLauncher,
       "itemsuggest_query_on_screen_idle_state_changed", true);
 
-  // Perform a hypothetical query if the screen changed from off to on.
-  if (screen_off_ && !proto.dimmed() && !proto.off()) {
-    MaybeLogHypotheticalQuery();
-    if (kUpdateCache)
-      MaybeUpdateCache();
+  // Update cache if the screen changed from off to on.
+  if (screen_off_ && !proto.dimmed() && !proto.off() && kUpdateCache) {
+    MaybeUpdateCache();
   }
   screen_off_ = proto.off();
 }
 
 void ZeroStateDriveProvider::ViewClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MaybeLogHypotheticalQuery();
 
   static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
       ash::features::kProductivityLauncher, "itemsuggest_query_on_view_closing",
@@ -402,23 +379,6 @@ void ZeroStateDriveProvider::OnCacheUpdated() {
 void ZeroStateDriveProvider::MaybeUpdateCache() {
   if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
     item_suggest_cache_->UpdateCache();
-  }
-}
-
-void ZeroStateDriveProvider::MaybeLogHypotheticalQuery() {
-  const auto now = base::TimeTicks::Now();
-  const std::vector<int> throttle_intervals({5, 10, 15, 30});
-
-  for (const int interval : throttle_intervals) {
-    const bool is_first_query = last_hypothetical_query_.find(interval) ==
-                                last_hypothetical_query_.end();
-    if (is_first_query ||
-        now - last_hypothetical_query_[interval] >= base::Minutes(interval)) {
-      base::UmaHistogramEnumeration(
-          "Apps.AppList.DriveZeroStateProvider.HypotheticalQuery",
-          MinutesToThrottleInterval(interval));
-      last_hypothetical_query_[interval] = now;
-    }
   }
 }
 

@@ -61,18 +61,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   ash::AppListSearchResultType ResultType() const override;
   bool ShouldBlockZeroState() const override;
 
-  // The minimum time between hypothetical queries.
-  // These values persist to logs. Entries should not be renumbered and numeric
-  // values should never be reused.
-  enum class ThrottleInterval {
-    kUnknown = 0,
-    kFiveMinutes = 1,
-    kTenMinutes = 2,
-    kFifteenMinutes = 3,
-    kThirtyMinutes = 4,
-    kMaxValue = kThirtyMinutes,
-  };
-
  private:
   void OnFilePathsLocated(
       absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
@@ -95,16 +83,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   // this does nothing.
   void MaybeUpdateCache();
 
-  // We are intending to change the triggers of queries to ItemSuggest, but
-  // first want to know the QPS impact of the change. This method records
-  // metrics to track how many queries we will send under the proposed new
-  // logic. It does not actually make any queries. The new logic is as follows:
-  // - Query on login and wake from sleep.
-  // - Query on every launcher open.
-  // - Query at most every 5, 10 or 15 minutes. These are tracked separately in
-  //   the metrics.
-  void MaybeLogHypotheticalQuery();
-
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
   session_manager::SessionManager* const session_manager_;
@@ -120,13 +98,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   const base::Time construction_time_;
   base::TimeTicks query_start_time_;
 
-  // The time we last logged a hypothetical query, keyed by the minimum time
-  // between queries in minutes (5, 10 or 15 minutes). See
-  // MaybeLogHypotheticalQuery for details.
-  std::map<int, base::TimeTicks> last_hypothetical_query_;
-
-  // Whether or not the screen is off due to idling. Used for logging a
-  // hypothetical query on wake.
+  // Whether or not the screen is off due to idling.
   bool screen_off_ = true;
 
   // A file needs to have been modified more recently than this to be considered

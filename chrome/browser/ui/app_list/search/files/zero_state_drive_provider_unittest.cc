@@ -18,8 +18,18 @@
 namespace app_list {
 namespace {
 
-constexpr char kHypotheticalQueryHistogram[] =
-    "Apps.AppList.DriveZeroStateProvider.HypotheticalQuery";
+class TestItemSuggestCache : public ItemSuggestCache {
+ public:
+  explicit TestItemSuggestCache(Profile* profile)
+      : ItemSuggestCache(profile, nullptr) {}
+  TestItemSuggestCache(const TestItemSuggestCache&) = delete;
+  TestItemSuggestCache& operator=(const TestItemSuggestCache&) = delete;
+  ~TestItemSuggestCache() override = default;
+
+  void UpdateCache() override { update_count_++; }
+
+  int update_count_ = 0;
+};
 
 }  // namespace
 
@@ -28,25 +38,23 @@ class ZeroStateDriveProviderTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     session_manager_ = std::make_unique<session_manager::SessionManager>();
+    auto item_suggest_cache =
+        std::make_unique<TestItemSuggestCache>(profile_.get());
+    item_suggest_cache_ = item_suggest_cache.get();
+
     provider_ = std::make_unique<ZeroStateDriveProvider>(
         profile_.get(), nullptr,
         drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get()),
-        session_manager_.get(),
-        std::make_unique<ItemSuggestCache>(profile_.get(), nullptr));
+        session_manager_.get(), std::move(item_suggest_cache));
   }
 
   void FastForwardByMinutes(int minutes) {
     task_environment_.FastForwardBy(base::Minutes(minutes));
   }
 
-  // Check the histogram count and then fast forward in order to bypass the
-  // throttling interval.
-  void ExpectHistogramCountAndWait(int count) {
-    histogram_tester_.ExpectBucketCount(
-        kHypotheticalQueryHistogram,
-        ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, count);
-    FastForwardByMinutes(5);
-  }
+  void Wait() { task_environment_.RunUntilIdle(); }
+
+  int update_count() const { return item_suggest_cache_->update_count_; }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -55,139 +63,74 @@ class ZeroStateDriveProviderTest : public testing::Test {
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ZeroStateDriveProvider> provider_;
   base::HistogramTester histogram_tester_;
+
+  // Owned by |provider_|.
+  TestItemSuggestCache* item_suggest_cache_;
 };
 
-// Test that each of the trigger events logs a hypothetical query.
-TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryTriggers) {
+// TODO(crbug.com/1348339): Add a test for a file mount-triggered update at
+// construction time.
+
+// Test that each of the trigger events causes an update.
+TEST_F(ZeroStateDriveProviderTest, UpdateCache) {
+  // Fast forward past the construction delay.
+  FastForwardByMinutes(1);
+  EXPECT_EQ(update_count(), 0);
+
   provider_->OnFileSystemMounted();
-  ExpectHistogramCountAndWait(1);
+  // File system mount updates are posted with a delay, so fast forward here.
+  FastForwardByMinutes(1);
+  EXPECT_EQ(update_count(), 1);
 
   provider_->ViewClosing();
-  ExpectHistogramCountAndWait(2);
+  EXPECT_EQ(update_count(), 2);
 
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
-  provider_->OnSessionStateChanged();
-  ExpectHistogramCountAndWait(3);
+  EXPECT_EQ(update_count(), 3);
 
   power_manager::ScreenIdleState idle_state;
   idle_state.set_dimmed(false);
   idle_state.set_off(false);
   provider_->ScreenIdleStateChanged(idle_state);
-  ExpectHistogramCountAndWait(4);
+  EXPECT_EQ(update_count(), 4);
 }
 
-// Test that the minimum interval between queries is respected.
-TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
-  histogram_tester_.ExpectTotalCount(kHypotheticalQueryHistogram, 0);
+// Test that an update is triggered when the screen turns on.
+TEST_F(ZeroStateDriveProviderTest, UpdateOnWake) {
+  // Fast forward past the construction delay.
+  FastForwardByMinutes(1);
 
-  provider_->ViewClosing();
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 1);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kTenMinutes, 1);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFifteenMinutes, 1);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
-
-  FastForwardByMinutes(5);
-  provider_->ViewClosing();
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 2);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kTenMinutes, 1);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFifteenMinutes, 1);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
-
-  FastForwardByMinutes(5);
-  provider_->ViewClosing();
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 3);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kTenMinutes, 2);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFifteenMinutes, 1);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
-
-  FastForwardByMinutes(5);
-  provider_->ViewClosing();
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 4);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kTenMinutes, 2);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFifteenMinutes, 2);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
-
-  FastForwardByMinutes(15);
-  provider_->ViewClosing();
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 5);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kTenMinutes, 3);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kFifteenMinutes, 3);
-  histogram_tester_.ExpectBucketCount(
-      kHypotheticalQueryHistogram,
-      ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 2);
-}
-
-// Test that a hypothetical query is logged when the screen turns on.
-TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryOnWake) {
   power_manager::ScreenIdleState idle_state;
-  histogram_tester_.ExpectTotalCount(kHypotheticalQueryHistogram, 0);
+  EXPECT_EQ(update_count(), 0);
 
   // Turn the screen on. This logs a query since the screen state is default off
   // when the provider is initialized.
   idle_state.set_dimmed(false);
   idle_state.set_off(false);
   provider_->ScreenIdleStateChanged(idle_state);
-  ExpectHistogramCountAndWait(1);
+  EXPECT_EQ(update_count(), 1);
 
   // Dim the screen.
   idle_state.set_dimmed(true);
   provider_->ScreenIdleStateChanged(idle_state);
-  ExpectHistogramCountAndWait(1);
+  EXPECT_EQ(update_count(), 1);
 
   // Undim the screen. This should NOT log a query.
   idle_state.set_dimmed(false);
   provider_->ScreenIdleStateChanged(idle_state);
-  ExpectHistogramCountAndWait(1);
+  EXPECT_EQ(update_count(), 1);
 
   // Turn off the screen.
   idle_state.set_dimmed(true);
   idle_state.set_off(true);
   provider_->ScreenIdleStateChanged(idle_state);
-  ExpectHistogramCountAndWait(1);
+  EXPECT_EQ(update_count(), 1);
 
   // Turn on the screen. This logs a query.
   idle_state.set_dimmed(false);
   idle_state.set_off(false);
   provider_->ScreenIdleStateChanged(idle_state);
-  ExpectHistogramCountAndWait(2);
+  EXPECT_EQ(update_count(), 2);
 }
 
 }  // namespace app_list

@@ -467,18 +467,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.DriveZeroStateProvider.HypotheticalQuery"
-    enum="DriveZeroStateProviderThrottleInterval" expires_after="2023-02-12">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
-  <summary>
-    We intend to change the query trigger logic for ItemSuggest. This records an
-    event each time we would query ItemSuggest under the new logic, recorded
-    separately for each throttling interval. To be used for evaluating QPS.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
     expires_after="2023-02-12">
   <owner>tby@chromium.org</owner>

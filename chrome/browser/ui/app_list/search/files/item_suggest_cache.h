@@ -58,7 +58,7 @@ class ItemSuggestCache {
   ItemSuggestCache(
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~ItemSuggestCache();
+  virtual ~ItemSuggestCache();
 
   ItemSuggestCache(const ItemSuggestCache&) = delete;
   ItemSuggestCache& operator=(const ItemSuggestCache&) = delete;
@@ -73,8 +73,8 @@ class ItemSuggestCache {
   // the cache has not been successfully updated.
   absl::optional<ItemSuggestCache::Results> GetResults();
 
-  // Updates the cache by calling ItemSuggest.
-  void UpdateCache();
+  // Updates the cache by calling ItemSuggest. Virtual for testing.
+  virtual void UpdateCache();
 
   static absl::optional<ItemSuggestCache::Results> ConvertJsonForTest(
       const base::Value* value);
