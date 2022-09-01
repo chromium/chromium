@@ -2841,10 +2841,7 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   if (spec.find("/loading/") != std::string::npos)
     SetShouldDumpFrameLoadCallbacks(true);
 
-  if (spec.find("/external/wpt/") != std::string::npos ||
-      spec.find("/external/csswg-test/") != std::string::npos ||
-      spec.find("://web-platform.test") != std::string::npos ||
-      spec.find("/harness-tests/wpt/") != std::string::npos)
+  if (IsWebPlatformTest(spec))
     SetIsWebPlatformTestsMode();
 
   view->GetSettings()->SetV8CacheOptions(
