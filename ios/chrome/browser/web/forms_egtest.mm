@@ -40,10 +40,10 @@ using testing::ElementToDismissAlert;
 
 namespace {
 
-// Response shown on the page of |GetDestinationUrl|.
+// Response shown on the page of `GetDestinationUrl`.
 const char kDestinationText[] = "bar!";
 
-// Response shown on the page of |GetGenericUrl|.
+// Response shown on the page of `GetGenericUrl`.
 const char kGenericText[] = "A generic page";
 
 // Label for the button in the form.
@@ -61,29 +61,29 @@ const GURL GetGenericUrl() {
   return web::test::HttpServer::MakeUrl("http://generic");
 }
 
-// GURL of a page with a form that posts data to |GetDestinationUrl|.
+// GURL of a page with a form that posts data to `GetDestinationUrl`.
 const GURL GetFormUrl() {
   return web::test::HttpServer::MakeUrl("http://form");
 }
 
-// GURL of a page with a form that posts data to |GetDestinationUrl|.
+// GURL of a page with a form that posts data to `GetDestinationUrl`.
 const GURL GetFormPostOnSamePageUrl() {
   return web::test::HttpServer::MakeUrl("http://form");
 }
 
-// GURL of the page to which the |GetFormUrl| posts data to.
+// GURL of the page to which the `GetFormUrl` posts data to.
 const GURL GetDestinationUrl() {
   return web::test::HttpServer::MakeUrl("http://destination");
 }
 
 #pragma mark - TestFormResponseProvider
 
-// URL that redirects to |GetDestinationUrl| with a 302.
+// URL that redirects to `GetDestinationUrl` with a 302.
 const GURL GetRedirectUrl() {
   return web::test::HttpServer::MakeUrl("http://redirect");
 }
 
-// URL to return a page that posts to |GetRedirectUrl|.
+// URL to return a page that posts to `GetRedirectUrl`.
 const GURL GetRedirectFormUrl() {
   return web::test::HttpServer::MakeUrl("http://formRedirect");
 }
@@ -205,7 +205,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 }
 
 // Sets up a basic simple http server for form test with a form located at
-// |GetFormUrl|, and posts data to |GetDestinationUrl| upon submission.
+// `GetFormUrl`, and posts data to `GetDestinationUrl` upon submission.
 - (void)setUpFormTestSimpleHttpServer {
   std::map<GURL, std::string> responses;
   responses[GetGenericUrl()] = kGenericText;
@@ -269,7 +269,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   [ChromeEarlGrey loadURL:GetGenericUrl()];
   [ChromeEarlGrey goBack];
 
-  // NavigationManager doesn't trigger repost on |goForward| due to WKWebView's
+  // NavigationManager doesn't trigger repost on `goForward` due to WKWebView's
   // back-forward cache. Force reload to trigger repost. Not waiting because
   // NavigationManager presents repost confirmation dialog before loading stops.
   [ChromeEarlGrey reloadAndWaitForCompletion:NO];
@@ -312,7 +312,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey goForward];
 
-  // NavigationManager doesn't trigger repost on |goForward| due to WKWebView's
+  // NavigationManager doesn't trigger repost on `goForward` due to WKWebView's
   // back-forward cache. Force reload to trigger repost. Not waiting because
   // NavigationManager presents repost confirmation dialog before loading stops.
   [ChromeEarlGrey reloadAndWaitForCompletion:NO];
@@ -357,7 +357,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   [self openBackHistory];
   [self waitForTabHistoryView];
 
-  // Mimic |web::GetDisplayTitleForUrl| behavior which uses FormatUrl
+  // Mimic `web::GetDisplayTitleForUrl` behavior which uses FormatUrl
   // internally. It can't be called directly from the EarlGrey 2 test process.
   std::u16string title = url_formatter::FormatUrl(destinationURL);
   id<GREYMatcher> historyItem = grey_text(base::SysUTF16ToNSString(title));
@@ -385,7 +385,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey goForward];
 
-  // NavigationManager doesn't trigger repost on |goForward| due to WKWebView's
+  // NavigationManager doesn't trigger repost on `goForward` due to WKWebView's
   // back-forward cache. Force reload to trigger repost. Not waiting because
   // NavigationManager presents repost confirmation dialog before loading stops.
   [ChromeEarlGrey reloadAndWaitForCompletion:NO];
@@ -408,8 +408,8 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-  // NavigationManagerImpl displays repost on |reload|. So after
-  // cancelling, web view should show |destinationURL|.
+  // NavigationManagerImpl displays repost on `reload`. So after
+  // cancelling, web view should show `destinationURL`.
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
       assertWithMatcher:grey_notNil()];
@@ -559,7 +559,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tap the text field indicated by |ID| to open the keyboard, and then
+// Tap the text field indicated by `ID` to open the keyboard, and then
 // press the keyboard's "Go" button to submit the form.
 - (void)submitFormUsingKeyboardGoButtonWithInputID:(const std::string&)ID {
   // Disable EarlGrey's synchronization since it is blocked by opening the

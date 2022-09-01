@@ -305,7 +305,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
 // Tests PrepareErrorPage for a safe browsing error, which results in a
 // committed safe browsing interstitial.
 TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
-  // Store an unsafe resource in |web_state|'s container.
+  // Store an unsafe resource in `web_state`'s container.
   web::FakeWebState web_state;
   web_state.SetBrowserState(browser_state());
   SafeBrowsingUrlAllowList::CreateForWebState(&web_state);

@@ -26,7 +26,7 @@ web::NavigationManager::WebLoadParams CreateWebLoadParams(
   web::NavigationManager::WebLoadParams params(URL);
   params.transition_type = transition_type;
   if (post_data) {
-    // Extract the content type and post params from |postData| and add them
+    // Extract the content type and post params from `postData` and add them
     // to the load params.
     NSString* contentType = base::SysUTF8ToNSString(post_data->first);
     NSData* data = [NSData dataWithBytes:(void*)post_data->second.data()

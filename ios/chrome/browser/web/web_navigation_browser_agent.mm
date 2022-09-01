@@ -60,7 +60,7 @@ void WebNavigationBrowserAgent::Reload() {
   if (delegate_.NTPActiveForCurrentWebState) {
     [delegate_ reloadNTPForWebState:web_state_list_->GetActiveWebState()];
   } else {
-    // |check_for_repost| is true because the reload is explicitly initiated
+    // `check_for_repost` is true because the reload is explicitly initiated
     // by the user.
     web_state_list_->GetActiveWebState()->GetNavigationManager()->Reload(
         web::ReloadType::NORMAL, true /* check_for_repost */);

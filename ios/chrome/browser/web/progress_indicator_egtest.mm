@@ -43,7 +43,7 @@ const char kFormURL[] = "http://form";
 // URL string for an infinite pending page.
 const char kInfinitePendingPageURL[] = "http://infinite";
 
-// URL string for a simple page containing |kPageText|.
+// URL string for a simple page containing `kPageText`.
 const char kSimplePageURL[] = "http://simplepage";
 
 // Matcher for progress view.
@@ -133,7 +133,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
 @implementation ProgressIndicatorTestCase
 
 // Returns an HTML string for a form with the submission action set to
-// |submitURL|.
+// `submitURL`.
 - (std::string)formPageHTMLWithFormSubmitURL:(GURL)submitURL {
   return base::StringPrintf(
       "<p>%s</p><form id='%s' method='post' action='%s'>"

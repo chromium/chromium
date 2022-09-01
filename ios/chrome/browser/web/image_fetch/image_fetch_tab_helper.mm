@@ -90,8 +90,8 @@ void ImageFetchTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void ImageFetchTabHelper::GetImageData(const GURL& url,
                                        const web::Referrer& referrer,
                                        ImageDataCallback callback) {
-  // |this| is captured into the callback of GetImageDataByJs, which will always
-  // be invoked before the |this| is destroyed, so it's safe.
+  // `this` is captured into the callback of GetImageDataByJs, which will always
+  // be invoked before the `this` is destroyed, so it's safe.
   GetImageDataByJs(
       url, base::Milliseconds(kGetImageDataByJsTimeout),
       base::BindOnce(&ImageFetchTabHelper::JsCallbackOfGetImageData,

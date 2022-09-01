@@ -29,7 +29,7 @@
 @property(nonatomic, readwrite, getter=isNTPActiveForCurrentWebState)
     BOOL NTPActiveForCurrentWebState;
 
-// YES if reloadNTPForWebState was called for |webState|
+// YES if reloadNTPForWebState was called for `webState`
 - (BOOL)didReloadForWebState:(web::WebState*)webState;
 
 @end
@@ -76,7 +76,7 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   FakeNTPDelegate* delegate_;
   WebNavigationBrowserAgent* agent_;
-  // Navigation manager for the web state at index 0 in |browser_|'s web state
+  // Navigation manager for the web state at index 0 in `browser_`'s web state
   // list.
   web::FakeNavigationManager* navigation_manager_;
 };

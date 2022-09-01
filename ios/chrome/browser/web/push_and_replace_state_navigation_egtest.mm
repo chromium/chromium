@@ -398,7 +398,7 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 
 #pragma mark - Utility methods
 
-// Assert that status text |status|, if non-nil, is displayed in the webview,
+// Assert that status text `status`, if non-nil, is displayed in the webview,
 // that the omnibox text is as expected, and that "onload" text is not
 // displayed.
 - (void)assertStatusText:(NSString*)status

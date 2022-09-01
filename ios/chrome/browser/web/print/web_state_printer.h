@@ -16,7 +16,7 @@ class WebState;
 @protocol WebStatePrinter <NSObject>
 
 // Print WebState.
-// Print preview will be presented on top of |baseViewController|.
+// Print preview will be presented on top of `baseViewController`.
 - (void)printWebState:(web::WebState*)webState
     baseViewController:(UIViewController*)baseViewController;
 

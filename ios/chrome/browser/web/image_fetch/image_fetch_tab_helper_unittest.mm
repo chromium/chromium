@@ -126,7 +126,7 @@ class ImageFetchTabHelperTest : public PlatformTest {
 
 // Tests that ImageFetchTabHelper::GetImageData can get image data from Js.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
-  // Inject fake |__gCrWeb.imageFetch.getImageData| that returns |kImageData|
+  // Inject fake `__gCrWeb.imageFetch.getImageData` that returns `kImageData`
   // in base64 format.
   id script_result = ExecuteJavaScriptForFeature(
       [NSString
@@ -158,7 +158,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
 
 // Tests that ImageFetchTabHelper::GetImageData can get image data from Js.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
-  // Inject fake |__gCrWeb.imageFetch.getImageData| that returns |kImageData|
+  // Inject fake `__gCrWeb.imageFetch.getImageData` that returns `kImageData`
   // in base64 format.
   id script_result = ExecuteJavaScriptForFeature(
       [NSString
@@ -218,7 +218,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
 // Tests that ImageFetchTabHelper::GetImageData gets image data from server when
 // Js does not send a message back.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
-  // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
+  // Inject fake `__gCrWeb.imageFetch.getImageData` that does not do anything.
   id script_result = ExecuteJavaScriptForFeature(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;",
@@ -245,7 +245,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
 // Tests that ImageFetchTabHelper::GetImageData gets image data from server when
 // WebState is destroyed.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
-  // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
+  // Inject fake `__gCrWeb.imageFetch.getImageData` that does not do anything.
   id script_result = ExecuteJavaScriptForFeature(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;",
@@ -272,7 +272,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
 // Tests that ImageFetchTabHelper::GetImageData gets image data from server when
 // WebState navigates to a new web page.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateNavigate) {
-  // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
+  // Inject fake `__gCrWeb.imageFetch.getImageData` that does not do anything.
   id script_result = ExecuteJavaScriptForFeature(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;",

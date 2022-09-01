@@ -29,7 +29,7 @@
 
 // Delegate for testing.
 @interface SadTabTabHelperTestDelegate : NSObject<SadTabTabHelperDelegate>
-// |repeatedFailure| could be used by the delegate to display different types of
+// `repeatedFailure` could be used by the delegate to display different types of
 // SadTabs.
 @property(nonatomic, assign) BOOL repeatedFailure;
 // YES if SadTab is currently being shown.
@@ -345,7 +345,7 @@ TEST_F(SadTabTabHelperTest, FailureInterval) {
   OCMStub([application_ applicationState]).andReturn(UIApplicationStateActive);
 
   // N.B. The test fixture web_state_ is not used for this test as a custom
-  // |repeat_failure_interval| is required.
+  // `repeat_failure_interval` is required.
   std::unique_ptr<ChromeBrowserState> browser_state =
       TestChromeBrowserState::Builder().Build();
 

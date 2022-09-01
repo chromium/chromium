@@ -62,8 +62,8 @@ class PagePlaceholderTabHelper
   void AddPlaceholder();
   void RemovePlaceholder();
 
-  // Adds the given |snapshot| image to the |web_state_|'s view. The
-  // |web_state_|'s view must be visible, and it must be in a view hierarchy
+  // Adds the given `snapshot` image to the `web_state_`'s view. The
+  // `web_state_`'s view must be visible, and it must be in a view hierarchy
   // that has the Content Area named guide.
   void DisplaySnapshotImage(UIImage* snapshot);
 

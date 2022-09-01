@@ -24,7 +24,7 @@ class InvalidUrlTabHelperTest : public PlatformTest {
     InvalidUrlTabHelper::CreateForWebState(&web_state_);
   }
 
-  // Returns PolicyDecision for URL request with given |spec| and |transition|.
+  // Returns PolicyDecision for URL request with given `spec` and `transition`.
   web::WebStatePolicyDecider::PolicyDecision GetPolicy(
       NSString* spec,
       ui::PageTransition transition) {

@@ -44,7 +44,7 @@ const char kPageTwoTitle[] = "page 2";
 const char kCountURL[] = "/countme.html";
 
 // Response handler for page1 and page2 that supports 'airplane mode' by
-// returning an empty RawHttpResponse when |responds_with_content| us false.
+// returning an empty RawHttpResponse when `responds_with_content` us false.
 std::unique_ptr<net::test_server::HttpResponse> RestoreResponse(
     const bool& responds_with_content,
     const net::test_server::HttpRequest& request) {
@@ -73,7 +73,7 @@ std::unique_ptr<net::test_server::HttpResponse> RestoreResponse(
   return std::move(http_response);
 }
 
-// Response handler for |kCountURL| that counts the number of page loads.
+// Response handler for `kCountURL` that counts the number of page loads.
 std::unique_ptr<net::test_server::HttpResponse> CountResponse(
     int* counter,
     const net::test_server::HttpRequest& request) {
@@ -89,7 +89,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
   return std::move(http_response);
 }
 
-// Returns true when omnibox contains |text|, otherwise returns false after
+// Returns true when omnibox contains `text`, otherwise returns false after
 // after a timeout.
 [[nodiscard]] bool WaitForOmniboxContaining(std::string text) {
   return base::test::ios::WaitUntilConditionOrTimeout(
@@ -130,7 +130,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Verify that each page visited in -loadTestPages is properly restored by
 // navigating to each page and triggering a restore, confirming that pages are
-// reloaded and back-forward history is preserved.  If |checkServerData| is YES,
+// reloaded and back-forward history is preserved.  If `checkServerData` is YES,
 // also check that the proper content is restored.
 - (void)verifyRestoredTestPages:(BOOL)checkServerData;
 

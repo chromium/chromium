@@ -118,7 +118,7 @@ void WebSessionStateTabHelper::SaveSessionState() {
     WebSessionStateCache* cache =
         WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
     // To prevent very large session states from using too much space, don't
-    // persist any |data| larger than 5MB.  If this happens, remove the now
+    // persist any `data` larger than 5MB.  If this happens, remove the now
     // stale session state data.
     if (size_kb > kMaxSessionState) {
       [cache removeSessionStateDataForWebState:web_state_];
@@ -156,7 +156,7 @@ void WebSessionStateTabHelper::WebFrameDidBecomeAvailable(
     return;
 
   // -WebFrameDidBecomeAvailable is called much more often than navigations, so
-  // check if either |item_count_| or |last_committed_item_index_| has changed
+  // check if either `item_count_` or `last_committed_item_index_` has changed
   // before marking a page as stale.
   web::NavigationManager* navigation_manager =
       web_state->GetNavigationManager();

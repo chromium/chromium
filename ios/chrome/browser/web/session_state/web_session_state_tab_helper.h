@@ -32,7 +32,7 @@ class WebSessionStateTabHelper
   // Returns true if the feature is enabled and running iOS 15 or newer.
   static bool IsEnabled();
 
-  // If kRestoreSessionFromCache is enabled restore |web_state|'s WKWebView
+  // If kRestoreSessionFromCache is enabled restore `web_state`'s WKWebView
   // using the previously saved sessionState data via the WebSessionStateCache.
   // Returns true if the session could be restored.
   bool RestoreSessionFromCache();
@@ -65,7 +65,7 @@ class WebSessionStateTabHelper
   // SaveSessionState().
   bool stale_ = false;
 
-  // Cache the values of this |web_state|'s navigation manager GetItemCount()
+  // Cache the values of this `web_state`'s navigation manager GetItemCount()
   // and GetLastCommittedItemIndex().
   int item_count_ = 0;
   int last_committed_item_index_ = 0;

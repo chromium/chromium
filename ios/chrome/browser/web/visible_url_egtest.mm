@@ -53,7 +53,7 @@ id<GREYMatcher> ContextMenuMatcherForText(NSString* text) {
 }
 
 // Response provider which can be paused. When it is paused it buffers all
-// requests and does not respond to them until |set_paused(false)| is called.
+// requests and does not respond to them until `set_paused(false)` is called.
 class PausableResponseProvider : public HtmlResponseProvider {
  public:
   explicit PausableResponseProvider(
@@ -114,7 +114,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
 // Pauses response server.
 - (void)setServerPaused:(BOOL)paused;
 
-// Waits until |_responseProvider| receives a request with the given |URL|.
+// Waits until `_responseProvider` receives a request with the given `URL`.
 // Returns YES if request was received, NO on timeout.
 - (BOOL)waitForServerToReceiveRequestWithURL:(GURL)URL;
 

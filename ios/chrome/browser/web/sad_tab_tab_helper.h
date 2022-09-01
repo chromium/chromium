@@ -23,7 +23,7 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   static void CreateForWebState(web::WebState* web_state);
 
   // Creates a SadTabTabHelper and attaches it to a specific web_state object,
-  // |repeat_failure_interval| sets the corresponding instance variable used for
+  // `repeat_failure_interval` sets the corresponding instance variable used for
   // determining repeat failures.
   static void CreateForWebState(web::WebState* web_state,
                                 double repeat_failure_interval);
@@ -33,8 +33,8 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
 
   ~SadTabTabHelper() override;
 
-  // Sets the SadTabHelper delegate. |delegate| will be in charge of presenting
-  // the SadTabView. |delegate| is not retained by TabHelper.
+  // Sets the SadTabHelper delegate. `delegate` will be in charge of presenting
+  // the SadTabView. `delegate` is not retained by TabHelper.
   void SetDelegate(id<SadTabTabHelperDelegate> delegate);
 
   // true if Sad Tab has currently being shown.
@@ -47,14 +47,14 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   // default repeat_failure_interval will be used.
   explicit SadTabTabHelper(web::WebState* web_state);
 
-  // Constructs a SadTabTabHelper allowing an optional |repeat_failure_interval|
+  // Constructs a SadTabTabHelper allowing an optional `repeat_failure_interval`
   // value to be passed in, representing a timeout period in seconds during
   // which a second failure will be considered a 'repeated' crash rather than an
   // initial event.
   SadTabTabHelper(web::WebState* web_state, double repeat_failure_interval);
 
-  // Registers that a visible crash occurred for |url_causing_failure|. Updates
-  // |repeated_failure_|.
+  // Registers that a visible crash occurred for `url_causing_failure`. Updates
+  // `repeated_failure_`.
   void OnVisibleCrash(const GURL& url_causing_failure);
 
   // Presents a new SadTabView via the web_state object.
@@ -104,7 +104,7 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   // used to determine time window for repeated crashes.
   std::unique_ptr<base::ElapsedTimer> last_failed_timer_;
 
-  // Whether a Sad Tab is being shown over |web_state_|'s content area.
+  // Whether a Sad Tab is being shown over `web_state_`'s content area.
   bool showing_sad_tab_ = false;
 
   // true if Sad Tab is presented and presented for repeated load failure.

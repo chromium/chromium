@@ -31,13 +31,13 @@ namespace {
 // URL for the test window.history.go() test file.  The page at this URL
 // contains several buttons that trigger window.history commands.  Additionally
 // the page contains several divs used to display the state of the page:
-// - A div that is populated with |kOnLoadText| when the onload event fires.
-// - A div that is populated with |kNoOpText| 1s after a button is tapped.
-// - A div that is populated with |kPopStateReceivedText| when a popstate event
+// - A div that is populated with `kOnLoadText` when the onload event fires.
+// - A div that is populated with `kNoOpText` 1s after a button is tapped.
+// - A div that is populated with `kPopStateReceivedText` when a popstate event
 //   is received by the page.
 // - A div that is populated with the state object (if it's a string) upon the
 //   receipt of a popstate event.
-// - A div that is populated with |kHashChangeReceivedText| when a hashchange
+// - A div that is populated with `kHashChangeReceivedText` when a hashchange
 //   event is received.
 // When a button on the page is tapped, all pre-existing div text is cleared,
 // so matching against this webview text after a button is tapped ensures that
@@ -67,8 +67,8 @@ const char kHashChangedWithoutHistoryURL[] =
     "/page1/#hashChangedWithoutHistory";
 const char kNoHashChangeText[] = "No hash change";
 // An HTML page with two links that run JavaScript when they're clicked. The
-// first link updates |window.location.hash|, the second link changes
-// |window.location|.
+// first link updates `window.location.hash`, the second link changes
+// `window.location`.
 const char kHashChangedHTML[] =
     "<html><body>"
     "<a href='javascript:window.location.hash=\"#hashChangedWithHistory\"' "
@@ -133,10 +133,10 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 @interface NavigationTestCase : ChromeTestCase
 
 // Adds hashchange listener to the page that changes the inner html of the page
-// to |content| when a hashchange is detected.
+// to `content` when a hashchange is detected.
 - (void)addHashChangeListenerWithContent:(std::string)content;
 
-// Loads index page for redirect operations, taps the link with |redirectLabel|
+// Loads index page for redirect operations, taps the link with `redirectLabel`
 // and then perform series of back-forward navigations asserting the proper
 // behavior.
 - (void)verifyBackAndForwardAfterRedirect:(std::string)redirectLabel;
@@ -156,8 +156,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey loadURL:windowHistoryURL];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
-  // Tap on the window.history.go() button.  This will clear |kOnLoadText|, so
-  // the subsequent check for |kOnLoadText| will only pass if a reload has
+  // Tap on the window.history.go() button.  This will clear `kOnLoadText`, so
+  // the subsequent check for `kOnLoadText` will only pass if a reload has
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoNoParameterID];
 
@@ -174,8 +174,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey loadURL:windowHistoryURL];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
-  // Tap on the window.history.go() button.  This will clear |kOnLoadText|, so
-  // the subsequent check for |kOnLoadText| will only pass if a reload has
+  // Tap on the window.history.go() button.  This will clear `kOnLoadText`, so
+  // the subsequent check for `kOnLoadText` will only pass if a reload has
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoZeroID];
 
@@ -194,13 +194,13 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
   // Tap on the window.history.go(2) button.  This will clear all div text, so
-  // the subsequent check for |kNoOpText| will only pass if no navigations have
+  // the subsequent check for `kNoOpText` will only pass if no navigations have
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoTwoID];
   [ChromeEarlGrey waitForWebStateContainingText:kNoOpText];
 
   // Tap on the window.history.go(-2) button.  This will clear all div text, so
-  // the subsequent check for |kNoOpText| will only pass if no navigations have
+  // the subsequent check for `kNoOpText` will only pass if no navigations have
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoBackTwoID];
   [ChromeEarlGrey waitForWebStateContainingText:kNoOpText];
@@ -251,7 +251,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
   // Tap the window.history.go(-2) button.  This will clear the current page's
-  // |kOnLoadText|, so the subsequent check will only pass if another load
+  // `kOnLoadText`, so the subsequent check will only pass if another load
   // occurs.
   [ChromeEarlGrey tapWebStateElementWithID:kGoBackTwoID];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];

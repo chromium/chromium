@@ -53,7 +53,7 @@ class BlockedPopupTabHelperTest : public PlatformTest {
     return BlockedPopupTabHelper::FromWebState(web_state());
   }
 
-  // Returns InfoBarManager attached to |web_state()|.
+  // Returns InfoBarManager attached to `web_state()`.
   infobars::InfoBarManager* GetInfobarManager() {
     return InfoBarManagerImpl::FromWebState(web_state());
   }
@@ -73,7 +73,7 @@ TEST_F(BlockedPopupTabHelperTest, ShouldBlockPopup) {
   const GURL source_url1("https://source-url1");
   EXPECT_TRUE(GetBlockedPopupTabHelper()->ShouldBlockPopup(source_url1));
 
-  // Allow popups for |source_url1|.
+  // Allow popups for `source_url1`.
   scoped_refptr<HostContentSettingsMap> settings_map(
       ios::HostContentSettingsMapFactory::GetForBrowserState(
           browser_state_.get()));
@@ -113,7 +113,7 @@ TEST_F(BlockedPopupTabHelperTest, AllowBlockedPopup) {
   ASSERT_FALSE(web_state_delegate_.last_open_url_request());
   delegate->Accept();
 
-  // Verify that popups are allowed for |test_url|.
+  // Verify that popups are allowed for `test_url`.
   EXPECT_FALSE(GetBlockedPopupTabHelper()->ShouldBlockPopup(source_url));
 
   // Verify that child window was open.
@@ -151,7 +151,7 @@ TEST_F(BlockedPopupTabHelperTest, ShowAndDismissInfoBar) {
   EXPECT_EQ(0U, GetInfobarManager()->infobar_count());
   EXPECT_FALSE(IsObservingSources());
 
-  // Call |HandlePopup| to show an infobar.
+  // Call `HandlePopup` to show an infobar.
   const GURL test_url("https://popups.example.com");
   GetBlockedPopupTabHelper()->HandlePopup(test_url, web::Referrer());
   ASSERT_EQ(1U, GetInfobarManager()->infobar_count());
@@ -169,7 +169,7 @@ TEST_F(BlockedPopupTabHelperTest, ShowAndDismissInfoBar) {
 TEST_F(BlockedPopupTabHelperTest, RecordDismissMetrics) {
   base::HistogramTester histogram_tester;
 
-  // Call |HandlePopup| to show an infobar and check that the Presented
+  // Call `HandlePopup` to show an infobar and check that the Presented
   // histogram was recorded correctly.
   const GURL test_url("https://popups.example.com");
   GetBlockedPopupTabHelper()->HandlePopup(test_url, web::Referrer());

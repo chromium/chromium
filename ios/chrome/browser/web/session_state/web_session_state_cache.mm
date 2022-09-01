@@ -37,11 +37,11 @@ const base::FilePath::CharType kWebSessionCacheDirectoryName[] =
 namespace {
 
 // The delay, in seconds, for cleaning up any unassociated session state files
-// when -removeSessionStateDataForWebState is called while |_delayRemove| is
+// when -removeSessionStateDataForWebState is called while `_delayRemove` is
 // true.
 const int kRemoveSessionStateDataDelay = 10;
 
-// Writes |sessionData| to |cacheDirectory|.  If -writeToFile fails, deletes
+// Writes `sessionData` to `cacheDirectory`.  If -writeToFile fails, deletes
 // the old (now stale) data.
 void WriteSessionData(NSData* sessionData,
                       base::FilePath cacheDirectory,
@@ -142,7 +142,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
   if (!data || !sessionID || !_taskRunner)
     return;
 
-  // Copy ivars used by the block so that it does not reference |self|.
+  // Copy ivars used by the block so that it does not reference `self`.
   const base::FilePath cacheDirectory = _cacheDirectory;
 
   // Save the session to disk.
@@ -225,7 +225,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }
 
 // Deletes any files from the session cache directory that don't exist in
-// |liveSessionIDs|.
+// `liveSessionIDs`.
 - (void)purgeCacheExcept:(NSSet*)liveSessionIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 

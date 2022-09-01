@@ -103,7 +103,7 @@ IOSContentSizeCategory IOSContentSizeCategoryForCurrentUIContentSizeCategory() {
 }  // namespace
 
 FontSizeTabHelper::~FontSizeTabHelper() {
-  // Remove observer in destructor because |this| is captured by the usingBlock
+  // Remove observer in destructor because `this` is captured by the usingBlock
   // in calling [NSNotificationCenter.defaultCenter
   // addObserverForName:object:queue:usingBlock] in constructor.
   [NSNotificationCenter.defaultCenter

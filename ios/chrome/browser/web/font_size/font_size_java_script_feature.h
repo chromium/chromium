@@ -18,10 +18,10 @@ class FontSizeJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static FontSizeJavaScriptFeature* GetInstance();
 
-  // Adjusts the font size in all frames of |web_state| by |size| percentage.
+  // Adjusts the font size in all frames of `web_state` by `size` percentage.
   void AdjustFontSize(web::WebState* web_state, int size);
 
-  // Adjusts the font size in |web_frame| by |size| percentage.
+  // Adjusts the font size in `web_frame` by `size` percentage.
   void AdjustFontSize(web::WebFrame* web_frame, int size);
 
  private:

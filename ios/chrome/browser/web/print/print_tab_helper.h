@@ -20,10 +20,10 @@ class PrintTabHelper : public web::WebStateUserData<PrintTabHelper> {
 
   ~PrintTabHelper() override;
 
-  // Sets the |printer|, which is held weakly by this object.
+  // Sets the `printer`, which is held weakly by this object.
   void set_printer(id<WebStatePrinter> printer);
 
-  // Prints |web_state_| using |printer_|. Does nothing if printing is
+  // Prints `web_state_` using `printer_`. Does nothing if printing is
   // disabled, for example by policy.
   void Print();
 

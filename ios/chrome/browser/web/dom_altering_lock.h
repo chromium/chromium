@@ -23,7 +23,7 @@ typedef void (^ProceduralBlockWithBool)(BOOL);
 
 // Method called when another class wants to acquire the lock.
 // Return YES if the class is ready to restore the DOM tree to its initial state
-// and release the lock. A call to |releaseDOMLockWithCompletionHandler:|
+// and release the lock. A call to `releaseDOMLockWithCompletionHandler:`
 // will follow to do the actual cleaning.
 // Return NO if the class wants to keep an exclusive access to the DOM tree.
 // Other features must account for the fact that they may not be able to acquire
@@ -32,7 +32,7 @@ typedef void (^ProceduralBlockWithBool)(BOOL);
 
 // Method called when another class wants to acquire the lock.
 // The class must restore the DOM tree, call DOMAlteringLock::Release() and then
-// |completionHandler|.
+// `completionHandler`.
 - (void)releaseDOMLockWithCompletionHandler:(ProceduralBlock)completionHandler;
 
 @end

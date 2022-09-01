@@ -138,7 +138,7 @@ void SadTabTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   // The sad tab is removed when a new navigation begins.
   SetIsShowingSadTab(false);
-  // NO-OP is fine if |delegate_| is nil since the |delegate_| will be updated
+  // NO-OP is fine if `delegate_` is nil since the `delegate_` will be updated
   // when it is set.
   [delegate_ sadTabTabHelperDismissSadTab:this];
 }
@@ -176,7 +176,7 @@ void SadTabTabHelper::OnVisibleCrash(const GURL& url_causing_failure) {
 }
 
 void SadTabTabHelper::PresentSadTab() {
-  // NO-OP is fine if |delegate_| is nil since the |delegate_| will be updated
+  // NO-OP is fine if `delegate_` is nil since the `delegate_` will be updated
   // when it is set.
   [delegate_ sadTabTabHelper:this
       presentSadTabForWebState:web_state_

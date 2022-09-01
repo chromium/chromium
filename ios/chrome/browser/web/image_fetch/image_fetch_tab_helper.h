@@ -41,7 +41,7 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
 
   ~ImageFetchTabHelper() override;
 
-  // Callback for GetImageData. |data| will be in binary format, or nil if
+  // Callback for GetImageData. `data` will be in binary format, or nil if
   // GetImageData failed.
   typedef void (^ImageDataCallback)(NSData* data);
 
@@ -69,14 +69,14 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Callback for GetImageDataByJs. |data| will be in binary format, or nullptr
+  // Callback for GetImageDataByJs. `data` will be in binary format, or nullptr
   // if GetImageDataByJs failed.
   typedef base::OnceCallback<void(const std::string* data)> JsCallback;
 
   // Gets image data in binary format via ImageFetchJavaScriptFeature.
-  // |url| should be equal to the resolved "src" attribute of <img>, otherwise
+  // `url` should be equal to the resolved "src" attribute of <img>, otherwise
   // the method 1 would fail. If the JavaScript does not respond after
-  // |timeout|, the |callback| will be invoked with nullptr.
+  // `timeout`, the `callback` will be invoked with nullptr.
   void GetImageDataByJs(const GURL& url,
                         base::TimeDelta timeout,
                         JsCallback&& callback);
@@ -99,10 +99,10 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   // Store callbacks for GetImageData, with url as key.
   std::unordered_map<int, JsCallback> js_callbacks_;
 
-  // |GetImageData| uses this counter as ID to match calls with callbacks. Each
-  // call on |GetImageData| will increment |call_id_| by 1 and pass it as ID
+  // `GetImageData` uses this counter as ID to match calls with callbacks. Each
+  // call on `GetImageData` will increment `call_id_` by 1 and pass it as ID
   // when calling JavaScript. The ID will be regained in the message received in
-  // |OnImageDataReceived| and used to invoke the corresponding callback.
+  // `OnImageDataReceived` and used to invoke the corresponding callback.
   int call_id_ = 0;
 
   base::WeakPtrFactory<ImageFetchTabHelper> weak_ptr_factory_;

@@ -15,7 +15,7 @@
 // called from either app or test code.
 @interface ProgressIndicatorAppInterface : NSObject
 
-// Matcher for an MDCProgressView with |progress|.
+// Matcher for an MDCProgressView with `progress`.
 + (id<GREYMatcher>)progressViewWithProgress:(CGFloat)progress;
 
 @end

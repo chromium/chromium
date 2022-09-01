@@ -28,7 +28,7 @@ enum Zoom {
 };
 
 // Adjusts font size of web page by mapping
-// |UIApplication.sharedApplication.preferredContentSizeCategory| to a scaling
+// `UIApplication.sharedApplication.preferredContentSizeCategory` to a scaling
 // percentage and setting it to "-webkit-font-size-adjust" style on <body> when
 // the page is successfully loaded or system font size changes.
 class FontSizeTabHelper : public web::WebStateObserver,
@@ -63,7 +63,7 @@ class FontSizeTabHelper : public web::WebStateObserver,
   // Text zoom is currently only supported on HTML pages.
   bool CurrentPageSupportsTextZoom() const;
 
-  // Remove any stored zoom levels from the provided |PrefService|.
+  // Remove any stored zoom levels from `pref_service`.
   static void ClearUserZoomPrefs(PrefService* pref_service);
 
   static void RegisterBrowserStatePrefs(

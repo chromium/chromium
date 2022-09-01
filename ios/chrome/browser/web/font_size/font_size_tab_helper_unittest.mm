@@ -175,8 +175,8 @@ class FontSizeTabHelperTest : public PlatformTest {
   }
 
   // Waits for the text size adjustment value of the main frame to be
-  // |adjustment|. Returns true if the value matches |adjustment| within
-  // |kWaitForJSCompletionTimeout|, false otherwise.
+  // `adjustment`. Returns true if the value matches `adjustment` within
+  // `kWaitForJSCompletionTimeout`, false otherwise.
   bool WaitForMainFrameTextSizeAdjustmentEqualTo(int adjustment) {
     return base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForJSCompletionTimeout, ^bool {
@@ -200,7 +200,7 @@ class FontSizeTabHelperTest : public PlatformTest {
 };
 
 // Tests that a web page's font size is set properly in a procedure started
-// with default |UIApplication.sharedApplication.preferredContentSizeCategory|.
+// with default `UIApplication.sharedApplication.preferredContentSizeCategory`.
 TEST_F(FontSizeTabHelperTest, PageLoadedWithDefaultFontSize) {
   LoadWebpage();
   ASSERT_EQ(0ul, [GetMainFrameTextSizeAdjustment() length]);
@@ -219,7 +219,7 @@ TEST_F(FontSizeTabHelperTest, PageLoadedWithDefaultFontSize) {
 }
 
 // Tests that a web page's font size is set properly in a procedure started
-// with special |UIApplication.sharedApplication.preferredContentSizeCategory|.
+// with special `UIApplication.sharedApplication.preferredContentSizeCategory`.
 TEST_F(FontSizeTabHelperTest, PageLoadedWithExtraLargeFontSize) {
   preferred_content_size_category_ = UIContentSizeCategoryExtraLarge;
 
@@ -238,7 +238,7 @@ TEST_F(FontSizeTabHelperTest, PageLoadedWithExtraLargeFontSize) {
 }
 
 // Tests that UMA log is sent when
-// |UIApplication.sharedApplication.preferredContentSizeCategory| returns an
+// `UIApplication.sharedApplication.preferredContentSizeCategory` returns an
 // unrecognizable category.
 TEST_F(FontSizeTabHelperTest, PageLoadedWithUnrecognizableFontSize) {
   preferred_content_size_category_ = @"This is a new Category";

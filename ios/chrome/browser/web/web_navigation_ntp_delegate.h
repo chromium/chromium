@@ -24,7 +24,7 @@ class WebState;
 @property(nonatomic, readonly, getter=isNTPActiveForCurrentWebState)
     BOOL NTPActiveForCurrentWebState;
 
-// Tells the delegate to reload the NTP for |webState|, if any.
+// Tells the delegate to reload the NTP for `webState`, if any.
 - (void)reloadNTPForWebState:(web::WebState*)webState;
 
 @end

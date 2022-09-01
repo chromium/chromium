@@ -29,7 +29,7 @@
 // Tab helper which delegates to this class.
 @property(nonatomic, assign) RepostFormTabHelper* tabHelper;
 
-// Calls |repostFormTabHelper:presentRepostFromDialogAtPoint:completionHandler:|
+// Calls `repostFormTabHelper:presentRepostFromDialogAtPoint:completionHandler:`
 // completion handler.
 - (void)allowRepost:(BOOL)shouldContinue;
 

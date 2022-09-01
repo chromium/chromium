@@ -32,22 +32,22 @@ extern const base::FilePath::CharType kWebSessionCacheDirectoryName[];
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Persists |data| in a background thread based on |webState|'s tab id.
+// Persists `data` in a background thread based on `webState`'s tab id.
 - (void)persistSessionStateData:(NSData*)data
                     forWebState:(const web::WebState*)webState;
 
-// Retrieves the persisted session state based on |webState|'s tab id.  Returns
+// Retrieves the persisted session state based on `webState`'s tab id.  Returns
 // nil if file does not exist.
 - (NSData*)sessionStateDataForWebState:(const web::WebState*)webState;
 
-// Deletes the persisted session state based on |webState|'s tab id in a
-// background thread.  If |_delayRemove| is set, purge is instead called on a
+// Deletes the persisted session state based on `webState`'s tab id in a
+// background thread.  If `_delayRemove` is set, purge is instead called on a
 // short delay.
 - (void)removeSessionStateDataForWebState:(const web::WebState*)webState;
 
 // Removes any persisted session data for tabs that no longer exist.  Usually
 // this happens because of a crash, but may also be used internally if any tabs
-// are removed when |_delayRemove| is true.
+// are removed when `_delayRemove` is true.
 - (void)purgeUnassociatedData;
 
 // Delay any removes triggered by -removeSessionStateDataForWebState.  This is

@@ -17,21 +17,21 @@ class GURL;
 
 namespace web_navigation_util {
 
-// Creates a WebLoadParams object for loading |url| with |transition_type|. If
-// |post_data| is nonnull, the data and content-type of the post data will be
+// Creates a WebLoadParams object for loading `url` with `transition_type`. If
+// `post_data` is nonnull, the data and content-type of the post data will be
 // added to the return value as well.
 web::NavigationManager::WebLoadParams CreateWebLoadParams(
     const GURL& url,
     ui::PageTransition transition_type,
     TemplateURLRef::PostContent* post_data);
 
-// Navigates to the previous item on the navigation stack for |web_state|.
-// |web_state| can't be null. This method is for user initiated navigations as
+// Navigates to the previous item on the navigation stack for `web_state`.
+// `web_state` can't be null. This method is for user initiated navigations as
 // it logs "Back" user action.
 void GoBack(web::WebState* web_state);
 
-// Navigates to the next item on the navigation stack for |web_state|.
-// |web_state| can't be null. This method is for user initiated navigations as
+// Navigates to the next item on the navigation stack for `web_state`.
+// `web_state` can't be null. This method is for user initiated navigations as
 // it logs "Forward" user action.
 void GoForward(web::WebState* web_state);
 

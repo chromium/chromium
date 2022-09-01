@@ -90,7 +90,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     [app_state_ addAgent:app_agent_];
   }
 
-  // Adds a web state with |host| as the active URL to |browser|.
+  // Adds a web state with `host` as the active URL to `browser`.
   void AddWebStateToBrowser(std::string host, Browser* browser) {
     auto test_web_state = std::make_unique<web::FakeWebStateWithPolicyCache>(
         browser->GetBrowserState());
@@ -102,8 +102,8 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   }
 
-  // Adds a web state with |host| as the active URL, and with |host| registered
-  // as having a valid certificate to |browser|.
+  // Adds a web state with `host` as the active URL, and with `host` registered
+  // as having a valid certificate to `browser`.
   void AddCertifiedWebStateToBrowser(std::string host, Browser* browser) {
     auto test_web_state = std::make_unique<web::FakeWebStateWithPolicyCache>(
         browser->GetBrowserState());
@@ -158,9 +158,9 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     }));
   }
 
-  // Checks |cache| to see if the policy for |host| is "allowed". For the
-  // purposes of this test, that's effectively testing if |host| is "in"
-  // |cache|. Checking the cache is async, so this method handles synchronous
+  // Checks `cache` to see if the policy for `host` is "allowed". For the
+  // purposes of this test, that's effectively testing if `host` is "in"
+  // `cache`. Checking the cache is async, so this method handles synchronous
   // waiting for the result.
   bool IsHostCertAllowed(
       const scoped_refptr<web::CertificatePolicyCache>& cache,
@@ -179,7 +179,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     return judgement == web::CertPolicy::Judgment::ALLOWED;
   }
 
-  // Clears all entries from |cache|. This is posted to the IO thread and this
+  // Clears all entries from `cache`. This is posted to the IO thread and this
   // method sync-waits for this to complete.
   void ClearPolicyCache(
       const scoped_refptr<web::CertificatePolicyCache>& cache) {
@@ -214,7 +214,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     return IsHostCertAllowed(IncognitoPolicyCache(), host);
   }
 
-  // Populates |cache| with allowed certs for the hosts in |hosts|. This is done
+  // Populates `cache` with allowed certs for the hosts in `hosts`. This is done
   // in a single async call, and this method sync-waits on it completing.
   void PopulatePolicyCache(std::vector<std::string> hosts,
                            scoped_refptr<web::CertificatePolicyCache> cache) {
