@@ -19,7 +19,7 @@ namespace {
 // Default minimum amount of time for which a positive snooper presence will be
 // reported.
 constexpr base::TimeDelta kSnoopingProtectionPositiveWindowDefault =
-    base::Seconds(4);
+    base::Seconds(3);
 
 // Default quick dim delay to configure power_manager.
 constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(10);
@@ -54,13 +54,14 @@ absl::optional<int> GetIntParam(const base::FieldTrialParams& params,
 hps::FeatureConfig GetDefaultSnoopingProtectionConfig() {
   hps::FeatureConfig config;
 
-  // Just apply a threshold to the last-seen inference.
+  // Three consecutive positive/negative/unknown frames are required to change
+  // the second person presence state to reduce noise.
   auto& filter_config = *config.mutable_consecutive_results_filter_config();
-  filter_config.set_positive_count_threshold(1);
-  filter_config.set_negative_count_threshold(1);
-  filter_config.set_uncertain_count_threshold(1);
-  filter_config.set_positive_score_threshold(0);
-  filter_config.set_negative_score_threshold(0);
+  filter_config.set_positive_count_threshold(3);
+  filter_config.set_negative_count_threshold(3);
+  filter_config.set_uncertain_count_threshold(3);
+  filter_config.set_positive_score_threshold(20);
+  filter_config.set_negative_score_threshold(20);
 
   return config;
 }
