@@ -531,11 +531,8 @@ void NGInlineNode::PrepareLayoutIfNeeded() const {
 
 void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   if (Data().shaping_state_ != NGInlineNodeData::kShapingNone) {
-    if (ShouldBeReshaped()) {
-      ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDone, MutableData(),
-                                  nullptr, nullptr);
-    }
-    return;
+    if (!ShouldBeReshaped())
+      return;
   }
 
   NGInlineNodeData* data = MutableData();

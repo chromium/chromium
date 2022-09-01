@@ -74,10 +74,9 @@ void DeferredShapingController::OnFirstContentfulPaint() {
                 WrapWeakPersistent(this), ReshapeReason::kFcp));
 }
 
-void DeferredShapingController::ReshapeAllDeferred(ReshapeReason reason) {
-  default_allow_deferred_shaping_ = false;
+size_t DeferredShapingController::ReshapeAllDeferredInternal() {
   if (deferred_elements_.IsEmpty())
-    return;
+    return 0;
   size_t count = 0;
   for (auto& element : deferred_elements_) {
     if (!element->isConnected())
@@ -94,6 +93,12 @@ void DeferredShapingController::ReshapeAllDeferred(ReshapeReason reason) {
     box->ClearLayoutResults();
   }
   deferred_elements_.clear();
+  return count;
+}
+
+void DeferredShapingController::ReshapeAllDeferred(ReshapeReason reason) {
+  default_allow_deferred_shaping_ = false;
+  size_t count = ReshapeAllDeferredInternal();
   if (count == 0)
     return;
 
@@ -159,6 +164,17 @@ void DeferredShapingController::ReshapeDeferredForWidth(
 void DeferredShapingController::ReshapeDeferredForHeight(
     const LayoutObject& object) {
   ReshapeAllDeferred(ReshapeReason::kGeometryApi);
+}
+
+void DeferredShapingController::OnResizeFrame() {
+  // This function does not clear default_allow_deferred_shaping_.
+  // We don't need precise geometry of a specific element, and it's ok
+  // to defer elements after the resize.
+  size_t count = ReshapeAllDeferredInternal();
+  if (count <= 0)
+    return;
+  DEFERRED_SHAPING_VLOG(1) << "Reshaped all " << count
+                           << " elements by resizing";
 }
 
 }  // namespace blink

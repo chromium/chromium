@@ -559,4 +559,20 @@ TEST_F(DeferredShapingTest, ScrollIntoViewInInactiveDocument) {
   // PASS if no crash.
 }
 
+TEST_F(DeferredShapingTest, ResizeFrame) {
+  SetBodyInnerHTML(R"HTML(
+      <div style="height:600px"></div>
+      <div id="target" style="height:800px">IFC</div>
+      <div id="target2">IFC2</div>
+      )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+
+  GetFrame().View()->SetLayoutSizeFixedToFrameSize(false);
+  GetFrame().View()->SetLayoutSize({800, 1200});
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_TRUE(IsDefer("target2"));
+}
+
 }  // namespace blink
