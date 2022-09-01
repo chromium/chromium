@@ -52,4 +52,7 @@ enum AudioContextLatencyCategory {
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamSource] MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamDestination] MediaStreamAudioDestinationNode createMediaStreamDestination();
 
+    [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSinkId] readonly attribute DOMString sinkId;
+    [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSetSinkId, RaisesException, CallWith=ScriptState] Promise<void> setSinkId(DOMString sinkId);
+    [RuntimeEnabled=AudioContextSetSinkId] attribute EventHandler onsinkchange;
 };

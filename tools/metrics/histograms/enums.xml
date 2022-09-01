@@ -41261,6 +41261,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4346" label="V8TurboFanOsrCompileStarted"/>
   <int value="4347" label="V8Document_HasRedemptionRecord_Method"/>
   <int value="4348" label="DeferredShaping2ReshapedByLastResort"/>
+  <int value="4349" label="AudioContextSinkId"/>
+  <int value="4350" label="AudioContextSetSinkId"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

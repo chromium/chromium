@@ -200,6 +200,12 @@
       origin_trial_allows_third_party: true,
       status: "experimental",
     },
+    // The runtime flag for AudioContext.setSinkID().
+    // See: https://github.com/WebAudio/web-audio-api/pull/2498
+    {
+      name: "AudioContextSetSinkId",
+      status: "test",
+    },
     {
       name: "AudioOutputDevices",
       // Android does not yet support switching of audio output devices

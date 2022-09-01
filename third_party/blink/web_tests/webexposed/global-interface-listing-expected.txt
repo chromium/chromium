@@ -273,7 +273,9 @@ interface AudioBufferSourceNode : AudioScheduledSourceNode
 interface AudioContext : BaseAudioContext
     attribute @@toStringTag
     getter baseLatency
+    getter onsinkchange
     getter outputLatency
+    getter sinkId
     method close
     method constructor
     method createMediaElementSource
@@ -281,7 +283,9 @@ interface AudioContext : BaseAudioContext
     method createMediaStreamSource
     method getOutputTimestamp
     method resume
+    method setSinkId
     method suspend
+    setter onsinkchange
 interface AudioData
     attribute @@toStringTag
     getter duration

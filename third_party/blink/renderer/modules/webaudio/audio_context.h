@@ -48,6 +48,9 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
                const WebAudioLatencyHint&,
                absl::optional<float> sample_rate);
   ~AudioContext() override;
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(sinkchange, kSinkchange)
+
   void Trace(Visitor*) const override;
 
   // For ContextLifeCycleObserver
@@ -94,6 +97,12 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   // mojom::blink::PermissionObserver
   void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
+
+  String sinkId() const;
+
+  ScriptPromise setSinkId(ScriptState*, const String&, ExceptionState&);
+
+  void NotifySetSinkIdIsDone();
 
  protected:
   void Uninitialize() final;
@@ -228,6 +237,9 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
   HeapMojoReceiver<mojom::blink::PermissionObserver, AudioContext>
       permission_receiver_;
+
+  // Initializes `sink_id_` with "" for the default audio output device.
+  String sink_id_ = "";
 };
 
 }  // namespace blink

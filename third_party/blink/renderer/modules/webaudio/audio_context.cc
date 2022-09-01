@@ -883,4 +883,34 @@ double AudioContext::GetOutputLatencyQuantizingFactor() const {
       : kOutputLatencyQuatizingFactor;
 }
 
+String AudioContext::sinkId() const {
+  DCHECK(IsMainThread());
+
+  return sink_id_;
+}
+
+ScriptPromise AudioContext::setSinkId(ScriptState* script_state,
+                                      const String& sink_id,
+                                      ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+  ScriptPromise promise = ScriptPromise();
+
+  if (ContextState() == kClosed) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot invoke setSinkId() on a closed AudioContext.");
+    return promise;
+  }
+
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "setSinkId is not supported.");
+
+  return promise;
+}
+
+void AudioContext::NotifySetSinkIdIsDone() {
+  DispatchEvent(*Event::Create(event_type_names::kSinkchange));
+}
+
 }  // namespace blink
