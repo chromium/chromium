@@ -122,8 +122,8 @@ TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
 TEST_F(BookmarkMenuBridgeTest, TestClearBookmarkMenu) {
   AddTestMenuItem(menu_, @"hi mom", nil);
   AddTestMenuItem(menu_, @"not", @selector(openBookmarkMenuItem:));
-  NSMenuItem* item = AddTestMenuItem(menu_, @"hi mom", nil);
-  [item setSubmenu:[[[NSMenu alloc] initWithTitle:@"bar"] autorelease]];
+  NSMenuItem* test_item = AddTestMenuItem(menu_, @"hi mom", nil);
+  [test_item setSubmenu:[[[NSMenu alloc] initWithTitle:@"bar"] autorelease]];
   AddTestMenuItem(menu_, @"not", @selector(openBookmarkMenuItem:));
   AddTestMenuItem(menu_, @"zippy", @selector(length));
   [menu_ addItem:[NSMenuItem separatorItem]];
