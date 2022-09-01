@@ -61,8 +61,12 @@ namespace recordreplay {
 `
 );
 
-// ensure goma is started for cloud builds with engflow
-spawnChecked("goma_ctl", ["restart"]);
+const useGoma = !process.env.NO_GOMA;
+
+if (useGoma) {
+  // ensure goma is started for cloud builds with engflow
+  spawnChecked("goma_ctl", ["restart"]);
+}
 
 // ensure that build configuration is written with correct paths
 spawnChecked("gn", ["gen", "out/Release"]);
