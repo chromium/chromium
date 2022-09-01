@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "url/gurl.h"
 
@@ -27,13 +28,14 @@ enum class PickerShowState {
   kPopOut = 2,   // show the intent picker icon and pop out bubble
 };
 
-void OnIntentPickerClosedChromeOs(content::WebContents* web_contents,
-                                  PickerShowState show_state,
-                                  const GURL& url,
-                                  const std::string& launch_name,
-                                  PickerEntryType entry_type,
-                                  IntentPickerCloseReason close_reason,
-                                  bool should_persist);
+void OnIntentPickerClosedChromeOs(
+    base::WeakPtr<content::WebContents> web_contents,
+    PickerShowState show_state,
+    const GURL& url,
+    const std::string& launch_name,
+    PickerEntryType entry_type,
+    IntentPickerCloseReason close_reason,
+    bool should_persist);
 
 void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
                                        const GURL& url,

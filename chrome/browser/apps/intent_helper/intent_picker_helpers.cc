@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -99,12 +100,16 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void OnIntentPickerClosed(content::WebContents* web_contents,
+void OnIntentPickerClosed(base::WeakPtr<content::WebContents> web_contents,
                           const GURL& url,
                           const std::string& launch_name,
                           PickerEntryType entry_type,
                           IntentPickerCloseReason close_reason,
                           bool should_persist) {
+  if (!web_contents) {
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   OnIntentPickerClosedChromeOs(web_contents, PickerShowState::kOmnibox, url,
                                launch_name, entry_type, close_reason,
@@ -113,7 +118,7 @@ void OnIntentPickerClosed(content::WebContents* web_contents,
   const bool should_launch_app =
       close_reason == apps::IntentPickerCloseReason::OPEN_APP;
   if (should_launch_app) {
-    LaunchAppFromIntentPicker(web_contents, url, launch_name, entry_type);
+    LaunchAppFromIntentPicker(web_contents.get(), url, launch_name, entry_type);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
@@ -130,7 +135,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
       /*show_stay_in_chrome=*/false,
       /*show_remember_selection=*/false,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      base::BindOnce(&OnIntentPickerClosed, web_contents, url));
+      base::BindOnce(&OnIntentPickerClosed, web_contents->GetWeakPtr(), url));
 }
 
 std::vector<IntentPickerAppInfo> GetAppsForIntentPicker(

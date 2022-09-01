@@ -116,7 +116,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
       web_contents, std::move(apps),
       /*show_stay_in_chrome=*/true,
       /*show_remember_selection=*/true,
-      base::BindOnce(&OnIntentPickerClosedChromeOs, web_contents,
+      base::BindOnce(&OnIntentPickerClosedChromeOs, web_contents->GetWeakPtr(),
                      PickerShowState::kPopOut, url));
 }
 
@@ -140,13 +140,18 @@ void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
       base::BindOnce(&OnAppIconsLoaded, web_contents, url));
 }
 
-void OnIntentPickerClosedChromeOs(content::WebContents* web_contents,
-                                  PickerShowState show_state,
-                                  const GURL& url,
-                                  const std::string& launch_name,
-                                  PickerEntryType entry_type,
-                                  IntentPickerCloseReason close_reason,
-                                  bool should_persist) {
+void OnIntentPickerClosedChromeOs(
+    base::WeakPtr<content::WebContents> web_contents,
+    PickerShowState show_state,
+    const GURL& url,
+    const std::string& launch_name,
+    PickerEntryType entry_type,
+    IntentPickerCloseReason close_reason,
+    bool should_persist) {
+  if (!web_contents) {
+    return;
+  }
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 // TODO(crbug.com/1225828): Handle this for lacros-chrome as well.
@@ -169,8 +174,6 @@ void OnIntentPickerClosedChromeOs(content::WebContents* web_contents,
   const bool should_launch_app =
       close_reason == IntentPickerCloseReason::OPEN_APP;
 
-  auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
-
   // If the picker was closed without an app being chosen,
   // e.g. due to the tab being closed. Keep count of this scenario so we can
   // stop the UI from showing after 2+ dismissals.
@@ -182,6 +185,8 @@ void OnIntentPickerClosedChromeOs(content::WebContents* web_contents,
 
   if (should_persist) {
     DCHECK(!launch_name.empty());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
+    DCHECK(proxy);
     proxy->AddPreferredApp(launch_name, url);
     apps::IntentHandlingMetrics::RecordLinkCapturingEvent(
         entry_type,
@@ -189,7 +194,7 @@ void OnIntentPickerClosedChromeOs(content::WebContents* web_contents,
   }
 
   if (should_launch_app) {
-    LaunchAppFromIntentPickerChromeOs(web_contents, url, launch_name,
+    LaunchAppFromIntentPickerChromeOs(web_contents.get(), url, launch_name,
                                       entry_type);
   }
 
@@ -214,8 +219,6 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
   apps::IntentHandlingMetrics::RecordLinkCapturingEvent(
       app_type, apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened);
 
-  auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
-
   if (app_type == PickerEntryType::kWeb) {
     web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
 
@@ -224,6 +227,8 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
           web_contents, launch_name);
     }
   } else {
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
+
     // TODO(crbug.com/853604): Distinguish the source from link and omnibox.
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
       proxy->LaunchAppWithUrl(
