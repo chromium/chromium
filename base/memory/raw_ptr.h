@@ -1361,6 +1361,18 @@ struct less<raw_ptr<T, Impl>> {
   }
 };
 
+// Define for cases where raw_ptr<T> holds a pointer to an array of type T.
+// This is consistent with definition of std::iterator_traits<T*>.
+// Algorithms like std::binary_search need that.
+template <typename T, typename Impl>
+struct iterator_traits<raw_ptr<T, Impl>> {
+  using difference_type = ptrdiff_t;
+  using value_type = std::remove_cv_t<T>;
+  using pointer = T*;
+  using reference = T&;
+  using iterator_category = std::random_access_iterator_tag;
+};
+
 }  // namespace std
 
 #endif  // BASE_MEMORY_RAW_PTR_H_
