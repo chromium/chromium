@@ -2,13 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 # WPT codebase for running webplatform tests
 group("wpt_tests_isolate") {
   testonly = true
   data = [
     # Include the test runner.
     "//testing/scripts/wpt_common.py",
-    "//testing/scripts/run_wpt_tests.py",
+    "//third_party/blink/tools/run_wpt_tests.py",
 
     # WPT tooling
     "//third_party/wpt_tools/",
@@ -65,9 +67,9 @@ if (is_android) {
       "//third_party/blink/web_tests/android/WPTSmokeTestCases",
     ]
     data_deps = [
+      ":run_wpt_tests",
       ":wpt_tests_isolate",
       "//build/android:test_runner_py",
-      "//testing:run_wpt_tests",
     ]
   }
 }
@@ -113,4 +115,10 @@ group("blink_pytype") {
   ]
 
   data_deps = [ "//testing:pytype_dependencies" ]
+}
+
+python_library("run_wpt_tests") {
+  testonly = true
+  pydeps_file = "//third_party/blink/tools/run_wpt_tests.pydeps"
+  data = [ "//.vpython3" ]
 }

@@ -32,19 +32,17 @@ instructions may be out of date.
 ***
 
 The runner script is
-[`testing/scripts/run_wpt_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:testing/scripts/run_wpt_tests.py).
+[`third_party/blink/tools/run_wpt_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/run_wpt_tests.py).
 Before running the script, you must have built the necessary ninja targets:
 
 ```
 autoninja -C out/Release wpt_tests_isolate
 ```
 
-To run the script, you must enter the `testing/scripts/` directory before
-executing it:
+To run the script, enter chromium/src directory and run the command below:
 
 ```
-cd testing/scripts
-./run_wpt_tests.py [test list]
+./third_party/blink/tools/run_wpt_tests.py [test list]
 ```
 
 The list of tests should be given relative to `external/wpt/`, e.g.

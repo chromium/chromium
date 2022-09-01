@@ -323,7 +323,7 @@ android_apk("weblayer_support_apk") {
 }
 
 script_test("weblayer_shell_wpt") {
-  script = "//testing/scripts/run_wpt_tests.py"
+  script = "//third_party/blink/tools/run_wpt_tests.py"
   args = [
     "--product",
     "android_weblayer",

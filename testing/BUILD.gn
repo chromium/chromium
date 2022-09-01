@@ -85,9 +85,3 @@ python_library("run_isolated_script_test") {
   pydeps_file = "//testing/scripts/run_isolated_script_test.pydeps"
   data = [ "//.vpython3" ]
 }
-
-python_library("run_wpt_tests") {
-  testonly = true
-  pydeps_file = "//testing/scripts/run_wpt_tests.pydeps"
-  data = [ "//.vpython3" ]
-}

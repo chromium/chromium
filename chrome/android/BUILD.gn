@@ -3651,12 +3651,12 @@ script_test("monochrome_webview_finch_smoke_tests") {
   data_deps = [
     "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
     "//chrome/android:monochrome_public_apk",
-    "//testing:run_wpt_tests",
+    "//third_party/blink/tools:run_wpt_tests",
   ]
 }
 
 script_test("chrome_public_wpt") {
-  script = "//testing/scripts/run_wpt_tests.py"
+  script = "//third_party/blink/tools/run_wpt_tests.py"
   args = [
     "--product",
     "chrome_android",

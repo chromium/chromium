@@ -1143,7 +1143,7 @@ if (!is_ios) {
       }
     }
     script_test("wpt_tests_isolate") {
-      script = "//testing/scripts/run_wpt_tests.py"
+      script = "//third_party/blink/tools/run_wpt_tests.py"
       data_deps = [
         "//chrome:chrome",
         "//chrome/test/chromedriver",
@@ -1152,7 +1152,7 @@ if (!is_ios) {
       ]
     }
     script_test("wpt_tests_isolate_content_shell") {
-      script = "//testing/scripts/run_wpt_tests.py"
+      script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [ "--product=content_shell" ]
       data_deps = [
         ":blink_web_tests_support_data",
