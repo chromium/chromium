@@ -81,7 +81,8 @@ AudioParameters AudioManagerFuchsia::GetInputStreamParameters(
   const size_t kPeriodSamples = AudioTimestampHelper::TimeToFrames(
       base::kAudioSchedulingPeriod, kSampleRate);
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_MONO, kSampleRate, kPeriodSamples);
+                         ChannelLayoutConfig::Mono(), kSampleRate,
+                         kPeriodSamples);
 
   // Some AudioCapturer implementations support echo cancellation, noise
   // suppression and automatic gain control, but currently there is no way to
@@ -107,7 +108,8 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
   const size_t kPeriodFrames = AudioTimestampHelper::TimeToFrames(
       base::kAudioSchedulingPeriod, kSampleRate);
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, kSampleRate, kPeriodFrames);
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kPeriodFrames);
 }
 
 const char* AudioManagerFuchsia::GetName() {

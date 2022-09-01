@@ -11,6 +11,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 #include "media/fuchsia/audio/fake_audio_capturer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,14 +70,15 @@ class AudioInputStreamFuchsiaTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void InitializeCapturer(ChannelLayout layout) {
+  void InitializeCapturer(ChannelLayoutConfig channel_layout_config) {
     base::TestComponentContextForProcess test_context;
     FakeAudioCapturerFactory audio_capturer_factory(
         test_context.additional_services());
 
     input_stream_ = std::make_unique<AudioInputStreamFuchsia>(
         /*manager=*/nullptr,
-        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, layout,
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        channel_layout_config,
                         /*sample_rate=*/48000, kFramesPerPacket),
         AudioDeviceDescription::kDefaultDeviceId);
 
@@ -94,12 +96,12 @@ class AudioInputStreamFuchsiaTest : public testing::Test {
     ASSERT_FALSE(audio_capturer_factory.TakeCapturer());
   }
 
-  void TestCapture(ChannelLayout layout) {
-    InitializeCapturer(layout);
+  void TestCapture(ChannelLayoutConfig channel_layout_config) {
+    InitializeCapturer(channel_layout_config);
     input_stream_->Start(&callback_);
     base::RunLoop().RunUntilIdle();
 
-    size_t num_channels = ChannelLayoutToChannelCount(layout);
+    size_t num_channels = channel_layout_config.channels();
 
     // Produce a packet.
     std::vector<float> samples(kFramesPerPacket * num_channels);
@@ -133,14 +135,14 @@ class AudioInputStreamFuchsiaTest : public testing::Test {
 TEST_F(AudioInputStreamFuchsiaTest, CreateAndDestroy) {}
 
 TEST_F(AudioInputStreamFuchsiaTest, InitializeAndDestroy) {
-  InitializeCapturer(CHANNEL_LAYOUT_MONO);
+  InitializeCapturer(ChannelLayoutConfig::Mono());
 }
 
 TEST_F(AudioInputStreamFuchsiaTest, InitializeAndStart) {
-  const auto kLayout = CHANNEL_LAYOUT_MONO;
-  const auto kNumChannels = ChannelLayoutToChannelCount(kLayout);
+  const auto kChannelLayoutConfig = ChannelLayoutConfig::Mono();
+  const auto kNumChannels = kChannelLayoutConfig.channels();
 
-  InitializeCapturer(kLayout);
+  InitializeCapturer(kChannelLayoutConfig);
   input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
@@ -152,10 +154,10 @@ TEST_F(AudioInputStreamFuchsiaTest, InitializeAndStart) {
 }
 
 TEST_F(AudioInputStreamFuchsiaTest, InitializeStereo) {
-  const auto kLayout = CHANNEL_LAYOUT_STEREO;
-  const auto kNumChannels = ChannelLayoutToChannelCount(kLayout);
+  const auto kChannelLayoutConfig = ChannelLayoutConfig::Stereo();
+  const auto kNumChannels = kChannelLayoutConfig.channels();
 
-  InitializeCapturer(kLayout);
+  InitializeCapturer(kChannelLayoutConfig);
   input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
@@ -165,7 +167,7 @@ TEST_F(AudioInputStreamFuchsiaTest, InitializeStereo) {
 }
 
 TEST_F(AudioInputStreamFuchsiaTest, StartAndStop) {
-  InitializeCapturer(CHANNEL_LAYOUT_MONO);
+  InitializeCapturer(ChannelLayoutConfig::Stereo());
   input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
@@ -176,15 +178,15 @@ TEST_F(AudioInputStreamFuchsiaTest, StartAndStop) {
 }
 
 TEST_F(AudioInputStreamFuchsiaTest, CaptureMono) {
-  TestCapture(CHANNEL_LAYOUT_MONO);
+  TestCapture(ChannelLayoutConfig::Mono());
 }
 
 TEST_F(AudioInputStreamFuchsiaTest, CaptureStereo) {
-  TestCapture(CHANNEL_LAYOUT_STEREO);
+  TestCapture(ChannelLayoutConfig::Stereo());
 }
 
 TEST_F(AudioInputStreamFuchsiaTest, CaptureTwoPackets) {
-  InitializeCapturer(CHANNEL_LAYOUT_MONO);
+  InitializeCapturer(ChannelLayoutConfig::Mono());
   input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
@@ -214,7 +216,7 @@ TEST_F(AudioInputStreamFuchsiaTest, CaptureTwoPackets) {
 }
 
 TEST_F(AudioInputStreamFuchsiaTest, CaptureAfterStop) {
-  InitializeCapturer(CHANNEL_LAYOUT_MONO);
+  InitializeCapturer(ChannelLayoutConfig::Mono());
   input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
   input_stream_->Stop();
