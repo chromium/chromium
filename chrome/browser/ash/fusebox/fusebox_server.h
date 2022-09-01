@@ -37,7 +37,7 @@ class Server {
   ~Server();
 
   // Manages monikers in the context of the Server's MonikerMap.
-  fusebox::Moniker CreateMoniker(storage::FileSystemURL target);
+  fusebox::Moniker CreateMoniker(storage::FileSystemURL target, bool read_only);
   void DestroyMoniker(fusebox::Moniker moniker);
 
   void RegisterFSURLPrefix(const std::string& subdir,

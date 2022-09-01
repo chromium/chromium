@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FUSEBOX_FUSEBOX_MONIKER_H_
 
 #include <map>
+#include <utility>
 
 #include "base/token.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -73,6 +74,8 @@ class MonikerMap {
     base::Token token;
   };
 
+  using FSURLAndReadOnlyState = std::pair<storage::FileSystemURL, bool>;
+
   // Returns the 1234etc base::Token from a storage::FileSystemURL in its
   // string form (like "dummy://moniker/1234etc"), where "dummy://moniker" is
   // the fusebox::kMonikerFileSystemURL prefix.
@@ -95,19 +98,21 @@ class MonikerMap {
   // string form) for the target. It is the caller's responsibility to call
   // DestroyMoniker when the moniker is no longer required but also to keep the
   // FileSystemURL's backing content alive until that DestroyMoniker call.
-  Moniker CreateMoniker(storage::FileSystemURL target);
+  Moniker CreateMoniker(storage::FileSystemURL target, bool read_only);
 
   // Tears down the link, so that Resolve will return invalid FileSystemURL
   // values.
   void DestroyMoniker(const Moniker& moniker);
 
   // Returns the target for the previously created moniker, as identified by
-  // its base::Token. The return value's is_valid() will be false if there was
-  // no such moniker or if it was destroyed.
-  storage::FileSystemURL Resolve(const Moniker& moniker);
+  // its base::Token. The return value's storage::FileSystemURL element
+  // is_valid() will be false if there was no such moniker or if it was
+  // destroyed. If valid, the bool element is the read_only argument passed to
+  // CreateMoniker.
+  FSURLAndReadOnlyState Resolve(const Moniker& moniker);
 
  private:
-  std::map<base::Token, storage::FileSystemURL> map_;
+  std::map<base::Token, FSURLAndReadOnlyState> map_;
 };
 
 }  // namespace fusebox

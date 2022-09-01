@@ -114,13 +114,16 @@ ParseResult ParseFileSystemURL(fusebox::MonikerMap& moniker_map,
   auto extract_token_result =
       fusebox::MonikerMap::ExtractToken(fs_url_as_string);
   switch (extract_token_result.result_type) {
-    case ResultType::OK:
-      fs_url = moniker_map.Resolve(extract_token_result.token);
-      if (!fs_url.is_valid()) {
+    case ResultType::OK: {
+      auto resolved = moniker_map.Resolve(extract_token_result.token);
+      if (!resolved.first.is_valid()) {
         LOG(ERROR) << "Unresolvable Moniker";
         return ParseResult(base::File::Error::FILE_ERROR_NOT_FOUND);
       }
+      fs_url = std::move(resolved.first);
+      read_only = resolved.second;
       break;
+    }
     case ResultType::NOT_A_MONIKER_FS_URL: {
       auto resolved = ResolvePrefixMap(prefix_map, fs_url_as_string);
       if (resolved.first.empty()) {
@@ -288,10 +291,11 @@ Server::~Server() {
   g_server_instance = nullptr;
 }
 
-fusebox::Moniker Server::CreateMoniker(storage::FileSystemURL target) {
+fusebox::Moniker Server::CreateMoniker(storage::FileSystemURL target,
+                                       bool read_only) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  return moniker_map_.CreateMoniker(target);
+  return moniker_map_.CreateMoniker(target, read_only);
 }
 
 void Server::DestroyMoniker(fusebox::Moniker moniker) {

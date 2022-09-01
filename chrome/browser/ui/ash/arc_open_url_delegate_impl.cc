@@ -164,7 +164,8 @@ GURL ConvertToMonikerFileUrl(Profile* profile, GURL external_file_url) {
     return external_file_url;
   }
 
-  fusebox::Moniker moniker = fusebox_server->CreateMoniker(fs_url);
+  constexpr bool kReadOnly = true;
+  fusebox::Moniker moniker = fusebox_server->CreateMoniker(fs_url, kReadOnly);
 
   // Keep the Moniker alive for the same time as a file shared through the Web
   // Share API. We could be cleverer about scheduling the clean up, but "destroy
