@@ -71,6 +71,7 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver {
   std::unique_ptr<GlanceablesDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
   GlanceablesView* view_ = nullptr;
+  bool show_session_restore_ = true;
 
   // Hides windows while glanceables are showing.
   std::unique_ptr<GlanceablesWindowHider> window_hider_;

@@ -125,6 +125,10 @@ class GlanceablesTest : public AshTestBase {
     return controller_->view_->up_next_view_;
   }
 
+  views::Label* GetRestoreSessionLabel() {
+    return controller_->view_->restore_session_label_;
+  }
+
   GlanceablesRestoreView* GetRestoreView() {
     return controller_->view_->restore_view_;
   }
@@ -172,7 +176,23 @@ TEST_F(GlanceablesTest, GlanceablesViewCreatesChildViews) {
   EXPECT_TRUE(GetWeatherIcon());
   EXPECT_TRUE(GetWeatherTemperature());
   EXPECT_TRUE(GetUpNextView());
+  EXPECT_TRUE(GetRestoreSessionLabel());
   EXPECT_TRUE(GetRestoreView());
+}
+
+TEST_F(GlanceablesTest, ShowFromOverviewDoesNotCreateRestoreViews) {
+  controller_->ShowFromOverview();
+
+  GlanceablesView* view = GetGlanceablesView();
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(GetWelcomeLabel());
+  EXPECT_TRUE(GetWeatherIcon());
+  EXPECT_TRUE(GetWeatherTemperature());
+  EXPECT_TRUE(GetUpNextView());
+
+  // Session restore views are skipped.
+  EXPECT_FALSE(GetRestoreSessionLabel());
+  EXPECT_FALSE(GetRestoreView());
 }
 
 TEST_F(GlanceablesTest, WeatherViewShowsWeather) {

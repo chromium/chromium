@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -80,7 +81,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   Profile* profile_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsOnLogin) {
+IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsAndHide) {
   // Not showing on the login screen.
   EXPECT_FALSE(glanceables_controller()->IsShowing());
 
@@ -95,5 +96,17 @@ IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsOnLogin) {
                                       signin::ConsentLevel::kSignin);
 
   // Showing once the refresh token is loaded.
+  EXPECT_TRUE(glanceables_controller()->IsShowing());
+
+  // Open a browser window.
+  CreateBrowser(ProfileManager::GetLastUsedProfile());
+
+  // Glanceables should close because a window opened.
+  EXPECT_FALSE(glanceables_controller()->IsShowing());
+
+  // Simulate re-showing glanceables from overview.
+  glanceables_controller()->ShowFromOverview();
+
+  // Glanceables are showing.
   EXPECT_TRUE(glanceables_controller()->IsShowing());
 }

@@ -60,6 +60,7 @@ void GlanceablesController::Init(
 }
 
 void GlanceablesController::ShowOnLogin() {
+  show_session_restore_ = true;
   CreateUi();
   FetchData();
 }
@@ -67,6 +68,7 @@ void GlanceablesController::ShowOnLogin() {
 void GlanceablesController::ShowFromOverview() {
   // Hide any open windows.
   window_hider_ = std::make_unique<GlanceablesWindowHider>();
+  show_session_restore_ = false;
   CreateUi();
   FetchData();
 }
@@ -93,7 +95,8 @@ void GlanceablesController::CreateUi() {
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   widget_->Init(std::move(params));
 
-  view_ = widget_->SetContentsView(std::make_unique<GlanceablesView>());
+  view_ = widget_->SetContentsView(
+      std::make_unique<GlanceablesView>(show_session_restore_));
 
   ApplyBackdrop();
   widget_->Show();

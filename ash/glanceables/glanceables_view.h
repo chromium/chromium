@@ -23,7 +23,9 @@ class GlanceablesWelcomeLabel;
 // Container view for the "welcome back" glanceables screen shown on login.
 class ASH_EXPORT GlanceablesView : public views::View {
  public:
-  GlanceablesView();
+  // `show_session_restore` controls whether the session restore views are
+  // created.
+  explicit GlanceablesView(bool show_session_restore);
   GlanceablesView(const GlanceablesView&) = delete;
   GlanceablesView& operator=(const GlanceablesView&) = delete;
   ~GlanceablesView() override;
