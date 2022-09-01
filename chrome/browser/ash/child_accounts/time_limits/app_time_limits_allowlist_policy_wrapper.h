@@ -17,7 +17,7 @@ class AppId;
 
 class AppTimeLimitsAllowlistPolicyWrapper {
  public:
-  explicit AppTimeLimitsAllowlistPolicyWrapper(const base::Value* value);
+  explicit AppTimeLimitsAllowlistPolicyWrapper(const base::Value::Dict* dict);
   ~AppTimeLimitsAllowlistPolicyWrapper();
 
   // Delete copy constructor and copy assign operator.
@@ -26,11 +26,10 @@ class AppTimeLimitsAllowlistPolicyWrapper {
   AppTimeLimitsAllowlistPolicyWrapper& operator=(
       const AppTimeLimitsAllowlistPolicyWrapper&) = delete;
 
-  std::vector<std::string> GetAllowlistURLList() const;
   std::vector<AppId> GetAllowlistAppList() const;
 
  private:
-  const base::Value* value_;
+  const base::Value::Dict* dict_;
 };
 
 }  // namespace app_time

@@ -568,7 +568,7 @@ TEST_F(AppActivityRegistryTest, RemoveLimitsFromAllowlistedApps) {
   builder.SetUp();
   builder.AppendToAllowlistAppList(kApp1);
 
-  AppTimeLimitsAllowlistPolicyWrapper wrapper(&builder.value());
+  AppTimeLimitsAllowlistPolicyWrapper wrapper(&builder.dict());
   registry().OnTimeLimitAllowlistChanged(wrapper);
 
   EXPECT_FALSE(registry_test().GetAppLimit(kApp1));
@@ -580,7 +580,7 @@ TEST_F(AppActivityRegistryTest, AllowlistedAppsNoLimits) {
   AppTimeLimitsAllowlistPolicyBuilder builder;
   builder.SetUp();
   builder.AppendToAllowlistAppList(kApp1);
-  AppTimeLimitsAllowlistPolicyWrapper wrapper(&builder.value());
+  AppTimeLimitsAllowlistPolicyWrapper wrapper(&builder.dict());
   registry().OnTimeLimitAllowlistChanged(wrapper);
 
   // Set initial limit.
