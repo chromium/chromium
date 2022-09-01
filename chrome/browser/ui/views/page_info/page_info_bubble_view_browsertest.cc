@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "base/memory/raw_ptr.h"
@@ -736,7 +737,8 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
         {page_info::kPageInfoAboutThisSiteEn,
          page_info::kPageInfoAboutThisSiteNonEn,
          page_info::kPageInfoAboutThisSiteMoreInfo,
-         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder},
+         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
+         features::kUnifiedSidePanel},
         {});
   }
 
