@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/ipc/service/image_transport_surface.h"
-#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace viz {
@@ -108,11 +107,11 @@ scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
     base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
   if (IsOffscreen()) {
-    return gl::init::CreateOffscreenGLSurfaceWithFormat(gl::GetDefaultDisplay(),
-                                                        gfx::Size(), format);
+    return gl::init::CreateOffscreenGLSurfaceWithFormat(
+        GetSharedContextState()->display(), gfx::Size(), format);
   } else {
     return gpu::ImageTransportSurface::CreateNativeSurface(
-        gl::GetDefaultDisplay(), stub, surface_handle_, format);
+        GetSharedContextState()->display(), stub, surface_handle_, format);
   }
 }
 

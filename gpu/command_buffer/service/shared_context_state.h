@@ -36,6 +36,7 @@
 
 namespace gl {
 class GLContext;
+class GLDisplay;
 class GLShareGroup;
 class GLSurface;
 }  // namespace gl
@@ -129,6 +130,7 @@ class GPU_GLES2_EXPORT SharedContextState
   gl::GLContext* context() { return context_.get(); }
   gl::GLContext* real_context() { return real_context_.get(); }
   gl::GLSurface* surface() { return surface_.get(); }
+  gl::GLDisplay* display();
   viz::VulkanContextProvider* vk_context_provider() {
     return vk_context_provider_;
   }

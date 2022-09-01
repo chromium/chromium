@@ -530,7 +530,7 @@ void GpuServiceImpl::UpdateGPUInfo() {
 
 void GpuServiceImpl::UpdateGPUInfoGL() {
   DCHECK(main_runner_->BelongsToCurrentThread());
-  gpu::CollectGraphicsInfoGL(&gpu_info_, gl::GetDefaultDisplay());
+  gpu::CollectGraphicsInfoGL(&gpu_info_, GetContextState()->display());
   gpu_host_->DidUpdateGPUInfo(gpu_info_);
 }
 
@@ -625,6 +625,9 @@ void GpuServiceImpl::InitializeWithHost(
 #else
       nullptr, nullptr,
 #endif
+      gpu_channel_manager_->default_offscreen_surface()
+          ? gpu_channel_manager_->default_offscreen_surface()->GetGLDisplay()
+          : nullptr,
       !!watchdog_thread_);
 }
 

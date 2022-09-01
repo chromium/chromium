@@ -718,6 +718,10 @@ void SharedContextState::StoreVkPipelineCacheIfNeeded() {
   }
 }
 
+gl::GLDisplay* SharedContextState::display() {
+  return surface_.get()->GetGLDisplay();
+}
+
 bool SharedContextState::initialized() const {
   return true;
 }

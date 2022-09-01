@@ -15,6 +15,10 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 
+namespace gl {
+class GLDisplay;
+}  // namespace gl
+
 namespace gpu {
 class GpuChannelManager;
 class VulkanImplementation;
@@ -32,6 +36,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
       gpu::GpuChannelManager* gpu_channel_manager,
       gpu::VulkanImplementation* vulkan_implementation,
       gpu::VulkanDeviceQueue* device_queue,
+      gl::GLDisplay* display,
       bool enable_watchdog);
 
   // Disallow copy and assign.
@@ -71,6 +76,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
   CompositorGpuThread(
       gpu::GpuChannelManager* gpu_channel_manager,
       scoped_refptr<VulkanContextProvider> vulkan_context_provider,
+      gl::GLDisplay* display,
       bool enable_watchdog);
 
   bool Initialize();
@@ -84,6 +90,10 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
   bool init_succeded_ = false;
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
+
+  // The GLDisplay lives in GLDisplayManager, which never deletes displays once
+  // they are lazily created.
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   // WatchdogThread to monitor CompositorGpuThread. Ensure that the members
   // which needs to be monitored by |watchdog_thread_| should be destroyed
