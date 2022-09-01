@@ -108,6 +108,8 @@ source_set("eg2_tests") {
   deps = [
     "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
