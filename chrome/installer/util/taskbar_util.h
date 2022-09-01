@@ -39,8 +39,8 @@ absl::optional<bool> IsShortcutPinnedToTaskbar(const base::FilePath& shortcut);
 // registry key to record when the installer pins a shortcut to Chrome
 // on the taskbar, on a fresh install. This is on a per-user basis, so for a
 // system level install, each user who runs Chrome for the first time will have
-// this set. The value is deleted if Chrome detects that the user has unpinned
-// Chrome from the taskbar.
+// this set. The value is set to false if Chrome detects that the user has
+// unpinned Chrome from the taskbar.
 // Returns true if registry key operation was successful, false otherwise.
 bool SetInstallerPinnedChromeToTaskbar(bool installed);
 

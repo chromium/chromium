@@ -395,9 +395,17 @@ void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
   // Chrome is pinned to the taskbar 1 out every 100 launches, which makes this
   // less meaningful, so if keeping track of whether the installer pinned Chrome
   // to the taskbar is important, we need to deal with that.
-  if (result == NOT_PINNED &&
-      GetInstallerPinnedChromeToTaskbar().value_or(false)) {
-    SetInstallerPinnedChromeToTaskbar(false);
+
+  // Record whether or not the user unpinned an installer pin of Chrome. Records
+  // true if the installer pinned Chrome, and it's not pinned on this startup,
+  // false if the installer pinned Chrome, and it's still pinned.
+  if (GetInstallerPinnedChromeToTaskbar().value_or(false)) {
+    if (result == NOT_PINNED)
+      SetInstallerPinnedChromeToTaskbar(false);
+    if (result != FAILURE) {
+      base::UmaHistogramBoolean("Windows.InstallerPinUnpinned",
+                                result == NOT_PINNED);
+    }
   }
 }
 

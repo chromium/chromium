@@ -142,6 +142,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.InstallerPinUnpinned" enum="IsPinnedToTaskbarResult"
+    expires_after="2023-08-31">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@chromium.org</owner>
+  <summary>
+    Records whether or not the user unpinned Chrome after the installer pinned
+    Chrome, on Win10+. Recorded when Chrome checks if Chrome is pinned to the
+    taskbar, on startup. This check is currently done on 1% of startups. Records
+    true if the installer pinned Chrome, and it's no longer pinned, false if the
+    installer pinned Chrome and it's still pinned. The unpin is only recorded at
+    most once per user, whereas the still pinned state is recorded on every
+    launch that checks if Chrome is pinned to the taskbar.
+  </summary>
+</histogram>
+
 <histogram name="Windows.IsPinnedToTaskbar" enum="IsPinnedToTaskbarResult"
     expires_after="never">
 <!-- expires-never: Used to assess Chrome usage on Windows -->
