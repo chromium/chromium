@@ -22,11 +22,12 @@ HRESULT OutOfProcessExceptionEventCallback(
     PDWORD pchSize,
     PDWORD pdwSignatureCount) {
   // Exceptions that are not collected by crashpad's in-process handlers.
-  std::vector<DWORD> wanted_exceptions = {
+  DWORD wanted_exceptions[1] = {
       0xC0000409,  // STATUS_STACK_BUFFER_OVERRUN
   };
-  bool result = crashpad::wer::ExceptionEvent(wanted_exceptions, pContext,
-                                              pExceptionInformation);
+  bool result = crashpad::wer::ExceptionEvent(
+      wanted_exceptions, sizeof(wanted_exceptions) / sizeof(DWORD), pContext,
+      pExceptionInformation);
 
   if (result) {
     *pbOwnershipClaimed = TRUE;

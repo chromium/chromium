@@ -15,8 +15,6 @@
 #ifndef CRASHPAD_HANDLER_WIN_WER_CRASHPAD_WER_H_
 #define CRASHPAD_HANDLER_WIN_WER_CRASHPAD_WER_H_
 
-#include <vector>
-
 #include <Windows.h>
 #include <werapi.h>
 
@@ -26,9 +24,11 @@ namespace crashpad::wer {
 //! In the embedder's WER runtime exception helper, call this during
 //! OutOfProcessExceptionEventCallback().
 //!
-//! \param[in] handled_exceptions is a list of exception codes that the helper
-//!     should pass on to crashpad handler (if possible).  Provide an empty list
-//!     to pass every exception on to the crashpad handler.
+//! \param[in] handled_exceptions is an array of exception codes that the helper
+//!     should pass on to crashpad handler (if possible).  Provide an empty
+//!     array to pass every exception on to the crashpad handler.
+//! \param[in] num_handled_exceptions is the number of elements in the array
+//!     passed to handled_exceptions.
 //! \param[in] pContext is the context provided by WerFault to the helper.
 //! \param[in] pExceptionInformation is the exception information provided by
 //!     WerFault to the helper DLL.
@@ -36,7 +36,8 @@ namespace crashpad::wer {
 //! \return `true` if the target process was dumped by the crashpad handler then
 //! terminated, or `false` otherwise.
 bool ExceptionEvent(
-    std::vector<DWORD>& handled_exceptions,
+    DWORD* handled_exceptions,
+    size_t num_handled_exceptions,
     const PVOID pContext,
     const PWER_RUNTIME_EXCEPTION_INFORMATION pExceptionInformation);
 

@@ -173,7 +173,7 @@ if (crashpad_is_win) {
     sources = [
       "misc/address_types.h",
       "win/address_types.h",
-      "win/registration_protocol_win.h",
+      "win/registration_protocol_win_structs.h",
     ]
     public_deps = [ "../third_party/mini_chromium:build" ]
     public_configs = [ "..:crashpad_config" ]
@@ -513,6 +513,7 @@ crashpad_static_library("util") {
       "win/process_structs.h",
       "win/registration_protocol_win.cc",
       "win/registration_protocol_win.h",
+      "win/registration_protocol_win_structs.h",
       "win/safe_terminate_process.h",
       "win/scoped_handle.cc",
       "win/scoped_handle.h",

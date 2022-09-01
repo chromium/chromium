@@ -18,7 +18,7 @@
 #include "handler/win/wer/crashpad_wer.h"
 
 #include "util/misc/address_types.h"
-#include "util/win/registration_protocol_win.h"
+#include "util/win/registration_protocol_win_structs.h"
 
 #include <Windows.h>
 #include <werapi.h>
@@ -61,7 +61,8 @@ ScopedHandle DuplicateFromTarget(HANDLE target_process, HANDLE target_handle) {
   return ScopedHandle(hTmp);
 }
 
-bool ProcessException(std::vector<DWORD>& handled_exceptions,
+bool ProcessException(DWORD* handled_exceptions,
+                      size_t num_handled_exceptions,
                       const PVOID pContext,
                       const PWER_RUNTIME_EXCEPTION_INFORMATION e_info) {
   // Need to have been given a context.
@@ -72,13 +73,15 @@ bool ProcessException(std::vector<DWORD>& handled_exceptions,
     return false;
 
   // Only deal with exceptions that crashpad would not have handled.
-  if (handled_exceptions.size() &&
-      std::find(handled_exceptions.begin(),
-                handled_exceptions.end(),
-                e_info->exceptionRecord.ExceptionCode) ==
-          handled_exceptions.end()) {
-    return false;
+  bool found = false;
+  for (size_t i = 0; i < num_handled_exceptions; i++) {
+    if (handled_exceptions[i] == e_info->exceptionRecord.ExceptionCode) {
+      found = true;
+      break;
+    }
   }
+  if (!found)
+    return false;
 
   // Grab out the handles to the crashpad server.
   WerRegistration target_registration = {};
@@ -168,10 +171,14 @@ bool ProcessException(std::vector<DWORD>& handled_exceptions,
 }  // namespace
 
 bool ExceptionEvent(
-    std::vector<DWORD>& handled_exceptions,
+    DWORD* handled_exceptions,
+    size_t num_handled_exceptions,
     const PVOID pContext,
     const PWER_RUNTIME_EXCEPTION_INFORMATION pExceptionInformation) {
-  return ProcessException(handled_exceptions, pContext, pExceptionInformation);
+  return ProcessException(handled_exceptions,
+                          num_handled_exceptions,
+                          pContext,
+                          pExceptionInformation);
 }
 
 }  // namespace crashpad::wer
