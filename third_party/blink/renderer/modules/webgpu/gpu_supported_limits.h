@@ -34,6 +34,7 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxTextureDimension3D() const;
   unsigned maxTextureArrayLayers() const;
   unsigned maxBindGroups() const;
+  unsigned maxBindingsPerBindGroup() const;
   unsigned maxDynamicUniformBuffersPerPipelineLayout() const;
   unsigned maxDynamicStorageBuffersPerPipelineLayout() const;
   unsigned maxSampledTexturesPerShaderStage() const;
