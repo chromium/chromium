@@ -3627,15 +3627,38 @@
                     "name": "Enabled",
                     "params": {
                         "AutocompleteStabilityAsyncProvidersFirst": "true",
-                        "AutocompleteStabilityDontCopyDoneProviders": "true",
-                        "AutocompleteStabilityPreserveDefaultAfterTransfer": "true",
-                        "AutocompleteStabilityPreserveDefaultForAsyncUpdates": "false",
-                        "AutocompleteStabilityPreserveDefaultForSyncUpdates": "true"
+                        "AutocompleteStabilityDontCopyDoneProviders": "true"
                     },
                     "enable_features": [
                         "OmniboxAutocompleteStability",
                         "OmniboxDocumentProviderDedupingOptimization",
                         "OmniboxStrippedGurlOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DesktopOmniboxPostAutocompletionPreserveDefault": [
+        {
+            "platforms": [
+                "android",
+                "chromeos_lacros",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AutocompleteStabilityPreserveDefaultAfterTransfer": "true",
+                        "AutocompleteStabilityPreserveDefaultForAsyncUpdates": "true",
+                        "AutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength": "3"
+                    },
+                    "enable_features": [
+                        "OmniboxPreserveDefault"
                     ]
                 }
             ]
