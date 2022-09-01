@@ -344,6 +344,8 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
           ancestor_ignored_changed_map);
   void PostprocessEvents();
 
+  AXLiveRegionTracker* GetOrCreateLiveRegionTracker();
+
   raw_ptr<AXTree> tree_ = nullptr;  // Not owned.
   std::map<AXNodeID, std::set<EventParams>> tree_events_;
 

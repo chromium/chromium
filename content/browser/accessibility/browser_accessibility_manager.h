@@ -484,6 +484,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // AXTreeManager overrides.
   ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
                               ui::AXNodeID node_id) const override;
+  ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
+
   ui::AXPlatformNode* GetPlatformNodeFromTree(
       const ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
@@ -585,6 +587,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   raw_ptr<BrowserAccessibilityDelegate> delegate_;
 
   // A mapping from a node id to its wrapper of type BrowserAccessibility.
+  // This is different from the map in AXTree, which does not contain extra mac
+  // nodes from AXTableInfo.
+  // TODO(accessibility) Find a way to have a single map for both, perhaps by
+  // having BrowserAccessibility into a subclass of AXNode.
   std::map<ui::AXNodeID, std::unique_ptr<BrowserAccessibility>> id_wrapper_map_;
 
   // True if the user has initiated a navigation to another page.

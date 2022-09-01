@@ -19,6 +19,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree.h"
 
 namespace content {
@@ -1642,10 +1643,17 @@ TEST_F(BrowserAccessibilityManagerTest, TestOnNodeReparented) {
   EXPECT_EQ(1, observer.reparent_count());
   EXPECT_EQ(3, observer.node_count());
 
-  // Reparenting a new child that is not found in the tree should not crash.
+  // Reparenting a new child that is not found in the tree should trigger a
+  // DCHECK in AX_FAIL_FAST_BUILD builds, otherwise it should not crash.
   ui::AXNode child3(manager->ax_tree(), /* parent */ nullptr, /* id */ 4,
                     /* index_in_parent */ 0u);
+#if defined(AX_FAIL_FAST_BUILD)
+  EXPECT_DEATH_IF_SUPPORTED(
+      manager->OnNodeReparented(manager->ax_tree(), &child3),
+      "Missing BrowserAccessibility");
+#else
   manager->OnNodeReparented(manager->ax_tree(), &child3);
+#endif
   // We avoid checking the observer on purpose, since reparenting a non-existent
   // node should not trigger any tree observers. The node is not in the tree,
   // hence the normal tree update process cannot be followed.

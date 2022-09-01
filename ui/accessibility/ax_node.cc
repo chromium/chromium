@@ -1376,6 +1376,20 @@ const std::vector<AXNode*>* AXNode::GetExtraMacNodes() const {
   return &table_info->extra_mac_nodes;
 }
 
+bool AXNode::IsGenerated() const {
+  bool is_generated_node = id() < 0;
+#if DCHECK_IS_ON()
+  // Currently, the only generated nodes are columns and table header
+  // containers, and when those roles occur, they are always extra mac nodes.
+  // This could change in the future.
+  bool is_extra_mac_node_role =
+      GetRole() == ax::mojom::Role::kColumn ||
+      GetRole() == ax::mojom::Role::kTableHeaderContainer;
+  DCHECK_EQ(is_generated_node, is_extra_mac_node_role);
+#endif
+  return is_generated_node;
+}
+
 //
 // Table row-like nodes.
 //

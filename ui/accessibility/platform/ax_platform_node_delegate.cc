@@ -12,9 +12,11 @@ AXPlatformNodeDelegate::AXPlatformNodeDelegate() = default;
 
 AXPlatformNodeDelegate::AXPlatformNodeDelegate(ui::AXNode* node) : node_(node) {
   DCHECK(node);
+  DCHECK(node->IsDataValid());
 }
 
 void AXPlatformNodeDelegate::SetNode(AXNode& node) {
+  DCHECK(node.IsDataValid());
   node_ = &node;
 }
 
