@@ -98,7 +98,7 @@ def _validate_and_convert_profraws(profraw_files,
       Doc: https://llvm.org/docs/CommandGuide/llvm-profdata.html#profdata-merge
 
   Returns:
-    A tulple:
+    A tuple:
       A list of converted .profdata files of *valid* profraw files.
       A list of *invalid* profraw files.
       A list of profraw files that have counter overflows.
@@ -118,14 +118,18 @@ def _validate_and_convert_profraws(profraw_files,
   invalid_profraw_files = multiprocessing.Manager().list()
   counter_overflows = multiprocessing.Manager().list()
 
+  results = []
   for profraw_file in profraw_files:
-    pool.apply_async(
-        _validate_and_convert_profraw,
-        (profraw_file, output_profdata_files, invalid_profraw_files,
-         counter_overflows, profdata_tool_path, sparse))
+    results.append(pool.apply_async(
+      _validate_and_convert_profraw,
+      (profraw_file, output_profdata_files, invalid_profraw_files,
+        counter_overflows, profdata_tool_path, sparse)))
 
   pool.close()
   pool.join()
+
+  for x in results:
+    x.get()
 
   # Remove inputs, as they won't be needed and they can be pretty large.
   for input_file in profraw_files:
@@ -161,7 +165,7 @@ def _validate_and_convert_profraw(profraw_file, output_profdata_files,
     # writes the error output to stderr and our error handling logic relies on
     # that output.
     validation_output = subprocess.check_output(
-        subprocess_cmd, stderr=subprocess.STDOUT)
+        subprocess_cmd, stderr=subprocess.STDOUT, encoding = 'UTF-8')
     if 'Counter overflow' in validation_output:
       counter_overflow = True
     else:
