@@ -88,6 +88,10 @@ public class MemoryPressureListener {
     /**
      * Distributes |pressure| to all callbacks.
      * This method should be called only on ThreadUtils.UiThread.
+     *
+     * This includes sending the notification to the native side, provided that addNativeCallback()
+     * has been called. It does not trigger all the clients listening directly to
+     * ComponentCallbacks2 notifications.
      */
     public static void notifyMemoryPressure(@MemoryPressureLevel int pressure) {
         ThreadUtils.assertOnUiThread();

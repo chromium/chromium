@@ -27,6 +27,10 @@ public final class BaseFeatureList {
      * @return Whether the feature is enabled or not.
      */
     public static boolean isEnabled(String featureName) {
+        // FeatureFlags set for testing override the native default value.
+        Boolean testValue = FeatureList.getTestValueForFeature(featureName);
+        if (testValue != null) return testValue;
+
         return BaseFeatureListJni.get().isEnabled(featureName);
     }
 
