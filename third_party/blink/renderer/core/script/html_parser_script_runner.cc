@@ -72,23 +72,17 @@ std::unique_ptr<TracedValue> GetTraceArgsForScriptElement(
   return value;
 }
 
-std::unique_ptr<TracedValue> GetTraceArgsForScriptElement(
-    const PendingScript* pending_script) {
-  DCHECK(pending_script);
-  return GetTraceArgsForScriptElement(
-      pending_script->GetElement()->GetDocument(),
-      pending_script->StartingPosition(), pending_script->UrlForTracing());
-}
-
-void DoExecuteScript(PendingScript* pending_script) {
-  TRACE_EVENT_WITH_FLOW1("blink", "HTMLParserScriptRunner ExecuteScript",
-                         pending_script->GetElement(), TRACE_EVENT_FLAG_FLOW_IN,
-                         "data", GetTraceArgsForScriptElement(pending_script));
+void DoExecuteScript(PendingScript* pending_script, Document& document) {
+  TRACE_EVENT_WITH_FLOW1(
+      "blink", "HTMLParserScriptRunner ExecuteScript",
+      pending_script->GetElement(), TRACE_EVENT_FLAG_FLOW_IN, "data",
+      GetTraceArgsForScriptElement(document, pending_script->StartingPosition(),
+                                   pending_script->UrlForTracing()));
   pending_script->ExecuteScriptBlock();
 }
 
 void TraceParserBlockingScript(const PendingScript* pending_script,
-                               bool waiting_for_resources) {
+                               Document& document) {
   // The HTML parser must yield before executing script in the following
   // cases:
   // * the script's execution is blocked on the completed load of the script
@@ -109,21 +103,24 @@ void TraceParserBlockingScript(const PendingScript* pending_script,
   ScriptElementBase* element = pending_script->GetElement();
   if (!element)
     return;
+  bool waiting_for_resources = !document.IsScriptExecutionReady();
+  std::unique_ptr<TracedValue> args =
+      GetTraceArgsForScriptElement(document, pending_script->StartingPosition(),
+                                   pending_script->UrlForTracing());
   if (!pending_script->IsReady()) {
     if (waiting_for_resources) {
-      TRACE_EVENT_WITH_FLOW1("blink",
-                             "YieldParserForScriptLoadAndBlockingResources",
-                             element, TRACE_EVENT_FLAG_FLOW_OUT, "data",
-                             GetTraceArgsForScriptElement(pending_script));
+      TRACE_EVENT_WITH_FLOW1(
+          "blink", "YieldParserForScriptLoadAndBlockingResources", element,
+          TRACE_EVENT_FLAG_FLOW_OUT, "data", std::move(args));
     } else {
       TRACE_EVENT_WITH_FLOW1("blink", "YieldParserForScriptLoad", element,
                              TRACE_EVENT_FLAG_FLOW_OUT, "data",
-                             GetTraceArgsForScriptElement(pending_script));
+                             std::move(args));
     }
   } else if (waiting_for_resources) {
     TRACE_EVENT_WITH_FLOW1("blink", "YieldParserForScriptBlockingResources",
                            element, TRACE_EVENT_FLAG_FLOW_OUT, "data",
-                           GetTraceArgsForScriptElement(pending_script));
+                           std::move(args));
   }
 }
 
@@ -221,7 +218,7 @@ void HTMLParserScriptRunner::
 
     // <spec step="B.11">Execute the script element the script.</spec>
     DCHECK(IsExecutingScript());
-    DoExecuteScript(pending_script);
+    DoExecuteScript(pending_script, *document_);
 
     // <spec step="B.12">Decrement the parser's script nesting level by one. If
     // the parser's script nesting level is zero (which it always should be at
@@ -253,7 +250,7 @@ void HTMLParserScriptRunner::ExecutePendingDeferredScriptAndDispatchEvent(
     Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
   }
 
-  DoExecuteScript(pending_script);
+  DoExecuteScript(pending_script, *document_);
 }
 
 void HTMLParserScriptRunner::PendingScriptFinished(
@@ -317,8 +314,7 @@ void HTMLParserScriptRunner::ProcessScriptElement(
 
     // - "Otherwise":
 
-    TraceParserBlockingScript(ParserBlockingScript(),
-                              !document_->IsScriptExecutionReady());
+    TraceParserBlockingScript(ParserBlockingScript(), *document_);
     parser_blocking_script_->MarkParserBlockingLoadStartTime();
 
     // If preload scanner got created, it is missing the source after the
@@ -423,7 +419,7 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
       // checked to avoid double execution of this code block. When
       // `IsWatchingForLoad()` is true, its existing client is always `this`.
       script->WatchForLoad(this);
-      TraceParserBlockingScript(script, !document_->IsScriptExecutionReady());
+      TraceParserBlockingScript(script, *document_);
       script->MarkParserBlockingLoadStartTime();
     }
     return nullptr;
