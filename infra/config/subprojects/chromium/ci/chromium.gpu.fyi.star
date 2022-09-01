@@ -301,8 +301,6 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "asn",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(
