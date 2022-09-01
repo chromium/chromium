@@ -11,6 +11,8 @@
 
 namespace blink {
 
+constexpr base::TimeDelta kMaximumDeferDuration = base::Seconds(5);
+
 // static
 DeferredShapingController* DeferredShapingController::From(
     const Document& document) {
@@ -58,6 +60,11 @@ void DeferredShapingController::PerformPostLayoutTask() {
   DEFERRED_SHAPING_VLOG(1) << "Deferred " << deferred_elements_.size()
                            << " elements";
   UseCounter::Count(*document_, WebFeature::kDeferredShapingWorked);
+  reshaping_task_handle_ = PostDelayedCancellableTask(
+      *document_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
+      WTF::Bind(&DeferredShapingController::ReshapeAllDeferred,
+                WrapWeakPersistent(this), ReshapeReason::kLastResort),
+      kMaximumDeferDuration);
 }
 
 void DeferredShapingController::OnFirstContentfulPaint() {
@@ -68,6 +75,8 @@ void DeferredShapingController::OnFirstContentfulPaint() {
   if (!default_allow_deferred_shaping_ && deferred_elements_.IsEmpty())
     return;
   default_allow_deferred_shaping_ = false;
+  // Cancels the last resort task.
+  reshaping_task_handle_.Cancel();
   reshaping_task_handle_ = PostCancellableTask(
       *document_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
       WTF::Bind(&DeferredShapingController::ReshapeAllDeferred,
@@ -132,6 +141,10 @@ void DeferredShapingController::ReshapeAllDeferred(ReshapeReason reason) {
     case ReshapeReason::kInspector:
       reason_string = "inspector";
       feature = WebFeature::kDeferredShaping2ReshapedByInspector;
+      break;
+    case ReshapeReason::kLastResort:
+      reason_string = "the last resort";
+      feature = WebFeature::kDeferredShaping2ReshapedByLastResort;
       break;
     case ReshapeReason::kPrinting:
       reason_string = "printing";

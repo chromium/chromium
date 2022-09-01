@@ -3666,6 +3666,7 @@ enum WebFeature {
   kLCPCandidateImageFromOriginDirtyStyle = 4345,
   kV8TurboFanOsrCompileStarted = 4346,
   kV8Document_HasRedemptionRecord_Method = 4347,
+  kDeferredShaping2ReshapedByLastResort = 4348,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

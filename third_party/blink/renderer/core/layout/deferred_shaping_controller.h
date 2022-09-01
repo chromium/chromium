@@ -33,6 +33,7 @@ enum class ReshapeReason {
   kFocus,
   kGeometryApi,
   kInspector,
+  kLastResort,
   kPrinting,
   kScrollingApi,
 };
