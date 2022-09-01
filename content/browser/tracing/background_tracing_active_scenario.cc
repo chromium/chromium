@@ -72,10 +72,12 @@ class BackgroundTracingActiveScenario::TracingSession {
                  bool use_local_output)
       : parent_scenario_(parent_scenario),
         use_local_output_(use_local_output) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     // TODO(crbug.com/941318): Re-enable startup tracing for Android once all
     // Perfetto-related deadlocks are resolved and we also handle concurrent
     // system tracing for startup tracing.
+    // TODO(khokhlov): Re-enable startup tracing in SDK build. Make sure that
+    // startup tracing config exactly matches non-startup tracing config.
     if (!TracingControllerImpl::GetInstance()->IsTracing()) {
       tracing::EnableStartupTracingForProcess(
           chrome_config, config->requires_anonymized_data());
