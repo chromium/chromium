@@ -50,6 +50,12 @@ def _remove_query_params(test_name):
     return test_name if index == -1 else test_name[:index]
 
 
+def _wptrunner_to_resultdb_status(status):
+    """Map a test-level wptrunner status to a ResultDB one."""
+    # Test timeouts are a special case of aborts.
+    return 'ABORT' if status == 'TIMEOUT' else status
+
+
 class WPTResultsProcessor(object):
     def __init__(self,
                  host,
@@ -498,12 +504,17 @@ class WPTResultsProcessor(object):
             text=False,
         )
 
-
     def _add_result_to_sink(self, node, test_name, test_name_prefix=''):
         """Add test results to the result sink."""
-        actual_statuses = node['actual'].split()
+        actual_statuses = [
+            _wptrunner_to_resultdb_status(status)
+            for status in node['actual'].split()
+        ]
         flaky = len(set(actual_statuses)) > 1
-        expected = set(node['expected'].split())
+        expected = {
+            _wptrunner_to_resultdb_status(status)
+            for status in node['expected'].split()
+        }
         durations = node.get('times') or [0] * len(actual_statuses)
 
         artifacts = Artifacts(
@@ -521,19 +532,14 @@ class WPTResultsProcessor(object):
         for iteration, (actual,
                         duration) in enumerate(zip(actual_statuses,
                                                    durations)):
-            # Test timeouts are a special case of aborts. We must report "ABORT"
-            # to result sink for tests that timed out.
-            if actual == 'TIMEOUT':
-                actual = 'ABORT'
-
             result = Result(
                 name=test_name,
                 actual=actual,
-                started=self.host.time() - duration,
+                started=(self.host.time() - duration),
                 took=duration,
                 worker=0,
                 expected=expected,
-                unexpected=actual not in expected,
+                unexpected=(actual not in expected),
                 flaky=flaky,
                 # TODO(crbug/1314847): wptrunner merges output from all runs
                 # together. Until it outputs per-test-run artifacts instead, we

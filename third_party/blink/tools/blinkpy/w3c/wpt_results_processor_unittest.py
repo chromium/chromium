@@ -198,12 +198,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
             'tests': {
                 'fail': {
                     'test.html?variant1': {
-                        'expected': 'PASS',
-                        'actual': 'FAIL',
+                        'expected': 'TIMEOUT',
+                        'actual': 'TIMEOUT',
                         'artifacts': {
-                            'wpt_actual_status': ['OK'],
+                            'wpt_actual_status': ['TIMEOUT'],
                             'wpt_actual_metadata': ['test.html actual text'],
                         },
+                        'time': 1000,
+                        'times': [1000],
                     },
                 },
             },
@@ -225,10 +227,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'test_path': test_abs_path,
                              'result': {
                                  'name': test_name,
-                                 'actual': 'FAIL',
-                                 'expected': {'PASS'},
-                                 'unexpected': True,
-                                 'took': 0,
+                                 'actual': 'ABORT',
+                                 'expected': {'ABORT'},
+                                 'unexpected': False,
+                                 'took': 1000,
                                  'flaky': False,
                                  'artifacts': {
                                      'actual_text': [path_from_out_dir],
