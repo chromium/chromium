@@ -2266,6 +2266,10 @@ const char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "
     "Has no effect if Chrome was not built with XFA support.";
 
+const char kVmPerBootShaderCacheName[] = "VM per-boot shader cache";
+const char kVmPerBootShaderCacheDescription[] =
+    "Enable per-boot VM shader cache (default is per OS build).";
+
 const char kAutoWebContentsDarkModeName[] = "Auto Dark Mode for Web Contents";
 const char kAutoWebContentsDarkModeDescription[] =
     "Automatically render all web contents using a dark theme.";

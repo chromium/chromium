@@ -58398,6 +58398,7 @@ from previous Chrome versions.
   <int value="-714710496" label="VideoFullscreenOrientationLock:disabled"/>
   <int value="-714543772" label="enable-gpu-service-logging"/>
   <int value="-714043324" label="OutOfBlinkCORS:enabled"/>
+  <int value="-713770286" label="VmPerBootShaderCache:enabled"/>
   <int value="-713705575" label="PhoneHubCallNotification:enabled"/>
   <int value="-713136799" label="NearbySharingOnePageOnboarding:disabled"/>
   <int value="-713104676"
@@ -59553,6 +59554,7 @@ from previous Chrome versions.
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
   <int value="15614295" label="Portals:enabled"/>
+  <int value="18571458" label="VmPerBootShaderCache:disabled"/>
   <int value="19629326" label="OmniboxExperimentalKeywordMode:enabled"/>
   <int value="19780991" label="CrosLanguageSettingsUpdateJapanese:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>

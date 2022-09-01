@@ -1663,6 +1663,11 @@ const base::Feature kVirtualKeyboardMultitouch{
 const base::Feature kVirtualKeyboardRoundCorners{
     "VirtualKeyboardRoundCorners", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables a per-boot host GPU cache generation for VMs. On default, the cache
+// is generated per OS version.
+const base::Feature kVmPerBootShaderCache{"VmPerBootShaderCache",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to allow enabling wake on WiFi features in shill.
 const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

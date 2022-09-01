@@ -2790,6 +2790,7 @@ constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
 constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 constexpr char kBorealisStorageBallooningInternalName[] =
     "borealis-storage-ballooning";
+constexpr char kVmPerBootShaderCacheName[] = "vm-per-boot-shader-cache";
 constexpr char kClipboardHistoryReorderInternalName[] =
     "clipboard-history-reorder";
 constexpr char kWelcomeScreenInternalName[] = "welcome-screen";
@@ -8394,6 +8395,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBorealisStorageBallooningName,
      flag_descriptions::kBorealisStorageBallooningDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisStorageBallooning)},
+    {kVmPerBootShaderCacheName, flag_descriptions::kVmPerBootShaderCacheName,
+     flag_descriptions::kVmPerBootShaderCacheDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kVmPerBootShaderCache)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"https-only-mode-setting", flag_descriptions::kHttpsOnlyModeName,

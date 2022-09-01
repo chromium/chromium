@@ -674,6 +674,8 @@ extern const base::Feature kVirtualKeyboardMultitouch;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardRoundCorners;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kVmPerBootShaderCache;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWakeOnWifiAllowed;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperFastRefresh;
