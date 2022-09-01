@@ -40,7 +40,7 @@ group("resources") {
     ":primary_background_color",
     ":purple_600_color",
     ":red_500_color",
-    ":red_color",
+    ":red_600_color",
     ":scrim_background_color",
     ":secondary_background_color",
     ":separator_color",
@@ -155,12 +155,12 @@ colorset("grey_900_color") {
   sources = [ "grey_900_color.colorset/Contents.json" ]
 }
 
-colorset("red_color") {
-  sources = [ "red_color.colorset/Contents.json" ]
-}
-
 colorset("red_500_color") {
   sources = [ "red_500_color.colorset/Contents.json" ]
+}
+
+colorset("red_600_color") {
+  sources = [ "red_600_color.colorset/Contents.json" ]
 }
 
 colorset("purple_600_color") {

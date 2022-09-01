@@ -70,7 +70,7 @@ extern NSString* const kBlue700Color;
 // Standard green color.
 extern NSString* const kGreenColor;
 
-// Other shades of green from the palette.
+// Green palette.
 extern NSString* const kGreen50Color;
 extern NSString* const kGreen500Color;
 extern NSString* const kGreen700Color;
@@ -79,19 +79,20 @@ extern NSString* const kGreen700Color;
 // destructive controls.
 extern NSString* const kRedColor;
 
-// Other shades of red from the palette.
+// Red palette
 extern NSString* const kRed500Color;
+extern NSString* const kRed600Color;
 
 // Pink palette.
 extern NSString* const kPink400Color;
 
-// Purple 600.
+// Purple palette.
 extern NSString* const kPurple600Color;
 
-// Yellow 500.
+// Yellow palette.
 extern NSString* const kYellow500Color;
 
-// Orange 500.
+// Orange palette.
 extern NSString* const kOrange500Color;
 
 // Grey Color Palette.
