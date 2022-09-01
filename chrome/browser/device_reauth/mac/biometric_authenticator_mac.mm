@@ -5,6 +5,7 @@
 #include "chrome/browser/device_reauth/mac/biometric_authenticator_mac.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -16,9 +17,12 @@ BiometricAuthenticatorMac::~BiometricAuthenticatorMac() = default;
 bool BiometricAuthenticatorMac::CanAuthenticate(
     device_reauth::BiometricAuthRequester requester) {
   base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
-  return
+  bool is_available =
       [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:nil];
+  base::UmaHistogramBoolean("PasswordManager.CanUseBiometricsMac",
+                            is_available);
+  return is_available;
 }
 
 void BiometricAuthenticatorMac::Authenticate(
