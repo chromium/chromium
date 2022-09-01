@@ -25,10 +25,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -172,8 +174,8 @@ namespace {
 
 class UserActivationUpdateWaiter {
  public:
-  explicit UserActivationUpdateWaiter(content::WebContents* web_contents)
-      : user_activation_interceptor_(web_contents->GetPrimaryMainFrame()) {}
+  explicit UserActivationUpdateWaiter(content::RenderFrameHost* rfh)
+      : user_activation_interceptor_(rfh) {}
   ~UserActivationUpdateWaiter() = default;
 
   void Wait() {
@@ -513,13 +515,18 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
   content::PrepContentsForBeforeUnloadTest(web_contents, false);
 
   // Make sure we have a guestviewmanager.
-  auto* guest_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  UserActivationUpdateWaiter activation_waiter(guest_contents);
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
 
-  // Activate |guest_contents| through a click, then wait until the activation
-  // IPC reaches the browser process.
-  SimulateMouseClick(guest_contents, 0, blink::WebMouseEvent::Button::kLeft);
+  UserActivationUpdateWaiter activation_waiter(guest_view->GetGuestMainFrame());
+
+  // Activate |guest_view| through a click, then wait until the activation IPC
+  // reaches the browser process.
+  content::WaitForHitTestData(guest_view->GetGuestMainFrame());
+  SimulateMouseClickAt(web_contents, 0, blink::WebMouseEvent::Button::kLeft,
+                       guest_view->GetGuestMainFrame()
+                           ->GetView()
+                           ->TransformPointToRootCoordSpace(gfx::Point(5, 5)));
   activation_waiter.Wait();
 
   // Wait for a round trip to the outer renderer to ensure any beforeunload
