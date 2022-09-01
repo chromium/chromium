@@ -59,12 +59,10 @@ class DisconnectWindowMac : public HostWindow {
       override;
 
  private:
-  DisconnectWindowController* window_controller_;
+  DisconnectWindowController* window_controller_ = nil;
 };
 
-DisconnectWindowMac::DisconnectWindowMac()
-    : window_controller_(nil) {
-}
+DisconnectWindowMac::DisconnectWindowMac() = default;
 
 DisconnectWindowMac::~DisconnectWindowMac() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -164,40 +162,39 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   self.disconnectButton.target = self;
   [self.window.contentView addSubview:self.disconnectButton];
 
-  [_connectedToField setStringValue:l10n_util::GetNSStringF(IDS_MESSAGE_SHARED,
-                                                            _username)];
-  [_disconnectButton setTitle:l10n_util::GetNSString(IDS_STOP_SHARING_BUTTON)];
+  self.connectedToField.stringValue =
+      l10n_util::GetNSStringF(IDS_MESSAGE_SHARED, _username);
+  self.disconnectButton.title = l10n_util::GetNSString(IDS_STOP_SHARING_BUTTON);
 
   // Resize the window dynamically based on the content.
-  CGFloat oldConnectedWidth = NSWidth([_connectedToField bounds]);
-  [_connectedToField sizeToFit];
-  NSRect connectedToFrame = [_connectedToField frame];
+  CGFloat oldConnectedWidth = NSWidth(self.connectedToField.bounds);
+  [self.connectedToField sizeToFit];
+  NSRect connectedToFrame = self.connectedToField.frame;
   CGFloat newConnectedWidth = NSWidth(connectedToFrame);
 
   // Set a max width for the connected to text field.
   if (newConnectedWidth > kMaximumConnectedNameWidthInPixels) {
     newConnectedWidth = kMaximumConnectedNameWidthInPixels;
     connectedToFrame.size.width = newConnectedWidth;
-    [_connectedToField setFrame:connectedToFrame];
+    self.connectedToField.frame = connectedToFrame;
   }
 
-  CGFloat oldDisconnectWidth = NSWidth([_disconnectButton bounds]);
-  [_disconnectButton sizeToFit];
-  NSRect disconnectFrame = [_disconnectButton frame];
+  CGFloat oldDisconnectWidth = NSWidth(self.disconnectButton.bounds);
+  [self.disconnectButton sizeToFit];
+  NSRect disconnectFrame = self.disconnectButton.frame;
   CGFloat newDisconnectWidth = NSWidth(disconnectFrame);
 
   // Move the disconnect button appropriately.
   disconnectFrame.origin.x += newConnectedWidth - oldConnectedWidth;
   disconnectFrame.origin.y =
       (NSHeight(self.window.contentView.frame) - NSHeight(disconnectFrame)) / 2;
-  [_disconnectButton setFrame:disconnectFrame];
+  self.disconnectButton.frame = disconnectFrame;
 
   // Then resize the window appropriately
-  NSWindow *window = [self window];
-  NSRect windowFrame = [window frame];
+  NSRect windowFrame = self.window.frame;
   windowFrame.size.width += (newConnectedWidth - oldConnectedWidth +
                              newDisconnectWidth - oldDisconnectWidth);
-  [window setFrame:windowFrame display:NO];
+  [self.window setFrame:windowFrame display:NO];
 
   if ([self isRToL]) {
     // Handle right to left case
@@ -206,16 +203,16 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
         = NSMinX(disconnectFrame) - NSMaxX(connectedToFrame);
     disconnectFrame.origin.x = buttonInset;
     connectedToFrame.origin.x = NSMaxX(disconnectFrame) + buttonTextSpacing;
-    [_connectedToField setFrame:connectedToFrame];
-    [_disconnectButton setFrame:disconnectFrame];
+    self.connectedToField.frame = connectedToFrame;
+    self.disconnectButton.frame = disconnectFrame;
   }
 
   // Center the window at the bottom of the screen, above the dock (if present).
-  NSRect desktopRect = [[NSScreen mainScreen] visibleFrame];
-  NSRect windowRect = [[self window] frame];
+  NSRect desktopRect = NSScreen.mainScreen.visibleFrame;
+  NSRect windowRect = self.window.frame;
   CGFloat x = (NSWidth(desktopRect) - NSWidth(windowRect)) / 2;
   CGFloat y = NSMinY(desktopRect);
-  [[self window] setFrameOrigin:NSMakePoint(x, y)];
+  [self.window setFrameOrigin:NSMakePoint(x, y)];
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
