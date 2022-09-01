@@ -89,8 +89,7 @@ std::string GetReadAloudAPIKey();
 // Retrieves the Fresnel API Key.
 std::string GetFresnelAPIKey();
 
-#if BUILDFLAG(IS_IOS) || \
-    (BUILDFLAG(IS_FUCHSIA) && !defined(USE_OFFICIAL_GOOGLE_API_KEYS))
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 // Sets the API key. This should be called as early as possible before this
 // API key is even accessed. It must be called before GetAPIKey.
 // TODO(https://crbug.com/1166007): Enforce this is called before GetAPIKey.

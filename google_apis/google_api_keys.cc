@@ -205,8 +205,7 @@ class APIKeyCache {
   }
 
   std::string api_key() const { return api_key_; }
-#if BUILDFLAG(IS_IOS) || \
-    (BUILDFLAG(IS_FUCHSIA) && !defined(USE_OFFICIAL_GOOGLE_API_KEYS))
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   void set_api_key(const std::string& api_key) { api_key_ = api_key; }
 #endif
   std::string api_key_non_stable() const { return api_key_non_stable_; }
@@ -302,10 +301,7 @@ class APIKeyCache {
     }
 
     if (key_value == DUMMY_API_TOKEN) {
-// iOS does not use USE_OFFICIAL_GOOGLE_API_KEYS. See https://crbug.com/1183709.
-// TODO(Tcrbug.com/1183709): The GN logic is inconsistent with this.
-#if defined(USE_OFFICIAL_GOOGLE_API_KEYS) || \
-    (BUILDFLAG(IS_IOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING))
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_FUCHSIA)
       // No key should be unset in an official build except the
       // GOOGLE_DEFAULT_* keys.  The default keys don't trigger this
       // check as their "unset" value is not DUMMY_API_TOKEN.
@@ -373,8 +369,7 @@ std::string GetFresnelAPIKey() {
   return g_api_key_cache.Get().api_key_fresnel();
 }
 
-#if BUILDFLAG(IS_IOS) || \
-    (BUILDFLAG(IS_FUCHSIA) && !defined(USE_OFFICIAL_GOOGLE_API_KEYS))
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 void SetAPIKey(const std::string& api_key) {
   g_api_key_cache.Get().set_api_key(api_key);
 }
