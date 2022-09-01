@@ -1431,19 +1431,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_mockito_mockito_core_java") {
-    jar_path = "libs/org_mockito_mockito_core/mockito-core-4.7.0.jar"
-    output_name = "org_mockito_mockito_core"
-    supports_android = true
-    testonly = true
-    deps = [
-      ":net_bytebuddy_byte_buddy_agent_java",
-      ":net_bytebuddy_byte_buddy_java",
-      ":org_objenesis_objenesis_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_robolectric_java") {
     jar_path = "libs/org_robolectric_robolectric/robolectric-4.8.1.jar"
     output_name = "org_robolectric_robolectric"
@@ -2124,37 +2111,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("net_bytebuddy_byte_buddy_java") {
-    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.12.13.jar"
-    output_name = "net_bytebuddy_byte_buddy"
-    supports_android = true
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("net_bytebuddy_byte_buddy_agent_java") {
-    jar_path =
-        "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.12.13.jar"
-    output_name = "net_bytebuddy_byte_buddy_agent"
-    supports_android = true
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_sf_kxml_kxml2_java") {
     jar_path = "libs/net_sf_kxml_kxml2/kxml2-2.3.0.jar"
     output_name = "net_sf_kxml_kxml2"
@@ -2191,21 +2147,6 @@ if (!limit_android_deps) {
   java_prebuilt("org_hamcrest_hamcrest_java") {
     jar_path = "libs/org_hamcrest_hamcrest/hamcrest-2.2.jar"
     output_name = "org_hamcrest_hamcrest"
-    supports_android = true
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_objenesis_objenesis_java") {
-    jar_path = "libs/org_objenesis_objenesis/objenesis-3.2.jar"
-    output_name = "org_objenesis_objenesis"
     supports_android = true
 
     # To remove visibility constraint, add this dependency to
