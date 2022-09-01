@@ -23,6 +23,10 @@ class V4L2VideoDecoderDelegateAV1 : public AV1Decoder::AV1Accelerator {
 
   ~V4L2VideoDecoderDelegateAV1() override;
 
+  // AV1Decoder::AV1Accelerator implementation.
+  scoped_refptr<AV1Picture> CreateAV1Picture(bool apply_grain) override;
+  bool OutputPicture(const AV1Picture& pic) override;
+
  private:
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;

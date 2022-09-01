@@ -9,10 +9,6 @@ namespace media {
 AV1Picture::AV1Picture() = default;
 AV1Picture::~AV1Picture() = default;
 
-V4L2AV1Picture* AV1Picture::AsV4L2AV1Picture() {
-  return nullptr;
-}
-
 scoped_refptr<AV1Picture> AV1Picture::Duplicate() {
   scoped_refptr<AV1Picture> dup_pic = CreateDuplicate();
   if (!dup_pic)

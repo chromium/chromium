@@ -11,8 +11,6 @@
 
 namespace media {
 
-class V4L2AV1Picture;
-
 // AV1Picture carries the parsed frame header needed for decoding an AV1 frame.
 // It also owns the decoded frame itself.
 class MEDIA_GPU_EXPORT AV1Picture : public CodecPicture {
@@ -20,10 +18,6 @@ class MEDIA_GPU_EXPORT AV1Picture : public CodecPicture {
   AV1Picture();
   AV1Picture(const AV1Picture&) = delete;
   AV1Picture& operator=(const AV1Picture&) = delete;
-
-  // TODO(stevecho): remove to use reinterpret_cast<> instead
-  // when similar changes are made with other codecs (vp8, vp9, etc.)
-  virtual V4L2AV1Picture* AsV4L2AV1Picture();
 
   // Create a duplicate instance and copy the data to it. It is used to support
   // the AV1 show_existing_frame feature. Return the scoped_refptr pointing to
