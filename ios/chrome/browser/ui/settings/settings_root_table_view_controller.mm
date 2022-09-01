@@ -425,7 +425,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)allowUserInteraction {
   DCHECK(self.navigationController)
-      << "|allowUserInteraction` should always be called before this settings"
+      << "`allowUserInteraction` should always be called before this settings"
          " controller is popped or dismissed.";
   [self.navigationController.view setUserInteractionEnabled:YES];
 
