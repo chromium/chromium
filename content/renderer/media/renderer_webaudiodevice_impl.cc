@@ -145,7 +145,7 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
   // In which case just choose whatever we want for the fake device.
   if (!hardware_params.IsValid()) {
     hardware_params.Reset(media::AudioParameters::AUDIO_FAKE,
-                          media::CHANNEL_LAYOUT_STEREO, 48000, 480);
+                          media::ChannelLayoutConfig::Stereo(), 48000, 480);
   }
   SendLogMessage(
       base::StringPrintf("%s => (hardware_params=[%s])", __func__,
@@ -159,12 +159,8 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
       GetOutputBufferSize(latency_hint_, latency, hardware_params);
   DCHECK_NE(0, output_buffer_size);
 
-  sink_params_.Reset(hardware_params.format(), layout,
+  sink_params_.Reset(hardware_params.format(), {layout, channels},
                      hardware_params.sample_rate(), output_buffer_size);
-
-  // Always set channels, this should be a no-op in all but the discrete case;
-  // this call will fail if channels doesn't match the layout in other cases.
-  sink_params_.set_channels_for_discrete(channels);
 
   // Specify the latency info to be passed to the browser side.
   sink_params_.set_latency_tag(latency);

@@ -39,7 +39,7 @@ media::AudioParameters MockGetOutputDeviceParameters(
     const base::UnguessableToken& session_id,
     const std::string& device_id) {
   return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_STEREO,
+                                media::ChannelLayoutConfig::Stereo(),
                                 kHardwareSampleRate, kHardwareBufferSize);
 }
 
