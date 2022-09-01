@@ -54,6 +54,7 @@ enum class MixedContentType {
 };
 
 void OnAllowCertificate(SSLErrorHandler* handler,
+                        StoragePartition* storage_partition,
                         SSLHostStateDelegate* state_delegate,
                         bool record_decision,
                         CertificateRequestResultType decision) {
@@ -73,10 +74,7 @@ void OnAllowCertificate(SSLErrorHandler* handler,
       if (record_decision && state_delegate) {
         state_delegate->AllowCert(handler->request_url().host(),
                                   *handler->ssl_info().cert.get(),
-                                  handler->cert_error(),
-                                  handler->web_contents()
-                                      ->GetPrimaryMainFrame()
-                                      ->GetStoragePartition());
+                                  handler->cert_error(), storage_partition);
       }
       handler->ContinueRequest();
       return;
@@ -347,9 +345,7 @@ void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
     judgment = ssl_host_state_delegate_->QueryPolicy(
         handler->request_url().host(), *handler->ssl_info().cert.get(),
         handler->cert_error(),
-        // TODO(crbug/1353781): Avoid WebContents for MPArch GuestView. Get
-        // StoragePartition from navi controller's frame tree instead.
-        handler->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
+        controller_->frame_tree().GetMainFrame()->GetStoragePartition());
   } else {
     judgment = SSLHostStateDelegate::DENIED;
   }
@@ -376,11 +372,8 @@ void SSLManager::DidStartResourceResponse(
   // any previous decisions that have occurred.
   if (!ssl_host_state_delegate_ ||
       !ssl_host_state_delegate_->HasAllowException(
-          // TODO(crbug/1353781): Avoid WebContents for MPArch GuestView. Get
-          // StoragePartition from navi controller's frame tree instead.
-          host, controller_->DeprecatedGetWebContents()
-                    ->GetPrimaryMainFrame()
-                    ->GetStoragePartition())) {
+          host,
+          controller_->frame_tree().GetMainFrame()->GetStoragePartition())) {
     return;
   }
 
@@ -400,9 +393,10 @@ void SSLManager::OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler) {
   bool fatal = handler->fatal();
 
   base::RepeatingCallback<void(bool, content::CertificateRequestResultType)>
-      callback = base::BindRepeating(&OnAllowCertificate,
-                                     base::Owned(handler.release()),
-                                     ssl_host_state_delegate_);
+      callback = base::BindRepeating(
+          &OnAllowCertificate, base::Owned(handler.release()),
+          controller_->frame_tree().GetMainFrame()->GetStoragePartition(),
+          ssl_host_state_delegate_);
 
   if (devtools_instrumentation::HandleCertificateError(
           web_contents, cert_error, request_url,
