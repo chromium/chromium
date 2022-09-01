@@ -236,6 +236,10 @@ void TestSessionControllerClient::RequestSignOut() {
   ++request_sign_out_count_;
 }
 
+void TestSessionControllerClient::RequestRestartForUpdate() {
+  ++request_restart_for_update_count_;
+}
+
 void TestSessionControllerClient::AttemptRestartChrome() {
   ++attempt_restart_chrome_count_;
 }

@@ -82,6 +82,7 @@ class SessionControllerClientImpl
   void RequestLockScreen() override;
   void RequestHideLockScreen() override;
   void RequestSignOut() override;
+  void RequestRestartForUpdate() override;
   void AttemptRestartChrome() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void CycleActiveUser(ash::CycleUserDirection direction) override;

@@ -149,6 +149,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // should use LockStateController::RequestSignOut() instead.
   void RequestSignOut();
 
+  // Requests a system restart to apply an OS update.
+  void RequestRestartForUpdate();
+
   // Attempts to restart the chrome browser.
   void AttemptRestartChrome();
 

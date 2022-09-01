@@ -40,7 +40,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -694,10 +693,6 @@ void SystemTrayClientImpl::ShowMultiDeviceSetup() {
 
 void SystemTrayClientImpl::ShowFirmwareUpdate() {
   chrome::ShowFirmwareUpdatesApp(ProfileManager::GetActiveUserProfile());
-}
-
-void SystemTrayClientImpl::RequestRestartForUpdate() {
-  browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
 }
 
 void SystemTrayClientImpl::SetLocaleAndExit(

@@ -229,6 +229,10 @@ void SessionControllerClientImpl::RequestSignOut() {
   chrome::AttemptUserExit();
 }
 
+void SessionControllerClientImpl::RequestRestartForUpdate() {
+  browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
+}
+
 void SessionControllerClientImpl::AttemptRestartChrome() {
   chrome::AttemptRestart();
 }

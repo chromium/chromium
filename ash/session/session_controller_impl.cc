@@ -237,6 +237,11 @@ void SessionControllerImpl::ProceedWithSignOut() {
     client_->RequestSignOut();
 }
 
+void SessionControllerImpl::RequestRestartForUpdate() {
+  if (client_)
+    client_->RequestRestartForUpdate();
+}
+
 void SessionControllerImpl::AttemptRestartChrome() {
   if (client_)
     client_->AttemptRestartChrome();

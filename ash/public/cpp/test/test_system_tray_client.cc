@@ -108,8 +108,6 @@ void TestSystemTrayClient::ShowFirmwareUpdate() {
   show_firmware_update_count_++;
 }
 
-void TestSystemTrayClient::RequestRestartForUpdate() {}
-
 void TestSystemTrayClient::SetLocaleAndExit(
     const std::string& locale_iso_code) {}
 

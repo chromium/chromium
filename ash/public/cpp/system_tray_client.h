@@ -136,9 +136,6 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows the Firmware update app.
   virtual void ShowFirmwareUpdate() = 0;
 
-  // Attempts to restart the system for update.
-  virtual void RequestRestartForUpdate() = 0;
-
   // Sets the UI locale to |locale_iso_code| and exit the session to take
   // effect.
   virtual void SetLocaleAndExit(const std::string& locale_iso_code) = 0;

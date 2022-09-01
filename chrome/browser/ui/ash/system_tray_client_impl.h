@@ -97,7 +97,6 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowNetworkSettings(const std::string& network_id) override;
   void ShowMultiDeviceSetup() override;
   void ShowFirmwareUpdate() override;
-  void RequestRestartForUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
   void ShowAccessCodeCastingDialog(
       AccessCodeCastDialogOpenLocation open_location) override;

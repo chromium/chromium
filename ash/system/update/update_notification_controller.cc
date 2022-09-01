@@ -292,7 +292,7 @@ void UpdateNotificationController::RestartForUpdate() {
     return;
   }
   // System updates require restarting the device.
-  Shell::Get()->system_tray_model()->client()->RequestRestartForUpdate();
+  Shell::Get()->session_controller()->RequestRestartForUpdate();
   base::RecordAction(
       base::UserMetricsAction("StatusArea_OS_Update_Default_Selected"));
 }
