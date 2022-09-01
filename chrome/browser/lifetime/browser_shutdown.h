@@ -122,6 +122,9 @@ bool IsTryingToQuit();
 base::AutoReset<ShutdownType> SetShutdownTypeForTesting(
     ShutdownType shutdown_type);
 
+// Allows resetting the shutdown globals for testing purposes.
+void ResetShutdownGlobalsForTesting();
+
 }  // namespace browser_shutdown
 
 #endif  // CHROME_BROWSER_LIFETIME_BROWSER_SHUTDOWN_H_

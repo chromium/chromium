@@ -402,4 +402,14 @@ base::AutoReset<ShutdownType> SetShutdownTypeForTesting(
   return base::AutoReset<ShutdownType>(&g_shutdown_type, shutdown_type);
 }
 
+void ResetShutdownGlobalsForTesting() {
+  if (g_shutdown_started) {
+    delete g_shutdown_started;
+    g_shutdown_started = nullptr;
+  }
+
+  g_trying_to_quit = false;
+  g_shutdown_type = ShutdownType::kNotValid;
+}
+
 }  // namespace browser_shutdown

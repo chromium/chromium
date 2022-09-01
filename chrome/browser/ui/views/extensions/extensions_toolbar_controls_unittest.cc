@@ -171,7 +171,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
 // TODO(crbug.com/1321562) Disabled for flakiness.
 TEST_F(ExtensionsToolbarControlsUnitTest,
-       DISABLED_RequestAccessButtonVisibility_NavigationBetweenPages) {
+       RequestAccessButtonVisibility_NavigationBetweenPages) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
   const GURL url_a("http://www.a.com");
@@ -247,9 +247,8 @@ TEST_F(
   }
 }
 
-// TODO(crbug.com/1321562) Disabled for flakiness.
 TEST_F(ExtensionsToolbarControlsUnitTest,
-       DISABLED_RequestAccessButtonVisibility_MultipleExtensions) {
+       RequestAccessButtonVisibility_MultipleExtensions) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
   const GURL url_a("http://www.a.com");
@@ -302,10 +301,8 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 // Tests that extensions with activeTab and requested url with withheld access
 // are taken into account for the request access button visibility, but not the
 // ones with just activeTab.
-// TODO(crbug.com/1339370): Withholding host permissions is flaky when the test
-// is run multiple times.
 TEST_F(ExtensionsToolbarControlsUnitTest,
-       DISABLED_RequestAccessButtonVisibility_ActiveTabExtensions) {
+       RequestAccessButtonVisibility_ActiveTabExtensions) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
   const GURL requested_url("http://www.requested-url.com");
@@ -383,10 +380,8 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   }
 }
 
-// TODO(crbug.com/1339370): Withholding host permissions is flaky when the test
-// is run multiple times.
 TEST_F(ExtensionsToolbarControlsUnitTest,
-       DISABLED_RequestAccessButton_OnPressedExecuteAction) {
+       RequestAccessButton_OnPressedExecuteAction) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
 

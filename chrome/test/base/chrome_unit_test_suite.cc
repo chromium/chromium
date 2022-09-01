@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
@@ -89,6 +90,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     arc::ClearArcAllowedCheckForTesting();
     crypto::ResetTokenManagerForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    browser_shutdown::ResetShutdownGlobalsForTesting();
   }
 };
 
