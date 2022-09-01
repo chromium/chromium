@@ -2437,27 +2437,15 @@ WebContents* GetFocusedWebContents(WebContents* web_contents) {
 
 namespace {
 
-RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromFrameTreeNode(
-    FrameTreeNode* node) {
-  DCHECK(node);
-  DCHECK(node->current_frame_host());
-  DCHECK(node->current_frame_host()->GetRenderWidgetHost());
-  return node->current_frame_host()
-      ->GetRenderWidgetHost()
-      ->render_frame_metadata_provider();
-}
-
-RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromWebContents(
-    WebContents* web_contents) {
-  DCHECK(web_contents);
-  DCHECK(web_contents->GetPrimaryMainFrame()->GetRenderViewHost());
-  DCHECK(
-      RenderWidgetHostImpl::From(
-          web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget())
-          ->render_frame_metadata_provider());
-  return RenderWidgetHostImpl::From(web_contents->GetPrimaryMainFrame()
-                                        ->GetRenderViewHost()
-                                        ->GetWidget())
+RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromRenderFrameHost(
+    RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host);
+  DCHECK(render_frame_host->GetRenderWidgetHost());
+  // This helper should return a valid provider since it's used for
+  // RenderFrameSubmissionObserver ctor.
+  DCHECK(RenderWidgetHostImpl::From(render_frame_host->GetRenderWidgetHost())
+             ->render_frame_metadata_provider());
+  return RenderWidgetHostImpl::From(render_frame_host->GetRenderWidgetHost())
       ->render_frame_metadata_provider();
 }
 
@@ -2798,12 +2786,19 @@ RenderFrameSubmissionObserver::RenderFrameSubmissionObserver(
 RenderFrameSubmissionObserver::RenderFrameSubmissionObserver(
     FrameTreeNode* node)
     : RenderFrameSubmissionObserver(
-          RenderFrameMetadataProviderFromFrameTreeNode(node)) {}
+          RenderFrameMetadataProviderFromRenderFrameHost(
+              node->current_frame_host())) {}
 
 RenderFrameSubmissionObserver::RenderFrameSubmissionObserver(
     WebContents* web_contents)
     : RenderFrameSubmissionObserver(
-          RenderFrameMetadataProviderFromWebContents(web_contents)) {}
+          RenderFrameMetadataProviderFromRenderFrameHost(
+              web_contents->GetPrimaryMainFrame())) {}
+
+RenderFrameSubmissionObserver::RenderFrameSubmissionObserver(
+    RenderFrameHost* rfh)
+    : RenderFrameSubmissionObserver(
+          RenderFrameMetadataProviderFromRenderFrameHost(rfh)) {}
 
 RenderFrameSubmissionObserver::~RenderFrameSubmissionObserver() {
   render_frame_metadata_provider_->RemoveObserver(this);

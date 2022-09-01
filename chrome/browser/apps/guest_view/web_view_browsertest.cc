@@ -4540,24 +4540,27 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadAfterCrash) {
   // Load guest and wait for it to appear.
   LoadAppWithGuest("web_view/simple");
-  EXPECT_TRUE(GetGuestWebContents()->GetPrimaryMainFrame()->GetView());
-  content::RenderFrameSubmissionObserver frame_observer(GetGuestWebContents());
+
+  EXPECT_TRUE(GetGuestView()->GetGuestMainFrame()->GetView());
+  content::RenderFrameSubmissionObserver frame_observer(
+      GetGuestView()->GetGuestMainFrame());
   frame_observer.WaitForMetadataChange();
 
   // Kill guest.
-  auto* rph = GetGuestWebContents()->GetPrimaryMainFrame()->GetProcess();
+  auto* rph = GetGuestView()->GetGuestMainFrame()->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
       rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   EXPECT_TRUE(rph->Shutdown(content::RESULT_CODE_KILLED));
   crash_observer.Wait();
-  EXPECT_FALSE(GetGuestWebContents()->GetPrimaryMainFrame()->GetView());
+  EXPECT_FALSE(GetGuestView()->GetGuestMainFrame()->GetView());
 
   // Reload guest and make sure it appears.
-  content::TestNavigationObserver load_observer(GetGuestWebContents());
+  content::TestFrameNavigationObserver load_observer(
+      GetGuestView()->GetGuestMainFrame());
   EXPECT_TRUE(ExecuteScript(GetEmbedderWebContents(),
                             "document.querySelector('webview').reload()"));
   load_observer.Wait();
-  EXPECT_TRUE(GetGuestWebContents()->GetPrimaryMainFrame()->GetView());
+  EXPECT_TRUE(GetGuestView()->GetGuestMainFrame()->GetView());
   // Ensure that the guest produces a new frame.
   frame_observer.WaitForAnyFrameSubmission();
 }

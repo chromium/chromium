@@ -1362,6 +1362,7 @@ class RenderFrameSubmissionObserver
       RenderFrameMetadataProviderImpl* render_frame_metadata_provider);
   explicit RenderFrameSubmissionObserver(FrameTreeNode* node);
   explicit RenderFrameSubmissionObserver(WebContents* web_contents);
+  explicit RenderFrameSubmissionObserver(RenderFrameHost* rfh);
   ~RenderFrameSubmissionObserver() override;
 
   // Resets the current |render_frame_count|;
