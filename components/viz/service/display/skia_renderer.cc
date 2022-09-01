@@ -3083,12 +3083,6 @@ void SkiaRenderer::UpdateRenderPassTextures(
         render_passes_in_frame) {
   std::vector<AggregatedRenderPassId> passes_to_delete;
   for (const auto& pair : render_pass_backings_) {
-    // Buffers for root render pass backings are managed by |buffer_queue_|, not
-    // DisplayResourceProvider, so we should not destroy them here.
-    const RenderPassBacking& backing = pair.second;
-    if (backing.is_root)
-      continue;
-
     auto render_pass_it = render_passes_in_frame.find(pair.first);
     if (render_pass_it == render_passes_in_frame.end()) {
       passes_to_delete.push_back(pair.first);
@@ -3096,16 +3090,12 @@ void SkiaRenderer::UpdateRenderPassTextures(
     }
 
     const RenderPassRequirements& requirements = render_pass_it->second;
+    const RenderPassBacking& backing = pair.second;
     bool size_appropriate = backing.size.width() >= requirements.size.width() &&
                             backing.size.height() >= requirements.size.height();
     bool mipmap_appropriate =
         !requirements.generate_mipmap || backing.generate_mipmap;
-    bool no_change_in_format = requirements.format == backing.format;
-    bool no_change_in_color_space =
-        requirements.color_space == backing.color_space;
-
-    if (!size_appropriate || !mipmap_appropriate || !no_change_in_format ||
-        !no_change_in_color_space)
+    if (!size_appropriate || !mipmap_appropriate)
       passes_to_delete.push_back(pair.first);
   }
 
@@ -3114,7 +3104,11 @@ void SkiaRenderer::UpdateRenderPassTextures(
   for (size_t i = 0; i < passes_to_delete.size(); ++i) {
     auto it = render_pass_backings_.find(passes_to_delete[i]);
     auto& backing = it->second;
-    skia_output_surface_->DestroySharedImage(backing.mailbox);
+    // Buffers for root render pass backings are managed by |buffer_queue_|, not
+    // DisplayResourceProvider, so we should not destroy them here.
+    if (!backing.is_root) {
+      skia_output_surface_->DestroySharedImage(backing.mailbox);
+    }
     render_pass_backings_.erase(it);
   }
 
@@ -3145,8 +3139,20 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
   }
 
   auto color_space = CurrentRenderPassColorSpace();
-  auto format = GetColorSpaceResourceFormat(color_space);
+  // TODO(penghuang): check supported format correctly.
+  gpu::Capabilities caps;
+  caps.texture_format_bgra8888 = true;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.
+  auto format = color_space.IsHDR()
+                    ? RGBA_1010102
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#else
+  auto format = color_space.IsHDR()
+                    ? RGBA_F16
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#endif
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY;
   if (requirements.generate_mipmap)
     usage |= gpu::SHARED_IMAGE_USAGE_MIPMAP;

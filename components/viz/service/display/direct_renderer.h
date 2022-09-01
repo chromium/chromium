@@ -193,8 +193,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   struct RenderPassRequirements {
     gfx::Size size;
     bool generate_mipmap = false;
-    ResourceFormat format;
-    gfx::ColorSpace color_space;
   };
 
   static gfx::RectF QuadVertexRect();
@@ -219,7 +217,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   void SetScissorTestRectInDrawSpace(const gfx::Rect& draw_space_rect);
 
   gfx::Size CalculateTextureSizeForRenderPass(
-      const AggregatedRenderPass* render_pass) const;
+      const AggregatedRenderPass* render_pass);
   gfx::Size CalculateSizeForOutputSurface(
       const gfx::Size& device_viewport_size);
 
@@ -310,7 +308,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     return CurrentRenderPassColorSpace().ToSkColorSpace(
         CurrentFrameSDRWhiteLevel());
   }
-  ResourceFormat GetColorSpaceResourceFormat(gfx::ColorSpace color_space) const;
 
   const raw_ptr<const RendererSettings> settings_;
   // Points to the viz-global singleton.
