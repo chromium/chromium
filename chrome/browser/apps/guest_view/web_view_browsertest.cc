@@ -1924,41 +1924,33 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
 
   content::WebContents* embedder = GetEmbedderWebContents();
-  auto* unattached_guest = extensions::WebViewGuest::FromWebContents(
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated());
+  auto* unattached_guest = GetGuestViewManager()->GetLastGuestViewCreated();
   ASSERT_TRUE(unattached_guest);
   ASSERT_EQ(embedder, unattached_guest->owner_web_contents());
   ASSERT_FALSE(unattached_guest->attached());
   ASSERT_FALSE(unattached_guest->embedder_web_contents());
 
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_contents_list);
-  ASSERT_EQ(2u, guest_contents_list.size());
-  content::WebContents* other_guest =
-      (guest_contents_list[0] == unattached_guest->web_contents())
-          ? guest_contents_list[1]
-          : guest_contents_list[0];
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
+  content::RenderFrameHost* unattached_guest_rfh =
+      unattached_guest->GetGuestMainFrame();
+  content::RenderFrameHost* other_guest_rfh =
+      (guest_rfh_list[0] == unattached_guest_rfh) ? guest_rfh_list[1]
+                                                  : guest_rfh_list[0];
 
   content::RenderFrameHost* embedder_main_frame =
       embedder->GetPrimaryMainFrame();
-  content::RenderFrameHost* unattached_guest_main_frame =
-      unattached_guest->web_contents()->GetPrimaryMainFrame();
-  content::RenderFrameHost* other_guest_main_frame =
-      other_guest->GetPrimaryMainFrame();
-
-  EXPECT_THAT(
-      content::CollectAllRenderFrameHosts(embedder_main_frame),
-      testing::UnorderedElementsAre(embedder_main_frame, other_guest_main_frame,
-                                    unattached_guest_main_frame));
+  EXPECT_THAT(content::CollectAllRenderFrameHosts(embedder_main_frame),
+              testing::UnorderedElementsAre(
+                  embedder_main_frame, other_guest_rfh, unattached_guest_rfh));
 
   // In either case, GetParentOrOuterDocument does not escape GuestViews.
-  EXPECT_EQ(nullptr, other_guest_main_frame->GetParentOrOuterDocument());
-  EXPECT_EQ(nullptr, unattached_guest_main_frame->GetParentOrOuterDocument());
-  EXPECT_EQ(other_guest_main_frame,
-            other_guest_main_frame->GetOutermostMainFrame());
-  EXPECT_EQ(unattached_guest_main_frame,
-            unattached_guest_main_frame->GetOutermostMainFrame());
+  EXPECT_EQ(nullptr, other_guest_rfh->GetParentOrOuterDocument());
+  EXPECT_EQ(nullptr, unattached_guest_rfh->GetParentOrOuterDocument());
+  EXPECT_EQ(other_guest_rfh, other_guest_rfh->GetOutermostMainFrame());
+  EXPECT_EQ(unattached_guest_rfh,
+            unattached_guest_rfh->GetOutermostMainFrame());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestContentLoadEvent) {
