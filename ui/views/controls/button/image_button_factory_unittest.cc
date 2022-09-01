@@ -29,15 +29,6 @@ TEST_F(ImageButtonFactoryTest, CreateVectorImageButton) {
   EXPECT_EQ(ImageButton::ALIGN_MIDDLE, button->v_alignment_);
 }
 
-TEST_F(ImageButtonFactoryTest, SetImageFromVectorIconWithColor) {
-  auto button = CreateVectorImageButton(Button::PressedCallback());
-  SetImageFromVectorIconWithColor(button.get(), vector_icons::kCloseRoundedIcon,
-                                  SK_ColorRED, SK_ColorRED);
-  EXPECT_FALSE(button->GetImage(Button::STATE_NORMAL).isNull());
-  EXPECT_FALSE(button->GetImage(Button::STATE_DISABLED).isNull());
-  EXPECT_EQ(SK_ColorRED, InkDrop::Get(button.get())->GetBaseColor());
-}
-
 class ImageButtonFactoryWidgetTest : public ViewsTestBase {
  public:
   ImageButtonFactoryWidgetTest() = default;
@@ -80,6 +71,15 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
   raw_ptr<ImageButton> button_ = nullptr;  // owned by |widget_|.
 };
+
+TEST_F(ImageButtonFactoryWidgetTest, SetImageFromVectorIconWithColor) {
+  AddImageButton(CreateVectorImageButton(Button::PressedCallback()));
+  SetImageFromVectorIconWithColor(button(), vector_icons::kCloseRoundedIcon,
+                                  SK_ColorRED, SK_ColorRED);
+  EXPECT_FALSE(button()->GetImage(Button::STATE_NORMAL).isNull());
+  EXPECT_FALSE(button()->GetImage(Button::STATE_DISABLED).isNull());
+  EXPECT_EQ(SK_ColorRED, InkDrop::Get(button())->GetBaseColor());
+}
 
 TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {
   AddImageButton(CreateVectorImageButtonWithNativeTheme(

@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -95,13 +96,13 @@ void SetImageFromVectorIconWithColor(ImageButton* button,
                                      int dip_size,
                                      SkColor icon_color,
                                      SkColor icon_disabled_color) {
-  const gfx::ImageSkia& normal_image =
-      gfx::CreateVectorIcon(icon, dip_size, icon_color);
-  const gfx::ImageSkia& disabled_image =
-      gfx::CreateVectorIcon(icon, dip_size, icon_disabled_color);
+  const ui::ImageModel& normal_image =
+      ui::ImageModel::FromVectorIcon(icon, icon_color, dip_size);
+  const ui::ImageModel& disabled_image =
+      ui::ImageModel::FromVectorIcon(icon, icon_disabled_color, dip_size);
 
-  button->SetImage(Button::STATE_NORMAL, normal_image);
-  button->SetImage(Button::STATE_DISABLED, disabled_image);
+  button->SetImageModel(Button::STATE_NORMAL, normal_image);
+  button->SetImageModel(Button::STATE_DISABLED, disabled_image);
   InkDrop::Get(button)->SetBaseColor(icon_color);
 }
 
@@ -110,13 +111,13 @@ void SetToggledImageFromVectorIconWithColor(ToggleImageButton* button,
                                             int dip_size,
                                             SkColor icon_color,
                                             SkColor disabled_color) {
-  const gfx::ImageSkia normal_image =
-      gfx::CreateVectorIcon(icon, dip_size, icon_color);
-  const gfx::ImageSkia disabled_image =
-      gfx::CreateVectorIcon(icon, dip_size, disabled_color);
+  const ui::ImageModel& normal_image =
+      ui::ImageModel::FromVectorIcon(icon, icon_color, dip_size);
+  const ui::ImageModel& disabled_image =
+      ui::ImageModel::FromVectorIcon(icon, disabled_color, dip_size);
 
-  button->SetToggledImage(Button::STATE_NORMAL, &normal_image);
-  button->SetToggledImage(Button::STATE_DISABLED, &disabled_image);
+  button->SetToggledImageModel(Button::STATE_NORMAL, normal_image);
+  button->SetToggledImageModel(Button::STATE_DISABLED, disabled_image);
 }
 
 }  // namespace views
