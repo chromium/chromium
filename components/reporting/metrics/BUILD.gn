@@ -18,6 +18,7 @@ static_library("metrics_data_collection") {
     "metric_reporting_controller.h",
     "reporting_settings.h",
     "sampler.h",
+    "telemetry_sampler_pool_base.h",
   ]
   deps = [
     "//base",
