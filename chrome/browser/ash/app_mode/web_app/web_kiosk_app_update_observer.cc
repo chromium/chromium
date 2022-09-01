@@ -9,7 +9,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
@@ -21,6 +23,8 @@ WebKioskAppUpdateObserver::WebKioskAppUpdateObserver(
     : account_id_(account_id) {
   app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile);
   DCHECK(app_service_);
+  web_app_provider_ = web_app::WebAppProvider::GetForWebApps(profile);
+  DCHECK(web_app_provider_);
   app_registry_observation_.Observe(&app_service_->AppRegistryCache());
 }
 
@@ -40,11 +44,19 @@ void WebKioskAppUpdateObserver::OnAppUpdate(const apps::AppUpdate& update) {
   // Name: title of the app
   // PublisherId: start URL of the app
   // IconKey: icon of the app
-  if (update.NameChanged() || update.PublisherIdChanged() ||
-      update.IconKeyChanged()) {
-    SYSLOG(INFO) << "Kiosk web app update triggered";
-    UpdateWebAppFromAppService(update.AppId(), update.IconKeyChanged());
+  if (!update.NameChanged() && !update.PublisherIdChanged() &&
+      !update.IconKeyChanged()) {
+    return;
   }
+
+  if (web_app_provider_->registrar().IsPlaceholderApp(
+          update.AppId(), web_app::WebAppManagement::Type::kKiosk)) {
+    SYSLOG(INFO) << "Ignoring web app update of placeholder app";
+    return;
+  }
+
+  SYSLOG(INFO) << "Kiosk web app update triggered";
+  UpdateWebAppFromAppService(update.AppId(), update.IconKeyChanged());
 }
 
 void WebKioskAppUpdateObserver::OnAppRegistryCacheWillBeDestroyed(
