@@ -77,8 +77,17 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
 
+  // An event was fired on the given AXObject, which should now also be
+  // considered modified (as if AXObjectModified was called on it).
   void AXEventFired(AXObject* object, ax::mojom::blink::Event event);
+
+  // The given AXObject (and possibly entire |subtree|) has changed.
   void AXObjectModified(AXObject* object, bool subtree);
+
+  // Called by the AXObjectCache when a11y is clean and it is safe to traverse
+  // the a11y tree and fetch object properties.
+  void AXReadyCallback(Document& document) {}
+
   void RefreshFrontendNodes(TimerBase*);
 
  private:

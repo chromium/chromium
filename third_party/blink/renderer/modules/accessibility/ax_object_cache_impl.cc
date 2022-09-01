@@ -2430,13 +2430,24 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 }
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
+  ProcessDeferredAccessibilityEventsImpl(document);
+
+  // Accessibility is now clean: AXObjects can be safely traversed and
+  // AXObject's properties can be safely fetched.
+  for (auto agent : agents_)
+    agent->AXReadyCallback(document);
+
+  // TODO(chrishtr) Accessibility serializations should happen now, on the
+  // condition that enough time has passed since the last serialization.
+}
+
+void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
+    Document& document) {
   TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents");
 
-  if (document.Lifecycle().GetState() != DocumentLifecycle::kInAccessibility) {
-    NOTREACHED() << "Deferred events should only be processed during the "
-                    "accessibility document lifecycle.";
-    return;
-  }
+  DCHECK(document.Lifecycle().GetState() == DocumentLifecycle::kInAccessibility)
+      << "Deferred events should only be processed during the "
+         "accessibility document lifecycle.";
 
   // When tree updates are paused, IsDirty() will return false. In this
   // situation we should not return early because we would never trigger the

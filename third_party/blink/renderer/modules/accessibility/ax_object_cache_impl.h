@@ -91,6 +91,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void AddInspectorAgent(InspectorAccessibilityAgent*);
   void RemoveInspectorAgent(InspectorAccessibilityAgent*);
 
+  // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
+  void ScheduleVisualUpdate(Document& document);
+
   void Dispose() override;
 
   void Freeze() override { is_frozen_ = true; }
@@ -179,6 +182,7 @@ class MODULES_EXPORT AXObjectCacheImpl
                              const LayoutRect&) override;
 
   void InlineTextBoxesUpdated(LayoutObject*) override;
+  // Called during the accessibility lifecycle to refresh the AX tree.
   void ProcessDeferredAccessibilityEvents(Document&) override;
   // Is there work to be done when layout becomes clean?
   bool IsDirty() const override;
@@ -424,6 +428,7 @@ class MODULES_EXPORT AXObjectCacheImpl
  private:
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
+  void ProcessDeferredAccessibilityEventsImpl(Document&);
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
@@ -627,7 +632,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // setting enabled, or where there is no active ancestral aria-modal dialog.
   AXObject* AncestorAriaModalDialog(Node* node);
 
-  void ScheduleVisualUpdate(Document& document);
   void FireTreeUpdatedEventImmediately(
       Document& document,
       ax::mojom::blink::EventFrom event_from,
