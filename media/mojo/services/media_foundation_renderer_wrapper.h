@@ -28,7 +28,7 @@ class MediaFoundationRendererWrapper final
     : public Renderer,
       public mojom::MediaFoundationRendererExtension,
       public mojom::MuteStateObserver,
-      public mojom::GpuInfoObserver {
+      public mojom::GpuLuidObserver {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
   using ClientExtension = mojom::MediaFoundationRendererClientExtension;
@@ -71,7 +71,7 @@ class MediaFoundationRendererWrapper final
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;
 
-  // mojom::GpuInfoObserver
+  // mojom::GpuLuidObserver
   void OnGpuLuidChange(const CHROME_LUID& adapter_luid) override;
 
  private:
@@ -95,7 +95,7 @@ class MediaFoundationRendererWrapper final
   mojo::Remote<media::mojom::MediaFoundationRendererClientExtension>
       client_extension_remote_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
-  mojo::Receiver<mojom::GpuInfoObserver> gpu_info_observer_;
+  mojo::Receiver<mojom::GpuLuidObserver> gpu_luid_observer_;
 
   float volume_ = 1.0;
   bool muted_ = false;  // Whether the site (WebContents) is muted.

@@ -218,10 +218,10 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     }
   }
 
-  void RegisterGpuInfoObserver(
-      mojo::PendingRemote<media::mojom::GpuInfoObserver> observer,
-      RegisterGpuInfoObserverCallback callback) override {
-    gpu_info_observers_.Add(std::move(observer));
+  void RegisterGpuLuidObserver(
+      mojo::PendingRemote<media::mojom::GpuLuidObserver> observer,
+      RegisterGpuLuidObserverCallback callback) override {
+    gpu_luid_observers_.Add(std::move(observer));
 
     // Synchronous return of initial GPU Info LUID.
     last_gpu_luid_ =
@@ -253,7 +253,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
         content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid;
     if (last_gpu_luid_ != current_gpu_luid) {
       last_gpu_luid_ = current_gpu_luid;
-      for (const auto& observer : gpu_info_observers_) {
+      for (const auto& observer : gpu_luid_observers_) {
         observer->OnGpuLuidChange(last_gpu_luid_);
       }
     }
@@ -267,7 +267,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 #if BUILDFLAG(IS_WIN)
   CHROME_LUID last_gpu_luid_;
   mojo::RemoteSet<media::mojom::MuteStateObserver> site_mute_observers_;
-  mojo::RemoteSet<media::mojom::GpuInfoObserver> gpu_info_observers_;
+  mojo::RemoteSet<media::mojom::GpuLuidObserver> gpu_luid_observers_;
 #endif  // BUILDFLAG(IS_WIN)
 };
 

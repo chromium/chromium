@@ -47,13 +47,13 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
                                    std::move(renderer_extension_receiver)),
       client_extension_remote_(std::move(client_extension_remote), task_runner),
       site_mute_observer_(this),
-      gpu_info_observer_(this) {
+      gpu_luid_observer_(this) {
   DVLOG_FUNC(1);
   DCHECK(frame_interfaces_);
 
   CHROME_LUID adapter_luid;
-  frame_interfaces_->RegisterGpuInfoObserver(
-      gpu_info_observer_.BindNewPipeAndPassRemote(), &adapter_luid);
+  frame_interfaces_->RegisterGpuLuidObserver(
+      gpu_luid_observer_.BindNewPipeAndPassRemote(), &adapter_luid);
   LUID gpu_process_adapter_luid = ChromeLuidToLuid(adapter_luid);
   renderer_ = std::make_unique<MediaFoundationRenderer>(
       std::move(task_runner),

@@ -23,10 +23,10 @@ interface MuteStateObserver {
 };
 
 // Implemented by utility processes which would like change notifications
-// when GpuInfo changes  (currently subsetted to the LUID).
+// when GPU Adapter LUID changes.
 [EnableIf=is_win]
-interface GpuInfoObserver {
-  // Notifies client of GPU Adapter LUID on GPU Info state change.
+interface GpuLuidObserver {
+  // Notifies client of GPU Adapter LUID change.
   OnGpuLuidChange(gpu.mojom.Luid adapter_luid);
 };
 
@@ -60,9 +60,9 @@ interface FrameInterfaceFactory {
   // embedders to provide additional interfaces.
   BindEmbedderReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
 
-  // Registers `observer` to get notified of the active GPU adapter LUID when
-  // GpuInfo changes, synchronously returns the current adapter LUID.
+  // Registers `observer` to get notified of the active GPU adapter LUID
+  // changes, synchronously returns the current adapter LUID.
   [EnableIf=is_win, Sync]
-  RegisterGpuInfoObserver(pending_remote<GpuInfoObserver> observer)
+  RegisterGpuLuidObserver(pending_remote<GpuLuidObserver> observer)
       => (gpu.mojom.Luid adapter_luid);
 };
