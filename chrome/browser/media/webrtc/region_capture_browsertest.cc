@@ -478,7 +478,13 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
 }
 
-IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, CropToWorksForAllElements) {
+// https://crbug.com/1358839: Flaky on Mac and Linux
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_CropToWorksForAllElements DISABLED_CropToWorksForAllElements
+#else
+#define MAYBE_CropToWorksForAllElements CropToWorksForAllElements
+#endif
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MAYBE_CropToWorksForAllElements) {
   // NOTE: this list is intentionally non-exhaustive, but represents a wide
   // variety of element types.
   static const std::vector<const char*> kElementTags{"a",
