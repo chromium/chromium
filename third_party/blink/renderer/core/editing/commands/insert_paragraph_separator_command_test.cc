@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/insert_paragraph_separator_command.h"
 
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -103,6 +104,28 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithObject) {
   EXPECT_EQ(
       "<div><object><b><br></b></object></div>"
       "<object><b>|ABC</b></object>",
+      GetSelectionTextFromBody());
+}
+
+// http://crbug.com/1357082
+TEST_F(InsertParagraphSeparatorCommandTest, CrashWithObjectWithFloat) {
+  InsertStyleElement("object { float: right; }");
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<object><b>|ABC</b></object>"),
+      SetSelectionOptions());
+  base::RunLoop().RunUntilIdle();  // prepare <object> fallback content
+
+  Element& object_element = *GetDocument().QuerySelector("object");
+  object_element.appendChild(Text::Create(GetDocument(), "XYZ"));
+
+  auto* command =
+      MakeGarbageCollected<InsertParagraphSeparatorCommand>(GetDocument());
+
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<object><b><br></b></object>"
+      "<object><b>|ABC</b>XYZ</object>",
       GetSelectionTextFromBody());
 }
 

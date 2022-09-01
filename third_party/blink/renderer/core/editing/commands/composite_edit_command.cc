@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_li_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -981,7 +982,11 @@ HTMLBRElement* CompositeEditCommand::AppendBlockPlaceholder(
 
   // Should assert isLayoutBlockFlow || isInlineFlow when deletion improves. See
   // 4244964.
-  DCHECK(container->GetLayoutObject()) << container;
+  // Note: When `container` is newly created <object> as fallback content, it
+  // isn't associated to layout object. See http://crbug.com/1357082
+  DCHECK(container->GetLayoutObject() ||
+         Traversal<HTMLObjectElement>::FirstAncestor(*container))
+      << container;
 
   auto* placeholder = MakeGarbageCollected<HTMLBRElement>(GetDocument());
   AppendNode(placeholder, container, editing_state);
