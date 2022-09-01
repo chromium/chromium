@@ -612,17 +612,17 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   }
 
   if (random.next_bool()) {
-    using IsolationDataContent = decltype(WebApp::IsolationData::content);
+    using IsolationDataContent = decltype(IsolationData::content);
     constexpr size_t kNumContentTypes =
         absl::variant_size<IsolationDataContent>::value;
     IsolationDataContent content_types[] = {
-        WebApp::IsolationData::InstalledBundle{.path = seed_str},
-        WebApp::IsolationData::DevModeBundle{.path = seed_str},
-        WebApp::IsolationData::DevModeProxy{.proxy_url = seed_str},
+        IsolationData::InstalledBundle{.path = seed_str},
+        IsolationData::DevModeBundle{.path = seed_str},
+        IsolationData::DevModeProxy{.proxy_url = seed_str},
     };
     static_assert(std::size(content_types) == kNumContentTypes);
 
-    WebApp::IsolationData isolation_data(
+    IsolationData isolation_data(
         content_types[random.next_uint(kNumContentTypes)]);
     app->SetIsolationData(isolation_data);
   }

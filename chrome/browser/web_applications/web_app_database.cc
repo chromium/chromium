@@ -735,7 +735,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.always_show_toolbar_in_fullscreen());
 
   if (web_app.isolation_data().has_value()) {
-    using IsolationData = WebApp::IsolationData;
     auto* mutable_data = local_data->mutable_isolation_data();
     absl::visit(
         base::Overloaded{
@@ -1369,27 +1368,23 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   if (local_data.has_isolation_data()) {
     switch (local_data.isolation_data().content_case()) {
-      case IsolationData::ContentCase::kInstalledBundle:
-        web_app->SetIsolationData(
-            WebApp::IsolationData(WebApp::IsolationData::InstalledBundle{
-                .path =
-                    local_data.isolation_data().installed_bundle().path()}));
+      case IsolationDataProto::ContentCase::kInstalledBundle:
+        web_app->SetIsolationData(IsolationData(IsolationData::InstalledBundle{
+            .path = local_data.isolation_data().installed_bundle().path()}));
         break;
 
-      case IsolationData::ContentCase::kDevModeBundle:
-        web_app->SetIsolationData(
-            WebApp::IsolationData(WebApp::IsolationData::DevModeBundle{
-                .path = local_data.isolation_data().dev_mode_bundle().path()}));
+      case IsolationDataProto::ContentCase::kDevModeBundle:
+        web_app->SetIsolationData(IsolationData(IsolationData::DevModeBundle{
+            .path = local_data.isolation_data().dev_mode_bundle().path()}));
         break;
 
-      case IsolationData::ContentCase::kDevModeProxy:
-        web_app->SetIsolationData(
-            WebApp::IsolationData(WebApp::IsolationData::DevModeProxy{
-                .proxy_url =
-                    local_data.isolation_data().dev_mode_proxy().proxy_url()}));
+      case IsolationDataProto::ContentCase::kDevModeProxy:
+        web_app->SetIsolationData(IsolationData(IsolationData::DevModeProxy{
+            .proxy_url =
+                local_data.isolation_data().dev_mode_proxy().proxy_url()}));
         break;
 
-      case IsolationData::ContentCase::CONTENT_NOT_SET:
+      case IsolationDataProto::ContentCase::CONTENT_NOT_SET:
         DLOG(ERROR) << "WebApp proto isolation_data parse error: "
                     << "content not set";
         return nullptr;

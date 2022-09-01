@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -511,76 +510,6 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
   root.Set("install_urls", std::move(urls));
   root.Set("is_placeholder", is_placeholder);
   return root;
-}
-
-WebApp::IsolationData::IsolationData(
-    absl::variant<InstalledBundle, DevModeBundle, DevModeProxy> content)
-    : content(content) {}
-WebApp::IsolationData::~IsolationData() = default;
-WebApp::IsolationData::IsolationData(const IsolationData&) = default;
-WebApp::IsolationData& WebApp::IsolationData::operator=(
-    const WebApp::IsolationData&) = default;
-WebApp::IsolationData::IsolationData(IsolationData&&) = default;
-WebApp::IsolationData& WebApp::IsolationData::operator=(
-    WebApp::IsolationData&&) = default;
-bool WebApp::IsolationData::operator==(
-    const WebApp::IsolationData& other) const {
-  return content == other.content;
-}
-bool WebApp::IsolationData::operator!=(
-    const WebApp::IsolationData& other) const {
-  return !(*this == other);
-}
-bool WebApp::IsolationData::InstalledBundle::operator==(
-    const WebApp::IsolationData::InstalledBundle& other) const {
-  return path == other.path;
-}
-bool WebApp::IsolationData::InstalledBundle::operator!=(
-    const WebApp::IsolationData::InstalledBundle& other) const {
-  return !(*this == other);
-}
-bool WebApp::IsolationData::DevModeBundle::operator==(
-    const WebApp::IsolationData::DevModeBundle& other) const {
-  return path == other.path;
-}
-bool WebApp::IsolationData::DevModeBundle::operator!=(
-    const WebApp::IsolationData::DevModeBundle& other) const {
-  return !(*this == other);
-}
-bool WebApp::IsolationData::DevModeProxy::operator==(
-    const WebApp::IsolationData::DevModeProxy& other) const {
-  return proxy_url == other.proxy_url;
-}
-bool WebApp::IsolationData::DevModeProxy::operator!=(
-    const WebApp::IsolationData::DevModeProxy& other) const {
-  return !(*this == other);
-}
-base::Value WebApp::IsolationData::AsDebugValue() const {
-  base::Value::Dict value;
-  value.Set(
-      "content",
-      absl::visit(base::Overloaded{
-                      [](const WebApp::IsolationData::InstalledBundle& bundle) {
-                        base::Value::Dict content_dict;
-                        content_dict.SetByDottedPath("installed_bundle.path",
-                                                     bundle.path);
-                        return content_dict;
-                      },
-                      [](const WebApp::IsolationData::DevModeBundle& bundle) {
-                        base::Value::Dict content_dict;
-                        content_dict.SetByDottedPath("dev_mode_bundle.path",
-                                                     bundle.path);
-                        return content_dict;
-                      },
-                      [](const WebApp::IsolationData::DevModeProxy& proxy) {
-                        base::Value::Dict content_dict;
-                        content_dict.SetByDottedPath("dev_mode_proxy.proxy_url",
-                                                     proxy.proxy_url);
-                        return content_dict;
-                      },
-                  },
-                  content));
-  return base::Value(std::move(value));
 }
 
 bool WebApp::operator==(const WebApp& other) const {

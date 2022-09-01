@@ -127,7 +127,7 @@ message ManagementToExternalConfigInfo {
 }
 
 // Contains information specific to Isolated Web Apps.
-message IsolationData {
+message IsolationDataProto {
   // Information needed to load data from an installed web bundle.
   message InstalledBundle {
     optional string path = 1;
@@ -385,5 +385,5 @@ message WebAppProto {
 
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like bundle location.
-  optional IsolationData isolation_data = 60;
+  optional IsolationDataProto isolation_data = 60;
 }

@@ -543,8 +543,7 @@ class WebAppDatabaseIsolationDataTest : public ::testing::Test {
     return web_app;
   }
 
-  std::unique_ptr<WebApp> CreateIsolatedWebApp(
-      WebApp::IsolationData isolation_data) {
+  std::unique_ptr<WebApp> CreateIsolatedWebApp(IsolationData isolation_data) {
     std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
     web_app->SetIsolationData(isolation_data);
     return web_app;
@@ -556,7 +555,7 @@ class WebAppDatabaseIsolationDataTest : public ::testing::Test {
   }
 };
 
-TEST_F(WebAppDatabaseIsolationDataTest, NotIsolated) {
+TEST_F(WebAppDatabaseIsolationDataTest, DoesNotSetIsolationDataIfNotIsolated) {
   std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
@@ -566,40 +565,40 @@ TEST_F(WebAppDatabaseIsolationDataTest, NotIsolated) {
                              absl::nullopt)));
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest, InstalledBundle) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      WebApp::IsolationData::InstalledBundle{.path = "bundle_path"}));
+TEST_F(WebAppDatabaseIsolationDataTest, SavesInstalledBundleIsolationData) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
+      IsolationData(IsolationData::InstalledBundle{.path = "bundle_path"}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app->isolation_data()->content,
-              VariantWith<WebApp::IsolationData::InstalledBundle>(
-                  Field("path", &WebApp::IsolationData::InstalledBundle::path,
-                        Eq("bundle_path"))));
+  EXPECT_THAT(
+      web_app->isolation_data()->content,
+      VariantWith<IsolationData::InstalledBundle>(Field(
+          "path", &IsolationData::InstalledBundle::path, Eq("bundle_path"))));
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest, DevModeBundle) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      WebApp::IsolationData::DevModeBundle{.path = "dev_bundle_path"}));
+TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeBundleIsolationData) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
+      IsolationData(IsolationData::DevModeBundle{.path = "dev_bundle_path"}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app->isolation_data()->content,
-              VariantWith<WebApp::IsolationData::DevModeBundle>(
-                  Field("path", &WebApp::IsolationData::DevModeBundle::path,
-                        Eq("dev_bundle_path"))));
+  EXPECT_THAT(
+      web_app->isolation_data()->content,
+      VariantWith<IsolationData::DevModeBundle>(Field(
+          "path", &IsolationData::DevModeBundle::path, Eq("dev_bundle_path"))));
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest, DevModeProxy) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      WebApp::IsolationData::DevModeProxy{.proxy_url = "proxy"}));
+TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeProxyIsolationData) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
+      IsolationData(IsolationData::DevModeProxy{.proxy_url = "proxy"}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app->isolation_data()->content,
-              VariantWith<WebApp::IsolationData::DevModeProxy>(Field(
-                  "proxy_url", &WebApp::IsolationData::DevModeProxy::proxy_url,
-                  Eq("proxy"))));
+  EXPECT_THAT(
+      web_app->isolation_data()->content,
+      VariantWith<IsolationData::DevModeProxy>(Field(
+          "proxy_url", &IsolationData::DevModeProxy::proxy_url, Eq("proxy"))));
 }
 
 }  // namespace web_app
