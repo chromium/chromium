@@ -293,5 +293,11 @@ const base::Feature kClampCookieExpiryTo400Days(
     "ClampCookieExpiryTo400Days",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::Feature kAlpsParsing{"AlpsParsing",
+                                 base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAlpsClientHintParsing{"AlpsClientHintParsing",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net

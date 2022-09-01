@@ -430,6 +430,12 @@ NET_EXPORT extern const base::Feature kSandboxHttpCache;
 // future.
 NET_EXPORT extern const base::Feature kClampCookieExpiryTo400Days;
 
+// Whether ALPS parsing is on for any type of frame.
+NET_EXPORT extern const base::Feature kAlpsParsing;
+
+// Whether ALPS parsing is on for client hint parsing specifically.
+NET_EXPORT extern const base::Feature kAlpsClientHintParsing;
+
 }  // namespace features
 }  // namespace net
 
