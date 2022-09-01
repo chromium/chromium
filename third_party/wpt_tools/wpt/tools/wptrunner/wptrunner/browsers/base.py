@@ -356,7 +356,8 @@ class WebDriverBrowser(Browser):
         self._output_handler.after_process_start(self._proc.pid)
 
         try:
-            wait_for_service(self.logger, self.host, self.port)
+            wait_for_service(self.logger, self.host, self.port,
+                             timeout=self.init_timeout)
         except Exception:
             self.logger.error(
                 "WebDriver was not accessible "
