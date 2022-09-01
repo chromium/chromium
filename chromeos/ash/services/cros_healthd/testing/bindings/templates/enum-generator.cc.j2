@@ -2,7 +2,7 @@
                                                           ~ "DataGenerator" -%}
 
 std::unique_ptr<{{class_name}}> {{class_name}}::Create(
-    ::chromeos::cros_healthd::connectivity::Context*) {
+    ::ash::cros_healthd::connectivity::Context*) {
   return std::unique_ptr<{{class_name}}>(new {{class_name}}());
 }
 

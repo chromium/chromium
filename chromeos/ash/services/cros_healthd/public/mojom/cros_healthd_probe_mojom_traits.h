@@ -12,14 +12,13 @@
 namespace mojo {
 
 template <>
-class EnumTraits<chromeos::cros_healthd::mojom::CpuArchitectureEnum,
+class EnumTraits<ash::cros_healthd::mojom::CpuArchitectureEnum,
                  enterprise_management::CpuInfo::Architecture> {
  public:
-  static chromeos::cros_healthd::mojom::CpuArchitectureEnum ToMojom(
+  static ash::cros_healthd::mojom::CpuArchitectureEnum ToMojom(
       enterprise_management::CpuInfo::Architecture input);
-  static bool FromMojom(
-      chromeos::cros_healthd::mojom::CpuArchitectureEnum input,
-      enterprise_management::CpuInfo::Architecture* out);
+  static bool FromMojom(ash::cros_healthd::mojom::CpuArchitectureEnum input,
+                        enterprise_management::CpuInfo::Architecture* out);
 };
 
 }  // namespace mojo

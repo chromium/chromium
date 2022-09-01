@@ -118,13 +118,11 @@ class WilcoDtcSupportdBridge final
   void HandleEvent(chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdEvent
                        event) override;
   void GetCrosHealthdDiagnosticsService(
-      mojo::PendingReceiver<
-          chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService> service)
-      override;
+      mojo::PendingReceiver<cros_healthd::mojom::CrosHealthdDiagnosticsService>
+          service) override;
   void GetCrosHealthdProbeService(
-      mojo::PendingReceiver<
-          chromeos::cros_healthd::mojom::CrosHealthdProbeService> service)
-      override;
+      mojo::PendingReceiver<cros_healthd::mojom::CrosHealthdProbeService>
+          service) override;
 
   std::unique_ptr<Delegate> delegate_;
 

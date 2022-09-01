@@ -12,13 +12,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
-namespace cros_healthd {
-namespace internal {
+namespace ash::cros_healthd::internal {
 
-class DataCollector : public mojom::ChromiumDataCollector,
-                      public mojo_service_manager::mojom::ServiceProvider,
-                      public chromeos::sensors::mojom::SensorHalClient {
+class DataCollector
+    : public mojom::ChromiumDataCollector,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider,
+      public chromeos::sensors::mojom::SensorHalClient {
  public:
   // Delegate class to be replaced for testing.
   class Delegate {
@@ -48,8 +47,9 @@ class DataCollector : public mojom::ChromiumDataCollector,
           pending_receiver) override;
 
   // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
-  void Request(mojo_service_manager::mojom::ProcessIdentityPtr identity,
-               mojo::ScopedMessagePipeHandle receiver) override;
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override;
 
   // chromeos::sensors::mojom::SensorHalClient overrides:
   void SetUpChannel(mojo::PendingRemote<chromeos::sensors::mojom::SensorService>
@@ -70,17 +70,6 @@ class DataCollector : public mojom::ChromiumDataCollector,
       sensor_service_pending_receiver_;
 };
 
-}  // namespace internal
-}  // namespace cros_healthd
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace cros_healthd {
-namespace internal {
-using ::chromeos::cros_healthd::internal::DataCollector;
-}
-}  // namespace cros_healthd
-}  // namespace ash
+}  // namespace ash::cros_healthd::internal
 
 #endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PRIVATE_CPP_DATA_COLLECTOR_H_

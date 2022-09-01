@@ -6,9 +6,9 @@
 // browser and the telem and diag command-line tools.
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
-// in src/platform2/diagnostics/mojo/cros_healthd.mojom.
+// in src/platform2/diagnostics/mojom/public/cros_healthd.mojom.
 
-module chromeos.cros_healthd.mojom;
+module ash.cros_healthd.mojom;
 
 import "chromeos/ash/services/cros_healthd/private/mojom/cros_healthd_internal.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom";
@@ -48,7 +48,7 @@ interface CrosHealthdServiceFactory {
   // daemon.
   [MinVersion=1] SendChromiumDataCollector@6(
       pending_remote<
-          chromeos.cros_healthd.internal.mojom.ChromiumDataCollector> remote);
+          ash.cros_healthd.internal.mojom.ChromiumDataCollector> remote);
 };
 
 // Diagnostics interface exposed by the cros_healthd daemon.

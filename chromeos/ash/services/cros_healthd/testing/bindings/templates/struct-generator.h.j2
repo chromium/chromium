@@ -3,7 +3,7 @@
 {%- set class_name = struct.name ~ "DataGenerator" -%}
 
 class {{class_name}}
-  : public ::chromeos::cros_healthd::connectivity::DataGeneratorInterface<{{
+  : public ::ash::cros_healthd::connectivity::DataGeneratorInterface<{{
       struct.name}}Ptr> {
  public:
   {{class_name}}(const {{class_name}}&) = delete;
@@ -11,7 +11,7 @@ class {{class_name}}
   virtual ~{{class_name}}() = default;
 
   static std::unique_ptr<{{class_name}}> Create(
-    ::chromeos::cros_healthd::connectivity::Context* context);
+    ::ash::cros_healthd::connectivity::Context* context);
 
  public:
   // DataGeneratorInterface overrides.
@@ -20,7 +20,7 @@ class {{class_name}}
 
  protected:
   explicit {{class_name}}(
-    ::chromeos::cros_healthd::connectivity::Context* context, bool nullable);
+    ::ash::cros_healthd::connectivity::Context* context, bool nullable);
 
  private:
   bool nullable_;

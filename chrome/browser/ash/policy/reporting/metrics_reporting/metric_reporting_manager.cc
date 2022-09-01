@@ -133,26 +133,26 @@ void MetricReportingManager::DelayedInit() {
   }
 
   CreateCrosHealthdOneShotCollector(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu,
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kCpu,
       CrosHealthdMetricSampler::MetricType::kInfo, ::ash::kReportDeviceCpuInfo,
       /*default_value=*/false, info_report_queue_.get());
   CreateCrosHealthdOneShotCollector(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kMemory,
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kMemory,
       CrosHealthdMetricSampler::MetricType::kInfo,
       ::ash::kReportDeviceMemoryInfo,
       /*default_value=*/false, info_report_queue_.get());
   CreateCrosHealthdOneShotCollector(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kBus,
       CrosHealthdMetricSampler::MetricType::kInfo,
       ::ash::kReportDeviceSecurityStatus,
       /*default_value=*/false, info_report_queue_.get());
   CreateCrosHealthdOneShotCollector(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance,
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance,
       CrosHealthdMetricSampler::MetricType::kTelemetry,
       ::ash::kReportDeviceBootMode,
       /*default_value=*/true, telemetry_report_queue_.get());
   CreateCrosHealthdOneShotCollector(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kInput,
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kInput,
       CrosHealthdMetricSampler::MetricType::kInfo,
       ::ash::kReportDeviceGraphicsStatus,
       /*default_value=*/false, info_report_queue_.get());
@@ -275,7 +275,7 @@ void MetricReportingManager::UploadTelemetry() {
 }
 
 void MetricReportingManager::CreateCrosHealthdOneShotCollector(
-    chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
+    ash::cros_healthd::mojom::ProbeCategoryEnum probe_category,
     CrosHealthdMetricSampler::MetricType metric_type,
     const std::string& setting_path,
     bool default_value,
@@ -336,7 +336,7 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
 
 void MetricReportingManager::InitAudioCollectors() {
   auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);
   InitPeriodicCollector(std::move(audio_telemetry_sampler),
                         telemetry_report_queue_.get(),
@@ -361,12 +361,12 @@ void MetricReportingManager::InitPeripheralsCollectors() {
 
   auto peripheral_telemetry_sampler =
       std::make_unique<CrosHealthdMetricSampler>(
-          chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+          ash::cros_healthd::mojom::ProbeCategoryEnum::kBus,
           CrosHealthdMetricSampler::MetricType::kTelemetry);
 
   // Peripheral telemetry
   CreateCrosHealthdOneShotCollector(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kBus,
       CrosHealthdMetricSampler::MetricType::kTelemetry,
       ash::kReportDevicePeripherals,
       metrics::kReportDevicePeripheralsDefaultValue,

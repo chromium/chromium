@@ -20,9 +20,6 @@ namespace ash::cros_healthd {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
-namespace mojom = ::chromeos::cros_healthd::mojom;
-
 CrosHealthdClient* g_instance = nullptr;
 
 // Production implementation of CrosHealthdClient.

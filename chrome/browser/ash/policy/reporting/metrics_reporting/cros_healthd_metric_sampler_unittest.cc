@@ -13,7 +13,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace cros_healthd = chromeos::cros_healthd::mojom;
+namespace reporting::test {
+
+namespace cros_healthd = ::ash::cros_healthd::mojom;
 using ::testing::Eq;
 using ::testing::StrEq;
 
@@ -32,9 +34,6 @@ struct MemoryEncryptionTestCase {
   int64_t max_keys;
   int64_t key_length;
 };
-
-namespace reporting {
-namespace test {
 
 // Memory constants.
 constexpr int64_t kTmeMaxKeys = 2;
@@ -833,5 +832,5 @@ INSTANTIATE_TEST_SUITE_P(
         CrosHealthdMetricSamplerMemoryEncryptionTest::ParamType>& info) {
       return info.param.test_name;
     });
-}  // namespace test
-}  // namespace reporting
+
+}  // namespace reporting::test

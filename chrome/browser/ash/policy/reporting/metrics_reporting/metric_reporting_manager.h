@@ -111,7 +111,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       std::vector<Sampler*> additional_samplers = {});
   void UploadTelemetry();
   void CreateCrosHealthdOneShotCollector(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
+      ash::cros_healthd::mojom::ProbeCategoryEnum probe_category,
       CrosHealthdMetricSampler::MetricType metric_type,
       const std::string& setting_path,
       bool default_value,
@@ -163,6 +163,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   base::OneShotTimer initial_upload_timer_;
 };
+
 }  // namespace reporting
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_REPORTING_MANAGER_H_

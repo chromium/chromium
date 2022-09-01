@@ -389,16 +389,16 @@ void WilcoDtcSupportdBridge::HandleEvent(WilcoDtcSupportdEvent event) {
 }
 
 void WilcoDtcSupportdBridge::GetCrosHealthdDiagnosticsService(
-    mojo::PendingReceiver<
-        chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService> service) {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()
-      ->GetDiagnosticsService(std::move(service));
+    mojo::PendingReceiver<cros_healthd::mojom::CrosHealthdDiagnosticsService>
+        service) {
+  cros_healthd::ServiceConnection::GetInstance()->GetDiagnosticsService(
+      std::move(service));
 }
 
 void WilcoDtcSupportdBridge::GetCrosHealthdProbeService(
-    mojo::PendingReceiver<
-        chromeos::cros_healthd::mojom::CrosHealthdProbeService> service) {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+    mojo::PendingReceiver<cros_healthd::mojom::CrosHealthdProbeService>
+        service) {
+  cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
       std::move(service));
 }
 

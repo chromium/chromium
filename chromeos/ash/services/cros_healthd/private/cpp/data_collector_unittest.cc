@@ -12,9 +12,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 
-namespace chromeos {
-namespace cros_healthd {
-namespace internal {
+namespace ash::cros_healthd::internal {
 namespace {
 
 constexpr char kFakeTouchpadLibraryName[] = "FakeTouchpadLibraryName";
@@ -86,6 +84,4 @@ TEST_F(DataCollectorTest, GetTouchpadLibraryName) {
 }
 
 }  // namespace
-}  // namespace internal
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd::internal

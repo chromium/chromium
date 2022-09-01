@@ -6,7 +6,7 @@
 // API is the browser.
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
-// in src/platform2/diagnostics/mojo/.
+// in src/platform2/diagnostics/mojom/public/wilco_dtc_supportd.mojom.
 
 module chromeos.wilco_dtc_supportd.mojom;
 
@@ -160,10 +160,11 @@ interface WilcoDtcSupportdClient {
   // Binds |service| to an implementation of CrosHealthdDiagnsticsService. In
   // production, this implementation is provided by cros_healthd.
   GetCrosHealthdDiagnosticsService@4(
-      pending_receiver<chromeos.cros_healthd.mojom.CrosHealthdDiagnosticsService> service);
+      pending_receiver<ash.cros_healthd.mojom.CrosHealthdDiagnosticsService>
+          service);
 
   // Binds |service| to an implementation of CrosHealthdProbeService. In
   // production, this implementation is provided by cros_healthd.
   GetCrosHealthdProbeService@5(
-      pending_receiver<chromeos.cros_healthd.mojom.CrosHealthdProbeService> service);
+      pending_receiver<ash.cros_healthd.mojom.CrosHealthdProbeService> service);
 };

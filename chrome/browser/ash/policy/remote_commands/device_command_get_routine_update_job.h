@@ -39,12 +39,12 @@ class DeviceCommandGetRoutineUpdateJob : public RemoteCommandJob {
   void OnCrosHealthdResponseReceived(
       CallbackWithResult succeeded_callback,
       CallbackWithResult failed_callback,
-      chromeos::cros_healthd::mojom::RoutineUpdatePtr update);
+      ash::cros_healthd::mojom::RoutineUpdatePtr update);
 
   // The ID of the routine to send the command to.
   int32_t routine_id_;
   // Which command to send to the routine.
-  chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum command_;
+  ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum command_;
   // Whether or not output should be included in the response to the command.
   bool include_output_;
 

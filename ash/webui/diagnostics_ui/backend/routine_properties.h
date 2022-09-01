@@ -22,7 +22,7 @@ struct RoutineProperties {
   mojom::RoutineType type;
   const char* metric_name;
   uint32_t duration_seconds;
-  chromeos::cros_healthd::mojom::DiagnosticRoutineEnum healthd_type;
+  cros_healthd::mojom::DiagnosticRoutineEnum healthd_type;
 };
 
 extern const RoutineProperties kRoutineProperties[];

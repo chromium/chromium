@@ -27,8 +27,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #endif
 
-namespace chromeos {
-namespace cros_healthd {
+namespace ash::cros_healthd {
 
 namespace {
 
@@ -196,9 +195,8 @@ class ServiceConnectionImpl : public ServiceConnection {
   void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) override;
   void SendChromiumDataCollector(
-      mojo::PendingRemote<
-          chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
-          remote) override;
+      mojo::PendingRemote<internal::mojom::ChromiumDataCollector> remote)
+      override;
   std::string FetchTouchpadLibraryName() override;
   void FlushForTesting() override;
 
@@ -281,10 +279,10 @@ void ServiceConnectionImpl::RunUrandomRoutine(
     mojom::CrosHealthdDiagnosticsService::RunUrandomRoutineCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
-  chromeos::cros_healthd::mojom::NullableUint32Ptr routine_parameter;
+  mojom::NullableUint32Ptr routine_parameter;
   if (length_seconds.has_value()) {
-    routine_parameter = chromeos::cros_healthd::mojom::NullableUint32::New(
-        length_seconds.value().InSeconds());
+    routine_parameter =
+        mojom::NullableUint32::New(length_seconds.value().InSeconds());
   }
   cros_healthd_diagnostics_service_->RunUrandomRoutine(
       std::move(routine_parameter), std::move(callback));
@@ -332,10 +330,10 @@ void ServiceConnectionImpl::RunCpuCacheRoutine(
     mojom::CrosHealthdDiagnosticsService::RunCpuCacheRoutineCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
-  chromeos::cros_healthd::mojom::NullableUint32Ptr routine_duration;
+  mojom::NullableUint32Ptr routine_duration;
   if (exec_duration.has_value()) {
-    routine_duration = chromeos::cros_healthd::mojom::NullableUint32::New(
-        exec_duration.value().InSeconds());
+    routine_duration =
+        mojom::NullableUint32::New(exec_duration.value().InSeconds());
   }
   cros_healthd_diagnostics_service_->RunCpuCacheRoutine(
       std::move(routine_duration), std::move(callback));
@@ -347,10 +345,10 @@ void ServiceConnectionImpl::RunCpuStressRoutine(
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
-  chromeos::cros_healthd::mojom::NullableUint32Ptr routine_duration;
+  mojom::NullableUint32Ptr routine_duration;
   if (exec_duration.has_value()) {
-    routine_duration = chromeos::cros_healthd::mojom::NullableUint32::New(
-        exec_duration.value().InSeconds());
+    routine_duration =
+        mojom::NullableUint32::New(exec_duration.value().InSeconds());
   }
   cros_healthd_diagnostics_service_->RunCpuStressRoutine(
       std::move(routine_duration), std::move(callback));
@@ -362,10 +360,10 @@ void ServiceConnectionImpl::RunFloatingPointAccuracyRoutine(
         RunFloatingPointAccuracyRoutineCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
-  chromeos::cros_healthd::mojom::NullableUint32Ptr routine_duration;
+  mojom::NullableUint32Ptr routine_duration;
   if (exec_duration.has_value()) {
-    routine_duration = chromeos::cros_healthd::mojom::NullableUint32::New(
-        exec_duration.value().InSeconds());
+    routine_duration =
+        mojom::NullableUint32::New(exec_duration.value().InSeconds());
   }
   cros_healthd_diagnostics_service_->RunFloatingPointAccuracyRoutine(
       std::move(routine_duration), std::move(callback));
@@ -408,10 +406,10 @@ void ServiceConnectionImpl::RunPrimeSearchRoutine(
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
-  chromeos::cros_healthd::mojom::NullableUint32Ptr routine_duration;
+  mojom::NullableUint32Ptr routine_duration;
   if (exec_duration.has_value()) {
-    routine_duration = chromeos::cros_healthd::mojom::NullableUint32::New(
-        exec_duration.value().InSeconds());
+    routine_duration =
+        mojom::NullableUint32::New(exec_duration.value().InSeconds());
   }
   cros_healthd_diagnostics_service_->RunPrimeSearchRoutine(
       std::move(routine_duration), std::move(callback));
@@ -683,9 +681,7 @@ void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
 }
 
 void ServiceConnectionImpl::SendChromiumDataCollector(
-    mojo::PendingRemote<
-        chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
-        remote) {
+    mojo::PendingRemote<internal::mojom::ChromiumDataCollector> remote) {
   // Don't set the interface if service manager is used.
   if (use_service_manager_)
     return;
@@ -910,5 +906,4 @@ ServiceConnection* ServiceConnection::GetInstance() {
   return service_connection.get();
 }
 
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd

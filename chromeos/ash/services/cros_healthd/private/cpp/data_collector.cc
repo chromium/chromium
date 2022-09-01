@@ -20,9 +20,8 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
-namespace chromeos {
-namespace cros_healthd {
-namespace internal {
+namespace ash::cros_healthd::internal {
+
 namespace {
 
 class DataCollectorDelegateImpl : public DataCollector::Delegate {
@@ -160,7 +159,7 @@ void DataCollector::GetTouchpadLibraryName(
 }
 
 void DataCollector::Request(
-    mojo_service_manager::mojom::ProcessIdentityPtr identity,
+    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
     mojo::ScopedMessagePipeHandle receiver) {
   receiver_set_.Add(this, mojo::PendingReceiver<mojom::ChromiumDataCollector>(
                               std::move(receiver)));
@@ -196,6 +195,4 @@ void DataCollector::SetUpChannel(
   }
 }
 
-}  // namespace internal
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd::internal

@@ -9,9 +9,7 @@
 #include "chromeos/ash/services/cros_healthd/testing/bindings/local_state.h"
 #include "chromeos/ash/services/cros_healthd/testing/bindings/remote_state.h"
 
-namespace chromeos {
-namespace cros_healthd {
-namespace connectivity {
+namespace ash::cros_healthd::connectivity {
 
 class ContextImpl : public Context {
  public:
@@ -39,6 +37,4 @@ std::unique_ptr<Context> Context::Create(
                                        std::move(remote_state));
 }
 
-}  // namespace connectivity
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd::connectivity

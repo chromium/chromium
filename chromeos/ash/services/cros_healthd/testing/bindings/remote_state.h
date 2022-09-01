@@ -11,9 +11,7 @@
 #include "chromeos/ash/services/cros_healthd/testing/bindings/mojom/state.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-namespace cros_healthd {
-namespace connectivity {
+namespace ash::cros_healthd::connectivity {
 
 // RemoteState provides interface to get the remote internal state of
 // connectivity test between two context object in each processes.
@@ -48,8 +46,6 @@ class RemoteState {
   RemoteState() = default;
 };
 
-}  // namespace connectivity
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd::connectivity
 
 #endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_TESTING_BINDINGS_REMOTE_STATE_H_

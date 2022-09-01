@@ -10,28 +10,27 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
+
 namespace {
 
-using ::chromeos::cros_healthd::mojom::BatteryInfo;
-using ::chromeos::cros_healthd::mojom::BatteryResult;
-using ::chromeos::cros_healthd::mojom::BatteryResultPtr;
-using ::chromeos::cros_healthd::mojom::CpuInfo;
-using ::chromeos::cros_healthd::mojom::CpuResult;
-using ::chromeos::cros_healthd::mojom::CpuResultPtr;
-using ::chromeos::cros_healthd::mojom::MemoryInfo;
-using ::chromeos::cros_healthd::mojom::MemoryResult;
-using ::chromeos::cros_healthd::mojom::MemoryResultPtr;
-using ::chromeos::cros_healthd::mojom::NonInteractiveRoutineUpdate;
-using ::chromeos::cros_healthd::mojom::NonInteractiveRoutineUpdatePtr;
-using ::chromeos::cros_healthd::mojom::RoutineUpdate;
-using ::chromeos::cros_healthd::mojom::RoutineUpdateUnion;
-using ::chromeos::cros_healthd::mojom::RoutineUpdateUnionPtr;
-using ::chromeos::cros_healthd::mojom::SystemInfo;
-using ::chromeos::cros_healthd::mojom::SystemResult;
-using ::chromeos::cros_healthd::mojom::SystemResultPtr;
-using ::chromeos::cros_healthd::mojom::TelemetryInfo;
+using cros_healthd::mojom::BatteryInfo;
+using cros_healthd::mojom::BatteryResult;
+using cros_healthd::mojom::BatteryResultPtr;
+using cros_healthd::mojom::CpuInfo;
+using cros_healthd::mojom::CpuResult;
+using cros_healthd::mojom::CpuResultPtr;
+using cros_healthd::mojom::MemoryInfo;
+using cros_healthd::mojom::MemoryResult;
+using cros_healthd::mojom::MemoryResultPtr;
+using cros_healthd::mojom::NonInteractiveRoutineUpdate;
+using cros_healthd::mojom::RoutineUpdate;
+using cros_healthd::mojom::RoutineUpdateUnion;
+using cros_healthd::mojom::RoutineUpdateUnionPtr;
+using cros_healthd::mojom::SystemInfo;
+using cros_healthd::mojom::SystemResult;
+using cros_healthd::mojom::SystemResultPtr;
+using cros_healthd::mojom::TelemetryInfo;
 
 template <typename TResult, typename TTag>
 bool CheckResponse(const TResult& result,
@@ -109,5 +108,4 @@ const NonInteractiveRoutineUpdate* GetNonInteractiveRoutineUpdate(
   }
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

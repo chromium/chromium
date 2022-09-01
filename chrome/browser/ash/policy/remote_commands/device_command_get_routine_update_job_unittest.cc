@@ -51,12 +51,12 @@ constexpr char kIncludeOutputFieldName[] = "includeOutput";
 
 // Dummy values to populate cros_healthd's GetRoutineUpdate responses.
 constexpr uint32_t kProgressPercent = 97;
-constexpr chromeos::cros_healthd::mojom::DiagnosticRoutineStatusEnum kStatus =
-    chromeos::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning;
+constexpr ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum kStatus =
+    ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning;
 constexpr char kStatusMessage[] = "status_message";
-constexpr chromeos::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum
-    kUserMessage = chromeos::cros_healthd::mojom::
-        DiagnosticRoutineUserMessageEnum::kPlugInACPower;
+constexpr ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum
+    kUserMessage = ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+        kPlugInACPower;
 
 constexpr RemoteCommandJob::UniqueIDType kUniqueID = 987123;
 
@@ -66,7 +66,7 @@ em::RemoteCommand GenerateCommandProto(
     base::TimeDelta idleness_cutoff,
     bool terminate_upon_input,
     absl::optional<int32_t> id,
-    absl::optional<chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum>
+    absl::optional<ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum>
         command,
     absl::optional<bool> include_output) {
   em::RemoteCommand command_proto;
@@ -93,8 +93,7 @@ em::RemoteCommand GenerateCommandProto(
 std::string CreateInteractivePayload(
     uint32_t progress_percent,
     absl::optional<std::string> output,
-    chromeos::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum
-        user_message) {
+    ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum user_message) {
   base::Value root_dict(base::Value::Type::DICTIONARY);
   root_dict.SetIntKey(kProgressPercentFieldName,
                       static_cast<int>(progress_percent));
@@ -113,7 +112,7 @@ std::string CreateInteractivePayload(
 std::string CreateNonInteractivePayload(
     uint32_t progress_percent,
     absl::optional<std::string> output,
-    chromeos::cros_healthd::mojom::DiagnosticRoutineStatusEnum status,
+    ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status,
     const std::string& status_message) {
   base::Value root_dict(base::Value::Type::DICTIONARY);
   root_dict.SetIntKey(kProgressPercentFieldName,
@@ -149,7 +148,7 @@ class DeviceCommandGetRoutineUpdateJobTest : public testing::Test {
       base::TimeDelta idleness_cutoff,
       bool terminate_upon_input,
       int32_t id,
-      chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum command,
+      ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum command,
       bool include_output);
 
   base::test::TaskEnvironment task_environment_{
@@ -174,7 +173,7 @@ void DeviceCommandGetRoutineUpdateJobTest::InitializeJob(
     base::TimeDelta idleness_cutoff,
     bool terminate_upon_input,
     int32_t id,
-    chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum command,
+    ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum command,
     bool include_output) {
   EXPECT_TRUE(job->Init(
       base::TimeTicks::Now(),
@@ -197,10 +196,9 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
           kUniqueID, base::TimeTicks::Now() - test_start_time_,
           base::Seconds(30),
           /*terminate_upon_input=*/false, /*id=*/7979,
-          static_cast<
-              chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum>(
+          static_cast<ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum>(
               std::numeric_limits<std::underlying_type<
-                  chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum>::
+                  ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum>::
                                       type>::max()),
           /*include_output=*/false),
       em::SignedData()));
@@ -215,13 +213,13 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingId) {
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
   EXPECT_FALSE(job->Init(
       base::TimeTicks::Now(),
-      GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
-                           base::Seconds(30),
-                           /*terminate_upon_input=*/false,
-                           /*id=*/absl::nullopt,
-                           chromeos::cros_healthd::mojom::
-                               DiagnosticRoutineCommandEnum::kGetStatus,
-                           /*include_output=*/true),
+      GenerateCommandProto(
+          kUniqueID, base::TimeTicks::Now() - test_start_time_,
+          base::Seconds(30),
+          /*terminate_upon_input=*/false,
+          /*id=*/absl::nullopt,
+          ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kGetStatus,
+          /*include_output=*/true),
       em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
@@ -259,7 +257,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
           base::Seconds(30),
           /*terminate_upon_input=*/false,
           /*id=*/457658,
-          chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel,
+          ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel,
           /*include_output=*/absl::nullopt),
       em::SignedData()));
 
@@ -269,24 +267,23 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
 
 TEST_F(DeviceCommandGetRoutineUpdateJobTest,
        GetInteractiveRoutineUpdateSuccess) {
-  chromeos::cros_healthd::mojom::InteractiveRoutineUpdate interactive_update(
+  ash::cros_healthd::mojom::InteractiveRoutineUpdate interactive_update(
       kUserMessage);
 
-  chromeos::cros_healthd::mojom::RoutineUpdateUnion update_union;
+  ash::cros_healthd::mojom::RoutineUpdateUnion update_union;
   update_union.set_interactive_update(interactive_update.Clone());
 
-  auto response = chromeos::cros_healthd::mojom::RoutineUpdate::New(
+  auto response = ash::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
       /*output=*/mojo::ScopedHandle(), update_union.Clone());
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetGetRoutineUpdateResponseForTesting(response);
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
-  InitializeJob(
-      job.get(), kUniqueID, test_start_time_, base::Seconds(30),
-      /*terminate_upon_input=*/false, /*id=*/56923,
-      chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
-      /*include_output=*/true);
+  InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
+                /*terminate_upon_input=*/false, /*id=*/56923,
+                ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
+                /*include_output=*/true);
   base::RunLoop run_loop;
   bool success =
       job->Run(base::Time::Now(), base::TimeTicks::Now(),
@@ -307,24 +304,23 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
 
 TEST_F(DeviceCommandGetRoutineUpdateJobTest,
        GetNonInteractiveRoutineUpdateSuccess) {
-  chromeos::cros_healthd::mojom::NonInteractiveRoutineUpdate
-      noninteractive_update(kStatus, kStatusMessage);
+  ash::cros_healthd::mojom::NonInteractiveRoutineUpdate noninteractive_update(
+      kStatus, kStatusMessage);
 
-  chromeos::cros_healthd::mojom::RoutineUpdateUnion update_union;
+  ash::cros_healthd::mojom::RoutineUpdateUnion update_union;
   update_union.set_noninteractive_update(noninteractive_update.Clone());
 
-  auto response = chromeos::cros_healthd::mojom::RoutineUpdate::New(
+  auto response = ash::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
       /*output=*/mojo::ScopedHandle(), update_union.Clone());
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetGetRoutineUpdateResponseForTesting(response);
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
-  InitializeJob(
-      job.get(), kUniqueID, test_start_time_, base::Seconds(30),
-      /*terminate_upon_input=*/false, /*id=*/9812,
-      chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
-      /*include_output=*/true);
+  InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
+                /*terminate_upon_input=*/false, /*id=*/9812,
+                ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
+                /*include_output=*/true);
   base::RunLoop run_loop;
   bool success =
       job->Run(base::Time::Now(), base::TimeTicks::Now(),

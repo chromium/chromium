@@ -221,8 +221,7 @@ class ArcAppLaunchHandler
   void StartCpuUsageCount();
   void StopCpuUsageCount();
   void UpdateCpuUsage();
-  void OnCpuUsageUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnCpuUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
   void OnProbeServiceDisconnect();
 
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window);
@@ -300,8 +299,7 @@ class ArcAppLaunchHandler
   bool was_memory_pressured_ = false;
   bool was_cpu_usage_limited_ = false;
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
-      probe_service_;
+  mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
 
   // Cpu usage rate count window. It save the cpu usage in a time interval.
   std::list<CpuTick> cpu_tick_window_;

@@ -19,7 +19,7 @@ class CrosHealthdMetricSampler : public Sampler {
   enum class MetricType { kInfo = 0, kTelemetry = 1 };
 
   explicit CrosHealthdMetricSampler(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
+      ash::cros_healthd::mojom::ProbeCategoryEnum probe_category,
       MetricType metric_type);
 
   CrosHealthdMetricSampler(const CrosHealthdMetricSampler&) = delete;
@@ -32,7 +32,7 @@ class CrosHealthdMetricSampler : public Sampler {
 
  private:
   // probe_category is the category to probe from the health daemon.
-  const chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category_;
+  const ash::cros_healthd::mojom::ProbeCategoryEnum probe_category_;
 
   // metric_type is the type of data to gather. This is necessary since some
   // probe categories have both info and telemetry in their result.

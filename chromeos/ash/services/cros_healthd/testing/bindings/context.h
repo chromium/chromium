@@ -8,9 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace chromeos {
-namespace cros_healthd {
-namespace connectivity {
+namespace ash::cros_healthd::connectivity {
 
 class LocalState;
 class RemoteState;
@@ -36,8 +34,6 @@ class Context {
   Context() = default;
 };
 
-}  // namespace connectivity
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd::connectivity
 
 #endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_TESTING_BINDINGS_CONTEXT_H_

@@ -28,7 +28,7 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.cros_healthd_probe.mojom.CpuArchitectureEnum"
+          mojom = "ash.cros_healthd_probe.mojom.CpuArchitectureEnum"
           cpp = "::em::CpuInfo::Architecture"
         },
       ]

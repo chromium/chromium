@@ -13,7 +13,7 @@ namespace reporting {
 
 AudioEventsObserver::AudioEventsObserver()
     : CrosHealthdEventsObserverBase<
-          chromeos::cros_healthd::mojom::CrosHealthdAudioObserver>(this) {}
+          ash::cros_healthd::mojom::CrosHealthdAudioObserver>(this) {}
 
 AudioEventsObserver::~AudioEventsObserver() = default;
 
@@ -29,7 +29,8 @@ void AudioEventsObserver::OnSevereUnderrun() {
 }
 
 void AudioEventsObserver::AddObserver() {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->AddAudioObserver(
+  ash::cros_healthd::ServiceConnection::GetInstance()->AddAudioObserver(
       BindNewPipeAndPassRemote());
 }
+
 }  // namespace reporting

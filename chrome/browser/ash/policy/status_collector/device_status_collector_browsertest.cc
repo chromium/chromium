@@ -129,7 +129,7 @@ using ::testing::Not;
 using ::testing::Return;
 using ::testing::ReturnRef;
 namespace em = ::enterprise_management;
-namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+namespace cros_healthd = ::ash::cros_healthd::mojom;
 
 // Test values for cros_healthd:
 // Battery test values:

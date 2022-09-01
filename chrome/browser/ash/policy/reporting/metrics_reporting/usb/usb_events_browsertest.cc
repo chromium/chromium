@@ -31,6 +31,8 @@
 namespace chromeos {
 namespace {
 
+namespace cros_healthd = ::ash::cros_healthd;
+
 // Browser test that validate Usb added/removed events and telemetry collection
 // when the`ReportDevicePeripherals policy is set/unset. These tests cases only
 // cover USB added events and telemetry collection since FakeCrosHealthd doesn't
@@ -165,8 +167,8 @@ IN_PROC_BROWSER_TEST_F(
       ::reporting::Destination::PERIPHERAL_EVENTS);
 
   auto usb_telemetry = CreateUsbTelemetry();
-  ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(usb_telemetry);
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      usb_telemetry);
 
   // This triggers USB telemetry collection, a.k.a USB status updates
   LoginAffiliatedUser();

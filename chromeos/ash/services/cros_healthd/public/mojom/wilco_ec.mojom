@@ -6,9 +6,9 @@
 // normally consumed by the browser.
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
-// in src/platform2/diagnostics/mojo/wilco_ec.mojom.
+// in src/platform2/diagnostics/mojom/public/wilco_ec.mojom.
 
-module chromeos.cros_healthd.mojom;
+module ash.cros_healthd.mojom;
 
 // A packet of data sent by the EC when it notices certain events have
 // occurred, such as the battery, AC adapter, or USB-C state changing.

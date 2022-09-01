@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.cros_healthd.connectivity.mojom;
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/bindings/connectivity/mojom/state.mojom.
+
+module ash.cros_healthd.connectivity.mojom;
 
 // State provides interface to sync the internal state of connectivity test
 // between two context object in each processes.

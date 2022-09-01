@@ -110,11 +110,11 @@ class DeviceStatusCollector : public StatusCollector,
 
   // Format of the function that asynchronously receives data from cros_healthd.
   using CrosHealthdDataReceiver = base::OnceCallback<void(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr,
+      ash::cros_healthd::mojom::TelemetryInfoPtr,
       const base::circular_deque<std::unique_ptr<SampledData>>&)>;
   // Gets the data from cros_healthd and passes it to CrosHealthdDataReceiver.
   using CrosHealthdDataFetcher = base::RepeatingCallback<void(
-      std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>,
+      std::vector<ash::cros_healthd::mojom::ProbeCategoryEnum>,
       CrosHealthdDataReceiver)>;
 
   // Asynchronously receives the graphics status.
@@ -219,7 +219,7 @@ class DeviceStatusCollector : public StatusCollector,
   // Callbacks used during sampling data collection, that allows to pass
   // additional data using partial function application.
   using SamplingProbeResultCallback =
-      base::OnceCallback<void(chromeos::cros_healthd::mojom::TelemetryInfoPtr)>;
+      base::OnceCallback<void(ash::cros_healthd::mojom::TelemetryInfoPtr)>;
   using SamplingCallback = base::OnceCallback<void()>;
 
   // Clears the cached cpu resource usage.
@@ -293,7 +293,7 @@ class DeviceStatusCollector : public StatusCollector,
   // be called once all sampling is finished.
   void SampleProbeData(std::unique_ptr<SampledData> sample,
                        SamplingProbeResultCallback callback,
-                       chromeos::cros_healthd::mojom::TelemetryInfoPtr result);
+                       ash::cros_healthd::mojom::TelemetryInfoPtr result);
 
   // Callback triggered from PowerManagedClient that samples battery discharge
   // rate. |callback| will be called once all sampling is finished.
@@ -314,15 +314,14 @@ class DeviceStatusCollector : public StatusCollector,
   // cros_healthd and passes it to |callback|. The data collected depends on
   // the categories in |categories_to_probe|.
   void FetchCrosHealthdData(
-      std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>
+      std::vector<ash::cros_healthd::mojom::ProbeCategoryEnum>
           categories_to_probe,
       CrosHealthdDataReceiver callback);
 
   // Callback for CrosHealthd that performs final sampling and
   // actually invokes |callback|.
-  void OnProbeDataFetched(
-      CrosHealthdDataReceiver callback,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr reply);
+  void OnProbeDataFetched(CrosHealthdDataReceiver callback,
+                          ash::cros_healthd::mojom::TelemetryInfoPtr reply);
 
   // Callback invoked when reporting users pref is changed.
   void ReportingUsersChanged();

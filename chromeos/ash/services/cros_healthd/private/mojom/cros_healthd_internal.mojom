@@ -9,7 +9,7 @@
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
 // in src/platform2/diagnostics/mojom/external/cros_healthd_internal.mojom.
 
-module chromeos.cros_healthd.internal.mojom;
+module ash.cros_healthd.internal.mojom;
 
 import "chromeos/components/sensors/mojom/sensor.mojom";
 

@@ -20,9 +20,6 @@ namespace ash::cros_healthd {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migration to namespace ash.
-namespace mojom = ::chromeos::cros_healthd::mojom;
-
 // Will destroy `handle` if it's not a valid platform handle.
 mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
   DCHECK(handle);
@@ -385,9 +382,7 @@ void FakeCrosHealthd::GetSystemService(
 }
 
 void FakeCrosHealthd::SendChromiumDataCollector(
-    mojo::PendingRemote<
-        chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
-        remote) {
+    mojo::PendingRemote<internal::mojom::ChromiumDataCollector> remote) {
   NOTIMPLEMENTED();
 }
 

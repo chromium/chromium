@@ -31,7 +31,7 @@ class DeviceCommandGetAvailableRoutinesJob::Payload
     : public RemoteCommandJob::ResultPayload {
  public:
   explicit Payload(
-      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+      const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
           available_routines);
   Payload(const Payload&) = delete;
   Payload& operator=(const Payload&) = delete;
@@ -41,12 +41,12 @@ class DeviceCommandGetAvailableRoutinesJob::Payload
   std::unique_ptr<std::string> Serialize() override;
 
  private:
-  std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
+  std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>
       available_routines_;
 };
 
 DeviceCommandGetAvailableRoutinesJob::Payload::Payload(
-    const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+    const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
         available_routines)
     : available_routines_(available_routines) {}
 
@@ -77,8 +77,8 @@ void DeviceCommandGetAvailableRoutinesJob::RunImpl(
     CallbackWithResult failed_callback) {
   SYSLOG(INFO) << "Executing GetAvailableRoutines command.";
 
-  chromeos::cros_healthd::ServiceConnection::GetInstance()
-      ->GetAvailableRoutines(base::BindOnce(
+  ash::cros_healthd::ServiceConnection::GetInstance()->GetAvailableRoutines(
+      base::BindOnce(
           &DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived,
           weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
           std::move(failed_callback)));
@@ -87,7 +87,7 @@ void DeviceCommandGetAvailableRoutinesJob::RunImpl(
 void DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback,
-    const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+    const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
         available_routines) {
   if (available_routines.empty()) {
     SYSLOG(ERROR) << "No routines received from cros_healthd.";

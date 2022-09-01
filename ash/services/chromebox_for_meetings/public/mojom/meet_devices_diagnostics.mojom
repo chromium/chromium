@@ -11,9 +11,9 @@ import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom
 interface MeetDevicesDiagnostics {
   // Retrieves and forwards device telemetry from cros_healthd.
   GetCrosHealthdTelemetry@0()
-      => (chromeos.cros_healthd.mojom.TelemetryInfo telemetry);
+      => (ash.cros_healthd.mojom.TelemetryInfo telemetry);
 
   // Retrieves information about a specific process from cros_healthd.
   GetCrosHealthdProcessInfo@1(uint32 pid)
-      => (chromeos.cros_healthd.mojom.ProcessResult process_info);
+      => (ash.cros_healthd.mojom.ProcessResult process_info);
 };

@@ -19,7 +19,7 @@ namespace system_logs {
 
 namespace {
 
-namespace healthd = ::chromeos::cros_healthd::mojom;
+namespace healthd = ::ash::cros_healthd::mojom;
 using healthd::TelemetryInfo;
 using healthd::TelemetryInfoPtr;
 using ProbeCategories = healthd::ProbeCategoryEnum;

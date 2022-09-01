@@ -27,9 +27,9 @@ class RevenLogSource : public SystemLogsSource {
  private:
   void OnTelemetryInfoProbeResponse(
       SysLogsSourceCallback callback,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
+  mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;
 
   base::WeakPtrFactory<RevenLogSource> weak_ptr_factory_{this};

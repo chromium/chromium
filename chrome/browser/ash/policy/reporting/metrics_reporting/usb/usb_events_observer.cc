@@ -6,13 +6,13 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
-using UsbEventInfoPtr = chromeos::cros_healthd::mojom::UsbEventInfoPtr;
-
 namespace reporting {
+
+using ::ash::cros_healthd::mojom::UsbEventInfoPtr;
 
 UsbEventsObserver::UsbEventsObserver()
     : CrosHealthdEventsObserverBase<
-          chromeos::cros_healthd::mojom::CrosHealthdUsbObserver>(this) {}
+          ash::cros_healthd::mojom::CrosHealthdUsbObserver>(this) {}
 
 UsbEventsObserver::~UsbEventsObserver() = default;
 void UsbEventsObserver::OnAdd(UsbEventInfoPtr info) {
@@ -36,7 +36,7 @@ void UsbEventsObserver::OnRemove(UsbEventInfoPtr info) {
 }
 
 void UsbEventsObserver::AddObserver() {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->AddUsbObserver(
+  ash::cros_healthd::ServiceConnection::GetInstance()->AddUsbObserver(
       BindNewPipeAndPassRemote());
 }
 
@@ -51,4 +51,5 @@ void UsbEventsObserver::FillUsbTelemetry(UsbTelemetry* data,
     data->add_categories(category);
   }
 }
+
 }  // namespace reporting

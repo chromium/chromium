@@ -3,7 +3,7 @@
 {%- set class_name = "%sTestConsumer"|format(interface.mojom_name) %}
 
 class {{class_name}}
-  : public ::chromeos::cros_healthd::connectivity::DataGeneratorInterface<
+  : public ::ash::cros_healthd::connectivity::DataGeneratorInterface<
       ::mojo::PendingReceiver<{{interface.mojom_name}}>> {
  public:
   {{class_name}}(const {{class_name}}&) = delete;
@@ -11,7 +11,7 @@ class {{class_name}}
   virtual ~{{class_name}}() = default;
 
   static std::unique_ptr<{{class_name}}> Create(
-    ::chromeos::cros_healthd::connectivity::Context* context);
+    ::ash::cros_healthd::connectivity::Context* context);
 
  public:
   void Bind(::mojo::PendingRemote<{{interface.mojom_name}}> remote);
@@ -30,7 +30,7 @@ class {{class_name}}
 
  protected:
   explicit {{
-    class_name}}(::chromeos::cros_healthd::connectivity::Context* context);
+    class_name}}(::ash::cros_healthd::connectivity::Context* context);
 
  private:
   void SetCheckResult(CheckCallback callback, bool res);
@@ -43,7 +43,7 @@ class {{class_name}}
 {%  endfor %}
 
  private:
-  ::chromeos::cros_healthd::connectivity::Context* context_;
+  ::ash::cros_healthd::connectivity::Context* context_;
 
   bool has_next_ = true;
   // Used to cached the check result.

@@ -22,10 +22,11 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
-using ::chromeos::cros_healthd::mojom::NetworkInterfaceInfoPtr;
-
 namespace reporting {
+
 namespace {
+
+using ::ash::cros_healthd::mojom::NetworkInterfaceInfoPtr;
 
 ::ash::NetworkStateHandler::NetworkStateList GetNetworkStateList() {
   ::ash::NetworkStateHandler::NetworkStateList network_state_list;
@@ -40,8 +41,7 @@ namespace {
 
 NetworkInterfaceInfoPtr GetWifiNetworkInterfaceInfo(
     const std::string& device_path,
-    const ::chromeos::cros_healthd::mojom::TelemetryInfoPtr&
-        cros_healthd_telemetry) {
+    const ash::cros_healthd::mojom::TelemetryInfoPtr& cros_healthd_telemetry) {
   if (device_path.empty() || cros_healthd_telemetry.is_null() ||
       cros_healthd_telemetry->network_interface_result.is_null() ||
       !cros_healthd_telemetry->network_interface_result
@@ -117,6 +117,7 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
   NOTREACHED() << "Unsupported network type: " << type.ToDebugString();
   return NetworkType::NETWORK_TYPE_UNSPECIFIED;  // Unsupported
 }
+
 }  // namespace
 
 NetworkTelemetrySampler::NetworkTelemetrySampler() = default;
@@ -127,16 +128,16 @@ void NetworkTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
   auto handle_probe_result_cb =
       base::BindOnce(&NetworkTelemetrySampler::CollectWifiSignalStrengthRssi,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  ::ash::cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
-      std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>{
-          chromeos::cros_healthd::mojom::ProbeCategoryEnum::kNetworkInterface},
+  ash::cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
+      std::vector<ash::cros_healthd::mojom::ProbeCategoryEnum>{
+          ash::cros_healthd::mojom::ProbeCategoryEnum::kNetworkInterface},
       base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
                          std::move(handle_probe_result_cb)));
 }
 
 void NetworkTelemetrySampler::CollectWifiSignalStrengthRssi(
     OptionalMetricCallback callback,
-    ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry) {
+    ash::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry) {
   base::queue<std::string> service_paths;
   ::ash::NetworkStateHandler::NetworkStateList network_state_list =
       GetNetworkStateList();
@@ -169,7 +170,7 @@ void NetworkTelemetrySampler::CollectWifiSignalStrengthRssi(
 
 void NetworkTelemetrySampler::CollectNetworksStates(
     OptionalMetricCallback callback,
-    ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry,
+    ash::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry,
     base::flat_map<std::string, int> service_path_rssi_map) {
   if (cros_healthd_telemetry.is_null() ||
       cros_healthd_telemetry->network_interface_result.is_null()) {

@@ -8,7 +8,7 @@
 // NOTE: This mojom should be kept in sync with the copy in Chromium's repo in
 // src/platform2/diagnostics/mojom/public/cros_healthd_diagnostics.mojom.
 
-module chromeos.cros_healthd.mojom;
+module ash.cros_healthd.mojom;
 
 // Special id that will be returned if a routine was unable to be created.
 const int32 kFailedToStartId = 0;
@@ -16,7 +16,7 @@ const int32 kFailedToStartId = 0;
 // Enumeration of each of the diagnostics routines the platform may support.
 //
 // NextMinVersion: 1, NextIndex: 31
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticRoutineEnum {
   [Default] kUnknown = 30,
   kBatteryCapacity = 0,
@@ -54,7 +54,7 @@ enum DiagnosticRoutineEnum {
 // Enumeration of the possible DiskRead routine's command type
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.DiskReadRoutineTypeEnum"]
 enum DiskReadRoutineTypeEnum {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 2,
@@ -65,7 +65,7 @@ enum DiskReadRoutineTypeEnum {
 // Enumeration of each of the possible statuses for a diagnostics routine.
 //
 // NextMinVersion: 1, NextIndex: 13
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.DiagnosticRoutineStatusEnum"]
 enum DiagnosticRoutineStatusEnum {
   [Default] kUnknown = 12,
   kReady = 0,  // Routine is ready to start.
@@ -88,7 +88,7 @@ enum DiagnosticRoutineStatusEnum {
 // These messages prompt interaction from the user of the routine.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.DiagnosticRoutineUserMessageEnum"]
 enum DiagnosticRoutineUserMessageEnum {
   [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
@@ -98,7 +98,7 @@ enum DiagnosticRoutineUserMessageEnum {
 // Enumeration of the possible commands to send a diagnostics routine.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.DiagnosticRoutineCommandEnum"]
 enum DiagnosticRoutineCommandEnum {
   [Default] kUnknown = 4,
   kContinue = 0,  // Resume a routine that is waiting.
@@ -113,7 +113,7 @@ enum DiagnosticRoutineCommandEnum {
 // Generic return value for a RunSomeRoutine call.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.RunRoutineResponse"]
 struct RunRoutineResponse {
   // Unique identifier for the newly-created routine. An id of kFailedToStartId
   // means that the routine was unable to be created. Can be used in a
@@ -127,7 +127,7 @@ struct RunRoutineResponse {
 // Status fields specific to interactive routines.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.InteractiveRoutineUpdate"]
 struct InteractiveRoutineUpdate {
   // Request for user action. This message should be localized and displayed to
   // the user.
@@ -137,7 +137,7 @@ struct InteractiveRoutineUpdate {
 // Status fields specific to noninteractive routines.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NonInteractiveRoutineUpdate"]
 struct NonInteractiveRoutineUpdate {
   // Current status of the routine.
   DiagnosticRoutineStatusEnum status@0;
@@ -148,7 +148,7 @@ struct NonInteractiveRoutineUpdate {
 };
 
 // Responses will be either interactive or noninteractive.
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.RoutineUpdateUnion"]
 union RoutineUpdateUnion {
   InteractiveRoutineUpdate interactive_update;
   NonInteractiveRoutineUpdate noninteractive_update;
@@ -157,7 +157,7 @@ union RoutineUpdateUnion {
 // Response type for GetRoutineUpdate.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.RoutineUpdate"]
 struct RoutineUpdate {
   // Percent complete, must be between 0 and 100, inclusive.
   uint32 progress_percent@0;
@@ -175,7 +175,7 @@ struct RoutineUpdate {
 // routine.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.AcPowerStatusEnum"]
 enum AcPowerStatusEnum {
   [Default] kUnknown = 2,
   kConnected = 0,     // Power supply is connected.
@@ -185,7 +185,7 @@ enum AcPowerStatusEnum {
 // Enumeration of the self-test type in nvme_self_test routine
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.NvmeSelfTestTypeEnum"]
 enum NvmeSelfTestTypeEnum {
   [Default] kUnknown = 2,
   kShortSelfTest = 0, // Short time self-test.

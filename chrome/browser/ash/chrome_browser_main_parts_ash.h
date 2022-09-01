@@ -40,11 +40,6 @@ namespace chromeos {
 namespace default_app_order {
 class ExternalLoader;
 }
-namespace cros_healthd {
-namespace internal {
-class DataCollector;
-}
-}  // namespace cros_healthd
 }  // namespace chromeos
 
 namespace crosapi {
@@ -93,6 +88,10 @@ class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
 class SigninProfileHandler;
 class WebKioskAppManager;
+
+namespace cros_healthd::internal {
+class DataCollector;
+}
 
 namespace device_activity {
 class DeviceActivityController;
@@ -254,7 +253,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
 
-  std::unique_ptr<chromeos::cros_healthd::internal::DataCollector>
+  std::unique_ptr<cros_healthd::internal::DataCollector>
       cros_healthd_data_collector_;
 
   // Set when PreProfileInit() is called. If PreMainMessageLoopRun() exits

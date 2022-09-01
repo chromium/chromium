@@ -3,12 +3,12 @@
 {%- set class_name = "%sTestProvider"|format(interface.mojom_name) %}
 
 std::unique_ptr<{{class_name}}> {{class_name}}::Create(
-    ::chromeos::cros_healthd::connectivity::Context* context) {
+    ::ash::cros_healthd::connectivity::Context* context) {
   return std::unique_ptr<{{class_name}}>(new {{class_name}}(context));
 }
 
 {{class_name}}::{{class_name}}(
-    ::chromeos::cros_healthd::connectivity::Context* context)
+    ::ash::cros_healthd::connectivity::Context* context)
   : context_(context) {
 {%- for method in interface.methods -%}
   {{method_macro.define_data_checker(
@@ -68,7 +68,7 @@ void {{class_name}}::{{method.mojom_name}}_Step1({{
       param.mojom_name}}__checker__->Bind(std::move({{param.mojom_name}}));
 
   auto callback_{{loop.index}} = base::BindOnce(
-    &::chromeos::cros_healthd::connectivity::RunSuccessOrFailed,
+    &::ash::cros_healthd::connectivity::RunSuccessOrFailed,
     /*get_result=*/{{
       method.mojom_name}}__{{param.mojom_name}}__checker__->CheckClosure(),
     /*on_success=*/std::move(callback_{{loop.index - 1}}),

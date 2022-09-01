@@ -11,9 +11,6 @@ namespace ash::cros_healthd {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migration to namespace ash.
-namespace mojom = ::chromeos::cros_healthd::mojom;
-
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeCrosHealthdClient* g_instance = nullptr;
 

@@ -38,7 +38,7 @@ class DeviceCommandGetAvailableRoutinesJob : public RemoteCommandJob {
   void OnCrosHealthdResponseReceived(
       CallbackWithResult succeeded_callback,
       CallbackWithResult failed_callback,
-      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+      const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
           available_routines);
 
   base::WeakPtrFactory<DeviceCommandGetAvailableRoutinesJob> weak_ptr_factory_{

@@ -10,39 +10,39 @@ namespace em = enterprise_management;
 
 namespace mojo {
 
-chromeos::cros_healthd::mojom::CpuArchitectureEnum EnumTraits<
-    chromeos::cros_healthd::mojom::CpuArchitectureEnum,
+ash::cros_healthd::mojom::CpuArchitectureEnum EnumTraits<
+    ash::cros_healthd::mojom::CpuArchitectureEnum,
     em::CpuInfo::Architecture>::ToMojom(em::CpuInfo::Architecture input) {
   switch (input) {
     case em::CpuInfo::ARCHITECTURE_UNSPECIFIED:
-      return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kUnknown;
+      return ash::cros_healthd::mojom::CpuArchitectureEnum::kUnknown;
     case em::CpuInfo::X86_64:
-      return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kX86_64;
+      return ash::cros_healthd::mojom::CpuArchitectureEnum::kX86_64;
     case em::CpuInfo::AARCH64:
-      return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kAArch64;
+      return ash::cros_healthd::mojom::CpuArchitectureEnum::kAArch64;
     case em::CpuInfo::ARMV7L:
-      return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l;
+      return ash::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l;
   }
 
   NOTREACHED();
-  return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kUnknown;
+  return ash::cros_healthd::mojom::CpuArchitectureEnum::kUnknown;
 }
 
-bool EnumTraits<chromeos::cros_healthd::mojom::CpuArchitectureEnum,
+bool EnumTraits<ash::cros_healthd::mojom::CpuArchitectureEnum,
                 em::CpuInfo::Architecture>::
-    FromMojom(chromeos::cros_healthd::mojom::CpuArchitectureEnum input,
+    FromMojom(ash::cros_healthd::mojom::CpuArchitectureEnum input,
               em::CpuInfo::Architecture* out) {
   switch (input) {
-    case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kUnknown:
+    case ash::cros_healthd::mojom::CpuArchitectureEnum::kUnknown:
       *out = em::CpuInfo::ARCHITECTURE_UNSPECIFIED;
       return true;
-    case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kX86_64:
+    case ash::cros_healthd::mojom::CpuArchitectureEnum::kX86_64:
       *out = em::CpuInfo::X86_64;
       return true;
-    case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kAArch64:
+    case ash::cros_healthd::mojom::CpuArchitectureEnum::kAArch64:
       *out = em::CpuInfo::AARCH64;
       return true;
-    case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l:
+    case ash::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l:
       *out = em::CpuInfo::ARMV7L;
       return true;
   }

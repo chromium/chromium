@@ -58,22 +58,21 @@ struct FakeNetworkData {
 };
 
 void SetWifiInterfaceData() {
-  auto telemetry_info = ::chromeos::cros_healthd::mojom::TelemetryInfo::New();
-  std::vector<::chromeos::cros_healthd::mojom::NetworkInterfaceInfoPtr>
+  auto telemetry_info = ::ash::cros_healthd::mojom::TelemetryInfo::New();
+  std::vector<::ash::cros_healthd::mojom::NetworkInterfaceInfoPtr>
       network_interfaces;
 
-  auto wireless_link_info =
-      ::chromeos::cros_healthd::mojom::WirelessLinkInfo::New(
-          kAccessPointAddress, kTxBitRateMbps, kRxBitRateMbps, kTxPowerDbm,
-          kEncryptionOn, kLinkQuality, -50);
+  auto wireless_link_info = ::ash::cros_healthd::mojom::WirelessLinkInfo::New(
+      kAccessPointAddress, kTxBitRateMbps, kRxBitRateMbps, kTxPowerDbm,
+      kEncryptionOn, kLinkQuality, -50);
   auto wireless_interface_info =
-      ::chromeos::cros_healthd::mojom::WirelessInterfaceInfo::New(
+      ::ash::cros_healthd::mojom::WirelessInterfaceInfo::New(
           kInterfaceName, kPowerManagementOn, std::move(wireless_link_info));
   network_interfaces.push_back(
-      ::chromeos::cros_healthd::mojom::NetworkInterfaceInfo::
+      ::ash::cros_healthd::mojom::NetworkInterfaceInfo::
           NewWirelessInterfaceInfo(std::move(wireless_interface_info)));
   auto network_interface_result =
-      ::chromeos::cros_healthd::mojom::NetworkInterfaceResult::
+      ::ash::cros_healthd::mojom::NetworkInterfaceResult::
           NewNetworkInterfaceInfo(std::move(network_interfaces));
 
   telemetry_info->network_interface_result =
@@ -529,5 +528,6 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
                 .power_management_enabled(),
             kPowerManagementOn);
 }
+
 }  // namespace
 }  // namespace reporting

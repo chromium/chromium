@@ -8,34 +8,32 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
 
 // Extracts BatteryInfo from |info|. Logs and returns a nullptr if
 // BatteryInfo in not present.
-const chromeos::cros_healthd::mojom::BatteryInfo* GetBatteryInfo(
-    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
+const cros_healthd::mojom::BatteryInfo* GetBatteryInfo(
+    const cros_healthd::mojom::TelemetryInfo& info);
 
 // Extracts CpuInfo from |info|. Logs and returns a nullptr if CpuInfo
 // in not present.
-const chromeos::cros_healthd::mojom::CpuInfo* GetCpuInfo(
-    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
+const cros_healthd::mojom::CpuInfo* GetCpuInfo(
+    const cros_healthd::mojom::TelemetryInfo& info);
 
 // Extracts MemoryInfo from |info|. Logs and returns a nullptr if MemoryInfo
 // in not present.
-const chromeos::cros_healthd::mojom::MemoryInfo* GetMemoryInfo(
-    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
+const cros_healthd::mojom::MemoryInfo* GetMemoryInfo(
+    const cros_healthd::mojom::TelemetryInfo& info);
 
 // Extracts SystemInfo from |info|. Logs and returns a nullptr if SystemInfo
 // in not present.
-const chromeos::cros_healthd::mojom::SystemInfo* GetSystemInfo(
-    const chromeos::cros_healthd::mojom::TelemetryInfo& info);
+const cros_healthd::mojom::SystemInfo* GetSystemInfo(
+    const cros_healthd::mojom::TelemetryInfo& info);
 
-const chromeos::cros_healthd::mojom::NonInteractiveRoutineUpdate*
+const cros_healthd::mojom::NonInteractiveRoutineUpdate*
 GetNonInteractiveRoutineUpdate(
-    const chromeos::cros_healthd::mojom::RoutineUpdate& update);
+    const cros_healthd::mojom::RoutineUpdate& update);
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_CROS_HEALTHD_HELPERS_H_

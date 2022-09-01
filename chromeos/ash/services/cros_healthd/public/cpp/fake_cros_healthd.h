@@ -28,22 +28,20 @@ namespace ash::cros_healthd {
 // The factory methods bind to receivers held within FakeCrosHealtdService, and
 // all requests on each of the interfaces are fulfilled by
 // FakeCrosHealthd.
-class FakeCrosHealthd final
-    : public chromeos::cros_healthd::mojom::CrosHealthdServiceFactory,
-      public chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService,
-      public chromeos::cros_healthd::mojom::CrosHealthdEventService,
-      public chromeos::cros_healthd::mojom::CrosHealthdProbeService,
-      public chromeos::cros_healthd::mojom::CrosHealthdSystemService {
+class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
+                              public mojom::CrosHealthdDiagnosticsService,
+                              public mojom::CrosHealthdEventService,
+                              public mojom::CrosHealthdProbeService,
+                              public mojom::CrosHealthdSystemService {
  public:
   // Stores the params passed to `GetRoutineUpdate`.
   struct RoutineUpdateParams {
-    RoutineUpdateParams(
-        int32_t id,
-        chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum command,
-        bool include_output);
+    RoutineUpdateParams(int32_t id,
+                        mojom::DiagnosticRoutineCommandEnum command,
+                        bool include_output);
 
     int32_t id;
-    chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum command;
+    mojom::DiagnosticRoutineCommandEnum command;
     bool include_output;
   };
 
@@ -66,28 +64,24 @@ class FakeCrosHealthd final
   // Set the list of routines that will be used in the response to any
   // GetAvailableRoutines IPCs received.
   void SetAvailableRoutinesForTesting(
-      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
-          available_routines);
+      const std::vector<mojom::DiagnosticRoutineEnum>& available_routines);
 
   // Set the RunRoutine response that will be used in the response to any
   // RunSomeRoutine IPCs received.
-  void SetRunRoutineResponseForTesting(
-      chromeos::cros_healthd::mojom::RunRoutineResponsePtr& response);
+  void SetRunRoutineResponseForTesting(mojom::RunRoutineResponsePtr& response);
 
   // Set the GetRoutineUpdate response that will be used in the response to any
   // GetRoutineUpdate IPCs received.
-  void SetGetRoutineUpdateResponseForTesting(
-      chromeos::cros_healthd::mojom::RoutineUpdatePtr& response);
+  void SetGetRoutineUpdateResponseForTesting(mojom::RoutineUpdatePtr& response);
 
   // Set the TelemetryInfoPtr that will be used in the response to any
   // ProbeTelemetryInfo IPCs received.
   void SetProbeTelemetryInfoResponseForTesting(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr& response_info);
+      mojom::TelemetryInfoPtr& response_info);
 
   // Set the ProcessResultPtr that will be used in the response to any
   // ProbeProcessInfo IPCs received.
-  void SetProbeProcessInfoResponseForTesting(
-      chromeos::cros_healthd::mojom::ProcessResultPtr& result);
+  void SetProbeProcessInfoResponseForTesting(mojom::ProcessResultPtr& result);
 
   // Adds a delay before the passed callback is called.
   void SetCallbackDelay(base::TimeDelta delay);
@@ -169,8 +163,7 @@ class FakeCrosHealthd final
           RunLanConnectivityCallback callback);
 
   // Returns the last created routine by any Run*Routine method.
-  absl::optional<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
-  GetLastRunRoutine() const;
+  absl::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.
@@ -181,20 +174,16 @@ class FakeCrosHealthd final
   ~FakeCrosHealthd() override;
 
   // Binds a new mojo remote and disconnected the old one if exists.
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdServiceFactory>
-  BindNewRemote();
+  mojo::Remote<mojom::CrosHealthdServiceFactory> BindNewRemote();
 
   // CrosHealthdServiceFactory overrides:
-  void GetProbeService(mojo::PendingReceiver<
-                       chromeos::cros_healthd::mojom::CrosHealthdProbeService>
-                           service) override;
+  void GetProbeService(
+      mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) override;
   void GetDiagnosticsService(
-      mojo::PendingReceiver<
-          chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService> service)
+      mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
       override;
-  void GetEventService(mojo::PendingReceiver<
-                       chromeos::cros_healthd::mojom::CrosHealthdEventService>
-                           service) override;
+  void GetEventService(
+      mojo::PendingReceiver<mojom::CrosHealthdEventService> service) override;
   void SendNetworkHealthService(
       mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
           remote) override;
@@ -202,57 +191,47 @@ class FakeCrosHealthd final
       mojo::PendingRemote<
           chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
           network_diagnostics_routines) override;
-  void GetSystemService(mojo::PendingReceiver<
-                        chromeos::cros_healthd::mojom::CrosHealthdSystemService>
-                            service) override;
+  void GetSystemService(
+      mojo::PendingReceiver<mojom::CrosHealthdSystemService> service) override;
   void SendChromiumDataCollector(
-      mojo::PendingRemote<
-          chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
-          remote) override;
+      mojo::PendingRemote<internal::mojom::ChromiumDataCollector> remote)
+      override;
 
   // CrosHealthdDiagnosticsService overrides:
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
-  void GetRoutineUpdate(
-      int32_t id,
-      chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum command,
-      bool include_output,
-      GetRoutineUpdateCallback callback) override;
-  void RunUrandomRoutine(
-      chromeos::cros_healthd::mojom::NullableUint32Ptr length_seconds,
-      RunUrandomRoutineCallback callback) override;
+  void GetRoutineUpdate(int32_t id,
+                        mojom::DiagnosticRoutineCommandEnum command,
+                        bool include_output,
+                        GetRoutineUpdateCallback callback) override;
+  void RunUrandomRoutine(mojom::NullableUint32Ptr length_seconds,
+                         RunUrandomRoutineCallback callback) override;
   void RunBatteryCapacityRoutine(
       RunBatteryCapacityRoutineCallback callback) override;
   void RunBatteryHealthRoutine(
       RunBatteryHealthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
       RunSmartctlCheckRoutineCallback callback) override;
-  void RunAcPowerRoutine(
-      chromeos::cros_healthd::mojom::AcPowerStatusEnum expected_status,
-      const absl::optional<std::string>& expected_power_type,
-      RunAcPowerRoutineCallback callback) override;
-  void RunCpuCacheRoutine(
-      chromeos::cros_healthd::mojom::NullableUint32Ptr length_seconds,
-      RunCpuCacheRoutineCallback callback) override;
-  void RunCpuStressRoutine(
-      chromeos::cros_healthd::mojom::NullableUint32Ptr length_seconds,
-      RunCpuStressRoutineCallback callback) override;
+  void RunAcPowerRoutine(mojom::AcPowerStatusEnum expected_status,
+                         const absl::optional<std::string>& expected_power_type,
+                         RunAcPowerRoutineCallback callback) override;
+  void RunCpuCacheRoutine(mojom::NullableUint32Ptr length_seconds,
+                          RunCpuCacheRoutineCallback callback) override;
+  void RunCpuStressRoutine(mojom::NullableUint32Ptr length_seconds,
+                           RunCpuStressRoutineCallback callback) override;
   void RunFloatingPointAccuracyRoutine(
-      chromeos::cros_healthd::mojom::NullableUint32Ptr length_seconds,
+      mojom::NullableUint32Ptr length_seconds,
       RunFloatingPointAccuracyRoutineCallback callback) override;
   void RunNvmeWearLevelRoutine(
       uint32_t wear_level_threshold,
       RunNvmeWearLevelRoutineCallback callback) override;
-  void RunNvmeSelfTestRoutine(
-      chromeos::cros_healthd::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
-      RunNvmeSelfTestRoutineCallback callback) override;
-  void RunDiskReadRoutine(
-      chromeos::cros_healthd::mojom::DiskReadRoutineTypeEnum type,
-      uint32_t length_seconds,
-      uint32_t file_size_mb,
-      RunDiskReadRoutineCallback callback) override;
-  void RunPrimeSearchRoutine(
-      chromeos::cros_healthd::mojom::NullableUint32Ptr length_seconds,
-      RunPrimeSearchRoutineCallback callback) override;
+  void RunNvmeSelfTestRoutine(mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
+                              RunNvmeSelfTestRoutineCallback callback) override;
+  void RunDiskReadRoutine(mojom::DiskReadRoutineTypeEnum type,
+                          uint32_t length_seconds,
+                          uint32_t file_size_mb,
+                          RunDiskReadRoutineCallback callback) override;
+  void RunPrimeSearchRoutine(mojom::NullableUint32Ptr length_seconds,
+                             RunPrimeSearchRoutineCallback callback) override;
   void RunBatteryDischargeRoutine(
       uint32_t length_seconds,
       uint32_t maximum_discharge_percent_allowed,
@@ -291,34 +270,27 @@ class FakeCrosHealthd final
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(
-      mojo::PendingRemote<
-          chromeos::cros_healthd::mojom::CrosHealthdBluetoothObserver> observer)
+      mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer)
       override;
   void AddLidObserver(
-      mojo::PendingRemote<chromeos::cros_healthd::mojom::CrosHealthdLidObserver>
-          observer) override;
-  void AddPowerObserver(mojo::PendingRemote<
-                        chromeos::cros_healthd::mojom::CrosHealthdPowerObserver>
-                            observer) override;
+      mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) override;
+  void AddPowerObserver(
+      mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) override;
   void AddNetworkObserver(
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver> observer)
       override;
-  void AddAudioObserver(mojo::PendingRemote<
-                        chromeos::cros_healthd::mojom::CrosHealthdAudioObserver>
-                            observer) override;
+  void AddAudioObserver(
+      mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) override;
   void AddThunderboltObserver(
-      mojo::PendingRemote<
-          chromeos::cros_healthd::mojom::CrosHealthdThunderboltObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer)
+      override;
   void AddUsbObserver(
-      mojo::PendingRemote<chromeos::cros_healthd::mojom::CrosHealthdUsbObserver>
-          observer) override;
+      mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(
-      const std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>&
-          categories,
+      const std::vector<mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
   void ProbeProcessInfo(const uint32_t process_id,
                         ProbeProcessInfoCallback callback) override;
@@ -327,66 +299,50 @@ class FakeCrosHealthd final
   void GetServiceStatus(GetServiceStatusCallback callback) override;
 
   // Used to simulate the bootstrap of healthd mojo interface.
-  mojo::Receiver<chromeos::cros_healthd::mojom::CrosHealthdServiceFactory>
-      healthd_receiver_{this};
+  mojo::Receiver<mojom::CrosHealthdServiceFactory> healthd_receiver_{this};
 
   // Used as the response to any GetAvailableRoutines IPCs received.
-  std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
-      available_routines_;
+  std::vector<mojom::DiagnosticRoutineEnum> available_routines_;
   // Used to store last created routine by any Run*Routine method.
-  absl::optional<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
-      last_run_routine_;
+  absl::optional<mojom::DiagnosticRoutineEnum> last_run_routine_;
   // Used as the response to any RunSomeRoutine IPCs received.
-  chromeos::cros_healthd::mojom::RunRoutineResponsePtr run_routine_response_{
-      chromeos::cros_healthd::mojom::RunRoutineResponse::New()};
+  mojom::RunRoutineResponsePtr run_routine_response_{
+      mojom::RunRoutineResponse::New()};
   // Used as the response to any GetRoutineUpdate IPCs received.
-  chromeos::cros_healthd::mojom::RoutineUpdatePtr routine_update_response_{
-      chromeos::cros_healthd::mojom::RoutineUpdate::New()};
+  mojom::RoutineUpdatePtr routine_update_response_{mojom::RoutineUpdate::New()};
   // Used as the response to any ProbeTelemetryInfo IPCs received.
-  chromeos::cros_healthd::mojom::TelemetryInfoPtr telemetry_response_info_{
-      chromeos::cros_healthd::mojom::TelemetryInfo::New()};
+  mojom::TelemetryInfoPtr telemetry_response_info_{mojom::TelemetryInfo::New()};
   // Used as the response to any ProbeProcessInfo IPCs received.
-  chromeos::cros_healthd::mojom::ProcessResultPtr process_response_{
-      chromeos::cros_healthd::mojom::ProcessResult::NewProcessInfo(
-          chromeos::cros_healthd::mojom::ProcessInfo::New())};
+  mojom::ProcessResultPtr process_response_{
+      mojom::ProcessResult::NewProcessInfo(mojom::ProcessInfo::New())};
 
   // Allows the remote end to call the probe, diagnostics and event service
   // methods.
-  mojo::ReceiverSet<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
-      probe_receiver_set_;
-  mojo::ReceiverSet<
-      chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService>
+  mojo::ReceiverSet<mojom::CrosHealthdProbeService> probe_receiver_set_;
+  mojo::ReceiverSet<mojom::CrosHealthdDiagnosticsService>
       diagnostics_receiver_set_;
-  mojo::ReceiverSet<chromeos::cros_healthd::mojom::CrosHealthdEventService>
-      event_receiver_set_;
-  mojo::ReceiverSet<chromeos::cros_healthd::mojom::CrosHealthdSystemService>
-      system_receiver_set_;
+  mojo::ReceiverSet<mojom::CrosHealthdEventService> event_receiver_set_;
+  mojo::ReceiverSet<mojom::CrosHealthdSystemService> system_receiver_set_;
 
   // NetworkHealthService remote.
   mojo::Remote<chromeos::network_health::mojom::NetworkHealthService>
       network_health_remote_;
 
   // Collection of registered Bluetooth observers.
-  mojo::RemoteSet<chromeos::cros_healthd::mojom::CrosHealthdBluetoothObserver>
-      bluetooth_observers_;
+  mojo::RemoteSet<mojom::CrosHealthdBluetoothObserver> bluetooth_observers_;
   // Collection of registered lid observers.
-  mojo::RemoteSet<chromeos::cros_healthd::mojom::CrosHealthdLidObserver>
-      lid_observers_;
+  mojo::RemoteSet<mojom::CrosHealthdLidObserver> lid_observers_;
   // Collection of registered power observers.
-  mojo::RemoteSet<chromeos::cros_healthd::mojom::CrosHealthdPowerObserver>
-      power_observers_;
+  mojo::RemoteSet<mojom::CrosHealthdPowerObserver> power_observers_;
   // Collection of registered network observers.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
       network_observers_;
   // Collection of registered audio observers.
-  mojo::RemoteSet<chromeos::cros_healthd::mojom::CrosHealthdAudioObserver>
-      audio_observers_;
+  mojo::RemoteSet<mojom::CrosHealthdAudioObserver> audio_observers_;
   // Collection of registered Thunderbolt observers.
-  mojo::RemoteSet<chromeos::cros_healthd::mojom::CrosHealthdThunderboltObserver>
-      thunderbolt_observers_;
+  mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
   // Collection of registered USB observers.
-  mojo::RemoteSet<chromeos::cros_healthd::mojom::CrosHealthdUsbObserver>
-      usb_observers_;
+  mojo::RemoteSet<mojom::CrosHealthdUsbObserver> usb_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
@@ -401,10 +357,5 @@ class FakeCrosHealthd final
 };
 
 }  // namespace ash::cros_healthd
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::cros_healthd {
-using ::ash::cros_healthd::FakeCrosHealthd;
-}
 
 #endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_CROS_HEALTHD_H_

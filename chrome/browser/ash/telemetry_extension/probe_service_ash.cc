@@ -19,8 +19,9 @@
 namespace ash {
 
 namespace {
-namespace cros_healthd = ::ash::cros_healthd;
+
 constexpr char kOemDataLogName[] = "oemdata";
+
 }  // namespace
 
 // static

@@ -2,7 +2,7 @@
                                                           ~ "DataGenerator" -%}
 
 class {{class_name}}
-  : public ::chromeos::cros_healthd::connectivity::DataGeneratorInterface<{{
+  : public ::ash::cros_healthd::connectivity::DataGeneratorInterface<{{
       enum | get_name_for_kind}}> {
  public:
   {{class_name}}(const {{class_name}}&) = delete;
@@ -10,7 +10,7 @@ class {{class_name}}
   virtual ~{{class_name}}() = default;
 
   static std::unique_ptr<{{class_name}}> Create(
-    ::chromeos::cros_healthd::connectivity::Context* context);
+    ::ash::cros_healthd::connectivity::Context* context);
 
  public:
   // DataGeneratorInterface overrides.

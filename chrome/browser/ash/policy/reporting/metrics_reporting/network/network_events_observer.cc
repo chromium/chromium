@@ -104,7 +104,7 @@ void NetworkEventsObserver::OnSignalStrengthChanged(
 }
 
 void NetworkEventsObserver::AddObserver() {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->AddNetworkObserver(
+  ash::cros_healthd::ServiceConnection::GetInstance()->AddNetworkObserver(
       BindNewPipeAndPassRemote());
 }
 

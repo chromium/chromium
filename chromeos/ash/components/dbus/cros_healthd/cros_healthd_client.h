@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD)
 
   // Uses D-Bus to bootstrap the Mojo connection between the cros_healthd daemon
   // and the browser. Returns a bound remote.
-  virtual mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdServiceFactory>
+  virtual mojo::Remote<mojom::CrosHealthdServiceFactory>
       BootstrapMojoConnection(BootstrapMojoConnectionCallback) = 0;
 
  protected:
@@ -54,10 +54,5 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD)
 };
 
 }  // namespace ash::cros_healthd
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::cros_healthd {
-using ::ash::cros_healthd::CrosHealthdClient;
-}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_

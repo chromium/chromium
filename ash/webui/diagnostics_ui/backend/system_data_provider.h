@@ -75,11 +75,11 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void OnSystemInfoProbeResponse(
       GetSystemInfoCallback callback,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void OnBatteryInfoProbeResponse(
       GetBatteryInfoCallback callback,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void UpdateBatteryChargeStatus();
 
@@ -102,20 +102,16 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   void OnBatteryChargeStatusUpdated(
       const absl::optional<power_manager::PowerSupplyProperties>&
           power_supply_properties,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnBatteryHealthUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnBatteryHealthUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnMemoryUsageUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnMemoryUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnCpuUsageUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnCpuUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void ComputeAndPopulateCpuUsage(
-      const chromeos::cros_healthd::mojom::CpuInfo& cpu_info,
-      mojom::CpuUsage& out_cpu_usage);
+  void ComputeAndPopulateCpuUsage(const cros_healthd::mojom::CpuInfo& cpu_info,
+                                  mojom::CpuUsage& out_cpu_usage);
 
   bool IsLoggingEnabled() const;
 
@@ -123,8 +119,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   CpuUsageData previous_cpu_usage_data_;
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
-      probe_service_;
+  mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
   mojo::RemoteSet<mojom::BatteryChargeStatusObserver>
       battery_charge_status_observers_;
   mojo::RemoteSet<mojom::BatteryHealthObserver> battery_health_observers_;

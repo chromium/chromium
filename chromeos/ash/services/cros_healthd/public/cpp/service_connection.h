@@ -21,8 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace cros_healthd {
+namespace ash::cros_healthd {
 
 // Encapsulates a connection to the Chrome OS cros_healthd daemon via its Mojo
 // interface.
@@ -373,9 +372,7 @@ class ServiceConnection {
 
   // Sends the ChromiumDataCollector interface to cros_healthd.
   virtual void SendChromiumDataCollector(
-      mojo::PendingRemote<
-          chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
-          remote) = 0;
+      mojo::PendingRemote<internal::mojom::ChromiumDataCollector> remote) = 0;
 
   // Fetch touchpad stack driver library name.
   virtual std::string FetchTouchpadLibraryName() = 0;
@@ -390,14 +387,6 @@ class ServiceConnection {
   virtual ~ServiceConnection() = default;
 };
 
-}  // namespace cros_healthd
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace cros_healthd {
-using ::chromeos::cros_healthd::ServiceConnection;
-}  // namespace cros_healthd
-}  // namespace ash
+}  // namespace ash::cros_healthd
 
 #endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_SERVICE_CONNECTION_H_

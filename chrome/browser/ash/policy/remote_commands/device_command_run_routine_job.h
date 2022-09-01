@@ -40,10 +40,10 @@ class DeviceCommandRunRoutineJob : public RemoteCommandJob {
   void OnCrosHealthdResponseReceived(
       CallbackWithResult succeeded_callback,
       CallbackWithResult failed_callback,
-      chromeos::cros_healthd::mojom::RunRoutineResponsePtr response);
+      ash::cros_healthd::mojom::RunRoutineResponsePtr response);
 
   // Which routine the DeviceCommandRunRoutineJob will run.
-  chromeos::cros_healthd::mojom::DiagnosticRoutineEnum routine_enum_;
+  ash::cros_healthd::mojom::DiagnosticRoutineEnum routine_enum_;
   // Parameters for the routine to be run. See
   // chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details on the parameters accepted by each individual routine.

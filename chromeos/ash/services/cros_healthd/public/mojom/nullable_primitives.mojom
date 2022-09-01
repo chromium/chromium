@@ -11,45 +11,45 @@
 // NOTE: This mojom should be kept in sync with the copy in Chromium's repo in
 // src/platform2/diagnostics/mojom/public/nullable_primitives.mojom.
 
-module chromeos.cros_healthd.mojom;
+module ash.cros_healthd.mojom;
 
 // Optional uint8 field.
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint8"]
 struct NullableUint8 {
   // The value of the uint8.
   uint8 value;
 };
 
 // Optional int16 field.
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableInt16"]
 struct NullableInt16 {
   // The value of the int16.
   int16 value;
 };
 
 // Optional uint16 field.
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint16"]
 struct NullableUint16 {
   // The value of the uint16.
   uint16 value;
 };
 
 // Optional uint32 field.
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint32"]
 struct NullableUint32 {
   // The value of the uint32.
   uint32 value;
 };
 
 // Optional uint64 field.
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint64"]
 struct NullableUint64 {
   // The value of the uint64.
   uint64 value;
 };
 
 // Optional double field.
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableDouble"]
 struct NullableDouble {
   // The value of the double.
   double value;

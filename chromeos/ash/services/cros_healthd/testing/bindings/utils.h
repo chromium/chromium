@@ -7,9 +7,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
-namespace cros_healthd {
-namespace connectivity {
+namespace ash::cros_healthd::connectivity {
 
 // Runs or returns. Gets the result of the callback of |get_result|. If the
 // result is true, runs the |run_callback| and passes the |return_callback| as
@@ -37,8 +35,6 @@ void RunSuccessOrFailed(
     base::OnceClosure on_success,
     base::OnceClosure on_failed);
 
-}  // namespace connectivity
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd::connectivity
 
 #endif  // CHROMEOS_ASH_SERVICES_CROS_HEALTHD_TESTING_BINDINGS_UTILS_H_

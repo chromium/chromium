@@ -30,11 +30,11 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
+
 namespace {
 
-namespace healthd_mojom = ::chromeos::cros_healthd::mojom;
+namespace healthd_mojom = cros_healthd::mojom;
 
 constexpr char kSystemDataError[] = "ChromeOS.DiagnosticsUi.Error.System";
 
@@ -1363,5 +1363,4 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_DeltaZero) {
                                     /*expected_expectation_not_met_error=*/1);
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

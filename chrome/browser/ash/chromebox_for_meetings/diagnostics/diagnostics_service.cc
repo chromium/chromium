@@ -15,8 +15,6 @@ namespace ash::cfm {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration to namespace ash.
-namespace cros_healthd = ::chromeos::cros_healthd;
 namespace mojom = ::chromeos::cfm::mojom;
 
 static DiagnosticsService* g_info_service = nullptr;

@@ -49,5 +49,6 @@ TEST_F(AudioEventsObserverTest, SevereUnderrun) {
   EXPECT_EQ(metric_data.event_data().type(),
             reporting::MetricEventType::AUDIO_SEVERE_UNDERRUN);
 }
+
 }  // namespace
 }  // namespace reporting

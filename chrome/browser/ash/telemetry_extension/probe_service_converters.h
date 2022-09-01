@@ -14,14 +14,7 @@
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom-forward.h"
 
-namespace ash {
-
-// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
-namespace cros_healthd {
-namespace mojom = ::chromeos::cros_healthd::mojom;
-}  // namespace cros_healthd
-
-namespace converters {
+namespace ash::converters {
 
 // This file contains helper functions used by ProbeService to convert its
 // types to/from cros_healthd ProbeService types.
@@ -168,7 +161,6 @@ auto ConvertProbePairPtr(InputT input) {
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
     const std::vector<crosapi::mojom::ProbeCategoryEnum>& input);
 
-}  // namespace converters
-}  // namespace ash
+}  // namespace ash::converters
 
 #endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_CONVERTERS_H_

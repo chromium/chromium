@@ -30,14 +30,14 @@ class CrosHealthdMetricsProvider : public metrics::MetricsProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(CrosHealthdMetricsProviderTest, EndToEndTimeout);
 
-  chromeos::cros_healthd::mojom::CrosHealthdProbeService* GetService();
+  ash::cros_healthd::mojom::CrosHealthdProbeService* GetService();
   void OnDisconnect();
-  void OnProbeDone(chromeos::cros_healthd::mojom::TelemetryInfoPtr ptr);
+  void OnProbeDone(ash::cros_healthd::mojom::TelemetryInfoPtr ptr);
   void OnProbeTimeout();
 
   static base::TimeDelta GetTimeout();
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService> service_;
+  mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService> service_;
   std::vector<metrics::SystemProfileProto::Hardware::InternalStorageDevice>
       devices_;
 

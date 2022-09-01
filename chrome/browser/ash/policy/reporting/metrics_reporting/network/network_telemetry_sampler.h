@@ -28,15 +28,16 @@ class NetworkTelemetrySampler : public Sampler {
  private:
   void CollectWifiSignalStrengthRssi(
       OptionalMetricCallback callback,
-      ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry);
+      ash::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry);
 
   void CollectNetworksStates(
       OptionalMetricCallback callback,
-      ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry,
+      ash::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry,
       base::flat_map<std::string, int> service_path_rssi_map);
 
   base::WeakPtrFactory<NetworkTelemetrySampler> weak_ptr_factory_{this};
 };
+
 }  // namespace reporting
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_NETWORK_TELEMETRY_SAMPLER_H_

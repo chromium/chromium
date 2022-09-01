@@ -791,13 +791,13 @@ void ArcAppLaunchHandler::UpdateCpuUsage() {
   if (!probe_service_ || !probe_service_.is_connected())
     return;
   probe_service_->ProbeTelemetryInfo(
-      {chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu},
+      {cros_healthd::mojom::ProbeCategoryEnum::kCpu},
       base::BindOnce(&ArcAppLaunchHandler::OnCpuUsageUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcAppLaunchHandler::OnCpuUsageUpdated(
-    chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr) {
+    cros_healthd::mojom::TelemetryInfoPtr info_ptr) {
   // May be null in tests.
   if (info_ptr.is_null() || info_ptr->cpu_result.is_null() ||
       info_ptr->cpu_result->get_cpu_info().is_null()) {

@@ -25,11 +25,11 @@
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
+
 namespace {
 
-namespace healthd = ::chromeos::cros_healthd::mojom;
+namespace healthd = cros_healthd::mojom;
 
 constexpr char kChargePercentKey[] = "chargePercent";
 constexpr char kDischargePercentKey[] = "dischargePercent";
@@ -1043,5 +1043,4 @@ TEST_F(SystemRoutineControllerTest, SendRoutineResultDoesNotCrash) {
   EXPECT_TRUE(routine_runner->result.is_null());
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

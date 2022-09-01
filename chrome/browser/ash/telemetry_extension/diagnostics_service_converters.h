@@ -14,14 +14,7 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-
-// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
-namespace cros_healthd {
-namespace mojom = ::chromeos::cros_healthd::mojom;
-}  // namespace cros_healthd
-
-namespace converters {
+namespace ash::converters {
 
 // This file contains helper functions used by DiagnosticsService to convert its
 // types to/from cros_healthd DiagnosticsService types.
@@ -75,7 +68,6 @@ auto ConvertDiagnosticsPtr(InputT input) {
                             : nullptr;
 }
 
-}  // namespace converters
-}  // namespace ash
+}  // namespace ash::converters
 
 #endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_CONVERTERS_H_

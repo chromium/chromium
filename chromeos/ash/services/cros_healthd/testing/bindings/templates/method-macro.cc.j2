@@ -19,7 +19,7 @@
 {#  Add nullable if needed. #}
 {%- macro _cpp_nullable_generator_type(kind) -%}
 {%-   if kind.is_nullable -%}
-::chromeos::cros_healthd::connectivity::NullableGenerator<{{ caller() }}>
+::ash::cros_healthd::connectivity::NullableGenerator<{{ caller() }}>
 {%-   else -%}
 {{ caller() }}
 {%-   endif -%}
@@ -28,7 +28,7 @@
 {#  Add optional if needed. #}
 {%- macro _cpp_optional_generator_type(kind) -%}
 {%-   if kind.is_nullable -%}
-::chromeos::cros_healthd::connectivity::OptionalGenerator<{{ caller() }}>
+::ash::cros_healthd::connectivity::OptionalGenerator<{{ caller() }}>
 {%-   else -%}
 {{ caller() }}
 {%-   endif -%}
@@ -46,7 +46,7 @@
 {%-     endcall -%}
 {%-   elif kind is GenericHandleKind -%}
 {%-     call _cpp_nullable_generator_type(kind) -%}
-::chromeos::cros_healthd::connectivity::HandleDataGenerator
+::ash::cros_healthd::connectivity::HandleDataGenerator
 {%-     endcall -%}
 {%-   elif kind is PendingRemoteKind -%}
 {{kind.kind | get_name_for_kind}}TestProvider
@@ -54,18 +54,18 @@
 {{kind.kind | get_name_for_kind}}TestConsumer
 {%-   elif kind is ArrayKind -%}
 {%-     call _cpp_optional_generator_type(kind) -%}
-::chromeos::cros_healthd::connectivity::ArrayGenerator<{{
+::ash::cros_healthd::connectivity::ArrayGenerator<{{
     cpp_generator_type(kind.kind)}}>
 {%-     endcall -%}
 {%-   elif kind is MapKind -%}
 {%-     call _cpp_optional_generator_type(kind) -%}
-::chromeos::cros_healthd::connectivity::MapGenerator<{{
+::ash::cros_healthd::connectivity::MapGenerator<{{
     cpp_generator_type(kind.key_kind)}}, {{
     cpp_generator_type(kind.value_kind)}}>
 {%-     endcall -%}
 {%-   else -%}
 {%-     call _cpp_optional_generator_type(kind) -%}
-::chromeos::cros_healthd::connectivity::DataGenerator<{{
+::ash::cros_healthd::connectivity::DataGenerator<{{
   kind | cpp_wrapper_type(ignore_nullable=True)}}>
 {%-     endcall -%}
 {%-   endif -%}

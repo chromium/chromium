@@ -2760,7 +2760,7 @@ message RemoteCommand {
   // params_dict}, where params_dict varies by routine.
   // |DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE|: {"id" : id_integer, "command" :
   // command, "includeOutput" : include_output_bool}, where command must be a
-  // valid chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum.
+  // valid `ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum`.
   optional string payload = 4;
 
   // An identifier for the target this command is for. This is the same as

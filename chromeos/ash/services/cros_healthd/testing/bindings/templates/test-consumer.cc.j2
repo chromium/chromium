@@ -3,12 +3,12 @@
 {%- set class_name = "%sTestConsumer"|format(interface.mojom_name) %}
 
 std::unique_ptr<{{class_name}}> {{class_name}}::Create(
-    ::chromeos::cros_healthd::connectivity::Context* context) {
+    ::ash::cros_healthd::connectivity::Context* context) {
   return std::unique_ptr<{{class_name}}>(new {{class_name}}(context));
 }
 
 {{class_name}}::{{class_name}}(
-    ::chromeos::cros_healthd::connectivity::Context* context)
+    ::ash::cros_healthd::connectivity::Context* context)
   : context_(context) {
 {%- for method in interface.methods %}
   {{method_macro.define_data_generator(
@@ -93,7 +93,7 @@ void {{class_name}}::CheckStep2__{{method.mojom_name}}(CheckCallback callback) {
 {%    for param in method.parameters | reverse | selectattr(
                                             "kind", "PendingReceiverKind")  %}
   auto callback_{{loop.index}} = base::BindOnce(
-    &::chromeos::cros_healthd::connectivity::RunOrReturn,
+    &::ash::cros_healthd::connectivity::RunOrReturn,
     /*return_value=*/false,
     /*get_result=*/{{
       method.mojom_name}}__{{param.mojom_name}}__generator__->CheckClosure(),
@@ -120,7 +120,7 @@ void {{class_name}}::CheckStep3__{{method.mojom_name}}(CheckCallback callback) {
 {%-   if method.response_parameters == None %}
   std::move(callback).Run(true);
 {%-   else %}
-  ::chromeos::cros_healthd::connectivity::RunOrReturn(
+  ::ash::cros_healthd::connectivity::RunOrReturn(
     /*return_value=*/true,
     /*get_result=*/context_->remote_state()->GetLastCallHasNextClosure(),
     /*run_callback=*/base::BindOnce(
@@ -153,7 +153,7 @@ void {{class_name}}::Check(CheckCallback callback) {
     the previous one succeeded. #}
 {%- for method in interface.methods | reverse %}
   auto callback_{{loop.index}} = base::BindOnce(
-    &::chromeos::cros_healthd::connectivity::RunOrReturn,
+    &::ash::cros_healthd::connectivity::RunOrReturn,
     /*return_value=*/false,
     /*get_result=*/base::BindOnce(
       &{{class_name}}::CheckStep1__{{method.mojom_name}},

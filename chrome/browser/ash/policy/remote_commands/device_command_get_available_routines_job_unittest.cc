@@ -59,7 +59,7 @@ class DeviceCommandGetAvailableRoutinesJobTest : public testing::Test {
                      bool terminate_upon_input);
 
   std::string CreateSuccessPayload(
-      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+      const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
           available_routines);
 
   base::test::TaskEnvironment task_environment_{
@@ -96,7 +96,7 @@ void DeviceCommandGetAvailableRoutinesJobTest::InitializeJob(
 }
 
 std::string DeviceCommandGetAvailableRoutinesJobTest::CreateSuccessPayload(
-    const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+    const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
         available_routines) {
   std::string payload;
   base::Value root_dict(base::Value::Type::DICTIONARY);
@@ -109,11 +109,10 @@ std::string DeviceCommandGetAvailableRoutinesJobTest::CreateSuccessPayload(
 }
 
 TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Success) {
-  const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
+  const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>
       kAvailableRoutines = {
-          chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom,
-          chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-              kBatteryCapacity};
+          ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom,
+          ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity};
   ash::cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting(
       kAvailableRoutines);
   std::unique_ptr<RemoteCommandJob> job =

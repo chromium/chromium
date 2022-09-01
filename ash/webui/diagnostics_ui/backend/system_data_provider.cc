@@ -22,11 +22,11 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
+
 namespace {
 
-namespace healthd = ::chromeos::cros_healthd::mojom;
+namespace healthd = cros_healthd::mojom;
 using PhysicalCpuInfos = std::vector<healthd::PhysicalCpuInfoPtr>;
 using PowerSupplyProperties = power_manager::PowerSupplyProperties;
 using ProbeCategories = healthd::ProbeCategoryEnum;
@@ -694,5 +694,4 @@ bool SystemDataProvider::IsLoggingEnabled() const {
   return telemetry_log_ptr_ != nullptr;
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

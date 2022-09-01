@@ -8,12 +8,12 @@
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
 // in src/platform2/diagnostics/mojom/public/cros_healthd_events.mojom.
 
-module chromeos.cros_healthd.mojom;
+module ash.cros_healthd.mojom;
 
 // Implemented by clients who desire Bluetooth notifications.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CrosHealthdBluetoothObserver"]
 interface CrosHealthdBluetoothObserver {
   // Fired when a Bluetooth adapter is added.
   OnAdapterAdded@0();
@@ -32,7 +32,7 @@ interface CrosHealthdBluetoothObserver {
 // Implemented by clients who desire lid notifications.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CrosHealthdLidObserver"]
 interface CrosHealthdLidObserver {
   // Fired when the device's lid is closed.
   OnLidClosed@0();
@@ -43,7 +43,7 @@ interface CrosHealthdLidObserver {
 // Implemented by clients who desire power notifications.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CrosHealthdPowerObserver"]
 interface CrosHealthdPowerObserver {
   // Fired when the device begins consuming from an external power source.
   OnAcInserted@0();
@@ -58,7 +58,7 @@ interface CrosHealthdPowerObserver {
 // Implemented by clients who desire audio notifications.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CrosHealthdAudioObserver"]
 interface CrosHealthdAudioObserver {
   // Fired when the audio underrun happens.
   OnUnderrun@0();
@@ -69,7 +69,7 @@ interface CrosHealthdAudioObserver {
 // Implemented by clients who desire Thunderbolt notifications.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CrosHealthdThunderboltObserver"]
 interface CrosHealthdThunderboltObserver {
   // Fired when the Thunderbolt plug in.
   OnAdd@0();
@@ -84,7 +84,7 @@ interface CrosHealthdThunderboltObserver {
 // USB event info.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.UsbEventInfo"]
 struct UsbEventInfo {
   // Vendor name.
   string vendor@0;
@@ -102,7 +102,7 @@ struct UsbEventInfo {
 // Implemented by clients who desire USB notifications.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CrosHealthdUsbObserver"]
 interface CrosHealthdUsbObserver {
   // Fired when the USB plug in.
   OnAdd@0(UsbEventInfo info);

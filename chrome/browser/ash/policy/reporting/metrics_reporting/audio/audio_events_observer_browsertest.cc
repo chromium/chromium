@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
 
   EnablePolicy();
 
-  chromeos::cros_healthd::FakeCrosHealthd::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->EmitAudioSevereUnderrunEventForTesting();
 
   const Record& record = GetNextRecord(&missive_observer_);

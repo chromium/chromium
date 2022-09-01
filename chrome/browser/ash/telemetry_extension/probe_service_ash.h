@@ -16,11 +16,6 @@
 
 namespace ash {
 
-// TODO(https://crbug.com/1164001): Remove if cros_healthd::mojom moved to ash.
-namespace cros_healthd {
-namespace mojom = ::chromeos::cros_healthd::mojom;
-}  // namespace cros_healthd
-
 class ProbeServiceAsh : public crosapi::mojom::TelemetryProbeService {
  public:
   class Factory {

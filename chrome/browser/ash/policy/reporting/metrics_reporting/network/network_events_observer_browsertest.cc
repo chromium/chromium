@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 
   EnablePolicy();
 
-  chromeos::cros_healthd::FakeCrosHealthd::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->EmitConnectionStateChangedEventForTesting(kWifiGuid,
                                                   network_connection_state);
 
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
                              shill::kTypeWifi, shill::kStateReady, true);
 
   EnablePolicy();
-  chromeos::cros_healthd::FakeCrosHealthd::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->EmitSignalStrengthChangedEventForTesting(
           kWifiGuid,
           chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));

@@ -26,11 +26,11 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
+
 namespace {
 
-namespace healthd = ::chromeos::cros_healthd::mojom;
+namespace healthd = cros_healthd::mojom;
 
 constexpr uint32_t kBatteryDurationInSeconds = 30;
 constexpr uint32_t kBatteryChargeMinimumPercent = 0;
@@ -755,5 +755,4 @@ void SystemRoutineController::ReleaseWakeLock() {
   wake_lock_->CancelWakeLock();
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

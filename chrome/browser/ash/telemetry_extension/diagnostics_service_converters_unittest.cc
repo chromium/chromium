@@ -21,7 +21,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticsPtrTakesNullPtr) {
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace cros_healthd = cros_healthd::mojom;
   namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kReady),
@@ -52,7 +52,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
 
 TEST(DiagnosticsServiceConvertersTest,
      ConvertDiagnosticRoutineUserMessageEnum) {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace cros_healthd = cros_healthd::mojom;
   namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(
@@ -64,7 +64,7 @@ TEST(DiagnosticsServiceConvertersTest,
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace cros_healthd = cros_healthd::mojom;
   namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(Convert(crosapi::DiagnosticsRoutineCommandEnum::kUnknown),
@@ -80,7 +80,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertAcPowerStatusEnum) {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace cros_healthd = cros_healthd::mojom;
   namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(Convert(crosapi::DiagnosticsAcPowerStatusEnum::kUnknown),
@@ -92,7 +92,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertAcPowerStatusEnum) {
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertNvmeSelfTestTypeEnum) {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace cros_healthd = cros_healthd::mojom;
   namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(Convert(crosapi::DiagnosticsNvmeSelfTestTypeEnum::kUnknown),
@@ -104,7 +104,7 @@ TEST(DiagnosticsServiceConvertersTest, ConvertNvmeSelfTestTypeEnum) {
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiskReadRoutineTypeEnum) {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace cros_healthd = cros_healthd::mojom;
   namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(Convert(crosapi::DiagnosticsDiskReadRoutineTypeEnum::kLinearRead),
