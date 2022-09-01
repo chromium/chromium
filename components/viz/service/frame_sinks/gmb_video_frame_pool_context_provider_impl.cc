@@ -33,6 +33,7 @@ class GmbVideoFramePoolContext
                                std::move(on_context_lost))) {
     DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
 
+    // TODO(vikassoni): Verify this is the right GPU thread/sequence for DrDC.
     sequence_ = std::make_unique<gpu::SchedulerSequence>(
         gpu_service_->GetGpuScheduler(), gpu_service_->main_runner(),
         /*target_thread_is_always_available=*/true);
@@ -116,7 +117,7 @@ class GmbVideoFramePoolContext
         gpu_service_->gpu_driver_bug_workarounds(),
         gpu_service_->gpu_feature_info(), shared_context_state_.get(),
         gpu_service_->shared_image_manager(), gpu_service_->gpu_image_factory(),
-        shared_context_state_->memory_tracker());
+        /*is_for_display_compositor=*/false);
     DCHECK(sii_in_process_);
 
     initialized_ = true;

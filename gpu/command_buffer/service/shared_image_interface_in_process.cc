@@ -33,7 +33,6 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
   const raw_ptr<gpu::SharedContextState> context_state;
   const raw_ptr<SharedImageManager> shared_image_manager;
   const raw_ptr<ImageFactory> image_factory;
-  const raw_ptr<MemoryTracker> memory_tracker;
   const bool is_for_display_compositor;
 
   SetUpOnGpuParams(const GpuPreferences& gpu_preferences,
@@ -42,7 +41,6 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
                    gpu::SharedContextState* context_state,
                    SharedImageManager* shared_image_manager,
                    ImageFactory* image_factory,
-                   MemoryTracker* memory_tracker,
                    bool is_for_display_compositor)
       : gpu_preferences(gpu_preferences),
         gpu_workarounds(gpu_workarounds),
@@ -50,7 +48,6 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
         context_state(context_state),
         shared_image_manager(shared_image_manager),
         image_factory(image_factory),
-        memory_tracker(memory_tracker),
         is_for_display_compositor(is_for_display_compositor) {}
 
   ~SetUpOnGpuParams() = default;
@@ -61,8 +58,7 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
 
 SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     SingleTaskSequence* task_sequence,
-    DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller,
-    raw_ptr<CommandBufferHelper> command_buffer_helper)
+    DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller)
     : SharedImageInterfaceInProcess(
           task_sequence,
           display_controller->sync_point_manager(),
@@ -72,9 +68,7 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
           display_controller->shared_context_state(),
           display_controller->shared_image_manager(),
           display_controller->image_factory(),
-          display_controller->memory_tracker(),
-          /*is_for_display_compositor=*/true,
-          command_buffer_helper) {}
+          /*is_for_display_compositor=*/true) {}
 
 SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     SingleTaskSequence* task_sequence,
@@ -85,23 +79,19 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     gpu::SharedContextState* context_state,
     SharedImageManager* shared_image_manager,
     ImageFactory* image_factory,
-    MemoryTracker* memory_tracker,
-    bool is_for_display_compositor,
-    raw_ptr<CommandBufferHelper> command_buffer_helper)
+    bool is_for_display_compositor)
     : task_sequence_(task_sequence),
       command_buffer_id_(
           DisplayCompositorMemoryAndTaskControllerOnGpu::NextCommandBufferId()),
-      command_buffer_helper_(command_buffer_helper),
       shared_image_manager_(shared_image_manager),
       sync_point_manager_(sync_point_manager) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
   task_sequence_->ScheduleTask(
-      base::BindOnce(&SharedImageInterfaceInProcess::SetUpOnGpu,
-                     base::Unretained(this),
-                     std::make_unique<SetUpOnGpuParams>(
-                         gpu_preferences, gpu_workarounds, gpu_feature_info,
-                         context_state, shared_image_manager, image_factory,
-                         memory_tracker, is_for_display_compositor)),
+      base::BindOnce(
+          &SharedImageInterfaceInProcess::SetUpOnGpu, base::Unretained(this),
+          std::make_unique<SetUpOnGpuParams>(
+              gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
+              shared_image_manager, image_factory, is_for_display_compositor)),
       {});
 }
 
@@ -127,7 +117,8 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
             params->gpu_preferences, params->gpu_workarounds,
             params->gpu_feature_info, params->context_state,
             params->shared_image_manager, params->image_factory,
-            params->memory_tracker, params->is_for_display_compositor);
+            params->context_state->memory_tracker(),
+            params->is_for_display_compositor);
         return shared_image_factory;
       },
       std::move(params));
@@ -233,10 +224,7 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type,
           surface_handle, usage)) {
-    if (command_buffer_helper_) {
-      // Signal errors by losing the command buffer.
-      command_buffer_helper_->SetError();
-    }
+    context_state_->MarkContextLost();
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -292,10 +280,7 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type, usage,
           pixel_data)) {
-    if (command_buffer_helper_) {
-      // Signal errors by losing the command buffer.
-      command_buffer_helper_->SetError();
-    }
+    context_state_->MarkContextLost();
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -372,10 +357,7 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
           mailbox, kDisplayCompositorClientId, std::move(handle), format, plane,
           surface_handle, size, color_space, surface_origin, alpha_type,
           usage)) {
-    if (command_buffer_helper_) {
-      // Signal errors by losing the command buffer.
-      command_buffer_helper_->SetError();
-    }
+    context_state_->MarkContextLost();
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -447,10 +429,7 @@ void SharedImageInterfaceInProcess::UpdateSharedImageOnGpuThread(
 
   if (!shared_image_factory_ ||
       !shared_image_factory_->UpdateSharedImage(mailbox)) {
-    if (command_buffer_helper_) {
-      // Signal errors by losing the command buffer.
-      command_buffer_helper_->SetError();
-    }
+    context_state_->MarkContextLost();
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -476,10 +455,7 @@ void SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread(
 
   if (!shared_image_factory_ ||
       !shared_image_factory_->DestroySharedImage(mailbox)) {
-    if (command_buffer_helper_) {
-      // Signal errors by losing the command buffer.
-      command_buffer_helper_->SetError();
-    }
+    context_state_->MarkContextLost();
   }
 }
 
@@ -524,23 +500,10 @@ scoped_refptr<gfx::NativePixmap> SharedImageInterfaceInProcess::GetNativePixmap(
   return shared_image_manager_->GetNativePixmap(mailbox);
 }
 
-void SharedImageInterfaceInProcess::WrapTaskWithGpuUrl(base::OnceClosure task) {
-  if (command_buffer_helper_) {
-    command_buffer_helper_->WrapTaskWithGpuCheck(std::move(task));
-  } else {
-    std::move(task).Run();
-  }
-}
-
 void SharedImageInterfaceInProcess::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences) {
-  base::OnceClosure gpu_task =
-      base::BindOnce(&SharedImageInterfaceInProcess::WrapTaskWithGpuUrl,
-                     base::Unretained(this), std::move(task));
-
-  task_sequence_->ScheduleTask(std::move(gpu_task),
-                               std::move(sync_token_fences));
+  task_sequence_->ScheduleTask(std::move(task), std::move(sync_token_fences));
 }
 
 }  // namespace gpu

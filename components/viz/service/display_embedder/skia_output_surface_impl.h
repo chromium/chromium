@@ -144,7 +144,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   void PreserveChildSurfaceControls() override;
-  gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
   bool EnsureMinNumberOfBuffers(int n) override;
   gpu::Mailbox CreateSharedImage(ResourceFormat format,

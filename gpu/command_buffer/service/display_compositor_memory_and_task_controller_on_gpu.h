@@ -16,7 +16,6 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 
 namespace gpu {
-class CommandBufferTaskExecutor;
 class ImageFactory;
 class MailboxManager;
 class SyncPointManager;
@@ -29,7 +28,6 @@ struct GpuPreferences;
 // compositor.
 class GPU_GLES2_EXPORT DisplayCompositorMemoryAndTaskControllerOnGpu {
  public:
-  // Used for SkiaRenderer.
   DisplayCompositorMemoryAndTaskControllerOnGpu(
       scoped_refptr<SharedContextState> shared_context_state,
       MailboxManager* mailbox_manager,
@@ -39,10 +37,6 @@ class GPU_GLES2_EXPORT DisplayCompositorMemoryAndTaskControllerOnGpu {
       const GpuPreferences& gpu_preferences,
       const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,
       const GpuFeatureInfo& gpu_feature_info);
-  // Used for InProcessCommandBuffer.
-  DisplayCompositorMemoryAndTaskControllerOnGpu(
-      CommandBufferTaskExecutor* task_executor,
-      ImageFactory* image_factory);
   DisplayCompositorMemoryAndTaskControllerOnGpu(
       const DisplayCompositorMemoryAndTaskControllerOnGpu&) = delete;
   DisplayCompositorMemoryAndTaskControllerOnGpu& operator=(
@@ -84,10 +78,6 @@ class GPU_GLES2_EXPORT DisplayCompositorMemoryAndTaskControllerOnGpu {
   const GpuPreferences& gpu_preferences_;
   GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
   const GpuFeatureInfo& gpu_feature_info_;
-
-  // Only needed for InProcessCommandBuffer.
-  bool should_have_memory_tracker_ = false;
-  std::unique_ptr<MemoryTracker> memory_tracker_;
 
   SEQUENCE_CHECKER(gpu_sequence_checker_);
 };

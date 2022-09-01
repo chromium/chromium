@@ -1212,10 +1212,6 @@ base::ScopedClosureRunner SkiaOutputSurfaceImpl::GetCacheBackBufferCb() {
   return dependency_->CacheGLSurface(impl_on_gpu_->gl_surface());
 }
 
-gpu::SharedImageInterface* SkiaOutputSurfaceImpl::GetSharedImageInterface() {
-  return display_compositor_controller_->shared_image_interface();
-}
-
 void SkiaOutputSurfaceImpl::AddContextLostObserver(
     ContextLostObserver* observer) {
   observers_.AddObserver(observer);

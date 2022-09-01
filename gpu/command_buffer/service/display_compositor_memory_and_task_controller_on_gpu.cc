@@ -42,41 +42,8 @@ DisplayCompositorMemoryAndTaskControllerOnGpu::
       sync_point_manager_(sync_point_manager),
       gpu_preferences_(gpu_preferences),
       gpu_driver_bug_workarounds_(gpu_driver_bug_workarounds),
-      gpu_feature_info_(gpu_feature_info),
-      should_have_memory_tracker_(true) {
+      gpu_feature_info_(gpu_feature_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-}
-
-// Used for InProcessCommandBuffer.
-DisplayCompositorMemoryAndTaskControllerOnGpu::
-    DisplayCompositorMemoryAndTaskControllerOnGpu(
-        CommandBufferTaskExecutor* task_executor,
-        ImageFactory* image_factory)
-    : shared_context_state_(task_executor->GetSharedContextState()),
-      command_buffer_id_(GenNextCommandBufferId()),
-      mailbox_manager_(task_executor->mailbox_manager()),
-      image_factory_(image_factory),
-      shared_image_manager_(task_executor->shared_image_manager()),
-      sync_point_manager_(task_executor->sync_point_manager()),
-      gpu_preferences_(task_executor->gpu_preferences()),
-      gpu_driver_bug_workarounds_(
-          GpuDriverBugWorkarounds(task_executor->gpu_feature_info()
-                                      .enabled_gpu_driver_bug_workarounds)),
-      gpu_feature_info_(task_executor->gpu_feature_info()) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-
-  // Android WebView won't have a memory tracker.
-  if (task_executor->ShouldCreateMemoryTracker()) {
-    should_have_memory_tracker_ = true;
-    memory_tracker_ = std::make_unique<GpuCommandBufferMemoryTracker>(
-        command_buffer_id_,
-        base::trace_event::MemoryDumpManager::GetInstance()
-            ->GetTracingProcessId(),
-        base::ThreadTaskRunnerHandle::Get(),
-        /* obserer=*/nullptr);
-  } else {
-    should_have_memory_tracker_ = false;
-  }
 }
 
 DisplayCompositorMemoryAndTaskControllerOnGpu::
@@ -86,13 +53,8 @@ DisplayCompositorMemoryAndTaskControllerOnGpu::
 
 MemoryTracker* DisplayCompositorMemoryAndTaskControllerOnGpu::memory_tracker()
     const {
-  if (!should_have_memory_tracker_)
-    return nullptr;
-
-  if (memory_tracker_)
-    return memory_tracker_.get();
-  else
-    return shared_context_state_->memory_tracker();
+  DCHECK(shared_context_state_);
+  return shared_context_state_->memory_tracker();
 }
 
 // Static

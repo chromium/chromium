@@ -98,7 +98,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                   const gpu::Mailbox& mailbox) override;
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
-  gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
   bool EnsureMinNumberOfBuffers(int n) override;
   void PreserveChildSurfaceControls() override {}
@@ -120,6 +119,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,
       bool raw_draw_if_possible) override;
+
+  gpu::SharedImageInterface* GetSharedImageInterface();
 
   // If set true, callbacks triggering will be in a reverse order as SignalQuery
   // calls.

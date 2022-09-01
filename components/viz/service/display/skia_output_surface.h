@@ -34,10 +34,6 @@ namespace gfx {
 class ColorSpace;
 }  // namespace gfx
 
-namespace gpu {
-class SharedImageInterface;
-}
-
 namespace viz {
 
 class OverlayCandidate;
@@ -201,9 +197,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // waited on in a command buffer to ensure all pending tasks are executed on
   // the GPU main thread.
   virtual gpu::SyncToken Flush() = 0;
-
-  // Only used for creating and destroying shared images for render passes
-  virtual gpu::SharedImageInterface* GetSharedImageInterface() = 0;
 
   // Set the number of frame buffers to use when
   // `supports_dynamic_frame_buffer_allocation` is true. `n` must satisfy

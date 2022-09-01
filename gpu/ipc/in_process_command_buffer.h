@@ -89,8 +89,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
     : public CommandBuffer,
       public GpuControl,
       public CommandBufferServiceClient,
-      public DecoderClient,
-      public SharedImageInterfaceInProcess::CommandBufferHelper {
+      public DecoderClient {
  public:
   InProcessCommandBuffer(CommandBufferTaskExecutor* task_executor,
                          const GURL& active_url);
@@ -177,10 +176,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   gpu::SharedImageInterface* GetSharedImageInterface() const;
 
-  // SharedImageInterfaceInProcess::CommandBufferHelper implementation:
-  void SetError() override;
-  void WrapTaskWithGpuCheck(base::OnceClosure task) override;
-
  private:
   struct InitializeOnGpuThreadParams {
     const ContextCreationAttribs& attribs;
@@ -265,12 +260,11 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   void HandleReturnDataOnOriginThread(std::vector<uint8_t> data);
 
+  const CommandBufferId command_buffer_id_;
   const ContextUrl active_url_;
 
   // Members accessed on the gpu thread (possibly with the exception of
   // creation):
-  std::unique_ptr<DisplayCompositorMemoryAndTaskControllerOnGpu>
-      gpu_dependency_;
   bool use_virtualized_gl_context_ = false;
   raw_ptr<raster::GrShaderCache> gr_shader_cache_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
