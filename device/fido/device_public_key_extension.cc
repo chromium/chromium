@@ -4,6 +4,8 @@
 
 #include "device/fido/device_public_key_extension.h"
 
+#include <cstring>
+
 #include "components/cbor/reader.h"
 #include "device/fido/fido_constants.h"
 
