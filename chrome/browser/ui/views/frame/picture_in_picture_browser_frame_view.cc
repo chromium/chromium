@@ -108,7 +108,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   back_to_tab_button_ = controls_container_view_->AddChildView(
       std::make_unique<BackToTabButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
-            // TODO(https://crbug.com/1346734): Implement functionality.
+            // TODO(https://crbug.com/1346734): Focus the original tab too.
+            PictureInPictureWindowManager::GetInstance()
+                ->ExitPictureInPicture();
           },
           base::Unretained(this))));
 
@@ -116,8 +118,8 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   close_image_button_ = controls_container_view_->AddChildView(
       std::make_unique<CloseImageButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
-            frame_view->frame()->CloseWithReason(
-                views::Widget::ClosedReason::kCloseButtonClicked);
+            PictureInPictureWindowManager::GetInstance()
+                ->ExitPictureInPicture();
           },
           base::Unretained(this))));
 }
@@ -312,6 +314,10 @@ gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
 gfx::Rect PictureInPictureBrowserFrameView::GetCloseControlsBounds() const {
   DCHECK(close_image_button_);
   return close_image_button_->GetMirroredBounds();
+}
+
+LocationIconView* PictureInPictureBrowserFrameView::GetLocationIconView() {
+  return location_icon_view_;
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)

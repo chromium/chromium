@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/permissions/permission_chip.h"
@@ -26,6 +27,13 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
     return {browser_view->GetLocationBarView(),
             browser_view->GetLocationBarView()->location_icon_view(),
             views::BubbleBorder::TOP_LEFT};
+
+  if (anchor == kLocationBar && browser_view->GetIsPictureInPictureType()) {
+    auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+        browser_view->frame()->GetFrameView());
+    return {frame_view->GetLocationIconView(),
+            frame_view->GetLocationIconView(), views::BubbleBorder::TOP_LEFT};
+  }
 
   if (anchor == kCustomTabBar && browser_view->toolbar()->custom_tab_bar())
     return {browser_view->toolbar()->custom_tab_bar(),

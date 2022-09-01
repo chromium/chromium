@@ -79,6 +79,8 @@ class PictureInPictureBrowserFrameView : public BrowserNonClientFrameView,
   gfx::Rect GetBackToTabControlsBounds() const;
   gfx::Rect GetCloseControlsBounds() const;
 
+  LocationIconView* GetLocationIconView();
+
  private:
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;
