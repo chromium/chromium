@@ -66,7 +66,7 @@ class CastStreamingTestSender::SenderObserver final
     CHECK(sender_);
     sender_->SetObserver(this);
   }
-  ~SenderObserver() override { sender_->SetObserver(nullptr); };
+  ~SenderObserver() override { sender_->SetObserver(nullptr); }
 
   SenderObserver(const SenderObserver&) = delete;
   SenderObserver& operator=(const SenderObserver&) = delete;
