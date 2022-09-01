@@ -5874,7 +5874,7 @@
   {
     "name": "shelf-drag-to-pin",
     "owners": ["tbarzic", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 110
   },
   {
     "name": "shelf-gestures-with-vk",
