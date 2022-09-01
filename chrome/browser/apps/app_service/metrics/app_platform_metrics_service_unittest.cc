@@ -855,8 +855,8 @@ class AppPlatformMetricsServiceTest : public testing::Test,
 
   void VerifyInstalledAppsUkm(const std::string& app_info,
                               AppTypeName app_type_name,
-                              apps::mojom::InstallReason install_reason,
-                              apps::mojom::InstallSource install_source,
+                              apps::InstallReason install_reason,
+                              apps::InstallSource install_source,
                               InstallTime install_time) {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InstalledApp");
@@ -2041,42 +2041,38 @@ TEST_P(AppPlatformMetricsServiceTest,
 TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   // Verify the apps installed during the init phase.
   VerifyInstalledAppsUkm("app://com.google.A", AppTypeName::kArc,
-                         apps::mojom::InstallReason::kUser,
-                         apps::mojom::InstallSource::kPlayStore,
-                         InstallTime::kInit);
-  VerifyInstalledAppsUkm(
-      "app://bu", AppTypeName::kBuiltIn, apps::mojom::InstallReason::kSystem,
-      apps::mojom::InstallSource::kSystem, InstallTime::kInit);
-  VerifyInstalledAppsUkm(
-      "app://s", AppTypeName::kSystemWeb, apps::mojom::InstallReason::kSystem,
-      apps::mojom::InstallSource::kSystem, InstallTime::kInit);
+                         apps::InstallReason::kUser,
+                         apps::InstallSource::kPlayStore, InstallTime::kInit);
+  VerifyInstalledAppsUkm("app://bu", AppTypeName::kBuiltIn,
+                         apps::InstallReason::kSystem,
+                         apps::InstallSource::kSystem, InstallTime::kInit);
+  VerifyInstalledAppsUkm("app://s", AppTypeName::kSystemWeb,
+                         apps::InstallReason::kSystem,
+                         apps::InstallSource::kSystem, InstallTime::kInit);
   VerifyInstalledAppsUkm("https://foo.com", GetWebAppTypeName(),
-                         apps::mojom::InstallReason::kSync,
-                         apps::mojom::InstallSource::kSync, InstallTime::kInit);
+                         apps::InstallReason::kSync, apps::InstallSource::kSync,
+                         InstallTime::kInit);
+  VerifyInstalledAppsUkm("app://" + std::string(app_constants::kLacrosAppId),
+                         AppTypeName::kStandaloneBrowser,
+                         apps::InstallReason::kSystem,
+                         apps::InstallSource::kSystem, InstallTime::kInit);
   VerifyInstalledAppsUkm(
-      "app://" + std::string(app_constants::kLacrosAppId),
-      AppTypeName::kStandaloneBrowser, apps::mojom::InstallReason::kSystem,
-      apps::mojom::InstallSource::kSystem, InstallTime::kInit);
-  VerifyInstalledAppsUkm("app://" + std::string(kChromeAppId),
-                         AppTypeName::kStandaloneBrowserChromeApp,
-                         apps::mojom::InstallReason::kUser,
-                         apps::mojom::InstallSource::kChromeWebStore,
-                         InstallTime::kInit);
-  VerifyInstalledAppsUkm("app://" + std::string(kExtensionId),
-                         AppTypeName::kStandaloneBrowserExtension,
-                         apps::mojom::InstallReason::kUser,
-                         apps::mojom::InstallSource::kChromeWebStore,
-                         InstallTime::kInit);
+      "app://" + std::string(kChromeAppId),
+      AppTypeName::kStandaloneBrowserChromeApp, apps::InstallReason::kUser,
+      apps::InstallSource::kChromeWebStore, InstallTime::kInit);
+  VerifyInstalledAppsUkm(
+      "app://" + std::string(kExtensionId),
+      AppTypeName::kStandaloneBrowserExtension, apps::InstallReason::kUser,
+      apps::InstallSource::kChromeWebStore, InstallTime::kInit);
 
   // Install a new ARC app during the running time.
   InstallOneApp("aa", AppType::kArc, "com.google.AA", Readiness::kReady,
                 InstallSource::kPlayStore);
 
   // Verify the ARC app installed during the running time.
-  VerifyInstalledAppsUkm("app://com.google.AA", AppTypeName::kArc,
-                         apps::mojom::InstallReason::kUser,
-                         apps::mojom::InstallSource::kPlayStore,
-                         InstallTime::kRunning);
+  VerifyInstalledAppsUkm(
+      "app://com.google.AA", AppTypeName::kArc, apps::InstallReason::kUser,
+      apps::InstallSource::kPlayStore, InstallTime::kRunning);
 
   // Install Chrome apps (hosted apps) during the running time.
   std::string kChromeAppId1 = "bb";
@@ -2093,12 +2089,12 @@ TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   // Verify Chrome apps (hosted apps) installed during the running time.
   VerifyInstalledAppsUkm(
       "app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
-      apps::mojom::InstallReason::kUser,
-      apps::mojom::InstallSource::kChromeWebStore, InstallTime::kRunning);
+      apps::InstallReason::kUser, apps::InstallSource::kChromeWebStore,
+      InstallTime::kRunning);
   VerifyInstalledAppsUkm(
       "app://" + kChromeAppId2, AppTypeName::kStandaloneBrowserChromeApp,
-      apps::mojom::InstallReason::kUser,
-      apps::mojom::InstallSource::kChromeWebStore, InstallTime::kRunning);
+      apps::InstallReason::kUser, apps::InstallSource::kChromeWebStore,
+      InstallTime::kRunning);
 }
 
 TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
@@ -2868,8 +2864,9 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
 
   auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
-  proxy->Launch(app_id, ui::EF_NONE,
-                apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  FakePublisher fake_arc_apps(proxy, AppType::kArc);
+  proxy->Launch(app_id, ui::EF_NONE, apps::LaunchSource::kFromChromeInternal,
+                nullptr);
   task_environment_.RunUntilIdle();
 }
 
