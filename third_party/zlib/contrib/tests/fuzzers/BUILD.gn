@@ -18,6 +18,11 @@ fuzzer_test("zlib_inflate_fuzzer") {
   deps = [ "../../../:zlib" ]
 }
 
+fuzzer_test("zlib_inflate_with_header_fuzzer") {
+  sources = [ "inflate_with_header_fuzzer.cc" ]
+  deps = [ "../../../:zlib" ]
+}
+
 fuzzer_test("zlib_streaming_inflate_fuzzer") {
   sources = [ "streaming_inflate_fuzzer.cc" ]
   deps = [ "../../../:zlib" ]
