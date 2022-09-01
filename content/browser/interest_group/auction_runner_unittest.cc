@@ -38,6 +38,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/aggregatable_report.mojom-shared.h"
 #include "content/common/private_aggregation_features.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -113,7 +114,8 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
             content::mojom::AggregatableReportHistogramContribution::New(
                 /*bucket=*/1,
                 /*value=*/2),
-            content::mojom::AggregationServiceMode::kDefault);
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New());
 
 const auction_worklet::mojom::PrivateAggregationRequestPtr
     kExpectedReportWinPrivateAggregationRequest =
@@ -121,7 +123,8 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
             content::mojom::AggregatableReportHistogramContribution::New(
                 /*bucket=*/3,
                 /*value=*/4),
-            content::mojom::AggregationServiceMode::kDefault);
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New());
 
 const auction_worklet::mojom::PrivateAggregationRequestPtr
     kExpectedScoreAdPrivateAggregationRequest =
@@ -129,7 +132,8 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
             content::mojom::AggregatableReportHistogramContribution::New(
                 /*bucket=*/5,
                 /*value=*/6),
-            content::mojom::AggregationServiceMode::kDefault);
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New());
 
 const auction_worklet::mojom::PrivateAggregationRequestPtr
     kExpectedReportResultPrivateAggregationRequest =
@@ -137,7 +141,8 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
             content::mojom::AggregatableReportHistogramContribution::New(
                 /*bucket=*/7,
                 /*value=*/8),
-            content::mojom::AggregationServiceMode::kDefault);
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New());
 
 // Helper to avoid excess boilerplate.
 template <typename... Ts>

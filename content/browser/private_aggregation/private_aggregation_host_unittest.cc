@@ -88,7 +88,8 @@ TEST_F(PrivateAggregationHostTest,
   contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
       /*bucket=*/123, /*value=*/456));
   remote->SendHistogramReport(std::move(contributions),
-                              mojom::AggregationServiceMode::kDefault);
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
 
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
@@ -154,7 +155,8 @@ TEST_F(PrivateAggregationHostTest, ReportingPath) {
     contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
         /*bucket=*/123, /*value=*/456));
     remotes[i]->SendHistogramReport(std::move(contributions),
-                                    mojom::AggregationServiceMode::kDefault);
+                                    mojom::AggregationServiceMode::kDefault,
+                                    mojom::DebugModeDetails::New());
 
     remotes[i].FlushForTesting();
     EXPECT_TRUE(remotes[i].is_connected());
@@ -166,6 +168,61 @@ TEST_F(PrivateAggregationHostTest, ReportingPath) {
             "/.well-known/private-aggregation/report-fledge");
   EXPECT_EQ(validated_requests[1]->reporting_path(),
             "/.well-known/private-aggregation/report-shared-storage");
+}
+
+TEST_F(PrivateAggregationHostTest, DebugModeDetails_ReflectedInReport) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  std::vector<mojom::DebugModeDetailsPtr> debug_mode_details_args;
+  debug_mode_details_args.push_back(mojom::DebugModeDetails::New());
+  debug_mode_details_args.push_back(
+      mojom::DebugModeDetails::New(/*is_enabled=*/true, /*debug_key=*/nullptr));
+  debug_mode_details_args.push_back(mojom::DebugModeDetails::New(
+      /*is_enabled=*/true,
+      /*debug_key=*/mojom::DebugKey::New(/*value=*/1234u)));
+
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
+                                     PrivateAggregationBudgetKey::Api::kFledge,
+                                     remote.BindNewPipeAndPassReceiver()));
+
+  std::vector<absl::optional<AggregatableReportRequest>> validated_requests{
+      /*n=*/3};
+  EXPECT_CALL(mock_callback_, Run)
+      .WillOnce(MoveArg<0>(&validated_requests[0]))
+      .WillOnce(MoveArg<0>(&validated_requests[1]))
+      .WillOnce(MoveArg<0>(&validated_requests[2]));
+
+  for (auto& debug_mode_details_arg : debug_mode_details_args) {
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
+        contributions;
+    contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+        /*bucket=*/123, /*value=*/456));
+    remote->SendHistogramReport(std::move(contributions),
+                                mojom::AggregationServiceMode::kDefault,
+                                debug_mode_details_arg->Clone());
+  }
+
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+
+  ASSERT_TRUE(validated_requests[0].has_value());
+  ASSERT_TRUE(validated_requests[1].has_value());
+  ASSERT_TRUE(validated_requests[2].has_value());
+
+  EXPECT_EQ(validated_requests[0]->shared_info().debug_mode,
+            AggregatableReportSharedInfo::DebugMode::kDisabled);
+  EXPECT_EQ(validated_requests[1]->shared_info().debug_mode,
+            AggregatableReportSharedInfo::DebugMode::kEnabled);
+  EXPECT_EQ(validated_requests[2]->shared_info().debug_mode,
+            AggregatableReportSharedInfo::DebugMode::kEnabled);
+
+  EXPECT_EQ(validated_requests[0]->debug_key(), absl::nullopt);
+  EXPECT_EQ(validated_requests[1]->debug_key(), absl::nullopt);
+  EXPECT_EQ(validated_requests[2]->debug_key(), 1234u);
 }
 
 TEST_F(PrivateAggregationHostTest,
@@ -226,7 +283,8 @@ TEST_F(PrivateAggregationHostTest,
     contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
         /*bucket=*/1, /*value=*/123));
     remotes[1]->SendHistogramReport(std::move(contributions),
-                                    mojom::AggregationServiceMode::kDefault);
+                                    mojom::AggregationServiceMode::kDefault,
+                                    mojom::DebugModeDetails::New());
   }
 
   {
@@ -235,7 +293,8 @@ TEST_F(PrivateAggregationHostTest,
     contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
         /*bucket=*/2, /*value=*/123));
     remotes[2]->SendHistogramReport(std::move(contributions),
-                                    mojom::AggregationServiceMode::kDefault);
+                                    mojom::AggregationServiceMode::kDefault,
+                                    mojom::DebugModeDetails::New());
   }
 
   for (auto& remote : remotes) {
@@ -268,7 +327,8 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
   contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
       /*bucket=*/123, /*value=*/456));
   remote_1->SendHistogramReport(std::move(contributions),
-                                mojom::AggregationServiceMode::kDefault);
+                                mojom::AggregationServiceMode::kDefault,
+                                mojom::DebugModeDetails::New());
 
   // Flush to ensure disconnection and the SendHistogramReport call have had
   // time to be processed.
@@ -305,11 +365,24 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
             /*bucket=*/123, /*value=*/1));
   }
 
+  std::vector<mojom::AggregatableReportHistogramContributionPtr>
+      valid_contributions;
+  valid_contributions.push_back(
+      mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/123, /*value=*/456));
+
   EXPECT_CALL(mock_callback_, Run(_, _)).Times(0);
   remote->SendHistogramReport(std::move(negative_contributions),
-                              mojom::AggregationServiceMode::kDefault);
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
   remote->SendHistogramReport(std::move(too_many_contributions),
-                              mojom::AggregationServiceMode::kDefault);
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
+  remote->SendHistogramReport(
+      std::move(valid_contributions), mojom::AggregationServiceMode::kDefault,
+      // Debug mode must be enabled for a debug key to be set.
+      mojom::DebugModeDetails::New(
+          /*is_enabled=*/false, /*debug_key=*/mojom::DebugKey::New(1234u)));
   remote.FlushForTesting();
 }
 
@@ -337,7 +410,8 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {
   contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
       /*bucket=*/123, /*value=*/456));
   remote->SendHistogramReport(std::move(contributions),
-                              mojom::AggregationServiceMode::kDefault);
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
 
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
@@ -367,7 +441,8 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
   contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
       /*bucket=*/123, /*value=*/456));
   remote->SendHistogramReport(std::move(contributions),
-                              mojom::AggregationServiceMode::kDefault);
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
 
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());

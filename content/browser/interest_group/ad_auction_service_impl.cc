@@ -508,7 +508,8 @@ void AdAuctionServiceImpl::SendPrivateAggregationRequests(
           contributions;
       contributions.push_back(std::move(request->contribution));
       remote->SendHistogramReport(std::move(contributions),
-                                  request->aggregation_mode);
+                                  request->aggregation_mode,
+                                  std::move(request->debug_mode_details));
     }
   }
 }

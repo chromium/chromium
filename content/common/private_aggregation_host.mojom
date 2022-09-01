@@ -6,6 +6,20 @@ module content.mojom;
 
 import "content/common/aggregatable_report.mojom";
 
+// Wrapper to allow for a null debug key.
+struct DebugKey {
+  uint64 value;
+};
+
+struct DebugModeDetails {
+  // Whether debug mode is enabled.
+  bool is_enabled = false;
+
+  // Must be null if the debug mode is disabled. Can still be null even if the
+  // debug mode is enabled.
+  DebugKey? debug_key;
+};
+
 // Interface implemented in the browser for worklets and renderers to forward
 // histogram report requests.
 interface PrivateAggregationHost {
@@ -14,5 +28,6 @@ interface PrivateAggregationHost {
   // are controllable by the worklet/renderer.
   SendHistogramReport(
       array<AggregatableReportHistogramContribution> contributions,
-      AggregationServiceMode aggregation_mode);
+      AggregationServiceMode aggregation_mode,
+      DebugModeDetails debug_mode_details);
 };

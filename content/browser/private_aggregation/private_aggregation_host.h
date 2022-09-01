@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
+#include "content/common/private_aggregation_host.mojom-forward.h"
 #include "content/common/private_aggregation_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -65,7 +66,8 @@ class CONTENT_EXPORT PrivateAggregationHost
   void SendHistogramReport(
       std::vector<mojom::AggregatableReportHistogramContributionPtr>
           contributions,
-      mojom::AggregationServiceMode aggregation_mode) override;
+      mojom::AggregationServiceMode aggregation_mode,
+      mojom::DebugModeDetailsPtr debug_mode_details) override;
 
  private:
   struct ReceiverContext;

@@ -81,7 +81,8 @@ bool PrivateAggregationHost::BindNewReceiver(
 void PrivateAggregationHost::SendHistogramReport(
     std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contribution_ptrs,
-    mojom::AggregationServiceMode aggregation_mode) {
+    mojom::AggregationServiceMode aggregation_mode,
+    mojom::DebugModeDetailsPtr debug_mode_details) {
   // TODO(alexmt): Consider updating or making a FeatureParam.
   static constexpr char kFledgeReportingPath[] =
       "/.well-known/private-aggregation/report-fledge";
@@ -103,6 +104,7 @@ void PrivateAggregationHost::SendHistogramReport(
       contribution_ptrs,
       [](const mojom::AggregatableReportHistogramContributionPtr&
              contribution_ptr) { return contribution_ptr.is_null(); }));
+  DCHECK(!debug_mode_details.is_null());
 
   if (contribution_ptrs.size() > kMaxNumberOfContributions) {
     // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
@@ -128,7 +130,9 @@ void PrivateAggregationHost::SendHistogramReport(
       /*scheduled_report_time=*/GetScheduledReportTime(
           /*report_issued_time=*/now),
       /*report_id=*/base::GUID::GenerateRandomV4(), reporting_origin,
-      AggregatableReportSharedInfo::DebugMode::kDisabled,
+      debug_mode_details->is_enabled
+          ? AggregatableReportSharedInfo::DebugMode::kEnabled
+          : AggregatableReportSharedInfo::DebugMode::kDisabled,
       /*additional_fields=*/base::Value::Dict(),
       /*api_version=*/kApiReportVersion,
       /*api_identifier=*/kApiIdentifier);
@@ -143,10 +147,19 @@ void PrivateAggregationHost::SendHistogramReport(
       break;
   }
 
+  absl::optional<uint64_t> debug_key;
+  if (!debug_mode_details->debug_key.is_null()) {
+    if (!debug_mode_details->is_enabled) {
+      mojo::ReportBadMessage("Debug key present but debug mode is not enabled");
+      return;
+    }
+    debug_key = debug_mode_details->debug_key->value;
+  }
+
   absl::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::Create(std::move(payload_contents),
                                         std::move(shared_info),
-                                        std::move(reporting_path));
+                                        std::move(reporting_path), debug_key);
   if (!report_request.has_value()) {
     // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
     // possibly broken out by failure reason.

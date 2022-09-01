@@ -6,11 +6,13 @@
 
 #include <stdint.h>
 
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_features.h"
@@ -70,6 +72,44 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
   return absl::MakeUint128(words[1], words[0]);
 }
 
+// In case of failure, will return `absl::nullopt` and output an error to
+// `error_out`.
+absl::optional<uint64_t> ParseDebugKey(gin::Dictionary dict,
+                                       v8::Local<v8::Context>& context,
+                                       std::string* error_out) {
+  v8::Local<v8::Value> js_debug_key;
+
+  if (!dict.Get("debug_key", &js_debug_key) || js_debug_key.IsEmpty() ||
+      js_debug_key->IsNullOrUndefined()) {
+    return absl::nullopt;
+  }
+
+  if (js_debug_key->IsUint32()) {
+    v8::Maybe<uint32_t> maybe_debug_key = js_debug_key->Uint32Value(context);
+    if (maybe_debug_key.IsNothing()) {
+      *error_out = "Failed to interpret value as integer";
+    }
+    return maybe_debug_key.ToChecked();
+  }
+
+  if (js_debug_key->IsBigInt()) {
+    absl::optional<absl::uint128> maybe_debug_key =
+        ConvertBigIntToUint128(js_debug_key->ToBigInt(context), error_out);
+    if (!maybe_debug_key.has_value()) {
+      return absl::nullopt;
+    }
+    if (absl::Uint128High64(maybe_debug_key.value()) != 0) {
+      *error_out = "BigInt is too large";
+      return absl::nullopt;
+    }
+    return absl::Uint128Low64(maybe_debug_key.value());
+  }
+
+  *error_out =
+      "debug_key must be either a non-negative integer Number or BigInt";
+  return absl::nullopt;
+}
+
 }  // namespace
 
 PrivateAggregationBindings::PrivateAggregationBindings(
@@ -89,14 +129,24 @@ void PrivateAggregationBindings::FillInGlobalTemplate(
 
   v8::Local<v8::ObjectTemplate> private_aggregation_template =
       v8::ObjectTemplate::New(v8_helper_->isolate());
-  v8::Local<v8::FunctionTemplate> function_template = v8::FunctionTemplate::New(
-      v8_helper_->isolate(), &PrivateAggregationBindings::SendHistogramReport,
-      v8_this);
-  function_template->RemovePrototype();
 
+  v8::Local<v8::FunctionTemplate> send_histogram_report_template =
+      v8::FunctionTemplate::New(
+          v8_helper_->isolate(),
+          &PrivateAggregationBindings::SendHistogramReport, v8_this);
+  send_histogram_report_template->RemovePrototype();
   private_aggregation_template->Set(
       v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
-      function_template);
+      send_histogram_report_template);
+
+  v8::Local<v8::FunctionTemplate> enable_debug_mode_template =
+      v8::FunctionTemplate::New(v8_helper_->isolate(),
+                                &PrivateAggregationBindings::EnableDebugMode,
+                                v8_this);
+  enable_debug_mode_template->RemovePrototype();
+  private_aggregation_template->Set(
+      v8_helper_->CreateStringFromLiteral("enableDebugMode"),
+      enable_debug_mode_template);
 
   global_template->Set(
       v8_helper_->CreateStringFromLiteral("privateAggregation"),
@@ -104,12 +154,29 @@ void PrivateAggregationBindings::FillInGlobalTemplate(
 }
 
 void PrivateAggregationBindings::Reset() {
-  private_aggregation_requests_.clear();
+  private_aggregation_contributions_.clear();
+  debug_mode_details_.is_enabled = false;
+  debug_mode_details_.debug_key = nullptr;
 }
 
 std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
 PrivateAggregationBindings::TakePrivateAggregationRequests() {
-  return std::move(private_aggregation_requests_);
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests;
+
+  requests.reserve(private_aggregation_contributions_.size());
+  base::ranges::transform(
+      private_aggregation_contributions_, std::back_inserter(requests),
+      [this](content::mojom::AggregatableReportHistogramContributionPtr&
+                 contribution) {
+        return auction_worklet::mojom::PrivateAggregationRequest::New(
+            std::move(contribution),
+            // TODO(alexmt): consider allowing this to be set
+            content::mojom::AggregationServiceMode::kDefault,
+            debug_mode_details_.Clone());
+      });
+  private_aggregation_contributions_.clear();
+
+  return requests;
 }
 
 void PrivateAggregationBindings::SendHistogramReport(
@@ -121,7 +188,8 @@ void PrivateAggregationBindings::SendHistogramReport(
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
-  if (args.Length() != 1 || args[0].IsEmpty() || !args[0]->IsObject()) {
+  // Any additional arguments are ignored.
+  if (args.Length() == 0 || args[0].IsEmpty() || !args[0]->IsObject()) {
     isolate->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "sendHistogramReport requires 1 object parameter")));
@@ -211,15 +279,53 @@ void PrivateAggregationBindings::SendHistogramReport(
     return;
   }
 
-  content::mojom::AggregatableReportHistogramContributionPtr contribution =
+  bindings->private_aggregation_contributions_.push_back(
       content::mojom::AggregatableReportHistogramContribution::New(bucket,
-                                                                   value);
+                                                                   value));
+}
 
-  bindings->private_aggregation_requests_.push_back(
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          std::move(contribution),
-          // TODO(alexmt): consider allowing this to be set
-          content::mojom::AggregationServiceMode::kDefault));
+void PrivateAggregationBindings::EnableDebugMode(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  PrivateAggregationBindings* bindings =
+      static_cast<PrivateAggregationBindings*>(
+          v8::External::Cast(*args.Data())->Value());
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+
+  if (bindings->debug_mode_details_.is_enabled) {
+    isolate->ThrowException(
+        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+            "enableDebugMode may be called at most once")));
+    return;
+  }
+
+  // If no arguments are provided, no debug key is set.
+  if (args.Length() >= 1 && !args[0].IsEmpty()) {
+    gin::Dictionary dict(isolate);
+
+    if (!gin::ConvertFromV8(isolate, args[0], &dict)) {
+      isolate->ThrowException(
+          v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+              "Invalid argument in enableDebugMode")));
+      return;
+    }
+
+    std::string error;
+    absl::optional<uint64_t> maybe_debug_key =
+        ParseDebugKey(dict, context, &error);
+    if (!maybe_debug_key.has_value()) {
+      DCHECK(base::IsStringUTF8(error));
+      isolate->ThrowException(v8::Exception::TypeError(
+          v8_helper->CreateUtf8String(error).ToLocalChecked()));
+      return;
+    }
+
+    bindings->debug_mode_details_.debug_key =
+        content::mojom::DebugKey::New(maybe_debug_key.value());
+  }
+
+  bindings->debug_mode_details_.is_enabled = true;
 }
 
 }  // namespace auction_worklet
