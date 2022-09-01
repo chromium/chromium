@@ -182,7 +182,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
   request->type = Request::Type::kDecode;
   request->reset_generation = reset_generation_;
 
-  auto status_or_buffer = MakeDecoderBuffer(*chunk, require_key_frame_);
+  auto status_or_buffer = MakeInput(*chunk, require_key_frame_);
   if (status_or_buffer.has_value()) {
     request->decoder_buffer = std::move(status_or_buffer).value();
     require_key_frame_ = false;
@@ -726,7 +726,7 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
   if (!context)
     return;
 
-  auto output_or_error = Traits::MakeOutput(std::move(output), context);
+  auto output_or_error = MakeOutput(std::move(output), context);
 
   if (output_or_error.has_error()) {
     Shutdown(logger_->MakeException("Error creating output from decoded data",

@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/containers/lru_cache.h"
+#include "base/time/time.h"
 #include "media/base/media_types.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
@@ -68,9 +70,6 @@ class MODULES_EXPORT VideoDecoderTraits {
   static void UpdateDecoderLog(const MediaDecoderType& decoder,
                                const MediaConfigType& media_config,
                                media::MediaLog* media_log);
-  static media::DecoderStatus::Or<OutputType*> MakeOutput(
-      scoped_refptr<MediaOutputType>,
-      ExecutionContext*);
   static const char* GetName();
 };
 
@@ -112,13 +111,12 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   absl::optional<media::VideoDecoderConfig> MakeMediaConfig(
       const ConfigType& config,
       String* js_error_message) override;
-  media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
-  MakeDecoderBuffer(const InputType& input, bool verify_key_frame) override;
-
-  // Bitstream converter to annex B for AVC/HEVC.
-  std::unique_ptr<VideoDecoderHelper> decoder_helper_;
-
-  media::VideoCodec current_codec_ = media::VideoCodec::kUnknown;
+  media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>> MakeInput(
+      const InputType& input,
+      bool verify_key_frame) override;
+  media::DecoderStatus::Or<OutputType*> MakeOutput(
+      scoped_refptr<MediaOutputType>,
+      ExecutionContext*) override;
 
  private:
   // DecoderTemplate implementation.
@@ -132,6 +130,17 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
       std::unique_ptr<VideoDecoderHelper>& decoder_helper,
       String* js_error_message,
       bool* needs_converter_out = nullptr);
+
+  // Bitstream converter to annex B for AVC/HEVC.
+  std::unique_ptr<VideoDecoderHelper> decoder_helper_;
+
+  media::VideoCodec current_codec_ = media::VideoCodec::kUnknown;
+
+  // Per-chunk metadata to be applied to outputs, linked by timestamp.
+  struct ChunkMetadata {
+    base::TimeDelta duration;
+  };
+  base::LRUCache<base::TimeDelta, ChunkMetadata> chunk_metadata_;
 };
 
 }  // namespace blink

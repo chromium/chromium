@@ -14,8 +14,10 @@
 #include "media/base/media_util.h"
 #include "media/base/mime_util.h"
 #include "media/base/supported_types.h"
+#include "media/base/timestamp_constants.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_decoder.h"
+#include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -245,14 +247,6 @@ void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       << "Initialized VideoDecoder: " << media_config.AsHumanReadableString();
   base::UmaHistogramEnumeration("Blink.WebCodecs.VideoDecoder.Codec",
                                 media_config.codec());
-}
-
-// static
-media::DecoderStatus::Or<VideoDecoderTraits::OutputType*>
-VideoDecoderTraits::MakeOutput(scoped_refptr<MediaOutputType> output,
-                               ExecutionContext* context) {
-  return MakeGarbageCollected<VideoDecoderTraits::OutputType>(std::move(output),
-                                                              context);
 }
 
 // static
@@ -525,7 +519,8 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
 VideoDecoder::VideoDecoder(ScriptState* script_state,
                            const VideoDecoderInit* init,
                            ExceptionState& exception_state)
-    : DecoderTemplate<VideoDecoderTraits>(script_state, init, exception_state) {
+    : DecoderTemplate<VideoDecoderTraits>(script_state, init, exception_state),
+      chunk_metadata_(128) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 }
@@ -549,7 +544,7 @@ absl::optional<media::VideoDecoderConfig> VideoDecoder::MakeMediaConfig(
 }
 
 media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
-VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
+VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
   scoped_refptr<media::DecoderBuffer> decoder_buffer = chunk.buffer();
   if (decoder_helper_) {
     const uint8_t* src = chunk.buffer()->data();
@@ -623,7 +618,27 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
     }
   }
 
+  chunk_metadata_.Put(chunk.buffer()->timestamp(),
+                      ChunkMetadata{chunk.buffer()->duration()});
+
   return decoder_buffer;
+}
+
+media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
+    scoped_refptr<MediaOutputType> output,
+    ExecutionContext* context) {
+  const auto it = chunk_metadata_.Get(output->timestamp());
+  if (it != chunk_metadata_.end()) {
+    const auto duration = it->second.duration;
+    if (!duration.is_zero() && duration != media::kNoTimestamp) {
+      output = media::VideoFrame::WrapVideoFrame(output, output->format(),
+                                                 output->visible_rect(),
+                                                 output->natural_size());
+      output->metadata().frame_duration = duration;
+    }
+  }
+
+  return MakeGarbageCollected<OutputType>(std::move(output), context);
 }
 
 const AtomicString& VideoDecoder::InterfaceName() const {

@@ -77,37 +77,6 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
 }
 
 // static
-media::DecoderStatus::Or<AudioDecoderTraits::OutputType*>
-AudioDecoderTraits::MakeOutput(scoped_refptr<MediaOutputType> output,
-                               ExecutionContext* context) {
-  if (!blink::audio_utilities::IsValidAudioBufferSampleRate(
-          output->sample_rate())) {
-    return media::DecoderStatus(
-        media::DecoderStatus::Codes::kInvalidArgument,
-        String::Format("Invalid decoded audio output sample rate. Got %u, "
-                       "which is outside [%f, %f]",
-                       output->sample_rate(),
-                       blink::audio_utilities::MinAudioBufferSampleRate(),
-                       blink::audio_utilities::MaxAudioBufferSampleRate())
-            .Ascii());
-  }
-
-  if (static_cast<uint32_t>(output->channel_count()) >
-      BaseAudioContext::MaxNumberOfChannels()) {
-    return media::DecoderStatus(
-        media::DecoderStatus::Codes::kInvalidArgument,
-        String::Format("Invalid decoded audio output channel "
-                       "count. Got %u, which exceeds %u",
-                       output->channel_count(),
-                       BaseAudioContext::MaxNumberOfChannels())
-            .Ascii());
-  }
-
-  return MakeGarbageCollected<AudioDecoderTraits::OutputType>(
-      std::move(output));
-}
-
-// static
 void AudioDecoderTraits::InitializeDecoder(
     MediaDecoderType& decoder,
     bool /*low_delay*/,
@@ -263,10 +232,40 @@ absl::optional<media::AudioDecoderConfig> AudioDecoder::MakeMediaConfig(
 }
 
 media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
-AudioDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
+AudioDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
   if (verify_key_frame && !chunk.buffer()->is_key_frame())
     return media::DecoderStatus::Codes::kKeyFrameRequired;
   return chunk.buffer();
+}
+
+media::DecoderStatus::Or<AudioDecoder::OutputType*> AudioDecoder::MakeOutput(
+    scoped_refptr<MediaOutputType> output,
+    ExecutionContext* context) {
+  if (!blink::audio_utilities::IsValidAudioBufferSampleRate(
+          output->sample_rate())) {
+    return media::DecoderStatus(
+        media::DecoderStatus::Codes::kInvalidArgument,
+        String::Format("Invalid decoded audio output sample rate. Got %u, "
+                       "which is outside [%f, %f]",
+                       output->sample_rate(),
+                       blink::audio_utilities::MinAudioBufferSampleRate(),
+                       blink::audio_utilities::MaxAudioBufferSampleRate())
+            .Ascii());
+  }
+
+  if (static_cast<uint32_t>(output->channel_count()) >
+      BaseAudioContext::MaxNumberOfChannels()) {
+    return media::DecoderStatus(
+        media::DecoderStatus::Codes::kInvalidArgument,
+        String::Format("Invalid decoded audio output channel "
+                       "count. Got %u, which exceeds %u",
+                       output->channel_count(),
+                       BaseAudioContext::MaxNumberOfChannels())
+            .Ascii());
+  }
+
+  return MakeGarbageCollected<AudioDecoderTraits::OutputType>(
+      std::move(output));
 }
 
 const AtomicString& AudioDecoder::InterfaceName() const {

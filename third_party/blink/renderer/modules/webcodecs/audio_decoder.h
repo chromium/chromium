@@ -64,9 +64,6 @@ class MODULES_EXPORT AudioDecoderTraits {
   static void UpdateDecoderLog(const MediaDecoderType& decoder,
                                const MediaConfigType& media_config,
                                media::MediaLog* media_log);
-  static media::DecoderStatus::Or<OutputType*> MakeOutput(
-      scoped_refptr<MediaOutputType>,
-      ExecutionContext*);
   static const char* GetName();
 };
 
@@ -104,8 +101,12 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
   absl::optional<media::AudioDecoderConfig> MakeMediaConfig(
       const ConfigType& config,
       String* js_error_message) override;
-  media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
-  MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) override;
+  media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>> MakeInput(
+      const InputType& chunk,
+      bool verify_key_frame) override;
+  media::DecoderStatus::Or<OutputType*> MakeOutput(
+      scoped_refptr<MediaOutputType> output,
+      ExecutionContext* context) override;
 };
 
 }  // namespace blink

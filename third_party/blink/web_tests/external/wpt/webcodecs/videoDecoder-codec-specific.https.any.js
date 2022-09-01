@@ -261,6 +261,7 @@ promise_test(async t => {
   callbacks.output = frame => {
     outputs++;
     assert_equals(frame.timestamp, CHUNKS[0].timestamp, 'timestamp');
+    assert_equals(frame.duration, CHUNKS[0].duration, 'duration');
     frame.close();
   };
 

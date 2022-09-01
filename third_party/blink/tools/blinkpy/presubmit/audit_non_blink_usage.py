@@ -1128,6 +1128,7 @@ _CONFIG = [
             'third_party/blink/renderer/core/html/media/',
             'third_party/blink/renderer/modules/canvas/',
             'third_party/blink/renderer/modules/vr/',
+            'third_party/blink/renderer/modules/webcodecs/',
             'third_party/blink/renderer/modules/webgl/',
             'third_party/blink/renderer/modules/webgpu/',
             'third_party/blink/renderer/modules/xr/',
