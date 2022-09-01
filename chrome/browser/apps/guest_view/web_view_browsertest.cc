@@ -5485,7 +5485,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
 
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
+  content::RenderFrameHost* guest = GetGuestView()->GetGuestMainFrame();
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("web_accessible_resources"));
@@ -5494,30 +5494,25 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
 
   GURL iframe_url(embedded_test_server()->GetURL("/title1.html"));
 
-  std::string setup_iframe_script = base::StringPrintf(
-      R"(
+  std::string setup_iframe_script = R"(
           var iframe = document.createElement('iframe');
           iframe.id = 'subframe';
-          iframe.src = '%s';
           document.body.appendChild(iframe);
-      )",
-      iframe_url.spec().c_str());
+      )";
 
   EXPECT_TRUE(content::ExecuteScript(guest, setup_iframe_script));
-  EXPECT_TRUE(content::WaitForLoadStop(guest));
+  content::RenderFrameHost* webview_subframe = ChildFrameAt(guest, 0);
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(webview_subframe, iframe_url));
 
   // Navigate the subframe to an unrelated extension URL.  This shouldn't
   // terminate the renderer. If it does, this test will fail via
   // content::NoRendererCrashesAssertion().
-  content::TestNavigationObserver load_observer(guest);
-  EXPECT_TRUE(BeginNavigateIframeToURL(guest, "subframe", extension_url));
-  load_observer.Wait();
+  webview_subframe = ChildFrameAt(guest, 0);
+  EXPECT_FALSE(
+      content::NavigateToURLFromRenderer(webview_subframe, extension_url));
 
   // The navigation should be aborted and the iframe should be left at its old
   // URL.
-  EXPECT_FALSE(load_observer.last_navigation_succeeded());
-  content::RenderFrameHost* webview_subframe =
-      ChildFrameAt(guest->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(webview_subframe->GetLastCommittedURL(), iframe_url);
 
   // Check that a proper UKM event was logged for failed extension file access.

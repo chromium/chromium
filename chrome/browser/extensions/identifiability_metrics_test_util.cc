@@ -53,6 +53,26 @@ IdentifiabilityMetricsTestHelper::NavigateToBlankAndWaitForMetrics(
       ukm::builders::Identifiability::kEntryName);
 }
 
+std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr>
+IdentifiabilityMetricsTestHelper::NavigateToBlankAndWaitForMetrics(
+    content::RenderFrameHost* render_frame_host,
+    base::RunLoop* run_loop) {
+  DCHECK(ukm_recorder_) << "IdentifiabilityMetricsTestHelper::"
+                           "SetUpOnMainThread hasn't been called";
+
+  // Need to navigate away to force a metrics flush; otherwise it would be
+  // dependent on periodic flush heuristics.
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(render_frame_host,
+                                                 GURL("about:blank")));
+
+  // Also force a browser-side flush.
+  blink::IdentifiabilitySampleCollector::Get()->Flush(ukm::UkmRecorder::Get());
+
+  run_loop->Run();
+  return ukm_recorder_->GetMergedEntriesByName(
+      ukm::builders::Identifiability::kEntryName);
+}
+
 void IdentifiabilityMetricsTestHelper::EnsureIdentifiabilityEventGenerated(
     content::WebContents* contents) {
   // Create a canvas and serialize it to force at least one event to happen,
