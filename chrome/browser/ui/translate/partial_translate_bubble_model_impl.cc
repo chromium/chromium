@@ -37,7 +37,7 @@ void PartialTranslateBubbleModelImpl::SetViewState(
 }
 
 void PartialTranslateBubbleModelImpl::ShowError(
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   // TODO(crbug/1314825): implement when partial translate specific
   // metrics are added.
 }

@@ -75,7 +75,7 @@ class WebViewTranslateClient : public translate::TranslateClient {
   bool ShowTranslateUI(translate::TranslateStep step,
                        const std::string& source_language,
                        const std::string& target_language,
-                       translate::TranslateErrors::Type error_type,
+                       translate::TranslateErrors error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
   bool IsAutofillAssistantRunning() const override;

@@ -17,11 +17,11 @@ namespace mojo {
 
 template <>
 struct EnumTraits<translate::mojom::TranslateError,
-                  translate::TranslateErrors::Type> {
+                  translate::TranslateErrors> {
   static translate::mojom::TranslateError ToMojom(
-      translate::TranslateErrors::Type input);
+      translate::TranslateErrors input);
   static bool FromMojom(translate::mojom::TranslateError input,
-                        translate::TranslateErrors::Type* output);
+                        translate::TranslateErrors* output);
 };
 
 template <>

@@ -289,7 +289,7 @@ void PerFrameTranslateAgent::CheckTranslateStatus(int check_count) {
   // First check if there was an error.
   if (HasTranslationFailed()) {
     NotifyBrowserTranslationFailed(
-        static_cast<translate::TranslateErrors::Type>(GetErrorCode()));
+        static_cast<translate::TranslateErrors>(GetErrorCode()));
     return;  // There was an error.
   }
 
@@ -347,8 +347,8 @@ void PerFrameTranslateAgent::TranslateFrameImpl(int try_count) {
   DCHECK_LT(try_count, kMaxTranslateInitCheckAttempts);
   if (!IsTranslateLibReady()) {
     // There was an error during initialization of library.
-    TranslateErrors::Type error =
-        static_cast<translate::TranslateErrors::Type>(GetErrorCode());
+    TranslateErrors error =
+        static_cast<translate::TranslateErrors>(GetErrorCode());
     if (error != TranslateErrors::NONE) {
       NotifyBrowserTranslationFailed(error);
       return;
@@ -378,7 +378,7 @@ void PerFrameTranslateAgent::TranslateFrameImpl(int try_count) {
   if (!StartTranslation()) {
     DCHECK(HasTranslationFailed());
     NotifyBrowserTranslationFailed(
-        static_cast<translate::TranslateErrors::Type>(GetErrorCode()));
+        static_cast<translate::TranslateErrors>(GetErrorCode()));
     return;
   }
   // Check the status of the translation.
@@ -392,7 +392,7 @@ void PerFrameTranslateAgent::TranslateFrameImpl(int try_count) {
 }
 
 void PerFrameTranslateAgent::NotifyBrowserTranslationFailed(
-    TranslateErrors::Type error) {
+    TranslateErrors error) {
   DCHECK(translate_callback_pending_);
   // Notify the browser there was an error.
   std::move(translate_callback_pending_)

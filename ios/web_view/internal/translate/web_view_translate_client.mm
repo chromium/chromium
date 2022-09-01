@@ -90,7 +90,7 @@ bool WebViewTranslateClient::ShowTranslateUI(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool triggered_from_menu) {
   [translation_controller_ updateTranslateStep:step
                                 sourceLanguage:source_language

@@ -433,9 +433,8 @@ TranslateBubbleModel::ViewState TranslateBubbleView::GetViewState() const {
   return model_->GetViewState();
 }
 
-void TranslateBubbleView::SetViewState(
-    translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+void TranslateBubbleView::SetViewState(translate::TranslateStep step,
+                                       translate::TranslateErrors error_type) {
   if (step == translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
     SwitchToErrorView(error_type);
   } else {
@@ -448,7 +447,7 @@ void TranslateBubbleView::SetViewState(
 TranslateBubbleView::TranslateBubbleView(
     views::View* anchor_view,
     std::unique_ptr<TranslateBubbleModel> model,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     content::WebContents* web_contents,
     base::OnceClosure on_closing)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
@@ -1103,7 +1102,7 @@ void TranslateBubbleView::SwitchTabForViewState(
 }
 
 void TranslateBubbleView::SwitchToErrorView(
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   SwitchView(TranslateBubbleModel::VIEW_STATE_ERROR);
   error_type_ = error_type;
   model_->ShowError(error_type);

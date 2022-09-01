@@ -242,7 +242,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool triggered_from_menu) {
   DCHECK(web_contents());
   DCHECK(translate_manager_);
@@ -395,7 +395,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool is_user_gesture) {
   DCHECK(translate_manager_);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());

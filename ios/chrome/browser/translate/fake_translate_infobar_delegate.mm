@@ -22,7 +22,7 @@ FakeTranslateInfoBarDelegate::FakeTranslateInfoBarDelegate(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool triggered_from_menu)
     : translate::TranslateInfoBarDelegate(translate_manager,
                                           step,
@@ -49,7 +49,7 @@ void FakeTranslateInfoBarDelegate::RemoveObserver(Observer* observer) {
 
 void FakeTranslateInfoBarDelegate::TriggerOnTranslateStepChanged(
     translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   for (auto& observer : observers_) {
     observer.OnTranslateStepChanged(step, error_type);
   }
@@ -85,7 +85,7 @@ FakeTranslateInfoBarDelegateFactory::CreateFakeTranslateInfoBarDelegate(
     const std::string& source_language,
     const std::string& target_language,
     translate::TranslateStep translate_step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   return std::make_unique<FakeTranslateInfoBarDelegate>(
       manager_->GetWeakPtr(), translate_step, source_language, target_language,
       error_type, false);

@@ -34,7 +34,7 @@ void TranslateWaiter::OnLanguageDetermined(
 // ContentTranslateDriver::TranslationObserver:
 void TranslateWaiter::OnPageTranslated(const std::string& source_lang,
                                        const std::string& translated_lang,
-                                       TranslateErrors::Type error_type) {
+                                       TranslateErrors error_type) {
   if (wait_event_ == WaitEvent::kPageTranslated)
     run_loop_.Quit();
 }

@@ -19,7 +19,7 @@ struct TranslateErrorDetails {
   GURL url;
 
   // Translation error type
-  TranslateErrors::Type error;
+  TranslateErrors error;
 };
 
 }  // namespace translate

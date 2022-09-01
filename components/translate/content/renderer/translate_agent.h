@@ -155,7 +155,7 @@ class TranslateAgent : public content::RenderFrameObserver,
 
   // Sends a message to the browser to notify it that the translation failed
   // with |error|.
-  void NotifyBrowserTranslationFailed(TranslateErrors::Type error);
+  void NotifyBrowserTranslationFailed(TranslateErrors error);
 
   // Convenience method to access the main frame.  Can return nullptr, typically
   // if the page is being closed.

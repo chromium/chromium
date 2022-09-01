@@ -42,7 +42,7 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
   MOCK_METHOD1(LogDetectedLanguage, void(const std::string&));
   MOCK_METHOD1(LogDetectionReliabilityScore, void(const float&));
   MOCK_METHOD1(LogTranslationStarted, void(TranslationType));
-  MOCK_METHOD2(LogTranslationFinished, void(bool, TranslateErrors::Type));
+  MOCK_METHOD2(LogTranslationFinished, void(bool, TranslateErrors));
   MOCK_METHOD0(LogReversion, void());
   MOCK_METHOD1(LogUIChange, void(bool));
   MOCK_METHOD1(LogOmniboxIconChange, void(bool));

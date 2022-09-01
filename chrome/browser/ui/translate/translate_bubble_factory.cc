@@ -12,14 +12,13 @@
 
 namespace {
 
-ShowTranslateBubbleResult ShowDefault(
-    BrowserWindow* window,
-    content::WebContents* web_contents,
-    translate::TranslateStep step,
-    const std::string& source_language,
-    const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
-    bool is_user_gesture) {
+ShowTranslateBubbleResult ShowDefault(BrowserWindow* window,
+                                      content::WebContents* web_contents,
+                                      translate::TranslateStep step,
+                                      const std::string& source_language,
+                                      const std::string& target_language,
+                                      translate::TranslateErrors error_type,
+                                      bool is_user_gesture) {
   // |window| might be null when testing.
   if (!window)
     return ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_VALID;
@@ -40,7 +39,7 @@ ShowTranslateBubbleResult TranslateBubbleFactory::Show(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool is_user_gesture) {
   if (current_factory_) {
     return current_factory_->ShowImplementation(window, web_contents, step,

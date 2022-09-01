@@ -81,8 +81,8 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
     bool outermost_main_frame_success = false;
     int frame_request_count = 0;
     int frame_success_count = 0;
-    TranslateErrors::Type outermost_main_frame_error = TranslateErrors::NONE;
-    std::vector<TranslateErrors::Type> frame_errors;
+    TranslateErrors outermost_main_frame_error = TranslateErrors::NONE;
+    std::vector<TranslateErrors> frame_errors;
   };
 
   void StartLanguageDetection();
@@ -129,7 +129,7 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
       bool cancelled,
       const std::string& source_lang,
       const std::string& translated_lang,
-      TranslateErrors::Type error_type);
+      TranslateErrors error_type);
 
   int IncrementSeqNo(int seq_no) { return (seq_no % 100000) + 1; }
 

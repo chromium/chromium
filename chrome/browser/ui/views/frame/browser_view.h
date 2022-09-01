@@ -552,7 +552,7 @@ class BrowserView : public BrowserWindow,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
+      translate::TranslateErrors error_type,
       bool is_user_gesture) override;
   void StartPartialTranslate(const std::string& source_language,
                              const std::string& target_language,

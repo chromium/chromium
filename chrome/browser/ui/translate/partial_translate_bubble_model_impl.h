@@ -23,7 +23,7 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   // PartialTranslateBubbleModel methods:
   ViewState GetViewState() const override;
   void SetViewState(ViewState view_state) override;
-  void ShowError(translate::TranslateErrors::Type error_type) override;
+  void ShowError(translate::TranslateErrors error_type) override;
   int GetNumberOfSourceLanguages() const override;
   int GetNumberOfTargetLanguages() const override;
   std::u16string GetSourceLanguageNameAt(int index) const override;

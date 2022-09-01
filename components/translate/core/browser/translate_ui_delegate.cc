@@ -192,7 +192,7 @@ void TranslateUIDelegate::MaybeSetContentLanguages() {
       locale, &translatable_content_languages_codes_);
 }
 
-void TranslateUIDelegate::OnErrorShown(TranslateErrors::Type error_type) {
+void TranslateUIDelegate::OnErrorShown(TranslateErrors error_type) {
   DCHECK_LE(TranslateErrors::NONE, error_type);
   DCHECK_LT(error_type, TranslateErrors::TRANSLATE_ERROR_MAX);
 

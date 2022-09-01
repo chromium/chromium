@@ -121,7 +121,7 @@ void PerFrameContentTranslateDriver::PendingRequestStats::Report() {
       UMA_HISTOGRAM_PERCENTAGE(kTranslateSubframeSuccessPercentage,
                                success_percentage_as_int);
     }
-    for (TranslateErrors::Type error_type : frame_errors) {
+    for (TranslateErrors error_type : frame_errors) {
       UMA_HISTOGRAM_ENUMERATION(kTranslateSubframeErrorType, error_type,
                                 TranslateErrors::TRANSLATE_ERROR_MAX);
     }
@@ -462,7 +462,7 @@ void PerFrameContentTranslateDriver::OnFrameTranslated(
     bool cancelled,
     const std::string& source_lang,
     const std::string& translated_lang,
-    TranslateErrors::Type error_type) {
+    TranslateErrors error_type) {
   if (cancelled)
     return;
 

@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
+#include "base/stl_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/translate/content/android/translate_utils.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
@@ -204,7 +205,7 @@ translate::TranslateInfoBarDelegate* TranslateCompactInfoBar::GetDelegate() {
 
 void TranslateCompactInfoBar::OnTranslateStepChanged(
     translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   // If the tab lost active state while translation was occurring, the Java
   // infobar will now be gone. In that case there is nothing to do here.
   if (!HasSetJavaInfoBar())
@@ -216,8 +217,8 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
   if ((step == translate::TRANSLATE_STEP_AFTER_TRANSLATE) ||
       (step == translate::TRANSLATE_STEP_TRANSLATE_ERROR)) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_TranslateCompactInfoBar_onPageTranslated(env, GetJavaInfoBar(),
-                                                  error_type);
+    Java_TranslateCompactInfoBar_onPageTranslated(
+        env, GetJavaInfoBar(), base::to_underlying(error_type));
   }
 }
 

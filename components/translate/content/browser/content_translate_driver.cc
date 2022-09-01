@@ -363,7 +363,7 @@ void ContentTranslateDriver::OnPageTranslated(
     bool cancelled,
     const std::string& source_lang,
     const std::string& translated_lang,
-    TranslateErrors::Type error_type) {
+    TranslateErrors error_type) {
   if (cancelled) {
     // Informs the |TranslateMetricsLogger| that the translation was cancelled.
     translate_manager_->GetActiveTranslateMetricsLogger()

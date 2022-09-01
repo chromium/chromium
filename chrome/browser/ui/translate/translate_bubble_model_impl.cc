@@ -66,7 +66,7 @@ void TranslateBubbleModelImpl::SetViewState(
 }
 
 void TranslateBubbleModelImpl::ShowError(
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   ui_delegate_->OnErrorShown(error_type);
 }
 

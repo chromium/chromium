@@ -90,7 +90,7 @@ class TranslateControllerTest : public PlatformTest,
         fake_iframe_(web::FakeWebFrame::Create(/*frame_id=*/"",
                                                /*is_main_frame=*/false,
                                                GURL())),
-        error_type_(TranslateErrors::Type::NONE),
+        error_type_(TranslateErrors::NONE),
         ready_time_(0),
         load_time_(0),
         translation_time_(0),
@@ -105,7 +105,7 @@ class TranslateControllerTest : public PlatformTest,
   }
 
   // TranslateController::Observer methods.
-  void OnTranslateScriptReady(TranslateErrors::Type error_type,
+  void OnTranslateScriptReady(TranslateErrors error_type,
                               double load_time,
                               double ready_time) override {
     on_script_ready_called_ = true;
@@ -114,7 +114,7 @@ class TranslateControllerTest : public PlatformTest,
     ready_time_ = ready_time;
   }
 
-  void OnTranslateComplete(TranslateErrors::Type error_type,
+  void OnTranslateComplete(TranslateErrors error_type,
                            const std::string& source_language,
                            double translation_time) override {
     on_translate_complete_called_ = true;
@@ -130,7 +130,7 @@ class TranslateControllerTest : public PlatformTest,
   std::unique_ptr<web::FakeWebFrame> fake_iframe_;
   FakeJSTranslateManager* fake_js_translate_manager_;
   std::unique_ptr<TranslateController> translate_controller_;
-  TranslateErrors::Type error_type_;
+  TranslateErrors error_type_;
   double ready_time_;
   double load_time_;
   std::string source_language_;

@@ -76,7 +76,7 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogInitialState() override {}
   void LogTranslationStarted(TranslationType translation_type) override {}
   void LogTranslationFinished(bool was_successful,
-                              TranslateErrors::Type error_type) override {}
+                              TranslateErrors error_type) override {}
   void LogReversion() override {}
   void LogUIChange(bool is_ui_shown) override {}
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override {}
@@ -138,7 +138,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogInitialState() override;
   void LogTranslationStarted(TranslationType translation_type) override;
   void LogTranslationFinished(bool was_successful,
-                              TranslateErrors::Type error_type) override;
+                              TranslateErrors error_type) override;
   void LogReversion() override;
   void LogUIChange(bool is_ui_shown) override;
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override;
@@ -286,7 +286,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   float model_detection_reliability_score_ = 0.0;
 
   // Tracks any translation errors that occur over the course of the page load.
-  TranslateErrors::Type first_translate_error_type_ = TranslateErrors::NONE;
+  TranslateErrors first_translate_error_type_ = TranslateErrors::NONE;
   int num_translate_errors_ = 0;
 
   // Tracks the user's high level interaction with the Translate UI over the

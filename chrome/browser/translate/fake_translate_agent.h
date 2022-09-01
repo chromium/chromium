@@ -67,7 +67,7 @@ class FakeTranslateAgent : public translate::mojom::TranslateAgent {
   void PageTranslated(bool cancelled,
                       const std::string& source_lang,
                       const std::string& target_lang,
-                      translate::TranslateErrors::Type error);
+                      translate::TranslateErrors error);
 
   void BindRequest(mojo::ScopedInterfaceEndpointHandle handle);
 

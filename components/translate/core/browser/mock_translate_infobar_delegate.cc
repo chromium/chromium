@@ -53,7 +53,7 @@ MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool triggered_from_menu)
     : translate::TranslateInfoBarDelegate(translate_manager,
                                           step,
@@ -82,7 +82,7 @@ MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
   delegate_ = std::make_unique<MockTranslateInfoBarDelegate>(
       manager_->GetWeakPtr(),
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      source_language, target_language, translate::TranslateErrors::Type::NONE,
+      source_language, target_language, translate::TranslateErrors::NONE,
       false);
 }
 
@@ -94,7 +94,7 @@ MockTranslateInfoBarDelegateFactory::CreateMockTranslateInfoBarDelegate(
     translate::TranslateStep step) {
   return std::make_unique<MockTranslateInfoBarDelegate>(
       manager_->GetWeakPtr(), step, "fr", "en",
-      translate::TranslateErrors::Type::NONE, false);
+      translate::TranslateErrors::NONE, false);
 }
 
 }  // namespace testing

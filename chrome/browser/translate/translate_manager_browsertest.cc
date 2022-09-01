@@ -273,7 +273,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     error_type_ = details.error;
   }
 
-  TranslateErrors::Type GetPageTranslatedResult() { return error_type_; }
+  TranslateErrors GetPageTranslatedResult() { return error_type_; }
 
   ChromeTranslateClient* GetChromeTranslateClient() {
     return ChromeTranslateClient::FromWebContents(
@@ -368,7 +368,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TranslateErrors::Type error_type_;
+  TranslateErrors error_type_;
 
   base::CallbackListSubscription error_subscription_;
 

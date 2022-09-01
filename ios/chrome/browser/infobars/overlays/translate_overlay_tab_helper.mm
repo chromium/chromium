@@ -130,7 +130,7 @@ TranslateOverlayTabHelper::TranslateStepObserver::~TranslateStepObserver() =
 
 void TranslateOverlayTabHelper::TranslateStepObserver::OnTranslateStepChanged(
     translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   switch (step) {
     case translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE: {
       tab_helper_->TranslateDidFinish(translate_infobar_, true);

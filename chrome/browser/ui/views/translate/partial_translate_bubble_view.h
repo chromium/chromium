@@ -59,7 +59,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   PartialTranslateBubbleView(views::View* anchor_view,
                              std::unique_ptr<PartialTranslateBubbleModel> model,
-                             translate::TranslateErrors::Type error_type,
+                             translate::TranslateErrors error_type,
                              content::WebContents* web_contents,
                              const std::u16string& text_selection,
                              base::OnceClosure on_closing);
@@ -90,7 +90,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // Initialize the bubble in the correct view state when it is shown.
   void SetViewState(PartialTranslateBubbleModel::ViewState view_state,
-                    translate::TranslateErrors::Type error_type);
+                    translate::TranslateErrors error_type);
 
   // LocationBarBubbleDelegateView:
   void CloseBubble() override;
@@ -192,7 +192,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   void SwitchTabForViewState(PartialTranslateBubbleModel::ViewState view_state);
 
   // Switches to the error view.
-  void SwitchToErrorView(translate::TranslateErrors::Type error_type);
+  void SwitchToErrorView(translate::TranslateErrors error_type);
 
   // Updates the advanced view.
   void UpdateAdvancedView();
@@ -255,7 +255,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   std::unique_ptr<PartialTranslateBubbleModel> model_;
 
-  translate::TranslateErrors::Type error_type_;
+  translate::TranslateErrors error_type_;
 
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
 

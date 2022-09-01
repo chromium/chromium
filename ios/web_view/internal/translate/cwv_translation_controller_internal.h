@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTranslateStep:(translate::TranslateStep)step
              sourceLanguage:(const std::string&)sourceLanguage
              targetLanguage:(const std::string&)targetLanguage
-                  errorType:(translate::TranslateErrors::Type)errorType
+                  errorType:(translate::TranslateErrors)errorType
           triggeredFromMenu:(bool)triggeredFromMenu;
 
 @end

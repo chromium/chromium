@@ -52,7 +52,7 @@ class MockTranslateClient : public TranslateClient {
                bool(translate::TranslateStep,
                     const std::string&,
                     const std::string&,
-                    TranslateErrors::Type,
+                    TranslateErrors,
                     bool));
   MOCK_METHOD1(IsTranslatableURL, bool(const GURL&));
   MOCK_CONST_METHOD0(IsAutofillAssistantRunning, bool());

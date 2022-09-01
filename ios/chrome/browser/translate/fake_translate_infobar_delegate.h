@@ -32,7 +32,7 @@ class FakeTranslateInfoBarDelegate
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
+      translate::TranslateErrors error_type,
       bool triggered_from_menu);
   ~FakeTranslateInfoBarDelegate() override;
 
@@ -41,9 +41,8 @@ class FakeTranslateInfoBarDelegate
 
   // Call the OnTranslateStepChanged() observer method on all
   // |OnTranslateStepChanged|.
-  void TriggerOnTranslateStepChanged(
-      translate::TranslateStep step,
-      translate::TranslateErrors::Type error_type);
+  void TriggerOnTranslateStepChanged(translate::TranslateStep step,
+                                     translate::TranslateErrors error_type);
 
   std::u16string source_language_name() const override;
 
@@ -69,8 +68,7 @@ class FakeTranslateInfoBarDelegateFactory {
       const std::string& target_language,
       translate::TranslateStep translate_step =
           translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      translate::TranslateErrors::Type error_type =
-          translate::TranslateErrors::Type::NONE);
+      translate::TranslateErrors error_type = translate::TranslateErrors::NONE);
 
  private:
   translate::testing::MockTranslateDriver driver_;

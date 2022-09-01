@@ -15,7 +15,7 @@ namespace translate {
 struct PageTranslatedDetails {
   std::string source_language;
   std::string target_language;
-  TranslateErrors::Type error_type;
+  TranslateErrors error_type;
 };
 
 }  // namespace translate

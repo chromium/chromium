@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(TranslateIconViewTest, ClosePartialTranslateBubble) {
   controller->ShowPartialTranslateBubble(
       anchor_view, nullptr,
       PartialTranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE, "fr",
-      "en", std::u16string(), translate::TranslateErrors::Type::NONE);
+      "en", std::u16string(), translate::TranslateErrors::NONE);
   EXPECT_THAT(GetPartialTranslateBubble(), ::testing::NotNull());
 
   // Clicking the icon should close the Partial Translate bubble and should not

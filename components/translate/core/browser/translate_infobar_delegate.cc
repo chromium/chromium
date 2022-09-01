@@ -53,7 +53,7 @@ void TranslateInfoBarDelegate::Create(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    TranslateErrors::Type error_type,
+    TranslateErrors error_type,
     bool triggered_from_menu) {
   DCHECK(translate_manager);
   DCHECK(infobar_manager);
@@ -154,7 +154,7 @@ void TranslateInfoBarDelegate::UpdateTargetLanguage(
   ui_delegate_.UpdateTargetLanguage(language_code);
 }
 
-void TranslateInfoBarDelegate::OnErrorShown(TranslateErrors::Type error_type) {
+void TranslateInfoBarDelegate::OnErrorShown(TranslateErrors error_type) {
   ui_delegate_.OnErrorShown(error_type);
 }
 
@@ -345,7 +345,7 @@ TranslateInfoBarDelegate::TranslateInfoBarDelegate(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    TranslateErrors::Type error_type,
+    TranslateErrors error_type,
     bool triggered_from_menu)
     : infobars::InfoBarDelegate(),
       step_(step),

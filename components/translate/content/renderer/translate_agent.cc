@@ -496,7 +496,7 @@ void TranslateAgent::CheckTranslateStatus() {
   // First check if there was an error.
   if (HasTranslationFailed()) {
     NotifyBrowserTranslationFailed(
-        static_cast<translate::TranslateErrors::Type>(GetErrorCode()));
+        static_cast<translate::TranslateErrors>(GetErrorCode()));
     return;  // There was an error.
   }
 
@@ -545,8 +545,8 @@ void TranslateAgent::TranslatePageImpl(int count) {
   DCHECK_LT(count, kMaxTranslateInitCheckAttempts);
   if (!IsTranslateLibReady()) {
     // There was an error during initialization of library.
-    TranslateErrors::Type error =
-        static_cast<translate::TranslateErrors::Type>(GetErrorCode());
+    TranslateErrors error =
+        static_cast<translate::TranslateErrors>(GetErrorCode());
     if (error != TranslateErrors::NONE) {
       NotifyBrowserTranslationFailed(error);
       return;
@@ -585,8 +585,7 @@ void TranslateAgent::TranslatePageImpl(int count) {
       AdjustDelay(kTranslateStatusCheckDelayMs));
 }
 
-void TranslateAgent::NotifyBrowserTranslationFailed(
-    TranslateErrors::Type error) {
+void TranslateAgent::NotifyBrowserTranslationFailed(TranslateErrors error) {
   DCHECK(translate_callback_pending_);
   // Notify the browser there was an error.
   std::move(translate_callback_pending_)

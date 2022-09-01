@@ -43,7 +43,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   TranslateInfobarModalOverlayMediatorTest(
       translate::TranslateStep step,
-      translate::TranslateErrors::Type error_type)
+      translate::TranslateErrors error_type)
       : infobar_(
             InfobarType::kInfobarTypeTranslate,
             delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr",
@@ -72,7 +72,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   TranslateInfobarModalOverlayMediatorTest()
       : TranslateInfobarModalOverlayMediatorTest(
             translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-            translate::TranslateErrors::Type::NONE) {}
+            translate::TranslateErrors::NONE) {}
 
   ~TranslateInfobarModalOverlayMediatorTest() override {
     EXPECT_CALL(callback_receiver_, CompletionCallback(request_.get()));
@@ -205,7 +205,7 @@ class TranslateInfobarModalOverlayMediatorAfterTranslateTest
   TranslateInfobarModalOverlayMediatorAfterTranslateTest()
       : TranslateInfobarModalOverlayMediatorTest(
             translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
-            translate::TranslateErrors::Type::NONE) {}
+            translate::TranslateErrors::NONE) {}
 };
 
 // Tests that a TranslateInfobarModalOverlayMediator correctly sets up its
@@ -237,7 +237,7 @@ class TranslateInfobarModalOverlayMediatorTranslateErrorTest
   TranslateInfobarModalOverlayMediatorTranslateErrorTest()
       : TranslateInfobarModalOverlayMediatorTest(
             translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR,
-            translate::TranslateErrors::Type::TRANSLATION_ERROR) {}
+            translate::TranslateErrors::TRANSLATION_ERROR) {}
 };
 
 // Tests that a TranslateInfobarModalOverlayMediator correctly sets up its

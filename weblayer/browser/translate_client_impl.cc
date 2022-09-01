@@ -74,12 +74,11 @@ const translate::LanguageState& TranslateClientImpl::GetLanguageState() {
   return *translate_manager_->GetLanguageState();
 }
 
-bool TranslateClientImpl::ShowTranslateUI(
-    translate::TranslateStep step,
-    const std::string& source_language,
-    const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
-    bool triggered_from_menu) {
+bool TranslateClientImpl::ShowTranslateUI(translate::TranslateStep step,
+                                          const std::string& source_language,
+                                          const std::string& target_language,
+                                          translate::TranslateErrors error_type,
+                                          bool triggered_from_menu) {
 #if BUILDFLAG(IS_ANDROID)
   if (error_type != translate::TranslateErrors::NONE)
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;

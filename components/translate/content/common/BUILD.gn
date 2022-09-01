@@ -21,7 +21,7 @@ mojom("common") {
         },
         {
           mojom = "translate.mojom.TranslateError"
-          cpp = "::translate::TranslateErrors::Type"
+          cpp = "::translate::TranslateErrors"
         },
       ]
       traits_headers = [ "translate_mojom_traits.h" ]

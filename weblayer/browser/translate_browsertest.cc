@@ -179,9 +179,7 @@ class TranslateBrowserTest : public WebLayerBrowserTest {
   }
 
  protected:
-  translate::TranslateErrors::Type GetPageTranslatedResult() {
-    return error_type_;
-  }
+  translate::TranslateErrors GetPageTranslatedResult() { return error_type_; }
   void SetTranslateScript(const std::string& script) { script_ = script; }
 
   void ResetLanguageDeterminationWaiter() {
@@ -218,8 +216,7 @@ class TranslateBrowserTest : public WebLayerBrowserTest {
   std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>
       mock_network_change_notifier_;
 
-  translate::TranslateErrors::Type error_type_ =
-      translate::TranslateErrors::NONE;
+  translate::TranslateErrors error_type_ = translate::TranslateErrors::NONE;
   base::CallbackListSubscription error_subscription_;
   std::string script_;
 };

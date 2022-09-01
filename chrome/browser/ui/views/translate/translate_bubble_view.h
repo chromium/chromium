@@ -74,7 +74,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   TranslateBubbleView(views::View* anchor_view,
                       std::unique_ptr<TranslateBubbleModel> model,
-                      translate::TranslateErrors::Type error_type,
+                      translate::TranslateErrors error_type,
                       content::WebContents* web_contents,
                       base::OnceClosure on_closing);
 
@@ -107,7 +107,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // Initialize the bubble in the correct view state when it is shown.
   void SetViewState(translate::TranslateStep step,
-                    translate::TranslateErrors::Type error_type);
+                    translate::TranslateErrors error_type);
 
   // LocationBarBubbleDelegateView:
   void CloseBubble() override;
@@ -242,7 +242,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   void SwitchTabForViewState(TranslateBubbleModel::ViewState view_state);
 
   // Switches to the error view.
-  void SwitchToErrorView(translate::TranslateErrors::Type error_type);
+  void SwitchToErrorView(translate::TranslateErrors error_type);
 
   // Updates the advanced view.
   void UpdateAdvancedView();
@@ -296,7 +296,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   std::unique_ptr<TranslateBubbleModel> model_;
 
-  translate::TranslateErrors::Type error_type_;
+  translate::TranslateErrors error_type_;
 
   // Whether the window is an incognito window.
   const bool is_in_incognito_window_;

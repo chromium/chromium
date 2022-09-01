@@ -44,7 +44,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
    public:
     // Handles UI changes on the translate step given.
     virtual void OnTranslateStepChanged(translate::TranslateStep step,
-                                        TranslateErrors::Type error_type) = 0;
+                                        TranslateErrors error_type) = 0;
     // Handles UI changes when the target language is updated.
     virtual void OnTargetLanguageChanged(
         const std::string& target_language_code) = 0;
@@ -80,7 +80,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
                      translate::TranslateStep step,
                      const std::string& source_language,
                      const std::string& target_language,
-                     TranslateErrors::Type error_type,
+                     TranslateErrors error_type,
                      bool triggered_from_menu);
 
   // Returns the number of languages supported.
@@ -94,7 +94,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   translate::TranslateStep translate_step() const { return step_; }
 
-  TranslateErrors::Type error_type() const { return error_type_; }
+  TranslateErrors error_type() const { return error_type_; }
 
   std::string source_language_code() const {
     return ui_delegate_.GetSourceLanguageCode();
@@ -118,7 +118,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
     return step_ == translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   }
 
-  void OnErrorShown(TranslateErrors::Type error_type);
+  void OnErrorShown(TranslateErrors error_type);
 
   // Return true if the translation was triggered by a menu entry instead of
   // via an infobar/bubble or preference.
@@ -231,7 +231,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      TranslateErrors::Type error_type,
+      TranslateErrors error_type,
       bool triggered_from_menu);
 
  private:
@@ -244,7 +244,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // The error that occurred when trying to translate (NONE if no error).
-  TranslateErrors::Type error_type_;
+  TranslateErrors error_type_;
 
   // The translation related preferences.
   std::unique_ptr<TranslatePrefs> prefs_;

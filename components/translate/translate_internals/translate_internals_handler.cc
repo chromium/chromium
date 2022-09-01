@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -109,7 +110,7 @@ void TranslateInternalsHandler::OnTranslateError(
   base::Value::Dict dict;
   dict.Set("time", details.time.ToJsTime());
   dict.Set("url", details.url.spec());
-  dict.Set("error", details.error);
+  dict.Set("error", base::to_underlying(details.error));
   SendMessageToJs("translateErrorDetailsAdded", dict);
 }
 

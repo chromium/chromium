@@ -35,13 +35,13 @@ class TranslateController : public web::WebStateObserver {
    public:
     // Called when the translate script is ready.
     // |error_type| Indicates error code.
-    virtual void OnTranslateScriptReady(TranslateErrors::Type error_type,
+    virtual void OnTranslateScriptReady(TranslateErrors error_type,
                                         double load_time,
                                         double ready_time) = 0;
 
     // Called when the translation is complete.
     // |error_type| Indicates error code.
-    virtual void OnTranslateComplete(TranslateErrors::Type error_type,
+    virtual void OnTranslateComplete(TranslateErrors error_type,
                                      const std::string& source_language,
                                      double translation_time) = 0;
   };

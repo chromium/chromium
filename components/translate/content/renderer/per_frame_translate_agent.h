@@ -136,7 +136,7 @@ class PerFrameTranslateAgent : public content::RenderFrameObserver,
 
   // Sends a message to the browser to notify it that the translation failed
   // with |error|.
-  void NotifyBrowserTranslationFailed(TranslateErrors::Type error);
+  void NotifyBrowserTranslationFailed(TranslateErrors error);
 
   // The states associated with the current translation.
   TranslateFrameCallback translate_callback_pending_;

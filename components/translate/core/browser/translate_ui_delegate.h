@@ -50,7 +50,7 @@ class TranslateUIDelegate {
   virtual ~TranslateUIDelegate();
 
   // Handles when an error message is shown.
-  void OnErrorShown(TranslateErrors::Type error_type);
+  void OnErrorShown(TranslateErrors error_type);
 
   // Returns the LanguageState associated with this object.
   const LanguageState* GetLanguageState();

@@ -64,9 +64,8 @@ class TranslateOverlayTabHelper
 
    private:
     // translate::TranslateInfoBarDelegate::Observer.
-    void OnTranslateStepChanged(
-        translate::TranslateStep step,
-        translate::TranslateErrors::Type error_type) override;
+    void OnTranslateStepChanged(translate::TranslateStep step,
+                                translate::TranslateErrors error_type) override;
     void OnTargetLanguageChanged(
         const std::string& target_language_code) override;
     bool IsDeclinedByUser() override;

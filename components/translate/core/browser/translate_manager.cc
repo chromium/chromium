@@ -466,7 +466,7 @@ void TranslateManager::DoTranslatePage(const std::string& translate_script,
 }
 
 // Notifies |g_error_callback_list_| of translate errors.
-void TranslateManager::NotifyTranslateError(TranslateErrors::Type error_type) {
+void TranslateManager::NotifyTranslateError(TranslateErrors error_type) {
   if (!g_error_callback_list_ || error_type == TranslateErrors::NONE ||
       translate_driver_->IsIncognito()) {
     return;
@@ -507,7 +507,7 @@ void TranslateManager::NotifyLanguageDetected(
 
 void TranslateManager::PageTranslated(const std::string& source_lang,
                                       const std::string& target_lang,
-                                      TranslateErrors::Type error_type) {
+                                      TranslateErrors error_type) {
   if (error_type == TranslateErrors::NONE) {
     // The user could have updated the source language before translating, so
     // update the language state with both source and current.

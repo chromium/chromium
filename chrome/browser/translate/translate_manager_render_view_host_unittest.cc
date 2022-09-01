@@ -87,7 +87,7 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type) override {
+      translate::TranslateErrors error_type) override {
     if (model_) {
       model_->SetViewState(
           TranslateBubbleModelImpl::TranslateStepToViewState(step));
@@ -231,7 +231,7 @@ class TranslateManagerRenderViewHostTest
 
   void SimulateOnPageTranslated(const std::string& source_lang,
                                 const std::string& target_lang,
-                                translate::TranslateErrors::Type error) {
+                                translate::TranslateErrors error) {
     // Ensure fake_agent_ Translate() call gets dispatched.
     base::RunLoop().RunUntilIdle();
 

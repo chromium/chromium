@@ -351,7 +351,7 @@ PartialTranslateBubbleView::GetViewState() const {
 
 void PartialTranslateBubbleView::SetViewState(
     PartialTranslateBubbleModel::ViewState view_state,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   if (view_state == PartialTranslateBubbleModel::VIEW_STATE_ERROR) {
     SwitchToErrorView(error_type);
   } else {
@@ -362,7 +362,7 @@ void PartialTranslateBubbleView::SetViewState(
 PartialTranslateBubbleView::PartialTranslateBubbleView(
     views::View* anchor_view,
     std::unique_ptr<PartialTranslateBubbleModel> model,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     content::WebContents* web_contents,
     const std::u16string& text_selection,
     base::OnceClosure on_closing)
@@ -1049,7 +1049,7 @@ void PartialTranslateBubbleView::SwitchTabForViewState(
 }
 
 void PartialTranslateBubbleView::SwitchToErrorView(
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_ERROR);
   error_type_ = error_type;
   model_->ShowError(error_type);

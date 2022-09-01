@@ -216,7 +216,7 @@ void IOSTranslateDriver::TranslationDidSucceed(
   if (!IsPageValid(page_seq_no))
     return;
   std::string actual_source_lang;
-  TranslateErrors::Type translate_errors = TranslateErrors::NONE;
+  TranslateErrors translate_errors = TranslateErrors::NONE;
   // Translation was successfull; if it was auto, retrieve the source
   // language the Translate Element detected.
   if (source_lang == kAutoDetectionLanguage) {
@@ -243,10 +243,9 @@ bool IOSTranslateDriver::IsPageValid(int page_seq_no) const {
 
 // TranslateController::Observer implementation.
 
-void IOSTranslateDriver::OnTranslateScriptReady(
-    TranslateErrors::Type error_type,
-    double load_time,
-    double ready_time) {
+void IOSTranslateDriver::OnTranslateScriptReady(TranslateErrors error_type,
+                                                double load_time,
+                                                double ready_time) {
   if (!IsPageValid(pending_page_seq_no_))
     return;
 
@@ -265,7 +264,7 @@ void IOSTranslateDriver::OnTranslateScriptReady(
   translate_controller_->StartTranslation(source_language_, target_language_);
 }
 
-void IOSTranslateDriver::OnTranslateComplete(TranslateErrors::Type error_type,
+void IOSTranslateDriver::OnTranslateComplete(TranslateErrors error_type,
                                              const std::string& source_language,
                                              double translation_time) {
   if (!IsPageValid(pending_page_seq_no_))

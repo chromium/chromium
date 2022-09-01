@@ -53,9 +53,8 @@ class TranslateCompactInfoBar
                        const base::android::JavaParamRef<jobject>& obj);
 
   // TranslateInfoBarDelegate::Observer implementation.
-  void OnTranslateStepChanged(
-      translate::TranslateStep step,
-      translate::TranslateErrors::Type error_type) override;
+  void OnTranslateStepChanged(translate::TranslateStep step,
+                              translate::TranslateErrors error_type) override;
   void OnTargetLanguageChanged(
       const std::string& target_language_code) override;
   // Returns true if the user didn't take any affirmative action.

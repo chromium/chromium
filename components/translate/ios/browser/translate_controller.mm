@@ -41,9 +41,8 @@ const char kCommandPrefix[] = "translate";
 
 // Extracts a TranslateErrors value from `value` for the given `key`. Returns
 // absl::nullopt if the value is missing or not convertible to TranslateErrors.
-absl::optional<TranslateErrors::Type> FindTranslateErrorsKey(
-    const base::Value& value,
-    base::StringPiece key) {
+absl::optional<TranslateErrors> FindTranslateErrorsKey(const base::Value& value,
+                                                       base::StringPiece key) {
   // Does `value` contains a double value for `key`?
   const absl::optional<double> found_value = value.FindDoubleKey(key);
   if (!found_value.has_value())
@@ -66,7 +65,7 @@ absl::optional<TranslateErrors::Type> FindTranslateErrorsKey(
   // Since `double_value` has no fractional part, is in range for the
   // enumeration and the enumeration has no holes between enumerators,
   // it is safe to cast the value to the enumeration.
-  return static_cast<TranslateErrors::Type>(double_value);
+  return static_cast<TranslateErrors>(double_value);
 }
 
 }  // anonymous namespace
@@ -140,7 +139,7 @@ bool TranslateController::OnJavascriptCommandReceived(
 }
 
 bool TranslateController::OnTranslateReady(const base::Value& command) {
-  absl::optional<TranslateErrors::Type> error_type =
+  absl::optional<TranslateErrors> error_type =
       FindTranslateErrorsKey(command, "errorCode");
   if (!error_type.has_value())
     return false;
@@ -162,7 +161,7 @@ bool TranslateController::OnTranslateReady(const base::Value& command) {
 }
 
 bool TranslateController::OnTranslateComplete(const base::Value& command) {
-  absl::optional<TranslateErrors::Type> error_type =
+  absl::optional<TranslateErrors> error_type =
       FindTranslateErrorsKey(command, "errorCode");
   if (!error_type.has_value())
     return false;

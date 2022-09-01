@@ -35,7 +35,7 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     LocationBarBubbleDelegateView::DisplayReason reason) {
   // If the Partial Translate bubble is already being shown, close it before
   // showing the full translate bubble.
@@ -146,7 +146,7 @@ void TranslateBubbleController::OnPartialTranslateWaitExpired(
             controller->partial_translate_bubble_view_->SetViewState(
                 PartialTranslateBubbleModel::ViewState::
                     VIEW_STATE_AFTER_TRANSLATE,
-                translate::TranslateErrors::Type::NONE);
+                translate::TranslateErrors::NONE);
           },
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -158,7 +158,7 @@ views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
     const std::string& source_language,
     const std::string& target_language,
     const std::u16string& text_selection,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   // If the other Translate bubble is already being shown, close it before
   // showing this one.
   if (translate_bubble_view_)

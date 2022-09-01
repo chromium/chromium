@@ -25,14 +25,13 @@ class TranslateBubbleFactory {
 
   // Shows the Full Page Translate bubble. The behavior depends on the current
   // factory's implementation.
-  static ShowTranslateBubbleResult Show(
-      BrowserWindow* window,
-      content::WebContents* web_contents,
-      translate::TranslateStep step,
-      const std::string& source_language,
-      const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
-      bool is_user_gesture);
+  static ShowTranslateBubbleResult Show(BrowserWindow* window,
+                                        content::WebContents* web_contents,
+                                        translate::TranslateStep step,
+                                        const std::string& source_language,
+                                        const std::string& target_language,
+                                        translate::TranslateErrors error_type,
+                                        bool is_user_gesture);
 
   // Sets the factory to change the behavior how to show the bubble.
   // TranslateBubbleFactory doesn't take the ownership of |factory|.
@@ -46,7 +45,7 @@ class TranslateBubbleFactory {
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type) = 0;
+      translate::TranslateErrors error_type) = 0;
 
  private:
   static TranslateBubbleFactory* current_factory_;

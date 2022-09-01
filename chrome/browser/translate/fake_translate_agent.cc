@@ -75,11 +75,10 @@ void FakeTranslateAgent::RevertTranslation() {
   called_revert_translation_ = true;
 }
 
-void FakeTranslateAgent::PageTranslated(
-    bool cancelled,
-    const std::string& source_lang,
-    const std::string& target_lang,
-    translate::TranslateErrors::Type error) {
+void FakeTranslateAgent::PageTranslated(bool cancelled,
+                                        const std::string& source_lang,
+                                        const std::string& target_lang,
+                                        translate::TranslateErrors error) {
   std::move(translate_callback_pending_)
       .Run(cancelled, source_lang, target_lang, error);
 }

@@ -74,9 +74,8 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogTranslationStarted(translation_type);
   }
 
-  void LogTranslationFinished(
-      bool was_successful,
-      translate::TranslateErrors::Type error_type) override {
+  void LogTranslationFinished(bool was_successful,
+                              translate::TranslateErrors error_type) override {
     mock_translate_metrics_logger_->LogTranslationFinished(was_successful,
                                                            error_type);
   }

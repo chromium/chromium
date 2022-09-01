@@ -145,7 +145,7 @@ class TranslateManager {
   // Shows the after translate or error infobar depending on the details.
   void PageTranslated(const std::string& source_lang,
                       const std::string& target_lang,
-                      TranslateErrors::Type error_type);
+                      TranslateErrors error_type);
 
   // Reverts the contents of the page to its original language.
   void RevertTranslation();
@@ -250,7 +250,7 @@ class TranslateManager {
                        const std::string& target_lang);
 
   // Notifies all registered callbacks of translate errors.
-  void NotifyTranslateError(TranslateErrors::Type error_type);
+  void NotifyTranslateError(TranslateErrors error_type);
 
   // Notifies all registered callbacks of translate initialization.
   void NotifyTranslateInit(std::string page_language_code,

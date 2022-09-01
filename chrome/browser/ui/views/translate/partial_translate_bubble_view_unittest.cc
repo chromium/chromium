@@ -35,7 +35,7 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
     current_view_state_ = view_state;
   }
 
-  void ShowError(translate::TranslateErrors::Type error_type) override {}
+  void ShowError(translate::TranslateErrors error_type) override {}
 
   int GetNumberOfSourceLanguages() const override { return 1000; }
 

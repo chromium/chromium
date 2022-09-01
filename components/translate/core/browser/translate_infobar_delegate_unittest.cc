@@ -66,7 +66,7 @@ class MockObserver : public TranslateInfoBarDelegate::Observer {
               (override));
   MOCK_METHOD(void,
               OnTranslateStepChanged,
-              (TranslateStep, TranslateErrors::Type),
+              (TranslateStep, TranslateErrors),
               (override));
   MOCK_METHOD(void, OnTargetLanguageChanged, (const std::string&), (override));
   MOCK_METHOD(bool, IsDeclinedByUser, (), (override));
@@ -118,7 +118,7 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
         new TranslateInfoBarDelegate(
             manager_->GetWeakPtr(),
             TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, kSourceLanguage,
-            kTargetLanguage, TranslateErrors::Type::NONE,
+            kTargetLanguage, TranslateErrors::NONE,
             /*triggered_from_menu=*/false));
   }
 
@@ -138,7 +138,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
-      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -155,7 +155,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
-      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -168,7 +168,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -231,7 +231,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
-      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
@@ -265,7 +265,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
-      kUnknownLanguageCode, kTargetLanguage, TranslateErrors::Type::NONE,
+      kUnknownLanguageCode, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
@@ -288,7 +288,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
-      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -319,7 +319,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
-      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
@@ -341,7 +341,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate_Not) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
-      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);

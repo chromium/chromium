@@ -32,7 +32,7 @@ class TranslateBubbleController
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
+      translate::TranslateErrors error_type,
       LocationBarBubbleDelegateView::DisplayReason reason);
 
   // Initiates the Partial Translate request, showing the bubble after a delay
@@ -53,7 +53,7 @@ class TranslateBubbleController
       const std::string& source_language,
       const std::string& target_language,
       const std::u16string& text_selection,
-      translate::TranslateErrors::Type error_type);
+      translate::TranslateErrors error_type);
 
   // Closes the current Partial or Full Page Translate bubble, if either exists.
   // At most one of these bubbles should be non-null at any given time.
