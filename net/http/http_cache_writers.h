@@ -252,7 +252,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   raw_ptr<HttpCache> const cache_ = nullptr;
 
   // Owner of |this|.
-  raw_ptr<ActiveEntry> const entry_ = nullptr;
+  raw_ptr<ActiveEntry, DanglingUntriaged> const entry_ = nullptr;
 
   std::unique_ptr<HttpTransaction> network_transaction_;
 

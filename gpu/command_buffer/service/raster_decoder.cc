@@ -253,9 +253,10 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
   }
 
  private:
-  raw_ptr<SharedImageRepresentationFactory> shared_image_factory_;
+  raw_ptr<SharedImageRepresentationFactory, DanglingUntriaged>
+      shared_image_factory_;
   scoped_refptr<SharedContextState> shared_context_state_;
-  raw_ptr<SkSurface> output_surface_;
+  raw_ptr<SkSurface, DanglingUntriaged> output_surface_;
   raw_ptr<std::vector<GrBackendSemaphore>> end_semaphores_;
   raw_ptr<gles2::ErrorState> error_state_;
 

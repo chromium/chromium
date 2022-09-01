@@ -133,7 +133,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   };
 
  private:
-  const raw_ptr<SharedImageManager> manager_;
+  const raw_ptr<SharedImageManager, DanglingUntriaged> manager_;
   const raw_ptr<SharedImageBacking, DanglingUntriaged> backing_;
   const raw_ptr<MemoryTypeTracker> tracker_;
   bool has_context_ = true;

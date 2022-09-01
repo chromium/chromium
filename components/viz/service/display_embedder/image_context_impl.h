@@ -129,7 +129,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   // The |promise_image_texture| is used for fulfilling the promise image. It is
   // used on GPU thread.
-  raw_ptr<SkPromiseImageTexture> promise_image_texture_ = nullptr;
+  raw_ptr<SkPromiseImageTexture, DanglingUntriaged> promise_image_texture_ =
+      nullptr;
 };
 
 }  // namespace viz
