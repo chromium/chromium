@@ -33,15 +33,6 @@ namespace blink {
 
 // static
 MediaStreamVideoSource* MediaStreamVideoSource::GetVideoSource(
-    const WebMediaStreamSource& source) {
-  if (source.IsNull() || source.GetType() != WebMediaStreamSource::kTypeVideo) {
-    return nullptr;
-  }
-  return static_cast<MediaStreamVideoSource*>(source.GetPlatformSource());
-}
-
-// static
-MediaStreamVideoSource* MediaStreamVideoSource::GetVideoSource(
     MediaStreamSource* source) {
   if (!source || source->GetType() != MediaStreamSource::kTypeVideo) {
     return nullptr;
@@ -373,12 +364,6 @@ absl::optional<media::VideoCaptureFormat>
 MediaStreamVideoSource::GetCurrentFormat() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   return absl::optional<media::VideoCaptureFormat>();
-}
-
-absl::optional<media::VideoCaptureParams>
-MediaStreamVideoSource::GetCurrentCaptureParams() const {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return absl::optional<media::VideoCaptureParams>();
 }
 
 size_t MediaStreamVideoSource::CountEncodedSinks() const {

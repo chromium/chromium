@@ -185,12 +185,6 @@ MediaStreamVideoCapturerSource::GetCurrentFormat() const {
   return capture_params_.requested_format;
 }
 
-absl::optional<media::VideoCaptureParams>
-MediaStreamVideoCapturerSource::GetCurrentCaptureParams() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return capture_params_;
-}
-
 void MediaStreamVideoCapturerSource::ChangeSourceImpl(
     const MediaStreamDevice& new_device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

@@ -101,13 +101,6 @@ MockMediaStreamVideoSource::GetCurrentFormat() const {
   return absl::optional<media::VideoCaptureFormat>(format_);
 }
 
-absl::optional<media::VideoCaptureParams>
-MockMediaStreamVideoSource::GetCurrentCaptureParams() const {
-  media::VideoCaptureParams params;
-  params.requested_format = format_;
-  return params;
-}
-
 void MockMediaStreamVideoSource::DeliverVideoFrame(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK(!is_stopped_for_restart_);

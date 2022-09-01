@@ -184,7 +184,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, StartAndStop) {
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
   EXPECT_FALSE(source_stopped_);
-  EXPECT_TRUE(video_capturer_source_->GetCurrentCaptureParams().has_value());
+  EXPECT_TRUE(video_capturer_source_->GetCurrentFormat().has_value());
 
   // If the delegate stops, the source should stop.
   EXPECT_CALL(mock_delegate(), MockStopCapture());

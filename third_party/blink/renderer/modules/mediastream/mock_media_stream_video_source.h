@@ -78,8 +78,6 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
 
   // Implements blink::MediaStreamVideoSource.
   void RequestRefreshFrame() override;
-  absl::optional<media::VideoCaptureParams> GetCurrentCaptureParams()
-      const override;
   void OnHasConsumers(bool has_consumers) override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
