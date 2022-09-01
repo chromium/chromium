@@ -13,6 +13,7 @@
 #include "chrome/android/chrome_jni_headers/InstalledWebappGeolocationBridge_jni.h"
 #include "chrome/browser/installable/installed_webapp_geolocation_context.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "url/android/gurl_android.h"
 
 namespace {
 
@@ -41,10 +42,10 @@ enum class LocationUpdateError {
 
 InstalledWebappGeolocationBridge::InstalledWebappGeolocationBridge(
     mojo::PendingReceiver<Geolocation> receiver,
-    const GURL& origin,
+    const GURL& url,
     InstalledWebappGeolocationContext* context)
     : context_(context),
-      origin_(origin),
+      url_(url),
       high_accuracy_(false),
       has_position_to_report_(false),
       receiver_(this, std::move(receiver)) {
@@ -61,11 +62,9 @@ InstalledWebappGeolocationBridge::~InstalledWebappGeolocationBridge() {
 void InstalledWebappGeolocationBridge::StartListeningForUpdates() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (java_ref_.is_null()) {
-    base::android::ScopedJavaLocalRef<jstring> j_origin =
-        base::android::ConvertUTF8ToJavaString(
-            env, origin_.DeprecatedGetOriginAsURL().spec());
     java_ref_.Reset(Java_InstalledWebappGeolocationBridge_create(
-        env, reinterpret_cast<intptr_t>(this), j_origin));
+        env, reinterpret_cast<intptr_t>(this),
+        url::GURLAndroid::FromNativeGURL(env, url_)));
   }
   Java_InstalledWebappGeolocationBridge_start(env, java_ref_, high_accuracy_);
 }

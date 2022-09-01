@@ -99,9 +99,9 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   if (permission_status != blink::mojom::PermissionStatus::GRANTED)
     return;
 
-  const auto& origin =
-      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
-  geolocation_context_->BindGeolocation(std::move(receiver), origin.GetURL());
+  const auto& requesting_url =
+      render_frame_host_->GetMainFrame()->GetLastCommittedURL();
+  geolocation_context_->BindGeolocation(std::move(receiver), requesting_url);
 }
 
 }  // namespace content

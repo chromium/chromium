@@ -13,11 +13,11 @@ import "url/mojom/url.mojom";
 // instances created by this context.
 interface GeolocationContext {
   // Creates a Geolocation instance that is bound to the |request|.
-  // The |origin| is the origin of the top-level frame which the |request| from,
+  // The |url| is the URL of the top-level frame which the |request| from,
   // it is only used for |InstalledWebappGeolocationContext| to separate request
   // from different Trusted Web Activity client apps.
   BindGeolocation(pending_receiver<Geolocation> receiver,
-                  url.mojom.Url origin);
+                  url.mojom.Url url);
 
   // Enables geolocation override. This method can be used to trigger possible
   // location-specific behavior in GeolocationImpl created by this

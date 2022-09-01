@@ -58,14 +58,14 @@ public class InstalledWebappRegistrar {
      * for PostMessage). Only at step 4 do we know that Chrome should associate the browsing data
      * for that origin with that app.
      */
-    public void registerClient(String packageName, Origin origin) {
+    public void registerClient(String packageName, Origin origin, String pageUrl) {
         if (mRegisteredOrigins.contains(origin)) return;
 
         // Register that we should wipe data for this origin when the client app is uninstalled.
         mDataRecorder.get().register(packageName, origin);
         // Register that we trust the client app to handle permission for this origin and update
         // Chrome's permission for the origin.
-        mPermissionUpdater.onOriginVerified(origin, packageName);
+        mPermissionUpdater.onOriginVerified(origin, pageUrl, packageName);
 
         mRegisteredOrigins.add(origin);
     }

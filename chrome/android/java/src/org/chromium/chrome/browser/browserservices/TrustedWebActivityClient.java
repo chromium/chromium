@@ -147,13 +147,14 @@ public class TrustedWebActivityClient {
 
     /**
      * Gets the notification permission setting of the TWA for the given origin.
+     * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
-    public void checkNotificationPermission(Origin origin, PermissionCallback permissionCallback) {
+    public void checkNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.notification_category_group_general);
 
-        connectAndExecute(origin.uri(), new ExecutionCallback() {
+        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, Connection service) throws RemoteException {
                 Bundle commandArgs = new Bundle();
@@ -197,14 +198,14 @@ public class TrustedWebActivityClient {
     }
 
     /**
-     * Requests notification permission for the TWA for the given origin using a dialog.
+     * Requests notification permission for the TWA for the given url using a dialog.
+     * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
-    public void requestNotificationPermission(
-            Origin origin, PermissionCallback permissionCallback) {
+    public void requestNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.notification_category_group_general);
-        connectAndExecute(origin.uri(), new ExecutionCallback() {
+        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, Connection service) throws RemoteException {
                 Bundle commandArgs = new Bundle();
@@ -260,10 +261,11 @@ public class TrustedWebActivityClient {
 
     /**
      * Check location permission for the TWA of the given origin.
+     * @param url The url of the web page that requesting the permission.
      * @param permissionCallback Will be called with whether the permission is granted.
      */
-    public void checkLocationPermission(Origin origin, PermissionCallback permissionCallback) {
-        connectAndExecute(origin.uri(), new ExecutionCallback() {
+    public void checkLocationPermission(String url, PermissionCallback permissionCallback) {
+        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, Connection service) throws RemoteException {
                 TrustedWebActivityCallback resultCallback = new TrustedWebActivityCallback() {
@@ -309,8 +311,8 @@ public class TrustedWebActivityClient {
      * depending on where and when they happen.
      */
     public void startListeningLocationUpdates(
-            Origin origin, boolean highAccuracy, TrustedWebActivityCallback locationCallback) {
-        connectAndExecute(origin.uri(), new ExecutionCallback() {
+            String url, boolean highAccuracy, TrustedWebActivityCallback locationCallback) {
+        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, Connection service) throws RemoteException {
                 Bundle args = new Bundle();
@@ -332,8 +334,8 @@ public class TrustedWebActivityClient {
         });
     }
 
-    public void stopLocationUpdates(Origin origin) {
-        connectAndExecute(origin.uri(), new ExecutionCallback() {
+    public void stopLocationUpdates(String url) {
+        connectAndExecute(Uri.parse(url), new ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, Connection service) throws RemoteException {
                 service.sendExtraCommand(STOP_LOCATION_COMMAND_NAME, Bundle.EMPTY, null);

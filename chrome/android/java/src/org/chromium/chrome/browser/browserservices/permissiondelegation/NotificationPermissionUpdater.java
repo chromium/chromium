@@ -56,14 +56,14 @@ public class NotificationPermissionUpdater {
      * that origin to match Android's notification permission for the package.
      * - Otherwise, it does nothing.
      */
-    public void onOriginVerified(Origin origin, String packageName) {
+    public void onOriginVerified(Origin origin, String url, String packageName) {
         // It's important to note here that the client we connect to to check for the notification
         // permission may not be the client that triggered this method call.
 
         // The function passed to this method call may not be executed in the case of the app not
         // having a TrustedWebActivityService. That's fine because we only want to update the
         // permission if a TrustedWebActivityService exists.
-        mTrustedWebActivityClient.checkNotificationPermission(origin,
+        mTrustedWebActivityClient.checkNotificationPermission(url,
                 (app, settingValue)
                         -> updatePermission(
                                 origin, /*callback=*/0, app.getPackageName(), settingValue));
@@ -87,7 +87,7 @@ public class NotificationPermissionUpdater {
         // See if there is any other app installed that could handle the notifications (and update
         // to that apps notification permission if it exists).
         mTrustedWebActivityClient.checkNotificationPermission(
-                origin, new TrustedWebActivityClient.PermissionCallback() {
+                origin.toString(), new TrustedWebActivityClient.PermissionCallback() {
                     @Override
                     public void onPermission(
                             ComponentName app, @ContentSettingValues int settingValue) {
@@ -111,7 +111,7 @@ public class NotificationPermissionUpdater {
     void requestPermission(Origin origin, String lastCommittedUrl, long callback) {
         assert BuildInfo.isAtLeastT() : "Cannot request notification permission before Android T";
         mTrustedWebActivityClient.requestNotificationPermission(
-                origin, new TrustedWebActivityClient.PermissionCallback() {
+                lastCommittedUrl, new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
                     @Override
                     public void onPermission(

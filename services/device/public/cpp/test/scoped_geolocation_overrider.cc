@@ -41,7 +41,7 @@ class ScopedGeolocationOverrider::FakeGeolocationContext
 
   // mojom::GeolocationContext implementation:
   void BindGeolocation(mojo::PendingReceiver<mojom::Geolocation> receiver,
-                       const GURL& requesting_origin) override;
+                       const GURL& requesting_url) override;
   void SetOverride(mojom::GeopositionPtr geoposition) override;
   void ClearOverride() override;
 

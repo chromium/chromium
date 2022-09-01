@@ -30,6 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
@@ -65,6 +66,7 @@ import java.util.concurrent.TimeoutException;
  * `--approve-app-links` command passed to the test target.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Test TWA start up behaviors.")
 public class TrustedWebActivityClientTest {
     private static final Uri SCOPE = Uri.parse("https://www.example.com/notifications");
     private static final Origin ORIGIN = Origin.create(SCOPE);
@@ -213,7 +215,7 @@ public class TrustedWebActivityClientTest {
     @Test
     @SmallTest
     public void testNoClientFound() throws TimeoutException {
-        Origin scope = Origin.createOrThrow("https://www.websitewithouttwa.com/");
+        String scope = "https://www.websitewithouttwa.com/";
 
         CallbackHelper noTwaFound = new CallbackHelper();
 

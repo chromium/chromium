@@ -74,7 +74,7 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         Origin origin = Origin.create(scope);
         String packageName = storage.getWebApkPackageName();
 
-        mInstalledWebappRegistrar.registerClient(packageName, origin);
+        mInstalledWebappRegistrar.registerClient(packageName, origin, storage.getUrl());
         PermissionUpdater.get().onWebApkLaunch(origin, packageName);
     }
 

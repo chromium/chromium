@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -16,8 +15,8 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.url.GURL;
 
 /**
  * Provides Trusted Web Activity Client App location for native. The C++ counterpart is the
@@ -34,7 +33,7 @@ public class InstalledWebappGeolocationBridge {
     public static final String EXTRA_NEW_LOCATION_ERROR_CALLBACK = "onNewLocationError";
 
     private long mNativePointer;
-    private final Origin mOrigin;
+    private final GURL mUrl;
 
     private final TrustedWebActivityClient mTwaClient;
 
@@ -55,32 +54,31 @@ public class InstalledWebappGeolocationBridge {
                 }
             };
 
-    InstalledWebappGeolocationBridge(
-            long nativePtr, Origin origin, TrustedWebActivityClient client) {
+    InstalledWebappGeolocationBridge(long nativePtr, GURL url, TrustedWebActivityClient client) {
         mNativePointer = nativePtr;
-        mOrigin = origin;
+        mUrl = url;
         mTwaClient = client;
     }
 
     @CalledByNative
     @Nullable
-    public static InstalledWebappGeolocationBridge create(long nativePtr, String url) {
-        Origin origin = Origin.create(Uri.parse(url));
-        if (origin == null) return null;
+    public static InstalledWebappGeolocationBridge create(long nativePtr, GURL url) {
+        if (url == null) return null;
 
-        return new InstalledWebappGeolocationBridge(nativePtr, origin,
+        return new InstalledWebappGeolocationBridge(nativePtr, url,
                 ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient());
     }
 
     @CalledByNative
     public void start(boolean highAccuracy) {
-        mTwaClient.startListeningLocationUpdates(mOrigin, highAccuracy, mLocationUpdateCallback);
+        mTwaClient.startListeningLocationUpdates(
+                mUrl.getSpec(), highAccuracy, mLocationUpdateCallback);
     }
 
     @CalledByNative
     public void stopAndDestroy() {
         mNativePointer = 0;
-        mTwaClient.stopLocationUpdates(mOrigin);
+        mTwaClient.stopLocationUpdates(mUrl.getSpec());
     }
 
     private void notifyNewGeoposition(@Nullable Bundle bundle) {

@@ -55,9 +55,9 @@ public class LocationPermissionUpdater {
      * permission for that origin to client app's Android location permission if a
      * TrustedWebActivityService is found, and the TWAService supports location permission.
      */
-    void checkPermission(Origin origin, long callback) {
+    void checkPermission(Origin origin, String lastCommitedUrl, long callback) {
         mTrustedWebActivityClient.checkLocationPermission(
-                origin, new TrustedWebActivityClient.PermissionCallback() {
+                lastCommitedUrl, new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
                     @Override
                     public void onPermission(

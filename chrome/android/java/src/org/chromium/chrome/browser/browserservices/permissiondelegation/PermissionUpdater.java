@@ -49,17 +49,17 @@ public class PermissionUpdater {
      * the Notification and Location delegation state for that origin if the package handles
      * browsable intents for the origin; otherwise, it does nothing.
      */
-    public void onOriginVerified(Origin origin, String packageName) {
+    public void onOriginVerified(Origin origin, String url, String packageName) {
         // If the client doesn't handle browsable Intents for the URL, we don't do anything special
         // for the origin.
-        if (!appHandlesBrowsableIntent(packageName, origin.uri())) {
+        if (!appHandlesBrowsableIntent(packageName, Uri.parse(url))) {
             Log.d(TAG, "Package does not handle Browsable Intents for the origin.");
             return;
         }
 
         mPermissionManager.addDelegateApp(origin, packageName);
 
-        mNotificationPermissionUpdater.onOriginVerified(origin, packageName);
+        mNotificationPermissionUpdater.onOriginVerified(origin, url, packageName);
     }
 
     public void onWebApkLaunch(Origin origin, String packageName) {
@@ -84,8 +84,8 @@ public class PermissionUpdater {
         }
     }
 
-    void getLocationPermission(Origin origin, long callback) {
-        mLocationPermissionUpdater.checkPermission(origin, callback);
+    void getLocationPermission(Origin origin, String lastCommittedUrl, long callback) {
+        mLocationPermissionUpdater.checkPermission(origin, lastCommittedUrl, callback);
     }
 
     void requestNotificationPermission(Origin origin, String lastCommittedUrl, long callback) {

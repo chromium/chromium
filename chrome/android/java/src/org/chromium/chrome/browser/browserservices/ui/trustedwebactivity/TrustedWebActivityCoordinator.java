@@ -83,7 +83,7 @@ public class TrustedWebActivityCoordinator {
         // want to register the clients once the state reaches SUCCESS.
         if (state != null && state.status == VerificationStatus.SUCCESS) {
             mInstalledWebappRegistrar.registerClient(
-                    mClientPackageNameProvider.get(), Origin.create(state.scope));
+                    mClientPackageNameProvider.get(), Origin.create(state.scope), state.url);
         }
     }
 
