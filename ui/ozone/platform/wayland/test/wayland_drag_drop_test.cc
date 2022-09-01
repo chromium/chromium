@@ -25,6 +25,21 @@ using testing::_;
 
 namespace ui {
 
+TestWaylandOSExchangeDataProvideFactory::
+    TestWaylandOSExchangeDataProvideFactory() {
+  SetInstance(this);
+}
+
+TestWaylandOSExchangeDataProvideFactory::
+    ~TestWaylandOSExchangeDataProvideFactory() {
+  SetInstance(nullptr);
+}
+
+std::unique_ptr<OSExchangeDataProvider>
+TestWaylandOSExchangeDataProvideFactory::CreateProvider() {
+  return std::make_unique<WaylandExchangeDataProvider>();
+}
+
 WaylandDragDropTest::WaylandDragDropTest() = default;
 
 WaylandDragDropTest::~WaylandDragDropTest() = default;

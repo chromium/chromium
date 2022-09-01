@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -26,6 +27,15 @@ class TestDataDeviceManager;
 namespace ui {
 
 class WaylandWindow;
+
+class TestWaylandOSExchangeDataProvideFactory
+    : public OSExchangeDataProviderFactoryOzone {
+ public:
+  TestWaylandOSExchangeDataProvideFactory();
+  ~TestWaylandOSExchangeDataProvideFactory() override;
+
+  std::unique_ptr<OSExchangeDataProvider> CreateProvider() override;
+};
 
 // Base class for Wayland drag-and-drop tests. Public methods allow test code to
 // emulate dnd-related events from the test compositor and can be used in both
@@ -100,6 +110,9 @@ class WaylandDragDropTest : public WaylandTest,
   raw_ptr<wl::TestTouch> touch_;
 
   uint32_t current_serial_;
+
+ private:
+  TestWaylandOSExchangeDataProvideFactory os_exchange_factory_;
 };
 
 }  // namespace ui
