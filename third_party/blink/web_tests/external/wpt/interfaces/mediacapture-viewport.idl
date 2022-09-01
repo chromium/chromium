@@ -5,5 +5,10 @@
 
 partial interface MediaDevices {
   Promise<MediaStream> getViewportMedia(
-      optional DisplayMediaStreamConstraints constraints = {});
+      optional ViewportMediaStreamConstraints constraints = {});
+};
+
+dictionary ViewportMediaStreamConstraints {
+  (boolean or MediaTrackConstraints) video = true;
+  (boolean or MediaTrackConstraints) audio = false;
 };

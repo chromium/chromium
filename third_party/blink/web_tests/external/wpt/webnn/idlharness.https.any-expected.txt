@@ -124,13 +124,13 @@ PASS MLContext interface: existence and properties of interface prototype object
 PASS MLContext interface: existence and properties of interface prototype object's "constructor" property
 PASS MLContext interface: existence and properties of interface prototype object's @@unscopables property
 PASS MLContext interface: member compute
-FAIL MLContext interface: operation computeAsync(MLGraph, MLNamedArrayInputs, MLNamedArrayOutputs) assert_own_property: interface prototype object missing non-static operation expected property "computeAsync" missing
+FAIL MLContext interface: operation computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "computeAsync" missing
 FAIL MLContext interface: operation createCommandEncoder() assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
 FAIL MLContext must be primary interface of context assert_equals: context's prototype is not MLContext.prototype expected object "[object MLContext]" but got object "[object Promise]"
 FAIL Stringification of context assert_class_string: class string of context expected "[object MLContext]" but got "[object Promise]"
 PASS MLContext interface: context must not have property "compute"
-FAIL MLContext interface: context must inherit property "computeAsync(MLGraph, MLNamedArrayInputs, MLNamedArrayOutputs)" with the proper type assert_inherits: property "computeAsync" not found in prototype chain
-FAIL MLContext interface: calling computeAsync(MLGraph, MLNamedArrayInputs, MLNamedArrayOutputs) on context with too few arguments must throw TypeError assert_inherits: property "computeAsync" not found in prototype chain
+FAIL MLContext interface: context must inherit property "computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "computeAsync" not found in prototype chain
+FAIL MLContext interface: calling computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "computeAsync" not found in prototype chain
 FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain
 PASS MLOperand interface: existence and properties of interface object
 PASS MLOperand interface object length
@@ -386,7 +386,7 @@ FAIL MLCommandEncoder interface: existence and properties of interface prototype
 FAIL MLCommandEncoder interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
 FAIL MLCommandEncoder interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
 FAIL MLCommandEncoder interface: operation initializeGraph(MLGraph) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface: operation dispatch(MLGraph, MLNamedGPUInputs, MLNamedGPUOutputs) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface: operation dispatch(MLGraph, MLNamedGPUResources, MLNamedGPUResources) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
 FAIL MLCommandEncoder interface: operation finish(optional GPUCommandBufferDescriptor) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
 PASS Navigator interface: attribute ml
 PASS Navigator interface: navigator must inherit property "ml" with the proper type

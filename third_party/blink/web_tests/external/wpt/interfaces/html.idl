@@ -1364,14 +1364,7 @@ interface mixin CanvasShadowStyles {
 
 interface mixin CanvasFilters {
   // filters
-  attribute (DOMString or CanvasFilter) filter; // (default "none")
-};
-
-typedef record<DOMString, any> CanvasFilterInput;
-
-[Exposed=(Window,Worker,PaintWorklet)]
-interface CanvasFilter {
-  constructor(optional (CanvasFilterInput or sequence<CanvasFilterInput>) filters);
+  attribute DOMString filter; // (default "none")
 };
 
 interface mixin CanvasRect {

@@ -22,6 +22,7 @@ interface WebTransport {
   Promise<WebTransportStats> getStats();
   readonly attribute Promise<undefined> ready;
   readonly attribute WebTransportReliabilityMode reliability;
+  readonly attribute WebTransportCongestionControl congestionControl;
   readonly attribute Promise<WebTransportCloseInfo> closed;
   undefined close(optional WebTransportCloseInfo closeInfo = {});
 
@@ -51,6 +52,13 @@ dictionary WebTransportOptions {
   boolean allowPooling = false;
   boolean requireUnreliable = false;
   sequence<WebTransportHash> serverCertificateHashes;
+  WebTransportCongestionControl congestionControl = "default";
+};
+
+enum WebTransportCongestionControl {
+  "default",
+  "throughput",
+  "low-latency",
 };
 
 dictionary WebTransportCloseInfo {

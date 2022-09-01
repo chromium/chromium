@@ -22,7 +22,7 @@ dictionary AuthenticationExtensionsPaymentInputs {
   boolean isPayment;
 
   // Only used for authentication.
-  USVString rp;
+  USVString rpId;
   USVString topOrigin;
   DOMString payeeName;
   USVString payeeOrigin;
@@ -35,7 +35,7 @@ dictionary CollectedClientPaymentData : CollectedClientData {
 };
 
 dictionary CollectedClientAdditionalPaymentData {
-    required USVString rp;
+    required USVString rpId;
     required USVString topOrigin;
     DOMString payeeName;
     USVString payeeOrigin;

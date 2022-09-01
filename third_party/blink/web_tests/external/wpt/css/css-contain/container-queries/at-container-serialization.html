@@ -36,7 +36,7 @@
     assert_equals(rules[0].cssRules.length, 2);
 
     assert_equals(rules[0].conditionText, "(width = 100px)");
-    assert_equals(rules[0].cssRules[0].conditionText, "(inline-size > 200px)");
+    assert_equals(rules[0].cssRules[0].conditionText, "\\!-name (inline-size > 200px)");
   }, "Serialization of conditionText");
 
   test(() => {
