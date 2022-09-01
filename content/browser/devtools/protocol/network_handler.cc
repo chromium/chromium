@@ -577,9 +577,9 @@ std::unique_ptr<Network::ResourceTiming> GetTiming(
           timeDelta(load_timing.proxy_resolve_start, load_timing.request_start))
       .SetProxyEnd(
           timeDelta(load_timing.proxy_resolve_end, load_timing.request_start))
-      .SetDnsStart(timeDelta(load_timing.connect_timing.dns_start,
+      .SetDnsStart(timeDelta(load_timing.connect_timing.domain_lookup_start,
                              load_timing.request_start))
-      .SetDnsEnd(timeDelta(load_timing.connect_timing.dns_end,
+      .SetDnsEnd(timeDelta(load_timing.connect_timing.domain_lookup_end,
                            load_timing.request_start))
       .SetConnectStart(timeDelta(load_timing.connect_timing.connect_start,
                                  load_timing.request_start))

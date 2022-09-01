@@ -104,8 +104,8 @@ void WebURLResponse::SetLoadTiming(
   timing->SetRequestTime(mojo_timing.request_start);
   timing->SetProxyStart(mojo_timing.proxy_resolve_start);
   timing->SetProxyEnd(mojo_timing.proxy_resolve_end);
-  timing->SetDnsStart(mojo_timing.connect_timing.dns_start);
-  timing->SetDnsEnd(mojo_timing.connect_timing.dns_end);
+  timing->SetDomainLookupStart(mojo_timing.connect_timing.domain_lookup_start);
+  timing->SetDomainLookupEnd(mojo_timing.connect_timing.domain_lookup_end);
   timing->SetConnectStart(mojo_timing.connect_timing.connect_start);
   timing->SetConnectEnd(mojo_timing.connect_timing.connect_end);
   timing->SetWorkerStart(mojo_timing.service_worker_start_time);

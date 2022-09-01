@@ -450,8 +450,10 @@ TEST_F(SOCKSConnectJobTest, ConnectTiming) {
   // Proxy name resolution is not considered resolving the host name for
   // ConnectionInfo. For SOCKS4, where the host name is also looked up via DNS,
   // the resolution time is not currently reported.
-  EXPECT_EQ(base::TimeTicks(), socks_connect_job.connect_timing().dns_start);
-  EXPECT_EQ(base::TimeTicks(), socks_connect_job.connect_timing().dns_end);
+  EXPECT_EQ(base::TimeTicks(),
+            socks_connect_job.connect_timing().domain_lookup_start);
+  EXPECT_EQ(base::TimeTicks(),
+            socks_connect_job.connect_timing().domain_lookup_end);
 
   // The "connect" time for socks proxies includes DNS resolution time.
   EXPECT_EQ(start, socks_connect_job.connect_timing().connect_start);

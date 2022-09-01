@@ -1018,8 +1018,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     connection->SetMaxPacketLength(connection->max_packet_length() -
                                    kAdditionalOverheadForIPv6);
   }
-  connect_timing_.dns_start = dns_resolution_start_time;
-  connect_timing_.dns_end = dns_resolution_end_time;
+  connect_timing_.domain_lookup_start = dns_resolution_start_time;
+  connect_timing_.domain_lookup_end = dns_resolution_end_time;
   if (!retransmittable_on_wire_timeout.IsZero()) {
     connection->set_initial_retransmittable_on_wire_timeout(
         retransmittable_on_wire_timeout);
@@ -3403,9 +3403,10 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
       connect_timing_.connect_end - connect_timing_.connect_start);
   // Track how long it has taken to finish handshake after we have finished
   // DNS host resolution.
-  if (!connect_timing_.dns_end.is_null()) {
-    UMA_HISTOGRAM_TIMES("Net.QuicSession.HostResolution.HandshakeConfirmedTime",
-                        tick_clock_->NowTicks() - connect_timing_.dns_end);
+  if (!connect_timing_.domain_lookup_end.is_null()) {
+    UMA_HISTOGRAM_TIMES(
+        "Net.QuicSession.HostResolution.HandshakeConfirmedTime",
+        tick_clock_->NowTicks() - connect_timing_.domain_lookup_end);
   }
 
   auto it = handles_.begin();

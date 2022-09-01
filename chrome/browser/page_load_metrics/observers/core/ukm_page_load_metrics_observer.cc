@@ -906,10 +906,11 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
   builder.SetMainFrameResource_SocketReused(main_frame_timing_->socket_reused);
 
   int64_t dns_start_ms =
-      main_frame_timing_->connect_timing.dns_start.since_origin()
+      main_frame_timing_->connect_timing.domain_lookup_start.since_origin()
           .InMilliseconds();
-  int64_t dns_end_ms = main_frame_timing_->connect_timing.dns_end.since_origin()
-                           .InMilliseconds();
+  int64_t dns_end_ms =
+      main_frame_timing_->connect_timing.domain_lookup_end.since_origin()
+          .InMilliseconds();
   int64_t connect_start_ms =
       main_frame_timing_->connect_timing.connect_start.since_origin()
           .InMilliseconds();

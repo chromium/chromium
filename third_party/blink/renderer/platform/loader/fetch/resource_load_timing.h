@@ -46,11 +46,11 @@ class PLATFORM_EXPORT ResourceLoadTiming
       const network::mojom::blink::LoadTimingInfo*);
   network::mojom::blink::LoadTimingInfoPtr ToMojo() const;
 
-  void SetDnsStart(base::TimeTicks);
+  void SetDomainLookupStart(base::TimeTicks);
   void SetRequestTime(base::TimeTicks);
   void SetProxyStart(base::TimeTicks);
   void SetProxyEnd(base::TimeTicks);
-  void SetDnsEnd(base::TimeTicks);
+  void SetDomainLookupEnd(base::TimeTicks);
   void SetConnectStart(base::TimeTicks);
   void SetConnectEnd(base::TimeTicks);
   void SetWorkerStart(base::TimeTicks);
@@ -66,11 +66,11 @@ class PLATFORM_EXPORT ResourceLoadTiming
   void SetPushStart(base::TimeTicks);
   void SetPushEnd(base::TimeTicks);
 
-  base::TimeTicks DnsStart() const { return dns_start_; }
+  base::TimeTicks DomainLookupStart() const { return domain_lookup_start_; }
   base::TimeTicks RequestTime() const { return request_time_; }
   base::TimeTicks ProxyStart() const { return proxy_start_; }
   base::TimeTicks ProxyEnd() const { return proxy_end_; }
-  base::TimeTicks DnsEnd() const { return dns_end_; }
+  base::TimeTicks DomainLookupEnd() const { return domain_lookup_end_; }
   base::TimeTicks ConnectStart() const { return connect_start_; }
   base::TimeTicks ConnectEnd() const { return connect_end_; }
   base::TimeTicks WorkerStart() const { return worker_start_; }
@@ -95,8 +95,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   ResourceLoadTiming(base::TimeTicks request_time,
                      base::TimeTicks proxy_start,
                      base::TimeTicks proxy_end,
-                     base::TimeTicks dns_start,
-                     base::TimeTicks dns_end,
+                     base::TimeTicks domain_lookup_start,
+                     base::TimeTicks domain_lookup_end,
                      base::TimeTicks connect_start,
                      base::TimeTicks connect_end,
                      base::TimeTicks worker_start,
@@ -126,8 +126,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks request_time_;
   base::TimeTicks proxy_start_;
   base::TimeTicks proxy_end_;
-  base::TimeTicks dns_start_;
-  base::TimeTicks dns_end_;
+  base::TimeTicks domain_lookup_start_;
+  base::TimeTicks domain_lookup_end_;
   base::TimeTicks connect_start_;
   base::TimeTicks connect_end_;
   base::TimeTicks worker_start_;

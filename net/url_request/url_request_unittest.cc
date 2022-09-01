@@ -1081,8 +1081,8 @@ LoadTimingInfo NormalLoadTimingInfo(base::TimeTicks now,
 
   LoadTimingInfo::ConnectTiming& connect_timing = load_timing.connect_timing;
   if (connect_time_flags & CONNECT_TIMING_HAS_DNS_TIMES) {
-    connect_timing.dns_start = now + base::Days(3);
-    connect_timing.dns_end = now + base::Days(4);
+    connect_timing.domain_lookup_start = now + base::Days(3);
+    connect_timing.domain_lookup_end = now + base::Days(4);
   }
   connect_timing.connect_start = now + base::Days(5);
   if (connect_time_flags & CONNECT_TIMING_HAS_SSL_TIMES) {
@@ -1161,10 +1161,10 @@ TEST_F(URLRequestLoadTimingTest, InterceptLoadTiming) {
             load_timing_result.proxy_resolve_start);
   EXPECT_EQ(job_load_timing.proxy_resolve_end,
             load_timing_result.proxy_resolve_end);
-  EXPECT_EQ(job_load_timing.connect_timing.dns_start,
-            load_timing_result.connect_timing.dns_start);
-  EXPECT_EQ(job_load_timing.connect_timing.dns_end,
-            load_timing_result.connect_timing.dns_end);
+  EXPECT_EQ(job_load_timing.connect_timing.domain_lookup_start,
+            load_timing_result.connect_timing.domain_lookup_start);
+  EXPECT_EQ(job_load_timing.connect_timing.domain_lookup_end,
+            load_timing_result.connect_timing.domain_lookup_end);
   EXPECT_EQ(job_load_timing.connect_timing.connect_start,
             load_timing_result.connect_timing.connect_start);
   EXPECT_EQ(job_load_timing.connect_timing.connect_end,
@@ -1192,10 +1192,10 @@ TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingProxy) {
             load_timing_result.proxy_resolve_start);
   EXPECT_EQ(job_load_timing.proxy_resolve_end,
             load_timing_result.proxy_resolve_end);
-  EXPECT_EQ(job_load_timing.connect_timing.dns_start,
-            load_timing_result.connect_timing.dns_start);
-  EXPECT_EQ(job_load_timing.connect_timing.dns_end,
-            load_timing_result.connect_timing.dns_end);
+  EXPECT_EQ(job_load_timing.connect_timing.domain_lookup_start,
+            load_timing_result.connect_timing.domain_lookup_start);
+  EXPECT_EQ(job_load_timing.connect_timing.domain_lookup_end,
+            load_timing_result.connect_timing.domain_lookup_end);
   EXPECT_EQ(job_load_timing.connect_timing.connect_start,
             load_timing_result.connect_timing.connect_start);
   EXPECT_EQ(job_load_timing.connect_timing.connect_end,
@@ -1222,8 +1222,8 @@ TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyProxyResolution) {
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_DNS_TIMES, true);
   job_load_timing.proxy_resolve_start = now - base::Days(6);
   job_load_timing.proxy_resolve_end = now - base::Days(5);
-  job_load_timing.connect_timing.dns_start = now - base::Days(4);
-  job_load_timing.connect_timing.dns_end = now - base::Days(3);
+  job_load_timing.connect_timing.domain_lookup_start = now - base::Days(4);
+  job_load_timing.connect_timing.domain_lookup_end = now - base::Days(3);
   job_load_timing.connect_timing.connect_start = now - base::Days(2);
   job_load_timing.connect_timing.connect_end = now - base::Days(1);
 
@@ -1237,9 +1237,9 @@ TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyProxyResolution) {
   EXPECT_EQ(load_timing_result.request_start,
             load_timing_result.proxy_resolve_end);
   EXPECT_EQ(load_timing_result.request_start,
-            load_timing_result.connect_timing.dns_start);
+            load_timing_result.connect_timing.domain_lookup_start);
   EXPECT_EQ(load_timing_result.request_start,
-            load_timing_result.connect_timing.dns_end);
+            load_timing_result.connect_timing.domain_lookup_end);
   EXPECT_EQ(load_timing_result.request_start,
             load_timing_result.connect_timing.connect_start);
   EXPECT_EQ(load_timing_result.request_start,

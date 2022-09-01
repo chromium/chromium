@@ -431,8 +431,8 @@ void ParamTraits<net::LoadTimingInfo>::Write(base::Pickle* m,
   WriteParam(m, p.request_start);
   WriteParam(m, p.proxy_resolve_start);
   WriteParam(m, p.proxy_resolve_end);
-  WriteParam(m, p.connect_timing.dns_start);
-  WriteParam(m, p.connect_timing.dns_end);
+  WriteParam(m, p.connect_timing.domain_lookup_start);
+  WriteParam(m, p.connect_timing.domain_lookup_end);
   WriteParam(m, p.connect_timing.connect_start);
   WriteParam(m, p.connect_timing.connect_end);
   WriteParam(m, p.connect_timing.ssl_start);
@@ -463,8 +463,8 @@ bool ParamTraits<net::LoadTimingInfo>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->request_start) &&
          ReadParam(m, iter, &r->proxy_resolve_start) &&
          ReadParam(m, iter, &r->proxy_resolve_end) &&
-         ReadParam(m, iter, &r->connect_timing.dns_start) &&
-         ReadParam(m, iter, &r->connect_timing.dns_end) &&
+         ReadParam(m, iter, &r->connect_timing.domain_lookup_start) &&
+         ReadParam(m, iter, &r->connect_timing.domain_lookup_end) &&
          ReadParam(m, iter, &r->connect_timing.connect_start) &&
          ReadParam(m, iter, &r->connect_timing.connect_end) &&
          ReadParam(m, iter, &r->connect_timing.ssl_start) &&
@@ -493,9 +493,9 @@ void ParamTraits<net::LoadTimingInfo>::Log(const param_type& p,
   l->append(", ");
   LogParam(p.proxy_resolve_end, l);
   l->append(", ");
-  LogParam(p.connect_timing.dns_start, l);
+  LogParam(p.connect_timing.domain_lookup_start, l);
   l->append(", ");
-  LogParam(p.connect_timing.dns_end, l);
+  LogParam(p.connect_timing.domain_lookup_end, l);
   l->append(", ");
   LogParam(p.connect_timing.connect_start, l);
   l->append(", ");

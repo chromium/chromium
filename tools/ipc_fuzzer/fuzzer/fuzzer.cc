@@ -1313,8 +1313,8 @@ struct FuzzTraits<net::LoadTimingInfo> {
            FuzzParam(&p->request_start, fuzzer) &&
            FuzzParam(&p->proxy_resolve_start, fuzzer) &&
            FuzzParam(&p->proxy_resolve_end, fuzzer) &&
-           FuzzParam(&p->connect_timing.dns_start, fuzzer) &&
-           FuzzParam(&p->connect_timing.dns_end, fuzzer) &&
+           FuzzParam(&p->connect_timing.domain_lookup_start, fuzzer) &&
+           FuzzParam(&p->connect_timing.domain_lookup_end, fuzzer) &&
            FuzzParam(&p->connect_timing.connect_start, fuzzer) &&
            FuzzParam(&p->connect_timing.connect_end, fuzzer) &&
            FuzzParam(&p->connect_timing.ssl_start, fuzzer) &&

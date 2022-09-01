@@ -1840,8 +1840,8 @@ void MockTransportClientSocketPool::MockConnectJob::OnConnect(int rv) {
     // sockets.
     LoadTimingInfo::ConnectTiming connect_timing;
     base::TimeTicks now = base::TimeTicks::Now();
-    connect_timing.dns_start = now;
-    connect_timing.dns_end = now;
+    connect_timing.domain_lookup_start = now;
+    connect_timing.domain_lookup_end = now;
     connect_timing.connect_start = now;
     connect_timing.connect_end = now;
     handle_->set_connect_timing(connect_timing);

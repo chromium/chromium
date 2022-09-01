@@ -447,7 +447,7 @@ TEST_F(TimeConversionTest, DISABLED_ProperlyInitialized) {
 
   EXPECT_LT(base::TimeTicks(), response_info().load_timing.request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.dns_start);
+            response_info().load_timing.connect_timing.domain_lookup_start);
   EXPECT_LE(request_start,
             response_info().load_timing.connect_timing.connect_start);
 }
@@ -461,7 +461,7 @@ TEST_F(TimeConversionTest, PartiallyInitialized) {
 
   EXPECT_EQ(base::TimeTicks(), response_info().load_timing.request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.dns_start);
+            response_info().load_timing.connect_timing.domain_lookup_start);
 }
 
 TEST_F(TimeConversionTest, NotInitialized) {
@@ -471,7 +471,7 @@ TEST_F(TimeConversionTest, NotInitialized) {
 
   EXPECT_EQ(base::TimeTicks(), response_info().load_timing.request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.dns_start);
+            response_info().load_timing.connect_timing.domain_lookup_start);
 }
 
 class CompletionTimeConversionTest : public WebResourceRequestSenderTest {

@@ -13,7 +13,8 @@ bool StructTraits<network::mojom::LoadTimingInfoConnectTimingDataView,
                   net::LoadTimingInfo::ConnectTiming>::
     Read(network::mojom::LoadTimingInfoConnectTimingDataView data,
          net::LoadTimingInfo::ConnectTiming* out) {
-  return data.ReadDnsStart(&out->dns_start) && data.ReadDnsEnd(&out->dns_end) &&
+  return data.ReadDomainLookupStart(&out->domain_lookup_start) &&
+         data.ReadDomainLookupEnd(&out->domain_lookup_end) &&
          data.ReadConnectStart(&out->connect_start) &&
          data.ReadConnectEnd(&out->connect_end) &&
          data.ReadSslStart(&out->ssl_start) && data.ReadSslEnd(&out->ssl_end);

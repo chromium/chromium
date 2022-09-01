@@ -887,8 +887,10 @@ void RecordTiming(perfetto::TracedValue context,
   dict.Add("requestTime", timing.RequestTime().since_origin().InSecondsF());
   dict.Add("proxyStart", timing.CalculateMillisecondDelta(timing.ProxyStart()));
   dict.Add("proxyEnd", timing.CalculateMillisecondDelta(timing.ProxyEnd()));
-  dict.Add("dnsStart", timing.CalculateMillisecondDelta(timing.DnsStart()));
-  dict.Add("dnsEnd", timing.CalculateMillisecondDelta(timing.DnsEnd()));
+  dict.Add("dnsStart",
+           timing.CalculateMillisecondDelta(timing.DomainLookupStart()));
+  dict.Add("dnsEnd",
+           timing.CalculateMillisecondDelta(timing.DomainLookupEnd()));
   dict.Add("connectStart",
            timing.CalculateMillisecondDelta(timing.ConnectStart()));
   dict.Add("connectEnd", timing.CalculateMillisecondDelta(timing.ConnectEnd()));

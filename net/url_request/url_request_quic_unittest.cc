@@ -324,9 +324,9 @@ class CheckLoadTimingDelegate : public TestDelegate {
     EXPECT_EQ(load_timing_info.connect_timing.connect_end,
               load_timing_info.connect_timing.ssl_end);
     EXPECT_EQ(session_reused,
-              load_timing_info.connect_timing.dns_start.is_null());
+              load_timing_info.connect_timing.domain_lookup_start.is_null());
     EXPECT_EQ(session_reused,
-              load_timing_info.connect_timing.dns_end.is_null());
+              load_timing_info.connect_timing.domain_lookup_end.is_null());
   }
 
   bool session_reused_;

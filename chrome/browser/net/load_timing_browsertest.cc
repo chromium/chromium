@@ -43,8 +43,8 @@ namespace {
 // These are milliseconds after fetch start, or -1 if not
 // present
 struct TimingDeltas {
-  int dns_start;
-  int dns_end;
+  int domain_lookup_start;
+  int domain_lookup_end;
   int connect_start;
   int ssl_start;
   int connect_end;
@@ -63,8 +63,9 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
   // Navigation Timing API, so those are all left as null.
   void GetResultDeltas(TimingDeltas* navigation_deltas) {
     *navigation_deltas = TimingDeltas();
-    navigation_deltas->dns_start = GetResultDelta("domainLookupStart");
-    navigation_deltas->dns_end = GetResultDelta("domainLookupEnd");
+    navigation_deltas->domain_lookup_start =
+        GetResultDelta("domainLookupStart");
+    navigation_deltas->domain_lookup_end = GetResultDelta("domainLookupEnd");
     navigation_deltas->connect_start = GetResultDelta("connectStart");
     navigation_deltas->connect_end = GetResultDelta("connectEnd");
     navigation_deltas->send_start = GetResultDelta("requestStart");
@@ -87,7 +88,7 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
     int fetch_start = GetResultDelta("fetchStart");
     // While the input dns_start is sometimes null, when read from the
     // NavigationTiming API, it's always non-null.
-    EXPECT_LE(fetch_start, navigation_deltas->dns_start);
+    EXPECT_LE(fetch_start, navigation_deltas->domain_lookup_start);
 
     int load_event_end = GetResultDelta("loadEventEnd");
     EXPECT_LE(navigation_deltas->receive_headers_end, load_event_end);
@@ -117,8 +118,10 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
 
-  EXPECT_LE(navigation_deltas.dns_start, navigation_deltas.dns_end);
-  EXPECT_LE(navigation_deltas.dns_end, navigation_deltas.connect_start);
+  EXPECT_LE(navigation_deltas.domain_lookup_start,
+            navigation_deltas.domain_lookup_end);
+  EXPECT_LE(navigation_deltas.domain_lookup_end,
+            navigation_deltas.connect_start);
   EXPECT_LE(navigation_deltas.connect_start, navigation_deltas.connect_end);
   EXPECT_LE(navigation_deltas.connect_end, navigation_deltas.send_start);
   EXPECT_LT(navigation_deltas.send_start,
@@ -138,8 +141,10 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, DISABLED_HTTPS) {
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
 
-  EXPECT_LE(navigation_deltas.dns_start, navigation_deltas.dns_end);
-  EXPECT_LE(navigation_deltas.dns_end, navigation_deltas.connect_start);
+  EXPECT_LE(navigation_deltas.domain_lookup_start,
+            navigation_deltas.domain_lookup_end);
+  EXPECT_LE(navigation_deltas.domain_lookup_end,
+            navigation_deltas.connect_start);
   EXPECT_LE(navigation_deltas.connect_start, navigation_deltas.ssl_start);
   EXPECT_LE(navigation_deltas.ssl_start, navigation_deltas.connect_end);
   EXPECT_LE(navigation_deltas.connect_end, navigation_deltas.send_start);
@@ -164,8 +169,10 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
 
-  EXPECT_LE(navigation_deltas.dns_start, navigation_deltas.dns_end);
-  EXPECT_LE(navigation_deltas.dns_end, navigation_deltas.connect_start);
+  EXPECT_LE(navigation_deltas.domain_lookup_start,
+            navigation_deltas.domain_lookup_end);
+  EXPECT_LE(navigation_deltas.domain_lookup_end,
+            navigation_deltas.connect_start);
   EXPECT_LE(navigation_deltas.connect_start, navigation_deltas.connect_end);
   EXPECT_LE(navigation_deltas.connect_end, navigation_deltas.send_start);
   EXPECT_LT(navigation_deltas.send_start,

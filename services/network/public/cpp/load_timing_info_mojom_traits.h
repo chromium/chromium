@@ -16,14 +16,14 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::LoadTimingInfoConnectTimingDataView,
                  net::LoadTimingInfo::ConnectTiming> {
-  static base::TimeTicks dns_start(
+  static base::TimeTicks domain_lookup_start(
       const net::LoadTimingInfo::ConnectTiming& obj) {
-    return obj.dns_start;
+    return obj.domain_lookup_start;
   }
 
-  static base::TimeTicks dns_end(
+  static base::TimeTicks domain_lookup_end(
       const net::LoadTimingInfo::ConnectTiming& obj) {
-    return obj.dns_end;
+    return obj.domain_lookup_end;
   }
 
   static base::TimeTicks connect_start(

@@ -29,8 +29,8 @@ namespace net {
 // service_worker_start_time
 // proxy_start
 // proxy_end
-// dns_start
-// dns_end
+// domain_lookup_start
+// domain_lookup_end
 // connect_start
 // ssl_start
 // ssl_end
@@ -78,8 +78,8 @@ struct NET_EXPORT LoadTimingInfo {
     // Corresponds to |domainLookupStart| and |domainLookupEnd| in
     // ResourceTiming (http://www.w3.org/TR/resource-timing/) for Web-surfacing
     // requests.
-    base::TimeTicks dns_start;
-    base::TimeTicks dns_end;
+    base::TimeTicks domain_lookup_start;
+    base::TimeTicks domain_lookup_end;
 
     // The time spent establishing the connection. Connect time includes proxy
     // connect times (though not proxy_resolve or DNS lookup times), time spent

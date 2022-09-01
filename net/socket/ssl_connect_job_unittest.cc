@@ -70,8 +70,8 @@ IPAddress ParseIP(const std::string& ip) {
 // Just check that all connect times are set to base::TimeTicks::Now(), for
 // tests that don't update the mocked out time.
 void CheckConnectTimesSet(const LoadTimingInfo::ConnectTiming& connect_timing) {
-  EXPECT_EQ(base::TimeTicks::Now(), connect_timing.dns_start);
-  EXPECT_EQ(base::TimeTicks::Now(), connect_timing.dns_end);
+  EXPECT_EQ(base::TimeTicks::Now(), connect_timing.domain_lookup_start);
+  EXPECT_EQ(base::TimeTicks::Now(), connect_timing.domain_lookup_end);
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.connect_start);
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.ssl_start);
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.ssl_end);
@@ -83,8 +83,8 @@ void CheckConnectTimesSet(const LoadTimingInfo::ConnectTiming& connect_timing) {
 // proxy.
 void CheckConnectTimesExceptDnsSet(
     const LoadTimingInfo::ConnectTiming& connect_timing) {
-  EXPECT_TRUE(connect_timing.dns_start.is_null());
-  EXPECT_TRUE(connect_timing.dns_end.is_null());
+  EXPECT_TRUE(connect_timing.domain_lookup_start.is_null());
+  EXPECT_TRUE(connect_timing.domain_lookup_end.is_null());
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.connect_start);
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.ssl_start);
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.ssl_end);
@@ -365,8 +365,9 @@ TEST_F(SSLConnectJobTest, BasicDirectAsync) {
   // |dns_start|, which is the only one recorded before the FastForwardBy()
   // call. The test classes don't allow any other phases to be triggered on
   // demand, or delayed by a set interval.
-  EXPECT_EQ(start_time, ssl_connect_job->connect_timing().dns_start);
-  EXPECT_EQ(resolve_complete_time, ssl_connect_job->connect_timing().dns_end);
+  EXPECT_EQ(start_time, ssl_connect_job->connect_timing().domain_lookup_start);
+  EXPECT_EQ(resolve_complete_time,
+            ssl_connect_job->connect_timing().domain_lookup_end);
   EXPECT_EQ(resolve_complete_time,
             ssl_connect_job->connect_timing().connect_start);
   EXPECT_EQ(resolve_complete_time, ssl_connect_job->connect_timing().ssl_start);

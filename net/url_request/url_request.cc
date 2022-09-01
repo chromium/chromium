@@ -105,12 +105,12 @@ void ConvertRealLoadTimesToBlockingTimes(LoadTimingInfo* load_timing_info) {
 
   LoadTimingInfo::ConnectTiming* connect_timing =
       &load_timing_info->connect_timing;
-  if (!connect_timing->dns_start.is_null()) {
-    DCHECK(!connect_timing->dns_end.is_null());
-    if (connect_timing->dns_start < block_on_connect)
-      connect_timing->dns_start = block_on_connect;
-    if (connect_timing->dns_end < block_on_connect)
-      connect_timing->dns_end = block_on_connect;
+  if (!connect_timing->domain_lookup_start.is_null()) {
+    DCHECK(!connect_timing->domain_lookup_end.is_null());
+    if (connect_timing->domain_lookup_start < block_on_connect)
+      connect_timing->domain_lookup_start = block_on_connect;
+    if (connect_timing->domain_lookup_end < block_on_connect)
+      connect_timing->domain_lookup_end = block_on_connect;
   }
 
   if (!connect_timing->connect_start.is_null()) {

@@ -86,8 +86,8 @@ void ResourceLoadObserver::CheckResourceLoaded(
     CheckTime(timing.send_start);
     CheckTime(timing.send_end);
     if (!was_cached) {
-      CheckTime(timing.connect_timing.dns_start);
-      CheckTime(timing.connect_timing.dns_end);
+      CheckTime(timing.connect_timing.domain_lookup_start);
+      CheckTime(timing.connect_timing.domain_lookup_end);
       CheckTime(timing.connect_timing.connect_start);
       CheckTime(timing.connect_timing.connect_end);
     }

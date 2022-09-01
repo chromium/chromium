@@ -122,10 +122,11 @@ void AndroidPageLoadMetricsObserver::OnLoadedResource(
 
     const net::LoadTimingInfo& timing =
         *extra_request_complete_info.load_timing_info;
-    int64_t dns_start =
-        timing.connect_timing.dns_start.since_origin().InMilliseconds();
-    int64_t dns_end =
-        timing.connect_timing.dns_end.since_origin().InMilliseconds();
+    int64_t domain_lookup_start =
+        timing.connect_timing.domain_lookup_start.since_origin()
+            .InMilliseconds();
+    int64_t domain_lookup_end =
+        timing.connect_timing.domain_lookup_end.since_origin().InMilliseconds();
     int64_t connect_start =
         timing.connect_timing.connect_start.since_origin().InMilliseconds();
     int64_t connect_end =
@@ -134,8 +135,9 @@ void AndroidPageLoadMetricsObserver::OnLoadedResource(
         timing.request_start.since_origin().InMilliseconds();
     int64_t send_start = timing.send_start.since_origin().InMilliseconds();
     int64_t send_end = timing.send_end.since_origin().InMilliseconds();
-    ReportLoadedMainResource(dns_start, dns_end, connect_start, connect_end,
-                             request_start, send_start, send_end);
+    ReportLoadedMainResource(domain_lookup_start, domain_lookup_end,
+                             connect_start, connect_end, request_start,
+                             send_start, send_end);
   }
 }
 

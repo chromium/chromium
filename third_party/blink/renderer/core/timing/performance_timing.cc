@@ -145,11 +145,11 @@ uint64_t PerformanceTiming::domainLookupStart() const {
   // This will be zero when a DNS request is not performed.  Rather than
   // exposing a special value that indicates no DNS, we "backfill" with
   // fetchStart.
-  base::TimeTicks dns_start = timing->DnsStart();
-  if (dns_start.is_null())
+  base::TimeTicks domain_lookup_start = timing->DomainLookupStart();
+  if (domain_lookup_start.is_null())
     return fetchStart();
 
-  return MonotonicTimeToIntegerMilliseconds(dns_start);
+  return MonotonicTimeToIntegerMilliseconds(domain_lookup_start);
 }
 
 uint64_t PerformanceTiming::domainLookupEnd() const {
@@ -160,11 +160,11 @@ uint64_t PerformanceTiming::domainLookupEnd() const {
   // This will be zero when a DNS request is not performed.  Rather than
   // exposing a special value that indicates no DNS, we "backfill" with
   // domainLookupStart.
-  base::TimeTicks dns_end = timing->DnsEnd();
-  if (dns_end.is_null())
+  base::TimeTicks domain_lookup_end = timing->DomainLookupEnd();
+  if (domain_lookup_end.is_null())
     return domainLookupStart();
 
-  return MonotonicTimeToIntegerMilliseconds(dns_end);
+  return MonotonicTimeToIntegerMilliseconds(domain_lookup_end);
 }
 
 uint64_t PerformanceTiming::connectStart() const {
@@ -186,8 +186,10 @@ uint64_t PerformanceTiming::connectStart() const {
   // ResourceLoadTiming's connect phase includes DNS, however Navigation
   // Timing's connect phase should not. So if there is DNS time, trim it from
   // the start.
-  if (!timing->DnsEnd().is_null() && timing->DnsEnd() > connect_start)
-    connect_start = timing->DnsEnd();
+  if (!timing->DomainLookupEnd().is_null() &&
+      timing->DomainLookupEnd() > connect_start) {
+    connect_start = timing->DomainLookupEnd();
+  }
 
   return MonotonicTimeToIntegerMilliseconds(connect_start);
 }

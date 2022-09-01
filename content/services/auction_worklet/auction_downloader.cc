@@ -115,10 +115,10 @@ void WriteTraceTiming(const net::LoadTimingInfo& timing,
            CalculateMillisecondDelta(timing, timing.proxy_resolve_start));
   dict.Add("proxyEnd",
            CalculateMillisecondDelta(timing, timing.proxy_resolve_end));
-  dict.Add("dnsStart",
-           CalculateMillisecondDelta(timing, timing.connect_timing.dns_start));
-  dict.Add("dnsEnd",
-           CalculateMillisecondDelta(timing, timing.connect_timing.dns_end));
+  dict.Add("dnsStart", CalculateMillisecondDelta(
+                           timing, timing.connect_timing.domain_lookup_start));
+  dict.Add("dnsEnd", CalculateMillisecondDelta(
+                         timing, timing.connect_timing.domain_lookup_end));
   dict.Add("connectStart", CalculateMillisecondDelta(
                                timing, timing.connect_timing.connect_start));
   dict.Add("connectEnd", CalculateMillisecondDelta(

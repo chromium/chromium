@@ -315,11 +315,11 @@ DOMHighResTimeStamp PerformanceResourceTiming::domainLookupStart() const {
   if (!AllowTimingDetails())
     return 0.0;
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing || timing->DnsStart().is_null())
+  if (!timing || timing->DomainLookupStart().is_null())
     return fetchStart();
 
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DnsStart(), AllowNegativeValue(),
+      TimeOrigin(), timing->DomainLookupStart(), AllowNegativeValue(),
       CrossOriginIsolatedCapability());
 }
 
@@ -327,11 +327,11 @@ DOMHighResTimeStamp PerformanceResourceTiming::domainLookupEnd() const {
   if (!AllowTimingDetails())
     return 0.0;
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing || timing->DnsEnd().is_null())
+  if (!timing || timing->DomainLookupEnd().is_null())
     return domainLookupStart();
 
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DnsEnd(), AllowNegativeValue(),
+      TimeOrigin(), timing->DomainLookupEnd(), AllowNegativeValue(),
       CrossOriginIsolatedCapability());
 }
 
@@ -345,8 +345,8 @@ DOMHighResTimeStamp PerformanceResourceTiming::connectStart() const {
 
   // connectStart includes any DNS time, so we may need to trim that off.
   base::TimeTicks connect_start = timing->ConnectStart();
-  if (!timing->DnsEnd().is_null())
-    connect_start = timing->DnsEnd();
+  if (!timing->DomainLookupEnd().is_null())
+    connect_start = timing->DomainLookupEnd();
 
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), connect_start, AllowNegativeValue(),

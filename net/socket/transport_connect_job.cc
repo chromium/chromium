@@ -242,11 +242,11 @@ int TransportConnectJob::DoLoop(int result) {
 }
 
 int TransportConnectJob::DoResolveHost() {
-  connect_timing_.dns_start = base::TimeTicks::Now();
+  connect_timing_.domain_lookup_start = base::TimeTicks::Now();
 
   if (has_dns_override_) {
     DCHECK_EQ(1u, endpoint_results_.size());
-    connect_timing_.dns_end = connect_timing_.dns_start;
+    connect_timing_.domain_lookup_end = connect_timing_.domain_lookup_start;
     next_state_ = STATE_TRANSPORT_CONNECT;
     return OK;
   }
@@ -273,10 +273,10 @@ int TransportConnectJob::DoResolveHost() {
 int TransportConnectJob::DoResolveHostComplete(int result) {
   TRACE_EVENT0(NetTracingCategory(),
                "TransportConnectJob::DoResolveHostComplete");
-  connect_timing_.dns_end = base::TimeTicks::Now();
+  connect_timing_.domain_lookup_end = base::TimeTicks::Now();
   // Overwrite connection start time, since for connections that do not go
   // through proxies, |connect_start| should not include dns lookup time.
-  connect_timing_.connect_start = connect_timing_.dns_end;
+  connect_timing_.connect_start = connect_timing_.domain_lookup_end;
   resolve_error_info_ = request_->GetResolveErrorInfo();
 
   if (result != OK) {
@@ -411,11 +411,11 @@ int TransportConnectJob::DoTransportConnectComplete(int result) {
 
   if (result == OK) {
     DCHECK(!connect_timing_.connect_start.is_null());
-    DCHECK(!connect_timing_.dns_start.is_null());
+    DCHECK(!connect_timing_.domain_lookup_start.is_null());
     // `HandleSubJobComplete` should have called `SetSocket`.
     DCHECK(socket());
     base::TimeTicks now = base::TimeTicks::Now();
-    base::TimeDelta total_duration = now - connect_timing_.dns_start;
+    base::TimeDelta total_duration = now - connect_timing_.domain_lookup_start;
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.DNS_Resolution_And_TCP_Connection_Latency2",
                                total_duration, base::Milliseconds(1),
                                base::Minutes(10), 100);

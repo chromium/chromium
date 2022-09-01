@@ -481,10 +481,12 @@ void CronetBidirectionalStreamAdapter::MaybeReportMetrics() {
   cronet::Java_CronetBidirectionalStream_onMetricsCollected(
       env, owner_,
       metrics_util::ConvertTime(start_ticks, start_ticks, start_time),
-      metrics_util::ConvertTime(load_timing_info.connect_timing.dns_start,
-                                start_ticks, start_time),
-      metrics_util::ConvertTime(load_timing_info.connect_timing.dns_end,
-                                start_ticks, start_time),
+      metrics_util::ConvertTime(
+          load_timing_info.connect_timing.domain_lookup_start, start_ticks,
+          start_time),
+      metrics_util::ConvertTime(
+          load_timing_info.connect_timing.domain_lookup_end, start_ticks,
+          start_time),
       metrics_util::ConvertTime(load_timing_info.connect_timing.connect_start,
                                 start_ticks, start_time),
       metrics_util::ConvertTime(load_timing_info.connect_timing.connect_end,

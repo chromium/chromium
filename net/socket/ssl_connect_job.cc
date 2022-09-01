@@ -376,8 +376,9 @@ int SSLConnectJob::DoSSLConnect() {
   // |connect_start| doesn't include dns times, and it adjusts the time so
   // as not to include time spent waiting for an idle socket.
   connect_timing_.connect_start = socket_connect_timing.connect_start;
-  connect_timing_.dns_start = socket_connect_timing.dns_start;
-  connect_timing_.dns_end = socket_connect_timing.dns_end;
+  connect_timing_.domain_lookup_start =
+      socket_connect_timing.domain_lookup_start;
+  connect_timing_.domain_lookup_end = socket_connect_timing.domain_lookup_end;
 
   ssl_negotiation_started_ = true;
   connect_timing_.ssl_start = base::TimeTicks::Now();

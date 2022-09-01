@@ -197,7 +197,7 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadTimingInfo) {
 
   auto load_timing_info = std::make_unique<net::LoadTimingInfo>();
   const base::TimeTicks kNow = base::TimeTicks::Now();
-  load_timing_info->connect_timing.dns_start = kNow;
+  load_timing_info->connect_timing.domain_lookup_start = kNow;
   page_load_metrics::ExtraRequestCompleteInfo info(
       url::SchemeHostPort(GURL("https://ignored.com")), net::IPEndPoint(),
       frame_tree_node_id, false, /* cached */
