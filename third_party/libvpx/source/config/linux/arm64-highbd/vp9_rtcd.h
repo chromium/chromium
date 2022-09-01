@@ -227,7 +227,17 @@ void vp9_highbd_quantize_fp_c(const tran_low_t* coeff_ptr,
                               uint16_t* eob_ptr,
                               const int16_t* scan,
                               const int16_t* iscan);
-#define vp9_highbd_quantize_fp vp9_highbd_quantize_fp_c
+void vp9_highbd_quantize_fp_neon(const tran_low_t* coeff_ptr,
+                                 intptr_t n_coeffs,
+                                 const int16_t* round_ptr,
+                                 const int16_t* quant_ptr,
+                                 tran_low_t* qcoeff_ptr,
+                                 tran_low_t* dqcoeff_ptr,
+                                 const int16_t* dequant_ptr,
+                                 uint16_t* eob_ptr,
+                                 const int16_t* scan,
+                                 const int16_t* iscan);
+#define vp9_highbd_quantize_fp vp9_highbd_quantize_fp_neon
 
 void vp9_highbd_quantize_fp_32x32_c(const tran_low_t* coeff_ptr,
                                     intptr_t n_coeffs,
@@ -239,7 +249,17 @@ void vp9_highbd_quantize_fp_32x32_c(const tran_low_t* coeff_ptr,
                                     uint16_t* eob_ptr,
                                     const int16_t* scan,
                                     const int16_t* iscan);
-#define vp9_highbd_quantize_fp_32x32 vp9_highbd_quantize_fp_32x32_c
+void vp9_highbd_quantize_fp_32x32_neon(const tran_low_t* coeff_ptr,
+                                       intptr_t n_coeffs,
+                                       const int16_t* round_ptr,
+                                       const int16_t* quant_ptr,
+                                       tran_low_t* qcoeff_ptr,
+                                       tran_low_t* dqcoeff_ptr,
+                                       const int16_t* dequant_ptr,
+                                       uint16_t* eob_ptr,
+                                       const int16_t* scan,
+                                       const int16_t* iscan);
+#define vp9_highbd_quantize_fp_32x32 vp9_highbd_quantize_fp_32x32_neon
 
 void vp9_highbd_temporal_filter_apply_c(const uint8_t* frame1,
                                         unsigned int stride,
