@@ -63,11 +63,11 @@ AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
   // once we have audited and removed code paths that call here with a profile
   // that doesn't have an App Service.
   if (!IsAppServiceAvailableForProfile(profile)) {
-    DVLOG(1) << "Called AppServiceProxyFactory::GetForProfile() on a profile "
-                "which does not contain an AppServiceProxy. Please check "
-                "whether this is appropriate as you may be leaking information "
-                "out of this profile. Returning the AppServiceProxy attached "
-                "to the parent profile instead.";
+    // See comments in app_service_proxy_factory.h for how to handle profiles
+    // with no AppServiceProxy. As an interim measure, we return the parent
+    // profile in non-guest Incognito profiles.
+    LOG(ERROR) << "Called AppServiceProxyFactory::GetForProfile() on a profile "
+                  "which does not contain an AppServiceProxy";
     // Fail tests that would trigger DumpWithoutCrashing.
     DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kTestType));
