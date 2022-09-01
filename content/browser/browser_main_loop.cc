@@ -951,10 +951,12 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   // ShellBrowserMainParts initializes a ShellBrowserContext with user data
   // directory only in PreMainMessageLoopRun(). First-Party Sets handler needs
   // to access this directory, hence triggering after this stage has run.
-  FirstPartySetsHandlerImpl::GetInstance()->Init(
-      GetContentClient()->browser()->GetFirstPartySetsDirectory(),
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          network::switches::kUseFirstPartySet));
+  if (result_code_ == RESULT_CODE_NORMAL_EXIT) {
+    FirstPartySetsHandlerImpl::GetInstance()->Init(
+        GetContentClient()->browser()->GetFirstPartySetsDirectory(),
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            network::switches::kUseFirstPartySet));
+  }
 
   variations::MaybeScheduleFakeCrash();
 
