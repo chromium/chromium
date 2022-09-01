@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/grit/generated_resources.h"
@@ -54,11 +56,20 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             browser->profile(),
             BookmarkLaunchLocation::kSidePanelContextMenu,
             bookmark->parent(),
-            {bookmark}))) {
+            {bookmark}))),
+        shopping_list_controller_(
+            base::WrapUnique(new commerce::ShoppingListContextMenuController(
+                BookmarkModelFactory::GetForBrowserContext(browser->profile()),
+                commerce::ShoppingServiceFactory::GetForBrowserContext(
+                    browser->profile()),
+                bookmark,
+                this))) {
     if (source == side_panel::mojom::ActionSource::kPriceTracking) {
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+      AddSeparator(ui::NORMAL_SEPARATOR);
+      shopping_list_controller_->AddPriceTrackingItemForBookmark();
       AddSeparator(ui::NORMAL_SEPARATOR);
       AddItem(IDC_BOOKMARK_MANAGER);
       return;
@@ -90,6 +101,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
   ~BookmarkContextMenu() override = default;
 
   void ExecuteCommand(int command_id, int event_flags) override {
+    if (shopping_list_controller_->ExecuteCommand(command_id))
+      return;
     controller_->ExecuteCommand(command_id, event_flags);
   }
 
@@ -114,6 +127,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
   }
   base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder_;
   std::unique_ptr<BookmarkContextMenuController> controller_;
+  std::unique_ptr<commerce::ShoppingListContextMenuController>
+      shopping_list_controller_;
 };
 
 }  // namespace

@@ -1,0 +1,1 @@
+include_rules = ["+components/power_bookmarks/core"]
