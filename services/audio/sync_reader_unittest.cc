@@ -61,7 +61,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   const int kSampleRate = 44100;
   const int kFramesPerBuffer = 1;
   AudioParameters params(AudioParameters::AUDIO_BITSTREAM_AC3,
-                         media::CHANNEL_LAYOUT_STEREO, kSampleRate,
+                         media::ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFramesPerBuffer);
 
   auto socket = std::make_unique<base::CancelableSyncSocket>();

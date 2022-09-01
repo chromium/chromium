@@ -41,7 +41,8 @@ namespace audio {
 namespace {
 
 const int kSampleRate = media::AudioParameters::kAudioCDSampleRate;
-const media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
+const media::ChannelLayoutConfig kChannelLayoutConfig =
+    media::ChannelLayoutConfig::Stereo();
 const int kSamplesPerPacket = kSampleRate / 100;
 
 // InputController will poll once every second, so wait at most a bit
@@ -120,7 +121,7 @@ class TimeSourceInputControllerTest
             &log_factory_)),
         aecdump_recording_manager_(audio_manager_->GetTaskRunner()),
         params_(media::AudioParameters::AUDIO_FAKE,
-                kChannelLayout,
+                kChannelLayoutConfig,
                 kSampleRate,
                 kSamplesPerPacket) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

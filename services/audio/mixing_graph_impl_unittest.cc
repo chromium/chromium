@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/audio/mixing_graph_impl.h"
+#include "media/base/channel_layout.h"
 #include "media/base/loopback_audio_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +59,7 @@ class MockConverterFactory {
 TEST(MixingGraphImpl, AddInputToMainConverter) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 480);
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -86,7 +87,7 @@ TEST(MixingGraphImpl, AddInputToMainConverter) {
 TEST(MixingGraphImpl, AddMultipleInputsToMainConverter) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 480);
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -124,10 +125,10 @@ TEST(MixingGraphImpl, AddMultipleInputsToMainConverter) {
 TEST(MixingGraphImpl, AddInputWithChannelMixer) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 480);
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 48000, 480);
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -157,10 +158,10 @@ TEST(MixingGraphImpl, AddInputWithChannelMixer) {
 TEST(MixingGraphImpl, AddInputWithResampler) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 480);
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 16000, 160);
+      media::ChannelLayoutConfig::Mono(), 16000, 160);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -190,11 +191,10 @@ TEST(MixingGraphImpl, AddInputWithResampler) {
 TEST(MixingGraphImpl, OutputDiscreteChannelLayout) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 48000, 480);
-  output_params.set_channels_for_discrete(2);
+      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 2}, 48000, 480);
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 48000, 480);
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -224,12 +224,10 @@ TEST(MixingGraphImpl, OutputDiscreteChannelLayout) {
 TEST(MixingGraphImpl, AddInputWithDiscreteChannelLayout) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 48000, 480);
-  output_params.set_channels_for_discrete(1);
+      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 480);
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 48000, 480);
-  input_params.set_channels_for_discrete(2);
+      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 2}, 48000, 480);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -259,7 +257,7 @@ TEST(MixingGraphImpl, AddInputWithDiscreteChannelLayout) {
 TEST(MixingGraphImpl, BuildComplexGraph) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 480);
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -272,7 +270,7 @@ TEST(MixingGraphImpl, BuildComplexGraph) {
   // Create a new input which differs from the output in sample rate.
   media::AudioParameters input_params_resamp(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 16000, 160);
+      media::ChannelLayoutConfig::Mono(), 16000, 160);
   MockInput input1(input_params_resamp);
   mixing_graph.AddInput(&input1);
   // Graph:
@@ -293,7 +291,7 @@ TEST(MixingGraphImpl, BuildComplexGraph) {
   // Create a new input which differs from the output in channel layout.
   media::AudioParameters input_params_downmix(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 48000, 480);
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
   MockInput input3(input_params_downmix);
   mixing_graph.AddInput(&input3);
   // Graph:
@@ -307,7 +305,7 @@ TEST(MixingGraphImpl, BuildComplexGraph) {
   // (new).
   media::AudioParameters input_params_resamp_downmix(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 16000, 160);
+      media::ChannelLayoutConfig::Stereo(), 16000, 160);
   MockInput input4(input_params_resamp_downmix);
   mixing_graph.AddInput(&input4);
   // Graph:
@@ -352,8 +350,7 @@ TEST(MixingGraphImpl, BuildComplexGraph) {
   // to having a discrete channel layout.
   media::AudioParameters input_params_resamp_discrete(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 48000, 160);
-  input_params_resamp_discrete.set_channels_for_discrete(1);
+      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 160);
   MockInput input8(input_params_resamp_discrete);
   mixing_graph.AddInput(&input8);
   // Graph:
@@ -410,7 +407,7 @@ TEST(MixingGraphImpl, BuildComplexGraph) {
 TEST(MixingGraphImpl, VerifyConverters) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 480);
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
   MockConverterFactory mock_converter_factory;
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
@@ -423,7 +420,7 @@ TEST(MixingGraphImpl, VerifyConverters) {
   // Create a new input which differs from the output in sample rate.
   media::AudioParameters input_params_resamp(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 16000, 160);
+      media::ChannelLayoutConfig::Mono(), 16000, 160);
   MockInput input1(input_params_resamp);
   EXPECT_CALL(mock_converter_factory,
               VerifyInput(16000, media::ChannelLayout::CHANNEL_LAYOUT_MONO));
@@ -444,7 +441,7 @@ TEST(MixingGraphImpl, VerifyConverters) {
   // Create a new input which differs from the output in channel layout.
   media::AudioParameters input_params_downmix(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 48000, 480);
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
   MockInput input3(input_params_downmix);
   EXPECT_CALL(mock_converter_factory,
               VerifyInput(48000, media::ChannelLayout::CHANNEL_LAYOUT_STEREO));
@@ -460,7 +457,7 @@ TEST(MixingGraphImpl, VerifyConverters) {
   // (new).
   media::AudioParameters input_params_resamp_downmix(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 16000, 160);
+      media::ChannelLayoutConfig::Stereo(), 16000, 160);
   MockInput input4(input_params_resamp_downmix);
   EXPECT_CALL(mock_converter_factory,
               VerifyInput(16000, media::ChannelLayout::CHANNEL_LAYOUT_STEREO));
@@ -488,8 +485,7 @@ TEST(MixingGraphImpl, VerifyConverters) {
   // to having a discrete channel layout.
   media::AudioParameters input_params_resamp_discrete(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 48000, 160);
-  input_params_resamp_discrete.set_channels_for_discrete(1);
+      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 160);
   MockInput input6(input_params_resamp_discrete);
   EXPECT_CALL(
       mock_converter_factory,
@@ -516,15 +512,16 @@ TEST(MixingGraphImpl, VerifyConverters) {
 // Verifies operator< of AudioConverterKey.
 TEST(MixingGraphImpl, AudioConverterKeySorting) {
   auto MakeKey = [](media::ChannelLayout channel_layout, int sample_rate) {
-    return MixingGraphImpl::AudioConverterKey(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               channel_layout, sample_rate, sample_rate / 100));
+    return MixingGraphImpl::AudioConverterKey(media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        {channel_layout, media::ChannelLayoutToChannelCount(channel_layout)},
+        sample_rate, sample_rate / 100));
   };
   auto MakeDiscreteKey = [](int channels, int sample_rate) {
-    media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                  media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE,
-                                  sample_rate, sample_rate / 100);
-    params.set_channels_for_discrete(channels);
+    media::AudioParameters params(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, channels}, sample_rate,
+        sample_rate / 100);
     return MixingGraphImpl::AudioConverterKey(params);
   };
 

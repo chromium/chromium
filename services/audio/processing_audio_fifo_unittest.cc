@@ -70,7 +70,7 @@ class ProcessingAudioFifoTest : public testing::Test {
  public:
   ProcessingAudioFifoTest()
       : params_(media::AudioParameters::Format::AUDIO_PCM_LINEAR,
-                media::CHANNEL_LAYOUT_STEREO,
+                media::ChannelLayoutConfig::Stereo(),
                 kSampleRate,
                 kFramesPerBuffer),
         audio_source_(params_.channels(),

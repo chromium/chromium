@@ -144,13 +144,9 @@ void MixingGraphImpl::AddInput(Input* input) {
   // Channel mixer input format is the same as resampler input except channel
   // layout and channel count.
   media::AudioParameters channel_mixer_input_params(
-      resampler_input_params.format(), input_params.channel_layout(),
+      resampler_input_params.format(), input_params.channel_layout_config(),
       resampler_input_params.sample_rate(),
       resampler_input_params.frames_per_buffer());
-  if (channel_mixer_input_params.channel_layout() ==
-      media::CHANNEL_LAYOUT_DISCRETE)
-    channel_mixer_input_params.set_channels_for_discrete(
-        input_params.channels());
 
   media::LoopbackAudioConverter* converter = nullptr;
 

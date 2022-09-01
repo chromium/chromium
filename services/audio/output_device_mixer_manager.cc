@@ -248,9 +248,9 @@ OutputDeviceMixer* OutputDeviceMixerManager::AddMixer(
   // rely on the system channel mapping.
   if (output_params.channel_layout() == media::CHANNEL_LAYOUT_DISCRETE &&
       output_params.channels() >= 2) {
-    output_params.Reset(output_params.format(), media::CHANNEL_LAYOUT_STEREO,
-                        output_params.sample_rate(),
-                        output_params.frames_per_buffer());
+    output_params.Reset(
+        output_params.format(), media::ChannelLayoutConfig::Stereo(),
+        output_params.sample_rate(), output_params.frames_per_buffer());
   }
 
   // base::Unretained(this) is safe here, because |output_device_mixers_|

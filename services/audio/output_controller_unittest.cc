@@ -58,7 +58,8 @@ namespace audio {
 namespace {
 
 constexpr int kSampleRate = AudioParameters::kAudioCDSampleRate;
-constexpr media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
+const media::ChannelLayoutConfig kChannelLayoutConfig =
+    media::ChannelLayoutConfig::Stereo();
 constexpr int kSamplesPerPacket = kSampleRate / 1000;
 constexpr double kTestVolume = 0.25;
 constexpr float kBufferNonZeroData = 1.0f;
@@ -67,8 +68,8 @@ AudioParameters GetTestParams() {
   // AudioManagerForControllerTest only creates FakeAudioOutputStreams
   // behind-the-scenes. So, the use of PCM_LOW_LATENCY won't actually result in
   // any real system audio output during these tests.
-  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, kChannelLayout,
-                         kSampleRate, kSamplesPerPacket);
+  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         kChannelLayoutConfig, kSampleRate, kSamplesPerPacket);
 }
 
 class MockOutputControllerEventHandler : public OutputController::EventHandler {

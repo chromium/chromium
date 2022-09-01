@@ -129,8 +129,8 @@ void FakeConsumer::SaveToFile(const base::FilePath& path) const {
 
   const media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::GuessChannelLayout(recorded_channel_data_.size()), sample_rate_,
-      recorded_channel_data_[0].size());
+      media::ChannelLayoutConfig::Guess(recorded_channel_data_.size()),
+      sample_rate_, recorded_channel_data_[0].size());
   media::AudioDebugFileWriter writer(params);
   base::File file(path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                             base::File::FLAG_WRITE);

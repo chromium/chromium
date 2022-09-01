@@ -12,9 +12,9 @@ namespace audio {
 class MixingGraphInputTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    output_params_ = media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 480);
+    output_params_ =
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Mono(), 48000, 480);
     mixing_graph_ = MixingGraph::Create(
         output_params_,
         base::BindRepeating(&MixingGraphInputTest::OnMoreDataCallBack,
@@ -179,7 +179,7 @@ TEST_F(MixingGraphInputTest, MultipleInputs) {
 TEST_F(MixingGraphInputTest, ChannelMixing) {
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 48000, 480);
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
   constexpr float kInitialCounterValue = 0.0f;
   constexpr float kCounterIncrement = 1e-4f;
   SampleCounter source_callback(kInitialCounterValue, kCounterIncrement);
@@ -199,7 +199,7 @@ TEST_F(MixingGraphInputTest, ChannelMixing) {
 TEST_F(MixingGraphInputTest, Resampling) {
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 24000, 480);
+      media::ChannelLayoutConfig::Mono(), 24000, 480);
   constexpr float kInitialCounterValue = 0.0f;
   constexpr float kCounterIncrement = 1e-4f;
   SampleCounter source_callback(kInitialCounterValue, kCounterIncrement);
@@ -221,7 +221,7 @@ TEST_F(MixingGraphInputTest, Buffering1) {
   // Input produces 5 ms of audio. Output consumes 10 ms.
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 240);
+      media::ChannelLayoutConfig::Mono(), 48000, 240);
   constexpr float kInitialCounterValue = 0.0f;
   constexpr float kCounterIncrement = 1e-4f;
   SampleCounter source_callback(kInitialCounterValue, kCounterIncrement);
@@ -240,7 +240,7 @@ TEST_F(MixingGraphInputTest, Buffering2) {
   // Input produces 15 ms of audio. Output consumes 10 ms.
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 720);
+      media::ChannelLayoutConfig::Mono(), 48000, 720);
   constexpr float kInitialCounterValue = 0.0f;
   constexpr float kCounterIncrement = 1e-4f;
   SampleCounter source_callback(kInitialCounterValue, kCounterIncrement);
@@ -259,7 +259,7 @@ TEST_F(MixingGraphInputTest, BufferClearedAtRestart) {
   // Input produces 15 ms of audio. Output consumes 10 ms.
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayout::CHANNEL_LAYOUT_MONO, 48000, 720);
+      media::ChannelLayoutConfig::Mono(), 48000, 720);
   constexpr float kInitialCounterValue = 0.0f;
   constexpr float kCounterIncrement = 1e-4f;
   CallbackCounter source_callback(kInitialCounterValue, kCounterIncrement);

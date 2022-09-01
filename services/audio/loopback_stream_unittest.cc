@@ -60,7 +60,7 @@ const media::AudioParameters& GetLoopbackStreamParams() {
   // 48 kHz, 2-channel audio, with 10 ms buffers.
   static const media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_STEREO, 48000, 480);
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
   return params;
 }
 
@@ -151,10 +151,11 @@ class LoopbackStreamTest : public testing::Test {
   void RunMojoTasks() { task_environment_.RunUntilIdle(); }
 
   FakeLoopbackGroupMember* AddSource(int channels, int sample_rate) {
-    sources_.emplace_back(std::make_unique<FakeLoopbackGroupMember>(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::GuessChannelLayout(channels), sample_rate,
-                               (sample_rate * kBufferDuration).InSeconds())));
+    sources_.emplace_back(
+        std::make_unique<FakeLoopbackGroupMember>(media::AudioParameters(
+            media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+            media::ChannelLayoutConfig::Guess(channels), sample_rate,
+            (sample_rate * kBufferDuration).InSeconds())));
     coordinator_.RegisterMember(group_id_, sources_.back().get());
     return sources_.back().get();
   }

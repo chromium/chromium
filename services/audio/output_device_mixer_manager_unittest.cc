@@ -147,7 +147,7 @@ class OutputDeviceMixerManagerTest
       : current_default_physical_device_id_(kFakeDeviceId),
         current_communications_physical_device_id_(kFakeCommunicationsId),
         default_params_(AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-                        media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+                        media::ChannelLayoutConfig::Stereo(),
                         /*sample_rate=*/8000,
                         /*frames_per_buffer=*/800),
         output_mixer_manager_(
@@ -571,7 +571,7 @@ TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_WithBitstreamFormat) {
       .WillOnce(Return(&mock_stream));
 
   AudioParameters bitstream_params{AudioParameters::Format::AUDIO_BITSTREAM_AC3,
-                                   media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+                                   media::ChannelLayoutConfig::Stereo(),
                                    /*sample_rate=*/8000,
                                    /*frames_per_buffer=*/800};
 
@@ -618,7 +618,7 @@ TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_MaxProxies) {
   // We use bitstream parameters to simplify hitting a portion of the code that
   // creates an AudioOutputStream directly.
   AudioParameters bitstream_params{AudioParameters::Format::AUDIO_BITSTREAM_AC3,
-                                   media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+                                   media::ChannelLayoutConfig::Stereo(),
                                    /*sample_rate=*/8000,
                                    /*frames_per_buffer=*/800};
 

@@ -183,7 +183,7 @@ class OutputDeviceMixerImplTestBase {
   struct MixTrackMock {
     explicit MixTrackMock(int frames_per_buffer)
         : params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                 media::CHANNEL_LAYOUT_STEREO,
+                 media::ChannelLayoutConfig::Stereo(),
                  48000,
                  frames_per_buffer) {}
     StrictMock<MockMixingGraphInput> graph_input;
@@ -423,7 +423,7 @@ class OutputDeviceMixerImplTestBase {
 
   const media::AudioParameters mixer_output_params_{
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_STEREO, 48000, 5};
+      media::ChannelLayoutConfig::Stereo(), 48000, 5};
 
  private:
   AudioOutputStream* CreateOutputStream(const std::string& expected_device_id,
