@@ -22,8 +22,8 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HELP_BUBBLE_DISMISSED_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
-import {HelpBubbleClientCallbackRouter, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
+import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
+import {HelpBubbleClientCallbackRouter, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
 import {HelpBubbleProxyImpl} from './help_bubble_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -164,6 +164,9 @@ export const HelpBubbleMixin = dedupingMixin(
           this.dismissedEventTracker_.add(
               bubble, HELP_BUBBLE_DISMISSED_EVENT,
               this.onHelpBubbleDismissed_.bind(this));
+          this.dismissedEventTracker_.add(
+              bubble, HELP_BUBBLE_TIMED_OUT_EVENT,
+              this.onHelpBubbleTimedOut_.bind(this));
 
           bubble.anchorId = anchorId;
           bubble.closeText = params.closeButtonAltText;
@@ -172,10 +175,14 @@ export const HelpBubbleMixin = dedupingMixin(
           bubble.forceCloseButton = params.forceCloseButton;
           bubble.titleText = params.titleText || '';
           bubble.progress = params.progress || null;
+          bubble.buttons = params.buttons;
+          if (params.timeout) {
+            bubble.timeoutMs = Number(params.timeout!.microseconds / 1000n);
+          }
+
           assert(
               !bubble.progress ||
               bubble.progress.total >= bubble.progress.current);
-          bubble.buttons = params.buttons;
           bubble.show();
           anchor!.focus();
         }
@@ -206,7 +213,8 @@ export const HelpBubbleMixin = dedupingMixin(
           const nativeId = this.getNativeIdForAnchor_(target.id);
           assert(nativeId);
           if (hidden) {
-            this.helpBubbleHandler_.helpBubbleClosed(nativeId, false);
+            this.helpBubbleHandler_.helpBubbleClosed(
+                nativeId, HelpBubbleClosedReason.kPageChanged);
           }
           this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
               nativeId, isVisible);
@@ -290,8 +298,19 @@ export const HelpBubbleMixin = dedupingMixin(
               this.helpBubbleHandler_.helpBubbleButtonPressed(
                   nativeId, e.detail.buttonIndex!);
             } else {
-              this.helpBubbleHandler_.helpBubbleClosed(nativeId, true);
+              this.helpBubbleHandler_.helpBubbleClosed(
+                  nativeId, HelpBubbleClosedReason.kDismissedByUser);
             }
+          }
+        }
+
+        private onHelpBubbleTimedOut_(e: HelpBubbleDismissedEvent) {
+          const hidden = this.hideHelpBubble(e.detail.anchorId);
+          assert(hidden);
+          const nativeId = this.getNativeIdForAnchor_(e.detail.anchorId);
+          if (nativeId) {
+            this.helpBubbleHandler_.helpBubbleClosed(
+                nativeId, HelpBubbleClosedReason.kTimedOut);
           }
         }
       }
