@@ -24,6 +24,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -230,9 +231,12 @@ void BookmarkBubbleView::ShowBubble(
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
             ->GetAvailableProductInfoForUrl(url);
     if (product_info.has_value()) {
+      bool is_price_tracked =
+          commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
       dialog_model_builder.AddSeparator().AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              std::make_unique<PriceTrackingView>(),
+              std::make_unique<PriceTrackingView>(profile, url,
+                                                  is_price_tracked),
               views::BubbleDialogModelHost::FieldType::kControl),
           kPriceTrackingBookmarkViewElementId);
     }

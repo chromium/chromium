@@ -10,12 +10,31 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
 
+class Profile;
+
 class PriceTrackingView : public views::FlexLayoutView {
  public:
-  PriceTrackingView();
+  PriceTrackingView(Profile* profile,
+                    GURL page_url,
+                    bool is_price_track_enabled);
+  ~PriceTrackingView() override;
+
+  bool IsToggleOn();
 
  private:
+  friend class PriceTrackingViewTest;
+
+  std::u16string GetToggleAccessibleName();
+  void OnToggleButtonPressed(const GURL url);
+  void UpdatePriceTrackingState(const GURL& url);
+  void OnPriceTrackingStateUpdated(bool success);
+
   raw_ptr<views::Label> body_label_;
   raw_ptr<views::ToggleButton> toggle_button_;
+
+  raw_ptr<Profile> profile_;
+  bool is_price_track_enabled_;
+
+  base::WeakPtrFactory<PriceTrackingView> weak_ptr_factory_{this};
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_VIEW_H_
