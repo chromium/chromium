@@ -371,6 +371,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                         && mPriceMessageService.getBindingTabId() == tab.getId()) {
                     priceWelcomeMessageController.restorePriceWelcomeMessage();
                 }
+                notifyBackPressStateChangedInternal();
+            }
+
+            @Override
+            public void tabPendingClosure(Tab tab) {
+                notifyBackPressStateChangedInternal();
+            }
+
+            @Override
+            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                notifyBackPressStateChangedInternal();
             }
 
             @Override

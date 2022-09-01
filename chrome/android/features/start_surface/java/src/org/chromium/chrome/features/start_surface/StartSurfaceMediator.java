@@ -893,10 +893,9 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         assert mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
 
         if (mSecondaryTasksSurfacePropertyModel == null) {
-            mSecondaryTasksSurfaceController = mSecondaryTasksSurfaceInitializer.initialize();
+            TabSwitcher.Controller controller = mSecondaryTasksSurfaceInitializer.initialize();
             assert mSecondaryTasksSurfacePropertyModel != null;
-            mSecondaryTasksSurfaceController.isDialogVisibleSupplier().addObserver(
-                    (x) -> notifyBackPressStateChanged());
+            setSecondaryTasksSurfaceController(controller);
         }
 
         RecordUserAction.record("StartSurface.SinglePane.MoreTabs");
@@ -929,6 +928,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             TabSwitcher.Controller secondaryTasksSurfaceController) {
         mSecondaryTasksSurfaceController = secondaryTasksSurfaceController;
         mSecondaryTasksSurfaceController.isDialogVisibleSupplier().addObserver(
+                (v) -> notifyBackPressStateChanged());
+        mSecondaryTasksSurfaceController.getHandleBackPressChangedSupplier().addObserver(
                 (v) -> notifyBackPressStateChanged());
     }
 
@@ -1004,7 +1005,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // StartSurface is being supplied with OneShotSupplier, notification sends after
         // StartSurface is available to avoid missing events. More detail see:
         // https://crrev.com/c/2427428.
-        notifyBackPressStateChanged();
         mController.onHomepageChanged(mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE);
         if (mSecondaryTasksSurfaceController != null) {
             mSecondaryTasksSurfaceController.onHomepageChanged(
@@ -1015,6 +1015,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 observer.onStateChanged(mStartSurfaceState, shouldShowTabSwitcherToolbar());
             }
         });
+        notifyBackPressStateChanged();
     }
 
     private boolean hasFakeSearchBox() {
