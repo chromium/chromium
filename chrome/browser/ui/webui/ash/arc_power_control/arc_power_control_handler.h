@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_POWER_CONTROL_ARC_POWER_CONTROL_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_POWER_CONTROL_ARC_POWER_CONTROL_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ARC_POWER_CONTROL_ARC_POWER_CONTROL_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_ARC_POWER_CONTROL_ARC_POWER_CONTROL_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -26,7 +26,7 @@ class ArcInstanceThrottle;
 class ArcSystemStatCollector;
 }  // namespace arc
 
-namespace chromeos {
+namespace ash {
 
 class ArcPowerControlHandler : public content::WebUIMessageHandler,
                                public arc::ArcPowerBridge::Observer,
@@ -92,6 +92,6 @@ class ArcPowerControlHandler : public content::WebUIMessageHandler,
   base::WeakPtrFactory<ArcPowerControlHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_POWER_CONTROL_ARC_POWER_CONTROL_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ARC_POWER_CONTROL_ARC_POWER_CONTROL_HANDLER_H_

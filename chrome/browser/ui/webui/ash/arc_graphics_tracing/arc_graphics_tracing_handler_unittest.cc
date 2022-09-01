@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_handler.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 #include "base/files/file_path.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -10,7 +10,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -52,4 +52,4 @@ TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
 
 }  // namespace
 
-}  // namespace chromeos
+}  // namespace ash

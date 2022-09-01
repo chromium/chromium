@@ -296,7 +296,7 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   AddObserver(std::make_unique<ArcPowerThrottleObserver>());
   AddObserver(std::make_unique<ArcProvisioningThrottleObserver>());
   AddObserver(std::make_unique<ArcSwitchThrottleObserver>());
-  // This one is controlled by chromeos::ArcPowerControlHandler.
+  // This one is controlled by ash::ArcPowerControlHandler.
   AddObserver(std::make_unique<ash::ThrottleObserver>(
       kChromeArcPowerControlPageObserver));
 

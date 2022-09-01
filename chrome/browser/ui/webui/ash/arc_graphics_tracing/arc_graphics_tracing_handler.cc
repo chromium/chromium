@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_handler.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 
 #include <map>
 
@@ -49,7 +49,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -651,4 +651,4 @@ void ArcGraphicsTracingHandler::HandleLoadFromText(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

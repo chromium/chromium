@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_POWER_CONTROL_ARC_POWER_CONTROL_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_POWER_CONTROL_ARC_POWER_CONTROL_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ARC_POWER_CONTROL_ARC_POWER_CONTROL_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_ARC_POWER_CONTROL_ARC_POWER_CONTROL_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
 
@@ -11,7 +11,7 @@ namespace content {
 class WebUI;
 }
 
-namespace chromeos {
+namespace ash {
 
 // WebUI controller for ARC power control.
 class ArcPowerControlUI : public content::WebUIController {
@@ -23,6 +23,6 @@ class ArcPowerControlUI : public content::WebUIController {
   ArcPowerControlUI& operator=(ArcPowerControlUI const&) = delete;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ARC_POWER_CONTROL_ARC_POWER_CONTROL_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ARC_POWER_CONTROL_ARC_POWER_CONTROL_UI_H_

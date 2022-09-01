@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 
 #include <memory>
 #include <string>
@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_handler.h"
+#include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
@@ -51,7 +51,7 @@ content::WebUIDataSource* CreatePowerControlDataSource() {
 
 }  // anonymous namespace
 
-namespace chromeos {
+namespace ash {
 
 ArcPowerControlUI::ArcPowerControlUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
@@ -60,4 +60,4 @@ ArcPowerControlUI::ArcPowerControlUI(content::WebUI* web_ui)
                                 CreatePowerControlDataSource());
 }
 
-}  // namespace chromeos
+}  // namespace ash

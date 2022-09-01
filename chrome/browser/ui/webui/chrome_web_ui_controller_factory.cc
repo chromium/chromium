@@ -249,8 +249,8 @@
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
-#include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_ui.h"
-#include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
@@ -1086,15 +1086,15 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<NearbyInternalsUI>;
   if (arc::IsArcAllowedForProfile(profile)) {
     if (url.host_piece() == chrome::kChromeUIArcGraphicsTracingHost) {
-      return &NewWebUI<chromeos::ArcGraphicsTracingUI<
-          chromeos::ArcGraphicsTracingMode::kFull>>;
+      return &NewWebUI<
+          ash::ArcGraphicsTracingUI<ash::ArcGraphicsTracingMode::kFull>>;
     }
     if (url.host_piece() == chrome::kChromeUIArcOverviewTracingHost) {
-      return &NewWebUI<chromeos::ArcGraphicsTracingUI<
-          chromeos::ArcGraphicsTracingMode::kOverview>>;
+      return &NewWebUI<
+          ash::ArcGraphicsTracingUI<ash::ArcGraphicsTracingMode::kOverview>>;
     }
     if (url.host_piece() == chrome::kChromeUIArcPowerControlHost) {
-      return &NewWebUI<chromeos::ArcPowerControlUI>;
+      return &NewWebUI<ash::ArcPowerControlUI>;
     }
   }
   if (url.host_piece() == chrome::kChromeUIEmojiPickerHost) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 
 #include <memory>
 #include <string>
@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_handler.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
@@ -75,7 +75,7 @@ content::WebUIDataSource* CreateOverviewDataSource() {
 
 }  // anonymous namespace
 
-namespace chromeos {
+namespace ash {
 
 template <>
 ArcGraphicsTracingUI<ArcGraphicsTracingMode::kFull>::ArcGraphicsTracingUI(
@@ -97,4 +97,4 @@ ArcGraphicsTracingUI<ArcGraphicsTracingMode::kOverview>::ArcGraphicsTracingUI(
                                 CreateOverviewDataSource());
 }
 
-}  // namespace chromeos
+}  // namespace ash

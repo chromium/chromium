@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_handler.h"
+#include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_handler.h"
 
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -377,4 +377,4 @@ void ArcPowerControlHandler::SetTracingStatus(const std::string& status) {
                          base::Value(status));
 }
 
-}  // namespace chromeos
+}  // namespace ash
