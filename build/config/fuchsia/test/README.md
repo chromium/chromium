@@ -44,6 +44,9 @@ required in a small number of tests.
 #### logger.shard.test-cml
 For tests that test logging functionality by providing `fuchsia.logger.Log`.
 
+#### test_ui_stack.shard.test-cml
+For tests that need an isolated Scenic by way of Fuchsia's test-ui-stack.
+
 ### WebEngine Fragments
 The following fragments are specific to WebEngine functionality as documented
 documentation at
