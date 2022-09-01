@@ -21,18 +21,18 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace ui {
 
 struct AXEvent;
+class AXLanguageDetectionManager;
+class AXNode;
+struct AXNodeData;
 class AXTableInfo;
 class AXTreeObserver;
 struct AXTreeUpdateState;
-class AXLanguageDetectionManager;
 class AXSelection;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -68,7 +68,7 @@ enum class AXTreeUnserializeError {
 // used as a source for sending updates to another client tree.
 // It's designed to be subclassed to implement support for native
 // accessibility APIs on a specific platform.
-class AX_EXPORT AXTree : public AXNode::OwnerTree {
+class AX_EXPORT AXTree {
  public:
   using IntReverseRelationMap =
       std::map<ax::mojom::IntAttribute, std::map<AXNodeID, std::set<AXNodeID>>>;
@@ -116,18 +116,26 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   AXNode* root() const { return root_; }
 
-  const AXTreeData& data() const override;
+  const AXTreeData& data() const;
 
   // Destroys the tree and notifies all observers.
   void Destroy();
 
-  // AXNode::OwnerTree override.
   // Returns the globally unique ID of this accessibility tree.
-  const AXTreeID& GetAXTreeID() const override;
+  const AXTreeID& GetAXTreeID() const;
 
-  // AXNode::OwnerTree override.
+  // Given a node in this accessibility tree that corresponds to a table
+  // or grid, return an object containing information about the
+  // table structure. This object is computed lazily on-demand and
+  // cached until the next time the tree is updated. Clients should
+  // not retain this pointer, they should just request it every time
+  // it's needed.
+  //
+  // Returns nullptr if the node is not a valid table.
+  AXTableInfo* GetTableInfo(const AXNode* table_node) const;
+
   // Returns the AXNode with the given |id| if it is part of this AXTree.
-  AXNode* GetFromId(AXNodeID id) const override;
+  AXNode* GetFromId(AXNodeID id) const;
 
   // Returns true on success. If it returns false, it's a fatal error
   // and this tree should be destroyed, and the source of the tree update
@@ -212,27 +220,27 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // Returns the PosInSet of |node|. Looks in node_set_size_pos_in_set_info_map_
   // for cached value. Calls |ComputeSetSizePosInSetAndCache|if no value is
   // present in the cache.
-  absl::optional<int> GetPosInSet(const AXNode& node) override;
+  absl::optional<int> GetPosInSet(const AXNode& node);
+
   // Returns the SetSize of |node|. Looks in node_set_size_pos_in_set_info_map_
   // for cached value. Calls |ComputeSetSizePosInSetAndCache|if no value is
   // present in the cache.
-  absl::optional<int> GetSetSize(const AXNode& node) override;
+  absl::optional<int> GetSetSize(const AXNode& node);
 
   // Returns the part of the current selection that falls within this
   // accessibility tree, if any.
-  AXSelection GetSelection() const override;
+  AXSelection GetSelection() const;
 
   // Returns the part of the current selection that falls within this
   // accessibility tree, if any, adjusting its endpoints to be within unignored
   // nodes. (An "ignored" node is a node that is not exposed to platform APIs:
   // See `AXNode::IsIgnored`.)
-  AXSelection GetUnignoredSelection() const override;
+  AXSelection GetUnignoredSelection() const;
 
-  bool GetTreeUpdateInProgressState() const override;
+  bool GetTreeUpdateInProgressState() const;
 
-  // AXNode::OwnerTree override.
   // Returns true if the tree represents a paginated document
-  bool HasPaginationSupport() const override;
+  bool HasPaginationSupport() const;
 
   // Language detection manager, entry point to language detection features.
   // TODO(chrishall): Should this be stored by pointer or value?
@@ -262,18 +270,6 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // In an AX_FAIL_FAST_BUILD, will assert/crash immediately.
   void RecordError(const AXTreeUpdateState& update_state,
                    std::string new_error);
-
-  // AXNode::OwnerTree override.
-  //
-  // Given a node in this accessibility tree that corresponds to a table
-  // or grid, return an object containing information about the
-  // table structure. This object is computed lazily on-demand and
-  // cached until the next time the tree is updated. Clients should
-  // not retain this pointer, they should just request it every time
-  // it's needed.
-  //
-  // Returns nullptr if the node is not a valid table.
-  AXTableInfo* GetTableInfo(const AXNode* table_node) const override;
 
   AXNode* CreateNode(AXNode* parent,
                      AXNodeID id,

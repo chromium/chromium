@@ -32,7 +32,7 @@ constexpr char16_t AXNode::kEmbeddedObjectCharacterUTF16[];
 constexpr int AXNode::kEmbeddedObjectCharacterLengthUTF8;
 constexpr int AXNode::kEmbeddedObjectCharacterLengthUTF16;
 
-AXNode::AXNode(AXNode::OwnerTree* tree,
+AXNode::AXNode(AXTree* tree,
                AXNode* parent,
                AXNodeID id,
                size_t index_in_parent,

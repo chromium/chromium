@@ -34,7 +34,7 @@ class AXTableInfo;
 class AXTreeManager;
 
 struct AXLanguageInfo;
-struct AXTreeData;
+class AXTree;
 
 // This class is used to represent a node in an accessibility tree (`AXTree`).
 class AX_EXPORT AXNode final {
@@ -55,34 +55,6 @@ class AX_EXPORT AXNode final {
       std::char_traits<char>::length(kEmbeddedObjectCharacterUTF8);
   static constexpr int kEmbeddedObjectCharacterLengthUTF16 =
       std::char_traits<char16_t>::length(kEmbeddedObjectCharacterUTF16);
-
-  // Interface to the tree class that owns an AXNode. We use this instead
-  // of letting AXNode have a pointer to its AXTree directly so that we're
-  // forced to think twice before calling an AXTree interface that might not
-  // be necessary.
-  class OwnerTree {
-   public:
-    // See AXTree::GetAXTreeID.
-    virtual const AXTreeID& GetAXTreeID() const = 0;
-    // See `AXTree::GetTableInfo`.
-    virtual AXTableInfo* GetTableInfo(const AXNode* table_node) const = 0;
-    // See AXTree::GetFromId.
-    virtual AXNode* GetFromId(AXNodeID id) const = 0;
-    // See AXTree::data.
-    virtual const AXTreeData& data() const = 0;
-
-    virtual absl::optional<int> GetPosInSet(const AXNode& node) = 0;
-    virtual absl::optional<int> GetSetSize(const AXNode& node) = 0;
-
-    // See `AXTree::GetSelection`.
-    virtual AXSelection GetSelection() const = 0;
-    // See `AXTree::GetUnignoredSelection`.
-    virtual AXSelection GetUnignoredSelection() const = 0;
-    // See `AXTree::GetTreeUpdateInProgressState`.
-    virtual bool GetTreeUpdateInProgressState() const = 0;
-    // See `AXTree::HasPaginationSupport`.
-    virtual bool HasPaginationSupport() const = 0;
-  };
 
   template <typename NodeType,
             NodeType* (NodeType::*NextSibling)() const,
@@ -117,7 +89,7 @@ class AX_EXPORT AXNode final {
   // the data is not required. After initialization, only index_in_parent
   // and unignored_index_in_parent is allowed to change, the others are
   // guaranteed to never change.
-  AXNode(OwnerTree* tree,
+  AXNode(AXTree* tree,
          AXNode* parent,
          AXNodeID id,
          size_t index_in_parent,
@@ -125,7 +97,7 @@ class AX_EXPORT AXNode final {
   virtual ~AXNode();
 
   // Accessors.
-  OwnerTree* tree() const { return tree_; }
+  AXTree* tree() const { return tree_; }
   AXNodeID id() const { return data_.id; }
   const AXNodeData& data() const { return data_; }
 
@@ -792,7 +764,7 @@ class AX_EXPORT AXNode final {
   // blended with ancestor colors.
   SkColor ComputeColorAttribute(ax::mojom::IntAttribute color_attr) const;
 
-  const raw_ptr<OwnerTree> tree_;  // Owns this.
+  const raw_ptr<AXTree> tree_;  // Owns this.
   size_t index_in_parent_;
   size_t unignored_index_in_parent_;
   size_t unignored_child_count_ = 0;
