@@ -113,7 +113,6 @@ absl::optional<base::Value> PolicyConverter::ConvertValueToSchema(
       return base::Value();
 
     case base::Value::Type::BOOLEAN: {
-      std::string string_value;
       if (value.is_string()) {
         const std::string& string_value = value.GetString();
         if (string_value.compare("true") == 0)

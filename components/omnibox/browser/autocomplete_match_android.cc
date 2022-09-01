@@ -39,9 +39,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int> contents_class_offsets;
   std::vector<int> contents_class_styles;
-  for (auto contents_class : contents_class) {
-    contents_class_offsets.push_back(contents_class.offset);
-    contents_class_styles.push_back(contents_class.style);
+  for (auto contents_class_item : contents_class) {
+    contents_class_offsets.push_back(contents_class_item.offset);
+    contents_class_styles.push_back(contents_class_item.style);
   }
 
   std::vector<int> description_class_offsets;

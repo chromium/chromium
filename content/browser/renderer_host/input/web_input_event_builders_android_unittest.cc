@@ -175,13 +175,6 @@ TEST(WebInputEventBuilderAndroidTest, DomKeySyntheticEvent) {
 TEST(WebInputEventBuilderAndroidTest, CutCopyPasteKey) {
   JNIEnv* env = AttachCurrentThread();
 
-  // The minimum Android NDK does not provide values for these yet:
-  enum {
-    AKEYCODE_CUT = 277,
-    AKEYCODE_COPY = 278,
-    AKEYCODE_PASTE = 279,
-  };
-
   struct DomKeyTestCase {
     int key_code;
     ui::DomKey key;

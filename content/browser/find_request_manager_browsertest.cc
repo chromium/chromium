@@ -785,8 +785,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest,
   options->run_synchronously_for_testing = true;
   Find("result", options->Clone());
   delegate()->WaitForFinalReply();
-  FindResults results = delegate()->GetFindResults();
-  EXPECT_EQ(19, results.number_of_matches);
+  EXPECT_EQ(19, delegate()->GetFindResults().number_of_matches);
 
   contents()->RequestFindMatchRects(-1);
   delegate()->WaitForMatchRects();
@@ -816,8 +815,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest,
     Find("result", options->Clone());
     delegate()->WaitForFinalReply();
 
-    FindResults results = delegate()->GetFindResults();
-    EXPECT_EQ(19, results.number_of_matches);
+    EXPECT_EQ(19, delegate()->GetFindResults().number_of_matches);
 
     // Request the find match rects.
     contents()->RequestFindMatchRects(-1);

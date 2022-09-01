@@ -1438,23 +1438,23 @@ TEST_F(UDPSocketTest, BindToNetwork) {
 
   // Binding the socket to a not existing network should fail at connect time.
   const handles::NetworkHandle wrong_network_handle = 65536;
-  UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource(),
-                         wrong_network_handle);
+  UDPClientSocket wrong_socket(DatagramSocket::RANDOM_BIND, nullptr,
+                               NetLogSource(), wrong_network_handle);
   // Different Android versions might report different errors. Hence, just check
   // what shouldn't happen.
-  int rv = socket.Connect(fake_server_address);
+  int rv = wrong_socket.Connect(fake_server_address);
   EXPECT_NE(OK, rv);
   EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
-  EXPECT_NE(wrong_network_handle, socket.GetBoundNetwork());
+  EXPECT_NE(wrong_network_handle, wrong_socket.GetBoundNetwork());
 
   // Binding the socket to an existing network should succeed.
   const handles::NetworkHandle network_handle =
       NetworkChangeNotifier::GetDefaultNetwork();
   if (network_handle != handles::kInvalidNetworkHandle) {
-    UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource(),
-                           network_handle);
-    EXPECT_EQ(OK, socket.Connect(fake_server_address));
-    EXPECT_EQ(network_handle, socket.GetBoundNetwork());
+    UDPClientSocket correct_socket(DatagramSocket::RANDOM_BIND, nullptr,
+                                   NetLogSource(), network_handle);
+    EXPECT_EQ(OK, correct_socket.Connect(fake_server_address));
+    EXPECT_EQ(network_handle, correct_socket.GetBoundNetwork());
   }
 }
 

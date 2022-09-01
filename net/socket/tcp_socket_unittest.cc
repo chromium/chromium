@@ -1024,12 +1024,11 @@ TEST_F(TCPSocketTest, BindToNetwork) {
   // Try binding to this IP to trigger the underlying BindToNetwork call.
   const IPEndPoint ip(IPAddress::IPv4Localhost(), 0);
   // TestCompletionCallback connect_callback;
-  TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    nullptr, NetLogSource(),
-                                    wrong_network_handle);
+  TCPClientSocket wrong_socket(local_address_list(), nullptr, nullptr, nullptr,
+                               NetLogSource(), wrong_network_handle);
   // Different Android versions might report different errors. Hence, just check
   // what shouldn't happen.
-  int rv = connecting_socket.Bind(ip);
+  int rv = wrong_socket.Bind(ip);
   EXPECT_NE(OK, rv);
   EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
 
@@ -1037,10 +1036,9 @@ TEST_F(TCPSocketTest, BindToNetwork) {
   const handles::NetworkHandle network_handle =
       NetworkChangeNotifier::GetDefaultNetwork();
   if (network_handle != handles::kInvalidNetworkHandle) {
-    TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                      nullptr, NetLogSource(),
-                                      wrong_network_handle);
-    EXPECT_EQ(OK, connecting_socket.Bind(ip));
+    TCPClientSocket correct_socket(local_address_list(), nullptr, nullptr,
+                                   nullptr, NetLogSource(), network_handle);
+    EXPECT_EQ(OK, correct_socket.Bind(ip));
   }
 }
 

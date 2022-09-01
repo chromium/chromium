@@ -441,11 +441,11 @@ ValueProto ToNativeValue(JNIEnv* env,
   if (jdatetimes) {
     auto* mutable_dates = proto.mutable_dates();
     for (int i = 0; i < Java_AssistantValue_getListSize(env, jdatetimes); ++i) {
-      auto jvalue = Java_AssistantValue_getListAt(env, jdatetimes, i);
+      auto jdatetimes_value = Java_AssistantValue_getListAt(env, jdatetimes, i);
       DateProto date;
-      date.set_year(Java_AssistantDateTime_getYear(env, jvalue));
-      date.set_month(Java_AssistantDateTime_getMonth(env, jvalue));
-      date.set_day(Java_AssistantDateTime_getDay(env, jvalue));
+      date.set_year(Java_AssistantDateTime_getYear(env, jdatetimes_value));
+      date.set_month(Java_AssistantDateTime_getMonth(env, jdatetimes_value));
+      date.set_day(Java_AssistantDateTime_getDay(env, jdatetimes_value));
       *mutable_dates->add_values() = date;
     }
     return proto;

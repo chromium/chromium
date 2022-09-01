@@ -696,10 +696,10 @@ void ArCoreGl::GetFrameData(
   // Warn the compositor that we're expecting to have data to submit this frame.
   if (ar_compositor_) {
     base::TimeDelta frametime = EstimatedArCoreFrameTime();
-    base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta render_margin =
         kScheduleFrametimeMarginForRender * frametime;
-    base::TimeTicks deadline = now + (frametime - render_margin);
+    base::TimeTicks deadline =
+        base::TimeTicks::Now() + (frametime - render_margin);
     ar_compositor_->RequestBeginFrame(frametime, deadline);
   }
 
