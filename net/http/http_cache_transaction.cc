@@ -2534,13 +2534,16 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
       "net", "has called DoneWithEntry",
       has_called_done_with_entry_since_last_do_cache_read_data_);
 
+  const char* writers_done_writing_to_entry_history = "N/A.";
   if (entry_) {
     const auto& call_history = entry_->writers_done_writing_to_entry_history;
-    SCOPED_CRASH_KEY_STRING32("net", "WritersDoneWritingToEntry is...",
-                              !call_history.has_value() ? "not called"
-                              : call_history.value()    ? "called with success"
-                                                        : "called with error");
+    writers_done_writing_to_entry_history =
+        !call_history.has_value() ? "not called."
+        : call_history.value()    ? "called with success."
+                                  : "called with error.";
   }
+  SCOPED_CRASH_KEY_STRING32("net", "WritersDoneWritingToEntry is ",
+                            writers_done_writing_to_entry_history);
 
   CHECK_EQ(do_cache_read_data_last_call_,
            DoCacheReadDataLastCall::kDoCacheReadData);
