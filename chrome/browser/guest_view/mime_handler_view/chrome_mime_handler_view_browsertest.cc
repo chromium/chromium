@@ -140,6 +140,18 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
     return browser()->tab_strip_model()->GetWebContentsAt(0);
   }
 
+  // In preparation for the migration of guest view from inner WebContents to
+  // MPArch (crbug/1261928), individual tests should avoid accessing the guest's
+  // inner WebContents. The direct access is centralized in this helper function
+  // for easier migration.
+  //
+  // TODO(crbug/1261928): Update this implementation for MPArch, and consider
+  // relocate it to `content/public/test/browser_test_utils.h`.
+  void WaitForGuestViewLoadStop(GuestViewBase* guest_view) {
+    auto* guest_contents = guest_view->web_contents();
+    ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
+  }
+
   int basic_count() const { return basic_count_; }
 
  private:
@@ -174,28 +186,6 @@ class UserActivationUpdateWaiter {
 
  private:
   content::UpdateUserActivationStateInterceptor user_activation_interceptor_;
-};
-
-// Helper class to wait for document load event in the main frame.
-class DocumentLoadCompletionWaiter : public content::WebContentsObserver {
- public:
-  explicit DocumentLoadCompletionWaiter(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-  ~DocumentLoadCompletionWaiter() override = default;
-
-  void DocumentOnLoadCompletedInPrimaryMainFrame() override {
-    did_load_ = true;
-    run_loop_.Quit();
-  }
-
-  void Wait() {
-    if (!did_load_)
-      run_loop_.Run();
-  }
-
- private:
-  bool did_load_ = false;
-  base::RunLoop run_loop_;
 };
 
 // A DevToolsAgentHostClient implementation doing nothing.
@@ -555,9 +545,11 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                               "const e = document.createElement('embed');"
                               "e.src = './testEmbedded.csv'; e.type='text/csv';"
                               "document.body.appendChild(e);"));
-  DocumentLoadCompletionWaiter(
-      GetGuestViewManager()->DeprecatedWaitForNextGuestCreated())
-      .Wait();
+
+  auto* guest_view = GetGuestViewManager()->WaitForNextGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  WaitForGuestViewLoadStop(guest_view);
+
   // After load, an IPC has been sent to the renderer to update routing IDs for
   // the guest frame and the content frame (and activate the
   // PostMessageSupport). Run some JS to Ensure no DCHECKs have fired in the
