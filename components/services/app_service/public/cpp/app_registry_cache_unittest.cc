@@ -975,13 +975,13 @@ TEST_F(AppRegistryCacheTest,
   cache.OnApps(std::move(deltas1), AppType::kArc,
                true /* should_notify_initialized */);
 
-  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // Verify OnAppTypeInitialized is called when the non mojom Apps are
   // added.
-  EXPECT_TRUE(observer1.app_types().empty());
-  EXPECT_EQ(0, observer1.initialized_app_type_count());
-  EXPECT_EQ(0, observer1.app_count_at_initialization());
-  EXPECT_EQ(0u, cache.InitializedAppTypes().size());
-  EXPECT_FALSE(cache.IsAppTypeInitialized(AppType::kArc));
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
 
   std::vector<apps::mojom::AppPtr> mojom_deltas1;
   mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
@@ -989,8 +989,7 @@ TEST_F(AppRegistryCacheTest,
   cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
                true /* should_notify_initialized */);
 
-  // Verify OnAppTypeInitialized is called when both the non mojom and mojom
-  // Apps are added.
+  // Verify OnAppTypeInitialized is not called.
   EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
   EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(2, observer1.app_count_at_initialization());
@@ -1090,12 +1089,13 @@ TEST_F(AppRegistryCacheTest,
   cache.OnApps(std::move(deltas1), AppType::kArc,
                true /* should_notify_initialized */);
 
-  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // Verify OnAppTypeInitialized is called when the non mojom Apps are
   // added.
-  EXPECT_TRUE(observer1.app_types().empty());
-  EXPECT_EQ(0, observer1.initialized_app_type_count());
-  EXPECT_EQ(0, observer1.app_count_at_initialization());
-  EXPECT_TRUE(cache.InitializedAppTypes().empty());
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
 
   std::vector<apps::mojom::AppPtr> mojom_deltas1;
   mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
@@ -1103,8 +1103,7 @@ TEST_F(AppRegistryCacheTest,
   cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
                true /* should_notify_initialized */);
 
-  // Verify OnAppTypeInitialized is called when both the non mojom and mojom
-  // Apps are added.
+  // Verify OnAppTypeInitialized is not called.
   EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
   EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(2, observer1.app_count_at_initialization());
@@ -1156,20 +1155,21 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
   cache.OnApps(std::move(deltas1), AppType::kStandaloneBrowserChromeApp,
                true /* should_notify_initialized */);
 
-  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // Verify OnAppTypeInitialized is called when the non mojom Apps are
   // initialized.
-  EXPECT_TRUE(observer1.app_types().empty());
-  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_TRUE(base::Contains(observer1.app_types(),
+                             AppType::kStandaloneBrowserChromeApp));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(0, observer1.app_count_at_initialization());
-  EXPECT_TRUE(cache.InitializedAppTypes().empty());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kStandaloneBrowserChromeApp));
 
   std::vector<apps::mojom::AppPtr> mojom_deltas1;
   cache.OnApps(std::move(mojom_deltas1),
                apps::mojom::AppType::kStandaloneBrowserChromeApp,
                true /* should_notify_initialized */);
 
-  // Verify OnAppTypeInitialized is called when both the mojom and non mojom
-  // Apps are initialized.
+  // Verify OnAppTypeInitialized is not called.
   EXPECT_TRUE(base::Contains(observer1.app_types(),
                              AppType::kStandaloneBrowserChromeApp));
   EXPECT_EQ(1, observer1.initialized_app_type_count());

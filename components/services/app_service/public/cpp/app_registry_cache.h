@@ -233,7 +233,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   // Saves app types which will finish initialization, and OnAppTypeInitialized
   // will be called to notify observers.
-  std::set<apps::mojom::AppType> in_progress_initialized_mojom_app_types_;
   std::set<AppType> in_progress_initialized_app_types_;
 
   // Saves app types which have finished initialization, and
