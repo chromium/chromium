@@ -148,17 +148,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   void RemoveObserver(Observer* observer);
 
   // Get the address of this adapter.
-  const std::string& GetAddress() const { return adapter_address_; }
+  const std::string& GetAddress() const { return property_address_.Get(); }
 
   // Get the name of this adapter.
-  const std::string& GetName() const { return adapter_name_; }
+  const std::string& GetName() const { return property_name_.Get(); }
 
   // Set the name of this adapter.
   virtual void SetName(ResponseCallback<Void> callback,
                        const std::string& name);
 
   // Get whether adapter is discoverable.
-  bool GetDiscoverable() const { return adapter_discoverable_; }
+  bool GetDiscoverable() const { return property_discoverable_.Get(); }
 
   // Set whether adapter is discoverable.
   virtual void SetDiscoverable(ResponseCallback<Void> callback,
@@ -248,35 +248,19 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
  protected:
   friend class FlossAdapterClientTest;
 
-  // Handle response to |GetAddress| DBus method call.
-  void HandleGetAddress(dbus::Response* response,
-                        dbus::ErrorResponse* error_response);
-
   // Handle callback |OnAdapterPropertyChanged| on exported object path.
   void OnAdapterPropertyChanged(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 
-  // Handle callback |OnAddressChanged| on exported object path.
-  void OnAddressChanged(dbus::MethodCall* method_call,
-                        dbus::ExportedObject::ResponseSender response_sender);
+  // When address property is updated.
+  void OnAddressChanged(const std::string& address);
 
-  // Handle response to |GetName| DBus method call.
-  void HandleGetName(dbus::Response* response,
-                     dbus::ErrorResponse* error_response);
+  // When name property is updated.
+  void OnNameChanged(const std::string& name);
 
-  // Handle callback |OnNameChanged| on exported object path.
-  void OnNameChanged(dbus::MethodCall* method_call,
-                     dbus::ExportedObject::ResponseSender response_sender);
-
-  // Handle response to |GetDiscoverable| DBus method call.
-  void HandleGetDiscoverable(dbus::Response* response,
-                             dbus::ErrorResponse* error_response);
-
-  // Handle callback |OnDiscoverableChanged| on exported object path.
-  void OnDiscoverableChanged(
-      dbus::MethodCall* method_call,
-      dbus::ExportedObject::ResponseSender response_sender);
+  // When discoverable property is updated.
+  void OnDiscoverableChanged(const bool& discoverable);
 
   // Handle callback |OnDiscoveringChanged| on exported object path.
   void OnDiscoveringChanged(
@@ -326,15 +310,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Service which implements the adapter interface.
   std::string service_name_;
 
-  // Address of adapter.
-  std::string adapter_address_;
-
-  // Name of adapter.
-  std::string adapter_name_;
-
-  // Whether adapter is discoverable.
-  bool adapter_discoverable_;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(FlossAdapterClientTest, CallAdapterMethods);
 
@@ -345,6 +320,18 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     CallMethod(std::move(callback), bus_, service_name_, kAdapterInterface,
                adapter_path_, member, args...);
   }
+
+  FlossProperty<std::string> property_address_{
+      kAdapterInterface, adapter::kCallbackInterface, adapter::kGetAddress,
+      adapter::kOnAddressChanged};
+
+  FlossProperty<std::string> property_name_{
+      kAdapterInterface, adapter::kCallbackInterface, adapter::kGetName,
+      adapter::kOnNameChanged};
+
+  FlossProperty<bool> property_discoverable_{
+      kAdapterInterface, adapter::kCallbackInterface, adapter::kGetDiscoverable,
+      adapter::kOnDiscoverableChanged};
 
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];

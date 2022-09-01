@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/types/expected.h"
 #include "dbus/bus.h"
+#include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -608,6 +609,127 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   void DefaultResponse(const std::string& caller,
                        dbus::Response* response,
                        dbus::ErrorResponse* error_response);
+};
+
+// Utility to keep a property that takes care of getting the initial value,
+// monitoring for updates, and notifying when value is updated.
+//
+// In Floss API, it is a pattern to abstract a value as a "property". These
+// values always have:
+// * A getter: A method exposed by Floss daemon to get current value.
+// * An update callback: A method to be called by Floss daemon to client when
+//   the value is updated.
+//
+// To simplify repetitive code performing common operations above, use this
+// utility by just specifying the property getter, update method, and the
+// interface names.
+//
+// |T| is the type of the property.
+template <typename T>
+class FlossProperty {
+ public:
+  // Instantiates a property, given:
+  // |interface| - The D-Bus interface of the getter.
+  // |callback_interface| - The D-Bus interface of the value update method.
+  // |getter| - The method name of the getter.
+  // |on_update| - The method name of the value update.
+  FlossProperty(const char* interface,
+                const char* callback_interface,
+                const char* getter,
+                const char* on_update)
+      : interface_(interface),
+        callback_interface_(callback_interface),
+        getter_(getter),
+        on_update_(on_update) {}
+
+  // Initializes the property. Once Init-ed, it takes care of getting the
+  // initial value, keeping it updated, notifying when there is an update.
+  // |bus| - D-Bus connection.
+  // |service_name| - Floss daemon D-Bus name.
+  // |path| - Object path where the getter is available.
+  // |callback_path| - Object path where the daemon calls back on value updates.
+  // |update_callback| - Caller can provide this to be notified when there are
+  //                     updates.
+  void Init(FlossDBusClient* client,
+            raw_ptr<dbus::Bus> bus,
+            const std::string& service_name,
+            const dbus::ObjectPath& path,
+            const dbus::ObjectPath& callback_path,
+            base::RepeatingCallback<void(const T&)> update_callback) {
+    update_callback_ = update_callback;
+
+    // Get the initial value.
+    client->CallMethod(base::BindOnce(&FlossProperty::OnGetInitialValue,
+                                      weak_ptr_factory_.GetWeakPtr()),
+                       bus, service_name, interface_, path, getter_);
+
+    // Listen for property updates.
+    dbus::ExportedObject* exported_object =
+        bus->GetExportedObject(callback_path);
+    if (!exported_object) {
+      LOG(ERROR) << "Could not export callback to listen for property updates"
+                 << callback_path.value();
+      return;
+    }
+
+    exported_object->ExportMethod(
+        callback_interface_, on_update_,
+        base::BindRepeating(&FlossProperty::OnValueUpdated,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::DoNothing());
+  }
+
+  // Returns the current value of this property.
+  const T& Get() const { return value_; }
+
+ private:
+  void OnGetInitialValue(DBusResult<T> ret) {
+    if (!ret.has_value()) {
+      LOG(ERROR) << "Error getting initial value";
+      return;
+    }
+
+    UpdateValue(std::move(*ret));
+  }
+
+  void OnValueUpdated(dbus::MethodCall* method_call,
+                      dbus::ExportedObject::ResponseSender response_sender) {
+    T data;
+    dbus::MessageReader reader(method_call);
+    if (!FlossDBusClient::ReadDBusParam(&reader, &data)) {
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, floss::FlossDBusClient::kErrorInvalidParameters,
+              "Error parsing property value"));
+      return;
+    }
+
+    UpdateValue(std::move(data));
+
+    std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+  }
+
+  void UpdateValue(T val) {
+    value_ = std::move(val);
+    update_callback_.Run(value_);
+  }
+
+  // Interfaces.
+  const char* interface_;
+  const char* callback_interface_;
+
+  // Method names.
+  const char* getter_;
+  const char* on_update_;
+
+  // Keeps the property value.
+  T value_;
+
+  // To update caller when property is updated.
+  base::RepeatingCallback<void(const T&)> update_callback_;
+
+  // WeakPtrFactory must be last.
+  base::WeakPtrFactory<FlossProperty> weak_ptr_factory_{this};
 };
 
 }  // namespace floss
