@@ -177,10 +177,10 @@ class ProjectorClientTest : public InProcessBrowserTest {
 // This test verifies that the (un)trusted Projector app and annotator WebUI
 // URLs are valid.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
-  VerifyUrlValid(kChromeUITrustedProjectorAppUrl);
-  VerifyUrlValid(kChromeUIUntrustedProjectorAppUrl);
-  VerifyUrlValid(kChromeUITrustedAnnotatorAppUrl);
-  VerifyUrlValid(kChromeUIUntrustedAnnotatorAppUrl);
+  VerifyUrlValid(kChromeUITrustedProjectorUrl);
+  VerifyUrlValid(kChromeUIUntrustedProjectorUrl);
+  VerifyUrlValid(kChromeUITrustedAnnotatorUrl);
+  VerifyUrlValid(kChromeUIUntrustedAnnotatorUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {

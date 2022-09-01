@@ -5,7 +5,7 @@
 import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
 import {RequestHandler} from 'chrome://resources/js/post_message_api_request_handler.m.js';
 
-import {ProjectorBrowserProxy, ProjectorBrowserProxyImpl} from '../../communication/projector_browser_proxy.js';
+import {ProjectorBrowserProxy, ProjectorBrowserProxyImpl} from './projector_browser_proxy.js';
 
 const TARGET_URL = 'chrome-untrusted://projector/';
 

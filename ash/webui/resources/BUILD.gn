@@ -274,17 +274,20 @@ ash_generated_grit("print_management_resources") {
 
 # Resources used by chrome-untrusted://projector SWA.
 ash_generated_grit("projector_app_untrusted_resources") {
-  source = "$root_gen_dir/ash/webui/projector_app/resources/ash_projector_app_untrusted_resources.grd"
-  deps = [ "//ash/webui/projector_app/resources:build_untrusted_grd" ]
+  source = "$root_gen_dir/ash/webui/projector_app/resources/app/untrusted/ash_projector_app_untrusted_resources.grd"
+  deps = [
+    "//ash/webui/projector_app/resources/app/untrusted:build_untrusted_grd",
+  ]
 }
 
 # Resources used by chrome://projector SWA.
 ash_generated_grit("projector_app_trusted_resources") {
-  source = "$root_gen_dir/ash/webui/projector_app/resources/ash_projector_app_trusted_resources.grd"
-  deps = [ "//ash/webui/projector_app/resources:build_trusted_grd" ]
+  source = "$root_gen_dir/ash/webui/projector_app/resources/app/trusted/ash_projector_app_trusted_resources.grd"
+  deps = [ "//ash/webui/projector_app/resources/app/trusted:build_trusted_grd" ]
 }
 
 # Resources automatically served by the chrome-untrusted://projector bundle, obtained via DEPS.
+# TODO(b/216523790): Split up the projector_app_bundle_resource into app_bundle and annotator_bundle.
 grit("projector_app_bundle_resources") {
   if (enable_cros_projector_app) {
     # Obtained via an internal CIPD package in src/DEPS.
@@ -337,6 +340,26 @@ grit("face_ml_app_bundle_resources") {
   ]
 
   output_dir = "$ash_webui_grit_output_dir"
+}
+
+# Resources used by chrome-untrusted://projector-annotator SWA.
+ash_generated_grit("projector_annotator_untrusted_resources") {
+  source = "$root_gen_dir/ash/webui/projector_app/resources/annotator/untrusted/ash_projector_annotator_untrusted_resources.grd"
+  deps = [ "//ash/webui/projector_app/resources/annotator/untrusted:build_untrusted_grd" ]
+}
+
+# Resources used by chrome://projector-annotator SWA.
+ash_generated_grit("projector_annotator_trusted_resources") {
+  source = "$root_gen_dir/ash/webui/projector_app/resources/annotator/trusted/ash_projector_annotator_trusted_resources.grd"
+  deps = [
+    "//ash/webui/projector_app/resources/annotator/trusted:build_trusted_grd",
+  ]
+}
+
+# Resources used by chrome://projector and chrome://projector-annotator SWA.
+ash_generated_grit("projector_common_resources") {
+  source = "$root_gen_dir/ash/webui/projector_app/resources/common/ash_projector_common_resources.grd"
+  deps = [ "//ash/webui/projector_app/resources/common:build_common_grd" ]
 }
 
 # Resources used by chrome://eche-app

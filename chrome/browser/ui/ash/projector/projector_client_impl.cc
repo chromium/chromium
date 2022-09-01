@@ -49,7 +49,7 @@ inline const std::string& GetLocale() {
 void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
   if (!ash::features::IsProjectorAnnotatorEnabled())
     return;
-  web_view->LoadInitialURL(GURL(ash::kChromeUITrustedAnnotatorAppUrl));
+  web_view->LoadInitialURL(GURL(ash::kChromeUITrustedAnnotatorUrl));
 }
 
 // Using base::Unretained for callback is safe since the ProjectorClientImpl

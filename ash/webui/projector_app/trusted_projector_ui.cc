@@ -8,6 +8,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources_map.h"
+#include "ash/webui/grit/ash_projector_common_resources.h"
+#include "ash/webui/grit/ash_projector_common_resources_map.h"
 #include "ash/webui/projector_app/projector_message_handler.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "components/prefs/pref_service.h"
@@ -28,12 +30,13 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
 
   source->AddResourcePaths(base::make_span(
       kAshProjectorAppTrustedResources, kAshProjectorAppTrustedResourcesSize));
-
-  source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_TRUSTED_APP_EMBEDDER_HTML);
+  source->AddResourcePaths(base::make_span(kAshProjectorCommonResources,
+                                           kAshProjectorCommonResourcesSize));
+  source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_TRUSTED_EMBEDDER_HTML);
   source->AddLocalizedString("appTitle", IDS_ASH_PROJECTOR_DISPLAY_SOURCE);
 
   std::string csp =
-      std::string("frame-src ") + kChromeUIUntrustedProjectorAppUrl + ";";
+      std::string("frame-src ") + kChromeUIUntrustedProjectorUrl + ";";
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);

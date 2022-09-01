@@ -30,7 +30,7 @@ SkColor GetBgColor(bool use_dark_mode) {
 ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::PROJECTOR,
                                 "Projector",
-                                GURL(ash::kChromeUITrustedProjectorAppUrl),
+                                GURL(ash::kChromeUITrustedProjectorUrl),
                                 profile) {}
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
@@ -38,8 +38,8 @@ ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 std::unique_ptr<WebAppInstallInfo>
 ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUITrustedProjectorAppUrl);
-  info->scope = GURL(ash::kChromeUITrustedProjectorAppUrl);
+  info->start_url = GURL(ash::kChromeUITrustedProjectorUrl);
+  info->scope = GURL(ash::kChromeUITrustedProjectorUrl);
 
   info->title = l10n_util::GetStringUTF16(IDS_PROJECTOR_APP_NAME);
 

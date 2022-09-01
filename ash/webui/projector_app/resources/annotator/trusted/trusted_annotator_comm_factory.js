@@ -5,7 +5,7 @@
 import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
 import {RequestHandler} from 'chrome://resources/js/post_message_api_request_handler.m.js';
 
-import {AnnotatorBrowserProxy, AnnotatorBrowserProxyImpl} from '../../communication/annotator_browser_proxy.js';
+import {AnnotatorBrowserProxy, AnnotatorBrowserProxyImpl} from './annotator_browser_proxy.js';
 
 const TARGET_URL = 'chrome-untrusted://projector-annotator/';
 

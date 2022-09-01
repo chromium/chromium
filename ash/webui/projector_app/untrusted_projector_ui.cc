@@ -7,6 +7,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/grit/ash_projector_app_untrusted_resources.h"
 #include "ash/webui/grit/ash_projector_app_untrusted_resources_map.h"
+#include "ash/webui/grit/ash_projector_common_resources.h"
+#include "ash/webui/grit/ash_projector_common_resources_map.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources.h"
@@ -24,15 +26,18 @@ namespace {
 content::WebUIDataSource* CreateProjectorHTMLSource(
     UntrustedProjectorUIDelegate* delegate) {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIUntrustedProjectorAppUrl);
+      content::WebUIDataSource::Create(kChromeUIUntrustedProjectorUrl);
 
   source->AddResourcePaths(
       base::make_span(kAshProjectorAppUntrustedResources,
                       kAshProjectorAppUntrustedResourcesSize));
+  source->AddResourcePaths(base::make_span(kAshProjectorCommonResources,
+                                           kAshProjectorCommonResourcesSize));
   source->AddResourcePaths(
       base::make_span(kChromeosProjectorAppBundleResources,
                       kChromeosProjectorAppBundleResourcesSize));
-  source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_APP_INDEX_HTML);
+
+  source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_ASH_PROJECTOR_DISPLAY_SOURCE);
 
   // Provide a list of specific script resources (javascript files and inlined

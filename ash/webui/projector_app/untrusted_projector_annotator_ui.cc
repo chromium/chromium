@@ -4,8 +4,10 @@
 
 #include "ash/webui/projector_app/untrusted_projector_annotator_ui.h"
 
-#include "ash/webui/grit/ash_projector_app_untrusted_resources.h"
-#include "ash/webui/grit/ash_projector_app_untrusted_resources_map.h"
+#include "ash/webui/grit/ash_projector_annotator_untrusted_resources.h"
+#include "ash/webui/grit/ash_projector_annotator_untrusted_resources_map.h"
+#include "ash/webui/grit/ash_projector_common_resources.h"
+#include "ash/webui/grit/ash_projector_common_resources_map.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources.h"
@@ -32,19 +34,23 @@ content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource(
   // TODO(b/216523790): Split untrusted annotator resources into a separate
   // bundle.
   source->AddResourcePaths(
-      base::make_span(kAshProjectorAppUntrustedResources,
-                      kAshProjectorAppUntrustedResourcesSize));
+      base::make_span(kAshProjectorAnnotatorUntrustedResources,
+                      kAshProjectorAnnotatorUntrustedResourcesSize));
   source->AddResourcePaths(
       base::make_span(kChromeosProjectorAppBundleResources,
                       kChromeosProjectorAppBundleResourcesSize));
+  source->AddResourcePaths(base::make_span(kAshProjectorCommonResources,
+                                           kAshProjectorCommonResourcesSize));
+  source->AddResourcePath("",
+                          IDR_ASH_PROJECTOR_ANNOTATOR_UNTRUSTED_ANNOTATOR_HTML);
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
   // Loads WASM resources shipped to Chromium by chrome://media-app.
-  source->AddResourcePath("annotator/ink_engine_ink.worker.js",
+  source->AddResourcePath("ink_engine_ink.worker.js",
                           IDR_MEDIA_APP_INK_ENGINE_INK_WORKER_JS);
-  source->AddResourcePath("annotator/ink_engine_ink.wasm",
+  source->AddResourcePath("ink_engine_ink.wasm",
                           IDR_MEDIA_APP_INK_ENGINE_INK_WASM);
-  source->AddResourcePath("annotator/ink.js", IDR_MEDIA_APP_INK_JS);
+  source->AddResourcePath("ink.js", IDR_MEDIA_APP_INK_JS);
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
   // Provide a list of specific script resources (javascript files and inlined

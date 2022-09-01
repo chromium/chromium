@@ -5,9 +5,8 @@
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AnnotatorBrowserProxyImpl} from '../../communication/annotator_browser_proxy.js';
-
-import {AnnotatorTrustedCommFactory, UntrustedAnnotatorClient} from './trusted/trusted_annotator_comm_factory.js';
+import {AnnotatorBrowserProxyImpl} from './annotator_browser_proxy.js';
+import {AnnotatorTrustedCommFactory, UntrustedAnnotatorClient} from './trusted_annotator_comm_factory.js';
 
 /**
  * Enum for passing annotator error message to the browser process.

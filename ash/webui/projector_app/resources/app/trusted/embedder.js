@@ -5,10 +5,9 @@
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ProjectorBrowserProxyImpl} from '../communication/projector_browser_proxy.js';
-
-import {installLaunchHandler} from './trusted/launch.js';
-import {AppTrustedCommFactory, UntrustedAppClient} from './trusted/trusted_app_comm_factory.js';
+import {installLaunchHandler} from './launch.js';
+import {ProjectorBrowserProxyImpl} from './projector_browser_proxy.js';
+import {AppTrustedCommFactory, UntrustedAppClient} from './trusted_app_comm_factory.js';
 
 /**
  * Gets the query string from the URL.

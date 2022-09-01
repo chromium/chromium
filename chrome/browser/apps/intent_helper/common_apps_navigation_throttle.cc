@@ -115,7 +115,7 @@ GURL RedirectUrlIfSwa(Profile* profile,
   // Projector:
   if (app_id == ash::kChromeUITrustedProjectorSwaAppId &&
       url.GetWithEmptyPath() == GURL(ash::kChromeUIUntrustedProjectorPwaUrl)) {
-    std::string override_url = ash::kChromeUITrustedProjectorAppUrl;
+    std::string override_url = ash::kChromeUITrustedProjectorUrl;
     if (url.path().length() > 1)
       override_url += url.path().substr(1);
     std::stringstream ss;

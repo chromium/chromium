@@ -8,6 +8,7 @@
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
@@ -38,7 +39,7 @@ class ProjectorAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 };
 
 IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest, ProjectorApp) {
-  const GURL url("chrome://projector/app/");
+  const GURL url(ash::kChromeUITrustedProjectorUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       ash::SystemWebAppType::PROJECTOR, url, "Screencast"));
 }

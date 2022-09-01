@@ -22,8 +22,6 @@ export const AnnotatorToolType = {
   ERASER: 'eraser',
 };
 
-
-
 /**
  * Enum for projector error types supported.
  * @enum {string}
