@@ -6,6 +6,7 @@
 
 #include "base/observer_list.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -190,7 +191,8 @@ void ProfileOAuth2TokenServiceDelegate::UpdateAuthError(
 
   if (backoff_entry_) {
     backoff_entry_->InformOfRequest(!error.IsTransientError());
-    backoff_error_ = error;
+    if (error.IsTransientError())
+      backoff_error_ = error;
   }
   ValidateAccountId(account_id);
 
