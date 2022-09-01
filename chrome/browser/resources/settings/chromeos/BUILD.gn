@@ -114,6 +114,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/bluetooth.d.ts",
     "//tools/typescript/definitions/bluetooth_private.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
     "types/dom_api.d.ts",
   ]
   root_dir = "$target_gen_dir/$preprocessed_ts_folder"
@@ -438,7 +439,6 @@ group("generate_web_components") {
     "os_privacy_page:web_components",
     "os_reset_page:web_components",
     "os_search_page:web_components",
-    "settings_scheduler_slider:web_components",
   ]
 }
 
@@ -470,7 +470,6 @@ group("closure_compile_module") {
     "os_privacy_page:closure_compile_module",
     "os_reset_page:closure_compile_module",
     "os_search_page:closure_compile_module",
-    "settings_scheduler_slider:closure_compile_module",
   ]
 }
 

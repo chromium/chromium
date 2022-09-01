@@ -10,33 +10,44 @@
 
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-/** @interface */
-class PaperRippleBehaviorInterface {
-  constructor() {
-    /**
-     * @type {?Object}
-     * @protected
-     */
-    this._ripple;
+import {getTemplate} from './settings_scheduler_slider.html.js';
 
-    /**
-     * @type {?Element}
-     * @protected
-     */
-    this._rippleContainer;
-  }
+interface SettingsSchedulerSliderElement {
+  $: {
+    dummyRippleContainer: HTMLDivElement,
+    endKnob: HTMLDivElement,
+    endLabel: HTMLDivElement,
+    endProgress: HTMLDivElement,
+    markersContainer: HTMLDivElement,
+    sliderBar: HTMLDivElement,
+    sliderContainer: HTMLDivElement,
+    startKnob: HTMLDivElement,
+    startLabel: HTMLDivElement,
+    startProgress: HTMLDivElement,
+  };
+}
 
-  /** @return {boolean} */
-  hasRipple() {}
+type TrackEvent = CustomEvent<{
+  state: string,
+  x: number,
+  y: number,
+  dx: number,
+  dy: number,
+  ddx: number,
+  ddy: number,
+}>;
 
-  ensureRipple() {}
+interface PrefObject extends chrome.settingsPrivate.PrefObject {
+  type: chrome.settingsPrivate.PrefType.NUMBER;
+  value: number;
 }
 
 const HOURS_PER_DAY = 24;
@@ -59,26 +70,19 @@ const DEFAULT_CUSTOM_END_TIME = 6 * 60;
  * integer (0 <= z < y).
  *
  * For example (-1 % 24) equals -1 whereas modulo(-1, 24) equals 23.
- * @param {number} x
- * @param {number} y
- * @return {number}
  */
-function modulo(x, y) {
+function modulo(x: number, y: number): number {
   return ((x % y) + y) % y;
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {PaperRippleBehaviorInterface}
- */
-const SettingsSchedulerSliderElementBase = mixinBehaviors(
-    [I18nBehavior, PrefsBehavior, IronResizableBehavior, PaperRippleBehavior],
-    PolymerElement);
+const SettingsSchedulerSliderElementBase =
+    mixinBehaviors(
+        [PrefsBehavior, IronResizableBehavior, PaperRippleBehavior],
+        I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nMixinInterface & PrefsBehaviorInterface &
+          IronResizableBehavior & PaperRippleBehavior,
+    };
 
-/** @polymer */
 class SettingsSchedulerSliderElement extends
     SettingsSchedulerSliderElementBase {
   static get is() {
@@ -86,14 +90,13 @@ class SettingsSchedulerSliderElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * The start time pref object being tracked.
-       * @type {!chrome.settingsPrivate.PrefObject}
        */
       prefStartTime: {
         type: Object,
@@ -109,14 +112,13 @@ class SettingsSchedulerSliderElement extends
 
       /**
        * The end time pref object being tracked.
-       * @type {!chrome.settingsPrivate.PrefObject}
        */
       prefEndTime: {
         type: Object,
         notify: true,
         value() {
           return {
-            key: 'ash.fake_feature.custom_start_time',
+            key: 'ash.fake_feature.custom_end_time',
             type: chrome.settingsPrivate.PrefType.NUMBER,
             value: DEFAULT_CUSTOM_END_TIME,
           };
@@ -125,20 +127,17 @@ class SettingsSchedulerSliderElement extends
 
       /**
        * Whether the element is ready and fully rendered.
-       * @private
        */
       isReady_: Boolean,
 
       /**
        * Whether the window is in RTL locales.
-       * @private
        */
       isRTL_: Boolean,
 
       /**
        * Whether to use the 24-hour format for the time shown in the label
        * bubbles.
-       * @private
        */
       shouldUse24Hours_: Boolean,
     };
@@ -152,23 +151,26 @@ class SettingsSchedulerSliderElement extends
     ];
   }
 
+  prefStartTime: PrefObject;
+  prefEndTime: PrefObject;
+  private dragObject_: HTMLElement|null;
+  private isReady_: boolean;
+  private isRTL_: boolean;
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  private _ripple: PaperRippleElement|null;
+  private shouldUse24Hours_: boolean;
+  private valueAtDragStart_?: number;
+
   constructor() {
     super();
 
     /**
      * The object currently being dragged. Either the start or end knobs.
-     * @type {Element}
-     * @private
      */
     this.dragObject_ = null;
-
-    /**
-     * @private {number}
-     */
-    this.valueAtDragStart_;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('iron-resize', this.onResize_);
@@ -177,8 +179,7 @@ class SettingsSchedulerSliderElement extends
     this.addEventListener('keydown', this.onKeyDown_);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.isRTL_ = window.getComputedStyle(this).direction === 'rtl';
@@ -198,23 +199,18 @@ class SettingsSchedulerSliderElement extends
     });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  prefsAvailable() {
+  private prefsAvailable_(): boolean {
     return [this.prefStartTime, this.prefEndTime].every(
         pref => pref !== undefined);
   }
 
-  /** @private */
-  updateMarkers_() {
-    if (!this.isReady_ || !this.prefsAvailable()) {
+  private updateMarkers_() {
+    if (!this.isReady_ || !this.prefsAvailable_()) {
       return;
     }
 
-    const startHour = (/** @type {number} */ (this.prefStartTime.value)) / 60.0;
-    const endHour = (/** @type {number} */ (this.prefEndTime.value)) / 60.0;
+    const startHour = this.prefStartTime.value / 60.0;
+    const endHour = this.prefEndTime.value / 60.0;
 
     const markersContainer = this.$.markersContainer;
     markersContainer.innerHTML = '';
@@ -240,96 +236,87 @@ class SettingsSchedulerSliderElement extends
 
   /**
    * Return true if the start knob is focused.
-   * @return {boolean}
-   * @private
    */
-  isStartKnobFocused_() {
-    return (this.shadowRoot.activeElement === this.$.startKnob);
+  private isStartKnobFocused_(): boolean {
+    return this.shadowRoot!.activeElement === this.$.startKnob;
   }
 
   /**
    * Return true if the end knob is focused.
-   * @return {boolean}
-   * @private
    */
-  isEndKnobFocused_() {
-    return (this.shadowRoot.activeElement === this.$.endKnob);
+  private isEndKnobFocused_(): boolean {
+    return this.shadowRoot!.activeElement === this.$.endKnob;
+  }
+
+  /**
+   * Return whether either of the two knobs is focused.
+   */
+  private isEitherKnobFocused_() {
+    return this.isStartKnobFocused_() || this.isEndKnobFocused_();
   }
 
   /**
    * Invoked when the element is resized and the knobs positions need to be
    * updated.
-   * @private
    */
-  onResize_() {
+  private onResize_() {
     this.updateKnobs_();
   }
 
   /**
    * Called when the value of the pref associated with whether to use the
    * 24-hour clock format is changed. This will also refresh the slider.
-   * @private
    */
-  hourFormatChanged_() {
-    this.shouldUse24Hours_ = /** @type {boolean} */ (
-        this.getPref('settings.clock.use_24hour_clock').value);
+  private hourFormatChanged_() {
+    this.shouldUse24Hours_ =
+        this.getPref('settings.clock.use_24hour_clock').value;
   }
 
   /**
    * Gets the style of legend div determining its absolute left position.
-   * @param {number} percent The value of the div's left as a percent (0 - 100).
-   * @param {boolean} isRTL whether window is in RTL locale.
-   * @return {string} The CSS style of the legend div.
-   * @private
+   * @param percent The value of the div's left as a percent (0 - 100).
+   * @param isRTL whether window is in RTL locale.
+   * @return The CSS style of the legend div.
    */
-  getLegendStyle_(percent, isRTL) {
+  private getLegendStyle_(percent: number, isRTL: boolean): string {
     percent = isRTL ? 100 - percent : percent;
     return 'left: ' + percent + '%';
   }
 
   /**
    * Gets the aria label for the start time knob.
-   * @return {string} The start time string to be announced.
-   * @private
+   * @return The start time string to be announced.
    */
-  getAriaLabelStartTime_() {
+  private getAriaLabelStartTime_(): string {
     return this.i18n(
         'startTime',
-        this.getTimeString_(
-            /** @type {number} */ (this.prefStartTime.value),
-            this.shouldUse24Hours_));
+        this.getTimeString_(this.prefStartTime.value, this.shouldUse24Hours_));
   }
 
   /**
    * Gets the aria label for the end time knob.
-   * @return {string} The end time string to be announced.
-   * @private
+   * @return The end time string to be announced.
    */
-  getAriaLabelEndTime_() {
+  private getAriaLabelEndTime_(): string {
     return this.i18n(
         'endTime',
-        this.getTimeString_(
-            /** @type {number} */ (this.prefEndTime.value),
-            this.shouldUse24Hours_));
+        this.getTimeString_(this.prefEndTime.value, this.shouldUse24Hours_));
   }
 
 
   /**
    * If one of the two knobs is focused, this function blurs it.
-   * @private
    */
-  blurAnyFocusedKnob_() {
+  private blurAnyFocusedKnob_() {
     if (this.isEitherKnobFocused_()) {
-      this.shadowRoot.activeElement.blur();
+      (this.shadowRoot!.activeElement as HTMLElement).blur();
     }
   }
 
   /**
    * Start dragging the target knob.
-   * @param {!Event} event
-   * @private
    */
-  startDrag_(event) {
+  private startDrag_(event: Event) {
     event.preventDefault();
 
     // Only handle start or end knobs. Use the "knob-inner" divs just to display
@@ -337,12 +324,12 @@ class SettingsSchedulerSliderElement extends
     if (event.target === this.$.startKnob ||
         event.target === this.$.startKnob.firstElementChild) {
       this.dragObject_ = this.$.startKnob;
-      this.valueAtDragStart_ = /** @type {number} */ (this.prefStartTime.value);
+      this.valueAtDragStart_ = this.prefStartTime.value;
     } else if (
         event.target === this.$.endKnob ||
         event.target === this.$.endKnob.firstElementChild) {
       this.dragObject_ = this.$.endKnob;
-      this.valueAtDragStart_ = /** @type {number} */ (this.prefEndTime.value);
+      this.valueAtDragStart_ = this.prefEndTime.value;
     } else {
       return;
     }
@@ -352,10 +339,8 @@ class SettingsSchedulerSliderElement extends
 
   /**
    * Continues dragging the selected knob if any.
-   * @param {!Event} event
-   * @private
    */
-  continueDrag_(event) {
+  private continueDrag_(event: TrackEvent) {
     if (!this.dragObject_) {
       return;
     }
@@ -376,11 +361,8 @@ class SettingsSchedulerSliderElement extends
 
   /**
    * Converts horizontal pixels into number of minutes.
-   * @param {number} deltaX
-   * @return {number}
-   * @private
    */
-  getDeltaMinutes_(deltaX) {
+  private getDeltaMinutes_(deltaX: number): number {
     return (this.isRTL_ ? -1 : 1) *
         Math.floor(
             TOTAL_MINUTES_PER_DAY * deltaX / this.$.sliderBar.offsetWidth);
@@ -390,10 +372,8 @@ class SettingsSchedulerSliderElement extends
    * Updates the knob's corresponding pref value in response to dragging, which
    * will in turn update the location of the knob and its corresponding label
    * bubble and its text contents.
-   * @param {!Event} event
-   * @private
    */
-  doKnobTracking_(event) {
+  private doKnobTracking_(event: TrackEvent) {
     const lastDeltaMinutes = this.getDeltaMinutes_(event.detail.ddx);
     if (Math.abs(lastDeltaMinutes) < 1) {
       return;
@@ -405,15 +385,13 @@ class SettingsSchedulerSliderElement extends
     // delta minutes from |dx| will provide a stable update that will not lose
     // pixel movement due to rounding.
     this.updatePref_(
-        this.valueAtDragStart_ + this.getDeltaMinutes_(event.detail.dx), true);
+        this.valueAtDragStart_! + this.getDeltaMinutes_(event.detail.dx), true);
   }
 
   /**
    * Ends the dragging.
-   * @param {!Event} event
-   * @private
    */
-  endDrag_(event) {
+  private endDrag_(event: TrackEvent) {
     event.preventDefault();
     this.dragObject_ = null;
     this.removeRipple_();
@@ -422,24 +400,21 @@ class SettingsSchedulerSliderElement extends
   /**
    * Gets the given knob's offset ratio with respect to its parent element
    * (which is the slider bar).
-   * @param {HTMLDivElement|Element} knob Either one of the two knobs.
-   * @return {number}
-   * @private
+   * @param knob Either one of the two knobs.
    */
-  getKnobRatio_(knob) {
+  private getKnobRatio_(knob: HTMLElement): number {
     return parseFloat(knob.style.left) / this.$.sliderBar.offsetWidth;
   }
 
   /**
    * Converts the time of day, given as |hour| and |minutes|, to its language-
    * sensitive time string representation.
-   * @param {number} hour The hour of the day (0 - 23).
-   * @param {number} minutes The minutes of the hour (0 - 59).
-   * @param {boolean} shouldUse24Hours Whether to use the 24-hour time format.
-   * @return {string}
-   * @private
+   * @param hour The hour of the day (0 - 23).
+   * @param minutes The minutes of the hour (0 - 59).
+   * @param shouldUse24Hours Whether to use the 24-hour time format.
    */
-  getLocaleTimeString_(hour, minutes, shouldUse24Hours) {
+  private getLocaleTimeString_(
+      hour: number, minutes: number, shouldUse24Hours: boolean): string {
     const d = new Date();
     d.setHours(hour);
     d.setMinutes(minutes);
@@ -454,13 +429,12 @@ class SettingsSchedulerSliderElement extends
   /**
    * Converts the |offsetMinutes| value (which the number of minutes since
    * 00:00) to its language-sensitive time string representation.
-   * @param {number} offsetMinutes The time of day represented as the number of
-   * minutes from 00:00.
-   * @param {boolean} shouldUse24Hours Whether to use the 24-hour time format.
-   * @return {string}
-   * @private
+   * @param offsetMinutes The time of day represented as the number of
+   *    minutes from 00:00.
+   * @param shouldUse24Hours Whether to use the 24-hour time format.
    */
-  getTimeString_(offsetMinutes, shouldUse24Hours) {
+  private getTimeString_(offsetMinutes: number, shouldUse24Hours: boolean):
+      string {
     const hour = Math.floor(offsetMinutes / 60);
     const minute = Math.floor(offsetMinutes % 60);
     return this.getLocaleTimeString_(hour, minute, shouldUse24Hours);
@@ -469,22 +443,17 @@ class SettingsSchedulerSliderElement extends
   /**
    * Using the current start and end times prefs, this function updates the
    * knobs and their label bubbles and refreshes the slider.
-   * @private
    */
-  updateKnobs_() {
-    if (!this.isReady_ || !this.prefsAvailable() ||
+  private updateKnobs_() {
+    if (!this.isReady_ || !this.prefsAvailable_() ||
         this.$.sliderBar.offsetWidth === 0) {
       return;
     }
 
-    /** @type {number} */
-    const startOffsetMinutes =
-        /** @type {number} */ (this.prefStartTime.value);
+    const startOffsetMinutes: number = this.prefStartTime.value;
     this.updateKnobLeft_(this.$.startKnob, startOffsetMinutes);
 
-    /** @type {number} */
-    const endOffsetMinutes =
-        /** @type {number} */ (this.prefEndTime.value);
+    const endOffsetMinutes: number = this.prefEndTime.value;
     this.updateKnobLeft_(this.$.endKnob, endOffsetMinutes);
 
     this.refresh_();
@@ -493,11 +462,8 @@ class SettingsSchedulerSliderElement extends
   /**
    * Updates the absolute left coordinate of the given |knob| based on the time
    * it represents given as an |offsetMinutes| value.
-   * @param {HTMLDivElement|Element} knob
-   * @param {number} offsetMinutes
-   * @private
    */
-  updateKnobLeft_(knob, offsetMinutes) {
+  private updateKnobLeft_(knob: HTMLElement, offsetMinutes: number) {
     const offsetAfter6pm =
         (offsetMinutes + TOTAL_MINUTES_PER_DAY - OFFSET_MINUTES_6PM) %
         TOTAL_MINUTES_PER_DAY;
@@ -520,9 +486,8 @@ class SettingsSchedulerSliderElement extends
   /**
    * Refreshes elements of the slider other than the knobs (the label bubbles,
    * and the progress bar).
-   * @private
    */
-  refresh_() {
+  private refresh_() {
     // The label bubbles have the same left coordinates as their corresponding
     // knobs.
     this.$.startLabel.style.left = this.$.startKnob.style.left;
@@ -538,22 +503,22 @@ class SettingsSchedulerSliderElement extends
 
     // The end progress bar starts from either the start knob or the start of
     // the slider (whichever is to its left) and ends at the end knob.
-    const endProgressLeft = startKnob.offsetLeft >= endKnob.offsetLeft ?
-        '0px' :
-        startKnob.style.left;
-    endProgress.style.left = endProgressLeft;
+    const endProgressLeft: number = startKnob.offsetLeft >= endKnob.offsetLeft ?
+        0 :
+        parseFloat(startKnob.style.left);
+    endProgress.style.left = `${endProgressLeft}px`;
     endProgress.style.width =
-        (parseFloat(endKnob.style.left) - parseFloat(endProgressLeft)) + 'px';
+        `${parseFloat(endKnob.style.left) - endProgressLeft}px`;
 
     // The start progress bar starts at the start knob, and ends at either the
     // end knob or the end of the slider (whichever is to its right).
-    const startProgressRight = endKnob.offsetLeft < startKnob.offsetLeft ?
+    const startProgressRight: number =
+        endKnob.offsetLeft < startKnob.offsetLeft ?
         this.$.sliderBar.offsetWidth :
-        endKnob.style.left;
+        parseFloat(endKnob.style.left);
     startProgress.style.left = startKnob.style.left;
     startProgress.style.width =
-        (parseFloat(startProgressRight) - parseFloat(startKnob.style.left)) +
-        'px';
+        `${startProgressRight - parseFloat(startKnob.style.left)}px`;
 
     this.fixLabelsOverlapIfAny_();
   }
@@ -561,9 +526,8 @@ class SettingsSchedulerSliderElement extends
   /**
    * If the label bubbles overlap, this function fixes them by moving the end
    * label up a little.
-   * @private
    */
-  fixLabelsOverlapIfAny_() {
+  private fixLabelsOverlapIfAny_() {
     const startLabel = this.$.startLabel;
     const endLabel = this.$.endLabel;
     const distance = Math.abs(
@@ -580,15 +544,13 @@ class SettingsSchedulerSliderElement extends
 
   /**
    * Return the value of the pref that corresponds to the other knob than
-   * `this.shadowRoot.activeElement`
-   * @return {number}
-   * @private
+   * `this.shadowRoot!.activeElement`
    */
-  getOtherKnobPrefValue_() {
+  private getOtherKnobPrefValue_(): number {
     if (this.isStartKnobFocused_()) {
-      return /** @type {number} */ (this.prefEndTime.value);
+      return this.prefEndTime.value;
     }
-    return /** @type {number} */ (this.prefStartTime.value);
+    return this.prefStartTime.value;
   }
 
   /**
@@ -615,11 +577,8 @@ class SettingsSchedulerSliderElement extends
    * distance of 1 hour, the start knob is at 8:00 am, and the end knob is at
    * 7:00, if the start knob value is decreased, then the start knob will be
    * updated to 6:00.
-   * @param {number} updatedValue
-   * @param {boolean} fromUserGesture
-   * @private
    */
-  updatePref_(updatedValue, fromUserGesture) {
+  private updatePref_(updatedValue: number, fromUserGesture: boolean) {
     const otherValue = this.getOtherKnobPrefValue_();
 
     const totalMinutes = TOTAL_MINUTES_PER_DAY;
@@ -640,38 +599,25 @@ class SettingsSchedulerSliderElement extends
     }
   }
 
-  /**
-   * @param {Element} knob
-   * @returns {?number}
-   * @private
-   */
-  getPrefValue(knob) {
+  private getPrefValue_(): number|null {
     if (this.isStartKnobFocused_()) {
-      return /** @type {number} */ (this.prefStartTime.value);
+      return this.prefStartTime.value;
     } else if (this.isEndKnobFocused_()) {
-      return /** @type {number} */ (this.prefEndTime.value);
+      return this.prefEndTime.value;
     } else {
       return null;
     }
   }
 
   /**
-   * @return {boolean} Whether either of the two knobs is focused.
-   * @private
-   */
-  isEitherKnobFocused_() {
-    return this.isStartKnobFocused_() || this.isEndKnobFocused_();
-  }
-
-  /**
    * Overrides _createRipple() from PaperRippleBehavior to create the ripple
    * only on a knob if it's focused, or on a dummy hidden element so that it
    * doesn't show.
-   * @protected
    */
-  _createRipple() {
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  override _createRipple() {
     if (this.isEitherKnobFocused_()) {
-      this._rippleContainer = this.shadowRoot.activeElement;
+      this._rippleContainer = this.shadowRoot!.activeElement as HTMLElement;
     } else {
       // We can't just skip the ripple creation and return early with null here.
       // The code inherited from PaperRippleBehavior expects that this function
@@ -679,18 +625,14 @@ class SettingsSchedulerSliderElement extends
       // to be created under a hidden element.
       this._rippleContainer = this.$.dummyRippleContainer;
     }
-    const ripple = PaperRippleBehavior._createRipple();
+    const ripple = super._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
     return ripple;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onFocus_(event) {
+  private onFocus_(event: Event) {
     this.handleKnobEvent_(event);
   }
 
@@ -698,14 +640,13 @@ class SettingsSchedulerSliderElement extends
    * Handles focus, drag and key events on the start and end knobs.
    * If |overrideElement| is provided, it will be the knob that gains focus and
    * and the ripple. Otherwise, the knob is determined from the |event|.
-   * @param {!Event} event
-   * @param {Element=} overrideElement
-   * @private
    */
-  handleKnobEvent_(event, overrideElement) {
+  private handleKnobEvent_(event: Event, overrideElement?: HTMLElement|null) {
     const knob = overrideElement ||
-        event.composedPath().find(
-            el => el.classList && el.classList.contains('knob'));
+        (event.composedPath().find(
+            el => (el as HTMLElement).classList?.contains('knob'))) as
+                HTMLElement |
+            undefined;
     if (!knob) {
       event.preventDefault();
       return;
@@ -719,36 +660,29 @@ class SettingsSchedulerSliderElement extends
     this.ensureRipple();
 
     if (this.hasRipple()) {
-      this._ripple.style.display = '';
-      this._ripple.holdDown = true;
+      this._ripple!.style.display = '';
+      this._ripple!.holdDown = true;
     }
   }
 
   /**
    * Handles blur events on the start and end knobs.
-   * @private
    */
-  onBlur_() {
+  private onBlur_() {
     this.removeRipple_();
   }
 
   /**
    * Removes ripple if one exists.
-   * @private
    */
-  removeRipple_() {
+  private removeRipple_() {
     if (this.hasRipple()) {
-      this._ripple.remove();
+      this._ripple!.remove();
       this._ripple = null;
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onKeyDown_(event) {
-    const activeElement = this.shadowRoot.activeElement;
+  private onKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Tab') {
       if (event.shiftKey && this.isEndKnobFocused_()) {
         event.preventDefault();
@@ -780,14 +714,20 @@ class SettingsSchedulerSliderElement extends
       this.handleKnobEvent_(event);
 
       event.preventDefault();
-      const value = this.getPrefValue(activeElement);
+      const value = this.getPrefValue_();
       if (value === null) {
         return;
       }
 
-      const delta = deltaKeyMap[event.key];
+      const delta = deltaKeyMap[event.key as keyof typeof deltaKeyMap];
       this.updatePref_(value + delta, false);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-scheduler-slider': SettingsSchedulerSliderElement;
   }
 }
 

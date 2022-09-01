@@ -37,6 +37,7 @@ web_component_files = [
   "chromeos/os_toolbar/os_toolbar.ts",
   "chromeos/parental_controls_page/parental_controls_page.ts",
   "chromeos/personalization_page/personalization_page.ts",
+  "chromeos/settings_scheduler_slider/settings_scheduler_slider.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -341,7 +342,6 @@ gen_web_component_files = [
   "chromeos/os_search_page/search_engine.js",
   "chromeos/os_search_page/search_subpage.js",
   "chromeos/os_settings_icons_css.js",
-  "chromeos/settings_scheduler_slider/settings_scheduler_slider.js",
 ]
 
 mojom_webui_files = [
