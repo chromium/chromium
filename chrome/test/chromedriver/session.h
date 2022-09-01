@@ -102,6 +102,7 @@ struct Session {
   std::string GetCurrentFrameId() const;
   std::vector<WebDriverLog*> GetAllLogs() const;
 
+  bool BidiMapperIsLaunched() const;
   void OnBidiResponse(const std::string& payload);
   void AddBidiConnection(int connection_id,
                          SendTextFunc send_response,
@@ -114,6 +115,7 @@ struct Session {
   bool webSocketUrl = false;
   bool quit;
   bool detach;
+  bool bidi_mapper_is_launched_ = false;
   int awaited_bidi_response_id = -1;
   std::unique_ptr<Chrome> chrome;
   std::string window;
@@ -175,7 +177,7 @@ struct Session {
   std::vector<BidiConnection> bidi_connections_;
   // If there is no active connections the messages from Chrome are accumulated
   // in this queue until a connection is created or the queue overflows.
-  std::queue<std::string> bidi_response_queue_;
+  std::queue<base::Value> bidi_response_queue_;
 };
 
 Session* GetThreadLocalSession();

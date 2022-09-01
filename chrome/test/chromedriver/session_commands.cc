@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -406,6 +407,18 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       if (status.IsError())
         return status;
     }
+
+    base::RepeatingCallback<Status(bool*)> bidi_mapper_is_launched =
+        base::BindRepeating(
+            [](Session* session, bool* condition_is_met) {
+              *condition_is_met = session->BidiMapperIsLaunched();
+              return Status{kOk};
+            },
+            base::Unretained(session));
+    // Assume that BiDiMapper initialization requires the same time as a regular
+    // script
+    web_view->HandleEventsUntil(bidi_mapper_is_launched,
+                                Timeout(session->script_timeout));
 
     {
       // Create a new tab because the default one is occupied by the BiDiMapper

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/threading/thread_local.h"
@@ -158,15 +159,25 @@ void Session::SwitchFrameInternal(bool for_top_frame) {
   }
 }
 
+bool Session::BidiMapperIsLaunched() const {
+  return bidi_mapper_is_launched_;
+}
+
 void Session::OnBidiResponse(const std::string& payload) {
-  if (payload == "{\"launched\":true}") {
-    // TODO(chromedriver:4180): Prohibit any user command handling before we
-    // receive the "launched" event from the BiDiMapper.
+  absl::optional<base::Value> payload_parsed =
+      base::JSONReader::Read(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!payload_parsed || !payload_parsed->is_dict()) {
+    LOG(WARNING) << "BiDi response is not a map: " << payload;
+    return;
+  }
+
+  if (payload_parsed->GetDict().FindBool("launched").value_or(false)) {
+    bidi_mapper_is_launched_ = true;
     return;
   }
 
   // If there is no active bidi connections the events will be accumulated.
-  bidi_response_queue_.push(payload);
+  bidi_response_queue_.push(std::move(*payload_parsed));
   for (; bidi_response_queue_.size() > kBidiQueueCapacity;
        bidi_response_queue_.pop()) {
     LOG(WARNING) << "BiDi response queue overflow, dropping the message: "
@@ -206,24 +217,21 @@ void Session::ProcessBidiResponseQueue() {
     // connections. The payload will have to be parsed and routed to the
     // appropriate connection. The events will have to be delivered to all
     // connections.
+    base::Value response_parsed = std::move(bidi_response_queue_.front());
+    std::string response;
+    if (!base::JSONWriter::Write(response_parsed, &response)) {
+      LOG(WARNING) << "unable to serialize a BiDi response";
+      continue;
+    }
     for (const BidiConnection& conn : bidi_connections_) {
       // If the callback fails (asynchronously) because the connection was
       // broken we simply ignore this fact as the message cannot be delivered
       // over that connection anyway.
-      std::string response = bidi_response_queue_.front();
       conn.send_response.Run(response);
-      absl::optional<base::Value> responseParsed = base::JSONReader::Read(
-          response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-      if (responseParsed && responseParsed->is_dict()) {
-        absl::optional<int> response_id =
-            responseParsed->GetDict().FindInt("id");
-        if (response_id && *response_id == awaited_bidi_response_id) {
-          VLOG(0) << "awaited response is received!";
-          awaited_bidi_response_id = -1;
-          // No "id" means that we are dealing with an event
-        }
-      } else {
-        LOG(WARNING) << "BiDi response is not a map";
+      absl::optional<int> response_id = response_parsed.GetDict().FindInt("id");
+      if (response_id && *response_id == awaited_bidi_response_id) {
+        awaited_bidi_response_id = -1;
+        // No "id" means that we are dealing with an event
       }
     }
   }
