@@ -25,13 +25,8 @@ CpuProbeWin::~CpuProbeWin() {
 void CpuProbeWin::Update() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& result = GetPdhData();
-  if (result.has_value()) {
-    last_sample_ = std::move(result.value());
-  } else {
-    last_sample_ = kUnsupportedValue;
-    LOG(ERROR) << result.error();
-  }
+  auto result = GetPdhData();
+  last_sample_ = result ? *result : kUnsupportedValue;
 }
 
 PressureSample CpuProbeWin::LastSample() {
@@ -40,7 +35,7 @@ PressureSample CpuProbeWin::LastSample() {
   return last_sample_;
 }
 
-base::expected<PressureSample, std::string> CpuProbeWin::GetPdhData() {
+absl::optional<PressureSample> CpuProbeWin::GetPdhData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PDH_STATUS pdh_status;
@@ -48,26 +43,34 @@ base::expected<PressureSample, std::string> CpuProbeWin::GetPdhData() {
   if (!cpu_query_.is_valid()) {
     cpu_query_ = ScopedPdhQuery::Create();
     if (!cpu_query_.is_valid())
-      return base::unexpected("PdhOpenQuery failed.");
+      return absl::nullopt;
 
     pdh_status = PdhAddEnglishCounter(cpu_query_.get(),
                                       L"\\Processor(_Total)\\% Processor Time",
                                       NULL, &cpu_percent_utilization_);
     if (pdh_status != ERROR_SUCCESS) {
       cpu_query_.reset();
-      return base::unexpected("PdhAddEnglishCounter failed.");
+      LOG(ERROR) << "PdhAddEnglishCounter failed: "
+                 << logging::SystemErrorCodeToString(pdh_status);
+      return absl::nullopt;
     }
   }
 
   pdh_status = PdhCollectQueryData(cpu_query_.get());
-  if (pdh_status != ERROR_SUCCESS)
-    return base::unexpected("PdhCollectQueryData failed.");
+  if (pdh_status != ERROR_SUCCESS) {
+    LOG(ERROR) << "PdhCollectQueryData failed: "
+               << logging::SystemErrorCodeToString(pdh_status);
+    return absl::nullopt;
+  }
 
   PDH_FMT_COUNTERVALUE counter_value;
   pdh_status = PdhGetFormattedCounterValue(
       cpu_percent_utilization_, PDH_FMT_DOUBLE, NULL, &counter_value);
-  if (pdh_status != ERROR_SUCCESS)
-    return base::unexpected("PdhGetFormattedCounterValue failed.");
+  if (pdh_status != ERROR_SUCCESS) {
+    LOG(ERROR) << "PdhGetFormattedCounterValue failed: "
+               << logging::SystemErrorCodeToString(pdh_status);
+    return absl::nullopt;
+  }
 
   return PressureSample{counter_value.doubleValue / 100.0};
 }

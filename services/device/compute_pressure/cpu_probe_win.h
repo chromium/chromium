@@ -6,14 +6,13 @@
 #define SERVICES_DEVICE_COMPUTE_PRESSURE_CPU_PROBE_WIN_H_
 
 #include <memory>
-#include <string>
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/types/expected.h"
 #include "services/device/compute_pressure/cpu_probe.h"
 #include "services/device/compute_pressure/pressure_sample.h"
 #include "services/device/compute_pressure/scoped_pdh_query.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -34,7 +33,7 @@ class CpuProbeWin : public CpuProbe {
  private:
   CpuProbeWin();
 
-  base::expected<PressureSample, std::string> GetPdhData();
+  absl::optional<PressureSample> GetPdhData();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
