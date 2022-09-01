@@ -61,6 +61,15 @@ void WebKioskAppServiceLauncher::OnWebAppInitializled() {
     return;
   }
 
+  // If the installed app is a placeholder (similar to failed installation in
+  // the old launcher), try to install again to replace it.
+  if (web_app_provider_->registrar().IsPlaceholderApp(
+          app_id.value(), web_app::WebAppManagement::Type::kKiosk)) {
+    SYSLOG(INFO) << "Placeholder app installed. Trying to reinstall...";
+    delegate_->InitializeNetwork();
+    return;
+  }
+
   app_id_ = app_id.value();
 
   // Don't enforce network status in web Kiosk if the app is already installed.
@@ -80,8 +89,7 @@ void WebKioskAppServiceLauncher::InstallApp() {
   // When the install URL redirects to another URL a placeholder will be
   // installed. This happens if a web app requires authentication.
   options.install_placeholder = true;
-  // The placeholder app will be replaced after the install URL can be accessed
-  // directly (for example after authentication).
+  // If there is a placeholder app installed, try to reinstall it.
   options.reinstall_placeholder = true;
   web_app_provider_->externally_managed_app_manager().Install(
       options,

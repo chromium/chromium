@@ -51,6 +51,14 @@ namespace ash {
 
 namespace {
 
+#define EXEC_AND_WAIT_FOR_CALL(exec, mock, method)                      \
+  ({                                                                    \
+    base::RunLoop loop;                                                 \
+    EXPECT_CALL(mock, method).WillOnce(RunClosure(loop.QuitClosure())); \
+    exec;                                                               \
+    loop.Run();                                                         \
+  })
+
 class MockAppLauncherDelegate : public WebKioskAppServiceLauncher::Delegate {
  public:
   MockAppLauncherDelegate() = default;
@@ -111,6 +119,18 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
               const GURL& install_url = install_options.install_url;
               const web_app::AppId app_id = web_app::GenerateAppId(
                   /*manifest_id=*/absl::nullopt, start_url);
+              // Uninstall placeholder if reinstall_placeholder is set to true.
+              auto placeholder_id =
+                  web_app_provider()->registrar().LookupPlaceholderAppId(
+                      install_url, web_app::WebAppManagement::Type::kKiosk);
+              if (placeholder_id.has_value()) {
+                if (install_options.reinstall_placeholder) {
+                  UnregisterApp(placeholder_id.value());
+                } else {
+                  return web_app::ExternallyManagedAppManager::InstallResult(
+                      webapps::InstallResultCode::kSuccessAlreadyInstalled);
+                }
+              }
               if (!app_registrar().GetAppById(app_id)) {
                 const auto install_source = install_options.install_source;
                 std::unique_ptr<web_app::WebApp> web_app =
@@ -119,9 +139,9 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
                         ConvertExternalInstallSourceToSource(install_source));
                 web_app->SetName(base::UTF16ToUTF8(kAppTitle));
                 RegisterApp(std::move(web_app));
-                web_app::test::AddInstallUrlData(profile()->GetPrefs(),
-                                                 &sync_bridge(), app_id,
-                                                 install_url, install_source);
+                web_app::test::AddInstallUrlAndPlaceholderData(
+                    profile()->GetPrefs(), &sync_bridge(), app_id, install_url,
+                    install_source, this->install_placeholder_);
               }
               return web_app::ExternallyManagedAppManager::InstallResult(
                   install_result_code_, app_id);
@@ -204,6 +224,16 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
                        base::Unretained(this), std::move(app_id)));
   }
 
+  void UnregisterApp(const std::string& app_id) {
+    std::unique_ptr<web_app::WebAppRegistryUpdate> update =
+        sync_bridge().BeginUpdate();
+    update->DeleteApp(app_id);
+    sync_bridge().CommitUpdate(
+        std::move(update),
+        base::BindOnce(&WebKioskAppServiceLauncherTest::OnAppUnregistered,
+                       base::Unretained(this), std::move(app_id)));
+  }
+
   apps::AppServiceProxy* app_service() { return app_service_; }
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
@@ -237,10 +267,19 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     install_result_code_ = result_code;
   }
 
+  void set_install_placeholder(bool install_placeholder) {
+    install_placeholder_ = install_placeholder;
+  }
+
  private:
   void OnAppRegistered(std::string app_id, bool success) {
     ASSERT_TRUE(success);
     web_app_provider()->install_manager().NotifyWebAppInstalled(app_id);
+  }
+
+  void OnAppUnregistered(std::string app_id, bool success) {
+    ASSERT_TRUE(success);
+    web_app_provider()->install_manager().NotifyWebAppUninstalled(app_id);
   }
 
   AccountId account_id_;
@@ -257,75 +296,72 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 
   webapps::InstallResultCode install_result_code_ =
       webapps::InstallResultCode::kSuccessNewInstall;
+
+  bool install_placeholder_ = false;
 };
 
 TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
-  SetupAppData(/*installed*/ false);
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*delegate(), InitializeNetwork())
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    launcher()->Initialize();
-    loop.Run();
-  }
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*delegate(), OnAppInstalling());
-    EXPECT_CALL(*delegate(), OnAppPrepared())
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    launcher()->ContinueWithNetworkReady();
-    loop.Run();
-  }
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*delegate(), OnAppLaunched())
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    launcher()->LaunchApp();
-    loop.Run();
-  }
+  SetupAppData(/*installed=*/false);
+
+  EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), *delegate(),
+                         InitializeNetwork());
+
+  EXPECT_CALL(*delegate(), OnAppInstalling());
+  EXEC_AND_WAIT_FOR_CALL(launcher()->ContinueWithNetworkReady(), *delegate(),
+                         OnAppPrepared());
+
+  EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), *delegate(), OnAppLaunched());
 
   EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, NormalFlowAlreadyInstalled) {
-  SetupAppData(/*installed*/ true);
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*delegate(), OnAppPrepared())
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    launcher()->Initialize();
-    loop.Run();
-  }
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*delegate(), OnAppLaunched())
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    launcher()->LaunchApp();
-    loop.Run();
-  }
+  SetupAppData(/*installed=*/true);
+
+  EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), *delegate(),
+                         OnAppPrepared());
+
+  EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), *delegate(), OnAppLaunched());
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, FailedToInstall) {
-  SetupAppData(/*installed*/ false);
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*delegate(), InitializeNetwork())
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    launcher()->Initialize();
-    loop.Run();
-  }
+  SetupAppData(/*installed=*/false);
+
+  EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), *delegate(),
+                         InitializeNetwork());
+
   set_install_result_code(webapps::InstallResultCode::kInstallURLLoadFailed);
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*delegate(), OnAppInstalling());
-    EXPECT_CALL(*delegate(),
-                OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall))
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    launcher()->ContinueWithNetworkReady();
-    loop.Run();
-  }
+
+  EXPECT_CALL(*delegate(), OnAppInstalling());
+  EXEC_AND_WAIT_FOR_CALL(
+      launcher()->ContinueWithNetworkReady(), *delegate(),
+      OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall));
+
   EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
+}
+
+TEST_F(WebKioskAppServiceLauncherTest, PlaceholderReplaced) {
+  set_install_placeholder(true);
+  SetupAppData(/*installed=*/true);
+  EXPECT_TRUE(web_app_provider()->registrar().LookupPlaceholderAppId(
+      GURL(kAppInstallUrl), web_app::WebAppManagement::Type::kKiosk));
+
+  set_install_placeholder(false);
+
+  EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), *delegate(),
+                         InitializeNetwork());
+
+  EXPECT_CALL(*delegate(), OnAppInstalling());
+  EXEC_AND_WAIT_FOR_CALL(launcher()->ContinueWithNetworkReady(), *delegate(),
+                         OnAppPrepared());
+
+  EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), *delegate(), OnAppLaunched());
+
+  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
+  EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
+  EXPECT_FALSE(web_app_provider()->registrar().LookupPlaceholderAppId(
+      GURL(kAppInstallUrl), web_app::WebAppManagement::Type::kKiosk));
 }
 
 }  // namespace ash
