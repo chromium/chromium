@@ -5050,12 +5050,6 @@
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION_CHILD" desc="The label that explains the location of the fingerprint sensor on the device, when a child account is in use.">
     To set up fingerprint, have your child touch the fingerprint sensor. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT" desc="The label that explains the location of the fingerprint sensor for devices with fingerprint sensor located left to the power button on the top right corner of the keyboard.">
-    Touch the fingerprint sensor at the top right corner of your keyboard, next to the Power button. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-  </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT_CHILD" desc="The label that explains the location of the fingerprint sensor for devices with fingerprint sensor located left to the power button on the top right corner of the keyboard, when a child account is in use.">
-    To set up fingerprint, have your child touch the fingerprint sensor at the top right corner of the keyboard, next to the Power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-  </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_PROGRESS_TITLE" desc="The title of the dialog that shows where the fingerprint sensor is.">
     Lift, then touch again
   </message>
