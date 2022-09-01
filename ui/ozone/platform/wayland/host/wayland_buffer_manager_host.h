@@ -60,6 +60,9 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // destroyed.
   void OnChannelDestroyed();
 
+  // Called by WaylandFrameManager if overlay data is invalid.
+  void OnCommitOverlayError(const std::string& message);
+
   // Returns supported buffer formats either from zwp_linux_dmabuf or wl_drm.
   wl::BufferFormatsWithModifiersMap GetSupportedBufferFormats() const;
 
@@ -154,7 +157,6 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                            uint32_t buffer_id);
   bool ValidateDataFromGpu(const gfx::Size& size, uint32_t buffer_id);
   bool ValidateBufferExistence(uint32_t buffer_id);
-  bool ValidateOverlayData(const wl::WaylandOverlayConfig& overlay_data);
 
   // Terminates the GPU process on invalid data received
   void TerminateGpuProcess();

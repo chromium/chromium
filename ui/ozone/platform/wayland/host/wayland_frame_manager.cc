@@ -25,6 +25,16 @@ namespace {
 
 constexpr uint32_t kMaxNumberOfFrames = 20u;
 
+constexpr char kBoundsRectNanOrInf[] =
+    "Overlay bounds_rect is invalid (NaN or infinity).";
+
+bool ValidateRect(const gfx::RectF& rect) {
+  return !std::isnan(rect.x()) && !std::isnan(rect.y()) &&
+         !std::isnan(rect.width()) && !std::isnan(rect.height()) &&
+         !std::isinf(rect.x()) && !std::isinf(rect.y()) &&
+         !std::isinf(rect.width()) && !std::isinf(rect.height());
+}
+
 uint32_t GetPresentationKindFlags(uint32_t flags) {
   // Wayland spec has different meaning of VSync. In Chromium, VSync means to
   // update the begin frame vsync timing based on presentation feedback.
@@ -144,7 +154,11 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   // ack_configure requests being issued.
   const wl::WaylandOverlayConfig& config = frame->root_config;
   if (!frame->buffer_lost && !!config.buffer_id) {
-    window_->UpdateVisualSize(gfx::ToRoundedSize(config.bounds_rect.size()));
+    if (!ValidateRect(config.bounds_rect)) {
+      fatal_error_message_ = kBoundsRectNanOrInf;
+    } else {
+      window_->UpdateVisualSize(gfx::ToRoundedSize(config.bounds_rect.size()));
+    }
   }
 
   // Skip this frame if:
@@ -154,12 +168,20 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   //    is still out-of-sync with the pending configure sequences received from
   //    the Wayland compositor. This avoids protocol errors as observed in
   //    https://crbug.com/1313023.
-  if (frame->buffer_lost || !window_->IsSurfaceConfigured())
+  // 3. A fatal error message has been set.
+  if (!fatal_error_message_.empty() || frame->buffer_lost ||
+      !window_->IsSurfaceConfigured())
     DiscardFrame(std::move(pending_frames_.front()));
   else
     PlayBackFrame(std::move(pending_frames_.front()));
 
   pending_frames_.pop_front();
+
+  if (!fatal_error_message_.empty()) {
+    connection_->buffer_manager_host()->OnCommitOverlayError(
+        fatal_error_message_);
+    return;
+  }
 
   // wl_frame_callback drives the continuous playback of frames, if the frame we
   // just played-back did not set up a wl_frame_callback, we should playback
@@ -210,10 +232,16 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
           config.bounds_rect, root_config.bounds_rect,
           root_config.surface_scale_factor, nullptr, reference_above);
       ApplySurfaceConfigure(frame.get(), surface, config, true);
+      // A fatal error happened. Must stop the playback and terminate the gpu
+      // process as it might have been compromised.
+      if (!fatal_error_message_.empty())
+        return;
       reference_above = subsurface;
       surface->Commit(false);
     }
   }
+
+  DCHECK(fatal_error_message_.empty());
 
   if (empty_frame) {
     // GPU channel has been destroyed. Do nothing for empty frames except that
@@ -223,6 +251,10 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   } else {
     // Opaque region is set during UpdateVisualSize() no need to set it again.
     ApplySurfaceConfigure(frame.get(), root_surface, root_config, false);
+    // A fatal error happened. Must stop the playback and terminate the gpu
+    // process as it might have been compromised.
+    if (!fatal_error_message_.empty())
+      return;
   }
 
   DCHECK(empty_frame || !connection_->presentation() ||
@@ -256,6 +288,15 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   DCHECK(surface);
   if (!config.buffer_id)
     return;
+
+  if (!ValidateRect(config.bounds_rect)) {
+    DCHECK(fatal_error_message_.empty());
+    // A fatal error must be set here and handled outside the Playback method as
+    // terminating the gpu during the playback is illegal - a pending frame will
+    // DCHECK in ::ClearStates.
+    fatal_error_message_ = kBoundsRectNanOrInf;
+    return;
+  }
 
   static const wl_callback_listener frame_listener = {
       &WaylandFrameManager::FrameCallbackDone};
@@ -667,6 +708,10 @@ void WaylandFrameManager::Hide() {
 }
 
 void WaylandFrameManager::ClearStates(bool closing) {
+  // Clear the previous fatal error message as it might have been set during
+  // a playback.
+  fatal_error_message_.clear();
+
   for (auto& frame : submitted_frames_) {
     frame->wl_frame_callback.reset();
     for (auto& submitted : frame->submitted_buffers)

@@ -573,24 +573,82 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
                  window_->GetBoundsInPixels().width(),
                  std::numeric_limits<float>::infinity())};
 
-  for (const auto& bounds_rect : bounds_rect_test_data) {
-    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, 1u);
-    ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
-                                                 false /* fail */);
+  constexpr bool config[2] = {/*root_has_nan_bounds=*/true,
+                              /*non_root_overlay_has_nan_bounds=*/false};
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+  constexpr uint32_t kBufferId3 = 3;
 
-    // Can't commit for bounds rect containing NaN
-    SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
+  for (bool should_root_have_nan_bounds : config) {
+    for (const auto& faulty_bounds_rect : bounds_rect_test_data) {
+      CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                        kBufferId1);
+      CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                        kBufferId2);
+      CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                        kBufferId3);
+      ProcessCreatedBufferResourcesWithExpectation(3u /* expected size */,
+                                                   false /* fail */);
 
-    std::vector<wl::WaylandOverlayConfig> overlay_configs;
-    overlay_configs.emplace_back(
-        CreateBasicWaylandOverlayConfig(1u, 1u, bounds_rect));
-    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
-                                        std::move(overlay_configs));
+      // Can't commit for bounds rect containing NaN
+      SetTerminateCallbackExpectationAndDestroyChannel(&callback_,
+                                                       true /*fail*/);
 
-    Sync();
+      size_t z_order = 0;
+      std::vector<wl::WaylandOverlayConfig> overlay_configs;
+      if (should_root_have_nan_bounds) {
+        // The root surface has nan bounds.
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            INT32_MIN, kBufferId1, faulty_bounds_rect));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId2, window_->GetBoundsInPixels()));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId3, window_->GetBoundsInPixels()));
+      } else {
+        // Overlays have nan bounds. Given playback starts with the biggest
+        // z-order number, add two more overlays around the faulty overlay
+        // config so that the test ensures no further playback happens and it
+        // doesn't crash.
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            INT32_MIN, kBufferId1, window_->GetBoundsInPixels()));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId2, window_->GetBoundsInPixels()));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId3, faulty_bounds_rect));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId2, window_->GetBoundsInPixels()));
+      }
+      buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
+                                          std::move(overlay_configs));
 
-    EXPECT_EQ("Overlay bounds_rect is invalid (NaN or infinity).",
-              channel_destroyed_error_message_);
+      Sync();
+
+      if (!should_root_have_nan_bounds &&
+          !connection_->linux_explicit_synchronization_v1()) {
+        // This case submits kBufferId2 twice. So, a second handle is requested
+        // during a frame playback if explicit sync is unavailable.
+        ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                                     false /* fail */);
+        Sync();
+      }
+
+      EXPECT_EQ("Overlay bounds_rect is invalid (NaN or infinity).",
+                channel_destroyed_error_message_);
+
+      // Clear all the possible frame and release callbacks.
+      auto* mock_surface = server_.GetObject<wl::MockSurface>(
+          window_->root_surface()->GetSurfaceId());
+      for (auto& subsurface : window_->wayland_subsurfaces_) {
+        auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
+            subsurface->wayland_surface()->GetSurfaceId());
+        EXPECT_TRUE(mock_surface_of_subsurface);
+        mock_surface_of_subsurface->SendFrameCallback();
+        mock_surface_of_subsurface->ClearBufferReleases();
+      }
+
+      mock_surface->SendFrameCallback();
+      mock_surface->ClearBufferReleases();
+    }
   }
 }
 

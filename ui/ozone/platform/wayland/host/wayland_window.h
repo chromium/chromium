@@ -403,6 +403,8 @@ class WaylandWindow : public PlatformWindow,
   FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetWindowScale);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSubmitOverlayPriority);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSetRoundedCorners);
+  FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest,
+                           CommitOverlaysNonsensicalBoundsRect);
 
   // Initializes the WaylandWindow with supplied properties.
   bool Initialize(PlatformWindowInitProperties properties);
