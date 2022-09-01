@@ -19,6 +19,8 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -75,10 +77,24 @@ AutocompleteMatch NewOpenTabResult(const std::string& url) {
   return result;
 }
 
+// A mock class for the AutoCompleteController.
+class MockAutoCompleteController : public AutocompleteController {
+ public:
+  MockAutoCompleteController()
+      : AutocompleteController(
+            std::make_unique<FakeAutocompleteProviderClient>(),
+            0) {}
+  MockAutoCompleteController(const MockAutoCompleteController&) = delete;
+  MockAutoCompleteController& operator=(const MockAutoCompleteController&) =
+      delete;
+  ~MockAutoCompleteController() override = default;
+
+  // Do nothing when it is called by OmniboxProvider.
+  void Start(const AutocompleteInput& input) override {}
+};
+
 }  // namespace
 
-// http://crbug.com/1357483
-#define OmniboxProviderTest DISABLED_OmniboxProviderTest
 class OmniboxProviderTest : public testing::Test {
  public:
   OmniboxProviderTest() {
@@ -110,6 +126,10 @@ class OmniboxProviderTest : public testing::Test {
         std::make_unique<OmniboxProvider>(profile_, list_controller_.get());
     provider_->set_controller(search_controller_.get());
 
+    std::unique_ptr<AutocompleteController> controller =
+        std::make_unique<MockAutoCompleteController>();
+    provider_->set_controller_for_test(std::move(controller));
+
     base::RunLoop().RunUntilIdle();
   }
 
@@ -123,7 +143,6 @@ class OmniboxProviderTest : public testing::Test {
   }
 
   void ProduceResults(const AutocompleteResult& results) {
-    provider_->set_query_finished_for_test(false);
     provider_->PopulateFromACResult(std::move(results));
     base::RunLoop().RunUntilIdle();
   }
@@ -188,6 +207,8 @@ TEST_F(OmniboxProviderTest, NewResults) {
   ProduceResults(std::move(result));
 
   // Then produce another.
+  StartSearch(u"query");
+
   to_produce.clear();
   AutocompleteResult new_result;
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab_2"));

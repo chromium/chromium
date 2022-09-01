@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_PROVIDER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_PROVIDER_H_
 
+#include <algorithm>
 #include <memory>
 
 #include "base/time/time.h"
@@ -41,11 +42,10 @@ class OmniboxProvider : public SearchProvider,
   // Populates result list from AutocompleteResult.
   void PopulateFromACResult(const AutocompleteResult& result);
 
-  // Change the query_finished_ flag for testing purpose.
-  // TODO(crbug.com/1356409): Replace this function with formal testing
-  // procedures.
-  void set_query_finished_for_test(bool query_finished) {
-    query_finished_ = query_finished;
+  // Change the controller_ for testing purpose.
+  void set_controller_for_test(
+      std::unique_ptr<AutocompleteController> controller) {
+    controller_ = std::move(controller);
   }
 
  private:
