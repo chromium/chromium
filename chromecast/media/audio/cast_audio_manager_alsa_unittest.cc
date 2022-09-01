@@ -28,7 +28,7 @@ const char kDefaultAlsaDevice[] = "plug:default";
 
 const ::media::AudioParameters kDefaultAudioParams(
     ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-    ::media::CHANNEL_LAYOUT_STEREO,
+    ::media::ChannelLayoutConfig::Stereo(),
     ::media::AudioParameters::kAudioCDSampleRate,
     256);
 

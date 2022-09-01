@@ -23,11 +23,8 @@ namespace mixer {
     int num_channels,
     int sample_rate,
     int frames_per_buffer) {
-  ::media::AudioParameters parameters(format, channel_layout, sample_rate,
-                                      frames_per_buffer);
-  if (channel_layout == ::media::CHANNEL_LAYOUT_DISCRETE) {
-    parameters.set_channels_for_discrete(num_channels);
-  }
+  ::media::AudioParameters parameters(format, {channel_layout, num_channels},
+                                      sample_rate, frames_per_buffer);
   return parameters;
 }
 

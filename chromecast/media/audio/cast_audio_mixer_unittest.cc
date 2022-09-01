@@ -41,7 +41,7 @@ using testing::StrictMock;
 ::media::AudioParameters GetAudioParams() {
   return ::media::AudioParameters(
       ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      ::media::CHANNEL_LAYOUT_STEREO, 48000, 1024);
+      ::media::ChannelLayoutConfig::Stereo(), 48000, 1024);
 }
 
 void SignalPull(

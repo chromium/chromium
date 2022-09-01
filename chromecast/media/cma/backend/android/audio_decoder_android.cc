@@ -324,11 +324,13 @@ void AudioDecoderAndroid::CreateRateShifter(const AudioConfig& config) {
   rate_shifter_output_.reset();
   rate_shifter_.reset(new ::media::AudioRendererAlgorithm(&media_log_));
   bool is_encrypted = false;
+  ::media::ChannelLayout channel_layout =
+      DecoderConfigAdapter::ToMediaChannelLayout(config.channel_layout);
   rate_shifter_->Initialize(
-      ::media::AudioParameters(
-          ::media::AudioParameters::AUDIO_PCM_LINEAR,
-          DecoderConfigAdapter::ToMediaChannelLayout(config.channel_layout),
-          config.samples_per_second, kDefaultFramesPerBuffer),
+      ::media::AudioParameters(::media::AudioParameters::AUDIO_PCM_LINEAR,
+                               {channel_layout, config.channel_number},
+                               config.samples_per_second,
+                               kDefaultFramesPerBuffer),
       is_encrypted);
 }
 
