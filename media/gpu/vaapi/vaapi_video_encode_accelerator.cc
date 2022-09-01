@@ -570,6 +570,9 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     return false;
   }
 
+  if (spatial_layer_resolutions.empty())
+    return false;
+
   scoped_refptr<VASurface> source_surface;
   {
     TRACE_EVENT0("media,gpu", "VAVEA::ImportGpuMemoryBufferToVASurface");
@@ -593,30 +596,36 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   // Create input and reconstructed surfaces.
   TRACE_EVENT1("media,gpu", "VAVEA::ConstructSurfaces", "layers",
                spatial_layer_resolutions.size());
-  input_surfaces->reserve(spatial_layer_resolutions.size());
-  reconstructed_surfaces->reserve(spatial_layer_resolutions.size());
-  for (const gfx::Size& encode_size : spatial_layer_resolutions) {
-    const bool engage_vpp = frame.visible_rect() != gfx::Rect(encode_size);
+  input_surfaces->resize(spatial_layer_resolutions.size());
+  reconstructed_surfaces->resize(spatial_layer_resolutions.size());
+
+  // Process from uppermost layer, then use immediate upper layer as vpp source
+  // surface if applicable.
+  auto source_rect = frame.visible_rect();
+  for (size_t i = spatial_layer_resolutions.size() - 1; i != std::variant_npos;
+       --i) {
+    const gfx::Size& encode_size = spatial_layer_resolutions[i];
+    const bool engage_vpp = source_rect != gfx::Rect(encode_size);
+
     // Crop and Scale input surface to a surface whose size is |encode_size|.
     // The size of a reconstructed surface is also |encode_size|.
     if (engage_vpp) {
-      auto blit_surface = ExecuteBlitSurface(*source_surface,
-                                             frame.visible_rect(), encode_size);
-      if (!blit_surface)
-        return false;
-
-      input_surfaces->push_back(std::move(blit_surface));
+      if (i + 1 < spatial_layer_resolutions.size()) {
+        source_surface = input_surfaces->at(i + 1);
+        source_rect = gfx::Rect(source_surface->size());
+      }
+      input_surfaces->at(i) =
+          ExecuteBlitSurface(*source_surface, source_rect, encode_size);
     } else {
-      input_surfaces->emplace_back(source_surface);
+      input_surfaces->at(i) = source_surface;
     }
 
-    reconstructed_surfaces->emplace_back(CreateEncodeSurface(encode_size));
-    if (!reconstructed_surfaces->back())
+    reconstructed_surfaces->at(i) = CreateEncodeSurface(encode_size);
+
+    if (!input_surfaces->at(i) || !reconstructed_surfaces->at(i))
       return false;
   }
 
-  DCHECK(!base::Contains(*input_surfaces, nullptr));
-  DCHECK(!base::Contains(*reconstructed_surfaces, nullptr));
   return true;
 }
 
