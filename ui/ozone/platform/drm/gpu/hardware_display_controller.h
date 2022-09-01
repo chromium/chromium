@@ -182,6 +182,16 @@ class HardwareDisplayController {
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
  private:
+  enum PageFlipResult {
+    // Indicates that the page flip was committed successfully.
+    kSuccess = 0,
+    // Indicates that the page flip failed because we could not assign
+    // planes.
+    kFailedPlaneAssignment = 1,
+    // Indicates that we assigned planes but the DRM commit failed.
+    kFailedCommit = 2,
+    kMaxValue = kFailedCommit,
+  };
   // Loops over |crtc_controllers_| and save their props into |commit_request|
   // to be enabled/modeset.
   void GetModesetPropsForCrtcs(CommitRequest* commit_request,
@@ -189,9 +199,10 @@ class HardwareDisplayController {
                                bool use_current_crtc_mode,
                                const drmModeModeInfo& mode);
   void OnModesetComplete(const DrmOverlayPlaneList& modeset_planes);
-  bool ScheduleOrTestPageFlip(const DrmOverlayPlaneList& plane_list,
-                              scoped_refptr<PageFlipRequest> page_flip_request,
-                              gfx::GpuFenceHandle* release_fence);
+  PageFlipResult ScheduleOrTestPageFlip(
+      const DrmOverlayPlaneList& plane_list,
+      scoped_refptr<PageFlipRequest> page_flip_request,
+      gfx::GpuFenceHandle* release_fence);
   void AllocateCursorBuffers();
   DrmDumbBuffer* NextCursorBuffer();
   void UpdateCursorImage();

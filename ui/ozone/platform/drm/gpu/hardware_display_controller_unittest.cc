@@ -965,6 +965,34 @@ TEST_F(HardwareDisplayControllerTest, CheckNoPrimaryPlaneOnFlip) {
   EXPECT_EQ(1, successful_page_flips_count_);
 }
 
+TEST_F(HardwareDisplayControllerTest, PageFlipWithUnassignablePlanes) {
+  ui::DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  {
+    std::vector<ui::DrmOverlayPlane> page_flip_planes;
+    page_flip_planes.emplace_back(
+        CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+        gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+    page_flip_planes.emplace_back(
+        CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+        gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+    page_flip_planes.emplace_back(
+        CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+        gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+    SchedulePageFlip(std::move(page_flip_planes));
+  }
+
+  drm_->RunCallbacks();
+
+  // It's important we don't do any real DRM flips here, since we know
+  // we can't allocate any planes, we avoid sending bad commits to the
+  // drivers.
+  EXPECT_EQ(0, drm_->get_page_flip_call_count());
+  EXPECT_EQ(gfx::SwapResult::SWAP_FAILED, last_swap_result_);
+}
+
 TEST_F(HardwareDisplayControllerTest, AddCrtcMidPageFlip) {
   ui::DrmOverlayPlaneList planes;
   planes.emplace_back(CreateBuffer(), nullptr);

@@ -172,9 +172,10 @@ void HardwareDisplayController::SchedulePageFlip(
       base::MakeRefCounted<PageFlipRequest>(GetRefreshInterval());
   gfx::GpuFenceHandle release_fence;
 
-  bool status =
+  PageFlipResult result =
       ScheduleOrTestPageFlip(plane_list, page_flip_request, &release_fence);
-  if (!status) {
+
+  if (PageFlipResult::kSuccess != result) {
     for (const auto& plane : plane_list) {
       // If the page flip failed and we see that the buffer has been allocated
       // before the latest modeset, it could mean it was an in-flight buffer
@@ -227,10 +228,12 @@ void HardwareDisplayController::SchedulePageFlip(
 
 bool HardwareDisplayController::TestPageFlip(
     const DrmOverlayPlaneList& plane_list) {
-  return ScheduleOrTestPageFlip(plane_list, nullptr, nullptr);
+  return PageFlipResult::kSuccess ==
+         ScheduleOrTestPageFlip(plane_list, nullptr, nullptr);
 }
 
-bool HardwareDisplayController::ScheduleOrTestPageFlip(
+HardwareDisplayController::PageFlipResult
+HardwareDisplayController::ScheduleOrTestPageFlip(
     const DrmOverlayPlaneList& plane_list,
     scoped_refptr<PageFlipRequest> page_flip_request,
     gfx::GpuFenceHandle* release_fence) {
@@ -239,7 +242,7 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
 
   // Ignore requests with no planes to schedule.
   if (plane_list.empty())
-    return true;
+    return PageFlipResult::kSuccess;
 
   DrmOverlayPlaneList pending_planes = DrmOverlayPlane::Clone(plane_list);
   std::sort(pending_planes.begin(), pending_planes.end(),
@@ -248,16 +251,17 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
             });
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
 
-  bool status = true;
   for (const auto& controller : crtc_controllers_) {
-    status &= controller->AssignOverlayPlanes(
-        &owned_hardware_planes_, pending_planes, /*is_modesetting=*/false);
+    if (!controller->AssignOverlayPlanes(
+            &owned_hardware_planes_, pending_planes, /*is_modesetting=*/false))
+      return PageFlipResult::kFailedPlaneAssignment;
   }
 
-  status &= GetDrmDevice()->plane_manager()->Commit(
+  bool commit_success = GetDrmDevice()->plane_manager()->Commit(
       &owned_hardware_planes_, page_flip_request, release_fence);
 
-  return status;
+  return commit_success ? PageFlipResult::kSuccess
+                        : PageFlipResult::kFailedCommit;
 }
 
 std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
