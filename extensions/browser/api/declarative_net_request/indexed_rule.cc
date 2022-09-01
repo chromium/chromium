@@ -373,7 +373,7 @@ ParseResult ParseRedirect(dnr_api::Redirect redirect,
   }
 
   if (redirect.transform) {
-    indexed_rule->url_transform = std::move(redirect.transform);
+    indexed_rule->url_transform = std::move(*redirect.transform);
     return ValidateTransform(*indexed_rule->url_transform);
   }
 
