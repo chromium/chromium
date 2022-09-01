@@ -3915,30 +3915,15 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadDataAPIAccessibleResources) {
              NEEDS_TEST_SERVER);
 }
 
-namespace {
-// Fails the test if a navigation is started in the given WebContents.
-class FailOnNavigation : public content::WebContentsObserver {
- public:
-  explicit FailOnNavigation(content::WebContents* contents)
-      : content::WebContentsObserver(contents) {}
-
-  // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    ADD_FAILURE() << "Unexpected navigation: " << navigation_handle->GetURL();
-  }
-};
-}  // namespace
-
 IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDataAPINotRelativeToAnotherExtension) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   const extensions::Extension* other_extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
   LoadAppWithGuest("web_view/simple");
   content::WebContents* embedder = GetEmbedderWebContents();
-  content::WebContents* guest = GetGuestWebContents();
+  content::RenderFrameHost* guest = GetGuestView()->GetGuestMainFrame();
 
-  FailOnNavigation fail_if_webview_navigates(guest);
+  content::TestFrameNavigationObserver fail_if_webview_navigates(guest);
   ASSERT_TRUE(content::ExecuteScript(
       embedder, content::JsReplace(
                     "var webview = document.querySelector('webview'); "
@@ -3953,6 +3938,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDataAPINotRelativeToAnotherExtension) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
+  EXPECT_FALSE(fail_if_webview_navigates.navigation_started());
 }
 
 // This test verifies that the resize and contentResize events work correctly.

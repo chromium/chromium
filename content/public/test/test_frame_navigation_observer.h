@@ -43,6 +43,8 @@ class TestFrameNavigationObserver : public WebContentsObserver {
 
   net::Error last_net_error_code() const { return last_net_error_code_; }
 
+  bool navigation_started() const { return navigation_started_; }
+
  private:
   // WebContentsObserver
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
