@@ -27,30 +27,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
-namespace {
-
-// Stub implementation of CaptivePortalWindowProxyDelegate, does
-// nothing and used to instantiate CaptivePortalWindowProxy.
-class CaptivePortalWindowProxyStubDelegate
-    : public CaptivePortalWindowProxyDelegate {
- public:
-  CaptivePortalWindowProxyStubDelegate() : num_portal_notifications_(0) {}
-
-  ~CaptivePortalWindowProxyStubDelegate() override {}
-
-  void OnPortalDetected() override { ++num_portal_notifications_; }
-
-  int num_portal_notifications() const { return num_portal_notifications_; }
-
- private:
-  int num_portal_notifications_;
-};
-
-}  // namespace
 
 class CaptivePortalWindowTest : public InProcessBrowserTest {
  protected:
@@ -66,11 +45,12 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
     captive_portal_window_proxy_->OnOriginalURLLoaded();
   }
 
-  void CheckState(bool is_shown, int num_portal_notifications) {
+  void CheckState(bool is_shown, bool in_progress) {
     bool actual_is_shown = (CaptivePortalWindowProxy::STATE_DISPLAYED ==
                             captive_portal_window_proxy_->GetState());
     ASSERT_EQ(is_shown, actual_is_shown);
-    ASSERT_EQ(num_portal_notifications, delegate_.num_portal_notifications());
+    ASSERT_EQ(in_progress,
+              network_portal_detector_->portal_detection_in_progress());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -83,16 +63,19 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         LoginDisplayHost::default_host()->GetOobeWebContents();
     captive_portal_window_proxy_ =
-        std::make_unique<CaptivePortalWindowProxy>(&delegate_, web_contents);
+        std::make_unique<CaptivePortalWindowProxy>(web_contents);
   }
 
-  void TearDownOnMainThread() override {
-    captive_portal_window_proxy_.reset();
+  void SetUpInProcessBrowserTestFixture() override {
+    network_portal_detector_ = new NetworkPortalDetectorTestImpl();
+    network_portal_detector::InitializeForTesting(network_portal_detector_);
   }
+
+  void TearDownOnMainThread() override { captive_portal_window_proxy_.reset(); }
 
  private:
   std::unique_ptr<CaptivePortalWindowProxy> captive_portal_window_proxy_;
-  CaptivePortalWindowProxyStubDelegate delegate_;
+  NetworkPortalDetectorTestImpl* network_portal_detector_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, Show) {
@@ -100,82 +83,82 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, Show) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, ShowClose) {
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   Show();
-  CheckState(true, 0);
+  CheckState(/*is_shown=*/true, /*in_progress=*/false);
 
   Close();
   // Wait for widget to be destroyed
   base::RunLoop().RunUntilIdle();
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, OnRedirected) {
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   ShowIfRedirected();
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   OnRedirected();
-  CheckState(true, 1);
+  CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
   Close();
   // Wait for widget to be destroyed
   base::RunLoop().RunUntilIdle();
-  CheckState(false, 1);
+  CheckState(/*is_shown=*/false, /*in_progress=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, OnOriginalURLLoaded) {
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   ShowIfRedirected();
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   OnRedirected();
-  CheckState(true, 1);
+  CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
   OnOriginalURLLoaded();
   // Wait for widget to be destroyed
   base::RunLoop().RunUntilIdle();
-  CheckState(false, 1);
+  CheckState(/*is_shown=*/false, /*in_progress=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, MultipleCalls) {
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   ShowIfRedirected();
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   Show();
-  CheckState(true, 0);
+  CheckState(/*is_shown=*/true, /*in_progress=*/false);
 
   Close();
   // Wait for widget to be destroyed
   base::RunLoop().RunUntilIdle();
-  CheckState(false, 0);
+  CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
   OnRedirected();
-  CheckState(false, 1);
+  CheckState(/*is_shown=*/false, /*in_progress=*/true);
 
   OnOriginalURLLoaded();
   // Wait for widget to be destroyed
   base::RunLoop().RunUntilIdle();
-  CheckState(false, 1);
+  CheckState(/*is_shown=*/false, /*in_progress=*/true);
 
   Show();
-  CheckState(true, 1);
+  CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
   OnRedirected();
-  CheckState(true, 2);
+  CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
   Close();
   // Wait for widget to be destroyed
   base::RunLoop().RunUntilIdle();
-  CheckState(false, 2);
+  CheckState(/*is_shown=*/false, /*in_progress=*/true);
 
   OnOriginalURLLoaded();
-  CheckState(false, 2);
+  CheckState(/*is_shown=*/false, /*in_progress=*/true);
 }
 
 class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {

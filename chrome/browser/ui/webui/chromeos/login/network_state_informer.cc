@@ -129,10 +129,6 @@ void NetworkStateInformer::OnPortalDetectionCompleted(
   UpdateStateAndNotify();
 }
 
-void NetworkStateInformer::OnPortalDetected() {
-  UpdateStateAndNotify();
-}
-
 // static
 const char* NetworkStateInformer::StatusString(State state) {
   switch (state) {

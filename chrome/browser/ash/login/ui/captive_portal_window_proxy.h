@@ -23,16 +23,6 @@ class Widget;
 namespace ash {
 class CaptivePortalView;
 
-// Delegate interface for CaptivePortalWindowProxy.
-class CaptivePortalWindowProxyDelegate {
- public:
-  // Called when a captive portal is detected.
-  virtual void OnPortalDetected() = 0;
-
- protected:
-  virtual ~CaptivePortalWindowProxyDelegate() = default;
-};
-
 // Proxy which manages showing of the window for CaptivePortal sign-in.
 class CaptivePortalWindowProxy : public views::WidgetObserver {
  public:
@@ -48,10 +38,7 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
     virtual void OnAfterCaptivePortalHidden() {}
   };
 
-  using Delegate = CaptivePortalWindowProxyDelegate;
-
-  CaptivePortalWindowProxy(Delegate* delegate,
-                           content::WebContents* web_contents);
+  explicit CaptivePortalWindowProxy(content::WebContents* web_contents);
   CaptivePortalWindowProxy(const CaptivePortalWindowProxy&) = delete;
   CaptivePortalWindowProxy& operator=(const CaptivePortalWindowProxy&) = delete;
   ~CaptivePortalWindowProxy() override;
@@ -120,7 +107,6 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
   }
 
   Profile* profile_ = ProfileHelper::GetSigninProfile();
-  Delegate* delegate_;
   content::WebContents* web_contents_;
   views::Widget* widget_ = nullptr;
 
@@ -131,11 +117,5 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::CaptivePortalWindowProxyDelegate;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_WINDOW_PROXY_H_

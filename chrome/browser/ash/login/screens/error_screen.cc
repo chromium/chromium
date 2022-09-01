@@ -197,8 +197,8 @@ base::CallbackListSubscription ErrorScreen::RegisterConnectRequestCallback(
 void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
     content::WebContents* web_contents) {
   if (!captive_portal_window_proxy_.get()) {
-    captive_portal_window_proxy_ = std::make_unique<CaptivePortalWindowProxy>(
-        network_state_informer_.get(), web_contents);
+    captive_portal_window_proxy_ =
+        std::make_unique<CaptivePortalWindowProxy>(web_contents);
   }
 }
 

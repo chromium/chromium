@@ -31,7 +31,6 @@ namespace chromeos {
 // changed. Also, it answers to the requests about current network state.
 class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
                              public chromeos::NetworkPortalDetector::Observer,
-                             public CaptivePortalWindowProxyDelegate,
                              public base::RefCounted<NetworkStateInformer> {
  public:
   enum State {
@@ -69,9 +68,6 @@ class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
   void OnPortalDetectionCompleted(
       const NetworkState* network,
       const NetworkPortalDetector::CaptivePortalStatus status) override;
-
-  // CaptivePortalWindowProxyDelegate implementation:
-  void OnPortalDetected() override;
 
   State state() const { return state_; }
   std::string network_path() const { return network_path_; }
