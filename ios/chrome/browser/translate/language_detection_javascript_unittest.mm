@@ -31,7 +31,7 @@ namespace {
 
 const char kExpectedLanguage[] = "Foo";
 
-// Returns an NSString filled with the char 'a' of length |length|.
+// Returns an NSString filled with the char 'a' of length `length`.
 NSString* GetLongString(NSUInteger length) {
   NSMutableData* data = [[NSMutableData alloc] initWithLength:length];
   memset([data mutableBytes], 'a', length);
@@ -62,7 +62,7 @@ class JsLanguageDetectionManagerTest : public PlatformTest {
     EXPECT_NSEQ(expected_result, web::test::ExecuteJavaScript(js, web_state()));
   }
 
-  // Injects JS, and spins the run loop until |condition| block returns true
+  // Injects JS, and spins the run loop until `condition` block returns true
   void InjectJSAndWaitUntilCondition(NSString* js, ConditionBlock condition) {
     web::test::ExecuteJavaScript(js, web_state());
     base::test::ios::WaitUntilCondition(^bool() {
@@ -71,19 +71,19 @@ class JsLanguageDetectionManagerTest : public PlatformTest {
   }
 
   // Verifies if the notranslate meta tag is present or not on the page based on
-  // |expected_value|.
+  // `expected_value`.
   void ExpectHasNoTranslate(BOOL expected_value) {
     InjectJsAndVerify(@"__gCrWeb.languageDetection.hasNoTranslate();",
                       @(expected_value));
   }
 
-  // Verifies if |lang| attribute of the HTML tag is the |expected_html_lang|,
+  // Verifies if `lang` attribute of the HTML tag is the `expected_html_lang`,
   void ExpectHtmlLang(NSString* expected_html_lang) {
     InjectJsAndVerify(@"document.documentElement.lang;", expected_html_lang);
   }
 
-  // Verifies if the value of the |Content-Language| meta tag is the same as
-  // |expected_http_content_language|.
+  // Verifies if the value of the `Content-Language` meta tag is the same as
+  // `expected_http_content_language`.
   void ExpectHttpContentLanguage(NSString* expected_http_content_language) {
     NSString* const kMetaTagContentJS =
         @"__gCrWeb.languageDetection.getMetaContentByHttpEquiv("
@@ -91,7 +91,7 @@ class JsLanguageDetectionManagerTest : public PlatformTest {
     InjectJsAndVerify(kMetaTagContentJS, expected_http_content_language);
   }
 
-  // Verifies if |__gCrWeb.languageDetection.getTextContent| correctly extracts
+  // Verifies if `__gCrWeb.languageDetection.getTextContent` correctly extracts
   // the text content from an HTML page.
   void ExpectTextContent(NSString* expected_text_content) {
     NSString* script = [[NSString alloc]
@@ -109,7 +109,7 @@ class JsLanguageDetectionManagerTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
 };
 
-// Tests |__gCrWeb.languageDetection.hasNoTranslate| JS call.
+// Tests `__gCrWeb.languageDetection.hasNoTranslate` JS call.
 TEST_F(JsLanguageDetectionManagerTest, PageHasNoTranslate) {
   web::test::LoadHtml(@"<html></html>", web_state());
   ExpectHasNoTranslate(NO);
@@ -127,7 +127,7 @@ TEST_F(JsLanguageDetectionManagerTest, PageHasNoTranslate) {
   ExpectHasNoTranslate(YES);
 }
 
-// Tests correctness of |document.documentElement.lang| attribute.
+// Tests correctness of `document.documentElement.lang` attribute.
 TEST_F(JsLanguageDetectionManagerTest, HtmlLang) {
   NSString* html;
   // Non-empty attribute.
@@ -147,7 +147,7 @@ TEST_F(JsLanguageDetectionManagerTest, HtmlLang) {
   ExpectHtmlLang(@(kExpectedLanguage));
 }
 
-// Tests |__gCrWeb.languageDetection.getMetaContentByHttpEquiv| JS call.
+// Tests `__gCrWeb.languageDetection.getMetaContentByHttpEquiv` JS call.
 TEST_F(JsLanguageDetectionManagerTest, HttpContentLanguage) {
   // No content language.
   web::test::LoadHtml(@"<html></html>", web_state());
@@ -173,7 +173,7 @@ TEST_F(JsLanguageDetectionManagerTest, HttpContentLanguage) {
   ExpectHttpContentLanguage(@(kExpectedLanguage));
 }
 
-// Tests |__gCrWeb.languageDetection.getTextContent| JS call.
+// Tests `__gCrWeb.languageDetection.getTextContent` JS call.
 TEST_F(JsLanguageDetectionManagerTest, ExtractTextContent) {
   web::test::LoadHtml(
       @"<html><body>"
@@ -187,7 +187,7 @@ TEST_F(JsLanguageDetectionManagerTest, ExtractTextContent) {
   ExpectTextContent(@"\nSome text here and there.");
 }
 
-// Tests that |__gCrWeb.languageDetection.getTextContent| correctly truncates
+// Tests that `__gCrWeb.languageDetection.getTextContent` correctly truncates
 // text.
 TEST_F(JsLanguageDetectionManagerTest, Truncation) {
   web::test::LoadHtml(
@@ -205,16 +205,16 @@ TEST_F(JsLanguageDetectionManagerTest, Truncation) {
 
 // HTML elements introduce a line break, except inline ones.
 TEST_F(JsLanguageDetectionManagerTest, ExtractWhitespace) {
-  // |b| and |span| do not break lines.
-  // |br| and |div| do.
+  // `b` and `span` do not break lines.
+  // `br` and `div` do.
   web::test::LoadHtml(@"<html><body>"
                        "O<b>n</b>e<br>Two\tT<span>hr</span>ee<div>Four</div>"
                        "</body></html>",
                       web_state());
   ExpectTextContent(@"One\nTwo\tThree\nFour");
 
-  // |a| does not break lines.
-  // |li|, |p| and |ul| do.
+  // `a` does not break lines.
+  // `li`, `p` and `ul` do.
   web::test::LoadHtml(
       @"<html><body>"
        "<ul><li>One</li><li>T<a href='foo'>wo</a></li></ul><p>Three</p>"
@@ -223,7 +223,7 @@ TEST_F(JsLanguageDetectionManagerTest, ExtractWhitespace) {
   ExpectTextContent(@"\n\nOne\nTwo\nThree");
 }
 
-// Tests that |__gCrWeb.languageDetection.getTextContent| returns only until the
+// Tests that `__gCrWeb.languageDetection.getTextContent` returns only until the
 // kMaxIndexChars number of characters even if the text content is very large.
 TEST_F(JsLanguageDetectionManagerTest, LongTextContent) {
   // Very long string.
@@ -244,7 +244,7 @@ TEST_F(JsLanguageDetectionManagerTest, LongTextContent) {
   EXPECT_EQ(translate::kMaxIndexChars, [result length]);
 }
 
-// Tests if |__gCrWeb.languageDetection.retrieveBufferedTextContent| correctly
+// Tests if `__gCrWeb.languageDetection.retrieveBufferedTextContent` correctly
 // retrieves the cache and then purges it.
 TEST_F(JsLanguageDetectionManagerTest, RetrieveBufferedTextContent) {
   web::test::LoadHtml(@"<html></html>", web_state());
@@ -262,7 +262,7 @@ TEST_F(JsLanguageDetectionManagerTest, RetrieveBufferedTextContent) {
                     [NSNull null]);
 }
 
-// Test fixture to test |__gCrWeb.languageDetection.detectLanguage|.
+// Test fixture to test `__gCrWeb.languageDetection.detectLanguage`.
 class JsLanguageDetectionManagerDetectLanguageTest
     : public JsLanguageDetectionManagerTest {
  public:
@@ -290,7 +290,7 @@ class JsLanguageDetectionManagerDetectLanguageTest
   base::CallbackListSubscription subscription_;
 };
 
-// Tests if |__gCrWeb.languageDetection.hasNoTranslate| correctly informs the
+// Tests if `__gCrWeb.languageDetection.hasNoTranslate` correctly informs the
 // native side when the notranslate meta tag is specified.
 TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
        DetectLanguageWithNoTranslateMeta) {
@@ -325,7 +325,7 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
   EXPECT_TRUE(*has_notranslate);
 }
 
-// Tests if |__gCrWeb.languageDetection.detectLanguage| correctly informs the
+// Tests if `__gCrWeb.languageDetection.detectLanguage` correctly informs the
 // native side when no notranslate meta tag is specified.
 TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
        DetectLanguageWithoutNoTranslateMeta) {

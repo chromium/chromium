@@ -43,7 +43,7 @@ class ChromeIOSTranslateClient
 
   ~ChromeIOSTranslateClient() override;
 
-  // Creates a translation client tab helper and attaches it to |web_state|
+  // Creates a translation client tab helper and attaches it to `web_state`
   static void CreateForWebState(web::WebState* web_state);
 
   // Helper method to return a new TranslatePrefs instance.

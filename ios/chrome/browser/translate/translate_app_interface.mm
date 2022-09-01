@@ -140,7 +140,7 @@ class TranslateAppInterfaceHelper {
 }
 
 - (void)injectWithTranslateScript:(const std::string&)translate_script {
-  // No need to set the |translate_script| JavaScript since it will never be
+  // No need to set the `translate_script` JavaScript since it will never be
   // used by this fake object. Instead just invoke host with 'translate.ready'
   // followed by 'translate.status'.
   base::Value translate_ready_dict(base::Value::Type::DICTIONARY);

@@ -40,7 +40,7 @@ class FakeTranslateInfoBarDelegate
   void RemoveObserver(Observer* observer) override;
 
   // Call the OnTranslateStepChanged() observer method on all
-  // |OnTranslateStepChanged|.
+  // `OnTranslateStepChanged`.
   void TriggerOnTranslateStepChanged(translate::TranslateStep step,
                                      translate::TranslateErrors error_type);
 
@@ -61,7 +61,7 @@ class FakeTranslateInfoBarDelegateFactory {
   ~FakeTranslateInfoBarDelegateFactory();
 
   // Create a FakeTranslateInfoBarDelegate unique_ptr with
-  // |source_language|, |target_language|, |translate_step| and |error_type|.
+  // `source_language`, `target_language`, `translate_step` and `error_type`.
   std::unique_ptr<FakeTranslateInfoBarDelegate>
   CreateFakeTranslateInfoBarDelegate(
       const std::string& source_language,

@@ -56,11 +56,11 @@ enum class MobileMessagesTranslateModalPresent {
 // This class records metrics for Translate-specific Messages events.
 @interface TranslateInfobarMetricsRecorder : NSObject
 
-// Records a histogram for |bannerEvent|.
+// Records a histogram for `bannerEvent`.
 + (void)recordBannerEvent:(MobileMessagesTranslateBannerEvent)bannerEvent;
-// Records a histogram for |event|.
+// Records a histogram for `event`.
 + (void)recordModalEvent:(MobileMessagesTranslateModalEvent)event;
-// Records a histogram for |presentEvent|.
+// Records a histogram for `presentEvent`.
 + (void)recordModalPresent:(MobileMessagesTranslateModalPresent)presentEvent;
 // Records a histogram for an infobar (both legacy and Messages) that the user
 // did not interact with throughout its lifetime.
