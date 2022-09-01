@@ -59,6 +59,13 @@ bool AreContextAwareAccessSignalsEnabledForUrl(const GURL& url,
          UrlMatchesPattern(
              url, prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref));
 }
+
+void LogVerifiedAccessForSAMLDeviceTrustMatchesEndpoints(bool is_matching) {
+  base::UmaHistogramBoolean(
+      "Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints",
+      is_matching);
+}
+
 }  // namespace
 
 SamlChallengeKeyHandler::SamlChallengeKeyHandler() = default;
@@ -128,11 +135,13 @@ void SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl(const GURL& url) {
   // for the same endpoint, since they are both reacting to the same VA
   // Challenge
   if (AreContextAwareAccessSignalsEnabledForUrl(url, profile_)) {
+    LogVerifiedAccessForSAMLDeviceTrustMatchesEndpoints(true);
     ReturnResult(attestation::TpmChallengeKeyResult::MakeError(
         attestation::TpmChallengeKeyResultCode::kDeviceTrustURLConflictError));
     return;
   }
 
+  LogVerifiedAccessForSAMLDeviceTrustMatchesEndpoints(false);
   BuildChallengeResponse();
 }
 

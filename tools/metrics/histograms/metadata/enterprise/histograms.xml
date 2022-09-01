@@ -2307,6 +2307,19 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks the sign-in events on an enrolled device.</summary>
 </histogram>
 
+<histogram name="Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints"
+    enum="Boolean" expires_after="2023-08-01">
+  <owner>lmasopust@google.com</owner>
+  <owner>rodmartin@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when building a response for a challenge from Verified Access
+    server for remote attestation during SAML authentication. This captures if
+    Device Trust is configured alongside Verified Access for the current
+    endpoint or not.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.VPDCacheReadResult" enum="VPDCacheReadResult"
     expires_after="2023-01-01">
   <owner>vsavu@google.com</owner>

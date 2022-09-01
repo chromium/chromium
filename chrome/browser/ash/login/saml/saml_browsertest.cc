@@ -185,8 +185,11 @@ constexpr char kTestRefreshToken[] = "fake-refresh-token";
 
 constexpr char kAffiliationID[] = "some-affiliation-id";
 
-// A FakeUserDataAuthClient that stores the salted and hashed secret passed to
-// MountEx().
+constexpr char kDeviceTrustMatchHistogramName[] =
+    "Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints";
+
+// A FakeUserDataAuthClient that stores the salted and hashed secret passed
+// to MountEx().
 class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
  public:
   SecretInterceptingFakeUserDataAuthClient();
@@ -2038,6 +2041,8 @@ class SAMLDeviceAttestationEnrolledTest : public SAMLDeviceAttestationTest {
     SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture();
     stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
   }
+
+  base::HistogramTester histogram_tester_;
 };
 
 // Verify that device attestation is not available when
@@ -2108,6 +2113,8 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, Success) {
     return;
   }
 
+  histogram_tester_.ExpectBucketCount(kDeviceTrustMatchHistogramName, false, 1);
+
   ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
   ASSERT_NO_FATAL_FAILURE(
       fake_saml_idp()->AssertChallengeResponseMatchesTpmResponse());
@@ -2126,6 +2133,8 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
     return;
   }
 
+  histogram_tester_.ExpectTotalCount(kDeviceTrustMatchHistogramName, 0);
+
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
 
@@ -2141,6 +2150,8 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
   if (Test::HasFailure()) {
     return;
   }
+
+  histogram_tester_.ExpectBucketCount(kDeviceTrustMatchHistogramName, false, 1);
 
   ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
   ASSERT_NO_FATAL_FAILURE(
@@ -2161,6 +2172,8 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest,
     return;
   }
 
+  histogram_tester_.ExpectBucketCount(kDeviceTrustMatchHistogramName, false, 1);
+
   ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
   ASSERT_NO_FATAL_FAILURE(
       fake_saml_idp()->AssertChallengeResponseMatchesTpmResponse());
@@ -2168,7 +2181,8 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest,
 
 // Verify that device attestation is not available for URLs that also match the
 // ones on the DeviceContextAwareAccessSignalsAllowlist
-IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyCASMatchError) {
+IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest,
+                       PolicyDeviceTrustMatchError) {
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
   SetDeviceContextAwareAccessSignalsAllowlistPolicy(
       {fake_saml_idp()->GetIdpHost()});
@@ -2180,6 +2194,8 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyCASMatchError) {
   if (Test::HasFailure()) {
     return;
   }
+
+  histogram_tester_.ExpectBucketCount(kDeviceTrustMatchHistogramName, true, 1);
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
@@ -2206,6 +2222,8 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
   if (Test::HasFailure()) {
     return;
   }
+
+  histogram_tester_.ExpectBucketCount(kDeviceTrustMatchHistogramName, false, 1);
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
