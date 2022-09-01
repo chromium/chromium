@@ -21,6 +21,11 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 chromeos::hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     const std::string& shill_state);
 
+// Convert shill security mode string value to mojom::WiFiSecurityMode enum
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+chromeos::hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
+    const std::string& shill_security);
+
 // Convert shill tethering config dictionary value to mojom::HotspotConfigPtr
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 chromeos::hotspot_config::mojom::HotspotConfigPtr

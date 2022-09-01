@@ -49,3 +49,20 @@ enum SetHotspotConfigResult {
   // Failed for invalid hotspot configuration.
   kFailedInvalidConfiguration,
 };
+
+// Status about whether Hotspot is allowed or not.
+enum HotspotAllowStatus {
+  // Disallowed because Cellular is not a supported upstream technology.
+  kDisallowedNoCellularUpstream,
+  // Disallowed because WiFi is not a supported downstream technology.
+  kDisallowedNoWiFiDownstream,
+  // Disallowed because no WiFi security modes are supported.
+  kDisallowedNoWiFiSecurityModes,
+  // Disallowed because there's no upstream mobile data connectivity.
+  kDisallowedNoMobileData,
+  // Disallowed because the tethering readiness check failed.
+  kDisallowedReadinessCheckFail,
+  // Disallowed because policy prohibited.
+  kDisallowedByPolicy,
+  kAllowed,
+};

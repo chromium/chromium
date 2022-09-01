@@ -131,7 +131,7 @@ void NetworkHandler::Init() {
                                   network_configuration_handler_.get());
   }
   if (ash::features::IsHotspotEnabled()) {
-    hotspot_state_handler_->Init();
+    hotspot_state_handler_->Init(network_state_handler_.get());
   }
   managed_cellular_pref_handler_->Init(network_state_handler_.get());
   esim_policy_login_metrics_logger_->Init(

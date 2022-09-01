@@ -28,11 +28,47 @@ size_t GetActiveClientCount(const base::Value& status) {
   return active_clients->GetList().size();
 }
 
+bool CanFindTechnoloyInList(const std::string& technology,
+                            const base::Value::List& technology_list) {
+  return std::find(technology_list.begin(), technology_list.end(),
+                   base::Value(technology)) != technology_list.end();
+}
+
+// Convert the base::Value::List type of |allowed_security_modes_in_shill| to
+// the corresponding mojom enum and update the value to the
+// |allowed_security_modes|.
+void UpdateAllowedSecurityList(
+    std::vector<hotspot_config::mojom::WiFiSecurityMode>&
+        allowed_security_modes,
+    const base::Value::List& allowed_security_modes_in_shill) {
+  allowed_security_modes.clear();
+  for (const base::Value& allowed_security : allowed_security_modes_in_shill) {
+    allowed_security_modes.push_back(
+        ShillSecurityToMojom(allowed_security.GetString()));
+  }
+}
+
+bool IsDisallowedByPlatformCapabilities(
+    hotspot_config::mojom::HotspotAllowStatus allow_status) {
+  using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
+  return allow_status == HotspotAllowStatus::kDisallowedNoCellularUpstream ||
+         allow_status == HotspotAllowStatus::kDisallowedNoWiFiDownstream ||
+         allow_status == HotspotAllowStatus::kDisallowedNoWiFiSecurityModes;
+}
+
 }  // namespace
+
+HotspotStateHandler::HotspotCapabilities::HotspotCapabilities(
+    const hotspot_config::mojom::HotspotAllowStatus allow_status)
+    : allow_status(allow_status) {}
+
+HotspotStateHandler::HotspotCapabilities::~HotspotCapabilities() = default;
 
 HotspotStateHandler::HotspotStateHandler() = default;
 
 HotspotStateHandler::~HotspotStateHandler() {
+  ResetNetworkStateHandler();
+
   if (ShillManagerClient::Get()) {
     ShillManagerClient::Get()->RemovePropertyChangedObserver(this);
   }
@@ -41,7 +77,10 @@ HotspotStateHandler::~HotspotStateHandler() {
   }
 }
 
-void HotspotStateHandler::Init() {
+void HotspotStateHandler::Init(NetworkStateHandler* network_state_handler) {
+  network_state_handler_ = network_state_handler;
+  network_state_handler_observer_.Observe(network_state_handler_);
+
   if (LoginState::IsInitialized()) {
     LoginState::Get()->AddObserver(this);
   }
@@ -74,6 +113,11 @@ HotspotStateHandler::GetHotspotState() const {
 
 size_t HotspotStateHandler::GetHotspotActiveClientCount() const {
   return active_client_count_;
+}
+
+const HotspotStateHandler::HotspotCapabilities&
+HotspotStateHandler::GetHotspotCapabilities() const {
+  return hotspot_capabilities_;
 }
 
 hotspot_config::mojom::HotspotConfigPtr HotspotStateHandler::GetHotspotConfig()
@@ -174,6 +218,50 @@ void HotspotStateHandler::OnPropertyChanged(const std::string& key,
                                             const base::Value& value) {
   if (key == shill::kTetheringStatusProperty)
     UpdateHotspotStatus(value);
+  else if (key == shill::kTetheringCapabilitiesProperty)
+    UpdateHotspotCapabilities(value);
+}
+
+// The hotspot capabilities is re-calculated when a cellular network connection
+// state is changed.
+void HotspotStateHandler::NetworkConnectionStateChanged(
+    const NetworkState* network) {
+  using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
+  // Only check the Cellular connectivity as the upstream technology
+  if (!network->Matches(NetworkTypePattern::Cellular())) {
+    return;
+  }
+
+  // Exit early if the platform capabilities doesn't support hotspot.
+  if (IsDisallowedByPlatformCapabilities(hotspot_capabilities_.allow_status)) {
+    return;
+  }
+
+  if (!network->IsConnectingOrConnected()) {
+    // The cellular network got disconnected.
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoMobileData);
+    return;
+  }
+
+  if (network->IsConnectedState()) {
+    ShillManagerClient::Get()->CheckTetheringReadiness(
+        base::BindOnce(&HotspotStateHandler::OnCheckReadinessSuccess,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&HotspotStateHandler::OnCheckReadinessFailure,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void HotspotStateHandler::OnShuttingDown() {
+  ResetNetworkStateHandler();
+}
+
+void HotspotStateHandler::ResetNetworkStateHandler() {
+  if (!network_state_handler_) {
+    return;
+  }
+  network_state_handler_observer_.Reset();
+  network_state_handler_ = nullptr;
 }
 
 void HotspotStateHandler::OnManagerProperties(
@@ -188,9 +276,18 @@ void HotspotStateHandler::OnManagerProperties(
   if (!status) {
     NET_LOG(EVENT) << "HotspotStateHandler: No dict value for: "
                    << shill::kTetheringStatusProperty;
-    return;
+  } else {
+    UpdateHotspotStatus(*status);
   }
-  UpdateHotspotStatus(*status);
+
+  const base::Value* capabilities =
+      properties->FindDictKey(shill::kTetheringCapabilitiesProperty);
+  if (!capabilities) {
+    NET_LOG(EVENT) << "HotspotStateHandler: No dict value for: "
+                   << shill::kTetheringCapabilitiesProperty;
+  } else {
+    UpdateHotspotCapabilities(*capabilities);
+  }
 }
 
 void HotspotStateHandler::UpdateHotspotStatus(const base::Value& status) {
@@ -239,6 +336,99 @@ void HotspotStateHandler::UpdateHotspotStatus(const base::Value& status) {
   NotifyHotspotStatusChanged();
 }
 
+void HotspotStateHandler::UpdateHotspotCapabilities(
+    const base::Value& capabilities) {
+  using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
+
+  const base::Value* upstream_technologies =
+      capabilities.FindListKey(shill::kTetheringCapUpstreamProperty);
+  if (!upstream_technologies) {
+    NET_LOG(ERROR) << "No list value for: "
+                   << shill::kTetheringCapUpstreamProperty << " in "
+                   << shill::kTetheringCapabilitiesProperty;
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoCellularUpstream);
+    return;
+  }
+
+  if (!CanFindTechnoloyInList(shill::kTypeCellular,
+                              upstream_technologies->GetList())) {
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoCellularUpstream);
+    return;
+  }
+
+  const base::Value* downstream_technologies =
+      capabilities.FindListKey(shill::kTetheringCapDownstreamProperty);
+  if (!downstream_technologies) {
+    NET_LOG(ERROR) << "No list value for: "
+                   << shill::kTetheringCapDownstreamProperty << " in "
+                   << shill::kTetheringCapabilitiesProperty;
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoWiFiDownstream);
+    return;
+  }
+
+  if (!CanFindTechnoloyInList(shill::kTypeWifi,
+                              downstream_technologies->GetList())) {
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoWiFiDownstream);
+    return;
+  }
+
+  // Update allowed security modes for WiFi downstream
+  const base::Value* allowed_security_modes_in_shill =
+      capabilities.FindListKey(shill::kTetheringCapSecurityProperty);
+  if (!allowed_security_modes_in_shill) {
+    NET_LOG(ERROR) << "No list value for: "
+                   << shill::kTetheringCapSecurityProperty << " in "
+                   << shill::kTetheringCapabilitiesProperty;
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoWiFiSecurityModes);
+    return;
+  }
+
+  UpdateAllowedSecurityList(hotspot_capabilities_.allowed_security_modes,
+                            allowed_security_modes_in_shill->GetList());
+  if (hotspot_capabilities_.allowed_security_modes.empty()) {
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoWiFiSecurityModes);
+    return;
+  }
+
+  // Check if there's a connected cellular network
+  const NetworkState* connected_cellular_network =
+      network_state_handler_->ConnectedNetworkByType(
+          NetworkTypePattern::Cellular());
+  if (!connected_cellular_network) {
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedNoMobileData);
+    return;
+  }
+
+  ShillManagerClient::Get()->CheckTetheringReadiness(
+      base::BindOnce(&HotspotStateHandler::OnCheckReadinessSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HotspotStateHandler::OnCheckReadinessFailure,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HotspotStateHandler::OnCheckReadinessSuccess(const std::string& result) {
+  using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
+
+  if (result == shill::kTetheringReadinessReady) {
+    SetHotspotCapablities(HotspotAllowStatus::kAllowed);
+    return;
+  }
+  if (result == shill::kTetheringReadinessNotAllowed) {
+    SetHotspotCapablities(HotspotAllowStatus::kDisallowedReadinessCheckFail);
+    return;
+  }
+  NET_LOG(ERROR) << "Unexpected check tethering readiness result: " << result;
+}
+
+void HotspotStateHandler::OnCheckReadinessFailure(
+    const std::string& error_name,
+    const std::string& error_message) {
+  NET_LOG(ERROR) << "Check tethering readiness failed, error name: "
+                 << error_name << ", message: " << error_message;
+  SetHotspotCapablities(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail);
+}
+
 void HotspotStateHandler::FallbackStateOnFailure() {
   using HotspotState = hotspot_config::mojom::HotspotState;
   if (hotspot_state_ == HotspotState::kEnabled ||
@@ -254,6 +444,19 @@ void HotspotStateHandler::FallbackStateOnFailure() {
   NotifyHotspotStatusChanged();
 }
 
+void HotspotStateHandler::SetHotspotCapablities(
+    hotspot_config::mojom::HotspotAllowStatus new_allow_status) {
+  if (hotspot_capabilities_.allow_status == new_allow_status)
+    return;
+
+  hotspot_capabilities_.allow_status = new_allow_status;
+  NotifyHotspotCapabilitiesChanged();
+}
+
+void HotspotStateHandler::SetPolicyAllowHotspot(bool allow) {
+  // TODO (jiajunz)
+}
+
 void HotspotStateHandler::NotifyHotspotStatusChanged() {
   for (auto& observer : observer_list_)
     observer.OnHotspotStatusChanged();
@@ -262,6 +465,11 @@ void HotspotStateHandler::NotifyHotspotStatusChanged() {
 void HotspotStateHandler::NotifyHotspotStateFailed(const std::string& error) {
   for (auto& observer : observer_list_)
     observer.OnHotspotStateFailed(error);
+}
+
+void HotspotStateHandler::NotifyHotspotCapabilitiesChanged() {
+  for (auto& observer : observer_list_)
+    observer.OnHotspotCapabilitiesChanged();
 }
 
 }  // namespace ash

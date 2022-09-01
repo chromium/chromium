@@ -36,25 +36,6 @@ hotspot_config::mojom::WiFiBand ShillBandToMojom(
   return WiFiBand::k5GHz;
 }
 
-hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
-    const std::string& shill_security) {
-  using hotspot_config::mojom::WiFiSecurityMode;
-
-  if (shill_security == shill::kSecurityWpa2) {
-    return WiFiSecurityMode::kWpa2;
-  }
-  if (shill_security == shill::kSecurityWpa2) {
-    return WiFiSecurityMode::kWpa3;
-  }
-  if (shill_security == shill::kSecurityWpa2Wpa3) {
-    return WiFiSecurityMode::kWpa2Wpa3;
-  }
-
-  NOTREACHED() << "Unexpected shill tethering security mode: "
-               << shill_security;
-  return WiFiSecurityMode::kWpa2;
-}
-
 std::string MojomBandToString(hotspot_config::mojom::WiFiBand mojom_band) {
   using hotspot_config::mojom::WiFiBand;
 
@@ -104,6 +85,24 @@ hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
 
   NOTREACHED() << "Unexpected shill tethering state: " << shill_state;
   return HotspotState::kDisabled;
+}
+
+hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
+    const std::string& shill_security) {
+  using hotspot_config::mojom::WiFiSecurityMode;
+
+  if (shill_security == shill::kSecurityWpa2) {
+    return WiFiSecurityMode::kWpa2;
+  }
+  if (shill_security == shill::kSecurityWpa3) {
+    return WiFiSecurityMode::kWpa3;
+  }
+  if (shill_security == shill::kSecurityWpa2Wpa3) {
+    return WiFiSecurityMode::kWpa2Wpa3;
+  }
+
+  NOTREACHED() << "Unexpeted shill tethering security mode: " << shill_security;
+  return WiFiSecurityMode::kWpa2;
 }
 
 hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(

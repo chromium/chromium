@@ -6,24 +6,31 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_STATE_HANDLER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
+class NetworkStateHandler;
+
 // This class caches hotspot related status and implements methods to get
 // current state, active client count, capabilities and configure the hotspot
 // configurations.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
     : public ShillPropertyChangedObserver,
-      public LoginState::Observer {
+      public LoginState::Observer,
+      public NetworkStateHandlerObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -34,6 +41,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
     virtual void OnHotspotStatusChanged() = 0;
     // Invoked when hotspot state is failed.
     virtual void OnHotspotStateFailed(const std::string& error) = 0;
+    // Invoked when hotspot capabilities is changed.
+    virtual void OnHotspotCapabilitiesChanged() = 0;
+  };
+
+  // Represents the hotspot capabilities. Includes:
+  // 1. The allow status that is calculated from the combination Shill Tethering
+  // Capabilities and Shill Tethering Readiness check result and policy allow
+  // status.
+  // 2. List of allowed WiFi security modes for WiFi downstream.
+  struct HotspotCapabilities {
+    HotspotCapabilities(
+        const chromeos::hotspot_config::mojom::HotspotAllowStatus allow_status);
+    ~HotspotCapabilities();
+
+    chromeos::hotspot_config::mojom::HotspotAllowStatus allow_status;
+    std::vector<chromeos::hotspot_config::mojom::WiFiSecurityMode>
+        allowed_security_modes;
   };
 
   HotspotStateHandler();
@@ -41,14 +65,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   HotspotStateHandler& operator=(const HotspotStateHandler&) = delete;
   ~HotspotStateHandler() override;
 
-  void Init();
+  void Init(NetworkStateHandler* network_state_handler);
   // Return the latest hotspot state
   const chromeos::hotspot_config::mojom::HotspotState& GetHotspotState() const;
   // Return the latest hotspot active client count
   size_t GetHotspotActiveClientCount() const;
   // Return the current hotspot configuration
   chromeos::hotspot_config::mojom::HotspotConfigPtr GetHotspotConfig() const;
-
+  // Return the latest hotspot capabilities
+  const HotspotCapabilities& GetHotspotCapabilities() const;
   // Return callback for the SetHotspotConfig method. |success| indicates
   // whether the operation is success or not.
   using SetHotspotConfigCallback = base::OnceCallback<void(
@@ -59,6 +84,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   void SetHotspotConfig(
       chromeos::hotspot_config::mojom::HotspotConfigPtr config,
       SetHotspotConfigCallback callback);
+
+  // Set whether Hotspot should be allowed/disallowed by policy.
+  void SetPolicyAllowHotspot(bool allow);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -71,6 +99,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
 
   // LoginState::Observer
   void LoggedInStateChanged() override;
+
+  // NetworkStateHandlerObserver
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
+  void OnShuttingDown() override;
 
   // Callback to handle the manager properties with hotspot related properties.
   void OnManagerProperties(absl::optional<base::Value> properties);
@@ -89,6 +121,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Notify observers that hotspot state was failure.
   void NotifyHotspotStateFailed(const std::string& error);
 
+  // Notify observer that hotspot capabilities was changed.
+  void NotifyHotspotCapabilitiesChanged();
+
   // Update the cached hotspot_config_ with the tethering configuration
   // from |manager_properties|, and then run the |callback|.
   void UpdateHotspotConfigAndRunCallback(
@@ -103,10 +138,36 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
                                  const std::string& error_name,
                                  const std::string& error_message);
 
+  // Update the cached hotspot_capabilities_ from the tethering capabilities
+  // values from Shill. This function is called whenever the tethering
+  // capabilities value is changed in Shill.
+  void UpdateHotspotCapabilities(const base::Value& capabilities);
+
+  // Callback when the CheckTetheringReadiness operation succeeded.
+  void OnCheckReadinessSuccess(const std::string& result);
+
+  // Callback when the CheckTetheringReadiness operation failed.
+  void OnCheckReadinessFailure(const std::string& error_name,
+                               const std::string& error_message);
+
+  // Update the hotspot_capabilities_ with the given |new_allow_status|
+  // and then notify observers if it changes.
+  void SetHotspotCapablities(
+      chromeos::hotspot_config::mojom::HotspotAllowStatus new_allow_status);
+
+  void ResetNetworkStateHandler();
+
   chromeos::hotspot_config::mojom::HotspotState hotspot_state_ =
       chromeos::hotspot_config::mojom::HotspotState::kDisabled;
+  HotspotCapabilities hotspot_capabilities_{
+      chromeos::hotspot_config::mojom::HotspotAllowStatus::
+          kDisallowedNoCellularUpstream};
   absl::optional<base::Value> hotspot_config_ = absl::nullopt;
   size_t active_client_count_ = 0;
+
+  NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotStateHandler> weak_ptr_factory_{this};
 };

@@ -523,7 +523,7 @@ void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
 void FakeShillManagerClient::CheckTetheringReadiness(
     StringCallback callback,
     ErrorCallback error_callback) {
-  switch (simulate_tethering_enable_result_) {
+  switch (simulate_check_tethering_readiness_result_) {
     case FakeShillSimulatedResult::kSuccess:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
