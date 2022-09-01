@@ -4440,7 +4440,7 @@ Press an assigned switch or key to remove assignment.
     If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If you aren't using a lock screen, your device will sleep instead of lock.
   </message>
   <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE" desc="Text in the smart privacy section which is the subheader for snooping protection options.">
-    Viewing protection
+    Viewing protection (Beta)
   </message>
   <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT" desc="Sub-label elaborating on the meaning of snooping protection.">
     When someone else looks at your screen, show the Privacy eye icon on the bottom right of your screen
