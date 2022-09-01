@@ -27,11 +27,13 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_output_surface.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -602,6 +604,7 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
 }
 
 void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
+  current_frame()->current_render_pass = render_pass;
   TRACE_EVENT0("viz", "DirectRenderer::DrawRenderPass");
   if (CanSkipRenderPass(render_pass)) {
     skipped_render_pass_ids_.insert(render_pass->id);
@@ -748,7 +751,6 @@ bool DirectRenderer::CanSkipRenderPass(
 
 void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
   bool is_root = render_pass == current_frame()->root_render_pass;
-  current_frame()->current_render_pass = render_pass;
   // The root render pass will be either bound to the buffer allocated by
   // the SkiaOutputSurface, or if the renderer allocatates images then the root
   // render pass buffer will be allocated in
@@ -772,8 +774,12 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
                  enlarge_pass_texture_amount_.height());
   }
 
-  AllocateRenderPassResourceIfNeeded(render_pass->id,
-                                     {size, render_pass->generate_mipmap});
+  auto color_space = CurrentRenderPassColorSpace();
+  auto format = GetColorSpaceResourceFormat(color_space);
+
+  AllocateRenderPassResourceIfNeeded(
+      render_pass->id,
+      {size, render_pass->generate_mipmap, format, color_space});
 
   // TODO(crbug.com/582554): This change applies only when Vulkan is enabled and
   // it will be removed once SkiaRenderer has complete support for Vulkan.
@@ -906,7 +912,7 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
 }
 
 gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(
-    const AggregatedRenderPass* render_pass) {
+    const AggregatedRenderPass* render_pass) const {
   // Round the size of the render pass backings to a multiple of 64 pixels. This
   // reduces memory fragmentation. https://crbug.com/146070. This also allows
   // backings to be more easily reused during a resize operation.
@@ -1043,6 +1049,25 @@ gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
   return current_frame()->display_color_spaces.GetCompositingColorSpace(
       current_frame()->current_render_pass->has_transparent_background,
       current_frame()->current_render_pass->content_color_usage);
+}
+
+ResourceFormat DirectRenderer::GetColorSpaceResourceFormat(
+    gfx::ColorSpace color_space) const {
+  // TODO(penghuang): check supported format correctly.
+  gpu::Capabilities caps;
+  caps.texture_format_bgra8888 = true;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.
+  auto format = color_space.IsHDR()
+                    ? RGBA_1010102
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#else
+  auto format = color_space.IsHDR()
+                    ? RGBA_F16
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#endif
+  return format;
 }
 
 DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer(
