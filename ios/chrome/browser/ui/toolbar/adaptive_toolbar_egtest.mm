@@ -517,7 +517,8 @@ UIViewController* TopPresentedViewController() {
 }
 
 // Tests share button is enabled only on pages that can be shared.
-- (void)testShareButton {
+// TODO(crbug.com/1358827): Disabled due to flakiness. Re-enabled when fixed.
+- (void)DISABLED_testShareButton {
   if (![ChromeEarlGrey isIPadIdiom]) {
     // If this test is run on an iPhone, rotate it to have the unsplit toolbar.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
