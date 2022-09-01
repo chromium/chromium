@@ -67,7 +67,7 @@ class PageHandler : public DevToolsDomainHandler,
   PageHandler(EmulationHandler* emulation_handler,
               BrowserHandler* browser_handler,
               bool allow_unsafe_operations,
-              bool may_capture_screenshots_not_from_surface,
+              bool is_trusted,
               absl::optional<url::Origin> navigation_initiator_origin,
               bool may_read_local_files);
 
@@ -224,7 +224,7 @@ class PageHandler : public DevToolsDomainHandler,
   ResponseOrWebContents GetWebContentsForTopLevelActiveFrame();
 
   const bool allow_unsafe_operations_;
-  const bool may_capture_screenshots_not_from_surface_;
+  const bool is_trusted_;
   const absl::optional<url::Origin> navigation_initiator_origin_;
   const bool may_read_local_files_;
 
