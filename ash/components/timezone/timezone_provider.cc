@@ -8,10 +8,10 @@
 #include <iterator>
 #include <utility>
 
-#include "ash/components/geolocation/geoposition.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {

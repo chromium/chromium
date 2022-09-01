@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 
 #include <algorithm>
 #include <iterator>
 #include <memory>
 
-#include "ash/components/geolocation/geoposition.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -30,7 +30,7 @@ SimpleGeolocationProvider::SimpleGeolocationProvider(
     : shared_url_loader_factory_(std::move(factory)), url_(url) {}
 
 SimpleGeolocationProvider::~SimpleGeolocationProvider() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void SimpleGeolocationProvider::RequestGeolocation(
@@ -38,7 +38,7 @@ void SimpleGeolocationProvider::RequestGeolocation(
     bool send_wifi_access_points,
     bool send_cell_towers,
     SimpleGeolocationRequest::ResponseCallback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto cell_vector = std::make_unique<CellTowerVector>();
   auto wifi_vector = std::make_unique<WifiAccessPointVector>();
@@ -84,7 +84,7 @@ void SimpleGeolocationProvider::OnGeolocationResponse(
     const Geoposition& geoposition,
     bool server_error,
     const base::TimeDelta elapsed) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::move(callback).Run(geoposition, server_error, elapsed);
 

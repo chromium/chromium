@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
-#define ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
 
 #include <memory>
 #include <vector>
 
-#include "ash/components/geolocation/simple_geolocation_request.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -31,7 +31,8 @@ class GeolocationHandler;
 // Note: this should probably be a singleton to monitor requests rate.
 // But as it is used only during ChromeOS Out-of-Box, it can be owned by
 // WizardController for now.
-class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationProvider {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
+    SimpleGeolocationProvider {
  public:
   SimpleGeolocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
@@ -85,9 +86,9 @@ class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationProvider {
   GeolocationHandler* geolocation_handler_ = nullptr;
 
   // Creation and destruction should happen on the same thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_

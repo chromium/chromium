@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/geolocation/geoposition.h"
 #include "ash/components/timezone/timezone_provider.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/geolocation/geoposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

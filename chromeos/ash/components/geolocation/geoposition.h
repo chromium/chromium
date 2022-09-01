@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_
-#define ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_
+#define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@ namespace ash {
 
 // This structure represents Google Maps Geolocation response.
 // Based on device/geolocation/geoposition.h .
-struct COMPONENT_EXPORT(ASH_GEOLOCATION) Geoposition {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) Geoposition {
   // Geolocation API client status.
   // (Server status is reported in "error_code" field.)
   enum Status {
@@ -63,4 +63,4 @@ struct COMPONENT_EXPORT(ASH_GEOLOCATION) Geoposition {
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_

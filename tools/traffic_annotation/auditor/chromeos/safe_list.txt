@@ -7,7 +7,7 @@ missing,ash/wallpaper/wallpaper_controller_impl.cc
 all,chromeos/printing/printer_config_cache.cc
 all,chrome/browser/ash/customization/customization_document.cc
 all,ash/webui/projector_app/projector_xhr_sender.cc
-all,ash/components/geolocation/simple_geolocation_request.cc
+all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
 all,ash/components/trial_group/trial_group_checker.cc
 all,chrome/browser/ash/net/network_portal_detector_impl.cc
 all,chrome/browser/ash/policy/uploading/system_log_uploader.cc

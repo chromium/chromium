@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/geolocation/simple_geolocation_request.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
 
 #include <stddef.h>
 
@@ -11,8 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/geolocation/simple_geolocation_provider.h"
-#include "ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -23,6 +21,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -115,8 +115,7 @@ SimpleGeolocationRequestTestMonitor* g_test_request_hook = nullptr;
 
 // Too many requests (more than 1) mean there is a problem in implementation.
 void RecordUmaEvent(SimpleGeolocationRequestEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("SimpleGeolocation.Request.Event",
-                            event,
+  UMA_HISTOGRAM_ENUMERATION("SimpleGeolocation.Request.Event", event,
                             SIMPLE_GEOLOCATION_REQUEST_EVENT_COUNT);
 }
 
@@ -136,8 +135,7 @@ void RecordUmaResponseTime(base::TimeDelta elapsed, bool success) {
 }
 
 void RecordUmaResult(SimpleGeolocationRequestResult result, size_t retries) {
-  UMA_HISTOGRAM_ENUMERATION("SimpleGeolocation.Request.Result",
-                            result,
+  UMA_HISTOGRAM_ENUMERATION("SimpleGeolocation.Request.Result", result,
                             SIMPLE_GEOLOCATION_REQUEST_RESULT_COUNT);
   base::UmaHistogramSparse("SimpleGeolocation.Request.Retries",
                            std::min(retries, kMaxRetriesValueInHistograms));
@@ -181,13 +179,14 @@ bool ParseServerResponse(const GURL& server_url,
   DCHECK(position);
 
   if (response_body.empty()) {
-    PrintGeolocationError(
-        server_url, "Server returned empty response", position);
+    PrintGeolocationError(server_url, "Server returned empty response",
+                          position);
     RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
     return false;
   }
   VLOG(1) << "SimpleGeolocationRequest::ParseServerResponse() : "
-             "Parsing response '" << response_body << "'";
+             "Parsing response '"
+          << response_body << "'";
 
   // Parse the response, ignoring comments.
   auto response_result =
@@ -254,8 +253,8 @@ bool ParseServerResponse(const GURL& server_url,
     absl::optional<double> accuracy =
         response_value.FindDoubleKey(kAccuracyString);
     if (!accuracy) {
-      PrintGeolocationError(
-          server_url, "Missing 'accuracy' attribute.", position);
+      PrintGeolocationError(server_url, "Missing 'accuracy' attribute.",
+                            position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
       return false;
     }
@@ -363,7 +362,7 @@ SimpleGeolocationRequest::SimpleGeolocationRequest(
       cell_tower_data_(cell_tower_data.release()) {}
 
 SimpleGeolocationRequest::~SimpleGeolocationRequest() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If callback is not empty, request is cancelled.
   if (callback_) {
@@ -425,7 +424,7 @@ std::string SimpleGeolocationRequest::FormatRequestBody() const {
 }
 
 void SimpleGeolocationRequest::StartRequest() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_REQUEST_START);
   ++retries_;
 
@@ -456,8 +455,8 @@ void SimpleGeolocationRequest::StartRequest() {
 void SimpleGeolocationRequest::MakeRequest(ResponseCallback callback) {
   callback_ = std::move(callback);
   request_url_ = GeolocationRequestURL(service_url_);
-  timeout_timer_.Start(
-      FROM_HERE, timeout_, this, &SimpleGeolocationRequest::OnTimeout);
+  timeout_timer_.Start(FROM_HERE, timeout_, this,
+                       &SimpleGeolocationRequest::OnTimeout);
   request_started_at_ = base::Time::Now();
   StartRequest();
 }
@@ -475,8 +474,8 @@ std::string SimpleGeolocationRequest::FormatRequestBodyForTesting() const {
 void SimpleGeolocationRequest::Retry(bool server_error) {
   base::TimeDelta delay(server_error ? retry_sleep_on_server_error_
                                      : retry_sleep_on_bad_response_);
-  request_scheduled_.Start(
-      FROM_HERE, delay, this, &SimpleGeolocationRequest::StartRequest);
+  request_scheduled_.Start(FROM_HERE, delay, this,
+                           &SimpleGeolocationRequest::StartRequest);
 }
 
 void SimpleGeolocationRequest::OnSimpleURLLoaderComplete(

@@ -1,8 +1,8 @@
 noparent = True
 
 include_rules = [
-  "+ash/components/geolocation",
   "+base",
+  "+chromeos/ash/components/geolocation",
   "+components/prefs",
   "+google_apis",
   "+services/network/public/cpp",

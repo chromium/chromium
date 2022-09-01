@@ -10,8 +10,8 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 component("timezone") {
   defines = [ "IS_ASH_TIMEZONE_IMPL" ]
   deps = [
-    "//ash/components/geolocation",
     "//base",
+    "//chromeos/ash/components/geolocation",
     "//components/prefs",
     "//google_apis",
     "//net",
@@ -31,9 +31,9 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":timezone",
-    "//ash/components/geolocation",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/geolocation",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",

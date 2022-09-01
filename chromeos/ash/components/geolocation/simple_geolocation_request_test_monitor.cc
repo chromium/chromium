@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/geolocation/simple_geolocation_request_test_monitor.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 
 namespace ash {
 

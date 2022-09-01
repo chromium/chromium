@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
-#define ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
+#define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
 
 #include <memory>
 
-#include "ash/components/geolocation/geoposition.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -15,6 +14,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/network/network_util.h"
 #include "url/gurl.h"
 
@@ -37,8 +37,10 @@ class SimpleGeolocationRequestTestMonitor;
 // - If request is destroyed while callback has not beed called yet, request
 // is silently cancelled.
 //
-// Note: we need COMPONENT_EXPORT(ASH_GEOLOCATION) for tests.
-class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationRequest {
+// Note: we need COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) for
+// tests.
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
+    SimpleGeolocationRequest {
  public:
   // Called when a new geolocation information is available.
   // The second argument indicates whether there was a server error or not.
@@ -139,9 +141,9 @@ class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationRequest {
   std::unique_ptr<CellTowerVector> cell_tower_data_;
 
   // Creation and destruction should happen on the same thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_

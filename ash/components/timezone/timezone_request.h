@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/components/geolocation/geoposition.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -15,6 +14,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/geolocation/geoposition.h"
 #include "url/gurl.h"
 
 namespace network {

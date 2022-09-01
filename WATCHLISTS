@@ -761,7 +761,7 @@
                   'ui/webui/resources/cr_components/chromeos/cellular_setup/',
     },
     'chromeos_geolocation': {
-      'filepath': 'ash/components/geolocation/',
+      'filepath': 'chromeos/ash/components/geolocation/',
     },
     'chromeos_lkgm': {
       'filepath': 'chromeos/CHROMEOS_LKGM',

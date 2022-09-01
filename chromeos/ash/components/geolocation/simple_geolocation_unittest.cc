@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/geolocation/simple_geolocation_provider.h"
-#include "ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,6 +13,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "net/http/http_response_headers.h"
@@ -330,9 +330,7 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override {
-    geolocation_handler_.reset();
-  }
+  void TearDown() override { geolocation_handler_.reset(); }
 
   bool GetWifiAccessPoints() {
     return geolocation_handler_->GetWifiAccessPoints(&wifi_access_points_,
