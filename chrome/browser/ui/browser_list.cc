@@ -4,14 +4,13 @@
 
 #include "chrome/browser/ui/browser_list.h"
 
-#include <algorithm>
-
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -371,7 +370,7 @@ size_t BrowserList::GetGuestBrowserCount() {
 // static
 bool BrowserList::IsOffTheRecordBrowserInUse(Profile* profile) {
   BrowserList* list = BrowserList::GetInstance();
-  return std::any_of(list->begin(), list->end(), [profile](Browser* browser) {
+  return base::ranges::any_of(*list, [profile](Browser* browser) {
     return browser->profile()->IsSameOrParent(profile) &&
            browser->profile()->IsOffTheRecord();
   });

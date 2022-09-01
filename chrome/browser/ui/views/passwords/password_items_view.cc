@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/strong_alias.h"
@@ -67,11 +67,9 @@ enum PasswordItemsViewColumnSetType {
 
 PasswordItemsViewColumnSetType InferColumnSetTypeFromCredentials(
     const std::vector<password_manager::PasswordForm>& credentials) {
-  if (std::any_of(credentials.begin(), credentials.end(),
-                  [](const password_manager::PasswordForm& form) {
-                    return form.in_store ==
-                           password_manager::PasswordForm::Store::kAccountStore;
-                  })) {
+  if (base::Contains(credentials,
+                     password_manager::PasswordForm::Store::kAccountStore,
+                     &password_manager::PasswordForm::in_store)) {
     return MULTI_STORE_PASSWORD_COLUMN_SET;
   }
   return PASSWORD_COLUMN_SET;

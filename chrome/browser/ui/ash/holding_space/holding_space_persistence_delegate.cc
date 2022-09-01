@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -81,10 +82,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
   update->GetList().EraseIf([&items](const base::Value& persisted_item) {
     const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
         base::Value::AsDictionaryValue(persisted_item));
-    return std::any_of(items.begin(), items.end(),
-                       [&persisted_item_id](const HoldingSpaceItem* item) {
-                         return persisted_item_id == item->id();
-                       });
+    return base::Contains(items, persisted_item_id, &HoldingSpaceItem::id);
   });
 }
 

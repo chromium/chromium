@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -678,8 +679,7 @@ void OmniboxViewViews::OnOmniboxPaste() {
       // fakebox is hidden and there's only whitespace in the omnibox, it's
       // difficult for the user to see that the focus moved to the omnibox.
       (model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE &&
-       std::all_of(text.begin(), text.end(),
-                   base::IsUnicodeWhitespace<char16_t>))) {
+       base::ranges::all_of(text, base::IsUnicodeWhitespace<char16_t>))) {
     return;
   }
 

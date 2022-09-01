@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -326,11 +326,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   std::vector<std::pair<std::u16string, std::unique_ptr<View>>> panes;
 
-  const bool current_tab_among_sources = std::any_of(
-      source_lists.begin(), source_lists.end(),
-      [](const std::unique_ptr<DesktopMediaList>& list) {
-        return list->GetMediaListType() == DesktopMediaList::Type::kCurrentTab;
-      });
+  const bool current_tab_among_sources =
+      base::Contains(source_lists, DesktopMediaList::Type::kCurrentTab,
+                     &DesktopMediaList::GetMediaListType);
 
   dialog_type_ = current_tab_among_sources ? DialogType::kPreferCurrentTab
                                            : DialogType::kStandard;

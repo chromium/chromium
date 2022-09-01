@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -124,9 +125,8 @@ void CloseUnpinnedTabs(Browser* browser) {
 
 bool CanMoveTabsToExistingWindow(const Browser* browser_to_exclude) {
   const BrowserList* browser_list = BrowserList::GetInstance();
-  return std::any_of(
-      browser_list->begin(), browser_list->end(),
-      [browser_to_exclude](Browser* browser) {
+  return base::ranges::any_of(
+      *browser_list, [browser_to_exclude](Browser* browser) {
         return browser != browser_to_exclude && browser->is_type_normal() &&
                browser->profile() == browser_to_exclude->profile();
       });

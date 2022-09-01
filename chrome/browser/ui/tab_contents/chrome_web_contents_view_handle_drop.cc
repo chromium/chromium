@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
@@ -26,11 +27,8 @@ void CompletionCallback(
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
     const enterprise_connectors::ContentAnalysisDelegate::Result& result) {
   // If any result is negative, block the drop.
-  const auto all_true_fn = [](const auto& vec) {
-    return std::all_of(vec.cbegin(), vec.cend(), [](bool b) { return b; });
-  };
-  bool all_true =
-      all_true_fn(result.text_results) && all_true_fn(result.paths_results);
+  bool all_true = !base::Contains(result.text_results, false) &&
+                  !base::Contains(result.paths_results, false);
 
   std::move(callback).Run(
       all_true

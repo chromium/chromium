@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -444,7 +443,7 @@ class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
       views::View::ConvertRectToTarget(target, child, &child_rect);
       return child->HitTestRect(gfx::ToEnclosingRect(child_rect));
     };
-    return std::any_of(children.cbegin(), children.cend(), hits_child);
+    return base::ranges::any_of(children, hits_child);
   }
 };
 

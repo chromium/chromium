@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -160,9 +160,9 @@ bool AuthenticatorMechanismSelectorSheetModel::IsManageDevicesButtonVisible()
     const {
   // If any phones are shown then also show a button that goes to the settings
   // page to manage them.
-  return std::any_of(
-      dialog_model()->mechanisms().begin(), dialog_model()->mechanisms().end(),
-      [](const AuthenticatorRequestDialogModel::Mechanism& mechanism) -> bool {
+  return base::ranges::any_of(
+      dialog_model()->mechanisms(),
+      [](const AuthenticatorRequestDialogModel::Mechanism& mechanism) {
         return absl::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Phone>(mechanism.type);
       });

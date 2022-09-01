@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-#include <vector>
-
 #include "chrome/browser/ui/views/frame/webui_tab_strip_field_trial.h"
+
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
@@ -60,10 +60,10 @@ bool IsInGroup(base::StringPiece group_name) {
     LOG(ERROR) << group_id.name << " " << group_id.group;
   }
 
-  return std::any_of(active_groups.begin(), active_groups.end(),
-                     [=](const variations::ActiveGroupId& e) {
-                       return e.name == id.name && e.group == id.group;
-                     });
+  return base::ranges::any_of(active_groups,
+                              [=](const variations::ActiveGroupId& e) {
+                                return e.name == id.name && e.group == id.group;
+                              });
 }
 
 }  // namespace

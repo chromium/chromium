@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -234,11 +235,11 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
   model()->RemoveIf(base::BindRepeating(
       [](const std::set<base::FilePath>& deleted_paths,
          const HoldingSpaceItem* item) {
-        return std::any_of(deleted_paths.begin(), deleted_paths.end(),
-                           [&](const base::FilePath& deleted_path) {
-                             return item->file_path() == deleted_path ||
-                                    deleted_path.IsParent(item->file_path());
-                           });
+        return base::ranges::any_of(
+            deleted_paths, [&](const base::FilePath& deleted_path) {
+              return item->file_path() == deleted_path ||
+                     deleted_path.IsParent(item->file_path());
+            });
       },
       std::cref(deleted_paths)));
 }
@@ -605,11 +606,10 @@ void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
   // The watch for `file_path` should only be removed if no holding space items
   // exist in the model which are backed by files it directly parents.
   const bool remove_watch =
-      std::none_of(model()->items().begin(), model()->items().end(),
-                   [&file_path](const auto& item) {
-                     return item->IsInitialized() &&
-                            item->file_path().DirName() == file_path;
-                   });
+      base::ranges::none_of(model()->items(), [&file_path](const auto& item) {
+        return item->IsInitialized() &&
+               item->file_path().DirName() == file_path;
+      });
 
   if (!remove_watch)
     return;

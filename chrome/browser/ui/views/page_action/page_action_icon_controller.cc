@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
@@ -253,9 +252,9 @@ void PageActionIconController::UpdateAll() {
 }
 
 bool PageActionIconController::IsAnyIconVisible() const {
-  return std::any_of(
-      page_action_icon_views_.begin(), page_action_icon_views_.end(),
-      [](auto icon_item) { return icon_item.second->GetVisible(); });
+  return base::ranges::any_of(page_action_icon_views_, [](auto icon_item) {
+    return icon_item.second->GetVisible();
+  });
 }
 
 bool PageActionIconController::ActivateFirstInactiveBubbleForAccessibility() {

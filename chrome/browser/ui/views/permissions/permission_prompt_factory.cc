@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -65,10 +66,10 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
     return false;
 
   std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
-  return std::all_of(requests.begin(), requests.end(),
-                     [](permissions::PermissionRequest* request) {
-                       return request->GetRequestChipText().has_value();
-                     });
+  return base::ranges::all_of(
+      requests, [](permissions::PermissionRequest* request) {
+        return request->GetRequestChipText().has_value();
+      });
 }
 
 bool IsLocationBarDisplayed(Browser* browser) {
@@ -84,13 +85,13 @@ bool ShouldCurrentRequestUseQuietChip(
   }
 
   std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
-  return std::all_of(requests.begin(), requests.end(),
-                     [](permissions::PermissionRequest* request) {
-                       return request->request_type() ==
-                                  permissions::RequestType::kNotifications ||
-                              request->request_type() ==
-                                  permissions::RequestType::kGeolocation;
-                     });
+  return base::ranges::all_of(
+      requests, [](permissions::PermissionRequest* request) {
+        return request->request_type() ==
+                   permissions::RequestType::kNotifications ||
+               request->request_type() ==
+                   permissions::RequestType::kGeolocation;
+      });
 }
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(

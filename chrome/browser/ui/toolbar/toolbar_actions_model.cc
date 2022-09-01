@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -238,11 +237,10 @@ bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   // If nay extension has access, we want to properly message that (since
   // saying "No extensions can run..." is inaccurate). Other extensions
   // will still be properly attributed in UI.
-  return std::all_of(
-      action_ids().begin(), action_ids().end(), [this, url](ActionId id) {
-        return GetExtensionById(id)->permissions_data()->IsRestrictedUrl(
-            url, /*error=*/nullptr);
-      });
+  return base::ranges::all_of(action_ids(), [this, url](ActionId id) {
+    return GetExtensionById(id)->permissions_data()->IsRestrictedUrl(
+        url, /*error=*/nullptr);
+  });
 }
 
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {

@@ -19,6 +19,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -108,10 +109,9 @@ base::FilePath CreateTextFile(
 void WaitForItemAddition(
     base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
   auto* model = ash::HoldingSpaceController::Get()->model();
-  if (std::any_of(model->items().begin(), model->items().end(),
-                  [&predicate](const auto& item) {
-                    return predicate.Run(item.get());
-                  })) {
+  if (base::ranges::any_of(model->items(), [&predicate](const auto& item) {
+        return predicate.Run(item.get());
+      })) {
     return;
   }
 
@@ -139,10 +139,9 @@ void WaitForItemAddition(
 void WaitForItemRemoval(
     base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
   auto* model = ash::HoldingSpaceController::Get()->model();
-  if (std::none_of(model->items().begin(), model->items().end(),
-                   [&predicate](const auto& item) {
-                     return predicate.Run(item.get());
-                   })) {
+  if (base::ranges::none_of(model->items(), [&predicate](const auto& item) {
+        return predicate.Run(item.get());
+      })) {
     return;
   }
 
