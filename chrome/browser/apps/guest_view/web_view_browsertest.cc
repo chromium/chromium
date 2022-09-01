@@ -89,6 +89,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_file_error_injector.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -833,7 +834,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
     return guest_view_->web_contents();
   }
   content::RenderFrameHost* GetGuestRenderFrameHost() {
-    return guest_view_->web_contents()->GetPrimaryMainFrame();
+    return guest_view_->GetGuestMainFrame();
   }
 
   content::WebContents* GetEmbedderWebContents() {
@@ -6254,9 +6255,8 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
-  content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_frame = GetGuestRenderFrameHost();
+  ASSERT_TRUE(main_frame);
   auto original_id = main_frame->GetGlobalId();
   scoped_refptr<content::SiteInstance> starting_instance =
       main_frame->GetSiteInstance();
@@ -6275,15 +6275,16 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
   const GURL start_url =
       embedded_test_server()->GetURL("a.test", "/iframe.html");
   {
-    content::TestNavigationObserver load_observer(guest);
-    EXPECT_TRUE(
-        ExecuteScript(guest, "location.href = '" + start_url.spec() + "';"));
+    content::TestFrameNavigationObserver load_observer(main_frame);
+    EXPECT_TRUE(ExecuteScript(main_frame,
+                              "location.href = '" + start_url.spec() + "';"));
     load_observer.Wait();
   }
 
   // Expect that we stayed in the same (default) SiteInstance and
   // RenderFrameHost.
-  main_frame = guest->GetPrimaryMainFrame();
+  main_frame = GetGuestRenderFrameHost();
+  ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame->GetGlobalId(), original_id);
   EXPECT_EQ(starting_instance, main_frame->GetSiteInstance());
   EXPECT_FALSE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
@@ -6293,8 +6294,9 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
   // SiteInstance and process.
   const GURL frame_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
-  EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(subframe);
+  EXPECT_TRUE(NavigateToURLFromRenderer(subframe, frame_url));
   EXPECT_EQ(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
   EXPECT_EQ(main_frame->GetProcess(), subframe->GetProcess());
   EXPECT_TRUE(subframe->GetSiteInstance()->IsGuest());
