@@ -33,7 +33,7 @@ class AddressProfileSaveManager;
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
-// Owned by BrowserAutofillManager.
+// Owned by `ChromeAutofillClient`.
 class FormDataImporter : public PersonalDataManagerObserver {
  public:
   // Record type of the credit card imported from the form, if one exists.
