@@ -34,6 +34,7 @@ source_set("commands") {
     "password_suggestion_commands.h",
     "policy_change_commands.h",
     "popup_menu_commands.h",
+    "promos_manager_commands.h",
     "qr_generation_commands.h",
     "qr_scanner_commands.h",
     "reading_list_add_command.h",
@@ -68,6 +69,7 @@ source_set("commands") {
     "//components/password_manager/core/browser",
     "//ios/chrome/browser/browsing_data:browsing_data_remove_mask",
     "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/promos_manager:constants",
   ]
 }
 
