@@ -1173,10 +1173,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // contained within it (but not owned by another WebContents).
   void SetFocusedFrameTree(FrameTree* frame_tree_to_focus);
 
-  // Called by this WebContents's BrowserPluginGuest (if one exists) to indicate
-  // that the guest will be detached.
-  void BrowserPluginGuestWillDetach();
-
   // Notifies the Picture-in-Picture controller that there is a new video player
   // entering video Picture-in-Picture. (This is not used for document
   // Picture-in-Picture,

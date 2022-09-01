@@ -158,8 +158,7 @@ class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
 GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
     : owner_web_contents_(owner_web_contents),
       browser_context_(owner_web_contents->GetBrowserContext()),
-      guest_instance_id_(GetGuestViewManager()->GetNextInstanceID()),
-      guest_host_(nullptr) {
+      guest_instance_id_(GetGuestViewManager()->GetNextInstanceID()) {
   SetOwnerHost();
 }
 
@@ -413,10 +412,6 @@ void GuestViewBase::Destroy(bool also_delete) {
   // may wish to access their openers.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // Give the content module an opportunity to perform some cleanup.
-  guest_host_->WillDestroy();
-  guest_host_ = nullptr;
-
   g_webcontents_guestview_map.Get().erase(web_contents());
   GetGuestViewManager()->RemoveGuest(guest_instance_id_);
   pending_events_.clear();
@@ -437,10 +432,6 @@ void GuestViewBase::SetOpener(GuestViewBase* guest) {
   if (!attached()) {
     opener_lifetime_observer_ = std::make_unique<OpenerLifetimeObserver>(this);
   }
-}
-
-void GuestViewBase::SetGuestHost(content::GuestHost* guest_host) {
-  guest_host_ = guest_host;
 }
 
 void GuestViewBase::WillAttach(

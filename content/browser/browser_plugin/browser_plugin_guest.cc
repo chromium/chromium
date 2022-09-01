@@ -17,7 +17,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/guest_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -40,13 +39,6 @@ BrowserPluginGuest::BrowserPluginGuest(WebContentsImpl* web_contents,
   DCHECK(web_contents);
   DCHECK(delegate);
   RecordAction(base::UserMetricsAction("BrowserPlugin.Guest.Create"));
-}
-
-void BrowserPluginGuest::WillDestroy() {
-  // It is important that the WebContents is notified before detaching.
-  GetWebContents()->BrowserPluginGuestWillDetach();
-
-  owner_web_contents_ = nullptr;
 }
 
 void BrowserPluginGuest::Init() {
@@ -120,7 +112,6 @@ void BrowserPluginGuest::CreateInWebContents(
     WebContentsImpl* web_contents,
     BrowserPluginGuestDelegate* delegate) {
   auto guest = base::WrapUnique(new BrowserPluginGuest(web_contents, delegate));
-  delegate->SetGuestHost(guest.get());
   web_contents->SetBrowserPluginGuest(std::move(guest));
 }
 
@@ -218,13 +209,11 @@ void BrowserPluginGuest::ShowPopupMenu(
     bool right_aligned,
     bool allow_multiple_selection) {
   gfx::Rect translated_bounds(bounds);
-  WebContents* guest = web_contents();
+  auto* guest_rwhv = render_frame_host->GetView();
   translated_bounds.set_origin(
-      guest->GetRenderWidgetHostView()->TransformPointToRootCoordSpace(
-          translated_bounds.origin()));
-  BrowserPluginPopupMenuHelper popup_menu_helper(
-      owner_web_contents_->GetPrimaryMainFrame(), render_frame_host,
-      std::move(*popup_client));
+      guest_rwhv->TransformPointToRootCoordSpace(translated_bounds.origin()));
+  BrowserPluginPopupMenuHelper popup_menu_helper(render_frame_host,
+                                                 std::move(*popup_client));
   popup_menu_helper.ShowPopupMenu(translated_bounds, item_height, font_size,
                                   selected_item, std::move(*menu_items),
                                   right_aligned, allow_multiple_selection);

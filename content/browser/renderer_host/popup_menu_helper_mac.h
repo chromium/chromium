@@ -69,14 +69,13 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   // Immediately return from ShowPopupMenu.
   CONTENT_EXPORT static void DontShowPopupMenuForTesting();
 
- protected:
-  virtual RenderWidgetHostViewMac* GetRenderWidgetHostView() const;
-
  private:
   // RenderWidgetHostObserver implementation:
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
                                          bool became_visible) override;
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
+
+  RenderWidgetHostViewMac* GetRenderWidgetHostView() const;
 
   raw_ptr<Delegate> delegate_;  // Weak. Owns |this|.
 

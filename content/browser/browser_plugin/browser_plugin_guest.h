@@ -24,7 +24,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
-#include "content/public/browser/guest_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -50,7 +49,7 @@ class WebContentsImpl;
 // dropped on the floor since we don't have a BrowserPlugin.
 // TODO(wjmaclean): Get rid of "BrowserPlugin" in the name of this class.
 // Perhaps "InnerWebContentsGuestConnector"?
-class BrowserPluginGuest : public GuestHost, public WebContentsObserver {
+class BrowserPluginGuest : public WebContentsObserver {
  public:
   BrowserPluginGuest(const BrowserPluginGuest&) = delete;
   BrowserPluginGuest& operator=(const BrowserPluginGuest&) = delete;
@@ -107,9 +106,6 @@ class BrowserPluginGuest : public GuestHost, public WebContentsObserver {
       bool right_aligned,
       bool allow_multiple_selection);
 #endif
-
-  // GuestHost implementation.
-  void WillDestroy() override;
 
   // Exposes the protected web_contents() from WebContentsObserver.
   WebContentsImpl* GetWebContents() const;

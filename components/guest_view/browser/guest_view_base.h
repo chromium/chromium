@@ -15,7 +15,6 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
-#include "content/public/browser/guest_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -333,7 +332,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   std::unique_ptr<content::WebContents> CreateNewGuestWindow(
       const content::WebContents::CreateParams& create_params) final;
   content::WebContents* GetOwnerWebContents() final;
-  void SetGuestHost(content::GuestHost* guest_host) final;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
@@ -452,9 +450,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // The size of the guest content. Note: In autosize mode, the container
   // element may not match the size of the guest.
   gfx::Size guest_size_;
-
-  // A pointer to the guest_host.
-  raw_ptr<content::GuestHost> guest_host_;
 
   // Indicates whether autosize mode is enabled or not.
   bool auto_size_enabled_ = false;

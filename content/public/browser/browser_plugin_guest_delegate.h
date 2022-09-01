@@ -10,8 +10,6 @@
 
 namespace content {
 
-class GuestHost;
-
 // Objects implement this interface to get notified about changes in the guest
 // WebContents and to provide necessary functionality.
 class CONTENT_EXPORT BrowserPluginGuestDelegate {
@@ -23,10 +21,6 @@ class CONTENT_EXPORT BrowserPluginGuestDelegate {
 
   // Returns the WebContents that currently owns this guest.
   virtual WebContents* GetOwnerWebContents();
-
-  // Provides the delegate with an interface with which to communicate with the
-  // content module.
-  virtual void SetGuestHost(GuestHost* guest_host) {}
 };
 
 }  // namespace content
