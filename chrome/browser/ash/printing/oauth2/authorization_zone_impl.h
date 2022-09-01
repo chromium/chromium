@@ -101,9 +101,6 @@ class AuthorizationZoneImpl : public AuthorizationZone {
                                          base::flat_set<std::string>& scopes,
                                          std::string& code_verifier);
 
-  // Adds context info to error messages returned with `callback`.
-  void AddContextToErrorMessage(StatusCallback& callback);
-
   // Represents started authorization procedure waiting for opening
   // communication with the server. This object is created when
   // InitAuthorization() is called and its callback does not return yet.
