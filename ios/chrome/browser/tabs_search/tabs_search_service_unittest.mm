@@ -96,7 +96,7 @@ class TabsSearchServiceTest : public PlatformTest {
   }
 
  protected:
-  // Appends a new web state to the web state list of |browser|.
+  // Appends a new web state to the web state list of `browser`.
   web::WebState* AppendNewWebState(Browser* browser,
                                    const std::u16string& title,
                                    const GURL& url) {
@@ -543,7 +543,7 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchURL) {
 TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitleAllClosed) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
-  // Add a webstate which will not match |kSearchQueryMatchesAll|.
+  // Add a webstate which will not match `kSearchQueryMatchesAll`.
   AppendNewWebState(browser_.get(), u"X", GURL("http://abc.xyz"));
 
   browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
