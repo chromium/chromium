@@ -5,91 +5,223 @@
 #include "extensions/browser/browsertest_util.h"
 
 #include "base/callback.h"
+#include "base/json/json_reader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
-#include "extension_registry.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 namespace browsertest_util {
+
+namespace {
+
+// Returns a log-friendly script string.
+std::string GetScriptToLog(const std::string& script) {
+  // The maximum script size for which to print on failure.
+  static constexpr int kMaxFailingScriptSizeToLog = 1000;
+  return (script.size() < kMaxFailingScriptSizeToLog) ? script
+                                                      : "<script too large>";
+}
+
+}  // namespace
+
+BackgroundScriptExecutor::BackgroundScriptExecutor(
+    content::BrowserContext* browser_context)
+    : browser_context_(browser_context),
+      registry_(ExtensionRegistry::Get(browser_context_)),
+      process_manager_(ProcessManager::Get(browser_context_)) {}
+
+BackgroundScriptExecutor::~BackgroundScriptExecutor() = default;
+
+base::Value BackgroundScriptExecutor::ExecuteScript(
+    const ExtensionId& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation) {
+  ExecuteScriptAsync(extension_id, script, script_user_activation);
+  return WaitForResult();
+}
+
+// static
+base::Value BackgroundScriptExecutor::ExecuteScript(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation) {
+  return BackgroundScriptExecutor(browser_context)
+      .ExecuteScript(extension_id, script, script_user_activation);
+}
+
+bool BackgroundScriptExecutor::ExecuteScriptAsync(
+    const ExtensionId& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation) {
+  extension_ = registry_->enabled_extensions().GetByID(extension_id);
+  script_ = script;
+  if (!extension_) {
+    AddTestFailure("No enabled extension with id: " + extension_id);
+    return false;
+  }
+
+  if (BackgroundInfo::IsServiceWorkerBased(extension_)) {
+    background_type_ = BackgroundType::kServiceWorker;
+    DCHECK_EQ(ScriptUserActivation::kDontActivate, script_user_activation)
+        << "Cannot provide a user gesture to service worker scripts";
+    return ExecuteScriptInServiceWorker();
+  }
+
+  if (BackgroundInfo::HasBackgroundPage(extension_)) {
+    background_type_ = BackgroundType::kPage;
+    return ExecuteScriptInBackgroundPage(script_user_activation);
+  }
+
+  AddTestFailure(
+      "Attempting to execute a background script for an extension"
+      " with no background context");
+  return false;
+}
+
+// static
+bool BackgroundScriptExecutor::ExecuteScriptAsync(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation) {
+  return BackgroundScriptExecutor(browser_context)
+      .ExecuteScriptAsync(extension_id, script, script_user_activation);
+}
+
+base::Value BackgroundScriptExecutor::WaitForResult() {
+  DCHECK(background_type_);
+
+  if (background_type_ == BackgroundType::kServiceWorker) {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+    return std::move(result_);
+  }
+
+  DCHECK_EQ(BackgroundType::kPage, *background_type_);
+  DCHECK(message_queue_);
+  std::string next_message;
+  if (!message_queue_->WaitForMessage(&next_message)) {
+    AddTestFailure("Failed to wait for message");
+    return base::Value();
+  }
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(next_message, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value) {
+    AddTestFailure("Received bad message: " + next_message);
+    return base::Value();
+  }
+  return std::move(*value);
+}
+
+bool BackgroundScriptExecutor::ExecuteScriptInServiceWorker() {
+  std::vector<WorkerId> worker_ids =
+      process_manager_->GetServiceWorkersForExtension(extension_->id());
+  if (worker_ids.size() != 1u) {
+    AddTestFailure("Incorrect number of workers registered for extension");
+    return false;
+  }
+  content::ServiceWorkerContext* service_worker_context =
+      util::GetStoragePartitionForExtensionId(extension_->id(),
+                                              browser_context_)
+          ->GetServiceWorkerContext();
+  service_worker_context->ExecuteScriptForTest(  // IN-TEST
+      script_, worker_ids[0].version_id,
+      base::BindOnce(&BackgroundScriptExecutor::OnServiceWorkerResult,
+                     weak_factory_.GetWeakPtr()));
+  return true;
+}
+
+bool BackgroundScriptExecutor::ExecuteScriptInBackgroundPage(
+    ScriptUserActivation script_user_activation) {
+  message_queue_ = std::make_unique<content::DOMMessageQueue>();
+
+  ExtensionHost* host =
+      process_manager_->GetBackgroundHostForExtension(extension_->id());
+  if (!host) {
+    AddTestFailure("Extension does not have an active background page");
+    return false;
+  }
+
+  if (script_user_activation == ScriptUserActivation::kActivate) {
+    content::ExecuteScriptAsync(host->host_contents(), script_);
+  } else {
+    NOTREACHED() << "Not yet supported. Use ExecuteScriptInBackgroundPage().";
+  }
+  return true;
+}
+
+void BackgroundScriptExecutor::OnServiceWorkerResult(
+    base::Value result,
+    const absl::optional<std::string>& error) {
+  ASSERT_FALSE(error) << *error;
+  result_ = std::move(result);
+  if (quit_closure_)
+    std::move(quit_closure_).Run();
+}
+
+void BackgroundScriptExecutor::AddTestFailure(const std::string& message) {
+  ADD_FAILURE() << "Background script execution failed: " << message
+                << ". Extension: "
+                << (extension_ ? extension_->name() : "<not found>")
+                << ", script: " << GetScriptToLog(script_);
+}
 
 std::string ExecuteScriptInBackgroundPage(
     content::BrowserContext* context,
     const std::string& extension_id,
     const std::string& script,
     ScriptUserActivation script_user_activation) {
-  ExtensionHost* host =
-      ProcessManager::Get(context)->GetBackgroundHostForExtension(extension_id);
-  if (!host) {
-    ADD_FAILURE() << "Extension " << extension_id << " has no background page.";
+  // BackgroundScriptExecutor does not yet support kDontActivate.
+  // TODO(https://crbug.com/1319642): Make it so.
+  if (script_user_activation == ScriptUserActivation::kDontActivate) {
+    ExtensionHost* host =
+        ProcessManager::Get(context)->GetBackgroundHostForExtension(
+            extension_id);
+    if (!host) {
+      ADD_FAILURE() << "Extension " << extension_id
+                    << " has no background page.";
+      return std::string();
+    }
+
+    std::string result;
+    bool success = content::ExecuteScriptWithoutUserGestureAndExtractString(
+        host->host_contents(), script, &result);
+    if (!success) {
+      ADD_FAILURE() << "Executing script failed: " << GetScriptToLog(script);
+      result.clear();
+    }
+    return result;
+  }
+
+  DCHECK_EQ(ScriptUserActivation::kActivate, script_user_activation);
+
+  base::Value value = BackgroundScriptExecutor::ExecuteScript(
+      context, extension_id, script, script_user_activation);
+  if (!value.is_string()) {
+    ADD_FAILURE() << "Bad return value: " << value.type()
+                  << "; script: " << GetScriptToLog(script);
     return "";
   }
 
-  std::string result;
-  bool success;
-  if (script_user_activation == ScriptUserActivation::kActivate) {
-    success = content::ExecuteScriptAndExtractString(host->host_contents(),
-                                                     script, &result);
-  } else {
-    DCHECK_EQ(script_user_activation, ScriptUserActivation::kDontActivate);
-    success = content::ExecuteScriptWithoutUserGestureAndExtractString(
-        host->host_contents(), script, &result);
-  }
-
-  // The maximum script size for which to print on failure.
-  constexpr int kMaxFailingScriptSizeToLog = 1000;
-  if (!success) {
-    std::string message_detail = script.length() < kMaxFailingScriptSizeToLog
-                                     ? script
-                                     : "<script too large>";
-    ADD_FAILURE() << "Executing script failed: " << message_detail;
-    result.clear();
-  }
-  return result;
+  return value.GetString();
 }
 
 bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
                                          const std::string& extension_id,
                                          const std::string& script) {
-  ExtensionHost* host =
-      ProcessManager::Get(context)->GetBackgroundHostForExtension(extension_id);
-  if (!host) {
-    ADD_FAILURE() << "Extension " << extension_id << " has no background page.";
-    return false;
-  }
-  content::ExecuteScriptAsync(host->host_contents(), script);
-  return true;
-}
-
-void ExecuteScriptInServiceWorker(
-    content::BrowserContext* browser_context,
-    const std::string& extension_id,
-    const std::string& script,
-    base::OnceCallback<void(base::Value)> callback) {
-  ProcessManager* process_manager = ProcessManager::Get(browser_context);
-  ASSERT_TRUE(process_manager);
-  std::vector<WorkerId> worker_ids =
-      process_manager->GetServiceWorkersForExtension(extension_id);
-  ASSERT_EQ(1u, worker_ids.size())
-      << "Incorrect number of workers registered for extension.";
-  content::ServiceWorkerContext* service_worker_context =
-      util::GetStoragePartitionForExtensionId(extension_id, browser_context)
-          ->GetServiceWorkerContext();
-  auto callback_adapter =
-      [](base::OnceCallback<void(base::Value)> original_callback,
-         base::Value value, const absl::optional<std::string>& error) {
-        ASSERT_FALSE(error.has_value()) << *error;
-        std::move(original_callback).Run(std::move(value));
-      };
-  service_worker_context->ExecuteScriptForTest(  // IN-TEST
-      script, worker_ids[0].version_id,
-      base::BindOnce(callback_adapter, std::move(callback)));
+  return BackgroundScriptExecutor::ExecuteScriptAsync(
+      context, extension_id, script, ScriptUserActivation::kActivate);
 }
 
 void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,

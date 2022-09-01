@@ -36,18 +36,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTestUtilBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
-  base::RunLoop run_loop;
-  base::Value value_out;
-  auto callback = [&run_loop, &value_out](base::Value value) {
-    value_out = std::move(value);
-    run_loop.Quit();
-  };
+  base::Value value = browsertest_util::BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), "console.warn('script ran'); myTestFlag;");
 
-  browsertest_util::ExecuteScriptInServiceWorker(
-      profile(), extension->id(), "console.warn('script ran'); myTestFlag;",
-      base::BindLambdaForTesting(callback));
-  run_loop.Run();
-  EXPECT_THAT(value_out, base::test::IsJson(R"("HELLO!")"));
+  EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
 }
 
 }  // namespace extensions
