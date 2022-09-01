@@ -123,9 +123,11 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   // Helpers for starting the auth session and cleaning stale data during that.
   void StartAuthSessionWithChecks(std::unique_ptr<UserContext> context,
                                   bool ephemeral,
+                                  AuthSessionIntent intent,
                                   StartAuthSessionCallback callback);
   void OnStartAuthSession(std::unique_ptr<UserContext> original_context,
                           bool ephemeral,
+                          AuthSessionIntent intent,
                           StartAuthSessionCallback callback,
                           bool user_exists,
                           std::unique_ptr<UserContext> context,
@@ -133,9 +135,11 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   void RemoveStaleUserForEphemeral(
       const std::string& auth_session_id,
       std::unique_ptr<UserContext> original_context,
+      AuthSessionIntent intent,
       StartAuthSessionCallback callback);
   void OnRemoveStaleUserForEphemeral(
       std::unique_ptr<UserContext> original_context,
+      AuthSessionIntent intent,
       StartAuthSessionCallback callback,
       absl::optional<user_data_auth::RemoveReply> reply);
   void OnStartAuthSessionAfterStaleRemoval(

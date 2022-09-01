@@ -5,6 +5,7 @@
 #include "ash/components/login/auth/auth_performer.h"
 
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
+#include "ash/components/login/auth/public/auth_session_intent.h"
 #include "ash/components/login/auth/public/auth_session_status.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/user_context.h"
@@ -32,6 +33,15 @@ bool IsKioskUserType(user_manager::UserType type) {
          type == user_manager::USER_TYPE_WEB_KIOSK_APP;
 }
 
+user_data_auth::AuthIntent AuthIntentToProto(AuthSessionIntent intent) {
+  switch (intent) {
+    case AuthSessionIntent::kDecrypt:
+      return user_data_auth::AUTH_INTENT_DECRYPT;
+    case AuthSessionIntent::kVerifyOnly:
+      return user_data_auth::AUTH_INTENT_VERIFY_ONLY;
+  }
+}
+
 }  // namespace
 
 AuthPerformer::AuthPerformer(base::raw_ptr<UserDataAuthClient> client)
@@ -51,14 +61,16 @@ base::WeakPtr<AuthPerformer> AuthPerformer::AsWeakPtr() {
 
 void AuthPerformer::StartAuthSession(std::unique_ptr<UserContext> context,
                                      bool ephemeral,
+                                     AuthSessionIntent intent,
                                      StartSessionCallback callback) {
   client_->WaitForServiceToBeAvailable(base::BindOnce(
       &AuthPerformer::OnServiceRunning, weak_factory_.GetWeakPtr(),
-      std::move(context), ephemeral, std::move(callback)));
+      std::move(context), ephemeral, intent, std::move(callback)));
 }
 
 void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
                                      bool ephemeral,
+                                     AuthSessionIntent intent,
                                      StartSessionCallback callback,
                                      bool service_is_available) {
   if (!service_is_available) {
@@ -69,6 +81,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
   user_data_auth::StartAuthSessionRequest request;
   *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(context->GetAccountId());
+  request.set_intent(AuthIntentToProto(intent));
 
   if (ephemeral) {
     request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER);

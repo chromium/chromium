@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/components/login/auth/public/auth_callbacks.h"
+#include "ash/components/login/auth/public/auth_session_intent.h"
 #include "ash/components/login/auth/public/auth_session_status.h"
 #include "ash/components/login/auth/public/cryptohome_error.h"
 #include "base/callback.h"
@@ -59,6 +60,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   // Does not authenticate new session.
   virtual void StartAuthSession(std::unique_ptr<UserContext> context,
                                 bool ephemeral,
+                                AuthSessionIntent intent,
                                 StartSessionCallback callback);
 
   // Attempts to authenticate session using Key in `context`.
@@ -108,6 +110,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
  private:
   void OnServiceRunning(std::unique_ptr<UserContext> context,
                         bool ephemeral,
+                        AuthSessionIntent intent,
                         StartSessionCallback callback,
                         bool service_is_running);
   void OnStartAuthSession(

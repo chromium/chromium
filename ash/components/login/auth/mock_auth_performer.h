@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_LOGIN_AUTH_MOCK_AUTH_PERFORMER_H_
 
 #include "ash/components/login/auth/auth_performer.h"
+#include "ash/components/login/auth/public/auth_session_intent.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +25,7 @@ class MockAuthPerformer : public AuthPerformer {
               StartAuthSession,
               (std::unique_ptr<UserContext> context,
                bool ephemeral,
+               AuthSessionIntent intent,
                StartSessionCallback callback),
               (override));
 

@@ -34,4 +34,4 @@ using AuthSessionStatus = base::EnumSet<AuthSessionLevel,
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_RESULTS_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_SESSION_STATUS_H_

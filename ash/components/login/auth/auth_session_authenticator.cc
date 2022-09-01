@@ -6,6 +6,7 @@
 
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "ash/components/login/auth/public/auth_failure.h"
+#include "ash/components/login/auth/public/auth_session_intent.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/operation_chain_runner.h"
 #include "ash/components/login/auth/public/user_context.h"
@@ -78,6 +79,7 @@ void AuthSessionAuthenticator::CompleteLoginImpl(
   }
   StartAuthSessionWithChecks(
       std::move(context), is_ephemeral_mount_enforced_,
+      AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoCompleteLogin,
                      weak_factory_.GetWeakPtr()));
 }
@@ -85,20 +87,22 @@ void AuthSessionAuthenticator::CompleteLoginImpl(
 void AuthSessionAuthenticator::StartAuthSessionWithChecks(
     std::unique_ptr<UserContext> context,
     bool ephemeral,
+    AuthSessionIntent intent,
     StartAuthSessionCallback callback) {
   // Clone the context to be able to retry the StartAuthSession operation in
   // case we need to go through stale data removal.
   auto original_context = std::make_unique<UserContext>(*context);
   auth_performer_->StartAuthSession(
-      std::move(context), ephemeral,
+      std::move(context), ephemeral, intent,
       base::BindOnce(&AuthSessionAuthenticator::OnStartAuthSession,
                      weak_factory_.GetWeakPtr(), std::move(original_context),
-                     ephemeral, std::move(callback)));
+                     ephemeral, intent, std::move(callback)));
 }
 
 void AuthSessionAuthenticator::OnStartAuthSession(
     std::unique_ptr<UserContext> original_context,
     bool ephemeral,
+    AuthSessionIntent intent,
     StartAuthSessionCallback callback,
     bool user_exists,
     std::unique_ptr<UserContext> context,
@@ -112,7 +116,7 @@ void AuthSessionAuthenticator::OnStartAuthSession(
     // It's an edge case when cryptohomed didn't have a chance to delete the
     // stale data yet. Trigger the removal and retry.
     RemoveStaleUserForEphemeral(context->GetAuthSessionId(),
-                                std::move(original_context),
+                                std::move(original_context), intent,
                                 std::move(callback));
     return;
   }
@@ -123,6 +127,7 @@ void AuthSessionAuthenticator::OnStartAuthSession(
 void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
     const std::string& auth_session_id,
     std::unique_ptr<UserContext> original_context,
+    AuthSessionIntent intent,
     StartAuthSessionCallback callback) {
   if (auth_session_id.empty())
     NOTREACHED() << "Auth session should exist";
@@ -133,11 +138,12 @@ void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
       remove_request,
       base::BindOnce(&AuthSessionAuthenticator::OnRemoveStaleUserForEphemeral,
                      weak_factory_.GetWeakPtr(), std::move(original_context),
-                     std::move(callback)));
+                     intent, std::move(callback)));
 }
 
 void AuthSessionAuthenticator::OnRemoveStaleUserForEphemeral(
     std::unique_ptr<UserContext> original_context,
+    AuthSessionIntent intent,
     StartAuthSessionCallback callback,
     absl::optional<user_data_auth::RemoveReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
@@ -150,7 +156,7 @@ void AuthSessionAuthenticator::OnRemoveStaleUserForEphemeral(
   }
   // Retry the auth session creation after we recovered from stale data.
   auth_performer_->StartAuthSession(
-      std::move(original_context), /*ephemeral=*/true,
+      std::move(original_context), /*ephemeral=*/true, intent,
       base::BindOnce(
           &AuthSessionAuthenticator::OnStartAuthSessionAfterStaleRemoval,
           weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -296,7 +302,7 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   }
   StartAuthSessionWithChecks(
       std::move(context), is_ephemeral_mount_enforced_,
-
+      AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsExistingUser,
                      weak_factory_.GetWeakPtr()));
 }
@@ -411,7 +417,7 @@ void AuthSessionAuthenticator::LoginAsPublicSession(
   }
 
   StartAuthSessionWithChecks(
-      std::move(context), true /* ephemeral */,
+      std::move(context), true /* ephemeral */, AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsPublicSession,
                      weak_factory_.GetWeakPtr()));
 }
@@ -487,6 +493,7 @@ void AuthSessionAuthenticator::LoginAsKioskImpl(
   }
   StartAuthSessionWithChecks(
       std::move(context), is_ephemeral_mount_enforced_,
+      AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsKiosk,
                      weak_factory_.GetWeakPtr()));
 }

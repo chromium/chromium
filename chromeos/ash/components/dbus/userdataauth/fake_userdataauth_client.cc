@@ -768,6 +768,7 @@ void FakeUserDataAuthClient::StartAuthSession(
   std::string auth_session_id =
       base::StringPrintf(kAuthSessionIdTemplate, next_auth_session_id_++);
 
+  DCHECK_EQ(request.intent(), user_data_auth::AUTH_INTENT_DECRYPT);
   DCHECK_EQ(auth_sessions_.count(auth_session_id), 0u);
   AuthSessionData& session = auth_sessions_[auth_session_id];
   session.id = auth_session_id;

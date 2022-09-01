@@ -47,7 +47,8 @@ class AuthenticationDialogTest : public AshTestBase {
   }
 
   void StartAuthSession(std::unique_ptr<UserContext> user_context,
-                        bool ephemeral,
+                        bool /*ephemeral*/,
+                        AuthSessionIntent /*intent*/,
                         AuthPerformer::StartSessionCallback callback) {
     user_context->SetAuthFactorsData(
         AuthFactorsData{{cryptohome::KeyDefinition::CreateForPassword(

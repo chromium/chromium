@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/login/auth/public/auth_factors_data.h"
+#include "ash/components/login/auth/public/auth_session_intent.h"
 #include "ash/components/login/auth/public/auth_session_status.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
@@ -104,7 +105,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
                          absl::optional<CryptohomeError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
-                             result.GetCallback());
+                             AuthSessionIntent::kDecrypt, result.GetCallback());
   auto [user_exists, user_context, cryptohome_error] = result.Take();
 
   // Assert: no error, user context has AuthSession ID and the password factor.
@@ -137,7 +138,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
                          absl::optional<CryptohomeError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
-                             result.GetCallback());
+                             AuthSessionIntent::kDecrypt, result.GetCallback());
   auto [user_exists, user_context, cryptohome_error] = result.Take();
 
   // Assert: no error, user context has AuthSession ID and the kiosk factor.

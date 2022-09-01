@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/login/auth/auth_performer.h"
+#include "ash/components/login/auth/public/auth_session_intent.h"
 #include "ash/components/login/auth/public/cryptohome_error.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/user_context.h"
@@ -107,8 +108,10 @@ AuthenticationDialog::AuthenticationDialog(
   auto user_context = std::make_unique<UserContext>();
   user_context->SetAccountId(account_id);
 
+  // TODO(b/240147756): Choose the intent based on
+  // `InSessionAuthDialogController::Reason`.
   auth_performer_->StartAuthSession(
-      std::move(user_context), /*ephemeral=*/false,
+      std::move(user_context), /*ephemeral=*/false, AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthenticationDialog::OnAuthSessionStarted,
                      weak_factory_.GetWeakPtr()));
 }
@@ -177,8 +180,11 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
       // Auth session expired for some reason, start it again and reattempt
       // authentication.
+      // TODO(b/240147756): Choose the intent based on
+      // `InSessionAuthDialogController::Reason`.
       auth_performer_->StartAuthSession(
           std::move(user_context), /*ephemeral=*/false,
+          AuthSessionIntent::kDecrypt,
           base::BindOnce(&AuthenticationDialog::OnAuthSessionInvalid,
                          weak_factory_.GetWeakPtr()));
       return;
