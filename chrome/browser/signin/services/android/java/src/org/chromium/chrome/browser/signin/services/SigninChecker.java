@@ -111,7 +111,9 @@ public class SigninChecker implements AccountTrackerService.Observer {
                         resigninAfterAccountRename(newAccountName, oldSyncConsent);
                     } else {
                         // Sign out if the current primary account is not renamed
-                        mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
+                        mSigninManager.runAfterOperationInProgress(() -> {
+                            mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
+                        });
                     }
                 });
     }

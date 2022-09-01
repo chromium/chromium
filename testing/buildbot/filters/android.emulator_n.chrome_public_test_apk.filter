@@ -24,6 +24,3 @@
 
 # TODO(crbug/1349958)
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest.testShowCastOnIFrameElementInScrollIFrame
-
-# TODO(crbug/1349966)
--org.chromium.chrome.browser.signin.SyncConsentFragmentTest.testFRESyncConsentScreenWhenSelectedAccountIsRemoved
