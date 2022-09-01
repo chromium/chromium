@@ -2122,16 +2122,15 @@ TEST_F(AppListViewPeekingTest, TypingFullscreenToFullscreenSearch) {
 // Tests that in tablet mode, typing changes the state to fullscreen search.
 TEST_F(AppListViewTest, TypingTabletModeFullscreenSearch) {
   Initialize(true /*is_tablet_mode*/);
-  views::Textfield* search_box =
-      view_->app_list_main_view()->search_box_view()->search_box();
-
   Show();
-  search_box->SetText(std::u16string());
-  search_box->InsertText(
-      u"cool!",
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  SetTextInSearchBox(u"cool!");
+  EXPECT_EQ(ash::AppListViewState::kFullscreenSearch, view_->app_list_state());
 
-  ASSERT_EQ(ash::AppListViewState::kFullscreenSearch, view_->app_list_state());
+  view_->SetState(AppListViewState::kFullscreenAllApps);
+  // The state should also change to fullscreen search if the user enters white
+  // space query.
+  SetTextInSearchBox(u" ");
+  EXPECT_EQ(ash::AppListViewState::kFullscreenSearch, view_->app_list_state());
 }
 
 // Tests that pressing escape when in peeking closes the app list.
