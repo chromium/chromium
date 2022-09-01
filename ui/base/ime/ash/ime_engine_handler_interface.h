@@ -30,12 +30,17 @@ class KeyEvent;
 
 namespace ime {
 struct AssistiveWindowButton;
+enum class KeyEventHandledState {
+  kNotHandled = 0,
+  kHandledByIME = 1,
+};
 }  // namespace ime
 
 // A interface to handle the engine handler method call.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
  public:
-  using KeyEventDoneCallback = base::OnceCallback<void(bool)>;
+  using KeyEventDoneCallback =
+      base::OnceCallback<void(ui::ime::KeyEventHandledState)>;
 
   // A information about a focused text input field.
   // A type of each member is based on the html spec, but InputContext can be

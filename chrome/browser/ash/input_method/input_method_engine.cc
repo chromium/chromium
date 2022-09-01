@@ -577,7 +577,9 @@ void InputMethodEngine::KeyEventHandled(const std::string& extension_id,
     return;
   }
 
-  std::move(it->second.callback).Run(handled);
+  std::move(it->second.callback)
+      .Run(handled ? ui::ime::KeyEventHandledState::kHandledByIME
+                   : ui::ime::KeyEventHandledState::kNotHandled);
   pending_key_events_.erase(it);
 }
 
@@ -595,7 +597,8 @@ std::string InputMethodEngine::AddPendingKeyEvent(
 
 void InputMethodEngine::CancelPendingKeyEvents() {
   for (auto& event : pending_key_events_) {
-    std::move(event.second.callback).Run(false);
+    std::move(event.second.callback)
+        .Run(ui::ime::KeyEventHandledState::kNotHandled);
   }
   pending_key_events_.clear();
 }
@@ -669,7 +672,7 @@ void InputMethodEngine::Reset() {
 void InputMethodEngine::ProcessKeyEvent(const ui::KeyEvent& key_event,
                                         KeyEventDoneCallback callback) {
   if (key_event.IsCommandDown()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
     return;
   }
 
@@ -681,11 +684,12 @@ void InputMethodEngine::ProcessKeyEvent(const ui::KeyEvent& key_event,
         active_component_id_, key_event,
         base::BindOnce(
             [](base::Time start, int context_id, int* context_id_ptr,
-               KeyEventDoneCallback callback, bool handled) {
+               KeyEventDoneCallback callback,
+               ui::ime::KeyEventHandledState handled_state) {
               // If the input_context has changed, assume the key event is
               // invalid as a precaution.
               if (context_id == *context_id_ptr) {
-                std::move(callback).Run(handled);
+                std::move(callback).Run(handled_state);
               }
               UMA_HISTOGRAM_TIMES("InputMethod.KeyEventLatency",
                                   base::Time::Now() - start);

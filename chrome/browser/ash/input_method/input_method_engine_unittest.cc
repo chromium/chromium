@@ -106,7 +106,7 @@ class TestObserver : public StubInputMethodEngineObserver {
       const std::string& engine_id,
       const ui::KeyEvent& event,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
-    std::move(callback).Run(/* handled */ true);
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
   }
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override {

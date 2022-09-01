@@ -31,7 +31,7 @@ class TestObserver : public StubInputMethodEngineObserver {
       const std::string& engine_id,
       const ui::KeyEvent& event,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
-    std::move(callback).Run(/*handled=*/false);
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
   }
 };
 
@@ -42,7 +42,9 @@ class KeyProcessingWaiter {
                           base::Unretained(this));
   }
 
-  void OnKeyEventDone(bool consumed) { run_loop_.Quit(); }
+  void OnKeyEventDone(ui::ime::KeyEventHandledState handled_state) {
+    run_loop_.Quit();
+  }
 
   void Wait() { run_loop_.Run(); }
 

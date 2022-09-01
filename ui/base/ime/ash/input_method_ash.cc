@@ -150,8 +150,13 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   return ui::EventDispatchDetails();
 }
 
-void InputMethodAsh::ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled) {
+void InputMethodAsh::ProcessKeyEventDone(
+    ui::KeyEvent* event,
+    ui::ime::KeyEventHandledState handled_state) {
   DCHECK(event);
+  bool is_handled =
+      (handled_state == ui::ime::KeyEventHandledState::kHandledByIME);
+
   if (event->type() == ET_KEY_PRESSED) {
     if (is_handled) {
       // IME event has a priority to be handled, so that character composer

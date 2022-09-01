@@ -335,7 +335,7 @@ class ImeObserverChromeOS
     if (!ShouldForwardKeyEvent()) {
       // Continue processing the key event so that the physical keyboard can
       // still work.
-      std::move(callback).Run(false);
+      std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
       return;
     }
 

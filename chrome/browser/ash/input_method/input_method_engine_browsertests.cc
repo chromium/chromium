@@ -137,7 +137,7 @@ class InputMethodEngineBrowserTest
 
 class KeyEventDoneCallback {
  public:
-  explicit KeyEventDoneCallback(bool expected_argument)
+  explicit KeyEventDoneCallback(ui::ime::KeyEventHandledState expected_argument)
       : expected_argument_(expected_argument) {}
 
   KeyEventDoneCallback(const KeyEventDoneCallback&) = delete;
@@ -145,7 +145,7 @@ class KeyEventDoneCallback {
 
   ~KeyEventDoneCallback() = default;
 
-  void Run(bool consumed) {
+  void Run(ui::ime::KeyEventHandledState consumed) {
     if (consumed == expected_argument_)
       run_loop_.Quit();
   }
@@ -153,7 +153,7 @@ class KeyEventDoneCallback {
   void WaitUntilCalled() { run_loop_.Run(); }
 
  private:
-  bool expected_argument_;
+  ui::ime::KeyEventHandledState expected_argument_;
   base::RunLoop run_loop_;
 };
 
@@ -228,7 +228,9 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   ASSERT_TRUE(focus_listener.was_satisfied());
 
   // onKeyEvent should be fired if ProcessKeyEvent is called.
-  KeyEventDoneCallback callback(false);  // EchoBackIME doesn't consume keys.
+  KeyEventDoneCallback callback(
+      ui::ime::KeyEventHandledState::kNotHandled);  // EchoBackIME doesn't
+                                                    // consume keys.
   ExtensionTestMessageListener keyevent_listener("onKeyEvent");
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
@@ -310,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -326,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:Yes, Alt:No, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:true:false:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -342,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:Yes, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:true:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -358,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:Yes, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:A:KeyA:false:false:false:true:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -374,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:No, Caps:Yes");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:A:KeyA:false:false:false:false:true";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -390,7 +392,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:Yes, Alt:Yes, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:true:true:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -406,7 +408,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:Yes, Caps:Yes");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:true:true";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -422,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:Yes, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:false:true:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
@@ -467,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
   for (size_t i = 0; i < std::size(kMediaKeyCases); ++i) {
     SCOPED_TRACE(std::string("KeyDown, ") + kMediaKeyCases[i].code);
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value = base::StringPrintf(
         "onKeyEvent::true:keydown:%s:%s:false:false:false:false:false",
         kMediaKeyCases[i].key, kMediaKeyCases[i].code);

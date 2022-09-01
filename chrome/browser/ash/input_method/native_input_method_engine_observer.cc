@@ -794,17 +794,17 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
     ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     if (assistive_suggester_->OnKeyEvent(event)) {
-      std::move(callback).Run(true);
+      std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
       return;
     }
   }
   if (autocorrect_manager_->OnKeyEvent(event)) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
     return;
   }
   if (grammar_manager_->IsOnDeviceGrammarEnabled() &&
       grammar_manager_->OnKeyEvent(event)) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
     return;
   }
 
@@ -818,20 +818,20 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
       // Don't send dead keys to the system IME. Dead keys should be handled at
       // the OS level and not exposed to IMEs.
       if (event.GetDomKey().IsDeadKey()) {
-        std::move(callback).Run(true);
+        std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
         return;
       }
 
       mojom::PhysicalKeyEventPtr key_event =
           CreatePhysicalKeyEventFromKeyEvent(event);
       if (!key_event) {
-        std::move(callback).Run(false);
+        std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
         return;
       }
 
       // Hot switches to turn on/off certain IME features.
       if (IsFstEngine(engine_id) && autocorrect_manager_->DisabledByRule()) {
-        std::move(callback).Run(false);
+        std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
         return;
       }
 
@@ -847,14 +847,16 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
                  original_callback,
              mojom::KeyEventResult result) {
             std::move(original_callback)
-                .Run(result == mojom::KeyEventResult::kConsumedByIme);
+                .Run((result == mojom::KeyEventResult::kConsumedByIme)
+                         ? ui::ime::KeyEventHandledState::kHandledByIME
+                         : ui::ime::KeyEventHandledState::kNotHandled);
           },
           std::move(callback));
 
       input_method_->ProcessKeyEvent(std::move(key_event),
                                      std::move(process_key_event_callback));
     } else {
-      std::move(callback).Run(false);
+      std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
     }
   } else {
     ime_base_observer_->OnKeyEvent(engine_id, event, std::move(callback));

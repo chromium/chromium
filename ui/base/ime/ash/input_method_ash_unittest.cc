@@ -1026,7 +1026,8 @@ TEST_F(InputMethodAshKeyEventTest, KeyEventDelayResponseTest) {
   EXPECT_EQ(0, inserted_char_);
 
   // Do callback.
-  std::move(mock_ime_engine_handler_->last_passed_callback()).Run(true);
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   // Check the results
   EXPECT_EQ(1, input_method_ash_->process_key_event_post_ime_call_count());
@@ -1080,7 +1081,7 @@ TEST_F(InputMethodAshKeyEventTest, MultiKeyEventDelayResponseTest) {
   EXPECT_EQ(0, composition_text_.text[0]);
 
   // Do callback for first key event.
-  std::move(first_callback).Run(true);
+  std::move(first_callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(comp.text, composition_text_.text);
 
@@ -1094,7 +1095,8 @@ TEST_F(InputMethodAshKeyEventTest, MultiKeyEventDelayResponseTest) {
   EXPECT_EQ(0, inserted_char_);
 
   // Do callback for second key event.
-  mock_ime_engine_handler_->last_passed_callback().Run(false);
+  mock_ime_engine_handler_->last_passed_callback().Run(
+      ui::ime::KeyEventHandledState::kNotHandled);
 
   // Check the results for second key event.
   EXPECT_EQ(2, input_method_ash_->process_key_event_post_ime_call_count());
@@ -1116,7 +1118,8 @@ TEST_F(InputMethodAshKeyEventTest, StopPropagationTest) {
   ui::KeyEvent eventA(ui::ET_KEY_PRESSED, ui::VKEY_A, EF_NONE);
   eventA.set_character(L'A');
   input_method_ash_->DispatchKeyEvent(&eventA);
-  mock_ime_engine_handler_->last_passed_callback().Run(false);
+  mock_ime_engine_handler_->last_passed_callback().Run(
+      ui::ime::KeyEventHandledState::kNotHandled);
 
   const ui::KeyEvent* key_event =
       mock_ime_engine_handler_->last_processed_key_event();
@@ -1126,7 +1129,8 @@ TEST_F(InputMethodAshKeyEventTest, StopPropagationTest) {
   // Do key event with event not being stopped propagation.
   stop_propagation_post_ime_ = false;
   input_method_ash_->DispatchKeyEvent(&eventA);
-  mock_ime_engine_handler_->last_passed_callback().Run(false);
+  mock_ime_engine_handler_->last_passed_callback().Run(
+      ui::ime::KeyEventHandledState::kNotHandled);
 
   key_event = mock_ime_engine_handler_->last_processed_key_event();
   EXPECT_EQ(ui::VKEY_A, key_event->key_code());
@@ -1187,7 +1191,7 @@ TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterKeyEvent) {
   input_method_ash_->DispatchKeyEvent(&event);
   input_method_ash_->SetAutocorrectRange(gfx::Range(0, 1));
   std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
 }
@@ -1202,7 +1206,7 @@ TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterCommitText) {
       u"a", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   input_method_ash_->SetAutocorrectRange(gfx::Range(0, 1));
   std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(L'a', inserted_char_);
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
@@ -1223,7 +1227,7 @@ TEST_F(InputMethodAshKeyEventTest,
   ime.CommitText(
       u"cde", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(fake_text_input_client.text(), u"abcde");
   EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(5, 5));
@@ -1248,7 +1252,7 @@ TEST_F(InputMethodAshKeyEventTest,
   ime.CommitText(
       u"e", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(fake_text_input_client.text(), u"bceda");
   EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(3, 3));
@@ -1267,7 +1271,7 @@ TEST_F(InputMethodAshKeyEventTest, CommitTextEmptyRunsAfterKeyEvent) {
   ime.CommitText(
       u"", TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText);
   std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(fake_text_input_client.text(), u"");
   EXPECT_FALSE(fake_text_input_client.HasCompositionText());
@@ -1323,7 +1327,7 @@ TEST_F(InputMethodAshTest, CommitTextThenKeyEventOnlyInsertsOnce) {
   ui::KeyEvent key(ET_KEY_PRESSED, VKEY_A, EF_NONE);
   ime.DispatchKeyEvent(&key);
   std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(fake_text_input_client.text(), u"a");
 }
