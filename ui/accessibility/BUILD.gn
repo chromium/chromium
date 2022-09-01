@@ -402,6 +402,20 @@ if (is_win) {
   }
 }
 
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":accessibility_features_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//ui/accessibility/accessibility_features.cc" ]
+    template = "//ui/accessibility/android/java_templates/AccessibilityFeatures.java.tmpl"
+  }
+
+  # A minimal library used to expose accessibility features to webview.
+  android_library("accessibility_features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}
+
 test("accessibility_perftests") {
   testonly = true
   sources = [ "ax_node_position_perftest.cc" ]

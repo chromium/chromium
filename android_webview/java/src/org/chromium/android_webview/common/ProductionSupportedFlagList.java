@@ -22,6 +22,7 @@ import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
 import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
 
 /**
  * List of experimental features/flags supported for user devices. Add features/flags to this list
@@ -366,6 +367,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.CONSOLIDATE_METRICS_SERVICE_INITIAL_LOG_LOGIC,
                     "Controls whether the logic to build the initial UMA log is the same as"
                             + " other logs."),
+            Flag.baseFeature(AccessibilityFeatures.ABLATE_SEND_PENDING_ACCESSIBILITY_EVENTS,
+                    "Enable to increase the cost of SendPendingAccessibilityEvents"),
             Flag.baseFeature(ContentFeatures.WEBVIEW_THROTTLE_BACKGROUND_BEGIN_FRAME,
                     "Enable to throttle begin frames when webview is not being drawn"),
             // Add new commandline switches and features above. The final entry should have a

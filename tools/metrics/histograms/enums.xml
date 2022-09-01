@@ -61940,6 +61940,8 @@ from previous Chrome versions.
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>
   <int value="1480507924" label="EnableNetworkingInDiagnosticsApp:enabled"/>
+  <int value="1480940805"
+      label="AblateSendPendingAccessibilityEvents:disabled"/>
   <int value="1481562816" label="disable-password-link"/>
   <int value="1482039233" label="SearchSuggestionsOnLocalNtp:disabled"/>
   <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>
@@ -62780,6 +62782,7 @@ from previous Chrome versions.
   <int value="2004651603" label="NativeFileSystemAPI:disabled"/>
   <int value="2004829262" label="enable-webgl-draft-extensions"/>
   <int value="2005009211" label="OmniboxAdaptiveSuggestionsCount:disabled"/>
+  <int value="2005012791" label="AblateSendPendingAccessibilityEvents:enabled"/>
   <int value="2005245012" label="SecurityInterstitialsDarkMode:disabled"/>
   <int value="2005614493" label="tab-management-experiment-type-dill"/>
   <int value="2006413281"
