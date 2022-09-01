@@ -4,6 +4,8 @@
 
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
+#import "base/debug/stack_trace.h"
+#import "base/logging.h"
 #include "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -47,6 +49,8 @@
     description:(NSString*)description {
   if (!fail)
     return;
+
+  DLOG(WARNING) << "\n" << base::debug::StackTrace(/*count=*/15).ToString();
 
   NSString* reason =
       [NSString stringWithFormat:@"%@ is false: %@", expression, description];

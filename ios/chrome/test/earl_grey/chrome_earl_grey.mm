@@ -427,7 +427,7 @@ UIWindow* GetAnyKeyWindow() {
   };
 
   bool matched = WaitUntilConditionOrTimeout(timeout, condition);
-  GREYAssert(matched, errorDescription);
+  EG_TEST_HELPER_ASSERT_TRUE(matched, errorDescription);
 }
 
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher {
@@ -449,7 +449,7 @@ UIWindow* GetAnyKeyWindow() {
   };
 
   bool matched = WaitUntilConditionOrTimeout(timeout, condition);
-  GREYAssert(matched, errorDescription);
+  EG_TEST_HELPER_ASSERT_TRUE(matched, errorDescription);
 }
 
 - (NSString*)currentTabTitle {
