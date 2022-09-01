@@ -31,12 +31,6 @@ config("runtime_library") {
 
   include_dirs += [ "//buildtools/third_party/libc++" ]
 
-  # Work around a symbol conflict between GRPC and the Fuchsia SDK.
-  # TODO(crbug.com/1166970): Remove this when resolved.
-  if (is_fuchsia) {
-    defines += [ "_LIBCPP_NO_NATIVE_SEMAPHORES" ]
-  }
-
   # The Windows component build fails to link with libc++'s debug mode. See
   # https://crbug.com/923166#c33, https://crbug.com/923166#c44, and
   # https://llvm.org/PR41018.
