@@ -47,13 +47,10 @@ with host_paths.SysPath(host_paths.TRACING_PATH):
 
 with host_paths.SysPath(_ANDROID_UTILS_PATH, 0):
   from util import build_utils  # pylint: disable=import-error
-  from util import zipalign  # pylint: disable=import-error
 
 with host_paths.SysPath(_BUILD_UTILS_PATH, 0):
   from lib.results import result_sink  # pylint: disable=import-error
   from lib.results import result_types  # pylint: disable=import-error
-
-zipalign.ApplyZipFileZipAlignFix()
 
 # Captures an entire config from aapt output.
 _AAPT_CONFIG_PATTERN = r'config %s:(.*?)config [a-zA-Z-]+:'

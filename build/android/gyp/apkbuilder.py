@@ -21,9 +21,6 @@ from util import build_utils
 from util import diff_utils
 from util import zipalign
 
-# Input dex.jar files are zipaligned.
-zipalign.ApplyZipFileZipAlignFix()
-
 
 # Taken from aapt's Package.cpp:
 _NO_COMPRESS_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.wav', '.mp2',
