@@ -58,11 +58,14 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
 
   // Shows / hides the lens results and the loading view to avoid showing
   // loading artifacts. If the visible bool is false, show loading view else
-  // show lens results view.
-  void SetContentVisible(bool visible);
+  // show lens results view. Also enables/disables the new tab button depending
+  // if the lens results page is showing.
+  void SetContentAndNewTabButtonVisible(bool visible,
+                                        bool enable_new_tab_button);
 
   // content::WebContentsObserver:
-  void LoadProgressChanged(double progress) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,

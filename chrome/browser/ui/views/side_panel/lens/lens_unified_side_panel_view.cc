@@ -78,7 +78,7 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
   if (lens::features::GetEnableLensSidePanelFooter())
     CreateAndInstallFooter();
 
-  SetContentVisible(false);
+  SetContentAndNewTabButtonVisible(false, false);
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);
   Observe(web_contents);
@@ -105,14 +105,27 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
   browser_view_->side_panel_coordinator()->Close();
 }
 
-void LensUnifiedSidePanelView::LoadProgressChanged(double progress) {
-  bool is_content_visible = progress == 1.0;
-  SetContentVisible(is_content_visible);
-  if (launch_button_ != nullptr && is_content_visible) {
-    auto last_committed_url =
-        web_view_->GetWebContents()->GetLastCommittedURL();
-    launch_button_->SetEnabled(lens::IsValidLensResultUrl(last_committed_url));
-  }
+void LensUnifiedSidePanelView::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  auto last_committed_url = web_view_->GetWebContents()->GetLastCommittedURL();
+
+  // Since Lens Web redirects to the actual UI using HTML redirection, this
+  // method gets fired twice. This check ensures we only show the user the
+  // rendered page and not the redirect. It also ensures we immediately render
+  // any page that is not lens.google.com
+  // TODO(243935799): Cleanup this check once Lens Web no longer redirects
+  if (lens::ShouldPageBeVisible(last_committed_url))
+    SetContentAndNewTabButtonVisible(
+        true, lens::IsValidLensResultUrl(last_committed_url));
+}
+
+// Catches case where Chrome errors. I.e. no internet connection
+// TODO(243935799): Cleanup this listener once Lens Web no longer redirects
+void LensUnifiedSidePanelView::PrimaryPageChanged(content::Page& page) {
+  auto last_committed_url = web_view_->GetWebContents()->GetLastCommittedURL();
+
+  if (page.GetMainDocument().IsErrorDocument())
+    SetContentAndNewTabButtonVisible(
+        true, lens::IsValidLensResultUrl(last_committed_url));
 }
 
 bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
@@ -128,6 +141,7 @@ bool LensUnifiedSidePanelView::HandleContextMenu(
 
 void LensUnifiedSidePanelView::OpenUrl(const content::OpenURLParams& params) {
   side_panel_url_params_ = std::make_unique<content::OpenURLParams>(params);
+  SetContentAndNewTabButtonVisible(false, false);
   MaybeLoadURLWithParams();
 }
 
@@ -232,9 +246,14 @@ void LensUnifiedSidePanelView::OnBoundsChanged(
   MaybeLoadURLWithParams();
 }
 
-void LensUnifiedSidePanelView::SetContentVisible(bool visible) {
+void LensUnifiedSidePanelView::SetContentAndNewTabButtonVisible(
+    bool visible,
+    bool enable_new_tab_button) {
   web_view_->SetVisible(visible);
   loading_indicator_web_view_->SetVisible(!visible);
+
+  if (launch_button_ != nullptr)
+    launch_button_->SetEnabled(enable_new_tab_button);
 }
 
 LensUnifiedSidePanelView::~LensUnifiedSidePanelView() = default;
