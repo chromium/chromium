@@ -2009,7 +2009,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
     EXPECT_TRUE(NavigateToURL(shell(), url_b1));
 
     // Since the navigation is cross-site, the localStorage and sessionStorage
-    // modification (which is done at committ time) will happen before pagehide
+    // modification (which is done at commit time) will happen before pagehide
     // gets dispatched (at unload time), so the histogram stays the same.
     ExpectBucketCount(kActionAfterPagehideHistogramName,
                       ActionAfterPagehide::kLocalStorageModification, 1);
@@ -2025,7 +2025,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
       sessionStorage.getItem('foo');
     )"));
 
-    // 7) Navigate same-site to b.com/title2.html.
+    // 9) Navigate same-site to b.com/title2.html.
     EXPECT_TRUE(NavigateToURL(shell(), url_b2));
 
     // Even though the script runs after pagehide was dispatched, we did not
