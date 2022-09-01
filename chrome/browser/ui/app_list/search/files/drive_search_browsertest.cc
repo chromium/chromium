@@ -14,14 +14,10 @@ namespace app_list {
 
 // This class contains additional logic to set up DriveFS and enable testing for
 // Drive file search in the launcher.
-// Parameterized by ProductivityLauncher feature.
-class AppListDriveSearchBrowserTest
-    : public AppListSearchBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
  public:
   AppListDriveSearchBrowserTest() {
-    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
-                                       GetParam());
+    feature_list_.InitWithFeatures({ash::features::kProductivityLauncher}, {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -56,12 +52,8 @@ class AppListDriveSearchBrowserTest
       fake_drivefs_helpers_;
 };
 
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         AppListDriveSearchBrowserTest,
-                         ::testing::Bool());
-
 // Test that Drive files can be searched.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FileSearch) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FileSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -82,7 +74,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FileSearch) {
 }
 
 // Test that Drive folders can be searched.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FolderSearch) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FolderSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -102,7 +94,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FolderSearch) {
 }
 
 // Test that files are ordered based on access time.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, ResultOrdering) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =

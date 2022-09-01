@@ -35,30 +35,16 @@ using web_app::test::WithCrosapiParam;
 
 namespace app_list {
 
-// Parameterized depending on whether productivity launcher is enabled.
 class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
  public:
   HelpAppSearchBrowserTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kHelpAppLauncherSearch,
-         chromeos::features::kHelpAppDiscoverTab},
+         chromeos::features::kHelpAppDiscoverTab,
+         ash::features::kProductivityLauncher},
         {});
   }
 
-  explicit HelpAppSearchBrowserTestBase(bool for_productivity_launcher) {
-    if (for_productivity_launcher) {
-      scoped_feature_list_.InitWithFeatures(
-          {chromeos::features::kHelpAppLauncherSearch,
-           chromeos::features::kHelpAppDiscoverTab,
-           ash::features::kProductivityLauncher},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {chromeos::features::kHelpAppLauncherSearch,
-           chromeos::features::kHelpAppDiscoverTab},
-          {ash::features::kProductivityLauncher});
-    }
-  }
   ~HelpAppSearchBrowserTestBase() override = default;
 
   HelpAppSearchBrowserTestBase(const HelpAppSearchBrowserTestBase&) = delete;
@@ -83,10 +69,8 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
     SearchResultsChangedWaiter results_waiter(GetClient()->search_controller(),
                                               result_types);
     GetClient()->ShowAppList();
-    if (ash::features::IsProductivityLauncherEnabled()) {
-      ash::AppListTestApi().WaitForBubbleWindow(
-          /*wait_for_opening_animation=*/false);
-    }
+    ash::AppListTestApi().WaitForBubbleWindow(
+        /*wait_for_opening_animation=*/false);
     results_waiter.Wait();
   }
 
@@ -94,12 +78,9 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase,
-                                 public ::testing::WithParamInterface<bool> {
+class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase {
  public:
-  HelpAppSearchBrowserTest()
-      : HelpAppSearchBrowserTestBase(/*for_productivity_launcher=*/GetParam()) {
-  }
+  HelpAppSearchBrowserTest() = default;
 
   // HelpAppSearchBrowserTestBase:
   void SetUpOnMainThread() override {
@@ -111,73 +92,22 @@ class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase,
     // needs to be visible, which will only be the case if other continue
     // results exist - create search provider to inject continue section
     // results.
-    if (GetParam()) {
-      auto continue_section_provider =
-          std::make_unique<TestContinueFilesSearchProvider>();
-      continue_section_provider_ = continue_section_provider.get();
-      app_list::SearchController* search_controller =
-          AppListClientImpl::GetInstance()->search_controller();
-      size_t group_id = search_controller->AddGroup(10);
-      search_controller->AddProvider(group_id,
-                                     std::move(continue_section_provider));
-    }
+    auto continue_section_provider =
+        std::make_unique<TestContinueFilesSearchProvider>();
+    continue_section_provider_ = continue_section_provider.get();
+    app_list::SearchController* search_controller =
+        AppListClientImpl::GetInstance()->search_controller();
+    size_t group_id = search_controller->AddGroup(10);
+    search_controller->AddProvider(group_id,
+                                   std::move(continue_section_provider));
   }
 
   TestContinueFilesSearchProvider* continue_section_provider_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         HelpAppSearchBrowserTest,
-                         testing::Bool());
-
-// Test that clicking the Discover tab suggestion chip launches the Help app on
-// the Discover page.
-IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
-                       ClickingDiscoverTabSuggestionChipLaunchesHelpApp) {
-  ash::SystemWebAppManager::GetForTest(GetProfile())
-      ->InstallSystemAppsForTesting();
-  GetProfile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
-
-  ShowAppListAndWaitForHelpAppZeroStateResults();
-
-  ChromeSearchResult* result = FindResult("help-app://discover");
-  ASSERT_EQ(GetParam(), !result);
-  if (GetParam())
-    return;
-
-  EXPECT_EQ(result->title(), l10n_util::GetStringUTF16(
-                                 IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP));
-  EXPECT_EQ(result->metrics_type(), ash::HELP_APP_DISCOVER);
-
-  // Open the search result. This should open the help app at the expected url.
-  size_t num_browsers = chrome::GetTotalBrowserCount();
-  const GURL expected_url("chrome://help-app/discover");
-  content::TestNavigationObserver navigation_observer(expected_url);
-  navigation_observer.StartWatchingNewWebContents();
-
-  GetClient()->OpenSearchResult(
-      GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
-      /*launch_as_default=*/false);
-
-  navigation_observer.Wait();
-
-  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(expected_url, chrome::FindLastActive()
-                              ->tab_strip_model()
-                              ->GetActiveWebContents()
-                              ->GetVisibleURL());
-
-  // Clicking on the chip should stop showing it in the future.
-  EXPECT_EQ(0, GetProfile()->GetPrefs()->GetInteger(
-                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
-}
-
 // Test that Help App shows up as Release notes if pref shows we have some times
 // left to show it.
-IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
+IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                        AppListSearchHasReleaseNotesSuggestionChip) {
   ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
@@ -188,21 +118,17 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
 
   auto* result = FindResult("help-app://updates");
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->title(),
-            GetParam() ? l10n_util::GetStringUTF16(
-                             IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE)
-                       : l10n_util::GetStringUTF16(
-                             IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP));
+  EXPECT_EQ(result->title(), l10n_util::GetStringUTF16(
+                                 IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE));
   EXPECT_EQ(result->metrics_type(), ash::HELP_APP_UPDATES);
   // Displayed in first position.
   EXPECT_EQ(result->position_priority(), 1.0f);
-  EXPECT_EQ(result->display_type(),
-            GetParam() ? DisplayType::kContinue : DisplayType::kChip);
+  EXPECT_EQ(result->display_type(), DisplayType::kContinue);
 }
 
 // Test that the number of times the suggestion chip should show decreases when
 // the chip is shown.
-IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
+IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                        ReleaseNotesDecreasesTimesShownOnAppListOpen) {
   ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
@@ -217,8 +143,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
   ShowAppListAndWaitForHelpAppZeroStateResults();
 
   GetClient()->GetNotifier()->FireImpressionTimerForTesting(
-      GetParam() ? ash::AppListNotifier::Location::kContinue
-                 : ash::AppListNotifier::Location::kChip);
+      ash::AppListNotifier::Location::kContinue);
 
   const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
@@ -227,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
 
 // Test that the number of times the suggestion chip should show decreases when
 // the chip is shown in tablet mode.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     HelpAppSearchBrowserTest,
     ReleaseNotesDecreasesTimesShownOnAppListOpenInTabletMode) {
   ash::SystemWebAppManager::GetForTest(GetProfile())
@@ -250,8 +175,7 @@ IN_PROC_BROWSER_TEST_P(
   results_waiter.Wait();
 
   GetClient()->GetNotifier()->FireImpressionTimerForTesting(
-      GetParam() ? ash::AppListNotifier::Location::kContinue
-                 : ash::AppListNotifier::Location::kChip);
+      ash::AppListNotifier::Location::kContinue);
 
   const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
@@ -260,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Test that clicking the Release Notes suggestion chip launches the Help app on
 // the What's New page.
-IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
+IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                        ClickingReleaseNotesSuggestionChipLaunchesHelpApp) {
   ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
@@ -298,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
 }
 
 // Test that the help app provider provides list search results.
-IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
+IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                        HelpAppProviderProvidesListResults) {
   // Need this because it sets up the icon.
   ash::SystemWebAppManager::GetForTest(GetProfile())
