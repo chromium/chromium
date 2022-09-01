@@ -257,6 +257,7 @@ class TranslateMessageTest : public ::testing::Test {
     translate_message_->HandlePrimaryAction(env);
 
     // Simulate a dismissal triggered from the Java side.
+    EXPECT_CALL(*bridge_, ClearNativePointer(env));
     int prev_on_dismiss_callback_called_count =
         on_dismiss_callback_called_count_;
     translate_message_->HandleDismiss(
@@ -403,6 +404,7 @@ TEST_F(TranslateMessageTest, TranslateAndRevert) {
   }
 
   // Simulate a dismissal triggered by the Java side.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::TIMER));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -413,8 +415,11 @@ TEST_F(TranslateMessageTest, TranslateAndRevertMultipleTimes) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
-
   TranslateThenRevertThenDismiss(env, "fr", "en");
+
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
   TranslateThenRevertThenDismiss(env, "de", "es");
 }
 
@@ -476,7 +481,6 @@ TEST_F(TranslateMessageTest, DismissMessageOnDestruction) {
             env,
             static_cast<jint>(messages::DismissReason::DISMISSED_BY_FEATURE));
       }));
-
   EXPECT_CALL(*bridge_, ClearNativePointer(env));
 
   translate_message_.reset();
@@ -1118,6 +1122,26 @@ TEST_F(TranslateMessageTest, CreateTranslateMessageFailsThenSucceeds) {
   TranslateThenRevertThenDismiss(env, "fr", "en");
 }
 
+TEST_F(TranslateMessageTest, CreateTranslateMessageSucceedsThenFails) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // The first call to CreateTranslateMessage will succeed.
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
+  TranslateThenRevertThenDismiss(env, "fr", "en");
+
+  // The second call to CreateTranslateMessage will fail.
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(false));
+
+  // ShowMessage should not be called after CreateTranslateMessage fails.
+  EXPECT_CALL(*bridge_, ShowMessage(_, _, _, _, _)).Times(0);
+  translate_message_->ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE, "fr",
+                                        "en");
+}
+
 TEST_F(TranslateMessageTest, TranslationDismissedInProgressByTimer) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -1143,6 +1167,7 @@ TEST_F(TranslateMessageTest, TranslationDismissedInProgressByTimer) {
   EXPECT_EQ(0, translate_prefs_->GetTranslationIgnoredCount("fr"));
 
   // Dismiss the translate message while translation is still in-progress.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::TIMER));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -1177,6 +1202,7 @@ TEST_F(TranslateMessageTest, TranslationDismissedInProgressByGesture) {
   EXPECT_EQ(0, translate_prefs_->GetTranslationIgnoredCount("fr"));
 
   // Dismiss the translate message while translation is still in-progress.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -1204,6 +1230,8 @@ TEST_F(TranslateMessageTest, TranslationIgnored) {
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::TIMER));
 
@@ -1220,17 +1248,18 @@ TEST_F(TranslateMessageTest, TranslationIgnored) {
 TEST_F(TranslateMessageTest, TranslationNotIgnoredBecauseOverflowMenuOpened) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
+  // Show the translate message and simulate the overflow menu being opened.
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
-
-  // Show the translate message and simulate the overflow menu being opened.
   ShowBeforeTranslationMessage(env, "fr", "en");
+
   EXPECT_CALL(*bridge_, ConstructMenuItemArray(env, _, _, _, _, _))
       .WillOnce(Return(nullptr));
   translate_message_->BuildOverflowMenu(env);
 
   // Dismiss the translate message.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::TIMER));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -1240,9 +1269,13 @@ TEST_F(TranslateMessageTest, TranslationNotIgnoredBecauseOverflowMenuOpened) {
   EXPECT_EQ(0, translate_prefs_->GetTranslationIgnoredCount("fr"));
 
   // Show the translate message again, this time without interacting with it.
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   // Dismiss the translate message.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::TIMER));
   EXPECT_EQ(2, on_dismiss_callback_called_count_);
@@ -1274,6 +1307,7 @@ TEST_F(TranslateMessageTest, TranslationNotIgnoredBecauseErrorOccurred) {
                                         "en");
 
   // Dismiss the message.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::TIMER));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -1299,6 +1333,8 @@ TEST_F(TranslateMessageTest, TranslationDenied) {
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
 
@@ -1314,17 +1350,18 @@ TEST_F(TranslateMessageTest, TranslationDenied) {
 TEST_F(TranslateMessageTest, TranslationNotDeniedBecauseOverflowMenuOpened) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
+  // Show the translate message and simulate the overflow menu being opened.
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
-
-  // Show the translate message and simulate the overflow menu being opened.
   ShowBeforeTranslationMessage(env, "fr", "en");
+
   EXPECT_CALL(*bridge_, ConstructMenuItemArray(env, _, _, _, _, _))
       .WillOnce(Return(nullptr));
   translate_message_->BuildOverflowMenu(env);
 
   // Dismiss the translate message.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -1334,9 +1371,13 @@ TEST_F(TranslateMessageTest, TranslationNotDeniedBecauseOverflowMenuOpened) {
   EXPECT_EQ(0, translate_prefs_->GetTranslationDeniedCount("fr"));
 
   // Show the translate message again, this time without interacting with it.
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   // Dismiss the translate message.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
   EXPECT_EQ(2, on_dismiss_callback_called_count_);
@@ -1368,6 +1409,7 @@ TEST_F(TranslateMessageTest, TranslationNotDeniedBecauseErrorOccurred) {
                                         "en");
 
   // Dismiss the message.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -1487,6 +1529,7 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateDismissedInProgress) {
   translate_message_->HandlePrimaryAction(env);
 
   // Simulate the message being dismissed from Java.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
@@ -1494,6 +1537,9 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateDismissedInProgress) {
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
 
   // Finish the translation, causing the Message to pop up again.
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
   FinishTranslation(env, "fr", "en");
 
   EXPECT_TRUE(
@@ -1672,6 +1718,7 @@ TEST_F(TranslateMessageTest, AutoNeverTranslate) {
               env,
               static_cast<jint>(messages::DismissReason::DISMISSED_BY_FEATURE));
         }));
+    EXPECT_CALL(*bridge_, ClearNativePointer(env));
     translate_message_->HandlePrimaryAction(env);
 
     histogram_tester.ExpectUniqueSample(
@@ -1703,6 +1750,7 @@ TEST_F(TranslateMessageTest, AutoNeverTranslatePastMaximumTimes) {
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   // Dismiss the message.
+  EXPECT_CALL(*bridge_, ClearNativePointer(env));
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
