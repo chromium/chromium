@@ -4448,6 +4448,94 @@ TEST_F(DisplayTest, PixelMovingForegroundFilterTest) {
   }
 }
 
+TEST_F(DisplayTest, CanSkipRenderPass) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAllowUndamagedNonrootRenderPassToSkip);
+
+  id_allocator_.GenerateId();
+  const LocalSurfaceId local_surface_id(
+      id_allocator_.GetCurrentLocalSurfaceId());
+
+  // Set up first display.
+  SetUpSoftwareDisplay(RendererSettings());
+  StubDisplayClient client;
+  display_->Initialize(&client, manager_.surface_manager());
+  display_->SetLocalSurfaceId(local_surface_id, 1.f);
+
+  // Create frame sink for a sub surface.
+  TestSurfaceIdAllocator sub_surface_id1(kAnotherFrameSinkId);
+  auto sub_support1 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kAnotherFrameSinkId, /*is_root=*/false);
+
+  // generate render pass id for the nonroot render pass.
+  CompositorRenderPassId::Generator render_pass_id_generator;
+  auto id_1 = render_pass_id_generator.GenerateNextId();
+
+  const gfx::Size display_size(100, 100);
+  const gfx::Rect root_damage_rect(20, 20, 40, 40);
+  display_->Resize(display_size);
+  const gfx::Rect sub_surface_rect(5, 5, 60, 60);
+  const gfx::Rect sub_surface_damage_rect(10, 10, 30, 30);
+
+  for (size_t frame_num = 1; frame_num <= 3; ++frame_num) {
+    ResetDamageForTest();
+
+    // Nonroot render pass with id_1. No update for frame #3.
+    if (frame_num != 3) {
+      CompositorRenderPassList pass_list;
+      auto bd_pass = CompositorRenderPass::Create();
+      bd_pass->output_rect = sub_surface_rect;
+      bd_pass->damage_rect = sub_surface_damage_rect;
+      bd_pass->has_damage_from_contributing_content = true;
+      bd_pass->id = id_1;
+      pass_list.push_back(std::move(bd_pass));
+
+      CompositorFrame frame = CompositorFrameBuilder()
+                                  .SetRenderPassList(std::move(pass_list))
+                                  .Build();
+
+      sub_support1->SubmitCompositorFrame(sub_surface_id1.local_surface_id(),
+                                          std::move(frame));
+    }
+
+    // Root render pass
+    {
+      auto frame =
+          CompositorFrameBuilder()
+              .AddRenderPass(RenderPassBuilder(display_size)
+                                 .AddSurfaceQuad(sub_surface_rect,
+                                                 SurfaceRange(absl::nullopt,
+                                                              sub_surface_id1),
+                                                 {.allow_merge = false})
+                                 .SetDamageRect(root_damage_rect))
+              .Build();
+      support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
+
+      scheduler_->reset_swapped_for_test();
+      display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
+      EXPECT_TRUE(scheduler_->swapped());
+
+      // Number of skipped non-root render passes.
+      auto* skipped = display_->renderer_for_testing()
+                          ->GetLastSkippedRenderPassIdsForTesting();
+
+      if (frame_num != 3) {
+        // Whether the render pass can be skpped or not depends on the flag
+        // pass->has_damage_from_contributing_content and the render pass
+        // damage rect.
+        EXPECT_EQ(0u, skipped->size());
+      } else {
+        // No frame update for the sub surface. The nonroot render pass damage
+        // rect will be zero. pass->has_damage_from_contributing_content becomes
+        // false when there is no frame update. The associated non-render pass
+        // can be skipped.
+        EXPECT_EQ(1u, skipped->size());
+      }
+    }
+  }
+}
+
 class SkiaDelegatedInkRendererTest : public DisplayTest {
  public:
   void SetUp() override { EnablePrediction(); }

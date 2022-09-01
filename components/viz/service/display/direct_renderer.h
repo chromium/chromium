@@ -152,6 +152,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     return last_root_render_pass_scissor_rect_;
   }
 
+  base::flat_set<AggregatedRenderPassId>*
+  GetLastSkippedRenderPassIdsForTesting() {
+    return &skipped_render_pass_ids_;
+  }
+
   virtual DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer(
       bool create_if_necessary);
   virtual void SetDelegatedInkMetadata(
@@ -318,6 +323,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // TODO(weiliangc): For SoftwareRenderer and tests where overlay is not used,
   // use OverlayProcessorStub so this pointer is never null.
   raw_ptr<OverlayProcessorInterface> overlay_processor_;
+
+  // If the non-root render pass and its embedded child render passes are not
+  // damaged, skip the rendering.
+  const bool allow_undamaged_nonroot_render_pass_to_skip_;
 
   // Whether it's valid to SwapBuffers with an empty rect. Trivially true when
   // using partial swap.

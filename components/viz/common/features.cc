@@ -174,6 +174,11 @@ const base::Feature kCanSkipRenderPassOverlay{"CanSkipRenderPassOverlay",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// TODO(crbug.com/1357744): Solve the vulkan flakiness issue before enabling
+// this on Linux.
+const base::Feature kAllowUndamagedNonrootRenderPassToSkip{
+    "AllowUndamagedNonrootRenderPassToSkip", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);

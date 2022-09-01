@@ -21,6 +21,7 @@
 #include "cc/base/math_util.h"
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -86,7 +87,9 @@ DirectRenderer::DirectRenderer(const RendererSettings* settings,
       debug_settings_(debug_settings),
       output_surface_(output_surface),
       resource_provider_(resource_provider),
-      overlay_processor_(overlay_processor) {
+      overlay_processor_(overlay_processor),
+      allow_undamaged_nonroot_render_pass_to_skip_(base::FeatureList::IsEnabled(
+          features::kAllowUndamagedNonrootRenderPassToSkip)) {
   DCHECK(output_surface_);
 }
 
@@ -347,6 +350,7 @@ void DirectRenderer::DrawFrame(
   // Only reshape when we know we are going to draw. Otherwise, the reshape
   // can leave the window at the wrong size if we never draw and the proper
   // viewport size is never set.
+  skipped_render_pass_ids_.clear();
   bool needs_full_frame_redraw = false;
   auto display_transform = output_surface_->GetDisplayTransform();
   OutputSurface::ReshapeParams reshape_params;
@@ -414,7 +418,6 @@ void DirectRenderer::DrawFrame(
   current_frame()->render_passes_in_draw_order = nullptr;
   current_frame()->root_render_pass = nullptr;
 
-  skipped_render_pass_ids_.clear();
   render_passes_in_draw_order->clear();
   render_pass_filters_.clear();
   render_pass_backdrop_filters_.clear();
@@ -721,25 +724,18 @@ bool DirectRenderer::CanSkipRenderPass(
   if (render_pass == current_frame()->root_render_pass)
     return false;
 
-  // TODO(crbug.com/783275): It's possible to skip a child RenderPass if damage
-  // does not overlap it, since that means nothing has changed:
-  //   ComputeScissorRectForRenderPass(render_pass).IsEmpty()
-  // However that caused crashes where the RenderPass' texture was not present
-  // (never seen the RenderPass before, or the texture was deleted when not used
-  // for a frame). It could avoid skipping if there is no texture present, which
-  // is what was done for a while, but this seems to papering over a missing
-  // damage problem, or we're failing to understand the system wholey.
-  // If attempted again this should probably CHECK() that the texture exists,
-  // and attempt to figure out where the new RenderPass texture without damage
-  // is coming from.
-
   // If the RenderPass wants to be cached, then we only draw it if we need to.
   // When damage is present, then we can't skip the RenderPass. Or if the
   // texture does not exist (first frame, or was deleted) then we can't skip
   // the RenderPass.
-  if (render_pass->cache_render_pass) {
-    if (render_pass->has_damage_from_contributing_content)
+  if (render_pass->cache_render_pass ||
+      allow_undamaged_nonroot_render_pass_to_skip_) {
+    // TODO(crbug.com/1346502): Fix CopyOutputRequest and allow the render pass
+    // with copy request to skip.
+    if (render_pass->has_damage_from_contributing_content ||
+        !render_pass->copy_requests.empty()) {
       return false;
+    }
     return IsRenderPassResourceAllocated(render_pass->id);
   }
 
