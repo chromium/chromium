@@ -52,6 +52,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.CallbackHelper;
@@ -87,6 +88,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
+import org.chromium.components.policy.PolicyService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -172,6 +174,7 @@ public class FirstRunIntegrationTest {
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunActivity.setObserverForTest(mTestObserver);
+        FirstRunActivityBase.setPolicyLoadListenerFactoryForTesting(null);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(true);
 
         mInstrumentation = InstrumentationRegistry.getInstrumentation();
@@ -199,6 +202,7 @@ public class FirstRunIntegrationTest {
         EnterpriseInfo.setInstanceForTest(null);
         AccountManagerFacadeProvider.resetInstanceForTests();
         FirstRunFlowSequencer.setDelegateForTesting(null);
+        ToSAndUMAFirstRunFragment.setObserverForTesting(null);
     }
 
     private ActivityMonitor getMonitor(Class activityClass) {
@@ -420,11 +424,11 @@ public class FirstRunIntegrationTest {
         CriteriaHelper.pollInstrumentationThread(() -> chromeLauncherActivity.isFinishing());
     }
 
-    // TODO(http://crbug.com/1240516): Add test cases for the new Welcome screen that includes the
+    // TODO(https://crbug.com/1240516): Add test cases for the new Welcome screen that includes the
     // Sign-in promo once the sign-in components can be disabled by policy.
 
-    // TODO(http://crbug.com/1254470): Add test cases for ToS page disabled by policy after the user
-    // accepted ToS and aborted first run.
+    // TODO(https://crbug.com/1254470): Add test cases for ToS page disabled by policy after the
+    // user accepted ToS and aborted first run.
 
     @Test
     @MediumTest
@@ -779,7 +783,7 @@ public class FirstRunIntegrationTest {
         initializePreferences(testCase);
 
         // In this specific setup the policy loading call will be notified before ToS fragment is
-        // finishing initialization, as FRE might attach to the PolicyLoaderListener first. To make
+        // finishing initialization, as FRE might attach to the PolicyLoadListener first. To make
         // sure no race condition happen, use TosAndUmaObserver to make sure the call is invoked.
         CallbackHelper tosPagePolicyLoadingListener = new CallbackHelper();
         ToSAndUMAFirstRunFragment.setObserverForTesting(new Observer() {
@@ -1226,6 +1230,52 @@ public class FirstRunIntegrationTest {
         waitForActivity(ChromeTabbedActivity.class);
     }
 
+    /**
+     * Inspired by http://crbug.com/1320171, covers the case when the user interacted with the UMA
+     * checkbox before the policy service became available.
+     */
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    public void testDelayedPolicyInitializationRespectsMetricsAndCrashReportingSelection()
+            throws Exception {
+        initializePreferences(new FirstRunPagesTestCase());
+
+        DelayedPolicyLoadListenerFactory delayedPolicyLoadListenerFactory =
+                new DelayedPolicyLoadListenerFactory();
+        FirstRunActivityBase.setPolicyLoadListenerFactoryForTesting(
+                delayedPolicyLoadListenerFactory);
+
+        CallbackHelper onPolicyServiceInitializedCallback = new CallbackHelper();
+        ToSAndUMAFirstRunFragment.setObserverForTesting(new Observer() {
+            @Override
+            public void onNativeInitialized() {}
+
+            @Override
+            public void onPolicyServiceInitialized() {
+                onPolicyServiceInitializedCallback.notifyCalled();
+            }
+
+            @Override
+            public void onHideLoadingUIComplete() {}
+        });
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        FirstRunNavigationHelper helper =
+                new FirstRunNavigationHelper(firstRunActivity).ensurePagesCreationSucceeded();
+
+        helper.clickOnMetricsAndCrashReportingCheckbox();
+        helper.ensureMetricsAndCrashReportingDisabled();
+
+        int onPolicyServiceInitializedCallCount = onPolicyServiceInitializedCallback.getCallCount();
+        ((DelayedPolicyLoadListener) delayedPolicyLoadListenerFactory.get()).runSavedCallback();
+        onPolicyServiceInitializedCallback.waitForCallback(
+                "onPolicyServiceInitialized expected to be called.",
+                onPolicyServiceInitializedCallCount);
+        helper.ensureMetricsAndCrashReportingDisabled();
+    }
+
     private void clickButton(final Activity activity, final int id, final String message) {
         CriteriaHelper.pollUiThread(() -> {
             View view = activity.findViewById(id);
@@ -1456,6 +1506,22 @@ public class FirstRunIntegrationTest {
             return this;
         }
 
+        protected FirstRunNavigationHelper clickOnMetricsAndCrashReportingCheckbox()
+                throws Exception {
+            ensureTermsOfServiceIsCurrentPage();
+            clickButton(mFirstRunActivity, R.id.send_report_checkbox,
+                    "Failed to click on send report checkbox.");
+            return this;
+        }
+
+        protected FirstRunNavigationHelper ensureMetricsAndCrashReportingDisabled() {
+            CheckBox umaCheckbox = mLastActivity.findViewById(R.id.send_report_checkbox);
+            Assert.assertNotNull("UMA checkbox should not be null.", umaCheckbox);
+            CriteriaHelper.pollUiThread(
+                    () -> !umaCheckbox.isChecked(), "UMA reporting should be disabled.");
+            return this;
+        }
+
         protected FirstRunNavigationHelper waitForCurrentFragmentToMatch(
                 String failureReason, Matcher<Object> matcher) {
             CriteriaHelper.pollUiThread(
@@ -1494,6 +1560,52 @@ public class FirstRunIntegrationTest {
         @Override
         public boolean shouldShowSearchEnginePage() {
             return mTestCase.showSearchPromo();
+        }
+    }
+
+    /**
+     * Fake {@link PolicyLoadListener} that captures invocations of {@code
+     * PolicyLoadListener#onAvailable} and delays them to until {@link runSavedCallback} is called.
+     */
+    private static class DelayedPolicyLoadListener extends PolicyLoadListener {
+        private List<Callback<Boolean>> mSavedCallbacks = new ArrayList<>();
+
+        public DelayedPolicyLoadListener(FirstRunAppRestrictionInfo appRestrictionInfo,
+                OneshotSupplier<PolicyService> policyServiceSupplier) {
+            super(appRestrictionInfo, policyServiceSupplier);
+        }
+
+        @Override
+        public Boolean onAvailable(Callback<Boolean> callback) {
+            mSavedCallbacks.add(callback);
+            return null;
+        }
+
+        /** Fires all callbacks saved in {@link mSavedCallbacks}. */
+        public void runSavedCallback() {
+            mSavedCallbacks.forEach(callback
+                    -> TestThreadUtils.runOnUiThreadBlocking(() -> callback.onResult(true)));
+        }
+    }
+
+    /**
+     * Allows injection of {@link DelayedPolicyLoadListener} into {@link
+     * ToSAndUMAFirstRunFragment}.
+     */
+    private class DelayedPolicyLoadListenerFactory
+            implements FirstRunActivityBase.PolicyLoadListenerFactory {
+        private PolicyLoadListener mInjectedPolicyLoadListener;
+
+        @Override
+        public PolicyLoadListener inject(FirstRunAppRestrictionInfo appRestrictionInfo,
+                OneshotSupplier<PolicyService> policyServiceSupplier) {
+            mInjectedPolicyLoadListener =
+                    new DelayedPolicyLoadListener(appRestrictionInfo, policyServiceSupplier);
+            return mInjectedPolicyLoadListener;
+        }
+
+        public PolicyLoadListener get() {
+            return mInjectedPolicyLoadListener;
         }
     }
 }
