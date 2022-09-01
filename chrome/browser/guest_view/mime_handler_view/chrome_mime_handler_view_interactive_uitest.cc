@@ -19,6 +19,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
@@ -152,10 +153,10 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewInteractiveUITest,
 
   // Make sure we have a guestviewmanager.
   auto* embedder_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
-  auto* guest_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  auto* guest_rwh =
-      guest_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+
+  auto* guest_rwh = guest_view->GetGuestMainFrame()->GetRenderWidgetHost();
 
   // Wait for fullscreen mode.
   fullscreen_waiter.Wait();
@@ -163,14 +164,20 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewInteractiveUITest,
 
   // Send a touch to focus the guest. We can't directly test that the correct
   // RenderWidgetHost got focus, but the wait seems to work.
-  SimulateMouseClick(guest_contents, 0, blink::WebMouseEvent::Button::kLeft);
+  content::WaitForHitTestData(guest_view->GetGuestMainFrame());
+  SimulateMouseClickAt(
+      embedder_contents, 0, blink::WebMouseEvent::Button::kLeft,
+      guest_rwh->GetView()->TransformPointToRootCoordSpace(gfx::Point(7, 7)));
+
   while (!IsRenderWidgetHostFocused(guest_rwh)) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
-  EXPECT_EQ(guest_contents, content::GetFocusedWebContents(embedder_contents));
+
+  EXPECT_EQ(embedder_contents->GetFocusedFrame(),
+            guest_view->GetGuestMainFrame());
 
   // Send <esc> to exit fullscreen.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
