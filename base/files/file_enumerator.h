@@ -84,6 +84,14 @@ class BASE_EXPORT FileEnumerator {
     FILES = 1 << 0,
     DIRECTORIES = 1 << 1,
     INCLUDE_DOT_DOT = 1 << 2,
+
+    // Report only the names of entries and not their type, size, or
+    // last-modified time. May only be used for non-recursive enumerations, and
+    // implicitly includes both files and directories (neither of which may be
+    // specified). When used, an enumerator's `GetInfo()` method must not be
+    // called.
+    NAMES_ONLY = 1 << 3,
+
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     SHOW_SYM_LINKS = 1 << 4,
 #endif
@@ -163,6 +171,7 @@ class BASE_EXPORT FileEnumerator {
   // particular, the GetLastModifiedTime() for the .. directory is 1601-01-01
   // on Fuchsia (https://crbug.com/1106172) and is equal to the last modified
   // time of the current directory on Windows (https://crbug.com/1119546).
+  // Must not be used with FileType::NAMES_ONLY.
   FileInfo GetInfo() const;
 
   // Once |Next()| returns an empty path, enumeration has been terminated. If
@@ -203,7 +212,7 @@ class BASE_EXPORT FileEnumerator {
 #endif
   FilePath root_path_;
   const bool recursive_;
-  const int file_type_;
+  int file_type_;
   FilePath::StringType pattern_;
   const FolderSearchPolicy folder_search_policy_;
   const ErrorPolicy error_policy_;

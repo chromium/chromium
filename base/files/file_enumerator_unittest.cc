@@ -611,4 +611,23 @@ TEST(FileEnumerator, GetInfoDotDot) {
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 
+TEST(FileEnumerator, OnlyName) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const FilePath& path = temp_dir.GetPath();
+
+  // Add a directory and a file.
+  ScopedTempDir temp_subdir;
+  ASSERT_TRUE(temp_subdir.CreateUniqueTempDirUnderPath(path));
+  const FilePath& subdir = temp_subdir.GetPath();
+  const FilePath dummy_file = path.AppendASCII("a_file.txt");
+  ASSERT_TRUE(CreateDummyFile(dummy_file));
+
+  auto found_paths = RunEnumerator(
+      path, /*recursive=*/false, FileEnumerator::FileType::NAMES_ONLY,
+      FilePath::StringType(), FileEnumerator::FolderSearchPolicy::MATCH_ONLY);
+  EXPECT_THAT(found_paths, UnorderedElementsAre(subdir, dummy_file));
+}
+
 }  // namespace base

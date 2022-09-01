@@ -30,8 +30,11 @@ TestComponentContextForProcess::TestComponentContextForProcess(
 
   // Push all services from /svc to the test context if requested.
   if (initial_state == InitialState::kCloneAll) {
-    base::FileEnumerator file_enum(base::FilePath("/svc"), false,
-                                   base::FileEnumerator::FILES);
+    // Calling stat() in /svc is problematic; see https://fxbug.dev/100207. Tell
+    // the enumerator not to recurse, to return both files and directories, and
+    // to report only the names of entries.
+    base::FileEnumerator file_enum(base::FilePath("/svc"), /*recursive=*/false,
+                                   base::FileEnumerator::NAMES_ONLY);
     for (auto file = file_enum.Next(); !file.empty(); file = file_enum.Next()) {
       AddService(file.BaseName().value());
     }

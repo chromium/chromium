@@ -123,6 +123,13 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
   // INCLUDE_DOT_DOT must not be specified if recursive.
   DCHECK(!(recursive && (INCLUDE_DOT_DOT & file_type_)));
 
+  if (file_type_ & FileType::NAMES_ONLY) {
+    DCHECK(!recursive_);
+    DCHECK_EQ(file_type_ & ~(FileType::NAMES_ONLY | FileType::INCLUDE_DOT_DOT),
+              0);
+    file_type_ |= (FileType::FILES | FileType::DIRECTORIES);
+  }
+
   if (recursive && ShouldTrackVisitedDirectories(file_type_)) {
     stat_wrapper_t st;
     GetStat(root_path, false, &st);
@@ -201,6 +208,13 @@ FilePath FileEnumerator::Next() {
       if (!recursive_ && !is_pattern_matched)
         continue;
 
+      // If the caller only wants the names of files and directories, then
+      // continue without populating `info` further.
+      if (file_type_ & FileType::NAMES_ONLY) {
+        directory_entries_.push_back(std::move(info));
+        continue;
+      }
+
       const FilePath full_path = root_path_.Append(info.filename_);
       GetStat(full_path, ShouldShowSymLinks(file_type_), &info.stat_);
 
@@ -235,6 +249,7 @@ FilePath FileEnumerator::Next() {
 }
 
 FileEnumerator::FileInfo FileEnumerator::GetInfo() const {
+  DCHECK(!(file_type_ & FileType::NAMES_ONLY));
   return directory_entries_[current_directory_entry_];
 }
 
