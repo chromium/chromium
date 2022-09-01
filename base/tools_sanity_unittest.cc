@@ -45,7 +45,7 @@ const base::subtle::Atomic32 kMagicValue = 42;
 #define HARMFUL_ACCESS_IS_NOOP
 #endif
 
-void DoReadUninitializedValue(char *ptr) {
+void DoReadUninitializedValue(volatile char *ptr) {
   // Comparison with 64 is to prevent clang from optimizing away the
   // jump -- valgrind only catches jumps and conditional moves, but clang uses
   // the borrow flag if the condition is just `*ptr == '\0'`.  We no longer
@@ -57,7 +57,7 @@ void DoReadUninitializedValue(char *ptr) {
   }
 }
 
-void ReadUninitializedValue(char *ptr) {
+void ReadUninitializedValue(volatile char *ptr) {
 #if defined(MEMORY_SANITIZER)
   EXPECT_DEATH(DoReadUninitializedValue(ptr),
                "use-of-uninitialized-value");
