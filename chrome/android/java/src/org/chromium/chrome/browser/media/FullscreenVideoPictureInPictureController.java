@@ -17,6 +17,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
@@ -132,11 +133,10 @@ public class FullscreenVideoPictureInPictureController {
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
 
-        // TODO(crbug.com/1345586): This should be >= rather than > .  However, it looks like
-        // auto-enter might be causing a very bad display issue on S, which local ToT builds don't
-        // replicate even though canary does.  Turning off temporarily to see if canary builds start
-        // working, or if auto-enter isn't actually the problem.
-        mListenForAutoEnterability = Build.VERSION.SDK_INT > Build.VERSION_CODES.S;
+        // TODO(crbug.com/1345586): This should be Build.VERSION.SDK_INT > Build.VERSION_CODES.S,
+        // rather than checking for T or later.  However, auto-enter seems to be causing a very bad
+        // display issue on S (31 or 32), so turn this off for S.
+        mListenForAutoEnterability = BuildInfo.isAtLeastT();
         if (mListenForAutoEnterability) addObserversIfNeeded();
     }
 
