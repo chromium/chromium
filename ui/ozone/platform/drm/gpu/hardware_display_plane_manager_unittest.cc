@@ -20,6 +20,7 @@
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
+#include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -49,6 +50,7 @@ constexpr uint32_t kCrtcIdPropId = 2000;
 constexpr uint32_t kTypePropId = 3010;
 constexpr uint32_t kInFormatsPropId = 3011;
 constexpr uint32_t kPlaneCtmId = 3012;
+constexpr uint32_t kRotationPropId = 3013;
 
 constexpr uint32_t kInFormatsBlobPropId = 400;
 
@@ -155,6 +157,7 @@ void HardwareDisplayPlaneManagerTest::InitializeDrmState(
       // Defines some optional properties we use for convenience.
       {kTypePropId, "type"},
       {kInFormatsPropId, "IN_FORMATS"},
+      {kRotationPropId, "rotation"},
   };
 
   // Always add an additional cursor plane.
@@ -1414,6 +1417,58 @@ TEST_F(HardwareDisplayPlaneManagerPlanesReadyTest,
   EXPECT_TRUE(callback_called);
 }
 
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
+  fake_drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
+      kInFormatsBlobPropId, {DRM_FORMAT_NV12}, {}));
+
+  InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
+  fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                             plane_properties_, property_names_, use_atomic_);
+
+  {
+    ui::DrmOverlayPlaneList assigns;
+    // Create as NV12 since this is required for rotation support.
+    std::unique_ptr<ui::GbmBuffer> buffer =
+        fake_drm_->gbm_device()->CreateBuffer(
+            DRM_FORMAT_NV12, kDefaultBufferSize, GBM_BO_USE_SCANOUT);
+    scoped_refptr<ui::DrmFramebuffer> framebuffer_original =
+        ui::DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
+                                           kDefaultBufferSize, {}, true);
+    assigns.push_back(ui::DrmOverlayPlane(framebuffer_original, nullptr));
+    assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
+
+    fake_drm_->plane_manager()->BeginFrame(&state_);
+    // Rotation should be supported for this buffer as it is the original buffer
+    // with the original modifiers.
+    EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+        &state_, assigns, crtc_properties_[0].id));
+
+    gfx::GpuFenceHandle release_fence;
+    scoped_refptr<ui::PageFlipRequest> page_flip_request =
+        base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
+                                                   &release_fence));
+  }
+
+  {
+    ui::DrmOverlayPlaneList assigns;
+    assigns.clear();
+    fake_drm_->plane_manager()->BeginFrame(&state_);
+    // The test buffer would not have accurate modifiers and therefore should
+    // fail rotation.
+    std::unique_ptr<ui::GbmBuffer> buffer =
+        fake_drm_->gbm_device()->CreateBuffer(
+            DRM_FORMAT_NV12, kDefaultBufferSize, GBM_BO_USE_SCANOUT);
+    scoped_refptr<ui::DrmFramebuffer> framebuffer_non_original =
+        ui::DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
+                                           kDefaultBufferSize, {}, false);
+    assigns.push_back(ui::DrmOverlayPlane(framebuffer_non_original, nullptr));
+    assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
+    EXPECT_FALSE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+        &state_, assigns, crtc_properties_[0].id));
+  }
+}
+
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
@@ -1491,7 +1546,8 @@ class HardwareDisplayPlaneAtomicMock : public ui::HardwareDisplayPlaneAtomic {
                         const gfx::Rect& src_rect,
                         const gfx::OverlayTransform transform,
                         int in_fence_fd,
-                        uint32_t format_fourcc) override {
+                        uint32_t format_fourcc,
+                        bool is_original_buffer) override {
     framebuffer_ = framebuffer;
     return true;
   }

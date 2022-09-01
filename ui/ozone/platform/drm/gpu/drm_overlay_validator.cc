@@ -69,9 +69,11 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
   if (!buffer)
     return nullptr;
 
+  constexpr bool kIsOriginalBuffer = false;
   scoped_refptr<DrmFramebuffer> drm_framebuffer =
       DrmFramebuffer::AddFramebuffer(drm_device, buffer.get(),
-                                     buffer->GetSize(), modifiers);
+                                     buffer->GetSize(), modifiers,
+                                     kIsOriginalBuffer);
   if (!drm_framebuffer)
     return nullptr;
 
