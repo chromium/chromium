@@ -6842,9 +6842,6 @@ crbug.com/1356118 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonym
 crbug.com/1296584 http/tests/devtools/indexeddb/database-names.js [ Skip ]
 crbug.com/1296584 http/tests/devtools/indexeddb/upgrade-events.js [ Skip ]
 
-# Sheriff 2022-08-30
-crbug.com/1357621 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html [ Failure Pass Timeout ]
-
 crbug.com/1358051 external/wpt/longtask-timing/containerTypes.html [ Failure Pass ]
 
 # TODO(crbug.com/1358147): Re-enable this test
