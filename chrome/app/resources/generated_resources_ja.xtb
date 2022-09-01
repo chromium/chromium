@@ -1000,6 +1000,7 @@
 <translation id="1925017091976104802">貼り付けるには、<ph name="MODIFIER_KEY_DESCRIPTION" /> キーを押してください</translation>
 <translation id="1925021887439448749">カスタムのウェブアドレスを入力</translation>
 <translation id="1925124445985510535">安全確認を <ph name="TIME" /> に実行しました</translation>
+<translation id="192564025059434655">古いバージョンの Chrome アプリを Windows デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうかは次の手順で確認できます。</translation>
 <translation id="1926339101652878330">これらの設定は会社のポリシーによって制御されています。詳しくは管理者にお尋ねください。</translation>
 <translation id="1927632033341042996">指紋 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">画面ロックの PIN</translation>
@@ -2496,6 +2497,7 @@
 <translation id="3348131053948466246">絵文字の候補です。上または下矢印キーで移動し、Enter キーで挿入します。</translation>
 <translation id="3349933790966648062">メモリ使用量</translation>
 <translation id="3353786022389205125">[スリープから復帰するときにロック画面を表示する] をオンにしてから、もう一度お試しください</translation>
+<translation id="3354768182971982851">古いバージョンの Chrome アプリを Mac デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうかは次の手順で確認できます。</translation>
 <translation id="3354972872297836698">デバイス <ph name="DEVICE_NAME" />　とペア設定できませんでした。デバイスを選択してもう一度お試しください</translation>
 <translation id="3355936511340229503">接続エラー</translation>
 <translation id="3356469410714175391">（仮想カードが有効）</translation>
@@ -3101,6 +3103,7 @@
 <translation id="3918972485393593704">Google に詳細なレポートを送信する</translation>
 <translation id="3919145445993746351">お使いのどのパソコンでも同じ拡張機能を使用するには、同期を有効にします</translation>
 <translation id="3919229493046408863">周辺にデバイスがあるときに通知をオフにする</translation>
+<translation id="3919262972282962508">古いバージョンの Chrome アプリを Mac デバイスで使用できるのは、2022 年 12 月までです。管理者にお問い合わせのうえ、新しいバージョンに更新するか、アプリを削除してください。</translation>
 <translation id="3919798653937160644">このウィンドウで開いたページはブラウザの履歴に記録されません。また、開いているゲスト ウィンドウをすべて閉じると、Cookie などのデータはパソコンから消去されます。ただし、ダウンロードしたファイルは保持されます。</translation>
 <translation id="3920504717067627103">証明書ポリシー</translation>
 <translation id="3920909973552939961">支払いハンドラのインストールを許可しないサイト</translation>
@@ -5586,6 +5589,7 @@
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試行</translation>
 <translation id="6374635887697228982">割引情報を取得しますか？</translation>
+<translation id="637642201764944055">古いバージョンの Chrome アプリを Linux デバイスで使用できるのは、2022 年 12 月までです。管理者にお問い合わせのうえ、新しいバージョンに更新するか、アプリを削除してください。</translation>
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
 <translation id="6378392501584240055">Wi-Fi ネットワークを開く</translation>
 <translation id="6380143666419481200">同意して続行</translation>
@@ -6062,6 +6066,7 @@
 <translation id="6826872289184051766">USB を使って確認</translation>
 <translation id="6827121912381363404">すべての拡張機能に <ph name="PERMITTED_SITE" /> の読み取りと変更を許可する</translation>
 <translation id="6827517233063803343">Google アカウントでログインしているすべての Chrome OS デバイス間で、アプリと設定が同期されます。ブラウザの同期オプションについては、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください。</translation>
+<translation id="6827767090350758381">古いバージョンの Chrome アプリを Windows デバイスで使用できるのは、2022 年 12 月までです。管理者にお問い合わせのうえ、新しいバージョンに更新するか、アプリを削除してください。</translation>
 <translation id="6828153365543658583">ログインを以下のユーザーに制限する:</translation>
 <translation id="6828182567531805778">データを同期するにはパスフレーズを入力してください</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7463,7 +7468,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="8168071266284693455">すべてのデバイスでブックマーク、パスワード、履歴、その他の設定が同期されます</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
-<translation id="8169165065843881617">{NUM_TABS,plural, =1{リーディング リストにタブを追加}other{リーディング リストにタブを追加}}</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
 <translation id="8171334254070436367">カードをすべて非表示にする</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
 <translation id="8174876712881364124">Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
@@ -7856,7 +7861,7 @@
 <translation id="8571687764447439720">Kerberos チケットの追加</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> の音声を常に許可する</translation>
 <translation id="8575286410928791436">終了するには <ph name="KEY_EQUIVALENT" /> キーを押します</translation>
-<translation id="8576885347118332789">{NUM_TABS,plural, =1{リーディング リストにタブを追加}other{リーディング リストにタブを追加}}</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
 <translation id="8577052309681449949">自動クリック、カーソルのサイズ、カーソルの色など</translation>
 <translation id="8578639784464423491">99 文字までで指定してください</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
@@ -7912,6 +7917,7 @@
 <translation id="863109444997383731">サイトによる通知の確認をブロックします。サイトで通知がリクエストされた場合、ブロックされたことを示すインジケーターがアドレスバーに表示されます。</translation>
 <translation id="8632104508818855045"><ph name="ORIGIN" /> の拡張機能を一切許可しないよう選択しています</translation>
 <translation id="8633025649649592204">最近のアクティビティ</translation>
+<translation id="8633979878370972178">古いバージョンの Chrome アプリを Linux デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうかは次の手順で確認できます。</translation>
 <translation id="8634348081024879304">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK" />仮想カードについて<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">再読み込みしています...</translation>
 <translation id="8636284842992792762">拡張機能を初期化しています…</translation>

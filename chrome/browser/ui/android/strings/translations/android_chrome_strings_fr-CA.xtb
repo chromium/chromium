@@ -686,7 +686,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nom du titulaire de la carte</translation>
 <translation id="481574578487123132">Appareils associés</translation>
-<translation id="4818017973810341238">Échec de la vérification des liens de ressource numérique sur la page <ph name="VIOLATED_URL" /></translation>
+<translation id="4818017973810341238">Échec de la vérification des liens d'actif numérique sur la page <ph name="VIOLATED_URL" /></translation>
 <translation id="4826163340425232009">Zone de contenu dans le bas de l'écran de connexion.</translation>
 <translation id="4831037795716408498">Télécharger du contenu</translation>
 <translation id="4834007576107377210">Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant</translation>

@@ -1005,6 +1005,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1925017091976104802">Appuyez sur <ph name="MODIFIER_KEY_DESCRIPTION" /> pour coller</translation>
 <translation id="1925021887439448749">Saisissez une adresse Web personnalisée</translation>
 <translation id="1925124445985510535">Contrôle de sécurité effectué à <ph name="TIME" /></translation>
+<translation id="192564025059434655">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Windows après décembre 2022. Vous pouvez vérifier si une nouvelle version est disponible.</translation>
 <translation id="1926339101652878330">Ces paramètres sont soumis à une règle d'entreprise. Contactez votre administrateur pour plus d'informations.</translation>
 <translation id="1927632033341042996">Doigt <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Code de verrouillage de l'écran</translation>
@@ -2505,6 +2506,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3348131053948466246">Emoji suggérés. Appuyez sur la flèche vers le haut ou vers le bas pour sélectionner un emoji, puis sur Entrée pour l'insérer.</translation>
 <translation id="3349933790966648062">Espace mémoire utilisé</translation>
 <translation id="3353786022389205125">Activez "Afficher l'écran de verrouillage en sortant du mode veille", puis réessayez.</translation>
+<translation id="3354768182971982851">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Mac après décembre 2022. Vous pouvez vérifier si une nouvelle version est disponible.</translation>
 <translation id="3354972872297836698">Impossible d'associer à l'appareil <ph name="DEVICE_NAME" /> ; sélectionnez l'appareil pour réessayer</translation>
 <translation id="3355936511340229503">Erreur de connexion</translation>
 <translation id="3356469410714175391">(carte virtuelle activée)</translation>
@@ -3110,6 +3112,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3918972485393593704">Envoyer les informations à Google</translation>
 <translation id="3919145445993746351">Pour synchroniser vos extensions sur tous vos ordinateurs, activez la synchronisation</translation>
 <translation id="3919229493046408863">Désactiver la notification en cas d'appareils à proximité</translation>
+<translation id="3919262972282962508">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Mac après décembre 2022. Contactez votre administrateur pour passer à une nouvelle version ou supprimer cette appli.</translation>
 <translation id="3919798653937160644">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laissent aucune autre trace sur votre ordinateur (des cookies, par exemple), une fois que vous avez fermé toutes les fenêtres Invité ouvertes. Tous les fichiers téléchargés sont toutefois conservés.</translation>
 <translation id="3920504717067627103">Stratégies de certificat</translation>
 <translation id="3920909973552939961">Non autorisé à installer des gestionnaires de paiement</translation>
@@ -5606,6 +5609,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6374635887697228982">Obtenir des remises ?</translation>
+<translation id="637642201764944055">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Linux après décembre 2022. Contactez votre administrateur pour passer à une nouvelle version ou supprimer cette appli.</translation>
 <translation id="6377268785556383139">1 résultat pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Ouvrir la liste des réseaux Wi-Fi</translation>
 <translation id="6380143666419481200">Accepter et continuer</translation>
@@ -6086,6 +6090,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6826872289184051766">Valider via USB</translation>
 <translation id="6827121912381363404">Autoriser toutes les extensions à lire et modifier <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Vos applis et paramètres seront synchronisés sur tous les appareils Chrome OS où vous êtes connecté à votre compte Google. Pour voir les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres de Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Windows après décembre 2022. Contactez votre administrateur pour passer à une nouvelle version ou supprimer cette appli.</translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Saisissez votre phrase secrète pour synchroniser vos données.</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7939,6 +7944,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="863109444997383731">Les sites ne pourront pas afficher de notifications. Si un site demande à afficher des notifications, un symbole indiquant le blocage de celles-ci s'affichera dans la barre d'adresse.</translation>
 <translation id="8632104508818855045">Vous avez précédemment choisi de n'autoriser aucune extension sur <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Activité récente</translation>
+<translation id="8633979878370972178">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Linux après décembre 2022. Vous pouvez vérifier si une nouvelle version est disponible.</translation>
 <translation id="8634348081024879304">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK" />En savoir plus sur les cartes virtuelles<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Actualisation…</translation>
 <translation id="8636284842992792762">Initialisation des extensions…</translation>

@@ -1016,6 +1016,7 @@
 <translation id="1925017091976104802">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可貼上</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
 <translation id="1925124445985510535">已於 <ph name="TIME" /> 執行安全檢查</translation>
+<translation id="192564025059434655">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Windows 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="1926339101652878330">這些設定受到公司政策管控。請聯絡您的管理員，以取得更多資料。</translation>
 <translation id="1927632033341042996">指紋 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">螢幕鎖定 PIN</translation>
@@ -2519,6 +2520,7 @@
 <translation id="3348131053948466246">提供咗 Emoji 建議。㩒向上鍵或者向下鍵就可以導覽，㩒 Enter 鍵就可以插入 Emoji。</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
 <translation id="3353786022389205125">請開啟「從休眠狀態喚醒時顯示上鎖畫面」，然後再試一次</translation>
+<translation id="3354768182971982851">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Mac 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="3354972872297836698">同裝置 <ph name="DEVICE_NAME" /> 配對唔到；請揀裝置之後再試一次</translation>
 <translation id="3355936511340229503">連線錯誤</translation>
 <translation id="3356469410714175391">(已啟用虛擬卡)</translation>
@@ -3124,6 +3126,7 @@
 <translation id="3918972485393593704">向 Google 報告詳情</translation>
 <translation id="3919145445993746351">如要在所有電腦上取得您的擴充程式，請開啟同步功能</translation>
 <translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
+<translation id="3919262972282962508">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Mac 裝置上開啟。請聯絡系統管理員以更新至新版本，或移除此應用程式。</translation>
 <translation id="3919798653937160644">您在這個視窗瀏覽的網頁不會顯示在瀏覽器記錄中，並且在您關閉所有開啟的訪客視窗後，電腦也不會留下 Cookie 等其他記錄。不過，系統將會保留您下載的所有檔案。</translation>
 <translation id="3920504717067627103">憑證政策</translation>
 <translation id="3920909973552939961">不允許安裝付款處理常式</translation>
@@ -5618,6 +5621,7 @@
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6374635887697228982">要取得折扣嗎？</translation>
+<translation id="637642201764944055">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Linux 裝置上開啟。請聯絡系統管理員以更新至新版本，或移除此應用程式。</translation>
 <translation id="6377268785556383139">有 1 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
 <translation id="6378392501584240055">開啟 Wi-Fi 網絡清單</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
@@ -6096,6 +6100,7 @@
 <translation id="6826872289184051766">透過 USB 驗證</translation>
 <translation id="6827121912381363404">允許所有擴充程式讀取和變更 <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">您的應用程式和設定將會同步至所有您使用 Google 帳戶登入的 Chrome OS 裝置。如要瞭解瀏覽器同步選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
+<translation id="6827767090350758381">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Windows 裝置上開啟。請聯絡系統管理員以更新至新版本，或移除此應用程式。</translation>
 <translation id="6828153365543658583">只允許下列使用者登入：</translation>
 <translation id="6828182567531805778">如要同步處理資料，請輸入您的密碼短語</translation>
 <translation id="682871081149631693">快速修正</translation>
@@ -7949,6 +7954,7 @@
 <translation id="863109444997383731">系統將禁止網站要求顯示通知。如果網站要求顯示通知，網址列上會顯示封鎖圖示。</translation>
 <translation id="8632104508818855045">您先前已選擇不允許 <ph name="ORIGIN" /> 上的所有擴充程式</translation>
 <translation id="8633025649649592204">近期活動</translation>
+<translation id="8633979878370972178">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Linux 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="8634348081024879304">您將無法再透過 Google Pay 使用虛擬卡。<ph name="BEGIN_LINK" />瞭解虛擬卡<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">正在重新載入…</translation>
 <translation id="8636284842992792762">正在初始化擴充程式…</translation>

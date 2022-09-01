@@ -1006,6 +1006,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1925017091976104802">Stisknutím kláves <ph name="MODIFIER_KEY_DESCRIPTION" /> provedete vložení</translation>
 <translation id="1925021887439448749">Zadejte vlastní webovou adresu</translation>
 <translation id="1925124445985510535">Bezpečnostní kontrola proběhla v <ph name="TIME" /></translation>
+<translation id="192564025059434655">Po prosinci 2022 již na zařízeních s Windows nebude možné otevírat staré verze aplikací pro Chrome. Můžete si ověřit, zda není k dispozici nová verze.</translation>
 <translation id="1926339101652878330">Tato nastavení jsou řízena podnikovými zásadami. Další informace získáte od administrátora.</translation>
 <translation id="1927632033341042996">Prst <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN zámku obrazovky</translation>
@@ -2506,6 +2507,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3348131053948466246">Navržený smajlík. Navigovat lze šipkami nahoru a dolů, smajlíka vložíte klávesou Enter.</translation>
 <translation id="3349933790966648062">Obsazená paměť</translation>
 <translation id="3353786022389205125">Zapněte možnost „Při probuzení z režimu spánku zobrazit obrazovku uzamčení“ a zkuste to znovu</translation>
+<translation id="3354768182971982851">Po prosinci 2022 již na zařízeních Mac nebude možné otevírat staré verze aplikací pro Chrome. Můžete si ověřit, zda není k dispozici nová verze.</translation>
 <translation id="3354972872297836698">Spárování se zařízením <ph name="DEVICE_NAME" /> se nezdařilo. Pokud to chcete zkusit znovu, vyberte zařízení</translation>
 <translation id="3355936511340229503">Chyba připojení</translation>
 <translation id="3356469410714175391">(Virtuální karta je povolena)</translation>
@@ -3111,6 +3113,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3918972485393593704">Nahlásit podrobnosti do Googlu</translation>
 <translation id="3919145445993746351">Chcete-li svá rozšíření mít na všech svých počítačích, zapněte synchronizaci</translation>
 <translation id="3919229493046408863">Vypnout oznámení o zařízeních v okolí</translation>
+<translation id="3919262972282962508">Po prosinci 2022 již na zařízeních Mac nebude možné otevírat staré verze aplikací pro Chrome. Požádejte administrátora o aktualizaci na novou verzi, nebo tuto aplikaci odstraňte.</translation>
 <translation id="3919798653937160644">Stránky, které otevřete v tomto okně, nebudou uvedeny v historii prohlížeče a nezanechají v počítači po zavření všech oken hosta žádné stopy, např. soubory cookie. Všechny stažené soubory však budou zachovány.</translation>
 <translation id="3920504717067627103">Zásady certifikátů</translation>
 <translation id="3920909973552939961">Zákaz instalovat obslužné nástroje pro platby</translation>
@@ -5602,6 +5605,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Zkusit znovu</translation>
 <translation id="6374635887697228982">Získat slevy?</translation>
+<translation id="637642201764944055">Po prosinci 2022 již na zařízeních s Linuxem nebude možné otevírat staré verze aplikací pro Chrome. Požádejte administrátora o aktualizaci na novou verzi, nebo tuto aplikaci odstraňte.</translation>
 <translation id="6377268785556383139">1 výsledek pro dotaz <ph name="SEARCH_TEXT" /></translation>
 <translation id="6378392501584240055">Otevřít sítě Wi-Fi</translation>
 <translation id="6380143666419481200">Přijmout a pokračovat</translation>
@@ -6084,6 +6088,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6826872289184051766">Ověřit přes USB</translation>
 <translation id="6827121912381363404">Povolit všem rozšířením číst a měnit data webu <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Vaše aplikace a nastavení se budou synchronizovat do všech zařízení ChromeOS, na kterých jste přihlášeni pomocí svého účtu Google. Možnosti synchronizace prohlížeče naleznete v <ph name="LINK_BEGIN" />nastavení Chromu<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Po prosinci 2022 již na zařízeních s Windows nebude možné otevírat staré verze aplikací pro Chrome. Požádejte administrátora o aktualizaci na novou verzi, nebo tuto aplikaci odstraňte.</translation>
 <translation id="6828153365543658583">Omezit přihlášení na následující uživatele:</translation>
 <translation id="6828182567531805778">Chcete-li synchronizovat data, zadejte heslovou frázi</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7936,6 +7941,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="863109444997383731">Weby nebudou moci žádat o zobrazování oznámení. Pokud web požádá o oznámení, zobrazí se na adresním řádku indikátor zablokování.</translation>
 <translation id="8632104508818855045">Dříve jste zakázali všechna rozšíření na stránce <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Nedávná aktivita</translation>
+<translation id="8633979878370972178">Po prosinci 2022 již na zařízeních s Linuxem nebude možné otevírat staré verze aplikací pro Chrome. Můžete si ověřit, zda není k dispozici nová verze.</translation>
 <translation id="8634348081024879304">Virtuální kartu už se službou Google Pay nebudete moci používat. <ph name="BEGIN_LINK" />Informace o virtuálních kartách<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Opětovné načítání...</translation>
 <translation id="8636284842992792762">Inicializace rozšíření…</translation>
