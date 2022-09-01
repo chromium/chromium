@@ -3467,12 +3467,21 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ContentAnalysisPrintBrowserTest \
+  DISABLED_ContentAnalysisPrintBrowserTest
+#else
+#define MAYBE_ContentAnalysisPrintBrowserTest ContentAnalysisPrintBrowserTest
+#endif  // !BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-class ContentAnalysisPrintBrowserTest
+class MAYBE_ContentAnalysisPrintBrowserTest
     : public PrintBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  ContentAnalysisPrintBrowserTest() {
+  MAYBE_ContentAnalysisPrintBrowserTest() {
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting(kFakeDmToken));
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
@@ -3480,7 +3489,7 @@ class ContentAnalysisPrintBrowserTest
             &enterprise_connectors::FakeContentAnalysisDelegate::Create,
             base::DoNothing(),
             base::BindRepeating(
-                &ContentAnalysisPrintBrowserTest::ScanningResponse,
+                &MAYBE_ContentAnalysisPrintBrowserTest::ScanningResponse,
                 base::Unretained(this)),
             kFakeDmToken));
 
@@ -3524,12 +3533,22 @@ class ContentAnalysisPrintBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-class ContentAnalysisScriptedPreviewlessPrintBrowserTest
-    : public ContentAnalysisPrintBrowserTest {
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest \
+  DISABLED_ContentAnalysisScriptedPreviewlessPrintBrowserTest
+#else
+#define MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest \
+  ContentAnalysisScriptedPreviewlessPrintBrowserTest
+#endif  // !BUILDFLAG(IS_WIN)
+
+class MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest
+    : public MAYBE_ContentAnalysisPrintBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* cmd_line) override {
     cmd_line->AppendSwitch(switches::kDisablePrintPreview);
-    ContentAnalysisPrintBrowserTest::SetUpCommandLine(cmd_line);
+    MAYBE_ContentAnalysisPrintBrowserTest::SetUpCommandLine(cmd_line);
   }
 
   void RunScriptedPrintTest(const std::string& script) {
@@ -3552,8 +3571,8 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 };
 
 // TODO(crbug.com/1256506): Re-enable test on Windows
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest, PrintNow) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3580,7 +3599,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
             content_analysis_allows_print());
 }
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
+IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
+                       PrintWithPreview) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3603,12 +3623,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
             content_analysis_allows_print());
 }
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest,
                        DocumentExecPrint) {
   RunScriptedPrintTest("document.execCommand('print');");
 }
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest,
                        WindowPrint) {
   RunScriptedPrintTest("window.print()");
 }
@@ -3616,7 +3636,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
                        BlockedByDLPThenNoContentAnalysis) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
@@ -3641,18 +3661,21 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1256506): Re-enable test on Windows
-#if !BUILDFLAG(IS_WIN)
-INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
-#endif  // !BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
+INSTANTIATE_TEST_SUITE_P(All,
+                         MAYBE_ContentAnalysisPrintBrowserTest,
+                         testing::Bool());
 
-// TODO(crbug.com/1256506): Re-enable test on Windows
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
 // This test suite doesn't run on CrOS since it doesn't support non-print
 // preview scripted printing.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
-INSTANTIATE_TEST_SUITE_P(All,
-                         ContentAnalysisScriptedPreviewlessPrintBrowserTest,
-                         testing::Bool());
+#if !BUILDFLAG(IS_CHROMEOS)
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest,
+    testing::Bool());
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(ENABLE_PRINT_SCANNING)
