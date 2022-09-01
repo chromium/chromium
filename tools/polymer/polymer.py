@@ -512,7 +512,7 @@ def _process_style_module(js_file, html_file):
   # correctly. Without this they are resolved with respect to the main HTML
   # documents location (unlike Polymer2). Note: This is assuming that only style
   # modules under ui/webui/resources/ are processed by polymer_modulizer(), for
-  # example cr_icons_css.html.
+  # example cr_icons.css.html.
   js_template = \
 """%(js_imports)s
 const template = document.createElement('template');

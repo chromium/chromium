@@ -105,6 +105,7 @@ if (include_polymer) {
     "action_link.css",
     "cr_actionable_row_style.css",
     "cr_hidden_style.css",
+    "cr_icons.css",
     "cr_nav_menu_item_style.css",
     "cr_page_host_style.css",
     "cr_radio_button/cr_radio_button_style.css",

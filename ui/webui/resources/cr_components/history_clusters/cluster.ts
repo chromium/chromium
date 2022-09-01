@@ -7,7 +7,7 @@ import './search_query.js';
 import './history_clusters_shared_style.css.js';
 import './shared_vars.css.js';
 import './url_visit.js';
-import '../../cr_elements/cr_icons_css.m.js';
+import '../../cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';

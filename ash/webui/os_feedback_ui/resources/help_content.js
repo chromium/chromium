@@ -6,7 +6,7 @@ import './help_resources_icons.js';
 import './strings.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import '//resources/cr_elements/cr_icons_css.m.js';
+import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';

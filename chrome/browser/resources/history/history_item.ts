@@ -5,7 +5,7 @@
 import './searched_label.js';
 import './shared_style.css.js';
 import './strings.m.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';

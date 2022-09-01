@@ -7,8 +7,10 @@ import './emoji_group.js';
 import './emoji_group_button.js';
 import './emoji_search.js';
 import './text_group_button.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
@@ -16,7 +18,7 @@ import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_p
 import * as events from './events.js';
 import {CATEGORY_METADATA, EMOJI_GROUP_TABS, V2_SUBCATEGORY_TABS, V2_TABS_CATEGORY_START_INDEX} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryData, CategoryEnum, EmojiGroup, EmojiGroupData, EmojiVariants, SubcategoryData, EmojiGroupElement} from './types.js';
+import {CategoryData, CategoryEnum, EmojiGroup, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData} from './types.js';
 
 export class EmojiPicker extends PolymerElement {
   static get is() {

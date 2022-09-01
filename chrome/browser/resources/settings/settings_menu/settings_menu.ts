@@ -6,7 +6,7 @@
  * @fileoverview
  * 'settings-menu' shows a menu with a hardcoded set of pages and subpages.
  */
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/icons.m.js';
