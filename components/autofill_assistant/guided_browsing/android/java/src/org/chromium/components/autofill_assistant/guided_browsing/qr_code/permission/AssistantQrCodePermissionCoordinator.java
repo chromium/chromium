@@ -36,6 +36,7 @@ public class AssistantQrCodePermissionCoordinator {
         mWindowAndroid = windowAndroid;
         mPermissionModel = permissionModel;
         mRequiredPermission = requiredPermission;
+        logCurrentPermissionState();
 
         mPermissionView = new AssistantQrCodePermissionView(
                 context, requiredPermission, new AssistantQrCodePermissionView.Delegate() {
@@ -75,6 +76,11 @@ public class AssistantQrCodePermissionCoordinator {
         mPermissionView.maybePromptForPermissionOnce();
     }
 
+    public void destroy() {
+        // Clean up view holder.
+        mViewHolder = null;
+    }
+
     /**
      * Returns an Intent to show the App Info page for the current app.
      */
@@ -84,8 +90,26 @@ public class AssistantQrCodePermissionCoordinator {
         return intent;
     }
 
-    public void destroy() {
-        // Clean up view holder.
-        mViewHolder = null;
+    /**
+     *  Logs the current permission state.
+     */
+    private void logCurrentPermissionState() {
+        AssistantQrCodePermissionMetric permissionMetric =
+                mRequiredPermission.getAndroidPermissionMetric();
+        permissionMetric.recordPermissionMetric(permissionMetric.getCheckingPermissionMetric());
+
+        if (AssistantQrCodePermissionUtils.hasPermission(mContext, mRequiredPermission)) {
+            permissionMetric.recordPermissionMetric(
+                    permissionMetric.getAlreadyHadPermissionMetric());
+        } else {
+            if (AssistantQrCodePermissionUtils.canPromptForPermission(
+                        mWindowAndroid, mRequiredPermission)) {
+                permissionMetric.recordPermissionMetric(
+                        permissionMetric.getCanPromptPermissionMetric());
+            } else {
+                permissionMetric.recordPermissionMetric(
+                        permissionMetric.getCannotPromptPermissionMetric());
+            }
+        }
     }
 }

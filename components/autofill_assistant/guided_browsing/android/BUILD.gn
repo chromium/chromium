@@ -14,12 +14,14 @@ android_library("java") {
     "$google_play_services_package:google_play_services_vision_java",
     "//base:base_java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
 
   sources = [
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/GuidedBrowsingMetrics.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/LayoutUtils.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/parse_xml/AssistantParseSingleTagXmlUtil.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/AssistantQrCodeController.java",
@@ -38,16 +40,21 @@ android_library("java") {
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerDialog.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerModel.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerView.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodeCameraPermissionMetric.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionBinder.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionCallback.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionMetric.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionModel.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionType.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionUtils.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionView.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodeReadImagesPermissionMetric.java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ "//components/autofill_assistant/guided_browsing/browser:autofill_assistant_guided_browsing_enums_java" ]
 }
 
 android_resources("java_resources") {

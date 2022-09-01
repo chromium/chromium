@@ -412,6 +412,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.AutofillAssistant.GuidedBrowsing.Camera.PermissionEvent"
+    enum="AutofillAssistantGuidedBrowsingCameraPermissionEvent"
+    expires_after="2023-08-30">
+  <owner>solankivinit@google.com</owner>
+  <owner>jainshashank@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <owner>guided-browsing-eng@google.com</owner>
+  <summary>
+    Reports the various events carried out when checking permission for the
+    camera. These events include the scenarios like the browser can prompt the
+    permission, cannot prompt the permission, already had the permission, etc.
+    This is recorded when the browser asks the users to scan QR code via camera
+    preview.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AutofillAssistant.GuidedBrowsing.ParseSingleTagXml.ActionEvent"
+    enum="AutofillAssistantGuidedBrowsingParseSingleTagXmlActionEvent"
+    expires_after="2023-08-30">
+  <owner>solankivinit@google.com</owner>
+  <owner>jainshashank@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <owner>guided-browsing-eng@google.com</owner>
+  <summary>
+    Reports the various events carried out when ParseSingleTagXml action is
+    executed. This is recorded when the action parses the attributes or keys of
+    a single tag XML. These events include the scenarios like parsing was
+    successful, a certain attribute was not found in the XML, etc.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AutofillAssistant.GuidedBrowsing.ReadImages.PermissionEvent"
+    enum="AutofillAssistantGuidedBrowsingReadImagesPermissionEvent"
+    expires_after="2023-08-30">
+  <owner>solankivinit@google.com</owner>
+  <owner>jainshashank@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <owner>guided-browsing-eng@google.com</owner>
+  <summary>
+    Reports the various events carried out when checking permission to read
+    images. These events include the scenarios like the browser can prompt the
+    permission, cannot prompt the permission, already had the permission, etc.
+    This is recorded when the browser asks the users to pick an image from the
+    gallery for QR Code scanning.
+  </summary>
+</histogram>
+
 <histogram name="Android.AutofillAssistant.JsFlowStartedEvent"
     enum="AutofillAssistantJsFlowStartedEvent" expires_after="2023-06-05">
   <owner>fga@google.com</owner>

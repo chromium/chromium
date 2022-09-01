@@ -10,12 +10,15 @@ import org.chromium.ui.permissions.PermissionConstants;
 
 public enum AssistantQrCodePermissionType {
     // List of permissions should be mentioned here
-    CAMERA(permission.CAMERA, "videocam_img"),
-    READ_MEDIA_IMAGES(PermissionConstants.READ_MEDIA_IMAGES, "folder_img"),
-    READ_EXTERNAL_STORAGE(permission.READ_EXTERNAL_STORAGE, "folder_img");
+    CAMERA(permission.CAMERA, "videocam_img", new AssistantQrCodeCameraPermissionMetric()),
+    READ_MEDIA_IMAGES(PermissionConstants.READ_MEDIA_IMAGES, "folder_img",
+            new AssistantQrCodeReadImagesPermissionMetric()),
+    READ_EXTERNAL_STORAGE(permission.READ_EXTERNAL_STORAGE, "folder_img",
+            new AssistantQrCodeReadImagesPermissionMetric());
 
     private String mAndroidPermission;
     private String mAndroidPermissionImage;
+    private AssistantQrCodePermissionMetric mAndroidPermissionMetric;
 
     public String getAndroidPermission() {
         return this.mAndroidPermission;
@@ -25,8 +28,14 @@ public enum AssistantQrCodePermissionType {
         return this.mAndroidPermissionImage;
     }
 
-    private AssistantQrCodePermissionType(String permission, String permissionImage) {
+    public AssistantQrCodePermissionMetric getAndroidPermissionMetric() {
+        return this.mAndroidPermissionMetric;
+    }
+
+    private AssistantQrCodePermissionType(String permission, String permissionImage,
+            AssistantQrCodePermissionMetric permissionMetric) {
         this.mAndroidPermission = permission;
         this.mAndroidPermissionImage = permissionImage;
+        this.mAndroidPermissionMetric = permissionMetric;
     }
 }
