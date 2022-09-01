@@ -31,8 +31,17 @@ enum SpeculationAction {
   kPrerender,
 };
 
+// The target hint that is proposed.
+enum SpeculationTargetHint {
+  kNoHint,
+  kBlank,
+  kSelf,
+};
+
 // A single candidate: a URL, an action, a referrer, and any associated
 // metadata that might be needed to make a decision.
+// https://wicg.github.io/nav-speculation/speculation-rules.html#prefetch-candidate
+// https://wicg.github.io/nav-speculation/speculation-rules.html#prerender-candidate
 struct SpeculationCandidate {
   // The URL which is eligible for some action.
   url.mojom.Url url;
@@ -47,4 +56,8 @@ struct SpeculationCandidate {
   // made in a manner which anonymizes the client IP. If this is not possible,
   // this candidate must be discarded.
   bool requires_anonymous_client_ip_when_cross_origin = false;
+
+  // The hint to be used to decide a target browsing context where preloaded
+  // resource will be used. This is kNoHint for actions other than `kPrerender`.
+  SpeculationTargetHint target_browsing_context_name_hint = kNoHint;
 };

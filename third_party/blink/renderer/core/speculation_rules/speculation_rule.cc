@@ -8,9 +8,11 @@ namespace blink {
 
 SpeculationRule::SpeculationRule(
     Vector<KURL> urls,
-    RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip)
-    : urls_(urls),
-      requires_anonymous_client_ip_(requires_anonymous_client_ip) {}
+    RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip,
+    absl::optional<mojom::blink::SpeculationTargetHint> target_hint)
+    : urls_(std::move(urls)),
+      requires_anonymous_client_ip_(requires_anonymous_client_ip),
+      target_browsing_context_name_hint_(target_hint) {}
 
 SpeculationRule::~SpeculationRule() = default;
 

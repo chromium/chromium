@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_SPECULATION_RULE_H_
 
 #include "base/types/strong_alias.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -23,19 +24,28 @@ class CORE_EXPORT SpeculationRule final
       base::StrongAlias<class RequiresAnonymousClientIPWhenCrossOriginTag,
                         bool>;
 
-  SpeculationRule(Vector<KURL>, RequiresAnonymousClientIPWhenCrossOrigin);
+  SpeculationRule(
+      Vector<KURL>,
+      RequiresAnonymousClientIPWhenCrossOrigin,
+      absl::optional<mojom::blink::SpeculationTargetHint> target_hint);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
   bool requires_anonymous_client_ip_when_cross_origin() const {
     return requires_anonymous_client_ip_.value();
   }
+  absl::optional<mojom::blink::SpeculationTargetHint>
+  target_browsing_context_name_hint() const {
+    return target_browsing_context_name_hint_;
+  }
 
   void Trace(Visitor*) const;
 
  private:
-  Vector<KURL> urls_;
-  RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip_;
+  const Vector<KURL> urls_;
+  const RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip_;
+  const absl::optional<mojom::blink::SpeculationTargetHint>
+      target_browsing_context_name_hint_;
 };
 
 }  // namespace blink

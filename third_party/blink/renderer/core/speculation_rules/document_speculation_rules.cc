@@ -104,7 +104,9 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
             KURL(referrer.referrer), referrer.referrer_policy);
         candidates.push_back(mojom::blink::SpeculationCandidate::New(
             url, action, std::move(referrer_ptr),
-            rule->requires_anonymous_client_ip_when_cross_origin()));
+            rule->requires_anonymous_client_ip_when_cross_origin(),
+            rule->target_browsing_context_name_hint().value_or(
+                mojom::blink::SpeculationTargetHint::kNoHint)));
       }
     }
   };

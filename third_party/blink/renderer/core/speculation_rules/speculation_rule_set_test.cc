@@ -86,6 +86,30 @@ MATCHER(RequiresAnonymousClientIPWhenCrossOrigin,
   return arg->requires_anonymous_client_ip_when_cross_origin();
 }
 
+SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
+    const char* target_hint) {
+  return SpeculationRuleSet::ParseInline(
+      String::Format(R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/hint.html"],
+          "target_hint": "%s"
+        }],
+        "prefetch_with_subresources": [{
+          "source": "list",
+          "urls": ["https://example.com/hint.html"],
+          "target_hint": "%s"
+        }],
+        "prerender": [{
+          "source": "list",
+          "urls": ["https://example.com/hint.html"],
+          "target_hint": "%s"
+        }]
+      })",
+                     target_hint, target_hint, target_hint),
+      KURL("https://example.com/"));
+}
+
 class SpeculationRuleSetTest : public ::testing::Test {
  private:
   ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch_{true};
@@ -254,6 +278,106 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/valid.html")));
+}
+
+// Test that only prerender rule can process a "_blank" target hint.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Blank) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_blank");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
+  EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
+            mojom::blink::SpeculationTargetHint::kBlank);
+}
+
+// Test that only prerender rule can process a "_self" target hint.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Self) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_self");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
+  EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
+            mojom::blink::SpeculationTargetHint::kSelf);
+}
+
+// Test that only prerender rule can process a "_parent" target hint but treat
+// it as no hint.
+// TODO(https://crbug.com/1354049): Support the "_parent" keyword for
+// prerendering.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Parent) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_parent");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
+  EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
+            mojom::blink::SpeculationTargetHint::kNoHint);
+}
+
+// Test that only prerender rule can process a "_top" target hint but treat it
+// as no hint.
+// Test that rules with a "_top" hint are ignored.
+// TODO(https://crbug.com/1354049): Support the "_top" keyword for prerendering.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Top) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_top");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
+  EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
+            mojom::blink::SpeculationTargetHint::kNoHint);
+}
+
+// Test that rules with an empty target hint are ignored.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_EmptyString) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+}
+
+// Test that only prerender rule can process a browsing context name target hint
+// but treat it as no hint.
+// TODO(https://crbug.com/1354049): Support valid browsing context names.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_ValidBrowsingContextName) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("valid");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
+  EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
+            mojom::blink::SpeculationTargetHint::kNoHint);
+}
+
+// Test that rules with an invalid browsing context name target hint are
+// ignored.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_InvalidBrowsingContextName) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_invalid");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+}
+
+// Test that the the validation of the browsing context keywords runs an ASCII
+// case-insensitive match.
+TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_CaseInsensitive) {
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_BlAnK");
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
+  EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
+            mojom::blink::SpeculationTargetHint::kBlank);
 }
 
 TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {

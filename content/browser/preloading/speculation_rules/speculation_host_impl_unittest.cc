@@ -141,7 +141,7 @@ TEST_F(SpeculationHostImplTest, ProcessFirstSameOriginPrerenderCandidate) {
       registry->FindHostByUrlForTesting(kSecondPrerenderingUrlSameOrigin));
 }
 
-// Tests that SpeculationHostImpl crash the renderer process if it receives
+// Tests that SpeculationHostImpl crashes the renderer process if it receives
 // non-http prerender candidates.
 TEST_F(SpeculationHostImplTest, ReportNonHttpMessage) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
@@ -167,6 +167,40 @@ TEST_F(SpeculationHostImplTest, ReportNonHttpMessage) {
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "SH_NON_HTTP");
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+}
+
+// Tests that SpeculationHostImpl crashes the renderer process if it receives
+// prefetch candidates that have a valid `target_browsing_context_name_hint`.
+TEST_F(SpeculationHostImplTest,
+       ReportTargetBrowsingContextNameHintOnPrefetchCandidate) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(render_frame_host,
+                            remote.BindNewPipeAndPassReceiver());
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error) {
+        EXPECT_FALSE(error.empty());
+        EXPECT_TRUE(bad_message_error.empty());
+        bad_message_error = error;
+      }));
+
+  // Create a prefetch candidate that has a valid target hint.
+  auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate->url = GetSameOriginUrl("/empty.html");
+  candidate->referrer = blink::mojom::Referrer::New();
+  candidate->target_browsing_context_name_hint =
+      blink::mojom::SpeculationTargetHint::kBlank;
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(std::move(candidate));
+
+  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote.FlushForTesting();
+  EXPECT_EQ(bad_message_error, "SH_TARGET_HINT_ON_PREFETCH");
 }
 
 class TestSpeculationHostDelegate : public SpeculationHostDelegate {

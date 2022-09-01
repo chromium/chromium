@@ -42,6 +42,15 @@ bool CandidatesAreValid(
       mojo::ReportBadMessage("SH_NON_HTTP");
       return false;
     }
+
+    // `target_browsing_context_name_hint` on non-prerender actions should be
+    // filtered out in Blink.
+    if (candidate->action != blink::mojom::SpeculationAction::kPrerender &&
+        candidate->target_browsing_context_name_hint !=
+            blink::mojom::SpeculationTargetHint::kNoHint) {
+      mojo::ReportBadMessage("SH_TARGET_HINT_ON_PREFETCH");
+      return false;
+    }
   }
   return true;
 }
@@ -330,6 +339,8 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
       }
     }
 
+    // TODO(crbug.com/1354049): Pass `target_browsing_context_name_hint` to
+    // start prerendering in a new tab.
     Referrer referrer(*(it->referrer));
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(it->url, PrerenderTriggerType::kSpeculationRule,
@@ -341,6 +352,10 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
                             rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
                             /*url_match_predicate=*/absl::nullopt),
         *web_contents, /*preloading_attempt=*/preloading_attempt);
+    // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
+    // have the same URL but its `target_browsing_context_name_hint` is
+    // different. In the current implementation, only the first rule is
+    // triggered.
     started_prerenders_.insert(end, {.url = it->url,
                                      .referrer = referrer,
                                      .prerender_host_id = prerender_host_id});
