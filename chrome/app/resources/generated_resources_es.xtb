@@ -1002,6 +1002,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1925017091976104802">Pulsa <ph name="MODIFIER_KEY_DESCRIPTION" /> para pegar</translation>
 <translation id="1925021887439448749">Introduce una dirección web personalizada</translation>
 <translation id="1925124445985510535">La comprobación de seguridad se ejecutó a las <ph name="TIME" /></translation>
+<translation id="192564025059434655">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Windows después de diciembre del 2022. Puedes comprobar si hay una versión nueva disponible.</translation>
 <translation id="1926339101652878330">Esta opción está controlada por una política de empresa. Para obtener más información, ponte en contacto con tu administrador.</translation>
 <translation id="1927632033341042996">Dedo <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN de bloqueo de pantalla</translation>
@@ -2507,6 +2508,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3348131053948466246">Emoji sugerido. Pulsa arriba o abajo para desplazarte, e Intro para insertarlo.</translation>
 <translation id="3349933790966648062">Uso de memoria</translation>
 <translation id="3353786022389205125">Activa "Mostrar la pantalla de bloqueo al activar el dispositivo" y vuelve a intentarlo</translation>
+<translation id="3354768182971982851">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Mac después de diciembre del 2022. Puedes comprobar si hay una versión nueva disponible.</translation>
 <translation id="3354972872297836698">No se ha podido emparejar con el dispositivo <ph name="DEVICE_NAME" />; selecciona el dispositivo para volver a intentarlo</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="3356469410714175391">(Tarjeta virtual habilitada)</translation>
@@ -2784,7 +2786,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3616741288025931835">&amp;Borrar datos de navegación...</translation>
 <translation id="3617891479562106823">Los fondos no están disponibles. Inténtalo de nuevo más tarde.</translation>
 <translation id="3619115746895587757">Capuchino</translation>
-<translation id="3619962278978697442">Elige una de las dos opciones cada vez que inicies sesión</translation>
 <translation id="3621807901162200696">Ayudar a mejorar las funciones y el rendimiento de ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{una aplicación}other{# aplicaciones}}</translation>
 <translation id="362333465072914957">Esperando a que la autoridad de certificación publique un certificado</translation>
@@ -3114,6 +3115,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3918972485393593704">Enviar informe detallado a Google</translation>
 <translation id="3919145445993746351">Para obtener las extensiones en todos tus ordenadores, activa la sincronización</translation>
 <translation id="3919229493046408863">Desactivar notificación cuando haya dispositivos cerca</translation>
+<translation id="3919262972282962508">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Mac después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o la quite.</translation>
 <translation id="3919798653937160644">Las páginas que aparezcan en esta ventana no se mostrarán en el historial del navegador y no dejarán otros rastros, como cookies, en el ordenador después de cerrar todas las ventanas abiertas de la sesión de invitado. No obstante, se conservará cualquier archivo que descargues.</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>
 <translation id="3920909973552939961">No puede instalar controladores de pago</translation>
@@ -3984,7 +3986,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4768332406694066911">Tienes certificados de estas organizaciones que te identifican</translation>
 <translation id="4770119228883592393">Permiso solicitado, pulsa ⌘ + Opción + flecha hacia abajo para responder</translation>
 <translation id="4773112038801431077">Actualizar Linux</translation>
-<translation id="4774337692467964393">Si Smart Lock está activado, no tendrás que introducir ni un PIN ni una contraseña</translation>
 <translation id="4775142426314270551">Ayuda a mejorar las funciones y el rendimiento de Chrome y Chrome OS enviando automáticamente a Google informes sobre fallos, así como datos de uso y diagnóstico. Algunos datos agregados también ayudarán a las aplicaciones Android y a los partners de Google. Si el ajuste Actividad en la Web y en Aplicaciones está activado en la cuenta de Google de tu hijo/a, es posible que los datos de Android de tu hijo/a se guarden en la cuenta de Google de tu hijo/a.</translation>
 <translation id="477647109558161443">Crear un acceso directo del escritorio</translation>
 <translation id="4776594120007763294">Para añadir una página a la lista y leerla más tarde, haz clic en el botón</translation>
@@ -4033,7 +4034,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4820236583224459650">Definir como ticket activo</translation>
 <translation id="4821935166599369261">Perfiles &amp;habilitados</translation>
 <translation id="4823484602432206655">Leer y cambiar la configuración del dispositivo y del usuario</translation>
-<translation id="4823894915586516138">Este PIN o contraseña protegerán los datos que tengas en este <ph name="DEVICE_TYPE" />, incluida cualquier información a la accedas desde tu teléfono</translation>
 <translation id="4824037980212326045">Copia de seguridad y restauración de Linux</translation>
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
 <translation id="4825532258163983651">No se puede eliminar la clave de acceso</translation>
@@ -5621,6 +5621,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Reintentar</translation>
 <translation id="6374635887697228982">¿Obtener descuentos?</translation>
+<translation id="637642201764944055">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Linux después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o la quite.</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Abrir en Redes Wi‑Fi</translation>
 <translation id="6380143666419481200">Aceptar y continuar</translation>
@@ -6098,6 +6099,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6826872289184051766">Verificar mediante USB</translation>
 <translation id="6827121912381363404">Permite que todas las extensiones lean y cambien <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Tus aplicaciones y ajustes se sincronizarán en todos los dispositivos ChromeOS en los que hayas iniciado sesión con tu cuenta de Google. Para ver las opciones de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Windows después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o la quite.</translation>
 <translation id="6828153365543658583">Restringir el inicio de sesión a los siguientes usuarios:</translation>
 <translation id="6828182567531805778">Introduce tu frase de contraseña para sincronizar tus datos</translation>
 <translation id="682871081149631693">Quick Fix</translation>
@@ -7312,7 +7314,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7984068253310542383">Proyectar <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Leer y cambiar la configuración de contraseñas guardadas</translation>
 <translation id="7987814697832569482">Conectar siempre a través de esta VPN</translation>
-<translation id="7987932397583333141">Establece un PIN o una contraseña</translation>
 <translation id="7988355189918024273">Habilita las funciones de accesibilidad</translation>
 <translation id="7988805580376093356">Mantén tu SO y ejecuta <ph name="DEVICE_OS" /> desde un USB.</translation>
 <translation id="7991296728590311172">Ajustes de accesibilidad con interruptores</translation>
@@ -7956,6 +7957,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="863109444997383731">Los sitios no podrán preguntarte si pueden mostrarte notificaciones. Si un sitio web te pregunta si puede mostrarte notificaciones, aparecerá un indicador de bloqueo en la barra de direcciones.</translation>
 <translation id="8632104508818855045">Anteriormente elegiste no permitir ninguna extensión en <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Actividad reciente</translation>
+<translation id="8633979878370972178">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Linux después de diciembre del 2022. Puedes comprobar si hay una versión nueva disponible.</translation>
 <translation id="8634348081024879304">Ya no podrás usar tu tarjeta virtual con Google Play. <ph name="BEGIN_LINK" />Información sobre las tarjetas virtuales<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Cargando de nuevo...</translation>
 <translation id="8636284842992792762">Inicializando extensiones...</translation>

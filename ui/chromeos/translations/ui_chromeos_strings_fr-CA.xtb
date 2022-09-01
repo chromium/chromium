@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Disque de vinyle</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3291218047831493686">Connectez-vous à ce réseau pour modifier le paramètre de verrouillage de la carte SIM</translation>
+<translation id="3293023191599135697">Les réseaux WEP ne sont pas pris en charge</translation>
 <translation id="3295357220137379386">L'appareil est en cours d'utilisation</translation>
 <translation id="3296763833017966289">Géorgien</translation>
 <translation id="3307875152560779385">Ukrainien</translation>
@@ -353,6 +354,7 @@
 <translation id="4092890906744441904">Irlandais</translation>
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
+<translation id="4176286497474237543">Vider la corbeille maintenant</translation>
 <translation id="4186579485882418952">Activer le mode hors ligne</translation>
 <translation id="4193154014135846272">Document Google</translation>
 <translation id="4197674956721858839">Sélection pour fichier ZIP</translation>
@@ -661,6 +663,7 @@
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6650726141019353908">Papillon rose</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
+<translation id="6658865850469097484">Les fichiers dans la corbeille depuis plus de 30 jours seront automatiquement supprimés.</translation>
 <translation id="6673674183150363784">Français (France) avec clavier BÉPO</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Précédent</translation>

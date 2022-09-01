@@ -157,6 +157,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1348198688976932919">O site a seguir contém apps perigosos</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
 <translation id="1354976809542763843">Financiamento de casas</translation>
+<translation id="1355158069018170842">Mostrar reduções no preço nas guias</translation>
 <translation id="1355301061807280185">Vagas</translation>
 <translation id="1355754231781595724">Segurança de veículos e trânsito</translation>
 <translation id="1357195169723583938">Quem usou o dispositivo recentemente e quando</translation>
@@ -466,6 +467,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2153609454945889823">Instalar o Google Play Services para RA?</translation>
 <translation id="2154054054215849342">O serviço de sincronização não está disponível para seu domínio</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
+<translation id="2157640075051554492">Notificações de monitoramento de preço</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162510787844374618">Entrando em contato com o banco…</translation>
 <translation id="2162620598375156287">Agora por <ph name="CURRENT_PRICE" /> nesta loja: <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3633738897356909127">Botão "Atualizar o Chrome". Pressione "Enter" para atualizar o Chrome pelas configurações dele</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chrome recomenda conferir as senhas salvas.</translation>
+<translation id="3637033245385760976">As notificações do Chrome precisam estar ativadas. Faça isso nas <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Salvar na Conta do Google</translation>
 <translation id="3640766068866876100">102 mm × 152 mm</translation>
 <translation id="3642638418806704195">Aplicativo:</translation>
@@ -1425,6 +1428,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4785376858512657294">Gerenciar Conta do Google</translation>
 <translation id="4785689107224900852">Alternar para esta guia</translation>
 <translation id="4786804728079074733">Vôlei</translation>
+<translation id="4789704664580239421">Os alertas de redução no preço vão aparecer nas suas guias abertas</translation>
 <translation id="4791134497475588553">Apps Linux instalados e quando eles foram usados pela última vez</translation>
 <translation id="4792686369684665359">As informações que você está prestes a enviar não estão protegidas</translation>
 <translation id="4796594887379589189">ID da conta de trabalho</translation>
@@ -1790,6 +1794,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5730040223043577876">O Chrome recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="5736165827969430182">Metais e mineração</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Salvar cartão na Conta do Google}one{Salvar cartão na Conta do Google}other{Salvar cartões na Conta do Google}}</translation>
+<translation id="5738385766833540397">Gerencie como você recebe alertas de redução no preço de produtos monitorados.</translation>
 <translation id="5743638595296120378">Compras de automóveis</translation>
 <translation id="5743898850056428078">Corridas de moto</translation>
 <translation id="5745733273847572235">Pode pedir sua localização</translation>
@@ -1799,6 +1804,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5759751709240058861">Usar e mover sua câmera</translation>
 <translation id="5763042198335101085">Informe um endereço de e-mail válido.</translation>
 <translation id="5764725887548570807">Formato de origem inválido.</translation>
+<translation id="5764920692828389743">Enviar para <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver métodos e requisitos de entrega, selecione um endereço</translation>
 <translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
 <translation id="5776313857861697733">Prioridade</translation>
@@ -1889,6 +1895,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6017850046339264347">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem instalar apps enganosos que fingem ser outra pessoa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6027201098523975773">Insira um nome</translation>
+<translation id="6028591542479806248">Gerenciar notificações recebidas por e-mail e no dispositivo móvel</translation>
 <translation id="603068602130820122">Dois grampos no lado direito</translation>
 <translation id="6032524144326295339">Caixa de e-mails 2</translation>
 <translation id="6032955021262906325">Encadernação no lado esquerdo</translation>
@@ -2809,6 +2816,7 @@ Mais detalhes:
 <translation id="8559762987265718583">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="8564182942834072828">Documentos separados/Cópias não reunidas</translation>
 <translation id="8564985650692024650">O Chromium recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
+<translation id="8573969211731659953">Os alertas de redução no preço estão ativados. Para mudar isso, acesse as <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">Sistemas de home theater</translation>
 <translation id="8577348305244205642">Cartão virtual indisponível</translation>
 <translation id="858637041960032120">Ad. nº. telefone

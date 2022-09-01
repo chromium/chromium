@@ -508,6 +508,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Do 1 minuty zařízení převeďte na předchozí verzi}few{Do # minut zařízení převeďte na předchozí verzi}many{Do # minuty zařízení převeďte na předchozí verzi}other{Do # minut zařízení převeďte na předchozí verzi}}</translation>
 <translation id="3923494859158167397">Nejsou nastaveny žádné mobilní sítě</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, načítání událostí.</translation>
+<translation id="392627956579011934">K instalaci řečových souborů je potřeba provést restart.</translation>
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
 <translation id="3934456833412894880">Je zapnuté adaptivní nabíjení. Baterie zůstane nabitá na 80 %, aby se prodloužila její životnost, a plně se nabije, jen když to budete potřebovat.</translation>
 <translation id="3943857333388298514">Vložit</translation>
@@ -562,6 +563,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4247123849143712100">Aktualizovat a vypnout</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
+<translation id="4250899820387052060">Rychlé soubory</translation>
 <translation id="425364040945105958">Žádná SIM karta</translation>
 <translation id="4261870227682513959">Zobrazit nastavení oznámení. Oznámení jsou vypnutá</translation>
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>

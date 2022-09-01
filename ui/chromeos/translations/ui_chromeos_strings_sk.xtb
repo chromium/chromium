@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Vinylová platňa</translation>
 <translation id="3290356915286466215">Nezabezpečené</translation>
 <translation id="3291218047831493686">Ak chcete zmeniť nastavenie zámky SIM karty, pripojte sa k tejto sieti</translation>
+<translation id="3293023191599135697">Siete WEP nie sú podporované</translation>
 <translation id="3295357220137379386">Zariadenie je zaneprázdnené</translation>
 <translation id="3296763833017966289">Gruzínčina</translation>
 <translation id="3307875152560779385">Ukrajinská klávesnica</translation>
@@ -353,6 +354,7 @@
 <translation id="4092890906744441904">Írska klávesnica</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4159731583141908892">Súbor <ph name="FILE_NAME" /> bol presunutý.</translation>
+<translation id="4176286497474237543">Vyprázdniť kôš</translation>
 <translation id="4186579485882418952">Povoliť offline režim</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4197674956721858839">Výber súborov na komprimovanie</translation>
@@ -660,6 +662,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6650726141019353908">Ružový motýľ</translation>
 <translation id="6657585470893396449">Heslo</translation>
+<translation id="6658865850469097484">Súbory, ktoré sú v koši dlhšie ako 30 dní, budú automaticky odstránené.</translation>
 <translation id="6673674183150363784">Francúzska (Francúzsko) klávesnica Bépo</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Späť</translation>

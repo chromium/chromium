@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">สีเหลืองอมเขียว</translation>
 <translation id="2523609930580546572">บทแนะนำ ChromeVox</translation>
 <translation id="2525706221823668172">แป้นพิม์ลัด Chromebook</translation>
+<translation id="2543973100702367007">แตะสองครั้งเพื่อ<ph name="LABEL" /></translation>
 <translation id="2553108862507765288">ข้อผิดพลาดทางไวยากรณ์</translation>
 <translation id="2556326187583116255">ใช้ 2 นิ้วแตะเพื่อหยุดเสียงที่กำลังพูดอยู่</translation>
 <translation id="2573256689920773241">วิธีพื้นฐานในการไปยังส่วนต่างๆ</translation>
@@ -1114,6 +1115,7 @@
 <translation id="8693391540059827073">ฤดูกาลโปรดของฉัน</translation>
 <translation id="8696284982970258155">สีเขียวฮันนีดิว</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{เครื่องหมายขีดตั้ง}other{# เครื่องหมายขีดตั้ง}}</translation>
+<translation id="8733397807344284494">กดค้นหา + เว้นวรรคเพื่อ<ph name="LABEL" /></translation>
 <translation id="8741370088760768424">คำแนะนำ: กดแป้น Search + แป้นเว้นวรรค เพื่อเปิดใช้งานรายการปัจจุบัน</translation>
 <translation id="8743786158317878347">ป้อนเนื้อหาที่มีโครงสร้าง เช่น ตาราง</translation>
 <translation id="8746846427395705317">ย้ายไปที่คำก่อนหน้า</translation>

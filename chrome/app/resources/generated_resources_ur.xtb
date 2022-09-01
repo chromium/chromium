@@ -2669,6 +2669,7 @@
 <translation id="3494769164076977169">جب کوئی سائٹ پہلی فائل کے بعد خود بخود فائلیں ڈاؤن لوڈ کرنے کی کوشش کرے تو پوچھیں (تجویز کردہ)</translation>
 <translation id="3495496470825196617">چارجنگ کے دوران پاور معطل کریں</translation>
 <translation id="3495660573538963482">‏Google اسسٹنٹ کی ترتیبات</translation>
+<translation id="3495675993466884458">آپ کے سسٹم کے منتظم نے <ph name="APP_ORIGIN" /> کو آپ کی اسکرین ریکارڈ کرنے کی اجازت دی ہے</translation>
 <translation id="3496213124478423963">زوم آؤٹ کریں</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (منتخب نہیں کیا گیا)</translation>
 <translation id="3496689104192986836">بیٹری لیول <ph name="PERCENTAGE" />%</translation>
@@ -2787,7 +2788,7 @@
 <translation id="3616741288025931835">براؤزنگ ڈیٹا &amp;صاف کریں…</translation>
 <translation id="3617891479562106823">پس منظر غیر دستیاب ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
-<translation id="3619962278978697442">ہر بار سائن ان کرنے پر کسی ایک کا انتخاب کریں</translation>
+<translation id="3620136223548713675">جغرافیائی مقام</translation>
 <translation id="3621807901162200696">‏ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ایک ایپ}other{# ایپس}}</translation>
 <translation id="362333465072914957">‏سرٹیفیکیٹ جاری کرنے کے لیے CA کا انتظار</translation>
@@ -3989,7 +3990,6 @@
 <translation id="4768332406694066911">آپ کی شناخت کرنے والی ان تنظیموں کی جانب سے آپ کے پاس سرٹیفیکیٹس ہیں</translation>
 <translation id="4770119228883592393">‏اجازت کی درخواست کی گئی، جواب دینے کے لیے ⌘ + Option + نیچے تیر کا نشان دبائیں</translation>
 <translation id="4773112038801431077">‏Linux کو اپ گریڈ کریں</translation>
-<translation id="4774337692467964393">‏اگر Smart Lock آن ہے تو آپ کو PIN یا پاس ورڈ درج کرنے کی ضرورت نہیں ہوگی</translation>
 <translation id="4775142426314270551">‏Google کو کریش رپورٹس کے ساتھ ساتھ ڈائیگناسٹک اور استعمال کا ڈیٹا خودکار طور پر بھیج کر Chrome اور ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں۔ کچھ مجموعی ڈیٹا Android ایپس اور Google پارٹنرز کی بھی مدد کرے گا۔ اگر آپ کے بچے کے Google اکاؤنٹ کے لیے ویب اور ایپ کی سرگرمی کی ترتیب آن ہے تو آپ کے بچے کے Android کا ڈیٹا آپ کے بچے کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔</translation>
 <translation id="477647109558161443">ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
 <translation id="4776594120007763294">بعد میں پڑھنے کی خاطر صفحہ شامل کرنے کے لیے، بٹن پر کلک کریں</translation>
@@ -4038,7 +4038,6 @@
 <translation id="4820236583224459650">بطور فعال ٹکٹ سیٹ کریں</translation>
 <translation id="4821935166599369261">&amp;پروفائلنگ فعال ہے</translation>
 <translation id="4823484602432206655">صارف اور آلہ کی ترتیبات پڑھیں اور انہیں تبدیل کریں</translation>
-<translation id="4823894915586516138">‏یہ PIN یا پاس ورڈ اس <ph name="DEVICE_TYPE" /> پر آپ کے ڈیٹا کی حفاظت کرتا ہے، بشمول کسی بھی معلومات کے جس تک آپ اپنے فون سے رسائی حاصل کرتے ہیں</translation>
 <translation id="4824037980212326045">‏Linux کا بیک اپ اور بحالی</translation>
 <translation id="4824958205181053313">مطابقت پذیری منسوخ کریں؟</translation>
 <translation id="4825532258163983651">پاس کی کو حذف نہیں کیا جا سکتا</translation>
@@ -7317,7 +7316,6 @@
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> کو مرر کریں</translation>
 <translation id="7986295104073916105">محفوظ کردہ پاس ورڈ کی ترتیبات پڑھیں اور تبدیل کریں</translation>
 <translation id="7987814697832569482">‏ہمیشہ اس VPN کے ذریعے منسلک کریں</translation>
-<translation id="7987932397583333141">‏ایک PIN یا پاس ورڈ سیٹ کریں</translation>
 <translation id="7988355189918024273">ایکسیسبیلٹی کی خصوصیات کو فعال کریں</translation>
 <translation id="7988805580376093356">‏اپنا OS برقرار رکھیں اور USB سے <ph name="DEVICE_OS" /> چلائیں۔</translation>
 <translation id="7991296728590311172">سوئچ رسائی کی ترتیبات</translation>

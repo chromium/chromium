@@ -508,6 +508,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 minuto}one{Reverta o dispositivo para a versão anterior em até # minuto}other{Reverta o dispositivo para a versão anterior em até # minutos}}</translation>
 <translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. Carregando eventos.</translation>
+<translation id="392627956579011934">É necessário reiniciar o dispositivo para instalar os arquivos de fala.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo conectado</translation>
 <translation id="3934456833412894880">O carregamento adaptável está ativado. Sua bateria vai parar em 80% para prolongar a vida útil e será totalmente carregada quando você precisar.</translation>
 <translation id="3943857333388298514">Colar</translation>
@@ -562,6 +563,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4247123849143712100">Atualizar e desligar</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
+<translation id="4250899820387052060">Arquivos de acesso rápido</translation>
 <translation id="425364040945105958">Sem chip</translation>
 <translation id="4261870227682513959">Mostrar configurações de notificação. As notificações estão desativadas</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>

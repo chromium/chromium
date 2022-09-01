@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">Сајтот пред вас содржи опасни апликации</translation>
 <translation id="1348779747280417563">Потврдете го името</translation>
 <translation id="1354976809542763843">Домашно финансирање</translation>
+<translation id="1355158069018170842">Прикажувај намалувања на цените на картички</translation>
 <translation id="1355301061807280185">Работни места</translation>
 <translation id="1355754231781595724">Безбедност на возила и во сообраќај</translation>
 <translation id="1357195169723583938">Кој го користел уредот неодамна и кога</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Да се инсталира „Услуги на Google Play за AR“?</translation>
 <translation id="2154054054215849342">Не е достапна синхронизација за вашиот домен</translation>
 <translation id="2154484045852737596">Уредете ја картичката</translation>
+<translation id="2157640075051554492">Известувања за следење на цените</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162510787844374618">Контактираме со вашата банка…</translation>
 <translation id="2162620598375156287">Сега <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@
 <translation id="3633738897356909127">Копче „Ажурирај го Chrome“, притиснете Enter за да го ажурирате Chrome од поставките за Chrome</translation>
 <translation id="3634530185120165534">Фиока 5</translation>
 <translation id="3634567936866541746">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chrome ви препорачува да ги проверите зачуваните лозинки.</translation>
+<translation id="3637033245385760976">Известувањата на Chrome мора да бидат вклучени. Може да ги вклучите во <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Зачувајте во сметката на Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Апликација:</translation>
@@ -1425,6 +1428,7 @@
 <translation id="4785376858512657294">Управувајте со сметката на Google</translation>
 <translation id="4785689107224900852">Префрлете се на оваа картичка</translation>
 <translation id="4786804728079074733">Одбојка</translation>
+<translation id="4789704664580239421">Известувањата за намалени цени ќе се појавуваат на отворените картички</translation>
 <translation id="4791134497475588553">Инсталирани апликации на Linux и кога последен пат се користени</translation>
 <translation id="4792686369684665359">Испраќањето на податоците не е безбедно</translation>
 <translation id="4796594887379589189">ID на работен налог</translation>
@@ -1790,6 +1794,7 @@
 <translation id="5730040223043577876">Chrome препорачува ресетирање на лозинката ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="5736165827969430182">Метали и рударство</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Зачувајте картичка во вашата сметка на Google}one{Зачувајте картички во вашата сметка на Google}other{Зачувајте картички во вашата сметка на Google}}</translation>
+<translation id="5738385766833540397">Управувајте како ќе добивате известувања за намалени цени за производите што ги следите</translation>
 <translation id="5743638595296120378">Купување возила</translation>
 <translation id="5743898850056428078">Трки со мотоцикли</translation>
 <translation id="5745733273847572235">Може да прашува за вашата локација</translation>
@@ -1799,6 +1804,7 @@
 <translation id="5759751709240058861">да ја користи и движи камерата</translation>
 <translation id="5763042198335101085">Внесете важечка адреса на е-пошта</translation>
 <translation id="5764725887548570807">Неважечки формат на потекло.</translation>
+<translation id="5764920692828389743">Испрати на <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">За да ги видите методите и условите за доставување, изберете адреса</translation>
 <translation id="57689295674415555">Не е пополнет бројот на виртуелна картичка?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
@@ -1889,6 +1895,7 @@
 <translation id="6017850046339264347">Напаѓачите што се на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> може да инсталираат лажни апликации што се преправаат дека се нешто друго или собираат податоци што може да ги користат за да ве следат. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /> (синхронизирани)</translation>
 <translation id="6027201098523975773">Внесете име</translation>
+<translation id="6028591542479806248">Управувајте со мобилните и известувањата по е-пошта</translation>
 <translation id="603068602130820122">Двојно спојување десно</translation>
 <translation id="6032524144326295339">Поштенско сандаче 2</translation>
 <translation id="6032955021262906325">Врзување лево</translation>
@@ -2809,6 +2816,7 @@
 <translation id="8559762987265718583">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот уред (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
 <translation id="8564182942834072828">Одделни документи/неподредени примероци</translation>
 <translation id="8564985650692024650">Chromium препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>
+<translation id="8573969211731659953">Известувањата за намалени цени се вклучени. Ова може да го промените во <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">Системи за домашно кино</translation>
 <translation id="8577348305244205642">Виртуелната картичка не е достапна</translation>
 <translation id="858637041960032120">Додајте телефонски број</translation>

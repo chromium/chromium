@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">લીલો પીળો</translation>
 <translation id="2523609930580546572">ChromeVox ટયૂટૉરિઅલ</translation>
 <translation id="2525706221823668172">Chromebook કીબોર્ડ શૉર્ટકટ્સ</translation>
+<translation id="2543973100702367007"><ph name="LABEL" /> કરવા બે વાર ટેપ કરો</translation>
 <translation id="2553108862507765288">વ્યાકરણની ભૂલ</translation>
 <translation id="2556326187583116255">કોઈપણ વર્તમાન સ્પીચ રોકવા માટે 2 આંગળી વડે ટૅપ કરો</translation>
 <translation id="2573256689920773241">મૂળભૂત નૅવિગેશન</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">મારી મનપસંદ ઋતુ</translation>
 <translation id="8696284982970258155">હનીડ્યૂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{પાઇપ}one{# વર્ટિકલ પાઇપ}other{# વર્ટિકલ પાઇપ}}</translation>
+<translation id="8733397807344284494"><ph name="LABEL" /> કરવા Search+Space દબાવો</translation>
 <translation id="8741370088760768424">હિન્ટ: વર્તમાન આઇટમને સક્રિય કરવા માટે Search + Space દબાવો.</translation>
 <translation id="8743786158317878347">ગણિત કે ટેબલ જેવું કન્ટેન્ટ દાખલ કરો</translation>
 <translation id="8746846427395705317">પાછલા શબ્દ પર ખસેડો</translation>

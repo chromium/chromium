@@ -1010,6 +1010,7 @@
 <translation id="1925017091976104802">Натиснете <ph name="MODIFIER_KEY_DESCRIPTION" />, за да поставите</translation>
 <translation id="1925021887439448749">Въведете персонализиран уеб адрес</translation>
 <translation id="1925124445985510535">Проверката на безопасността бе изпълнена в <ph name="TIME" /></translation>
+<translation id="192564025059434655">Старите версии на приложенията за Chrome няма да се отварят на устройства с Windows след декември 2022 г. Можете да проверите дали е налице нова версия.</translation>
 <translation id="1926339101652878330">Тези настройки се контролират от корпоративно правило. За още информация, моля, свържете се с администратора си.</translation>
 <translation id="1927632033341042996">Пръст <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">ПИН за заключване на екрана</translation>
@@ -2517,6 +2518,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3348131053948466246">Предложено е емоджи. За придвижване натиснете клавиша със стрелка нагоре или надолу, за вмъкване на предложението използвайте Enter.</translation>
 <translation id="3349933790966648062">Използвана памет</translation>
 <translation id="3353786022389205125">Включете „Показване на заключения екран при излизане от спящ режим“ и опитайте отново</translation>
+<translation id="3354768182971982851">Старите версии на приложенията за Chrome няма да се отварят на устройства Mac след декември 2022 г. Можете да проверите дали е налице нова версия.</translation>
 <translation id="3354972872297836698">Сдвояването с устройството <ph name="DEVICE_NAME" /> не бе успешно. Изберете устройство, за да опитате отново.</translation>
 <translation id="3355936511340229503">Грешка във връзката</translation>
 <translation id="3356469410714175391">(Виртуалната карта е активирана)</translation>
@@ -2676,6 +2678,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3494769164076977169">Извеждане на запитване, когато сайт опита да изтегли автоматично повече от един файл (препоръчително)</translation>
 <translation id="3495496470825196617">Неактивност при зареждане</translation>
 <translation id="3495660573538963482">Настройки на Google Асистент</translation>
+<translation id="3495675993466884458">Системният ви администратор е разрешил на <ph name="APP_ORIGIN" /> да записва екрана ви</translation>
 <translation id="3496213124478423963">Намаляване</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (не е избран)</translation>
 <translation id="3496689104192986836">Ниво на батерията: <ph name="PERCENTAGE" />%</translation>
@@ -2794,7 +2797,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3616741288025931835">&amp;Изчистване на данните за сърфирането...</translation>
 <translation id="3617891479562106823">Фоновете не са налице. Опитайте отново по-късно.</translation>
 <translation id="3619115746895587757">Капучино</translation>
-<translation id="3619962278978697442">Изберете една от двете опции при всяко влизане в профила</translation>
+<translation id="3620136223548713675">Геолокация</translation>
 <translation id="3621807901162200696">Помощ за подобряването на функциите и ефективността на Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{приложение}other{# приложения}}</translation>
 <translation id="362333465072914957">Изчаква се издаването на сертификат от сертифициращия орган</translation>
@@ -3125,6 +3128,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3918972485393593704">Изпращане на подробностите до Google</translation>
 <translation id="3919145445993746351">За да получите разширенията си на всичките си компютри, включете синхронизирането</translation>
 <translation id="3919229493046408863">Изключване на известията от устройства в близост</translation>
+<translation id="3919262972282962508">Старите версии на приложенията за Chrome няма да се отварят на устройства Mac след декември 2022 г. Обърнете се към администратора си, за да актуализира до нова версия или да премахне това приложение.</translation>
 <translation id="3919798653937160644">Преглежданите от вас страници в този прозорец няма да се показват в историята на браузъра и няма да оставят на компютъра други следи, като „бисквитки“, след като затворите всички прозорци в режим на гост. Изтеглените от вас файлове обаче ще бъдат запазени.</translation>
 <translation id="3920504717067627103">Правила за сертификата</translation>
 <translation id="3920909973552939961">Сайтове без разрешение за инсталиране на инструменти за обработване на плащания</translation>
@@ -3997,7 +4001,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4768332406694066911">Имате идентифициращи ви сертификати от тези организации</translation>
 <translation id="4770119228883592393">Изисква се разрешение. Натиснете ⌘ + Option + стрелката за надолу, за да отговорите</translation>
 <translation id="4773112038801431077">Надстройване на Linux</translation>
-<translation id="4774337692467964393">Ако функцията Smart Lock е включена, няма да е необходимо да въвеждате ПИН код или парола.</translation>
 <translation id="4775142426314270551">Помогнете за подобряването на функциите и ефективността на Chrome и Chrome OS, като автоматично изпращате до Google сигнали за сривове, както и диагностична информация и данни за използването. Някои обобщени данни също така ще подпомогнат приложенията за Android и партньорите на Google. Ако настройката „Активност в мрежата и приложенията“ е включена за профила в Google на детето ви, данните му от Android може да се запазват в профила му в Google.</translation>
 <translation id="477647109558161443">Създаване на пряк път на работния плот</translation>
 <translation id="4776594120007763294">За да добавите страница за четене по-късно, кликнете върху бутона</translation>
@@ -4046,7 +4049,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4820236583224459650">Задаване като активен пропуск</translation>
 <translation id="4821935166599369261">&amp;Профилирането е активирано</translation>
 <translation id="4823484602432206655">Четене и промяна на настройките на потребителите и устройството</translation>
-<translation id="4823894915586516138">ПИН кодът или паролата защитават данните ви на това устройство <ph name="DEVICE_TYPE" />, включително информацията, до която осъществявате достъп от телефона си</translation>
 <translation id="4824037980212326045">Резервни копия и възстановяване на Linux</translation>
 <translation id="4824958205181053313">Да се анулира ли синхронизирането?</translation>
 <translation id="4825532258163983651">Кодът за достъп не може да бъде изтрит</translation>
@@ -5635,6 +5637,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Нов опит</translation>
 <translation id="6374635887697228982">Искате ли да получавате отстъпки?</translation>
+<translation id="637642201764944055">Старите версии на приложенията за Chrome няма да се отварят на устройства с Linux след декември 2022 г. Обърнете се към администратора си, за да актуализира до нова версия или да премахне това приложение.</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6378392501584240055">Отваряне в списъка с Wi-Fi мрежи</translation>
 <translation id="6380143666419481200">Приемам и продължавам</translation>
@@ -6112,6 +6115,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6826872289184051766">Потвърждаване чрез USB</translation>
 <translation id="6827121912381363404">Разрешаване на всички разширения да четат и променят <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Приложенията и настройките ви ще се синхронизират с всички устройства с Chrome OS, на които сте влезли в профила си в Google. За да намерите опциите за синхронизиране на браузъра, отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Старите версии на приложенията за Chrome няма да се отварят на устройства с Windows след декември 2022 г. Обърнете се към администратора си, за да актуализира до нова версия или да премахне това приложение.</translation>
 <translation id="6828153365543658583">Влизането да се ограничи до следните потребители:</translation>
 <translation id="6828182567531805778">Въведете своя пропуск, за да синхронизирате данните си</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7326,7 +7330,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7984068253310542383">Дублиране на <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Четене и промяна на настройките за запазени пароли</translation>
 <translation id="7987814697832569482">Винаги да се установява връзка през тази VPN</translation>
-<translation id="7987932397583333141">Задаване на ПИН или парола</translation>
 <translation id="7988355189918024273">Активиране на функциите за достъпност</translation>
 <translation id="7988805580376093356">Запазване на операционната ви система и изпълняване на <ph name="DEVICE_OS" /> от USB.</translation>
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
@@ -7970,6 +7973,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="863109444997383731">Сайтовете ще бъдат блокирани, така че да не извеждат запитване дали да ви показват известия. Ако има заявка за показване на известия от даден сайт, в адресната лента ще се появи индикатор, че е блокирана.</translation>
 <translation id="8632104508818855045">По-рано избрахте да не разрешавате разширенията на <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Скорошна активност</translation>
+<translation id="8633979878370972178">Старите версии на приложенията за Chrome няма да се отварят на устройства с Linux след декември 2022 г. Можете да проверите дали е налице нова версия.</translation>
 <translation id="8634348081024879304">Вече няма да можете да използвате виртуалната си карта с Google Pay. <ph name="BEGIN_LINK" />Научете повече за виртуалните карти<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Презарежда се...</translation>
 <translation id="8636284842992792762">Разширенията се подготвят за работа...</translation>

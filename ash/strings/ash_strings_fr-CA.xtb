@@ -508,6 +508,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Restaurez la version antérieure de l'appareil dans un délai de 1 minute}one{Restaurez la version antérieure de l'appareil dans un délai de # minute}other{Restaurez la version antérieure de l'appareil dans un délai de # minutes}}</translation>
 <translation id="3923494859158167397">Aucun réseau cellulaire n'est configuré</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, chargement des événements en cours…</translation>
+<translation id="392627956579011934">Redémarrage nécessaire pour installer les fichiers vocaux.</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934456833412894880">La recharge adaptative est activée. Votre pile restera à 80 % afin de prolonger son autonomie et se rechargera complètement lorsque vous en aurez besoin.</translation>
 <translation id="3943857333388298514">Coller</translation>
@@ -562,6 +563,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4247123849143712100">Mettre à jour et éteindre</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
+<translation id="4250899820387052060">Accès rapide aux fichiers</translation>
 <translation id="425364040945105958">Aucune carte SIM</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>

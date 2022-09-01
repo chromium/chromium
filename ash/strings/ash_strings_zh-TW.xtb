@@ -508,6 +508,7 @@
 <translation id="3922427723338465344">{0,plural, =1{在 1 分鐘內將裝置復原為先前的版本}other{在 # 分鐘內將裝置復原為先前的版本}}</translation>
 <translation id="3923494859158167397">尚未設定行動網路</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
+<translation id="392627956579011934">必須重新啟動才能安裝語音檔案。</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
 <translation id="3934456833412894880">自動調節充電功能已開啟。裝置電量會維持在 80% 以延長電池壽命，並在你需要時充飽電。</translation>
 <translation id="3943857333388298514">貼上</translation>
@@ -562,6 +563,7 @@
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4247123849143712100">更新並關機</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
+<translation id="4250899820387052060">快速檔案</translation>
 <translation id="425364040945105958">沒有 SIM 卡</translation>
 <translation id="4261870227682513959">顯示通知設定。已關閉所有通知</translation>
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>

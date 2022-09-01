@@ -2672,6 +2672,17 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="3727675072430693164">Se a política for definida como "Ativada", as estatísticas de hardware dos componentes SoC serão informadas pelos dispositivos registrados.
 
       Se a política for definida como "Desativada" ou não for definida, as estatísticas não serão informadas pelos dispositivos registrados.</translation>
+<translation id="372853200788846114">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai pedir que os usuários desbloqueiem o dispositivo com uma senha quando ele for suspenso ou a tampa for fechada.
+
+      O dispositivo vai ser bloqueado quando a tampa for fechada, exceto se estiver conectado a um monitor externo.  Nesse caso, ele não vai ser bloqueado quando a tampa fechar, mas será se o monitor externo for desconectado e a tampa ainda estiver fechada.
+
+      Até a versão M106 do <ph name="PRODUCT_OS_NAME" />, esta política só bloqueia o dispositivo quando ele entra em suspensão.  Da versão M106 em diante, ela bloqueia o dispositivo quando ele está em suspensão ou quando a tampa é fechada.
+
+      Ao definir esta política como verdadeira e a <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> como <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />, o dispositivo vai ser bloqueado quando a tampa for fechada, mas vai ser suspenso apenas se for configurado para fazer isso na <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Se a política for desativada, os usuários não vão precisar digitar uma senha para desbloquear o dispositivo.
+
+      Se ela for deixada sem definição, os usuários vão poder escolher se querem receber uma solicitação de senha para desbloquear o dispositivo.</translation>
 <translation id="3729937245044939404">O esta política foi descontinuada na versão M70. Use a <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> e a <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Ativa o recurso de preenchimento automático do <ph name="PRODUCT_NAME" /> e permite que os usuários preencham formulários da Web automaticamente usando informações já armazenadas, como dados de endereço ou do cartão de crédito.

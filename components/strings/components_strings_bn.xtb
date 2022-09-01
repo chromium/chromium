@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">যে সাইট খুলতে চলেছেন সেটিতে বিপজ্জনক অ্যাপ আছে</translation>
 <translation id="1348779747280417563">নাম কনফার্ম করুন</translation>
 <translation id="1354976809542763843">হোম ফাইন্যান্সিং</translation>
+<translation id="1355158069018170842">ট্যাবে দাম কমার বিজ্ঞপ্তি দেখুন</translation>
 <translation id="1355301061807280185">চাকরি</translation>
 <translation id="1355754231781595724">যানবাহন ও ট্র্যাফিক নিরাপত্তা</translation>
 <translation id="1357195169723583938">সম্প্রতি ডিভাইসটি কে এবং কখন ব্যবহার করেছেন</translation>
@@ -467,6 +468,7 @@
 <translation id="2153609454945889823">Google Play Services for AR ইনস্টল করবেন?</translation>
 <translation id="2154054054215849342">আপনার ডোমেনের জন্য সিঙ্ক উপলভ্য নেই</translation>
 <translation id="2154484045852737596">কার্ড সম্পাদনা করুন</translation>
+<translation id="2157640075051554492">দাম ট্র্যাক করার বিজ্ঞপ্তি</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
 <translation id="2162510787844374618">আপনার ব্যাঙ্কের সাথে যোগাযোগ করা হচ্ছে…</translation>
 <translation id="2162620598375156287">এখন <ph name="SOURCE_WEBSITE" />-এ <ph name="CURRENT_PRICE" /></translation>
@@ -1004,6 +1006,7 @@
 <translation id="3633738897356909127">Chrome আপডেট করার বোতাম, আপনার Chrome সেটিংসে Chrome আপডেট করতে Enter প্রেস করুন</translation>
 <translation id="3634530185120165534">ট্রে ৫</translation>
 <translation id="3634567936866541746">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্ট সুরক্ষিত করার জন্য, Chrome আপনার সেভ করা পাসওয়ার্ড চেক করে নিতে সাজেস্ট করছে।</translation>
+<translation id="3637033245385760976">Chrome বিজ্ঞপ্তি চালু রাখতে হবে। আপনি <ph name="NOTIFICATION_SETTINGS" /> থেকে সেগুলি চালু করতে পারবেন</translation>
 <translation id="3637662659967048211">Google অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">অ্যাপ্লিকেশন:</translation>
@@ -1426,6 +1429,7 @@
 <translation id="4785376858512657294">Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4785689107224900852">এই ট্যাবে পরিবর্তন করুন</translation>
 <translation id="4786804728079074733">ভলিবল</translation>
+<translation id="4789704664580239421">দাম কমার বিজ্ঞপ্তি আপনার ওপেন ট্যাবে দেখা যাবে</translation>
 <translation id="4791134497475588553">ইনস্টল থাকা Linux অ্যাপ এবং শেষবার কখন সেগুলি ব্যবহার করা হয়েছে</translation>
 <translation id="4792686369684665359">আপনি নিরাপদ নয় এমন ফর্মের মাধ্যমে তথ্য জমা দিচ্ছেন</translation>
 <translation id="4796594887379589189">জব অ্যাকাউন্টের আইডি</translation>
@@ -1791,6 +1795,7 @@
 <translation id="5730040223043577876">Chrome-এর নীতি অনুযায়ী আপনার পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
 <translation id="5736165827969430182">ধাতু ও মাইনিং</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Google অ্যাকাউন্টে কার্ড সেভ করুন}one{Google অ্যাকাউন্টে কার্ড সেভ করুন}other{Google অ্যাকাউন্টে কার্ড সেভ করুন}}</translation>
+<translation id="5738385766833540397">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমার বিজ্ঞপ্তি কীভাবে পাবেন তা ম্যানেজ করুন</translation>
 <translation id="5743638595296120378">যানবাহন কেনাকেটা</translation>
 <translation id="5743898850056428078">মোটরসাইকেল রেসিং</translation>
 <translation id="5745733273847572235">আপনার লোকেশন জানতে চাইতে পারে</translation>
@@ -1800,8 +1805,10 @@
 <translation id="5759751709240058861">আপনার ক্যামেরা ব্যবহার করুন এবং সরান</translation>
 <translation id="5763042198335101085">একটি সঠিক ইমেল আইডি লিখুন</translation>
 <translation id="5764725887548570807">অরিজিন ফর্ম্যাটটি সঠিক নয়।</translation>
+<translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />-এ পাঠান</translation>
 <translation id="5765072501007116331">ডেলিভারির পদ্ধতি এবং প্রয়োজনীয়তাগুলি দেখতে একটি ঠিকানা বেছে নিন</translation>
 <translation id="57689295674415555">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি?</translation>
+<translation id="5772086939108830423">অন্য কোনও ডিভাইসে 'পাসকী' ব্যবহার করুন</translation>
 <translation id="5776313857861697733">অগ্রাধিকার</translation>
 <translation id="5781136890105823427">এক্সপেরিমেন্ট চালু করা হয়েছে</translation>
 <translation id="578305955206182703">হলুদাভ বাদামি</translation>
@@ -1890,6 +1897,7 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এ সক্রিয় থাকা আক্রমণকারীরা এমন প্রতারণামূলক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি অন্যান্য আপের থেকে আলাদা করা যায় না অথবা যেগুলি এমন ডেটা সংগ্রহ করে যা দিয়ে আপনার উপরে নজর রাখা যাবে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (সিঙ্ক হয়েছে)</translation>
 <translation id="6027201098523975773">একটি নাম লিখুন</translation>
+<translation id="6028591542479806248">মোবাইল এবং ইমেল বিজ্ঞপ্তি ম্যানেজ করুন</translation>
 <translation id="603068602130820122">ডানদিকে ডুয়াল স্টেপল</translation>
 <translation id="6032524144326295339">মেলবক্স ২</translation>
 <translation id="6032955021262906325">বাঁদিকে বাঁধাই</translation>
@@ -2809,6 +2817,7 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার ডিভাইসের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="8564182942834072828">আলাদা ডকুমেন্ট/সংগ্রহ না করা কপি</translation>
 <translation id="8564985650692024650">Chromium-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
+<translation id="8573969211731659953">দাম কমার বিজ্ঞপ্তি চালু করা আছে। আপনি <ph name="NOTIFICATION_SETTINGS" /> থেকে এটি পরিবর্তন করতে পারবেন</translation>
 <translation id="8576310925653847813">হোম থিয়েটার সিস্টেম</translation>
 <translation id="8577348305244205642">ভার্চুয়াল কার্ড উপলভ্য নেই</translation>
 <translation id="858637041960032120">ফোননম্বর জুড়ুন</translation>
@@ -3047,6 +3056,7 @@
 <translation id="950736567201356821">উপরে তিনটি পাঞ্চ</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
 <translation id="962484866189421427">এই কন্টেন্টটি প্রতারণামূলক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি অন্যান্য আপের থেকে আলাদা করা যায় না অথবা যেগুলি এমন ডেটা সংগ্রহ করে যা দিয়ে আপনার উপরে নজর রাখা যাবে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">পাসওয়ার্ড ও 'পাসকী' ম্যানেজ করুন…</translation>
 <translation id="96680173638229310">অটো ও যানবাহন</translation>
 <translation id="969892804517981540">অফিসিয়াল বিল্ড</translation>
 <translation id="973773823069644502">ডেলিভারি ঠিকানা যোগ করুন</translation>

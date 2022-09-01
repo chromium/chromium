@@ -508,6 +508,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Do minúty obnovte v zariadení predchádzajúcu verziu}few{Do # minút obnovte v zariadení predchádzajúcu verziu}many{Do # minúty obnovte v zariadení predchádzajúcu verziu}other{Do # minút obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="3923494859158167397">Žiadne nastavené mobilné siete</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, načítavajú sa udalosti.</translation>
+<translation id="392627956579011934">Inštalácia súborov s balíkmi reči vyžaduje reštartovanie.</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3934456833412894880">Je zapnuté adaptívne nabíjanie. Batéria zostane nabitá na 80 %, čím sa predĺži jej výdrž, a úplne sa nabije, keď to budete potrebovať.</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
@@ -562,6 +563,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4247123849143712100">Aktualizovať a vypnúť</translation>
 <translation id="4250229828105606438">Snímka obrazovky</translation>
+<translation id="4250899820387052060">Rýchle súbory</translation>
 <translation id="425364040945105958">Žiadna SIM karta</translation>
 <translation id="4261870227682513959">Zobraziť nastavenia upozornení. Upozornenia sú vypnuté</translation>
 <translation id="4269883910223712419">Správca tohto zariadenia môže:</translation>

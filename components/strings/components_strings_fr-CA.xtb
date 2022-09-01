@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">Le site que vous allez ouvrir contient des applications dangereuses</translation>
 <translation id="1348779747280417563">Confirmer le nom</translation>
 <translation id="1354976809542763843">Crédit immobilier</translation>
+<translation id="1355158069018170842">Afficher les réductions sur les onglets</translation>
 <translation id="1355301061807280185">Emplois</translation>
 <translation id="1355754231781595724">Sécurité routière</translation>
 <translation id="1357195169723583938">Qui a utilisé cet appareil récemment, et quand</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Installer les services Google Play pour la RA?</translation>
 <translation id="2154054054215849342">La synchronisation n'est pas offerte pour votre domaine</translation>
 <translation id="2154484045852737596">Modifier la carte</translation>
+<translation id="2157640075051554492">Notifications de suivi de prix</translation>
 <translation id="2161656808144014275">Texte</translation>
 <translation id="2162510787844374618">Nous communiquons avec votre banque…</translation>
 <translation id="2162620598375156287">Maintenant <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
@@ -691,6 +693,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Tennis de table</translation>
 <translation id="2742870351467570537">Supprimer les éléments sélectionnés</translation>
+<translation id="2759825833388495838">remplissez votre mot de passe dans <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Bandes dessinées</translation>
 <translation id="2765217105034171413">Petit</translation>
 <translation id="277133753123645258">Mode de livraison</translation>
@@ -1002,6 +1005,7 @@
 <translation id="3633738897356909127">Bouton Mise à jour de Chrome, appuyez sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
 <translation id="3634530185120165534">Bac 5</translation>
 <translation id="3634567936866541746">Vous venez d'entrer votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chrome vous recommande de vérifier vos mots de passe enregistrés.</translation>
+<translation id="3637033245385760976">Les notifications de Chrome doivent être activées. Vous pouvez les activer dans <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Enregistrer dans le compte Google</translation>
 <translation id="3640766068866876100">Fiche, 4 po x 6 po, ext</translation>
 <translation id="3642638418806704195">Application :</translation>
@@ -1424,6 +1428,7 @@
 <translation id="4785376858512657294">Gérer le compte Google</translation>
 <translation id="4785689107224900852">Basculer vers cet onglet</translation>
 <translation id="4786804728079074733">Volleyball</translation>
+<translation id="4789704664580239421">Les alertes de réduction s'afficheront sur vos onglets ouverts</translation>
 <translation id="4791134497475588553">Les applications Linux installées et quand elles ont été utilisées la dernière fois</translation>
 <translation id="4792686369684665359">Les données que vous vous apprêtez à soumettre ne sont pas sécurisées</translation>
 <translation id="4796594887379589189">Identifiant de compte de travail</translation>
@@ -1789,6 +1794,7 @@
 <translation id="5730040223043577876">Chrome recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="5736165827969430182">Métaux et mines</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Enregistrer la carte dans votre compte Google}one{Enregistrer la carte dans votre compte Google}other{Enregistrer les cartes dans votre compte Google}}</translation>
+<translation id="5738385766833540397">Gérez la façon dont vous recevez des alertes de réduction pour les produits que vous suivez</translation>
 <translation id="5743638595296120378">Achat de véhicules</translation>
 <translation id="5743898850056428078">Course de moto</translation>
 <translation id="5745733273847572235">Les sites peuvent demander votre position</translation>
@@ -1798,6 +1804,7 @@
 <translation id="5759751709240058861">Utiliser et déplacer la caméra de votre appareil</translation>
 <translation id="5763042198335101085">Entrez une adresse de courriel valide</translation>
 <translation id="5764725887548570807">Format d'origine incorrect.</translation>
+<translation id="5764920692828389743">Envoyer à <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="57689295674415555">Numéro de carte virtuelle non rempli?</translation>
 <translation id="5776313857861697733">Priorité</translation>
@@ -1888,6 +1895,7 @@
 <translation id="6017850046339264347">Les cyberpirates à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> pourraient installer des applications trompeuses qui prétendent être autre chose ou collectent des données pouvant être utilisées pour effectuer le suivi de votre activité. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synchronisés)</translation>
 <translation id="6027201098523975773">Entrez un nom</translation>
+<translation id="6028591542479806248">Gérer les notifications mobiles et par courriel</translation>
 <translation id="603068602130820122">Double agrafe en haut</translation>
 <translation id="6032524144326295339">Boîte aux lettres 2</translation>
 <translation id="6032955021262906325">Reliure à gauche</translation>
@@ -2808,6 +2816,7 @@ Détails supplémentaires :
 <translation id="8559762987265718583">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, car la date et l'heure de votre appareil (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="8564182942834072828">Documents séparés/Copies non assemblées</translation>
 <translation id="8564985650692024650">Chromium recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
+<translation id="8573969211731659953">Les alertes de réduction sont activées. Vous pouvez modifier ce paramètre dans <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">Chaînes de cinéma maison</translation>
 <translation id="8577348305244205642">Votre carte virtuelle n'est plus valide</translation>
 <translation id="858637041960032120">Ajouter un numéro de téléphone</translation>

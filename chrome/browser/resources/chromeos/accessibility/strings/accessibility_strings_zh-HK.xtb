@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">綠黃色</translation>
 <translation id="2523609930580546572">ChromeVox 教學課程</translation>
 <translation id="2525706221823668172">Chromebook 鍵盤快速鍵</translation>
+<translation id="2543973100702367007">輕觸兩下即可<ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">用兩指輕按即可停止目前的任何朗讀</translation>
 <translation id="2573256689920773241">基本導覽操作</translation>
@@ -1114,6 +1115,7 @@
 <translation id="8693391540059827073">我的最愛季節</translation>
 <translation id="8696284982970258155">蜜瓜綠色</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{1 個直立線符號}other{# 個直立線符號}}</translation>
+<translation id="8733397807344284494">按下搜尋鍵 + 空格鍵即可<ph name="LABEL" /></translation>
 <translation id="8741370088760768424">提示：㩒搜尋鍵加空白鍵就可以啟用目前嘅項目。</translation>
 <translation id="8743786158317878347">進入結構化內容，例如表格</translation>
 <translation id="8746846427395705317">移去上一個字詞</translation>

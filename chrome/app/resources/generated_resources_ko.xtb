@@ -1014,6 +1014,7 @@
 <translation id="1925017091976104802"><ph name="MODIFIER_KEY_DESCRIPTION" />을(를) 눌러 붙여넣기</translation>
 <translation id="1925021887439448749">맞춤 웹 주소 입력</translation>
 <translation id="1925124445985510535">안전 확인이 <ph name="TIME" />에 실행됨</translation>
+<translation id="192564025059434655">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Windows 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
 <translation id="1926339101652878330">이러한 설정은 엔터프라이즈 정책에 의해 관리됩니다. 자세한 정보는 관리자에게 문의하세요.</translation>
 <translation id="1927632033341042996">지문 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">화면 잠금 PIN</translation>
@@ -2522,6 +2523,7 @@
 <translation id="3348131053948466246">추천 그림 이모티콘이 표시되어 있습니다. 위 또는 아래를 눌러 이동하고 Enter를 눌러 입력합니다.</translation>
 <translation id="3349933790966648062">메모리 사용량</translation>
 <translation id="3353786022389205125">'절전 모드가 해제될 때 잠금 화면 표시'를 사용 설정한 후 다시 시도해 주세요.</translation>
+<translation id="3354768182971982851">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Mac 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> 기기와 페어링할 수 없음, 기기를 선택하여 다시 시도</translation>
 <translation id="3355936511340229503">연결 오류</translation>
 <translation id="3356469410714175391">(가상 카드 사용 설정됨)</translation>
@@ -2681,6 +2683,7 @@
 <translation id="3494769164076977169">사이트에서 첫 파일 다운로드 후 자동으로 파일을 다운로드하려고 할 때 확인(권장)</translation>
 <translation id="3495496470825196617">충전 시 전력 유휴 상태로 설정</translation>
 <translation id="3495660573538963482">Google 어시스턴트 설정</translation>
+<translation id="3495675993466884458">시스템 관리자가 <ph name="APP_ORIGIN" />의 화면 녹화를 허용했습니다.</translation>
 <translation id="3496213124478423963">축소</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" />(선택되지 않음)</translation>
 <translation id="3496689104192986836">배터리 잔량 <ph name="PERCENTAGE" />%</translation>
@@ -2799,7 +2802,7 @@
 <translation id="3616741288025931835">인터넷 사용 기록 삭제(&amp;C)...</translation>
 <translation id="3617891479562106823">배경을 사용할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3619115746895587757">카푸치노</translation>
-<translation id="3619962278978697442">로그인할 때마다 둘 중 하나 선택</translation>
+<translation id="3620136223548713675">위치정보</translation>
 <translation id="3621807901162200696">ChromeOS의 기능 및 성능 개선에 참여</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{앱 1개}other{앱 #개}}</translation>
 <translation id="362333465072914957">CA에서 인증서를 발급할 때까지 기다리는 중</translation>
@@ -3129,6 +3132,7 @@
 <translation id="3918972485393593704">Google에 세부정보 신고</translation>
 <translation id="3919145445993746351">어느 컴퓨터에서나 내 확장 프로그램을 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="3919229493046408863">기기가 주변에 있을 때 알림 끄기</translation>
+<translation id="3919262972282962508">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Mac 기기에서 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
 <translation id="3919798653937160644">이 창에서 보는 페이지는 방문 기록에 나타나지 않으며, 열려 있는 모든 게스트 창을 닫은 후 쿠키와 같은 다른 흔적을 컴퓨터에 남기지 않습니다. 하지만 다운로드한 파일은 모두 저장됩니다.</translation>
 <translation id="3920504717067627103">인증서 정책</translation>
 <translation id="3920909973552939961">결제 핸들러 설치가 허용되지 않음</translation>
@@ -3999,7 +4003,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
 <translation id="4770119228883592393">권한 요청됨, ⌘ 키와 Option 키와 아래쪽 화살표 키를 눌러 응답</translation>
 <translation id="4773112038801431077">Linux 업그레이드</translation>
-<translation id="4774337692467964393">Smart Lock을 사용 설정하면 PIN이나 비밀번호를 입력할 필요가 없습니다.</translation>
 <translation id="4775142426314270551">진단 및 사용 데이터와 함께 비정상 종료 보고서를 Google에 자동으로 전송하여 Chrome 및 ChromeOS의 기능과 성능 개선에 참여합니다. 일부 합산 데이터도 Android 앱 및 Google 파트너에게 도움이 됩니다. 자녀의 Google 계정에 웹 및 앱 활동이 사용 설정되어 있다면 관련된 Android 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="477647109558161443">바탕화면 바로가기 만들기</translation>
 <translation id="4776594120007763294">나중에 읽을 페이지를 추가하려면 버튼을 클릭하세요</translation>
@@ -4048,7 +4051,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4820236583224459650">활성 티켓으로 설정</translation>
 <translation id="4821935166599369261">프로파일링 사용(&amp;P)</translation>
 <translation id="4823484602432206655">사용자와 기기 설정 확인 및 변경</translation>
-<translation id="4823894915586516138">이 PIN 또는 비밀번호는 휴대전화에서 액세스하는 모든 정보를 포함하여 이 <ph name="DEVICE_TYPE" />의 데이터를 보호합니다</translation>
 <translation id="4824037980212326045">Linux 백업 및 복원</translation>
 <translation id="4824958205181053313">동기화를 취소하시겠습니까?</translation>
 <translation id="4825532258163983651">패스키를 삭제할 수 없음</translation>
@@ -5636,6 +5638,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">다시 시도</translation>
 <translation id="6374635887697228982">할인을 받으시겠습니까?</translation>
+<translation id="637642201764944055">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Linux 기기에서 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
 <translation id="6378392501584240055">Wi-Fi 네트워크에서 열기</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
@@ -6113,6 +6116,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6826872289184051766">USB를 통해 인증</translation>
 <translation id="6827121912381363404">모든 확장 프로그램이 <ph name="PERMITTED_SITE" /> 사이트를 읽고 변경하도록 허용</translation>
 <translation id="6827517233063803343">앱 및 설정은 Google 계정으로 로그인한 모든 ChromeOS 기기와 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
+<translation id="6827767090350758381">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Windows 기기에서 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
 <translation id="6828153365543658583">로그인할 수 있는 사용자 설정:</translation>
 <translation id="6828182567531805778">데이터를 동기화하려면 암호를 입력합니다.</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7328,7 +7332,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> 미러링</translation>
 <translation id="7986295104073916105">저장된 비밀번호 설정 읽기 및 변경</translation>
 <translation id="7987814697832569482">항상 이 VPN을 통해 연결</translation>
-<translation id="7987932397583333141">PIN 또는 비밀번호 설정</translation>
 <translation id="7988355189918024273">접근성 기능 사용</translation>
 <translation id="7988805580376093356">OS는 그대로 두고 USB에서 <ph name="DEVICE_OS" />을 실행하세요</translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
@@ -7972,6 +7975,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="863109444997383731">사이트가 알림 표시를 요청하지 못하도록 차단됩니다. 사이트에서 알림을 요청하면 차단 표시 아이콘이 주소 표시줄에 나타납니다.</translation>
 <translation id="8632104508818855045">이전에 <ph name="ORIGIN" />의 확장 프로그램을 일체 허용하지 않았습니다.</translation>
 <translation id="8633025649649592204">최근 활동</translation>
+<translation id="8633979878370972178">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Linux 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
 <translation id="8634348081024879304">더 이상 Google Pay에서 가상 카드를 사용할 수 없습니다. <ph name="BEGIN_LINK" />가상 카드에 관해 알아보기<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">새로 고치는 중...</translation>
 <translation id="8636284842992792762">확장 프로그램 초기화 중...</translation>

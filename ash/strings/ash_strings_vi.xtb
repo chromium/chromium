@@ -508,6 +508,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 phút}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # phút}}</translation>
 <translation id="3923494859158167397">Bạn chưa thiết lập mạng di động nào</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Đang tải sự kiện.</translation>
+<translation id="392627956579011934">Cần khởi động lại để cài đặt các tệp lời nói.</translation>
 <translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
 <translation id="3934456833412894880">Tính năng Sạc thích ứng đang bật Pin của bạn sẽ giữ ở mức 80% để kéo dài thời lượng pin và sạc đầy khi bạn cần.</translation>
 <translation id="3943857333388298514">Dán</translation>
@@ -562,6 +563,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4247123849143712100">Cập nhật và tắt</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
+<translation id="4250899820387052060">Tệp nhanh</translation>
 <translation id="425364040945105958">Không có SIM</translation>
 <translation id="4261870227682513959">Hiển thị các tùy chọn cài đặt thông báo. Thông báo hiện đang tắt</translation>
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>

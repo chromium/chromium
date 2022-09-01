@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Зелено-жолта</translation>
 <translation id="2523609930580546572">Упатство за ChromeVox</translation>
 <translation id="2525706221823668172">Кратенки од тастатурата на Chromebook</translation>
+<translation id="2543973100702367007">Допрете двапати за <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">граматичка грешка</translation>
 <translation id="2556326187583116255">Допрете со 2 прста за да го запрете тековниот говор</translation>
 <translation id="2573256689920773241">Основна навигација</translation>
@@ -1116,6 +1117,7 @@
 <translation id="8693391540059827073">Мое омилено годишно време</translation>
 <translation id="8696284982970258155">Боја на медена роса</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{цевка}one{# вертикална цевка}other{# вертикални цевки}}</translation>
+<translation id="8733397807344284494">Притиснете „Пребарување+Празно место“ за <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Совет: притиснете Search + празно место за да ја активирате тековната ставка.</translation>
 <translation id="8743786158317878347">внесува структурирана содржина како табели</translation>
 <translation id="8746846427395705317">преместете на претходниот збор</translation>

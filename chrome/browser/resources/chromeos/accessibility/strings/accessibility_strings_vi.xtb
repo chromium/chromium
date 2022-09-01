@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Màu vàng lục</translation>
 <translation id="2523609930580546572">Hướng dẫn về ChromeVox</translation>
 <translation id="2525706221823668172">Phím tắt Chromebook</translation>
+<translation id="2543973100702367007">Nhấn đúp để <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">lỗi ngữ pháp</translation>
 <translation id="2556326187583116255">Nhấn bằng 2 ngón tay để dừng mọi giọng đọc hiện tại</translation>
 <translation id="2573256689920773241">Thao tác cơ bản</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Mùa tôi yêu thích</translation>
 <translation id="8696284982970258155">Màu dưa lưới</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{dấu sổ thẳng}other{# dấu sổ thẳng}}</translation>
+<translation id="8733397807344284494">Nhấn tổ hợp phím Tìm kiếm + phím Cách để <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Gợi ý: Nhấn tổ hợp phím Tìm kiếm + Dấu cách để kích hoạt mục hiện tại.</translation>
 <translation id="8743786158317878347">vào nội dung có cấu trúc, chẳng hạn như bảng</translation>
 <translation id="8746846427395705317">chuyển đến từ đứng trước</translation>

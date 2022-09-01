@@ -2802,7 +2802,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3616741288025931835">&amp;Clear Browsing Data...</translation>
 <translation id="3617891479562106823">Backgrounds are unavailable. Try again later.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3619962278978697442">Choose either one each time that you sign in</translation>
 <translation id="3620136223548713675">Geolocation</translation>
 <translation id="3621807901162200696">Help improve Chrome OS features and performance</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{an app}other{# apps}}</translation>
@@ -4007,7 +4006,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
 <translation id="4770119228883592393">Permission requested, press ⌘ + Option + Down arrow to respond</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
-<translation id="4774337692467964393">If Smart Lock is turned on, you won't need to enter a PIN or password</translation>
 <translation id="4775142426314270551">Help improve Chrome and Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google Partners. If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's Android data may be saved to your child's Google Account.</translation>
 <translation id="477647109558161443">Create a desktop shortcut</translation>
 <translation id="4776594120007763294">To add a page to read later, click the button</translation>
@@ -4056,7 +4054,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4820236583224459650">Set as active ticket</translation>
 <translation id="4821935166599369261">&amp;Profiling Enabled</translation>
 <translation id="4823484602432206655">Read and change user and device settings</translation>
-<translation id="4823894915586516138">This PIN or password protects your data on this <ph name="DEVICE_TYPE" />, including any information that you access from your phone</translation>
 <translation id="4824037980212326045">Linux backup and restore</translation>
 <translation id="4824958205181053313">Cancel sync?</translation>
 <translation id="4825532258163983651">Can't delete passkey</translation>
@@ -7338,7 +7335,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7984068253310542383">Mirror <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Read and change saved password settings</translation>
 <translation id="7987814697832569482">Always connect through this VPN</translation>
-<translation id="7987932397583333141">Set a PIN or password</translation>
 <translation id="7988355189918024273">Enable accessibility features</translation>
 <translation id="7988805580376093356">Keep your OS and run <ph name="DEVICE_OS" /> from USB.</translation>
 <translation id="7991296728590311172">Switch Access settings</translation>
