@@ -247,8 +247,8 @@ and testing environment trust each other.
 Q: I found a bug, how do I report it?<br>
 A: Thank you for your contribution. Please create a new bug with the description
 and logs (if possible) on our
-[bugtracker](https://b.corp.google.com/components/1225577). You need a partner
-account to do that.
+[bugtracker](https://partnerissuetracker.corp.google.com/issues/new?component=1225577&template=1725782).
+You need a partner account to do that.
 
 Q: Have a question?<br>
 A: Please reach out to cros-oem-services-team@google.com.
