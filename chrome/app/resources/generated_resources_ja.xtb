@@ -7422,7 +7422,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="8168071266284693455">すべてのデバイスでブックマーク、パスワード、履歴、その他の設定が同期されます</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
-<translation id="8169165065843881617">{NUM_TABS,plural, =1{リーディング リストにタブを追加}other{リーディング リストにタブを追加}}</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
 <translation id="8171334254070436367">カードをすべて非表示にする</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
 <translation id="8174876712881364124">Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
@@ -7809,7 +7809,7 @@
 <translation id="8571687764447439720">Kerberos チケットの追加</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> の音声を常に許可する</translation>
 <translation id="8575286410928791436">終了するには <ph name="KEY_EQUIVALENT" /> キーを押します</translation>
-<translation id="8576885347118332789">{NUM_TABS,plural, =1{リーディング リストにタブを追加}other{リーディング リストにタブを追加}}</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
 <translation id="8578639784464423491">99 文字までで指定してください</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8581809080475256101">ボタンを押して次に進みます。履歴を表示するにはコンテキスト メニューを選択します</translation>
