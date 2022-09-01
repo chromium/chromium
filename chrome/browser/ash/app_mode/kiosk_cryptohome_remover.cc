@@ -103,7 +103,9 @@ void KioskCryptohomeRemover::RemoveObsoleteCryptohomes() {
 }
 
 void KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(
-    const AccountId& account_id) {}
+    const AccountId& account_id) {
+  UnscheduleDelayedCryptohomeRemoval(cryptohome::Identification(account_id));
+}
 
 void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
     const std::vector<AccountId>& account_ids) {
