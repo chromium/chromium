@@ -6853,3 +6853,6 @@ crbug.com/1358333 [ Mac10.15 ] external/wpt/webmessaging/event.origin.sub.htm [ 
 
 # Sheriff 2022-08-31
 crbug.com/1306304 [ Mac ] plugins/multiple-plugins.html [ Failure Pass ]
+
+# Sheriff 2022-09-01
+virtual/gpu/fast/canvas/disconnected-canvas-lost-gpu-context.html [ Skip ]
