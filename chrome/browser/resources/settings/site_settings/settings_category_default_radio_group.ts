@@ -211,6 +211,9 @@ export class SettingsCategoryDefaultRadioGroupElement extends
           break;
       }
       this.set('pref_.controlledBy', controlledBy);
+    } else {
+      this.set('pref_.enforcement', undefined);
+      this.set('pref_.controlledBy', undefined);
     }
 
     const enabled = this.computeIsSettingEnabled(update.setting);

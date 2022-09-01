@@ -4,8 +4,8 @@
 
 // clang-format off
 import {ContentSetting, ContentSettingProvider, ContentSettingsTypes, SettingsCategoryDefaultRadioGroupElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
@@ -155,7 +155,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     const enforcedPrefs = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
             ContentSettingsTypes.GEOLOCATION, createDefaultContentSetting({
-              setting: ContentSetting.ASK,
+              setting: ContentSetting.BLOCK,
               source: ContentSettingProvider.EXTENSION,
             }))],
         []);
@@ -164,7 +164,18 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     testElement.category = ContentSettingsTypes.GEOLOCATION;
 
     await browserProxy.whenCalled('getDefaultValueForContentType');
+    assertTrue(testElement.$.disabledRadioOption.checked);
     assertTrue(testElement.$.enabledRadioOption.disabled);
     assertTrue(testElement.$.disabledRadioOption.disabled);
+
+    // Stop enforcement.
+    const enabledPref =
+        createPref(ContentSettingsTypes.GEOLOCATION, ContentSetting.ASK);
+    browserProxy.setPrefs(enabledPref);
+
+    await flushTasks();
+    assertTrue(testElement.$.enabledRadioOption.checked);
+    assertFalse(testElement.$.enabledRadioOption.disabled);
+    assertFalse(testElement.$.disabledRadioOption.disabled);
   });
 });
