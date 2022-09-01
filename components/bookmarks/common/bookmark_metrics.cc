@@ -35,12 +35,12 @@ void RecordTimeSinceLastScheduledSave(base::TimeDelta delta) {
 }
 
 void RecordTimeToLoadAtStartup(base::TimeDelta delta) {
-  UmaHistogramTimes("Bookmarks.Storage.TimeToLoadAtStartup2", delta);
+  UmaHistogramTimes("Bookmarks.Storage.TimeToLoadAtStartup", delta);
 }
 
 void RecordFileSizeAtStartup(int64_t total_bytes) {
   int total_size_kb = base::saturated_cast<int>(total_bytes / kBytesPerKB);
-  base::UmaHistogramCounts1M("Bookmarks.Storage.FileSizeAtStartup2",
+  base::UmaHistogramCounts1M("Bookmarks.Storage.FileSizeAtStartup",
                              total_size_kb);
 }
 
@@ -52,45 +52,45 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
             stats.duplicate_url_and_title_bookmark_count);
 
   base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad3",
+      "Bookmarks.Count.OnProfileLoad",
       base::saturated_cast<int>(stats.total_url_bookmark_count));
 
   if (stats.duplicate_url_bookmark_count != 0) {
     base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrl3",
+        "Bookmarks.Count.OnProfileLoad.DuplicateUrl2",
         base::saturated_cast<int>(stats.duplicate_url_bookmark_count));
   }
 
   if (stats.duplicate_url_and_title_bookmark_count != 0) {
     base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitle3",
+        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitle",
         base::saturated_cast<int>(
             stats.duplicate_url_and_title_bookmark_count));
   }
 
   if (stats.duplicate_url_and_title_and_parent_bookmark_count != 0) {
     base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent3",
+        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent",
         base::saturated_cast<int>(
             stats.duplicate_url_and_title_and_parent_bookmark_count));
   }
 
   // Log derived metrics for convenience.
   base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrl3",
+      "Bookmarks.Count.OnProfileLoad.UniqueUrl",
       base::saturated_cast<int>(stats.total_url_bookmark_count -
                                 stats.duplicate_url_bookmark_count));
   base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitle3",
+      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitle",
       base::saturated_cast<int>(stats.total_url_bookmark_count -
                                 stats.duplicate_url_and_title_bookmark_count));
   base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitleAndParent3",
+      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitleAndParent",
       base::saturated_cast<int>(
           stats.total_url_bookmark_count -
           stats.duplicate_url_and_title_and_parent_bookmark_count));
   base::UmaHistogramCounts1000(
-      "Bookmarks.Times.OnProfileLoad.TimeSinceAdded3",
+      "Bookmarks.Times.OnProfileLoad.TimeSinceAdded",
       base::saturated_cast<int>(stats.avg_num_days_since_added));
 }
 

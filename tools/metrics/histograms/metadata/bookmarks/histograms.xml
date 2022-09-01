@@ -153,13 +153,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bookmarks.Count.OnProfileLoad" units="bookmarks"
     expires_after="2023-02-26">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably 0.) Replaced in M-107 with the histogram
-    Bookmarks.Count.OnProfileLoad3, which is similar but only emitted on
-    profiles that support bookmarks.
-  </obsolete>
   <owner>supertri@chromium.org</owner>
   <owner>isherman@chromium.org</owner>
   <owner>aidanday@google.com</owner>
@@ -187,36 +180,9 @@ chromium-metrics-reviews@google.com.
     there is at least one duplicate.
   </summary>
   <token key="UniquenessCriterion">
-    <variant name="Url2" summary="URL">
-      <obsolete>
-        This histogram was fine. It is being replaced with a version
-        &quot;3&quot; for a simple reason. Some other
-        Bookmarks.Count.OnProfileLoad* histograms needed to switch to a version
-        3. This one is making the switch so all these histograms have the same
-        suffix.
-      </obsolete>
-    </variant>
-    <variant name="Url3" summary="URL"/>
-    <variant name="UrlAndTitle" summary="URL-title pair">
-      <obsolete>
-        This histogram was fine. It is being replaced with a version
-        &quot;3&quot; for a simple reason. Some other
-        Bookmarks.Count.OnProfileLoad* histograms needed to switch to a version
-        3. This one is making the switch so all these histograms have the same
-        suffix.
-      </obsolete>
-    </variant>
-    <variant name="UrlAndTitle3" summary="URL-title pair"/>
-    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple">
-      <obsolete>
-        This histogram was fine. It is being replaced with a version
-        &quot;3&quot; for a simple reason. Some other
-        Bookmarks.Count.OnProfileLoad* histograms needed to switch to a version
-        3. This one is making the switch so all these histograms have the same
-        suffix.
-      </obsolete>
-    </variant>
-    <variant name="UrlAndTitleAndParent3" summary="URL-title-parent triple"/>
+    <variant name="Url2" summary="URL"/>
+    <variant name="UrlAndTitle" summary="URL-title pair"/>
+    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple"/>
   </token>
 </histogram>
 
@@ -230,52 +196,10 @@ chromium-metrics-reviews@google.com.
     user. Recorded when bookmarks are loaded into storage from disk.
   </summary>
   <token key="UniquenessCriterion">
-    <variant name="Url" summary="URL">
-      <obsolete>
-        Logged on profile open, including for profiles that do not support
-        bookmarks. (We did not investigate thoroughly; we don't know what value
-        typically was logged. Presumably 0.) Replaced in M-107 with the
-        histogram name with a &quot;3&quot; at the end, which is similar but
-        only emitted on profiles that support bookmarks.
-      </obsolete>
-    </variant>
-    <variant name="Url3" summary="URL"/>
-    <variant name="UrlAndTitle" summary="URL-title pair">
-      <obsolete>
-        Logged on profile open, including for profiles that do not support
-        bookmarks. (We did not investigate thoroughly; we don't know what value
-        typically was logged. Presumably 0.) Replaced in M-107 with the
-        histogram name with a &quot;3&quot; at the end, which is similar but
-        only emitted on profiles that support bookmarks.
-      </obsolete>
-    </variant>
-    <variant name="UrlAndTitle3" summary="URL-title pair"/>
-    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple">
-      <obsolete>
-        Logged on profile open, including for profiles that do not support
-        bookmarks. (We did not investigate thoroughly; we don't know what value
-        typically was logged. Presumably 0.) Replaced in M-107 with the
-        histogram name with a &quot;3&quot; at the end, which is similar but
-        only emitted on profiles that support bookmarks.
-      </obsolete>
-    </variant>
-    <variant name="UrlAndTitleAndParent3" summary="URL-title-parent triple"/>
+    <variant name="Url" summary="URL"/>
+    <variant name="UrlAndTitle" summary="URL-title pair"/>
+    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple"/>
   </token>
-</histogram>
-
-<histogram name="Bookmarks.Count.OnProfileLoad3" units="bookmarks"
-    expires_after="2023-02-19">
-  <owner>supertri@chromium.org</owner>
-  <owner>isherman@chromium.org</owner>
-  <owner>aidanday@google.com</owner>
-  <owner>mamir@chromium.org</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    The total number of bookmarks a user has saved, excluding folders. Recorded
-    when a profile is opened - precisely, when bookmarks are loaded into storage
-    from disk. The count includes all bookmarks both in the &quot;Bookmarks
-    Bar&quot; and also under &quot;Other Bookmarks&quot;.
-  </summary>
 </histogram>
 
 <histogram name="Bookmarks.Count.OpenInIncognito" units="bookmarks"
@@ -815,29 +739,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bookmarks.Storage.FileSizeAtStartup" units="KB"
     expires_after="2023-04-21">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably 0.) Replaced in M-107 with
-    Bookmarks.Storage.FileSizeAtStartup2, which is similar but only emitted on
-    profiles that support bookmarks.
-  </obsolete>
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Size of the bookmarks file, recorded when the bookmarks model is loaded.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
-    expires_after="2023-04-21">
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-collections@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Size of the bookmarks file, recorded when the bookmarks model is loaded.
-  </summary>
+  <summary>Size of the bookmarks file, recorded at startup.</summary>
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeSinceLastScheduledSave" units="ms"
@@ -853,24 +758,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bookmarks.Storage.TimeToLoadAtStartup" units="ms"
     expires_after="2023-04-21">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably something small.) Replaced in M-107 with
-    Bookmarks.Storage.TimeToLoadAtStartup2, which is similar but only emitted on
-    profiles that support bookmarks.
-  </obsolete>
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-collections@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Duration of loading the bookmarks file, recorded when the bookmark model is
-    loaded.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.Storage.TimeToLoadAtStartup2" units="ms"
-    expires_after="2023-04-21">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -881,24 +768,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Times.OnProfileLoad.TimeSinceAdded" units="days"
-    expires_after="2023-06-08">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably 0.) Replaced in M-107 with
-    Bookmarks.Times.OnProfileLoad.TimeSinceAdded3, which is similar but only
-    emitted on profiles that support bookmarks.
-  </obsolete>
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-collections@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Records the average number of days since each bookmark was added. Recorded
-    on profile load.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.Times.OnProfileLoad.TimeSinceAdded3" units="days"
     expires_after="2023-06-08">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>

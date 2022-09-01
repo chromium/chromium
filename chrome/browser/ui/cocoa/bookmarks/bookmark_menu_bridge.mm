@@ -59,6 +59,7 @@ BookmarkMenuBridge::BookmarkMenuBridge(Profile* profile, NSMenu* menu_root)
   DCHECK(![menu_root_ delegate]);
   [menu_root_ setDelegate:controller_];
 
+  DCHECK(GetBookmarkModel());
   ObserveBookmarkModel();
 }
 
@@ -66,6 +67,7 @@ BookmarkMenuBridge::~BookmarkMenuBridge() {
   ClearBookmarkMenu();
   [menu_root_ setDelegate:nil];
   BookmarkModel* model = GetBookmarkModel();
+  DCHECK(model);
   if (model)
     model->RemoveObserver(this);
 }
@@ -200,11 +202,6 @@ void BookmarkMenuBridge::BookmarkNodeChildrenReordered(
 // Watch for changes.
 void BookmarkMenuBridge::ObserveBookmarkModel() {
   BookmarkModel* model = GetBookmarkModel();
-
-  // In Guest mode, there is no bookmark model.
-  if (!model)
-    return;
-
   model->AddObserver(this);
   if (model->loaded())
     BookmarkModelLoaded(model, false);
