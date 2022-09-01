@@ -66,6 +66,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -295,6 +296,10 @@ TracingControllerImpl::GenerateMetadataDict() {
       metadata_dict.Set("os-wow64", "disabled");
     }
   }
+
+  metadata_dict.Set("module-apphelp", (::GetModuleHandle(L"apphelp.dll"))
+                                          ? "Loaded"
+                                          : "NotLoaded");
 
   metadata_dict.Set("os-session",
                     base::win::IsCurrentSessionRemote() ? "remote" : "local");
