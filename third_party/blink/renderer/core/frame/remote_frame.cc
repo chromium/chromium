@@ -772,12 +772,10 @@ void RemoteFrame::DidUpdateFramePolicy(const FramePolicy& frame_policy) {
 
 void RemoteFrame::UpdateOpener(
     const absl::optional<blink::FrameToken>& opener_frame_token) {
-  if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
-    Frame* opener_frame = nullptr;
-    if (opener_frame_token)
-      opener_frame = Frame::ResolveFrame(opener_frame_token.value());
-    SetOpenerDoNotNotify(opener_frame);
-  }
+  Frame* opener_frame = nullptr;
+  if (opener_frame_token)
+    opener_frame = Frame::ResolveFrame(opener_frame_token.value());
+  SetOpenerDoNotNotify(opener_frame);
 }
 
 gfx::Size RemoteFrame::GetOutermostMainFrameSize() const {
@@ -798,21 +796,18 @@ void RemoteFrame::SetOpener(Frame* opener_frame) {
   if (Opener() == opener_frame)
     return;
 
-  auto* web_frame = WebFrame::FromCoreFrame(this);
-  if (web_frame) {
-    // A proxy shouldn't normally be disowning its opener.  It is possible to
-    // get here when a proxy that is being detached clears its opener, in
-    // which case there is no need to notify the browser process.
-    if (opener_frame) {
-      // Only a LocalFrame (i.e., the caller of window.open) should be able to
-      // update another frame's opener.
-      DCHECK(opener_frame->IsLocalFrame());
-      GetRemoteFrameHostRemote().DidChangeOpener(
-          opener_frame
-              ? absl::optional<blink::LocalFrameToken>(
-                    opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
-              : absl::nullopt);
-    }
+  // A proxy shouldn't normally be disowning its opener.  It is possible to
+  // get here when a proxy that is being detached clears its opener, in
+  // which case there is no need to notify the browser process.
+  if (opener_frame) {
+    // Only a LocalFrame (i.e., the caller of window.open) should be able to
+    // update another frame's opener.
+    DCHECK(opener_frame->IsLocalFrame());
+    GetRemoteFrameHostRemote().DidChangeOpener(
+        opener_frame
+            ? absl::optional<blink::LocalFrameToken>(
+                  opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
+            : absl::nullopt);
   }
   SetOpenerDoNotNotify(opener_frame);
 }
