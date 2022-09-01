@@ -106,9 +106,11 @@ class AutocorrectManager {
   void HighlightUndoButton();
 
   struct PendingAutocorrectState {
-    explicit PendingAutocorrectState(const std::u16string& original_text,
-                                     const base::TimeTicks& start_time);
-    PendingAutocorrectState(const PendingAutocorrectState& other) = default;
+    explicit PendingAutocorrectState(
+        const std::u16string& original_text,
+        const base::TimeTicks& start_time,
+        bool virtual_keyboard_visible = false);
+    PendingAutocorrectState(const PendingAutocorrectState& other);
     ~PendingAutocorrectState();
 
     // Original text that is now corrected by autocorrect.
@@ -138,6 +140,10 @@ class AutocorrectManager {
 
     // The time of setting the pending range.
     base::TimeTicks start_time;
+
+    // Specifies if virtual keyboard was visible when suggesting the pending
+    // autocorrect or not.
+    bool virtual_keyboard_visible = false;
   };
 
   // State variable for pending autocorrect, nullopt means no autocorrect

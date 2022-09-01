@@ -1017,6 +1017,46 @@ TEST_F(AutocorrectManagerTest,
                               /*exited_text_field_with_underline=*/0);
 }
 
+TEST_F(AutocorrectManagerTest,
+       RecordMetricsForVkWhenVkWasVisibleAtUnderlineTime) {
+  // VK is visible at the time of suggesting an autocorrect.
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // To suppress strict mock.
+  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
+
+  // VK is made hidden, but still the metrics need to be recorded for VK
+  // given VK was visible at underline time.
+  keyboard_client_->set_keyboard_visible_for_test(false);
+  manager_.OnSurroundingTextChanged(u"teh ", 1, 1);
+
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
+                              /*window_shown=*/1, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       DoesNotRecordMetricsForVkWhenVkWasNotVisibleAtUnderlineTime) {
+  // VK is not visible at the time of suggesting an autocorrect.
+  keyboard_client_->set_keyboard_visible_for_test(false);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // To suppress strict mock.
+  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
+
+  // VK is made visible, but still metrics must not be recorded for VK
+  // as it was not visible at the time of underline.
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.OnSurroundingTextChanged(u"teh ", 1, 1);
+
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/1, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
 TEST_F(AutocorrectManagerTest, HandleAutocorrectRecordsMetricsWhenVkIsVisible) {
   keyboard_client_->set_keyboard_visible_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");

@@ -91,8 +91,13 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
     return;
   }
 
+  bool virtual_keyboard_visible =
+      ChromeKeyboardControllerClient::HasInstance() &&
+      ChromeKeyboardControllerClient::Get()->is_keyboard_visible();
+
   pending_autocorrect_ = AutocorrectManager::PendingAutocorrectState(
-      /*original_text=*/original_text, /*start_time=*/base::TimeTicks::Now());
+      /*original_text=*/original_text, /*start_time=*/base::TimeTicks::Now(),
+      /*virtual_keyboard_visible=*/virtual_keyboard_visible);
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
@@ -105,8 +110,8 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
   base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
                                 action);
 
-  if (ChromeKeyboardControllerClient::HasInstance() &&
-      ChromeKeyboardControllerClient::Get()->is_keyboard_visible()) {
+  if (pending_autocorrect_.has_value() &&
+      pending_autocorrect_->virtual_keyboard_visible) {
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.Autocorrect.Actions.VK", action);
   }
@@ -415,8 +420,14 @@ bool AutocorrectManager::DisabledByRule() {
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
     const std::u16string& original_text,
-    const base::TimeTicks& start_time)
-    : original_text(original_text), start_time(start_time) {}
+    const base::TimeTicks& start_time,
+    bool virtual_keyboard_visible)
+    : original_text(original_text),
+      start_time(start_time),
+      virtual_keyboard_visible(virtual_keyboard_visible) {}
+
+AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
+  const PendingAutocorrectState& other) = default;
 
 AutocorrectManager::PendingAutocorrectState::~PendingAutocorrectState() =
     default;
