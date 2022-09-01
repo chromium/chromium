@@ -921,7 +921,7 @@ const base::Feature kHotspot{"Hotspot", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether the snooping protection prototype is enabled.
 const base::Feature kSnoopingProtection{"SnoopingProtection",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to start AssistantAudioDecoder service on demand (at query
 // response time).
