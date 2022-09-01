@@ -58,10 +58,8 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(ConfirmSyncDataIntegrationTest.CONFIRM_SYNC_DATA_BATCH_NAME)
+@Batch(Batch.PER_CLASS)
 public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase {
-    public static final String CONFIRM_SYNC_DATA_BATCH_NAME = "confirm_sync_data";
-
     private static final String OLD_ACCOUNT_NAME = "test.account.old@gmail.com";
     private static final String NEW_ACCOUNT_NAME = "test.account.new@gmail.com";
     private static final String MANAGED_DOMAIN = "managed-domain.com";

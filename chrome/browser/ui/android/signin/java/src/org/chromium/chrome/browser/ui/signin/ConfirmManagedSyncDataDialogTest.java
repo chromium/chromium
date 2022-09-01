@@ -46,7 +46,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(ConfirmSyncDataIntegrationTest.CONFIRM_SYNC_DATA_BATCH_NAME)
+@Batch(Batch.PER_CLASS)
 public class ConfirmManagedSyncDataDialogTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
