@@ -55,8 +55,7 @@
   self.navigationAgent->StopLoading();
 }
 
-- (void)searchAction:(id)sender {
-  [self.findHandler closeFindInPage];
+- (void)newTabAction:(id)sender {
   UIView* senderView = base::mac::ObjCCastStrict<UIView>(sender);
   CGPoint center = [senderView.superview convertPoint:senderView.center
                                                toView:nil];

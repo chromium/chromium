@@ -188,7 +188,7 @@ NSString* const kToolbarArrowForwardSymbol = @"arrow.forward";
       [ToolbarNewTabButton toolbarButtonWithImage:newTabImage];
 
   [newTabButton addTarget:self.actionHandler
-                   action:@selector(searchAction:)
+                   action:@selector(newTabAction:)
          forControlEvents:UIControlEventTouchUpInside];
   BOOL isIncognito = self.style == INCOGNITO;
 
