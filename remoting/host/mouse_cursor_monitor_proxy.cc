@@ -69,6 +69,8 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   mouse_cursor_monitor_ = std::make_unique<MouseCursorMonitorAura>();
+#elif defined(REMOTING_USE_WAYLAND)
+  mouse_cursor_monitor_ = webrtc::MouseCursorMonitor::Create(options);
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
       options, webrtc::kFullDesktopScreenId));
