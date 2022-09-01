@@ -73,14 +73,15 @@
   <div slot="right-pane">
     <div class="input-wrapper">
       <div class="input-row">
-        <div class="input-holder" aria-labelledby="serialNumberLabel">
+        <div class="input-holder">
           <cr-input id="serialNumber" value="{{serialNumber_}}" 
               label="[[i18n('confirmDeviceInfoSerialNumberLabel')]]"
               disabled="[[allButtonsDisabled]]">
           </cr-input>
           <cr-button id="resetSerialNumber"
               on-click="onResetSerialNumberButtonClicked_"
-              disabled="[[disableResetSerialNumber_]]">
+              disabled="[[disableResetSerialNumber_]]"
+              aria-description="[[i18n('confirmDeviceInfoSerialNumberLabel')]]">
             [[i18n('confirmDeviceInfoResetButtonLabel')]]
           </cr-button>
         </div>
@@ -93,7 +94,8 @@
           </cr-input>
           <cr-button id="resetDramPartNumber"
               on-click="onResetDramPartNumberButtonClicked_"
-              disabled="[[disableResetDramPartNumber_]]">
+              disabled="[[disableResetDramPartNumber_]]"
+              aria-description="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]">
             [[i18n('confirmDeviceInfoResetButtonLabel')]]
           </cr-button>
         </div>
@@ -113,7 +115,8 @@
             </template>
           </select>
           <cr-button id="resetRegion" on-click="onResetRegionButtonClicked_"
-              disabled="[[disableResetRegion_]]">
+              disabled="[[disableResetRegion_]]"
+              aria-describedby="regionLabel">
             [[i18n('confirmDeviceInfoResetButtonLabel')]]
           </cr-button>
         </div>
@@ -135,7 +138,8 @@
           </select>
           <cr-button id="resetWhiteLabel"
               on-click="onResetWhiteLabelButtonClicked_"
-              disabled="[[disableResetWhiteLabel_]]">
+              disabled="[[disableResetWhiteLabel_]]"
+              aria-describedby="whiteLabelLabel">
             [[i18n('confirmDeviceInfoResetButtonLabel')]]
           </cr-button>
         </div>
@@ -162,7 +166,8 @@
           </template>
         </select>
         <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
-            disabled="[[disableResetSku_]]">
+            disabled="[[disableResetSku_]]"
+            aria-describedby="skuLabel">
           [[i18n('confirmDeviceInfoResetButtonLabel')]]
         </cr-button>
       </div>
