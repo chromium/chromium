@@ -9,7 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/web_dialogs/web_dialog_ui.h"

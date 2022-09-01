@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 

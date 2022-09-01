@@ -8,7 +8,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"

@@ -6,7 +6,7 @@
 #define ASH_PUBLIC_CPP_BLUETOOTH_CONFIG_SERVICE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {

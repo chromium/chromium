@@ -10,8 +10,8 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_notifier.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/fake_bluetooth_device_status_notifier.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using chromeos::bluetooth_config::mojom::BatteryProperties;

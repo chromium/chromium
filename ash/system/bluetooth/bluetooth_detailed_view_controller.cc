@@ -12,7 +12,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
-#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"

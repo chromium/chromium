@@ -34,5 +34,6 @@ grit("resources") {
     "//chromeos/ash/components/human_presence:human_presence_internals_ts",
     "//chromeos/ash/components/language/public/mojom:mojom_js",
     "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_js",
+    "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js",
   ]
 }

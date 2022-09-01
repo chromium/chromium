@@ -33,7 +33,7 @@
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
+#include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {

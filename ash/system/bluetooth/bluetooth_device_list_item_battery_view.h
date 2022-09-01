@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/hover_highlight_view.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {

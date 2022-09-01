@@ -19,8 +19,8 @@
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
-#include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
+#include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
+#include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

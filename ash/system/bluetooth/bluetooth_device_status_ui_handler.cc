@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 

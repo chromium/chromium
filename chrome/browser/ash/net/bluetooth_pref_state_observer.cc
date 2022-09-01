@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/services/bluetooth_config/in_process_instance.h"
+#include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {

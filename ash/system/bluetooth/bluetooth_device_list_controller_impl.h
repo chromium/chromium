@@ -11,7 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace views {
 class Separator;

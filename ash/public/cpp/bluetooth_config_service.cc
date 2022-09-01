@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/bluetooth_config_service.h"
 
-#include "chromeos/services/bluetooth_config/in_process_instance.h"
+#include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 
 namespace ash {
 

@@ -11,7 +11,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/controls/button/toggle_button.h"

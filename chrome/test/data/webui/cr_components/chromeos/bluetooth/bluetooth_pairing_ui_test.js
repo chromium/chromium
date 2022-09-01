@@ -12,11 +12,10 @@ import {SettingsBluetoothPairingUiElement} from 'chrome://resources/cr_component
 import {SettingsBluetoothSpinnerPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_spinner_page.js';
 import {PairingAuthType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-import {AudioOutputCapability, BluetoothDeviceProperties, BluetoothSystemState, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {AudioOutputCapability, BluetoothDeviceProperties, BluetoothSystemState, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
-import {eventToPromise, flushTasks} from '../../../test_util.js';
-import {waitAfterNextRender} from '../../../test_util.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from '../../../test_util.js';
 
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from './fake_bluetooth_config.js';
 

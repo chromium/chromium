@@ -6,8 +6,8 @@
 
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/callback_helpers.h"
-#include "chromeos/services/bluetooth_config/device_name_manager.h"
-#include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
+#include "chromeos/ash/services/bluetooth_config/device_name_manager.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 
 namespace ash {
 namespace quick_pair {

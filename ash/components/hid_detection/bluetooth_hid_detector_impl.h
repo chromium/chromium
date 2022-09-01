@@ -11,7 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

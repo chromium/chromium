@@ -15,7 +15,7 @@
 #include "ash/system/network/network_list_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

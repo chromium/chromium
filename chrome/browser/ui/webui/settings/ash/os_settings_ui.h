@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-forward.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

@@ -7,7 +7,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
+#include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

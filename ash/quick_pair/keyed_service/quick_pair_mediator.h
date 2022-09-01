@@ -15,8 +15,8 @@
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/services/bluetooth_config/adapter_state_controller.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
