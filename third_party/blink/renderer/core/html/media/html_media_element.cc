@@ -567,7 +567,7 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   // re-created on-demand when SpeechSynthesis() is called.
   if (speech_synthesis_) {
     speech_synthesis_->Cancel();
-    speech_synthesis_ = nullptr;
+    speech_synthesis_.Clear();
   }
 
   if (should_delay_load_event_) {
