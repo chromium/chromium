@@ -57934,6 +57934,7 @@ from previous Chrome versions.
   <int value="-1014936248" label="SyncUSSBookmarks:enabled"/>
   <int value="-1014649471" label="committed-interstitials"/>
   <int value="-1013986101" label="FirstScrollLatencyMeasurement:disabled"/>
+  <int value="-1012657256" label="WebAuthenticationConditionalUI:enabled"/>
   <int value="-1011390415" label="AutofillRejectCompanyBirthyear:enabled"/>
   <int value="-1010588306" label="SlideTopChromeWithPageScrolls:disabled"/>
   <int value="-1009111883" label="NearbyShareVisibilityReminder:enabled"/>
@@ -60091,6 +60092,7 @@ from previous Chrome versions.
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
   <int value="332960119" label="PdfXfaSupport:disabled"/>
   <int value="333032941" label="CellularCustomAPNProfiles:enabled"/>
+  <int value="334330083" label="WebAuthenticationConditionalUI:disabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>
   <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
   <int value="335976733" label="NotificationStackingBarRedesign:enabled"/>

@@ -3076,6 +3076,10 @@ const char kAppStoreBillingDebugDescription[] =
     "requested using the Payment Request API. This flag removes the "
     "restriction that the TWA has to be installed from the app-store.";
 
+const char kWebAuthnConditionalUIName[] = "Web Authentication Conditional UI";
+const char kWebAuthnConditionalUIDescription[] =
+    "Enable support for Conditional UI WebAuthn requests.";
+
 const char kWebrtcCaptureMultiChannelApmName[] =
     "WebRTC multi-channel capture audio processing.";
 const char kWebrtcCaptureMultiChannelApmDescription[] =
