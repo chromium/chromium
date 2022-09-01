@@ -4,9 +4,9 @@
 
 #include "fuchsia_web/webengine/web_engine_integration_test_base.h"
 
-#include <dirent.h>
 #include <lib/fdio/directory.h>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -36,21 +36,16 @@ WebEngineIntegrationTestBase::WebEngineIntegrationTestBase()
       filtered_service_directory_(std::make_shared<sys::ServiceDirectory>(
           base::OpenDirectoryHandle(base::FilePath("/svc")))) {
   // Push all services from /svc to the filtered service directory.
-  // TODO(fxbug.dev/100207): base::FileEnumerator would stat() each directory
-  // entry, which can hang with some legacy directory implementations.
-  DIR* dir = opendir("/svc");
-  PCHECK(dir);
-  struct dirent* dirent = nullptr;
-  while ((dirent = readdir(dir))) {
-    const base::StringPiece name = dirent->d_name;
-    if (name == base::FilePath::kCurrentDirectory ||
-        name == base::FilePath::kParentDirectory) {
-      continue;
-    }
-    zx_status_t status = filtered_service_directory_.AddService(name);
+  // Calling stat() in /svc is problematic; see https://fxbug.dev/100207. Tell
+  // the enumerator not to recurse, to return both files and directories, and
+  // to report only the names of entries.
+  base::FileEnumerator file_enum(base::FilePath("/svc"), /*recursive=*/false,
+                                 base::FileEnumerator::NAMES_ONLY);
+  for (auto file = file_enum.Next(); !file.empty(); file = file_enum.Next()) {
+    zx_status_t status =
+        filtered_service_directory_.AddService(file.BaseName().value());
     ZX_CHECK(status == ZX_OK, status) << "FilteredServiceDirectory::AddService";
   }
-  closedir(dir);
 }
 
 WebEngineIntegrationTestBase::~WebEngineIntegrationTestBase() = default;
