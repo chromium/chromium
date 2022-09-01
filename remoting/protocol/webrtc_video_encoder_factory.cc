@@ -22,24 +22,24 @@ namespace remoting::protocol {
 
 WebrtcVideoEncoderFactory::WebrtcVideoEncoderFactory()
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
-  formats_.emplace_back(webrtc::SdpVideoFormat("VP8"));
-  formats_.emplace_back(webrtc::SdpVideoFormat("VP9"));
+  formats_.emplace_back("VP8");
+  formats_.emplace_back("VP9");
   formats_.emplace_back(webrtc::SdpVideoFormat(
       "VP9", {{webrtc::kVP9FmtpProfileId,
                webrtc::VP9ProfileToString(webrtc::VP9Profile::kProfile1)}}));
+  formats_.emplace_back("AV1");
+  formats_.emplace_back(webrtc::SdpVideoFormat(
+      "AV1",
+      {{webrtc::kAV1FmtpProfile,
+        webrtc::AV1ProfileToString(webrtc::AV1Profile::kProfile1).data()}}));
 #if defined(USE_H264_ENCODER)
   // This call will query the underlying media classes to determine whether
   // hardware encoding is supported or not. We use a default resolution and
   // framerate so the call doesn't fail due to invalid params.
   if (WebrtcVideoEncoderGpu::IsSupportedByH264({{1920, 1080}, 30})) {
-    formats_.emplace_back(webrtc::SdpVideoFormat("H264"));
+    formats_.emplace_back("H264");
   }
 #endif
-  formats_.emplace_back(webrtc::SdpVideoFormat("AV1"));
-  formats_.emplace_back(webrtc::SdpVideoFormat(
-      "AV1",
-      {{webrtc::kAV1FmtpProfile,
-        webrtc::AV1ProfileToString(webrtc::AV1Profile::kProfile1).data()}}));
 }
 
 WebrtcVideoEncoderFactory::~WebrtcVideoEncoderFactory() = default;
