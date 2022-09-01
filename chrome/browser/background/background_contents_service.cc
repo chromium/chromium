@@ -659,9 +659,9 @@ bool BackgroundContentsService::HasRegisteredBackgroundContents(
     const std::string& app_id) {
   if (!prefs_)
     return false;
-  const base::Value* contents =
-      prefs_->GetDictionary(prefs::kRegisteredBackgroundContents);
-  return contents->FindKey(app_id);
+  const base::Value::Dict& contents =
+      prefs_->GetValueDict(prefs::kRegisteredBackgroundContents);
+  return contents.Find(app_id);
 }
 
 void BackgroundContentsService::UnregisterBackgroundContents(
