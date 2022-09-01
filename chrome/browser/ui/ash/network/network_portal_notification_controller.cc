@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
@@ -48,6 +49,51 @@ namespace chromeos {
 namespace {
 
 const char kNotifierNetworkPortalDetector[] = "ash.network.portal-detector";
+
+std::unique_ptr<message_center::Notification> CreatePost2022Notification(
+    const ash::NetworkState* network,
+    scoped_refptr<message_center::NotificationDelegate> delegate,
+    message_center::NotifierId notifier_id,
+    bool is_wifi) {
+  message_center::RichNotificationData data;
+  data.buttons.emplace_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON)));
+  std::unique_ptr<message_center::Notification> notification;
+  notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      NetworkPortalNotificationController::kNotificationId,
+      l10n_util::GetStringUTF16(
+          is_wifi ? IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI
+                  : IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED),
+      l10n_util::GetStringFUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE,
+                                 base::UTF8ToUTF16(network->name())),
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
+      data, std::move(delegate), kNotificationCaptivePortalIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification->set_never_timeout(true);
+  return notification;
+}
+
+std::unique_ptr<message_center::Notification> CreatePre2022Notification(
+    const ash::NetworkState* network,
+    scoped_refptr<message_center::NotificationDelegate> delegate,
+    message_center::NotifierId notifier_id,
+    bool is_wifi) {
+  return ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      NetworkPortalNotificationController::kNotificationId,
+      l10n_util::GetStringUTF16(
+          is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI
+                  : IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED),
+      l10n_util::GetStringFUTF16(
+          is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIFI
+                  : IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIRED,
+          base::UTF8ToUTF16(network->name())),
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
+      message_center::RichNotificationData(), std::move(delegate),
+      kNotificationCaptivePortalIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
+}
 
 void CloseNotification() {
   SystemNotificationHelper::GetInstance()->Close(
@@ -205,20 +251,14 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
       kNotifierNetworkPortalDetector,
       ash::NotificationCatalogName::kNetworkPortalDetector);
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-          l10n_util::GetStringUTF16(
-              is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI
-                      : IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED),
-          l10n_util::GetStringFUTF16(
-              is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIFI
-                      : IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIRED,
-              base::UTF8ToUTF16(network->name())),
-          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          notifier_id, message_center::RichNotificationData(),
-          std::move(delegate), kNotificationCaptivePortalIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
+  std::unique_ptr<message_center::Notification> notification;
+  if (ash::features::IsCaptivePortalUI2022Enabled()) {
+    notification =
+        CreatePost2022Notification(network, delegate, notifier_id, is_wifi);
+  } else {
+    notification =
+        CreatePre2022Notification(network, delegate, notifier_id, is_wifi);
+  }
   return notification;
 }
 
