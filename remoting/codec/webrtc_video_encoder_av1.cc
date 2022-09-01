@@ -10,6 +10,7 @@
 #include "base/system/sys_info.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
+#include "third_party/libaom/source/libaom/aom/aom_image.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -48,7 +49,10 @@ void WebrtcVideoEncoderAV1::SetLosslessEncode(bool want_lossless) {
 }
 
 void WebrtcVideoEncoderAV1::SetLosslessColor(bool want_lossless) {
-  NOTIMPLEMENTED();
+  if (want_lossless != lossless_color_) {
+    lossless_color_ = want_lossless;
+    codec_.reset();
+  }
 }
 
 bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
@@ -62,6 +66,9 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   // maximum number of threads here and then set the tile_row and tile_column
   // values based on the frame dimensions later on.
   config_.g_threads = GetEncoderThreadCount(std::max(config_.g_w, config_.g_h));
+
+  // Choose a profile based on whether we should provide frames in I420 or I444.
+  config_.g_profile = lossless_color_ ? 1 : 0;
 
   // Initialize an encoder instance.
   scoped_aom_codec codec(new aom_codec_ctx_t, DestroyAomCodecContext);
@@ -198,7 +205,8 @@ void WebrtcVideoEncoderAV1::PrepareImage(
     updated_region.IntersectWith(
         webrtc::DesktopRect::MakeWH(image_->d_w, image_->d_h));
   } else {
-    image_.reset(aom_img_alloc(nullptr, AOM_IMG_FMT_I420, frame->size().width(),
+    aom_img_fmt_t fmt = lossless_color_ ? AOM_IMG_FMT_I444 : AOM_IMG_FMT_I420;
+    image_.reset(aom_img_alloc(nullptr, fmt, frame->size().width(),
                                frame->size().height(),
                                GetSimdMemoryAlignment()));
     updated_region.AddRect(
@@ -215,18 +223,37 @@ void WebrtcVideoEncoderAV1::PrepareImage(
   uint8_t* u_data = image_->planes[1];
   uint8_t* v_data = image_->planes[2];
 
-  CHECK_EQ(image_->fmt, AOM_IMG_FMT_I420);
-  for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
-       r.Advance()) {
-    webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
-    int rgb_offset = rgb_stride * rect.top() +
-                     rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
-    int y_offset = y_stride * rect.top() + rect.left();
-    int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-    libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride, y_data + y_offset,
-                       y_stride, u_data + uv_offset, uv_stride,
-                       v_data + uv_offset, uv_stride, rect.width(),
-                       rect.height());
+  switch (image_->fmt) {
+    case AOM_IMG_FMT_I420:
+      for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
+           r.Advance()) {
+        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
+        int rgb_offset = rgb_stride * rect.top() +
+                         rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
+        int y_offset = y_stride * rect.top() + rect.left();
+        int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
+        libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride, y_data + y_offset,
+                           y_stride, u_data + uv_offset, uv_stride,
+                           v_data + uv_offset, uv_stride, rect.width(),
+                           rect.height());
+      }
+      break;
+    case AOM_IMG_FMT_I444:
+      for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
+           r.Advance()) {
+        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
+        int rgb_offset = rgb_stride * rect.top() +
+                         rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
+        int yuv_offset = uv_stride * rect.top() + rect.left();
+        libyuv::ARGBToI444(rgb_data + rgb_offset, rgb_stride,
+                           y_data + yuv_offset, y_stride, u_data + yuv_offset,
+                           uv_stride, v_data + yuv_offset, uv_stride,
+                           rect.width(), rect.height());
+      }
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -240,6 +267,8 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
 
   // Encoder config values are defined in:
   // //third_party/libaom/source/libaom/aom/aom_encoder.h
+
+  // Default to profile 0 and update later if lossless color is requested.
   config_.g_profile = 0;
   // Width, height, and thread count are set once the frame size is known.
   config_.g_w = 0;

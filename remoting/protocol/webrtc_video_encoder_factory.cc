@@ -9,6 +9,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_encoder_wrapper.h"
+#include "third_party/webrtc/api/video_codecs/av1_profile.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
@@ -35,6 +36,10 @@ WebrtcVideoEncoderFactory::WebrtcVideoEncoderFactory()
   }
 #endif
   formats_.emplace_back(webrtc::SdpVideoFormat("AV1"));
+  formats_.emplace_back(webrtc::SdpVideoFormat(
+      "AV1",
+      {{webrtc::kAV1FmtpProfile,
+        webrtc::AV1ProfileToString(webrtc::AV1Profile::kProfile1).data()}}));
 }
 
 WebrtcVideoEncoderFactory::~WebrtcVideoEncoderFactory() = default;

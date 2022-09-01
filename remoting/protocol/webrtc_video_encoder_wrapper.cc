@@ -25,6 +25,7 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
+#include "third_party/webrtc/api/video_codecs/av1_profile.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -143,6 +144,17 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
       }
       break;
     }
+    case webrtc::kVideoCodecAV1: {
+      absl::optional<webrtc::AV1Profile> profile =
+          webrtc::ParseSdpForAV1Profile(format.parameters);
+      bool lossless_color = profile.has_value() &&
+                            profile.value() == webrtc::AV1Profile::kProfile1;
+      VLOG(0) << "Creating AV1 encoder, lossless_color="
+              << (lossless_color ? "true" : "false");
+      encoder_ = std::make_unique<WebrtcVideoEncoderAV1>();
+      encoder_->SetLosslessColor(lossless_color);
+      break;
+    }
     case webrtc::kVideoCodecH264:
 #if defined(USE_H264_ENCODER)
       VLOG(0) << "Creating H264 encoder.";
@@ -150,10 +162,6 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
 #else
       NOTIMPLEMENTED();
 #endif
-      break;
-    case webrtc::kVideoCodecAV1:
-      VLOG(0) << "Creating AV1 encoder.";
-      encoder_ = std::make_unique<WebrtcVideoEncoderAV1>();
       break;
     default:
       LOG(FATAL) << "Unknown codec type: " << codec_type_;
