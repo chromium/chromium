@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,6 +34,11 @@ class BluetoothHidDetectorImpl
   const BluetoothHidDetectionStatus GetBluetoothHidDetectionStatus() override;
 
  private:
+  friend class BluetoothHidDetectorImplTest;
+
+  static constexpr base::TimeDelta kMaxPairingSessionDuration =
+      base::Seconds(33);
+
   // States used for internal state machine.
   enum State {
     // HID detection is currently not active.
@@ -133,6 +139,11 @@ class BluetoothHidDetectorImpl
   // If defined, indicates that the current pairing requires an authorization
   // code that should be displayed to the user for them to enter into the HID.
   absl::optional<BluetoothHidPairingState> current_pairing_state_;
+
+  // A timer started when the current pairing begins. If the pairing session
+  // finishes, the timer's callback is invalidated. If the timer exceeds
+  // kMaxPairingDuration, the current pairing session will be canceled.
+  base::OneShotTimer current_pairing_timer_;
 
   InputDevicesStatus input_devices_status_;
   State state_ = kNotStarted;

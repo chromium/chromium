@@ -354,6 +354,10 @@ void BluetoothHidDetectorImpl::ProcessQueue() {
   HID_LOG(EVENT) << "Pairing with device with id: "
                  << current_pairing_device_.value()->id;
   ++num_pairing_attempts_;
+  current_pairing_timer_.Start(
+      FROM_HERE, kMaxPairingSessionDuration,
+      base::BindOnce(&BluetoothHidDetectorImpl::ClearCurrentPairingState,
+                     weak_ptr_factory_.GetWeakPtr()));
   device_pairing_handler_remote_->PairDevice(
       current_pairing_device_.value()->id,
       device_pairing_delegate_receiver_.BindNewPipeAndPassRemote(),
@@ -364,7 +368,7 @@ void BluetoothHidDetectorImpl::ProcessQueue() {
 }
 
 void BluetoothHidDetectorImpl::OnPairDevice(
-    std::unique_ptr<base::ElapsedTimer> pairing_timer,
+    std::unique_ptr<base::ElapsedTimer> metrics_timer,
     chromeos::bluetooth_config::mojom::PairingResult pairing_result) {
   DCHECK(current_pairing_device_)
       << "OnPairDevice() called with no |current_pairing_device_|";
@@ -378,7 +382,7 @@ void BluetoothHidDetectorImpl::OnPairDevice(
       pairing_result ==
       chromeos::bluetooth_config::mojom::PairingResult::kSuccess;
   hid_detection::RecordBluetoothPairingResult(success,
-                                              pairing_timer->Elapsed());
+                                              metrics_timer->Elapsed());
 
   // If pairing has succeeded, wait for SetInputDevicesStatus() to be called
   // with the corresponding HID type no longer missing.
@@ -395,7 +399,8 @@ void BluetoothHidDetectorImpl::OnPairDevice(
 
 void BluetoothHidDetectorImpl::ClearCurrentPairingState() {
   // If there is an ongoing pairing, it will be cancelled. Invalidate the
-  // pairing finished callback.
+  // pairing finished callback. This will also invalidate the
+  // |current_pairing_timer_| callback.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   queued_device_ids_.erase(current_pairing_device_.value()->id);
@@ -417,6 +422,7 @@ void BluetoothHidDetectorImpl::ResetDiscoveryState() {
   // Reset queue-related properties.
   current_pairing_device_.reset();
   current_pairing_state_.reset();
+  current_pairing_timer_.Stop();
   queue_ = std::make_unique<base::queue<
       chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>();
   queued_device_ids_.clear();
