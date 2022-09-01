@@ -81,6 +81,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // Focuses this controller's view.
   void FocusView();
 
+  void HideView();
+
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
   absl::optional<content::DesktopMediaID> GetSelection() const;
@@ -113,6 +115,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // Used in tests.
   void Reject();
 
+  void StartUpdatingInternal();
+
   // DesktopMediaListObserver:
   void OnSourceAdded(int index) override;
   void OnSourceRemoved(int index) override;
@@ -132,6 +136,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   raw_ptr<ListView> view_ = nullptr;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
+  bool is_updating_ = false;
+  content::DesktopMediaID dialog_window_id_;
 
   // Auto-selection. Used only in tests.
   const std::string auto_select_tab_;        // Only tabs, by title.

@@ -43,6 +43,9 @@ class DesktopMediaListBase : public DesktopMediaList {
   int GetSourceCount() const override;
   const Source& GetSource(int index) const override;
   DesktopMediaList::Type GetMediaListType() const override;
+  bool IsSourceListDelegated() const override;
+  void FocusList() override;
+  void HideList() override;
 
   static uint32_t GetImageHash(const gfx::Image& image);
 
@@ -58,6 +61,12 @@ class DesktopMediaListBase : public DesktopMediaList {
 
   DesktopMediaListBase(base::TimeDelta update_period,
                        DesktopMediaListObserver* observer);
+
+  // Called to allow a capturer with a delegated source list to be started only
+  // once the list actually starts updating. Otherwise, child classes are
+  // responsible for ensuring their capturer is started at a reasonable time.
+  // Only called if IsSourceListDelegated() returns true.
+  virtual void StartDelegatedCapturer() {}
 
   // Before this method is called, |refresh_callback_| must be non-null, and
   // after it completes (usually asychnonrously), |refresh_callback_| must be

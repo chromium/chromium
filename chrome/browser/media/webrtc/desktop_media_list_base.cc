@@ -52,6 +52,10 @@ void DesktopMediaListBase::StartUpdating(DesktopMediaListObserver* observer) {
   DCHECK(!observer_);
   observer_ = observer;
 
+  // If there is a delegated source list, it may not have been started yet.
+  if (IsSourceListDelegated())
+    StartDelegatedCapturer();
+
   // Process sources previously discovered by a call to Update().
   if (observer_) {
     for (size_t i = 0; i < sources_.size(); i++) {
@@ -90,6 +94,13 @@ DesktopMediaList::Type DesktopMediaListBase::GetMediaListType() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return type_;
 }
+
+bool DesktopMediaListBase::IsSourceListDelegated() const {
+  return false;
+}
+
+void DesktopMediaListBase::FocusList() {}
+void DesktopMediaListBase::HideList() {}
 
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,

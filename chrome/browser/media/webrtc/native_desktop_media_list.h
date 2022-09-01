@@ -20,7 +20,7 @@ class DesktopCapturer;
 
 // Implementation of DesktopMediaList that shows native screens and
 // native windows.
-class NativeDesktopMediaList : public DesktopMediaListBase {
+class NativeDesktopMediaList final : public DesktopMediaListBase {
  public:
   // |capturer| must exist.
   NativeDesktopMediaList(DesktopMediaList::Type type,
@@ -35,6 +35,10 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
 
   ~NativeDesktopMediaList() override;
 
+  bool IsSourceListDelegated() const override;
+  void FocusList() override;
+  void HideList() override;
+
  private:
   typedef std::map<content::DesktopMediaID, uint32_t> ImageHashesMap;
 
@@ -48,6 +52,8 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   void RefreshForVizFrameSinkWindows(std::vector<SourceDescription> sources,
                                      bool update_thumnails);
   void UpdateNativeThumbnailsFinished();
+  void StartDelegatedCapturer() override;
+  void StartCapturer();
 
 #if defined(USE_AURA)
   void CaptureAuraWindowThumbnail(const content::DesktopMediaID& id);
@@ -60,7 +66,9 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
 
   // Whether we need to find and add the windows owned by the current process.
   // If false, the capturer will do this for us.
-  bool add_current_process_windows_;
+  const bool add_current_process_windows_;
+  const bool is_source_list_delegated_ = false;
+  bool is_capturer_started_ = false;
 
 #if defined(USE_AURA)
   // previous_aura_thumbnail_hashes_ holds thumbanil hash values of aura windows

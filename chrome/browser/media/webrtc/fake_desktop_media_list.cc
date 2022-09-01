@@ -96,3 +96,11 @@ DesktopMediaList::Type FakeDesktopMediaList::GetMediaListType() const {
 
 void FakeDesktopMediaList::SetPreviewedSource(
     const absl::optional<content::DesktopMediaID>& id) {}
+
+bool FakeDesktopMediaList::IsSourceListDelegated() const {
+  return false;
+}
+
+void FakeDesktopMediaList::FocusList() {}
+
+void FakeDesktopMediaList::HideList() {}

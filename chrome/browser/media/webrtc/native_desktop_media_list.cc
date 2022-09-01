@@ -21,6 +21,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_capture.h"
 #include "content/public/common/content_features.h"
 #include "media/base/video_util.h"
 #include "third_party/libyuv/include/libyuv/scale_argb.h"
@@ -164,6 +165,8 @@ class NativeDesktopMediaList::Worker
 
   void RefreshThumbnails(std::vector<DesktopMediaID> native_ids,
                          const gfx::Size& thumbnail_size);
+  void FocusList();
+  void HideList();
 
  private:
   typedef std::map<DesktopMediaID, uint32_t> ImageHashesMap;
@@ -461,6 +464,25 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
                                 weak_factory_.GetWeakPtr()));
 }
 
+void NativeDesktopMediaList::Worker::FocusList() {
+  // If the capturer uses a delegated source list, then we need to ensure that
+  // its source list is visible.
+  // If the capturer doesn't use a delegated source list, there's nothing for us
+  // to do as we're continually querying the list state ourselves.
+  if (capturer_->GetDelegatedSourceListController())
+    capturer_->GetDelegatedSourceListController()->EnsureVisible();
+}
+
+void NativeDesktopMediaList::Worker::HideList() {
+  // If the capturer uses a delegated source list, then we need to ensure that
+  // its source list is hidden.
+  // If the capturer doesn't use a delegated source list, there's nothing for us
+  // to do as we want to continually querying the list state ourselves as we
+  // have been doing.
+  if (capturer_->GetDelegatedSourceListController())
+    capturer_->GetDelegatedSourceListController()->EnsureHidden();
+}
+
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
     std::unique_ptr<webrtc::DesktopCapturer> capturer)
@@ -475,7 +497,9 @@ NativeDesktopMediaList::NativeDesktopMediaList(
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultNativeDesktopMediaListUpdatePeriod)),
       thread_("DesktopMediaListCaptureThread"),
-      add_current_process_windows_(add_current_process_windows) {
+      add_current_process_windows_(add_current_process_windows),
+      is_source_list_delegated_(capturer->GetDelegatedSourceListController() !=
+                                nullptr) {
   type_ = type;
 
   DCHECK(type_ == DesktopMediaList::Type::kWindow ||
@@ -495,16 +519,65 @@ NativeDesktopMediaList::NativeDesktopMediaList(
       thread_.task_runner(), weak_factory_.GetWeakPtr(), type,
       std::move(capturer), add_current_process_windows_);
 
-  thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Worker::Start, base::Unretained(worker_.get())));
+  if (!is_source_list_delegated_)
+    StartCapturer();
 }
 
 NativeDesktopMediaList::~NativeDesktopMediaList() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // This thread should mostly be an idle observer. Stopping it should be fast.
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_thread_join;
+
+  // Since we're on the UI thread (where all tasks to worker_ must have
+  // posted from), this delete and then immediate stop (which triggers a thread
+  // join) is safe because it ensures that no other tasks can be queued on the
+  // thread after worker_'s deletion.
   thread_.task_runner()->DeleteSoon(FROM_HERE, worker_.release());
   thread_.Stop();
+}
+
+bool NativeDesktopMediaList::IsSourceListDelegated() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return is_source_list_delegated_;
+}
+
+void NativeDesktopMediaList::StartDelegatedCapturer() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(IsSourceListDelegated());
+  StartCapturer();
+}
+
+void NativeDesktopMediaList::StartCapturer() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!is_capturer_started_);
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Worker::Start, base::Unretained(worker_.get())));
+  is_capturer_started_ = true;
+}
+
+void NativeDesktopMediaList::FocusList() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Worker::FocusList, base::Unretained(worker_.get())));
+}
+
+void NativeDesktopMediaList::HideList() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Worker::HideList, base::Unretained(worker_.get())));
 }
 
 void NativeDesktopMediaList::Refresh(bool update_thumnails) {
@@ -516,6 +589,9 @@ void NativeDesktopMediaList::Refresh(bool update_thumnails) {
   new_aura_thumbnail_hashes_.clear();
 #endif
 
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&Worker::Refresh, base::Unretained(worker_.get()),
@@ -638,6 +714,9 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
 #if defined(USE_AURA)
     pending_native_thumbnail_capture_ = true;
 #endif
+    // base::Unretained is safe here because we own the lifetime of both the
+    // worker and the thread and ensure that destroying the worker is the last
+    // thing the thread does before stopping.
     thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&Worker::RefreshThumbnails,
                                   base::Unretained(worker_.get()),

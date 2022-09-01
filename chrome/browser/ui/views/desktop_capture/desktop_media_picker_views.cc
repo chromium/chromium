@@ -557,6 +557,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   for (const auto& category : categories_)
     category.controller->StartUpdating(dialog_window_id);
+
+  GetSelectedController()->FocusView();
 }
 
 DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() {}
@@ -566,7 +568,10 @@ DialogType DesktopMediaPickerDialogView::GetDialogType() const {
 }
 
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
+  if (previously_selected_category_ == index)
+    return;
   SetAudioCheckboxAt(index);
+  categories_[previously_selected_category_].controller->HideView();
   categories_[index].controller->FocusView();
   DialogModelChanged();
   previously_selected_category_ = index;

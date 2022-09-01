@@ -297,6 +297,14 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
                    DesktopMediaList::Type::kWebContents,
                    DesktopMediaList::Type::kWindow,
                    DesktopMediaList::Type::kScreen};
+  } else if (content::desktop_capture::CanUsePipeWire()) {
+    // In order to prevent the PipeWire picker from appearing immediately
+    // (because we start with the first item in the list selected and show the
+    // PipeWire picker when we select a DesktopMediaList::Type it controls),
+    // ensure that we initially select "kWebContents".
+    media_types = {DesktopMediaList::Type::kWebContents,
+                   DesktopMediaList::Type::kWindow,
+                   DesktopMediaList::Type::kScreen};
   } else {
     media_types = {DesktopMediaList::Type::kScreen,
                    DesktopMediaList::Type::kWindow,

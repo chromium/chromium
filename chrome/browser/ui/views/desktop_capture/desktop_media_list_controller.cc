@@ -63,13 +63,31 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateTabListView(
 
 void DesktopMediaListController::StartUpdating(
     content::DesktopMediaID dialog_window_id) {
-  media_list_->SetViewDialogWindowId(dialog_window_id);
+  dialog_window_id_ = dialog_window_id;
+  // Defer calling StartUpdating on media lists with a delegated source list
+  // until the first time they are focused.
+  if (!media_list_->IsSourceListDelegated())
+    StartUpdatingInternal();
+}
+
+void DesktopMediaListController::StartUpdatingInternal() {
+  is_updating_ = true;
+  media_list_->SetViewDialogWindowId(dialog_window_id_);
   media_list_->StartUpdating(this);
 }
 
 void DesktopMediaListController::FocusView() {
   if (view_)
     view_->RequestFocus();
+
+  if (media_list_->IsSourceListDelegated() && !is_updating_)
+    StartUpdatingInternal();
+
+  media_list_->FocusList();
+}
+
+void DesktopMediaListController::HideView() {
+  media_list_->HideList();
 }
 
 absl::optional<content::DesktopMediaID>

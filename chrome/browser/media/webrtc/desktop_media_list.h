@@ -118,6 +118,25 @@ class DesktopMediaList {
   // generating in addition to its thumbnail.
   virtual void SetPreviewedSource(
       const absl::optional<content::DesktopMediaID>& id) = 0;
+
+  // Returns true if this DesktopMediaList wraps some other object (usually a
+  // DesktopCapturer), that takes responsibility for showing its own source
+  // list where the user will likely make their selection. When true, there will
+  // only be one source listed which will represent the selection made in the
+  // delegated source list.
+  // Returns false if this DesktopMediaList needs UI created for it to show its
+  // source list.
+  virtual bool IsSourceListDelegated() const = 0;
+
+  // Notifies the list that it is now focused. This is especially important
+  // when IsSourceDelegated() returns true, as it helps to notify the delegated
+  // source list when it should be visible.
+  virtual void FocusList() = 0;
+
+  // Notifies the list that it is no longer focused. This is especially
+  // important when IsSourceDelegated() returns true, as it helps to notify the
+  // delegated source list when it should be hidden.
+  virtual void HideList() = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_
