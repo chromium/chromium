@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"

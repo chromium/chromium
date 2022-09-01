@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
@@ -62,9 +62,8 @@ bool VaryHeaderContainsAsterisk(const Response* response) {
   if (headers->Get("vary", varyHeader)) {
     Vector<String> fields;
     varyHeader.Split(',', fields);
-    return std::any_of(fields.begin(), fields.end(), [](const String& field) {
-      return field.StripWhiteSpace() == "*";
-    });
+    String (String::*strip_whitespace)() const = &String::StripWhiteSpace;
+    return base::Contains(fields, "*", strip_whitespace);
   }
   return false;
 }

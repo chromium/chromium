@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
+
 #include <memory>
 
 #include "base/bind.h"
@@ -11,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -494,23 +496,21 @@ void PageSchedulerImpl::OnTraceLogEnabled() {
 }
 
 bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {
-  return std::any_of(frame_schedulers_.begin(), frame_schedulers_.end(),
-                     [](const FrameSchedulerImpl* fs) {
-                       return fs->IsWaitingForContentfulPaint() &&
-                              !fs->IsInEmbeddedFrameTree() &&
-                              fs->GetFrameType() ==
-                                  FrameScheduler::FrameType::kMainFrame;
-                     });
+  return base::ranges::any_of(
+      frame_schedulers_, [](const FrameSchedulerImpl* fs) {
+        return fs->IsWaitingForContentfulPaint() &&
+               !fs->IsInEmbeddedFrameTree() &&
+               fs->GetFrameType() == FrameScheduler::FrameType::kMainFrame;
+      });
 }
 
 bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
-  return std::any_of(frame_schedulers_.begin(), frame_schedulers_.end(),
-                     [](const FrameSchedulerImpl* fs) {
-                       return fs->IsWaitingForMeaningfulPaint() &&
-                              !fs->IsInEmbeddedFrameTree() &&
-                              fs->GetFrameType() ==
-                                  FrameScheduler::FrameType::kMainFrame;
-                     });
+  return base::ranges::any_of(
+      frame_schedulers_, [](const FrameSchedulerImpl* fs) {
+        return fs->IsWaitingForMeaningfulPaint() &&
+               !fs->IsInEmbeddedFrameTree() &&
+               fs->GetFrameType() == FrameScheduler::FrameType::kMainFrame;
+      });
 }
 
 void PageSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context,

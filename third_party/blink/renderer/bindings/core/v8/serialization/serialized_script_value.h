@@ -35,6 +35,7 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -290,10 +291,9 @@ class CORE_EXPORT SerializedScriptValue
   bool IsLockedToAgentCluster() const {
     return !wasm_modules_.IsEmpty() ||
            !shared_array_buffers_contents_.IsEmpty() ||
-           std::any_of(attachments_.begin(), attachments_.end(),
-                       [](const auto& entry) {
-                         return entry.value->IsLockedToAgentCluster();
-                       });
+           base::ranges::any_of(attachments_, [](const auto& entry) {
+             return entry.value->IsLockedToAgentCluster();
+           });
   }
 
   // Returns true after serializing script values that remote origins cannot

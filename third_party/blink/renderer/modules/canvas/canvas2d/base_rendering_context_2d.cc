@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
-#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -12,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
@@ -698,8 +698,8 @@ const Vector<double>& BaseRenderingContext2D::getLineDash() const {
 }
 
 static bool LineDashSequenceIsValid(const Vector<double>& dash) {
-  return std::all_of(dash.begin(), dash.end(),
-                     [](double d) { return std::isfinite(d) && d >= 0; });
+  return base::ranges::all_of(
+      dash, [](double d) { return std::isfinite(d) && d >= 0; });
 }
 
 void BaseRenderingContext2D::setLineDash(const Vector<double>& dash) {

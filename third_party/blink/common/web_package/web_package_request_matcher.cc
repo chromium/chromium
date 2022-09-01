@@ -4,11 +4,11 @@
 
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -160,9 +160,7 @@ class AcceptEncodingNegotiation final : public ContentNegotiationAlgorithm {
 
     // Step 3. If "identity" is not a member of preferred-codings, append
     // "identity". [spec text]
-    if (!std::any_of(
-            preferred_codings.begin(), preferred_codings.end(),
-            [](const WeightedValue& p) { return p.value == kIdentity; })) {
+    if (!base::Contains(preferred_codings, kIdentity, &WeightedValue::value)) {
       preferred_codings.push_back({kIdentity, 0.0});
     }
 

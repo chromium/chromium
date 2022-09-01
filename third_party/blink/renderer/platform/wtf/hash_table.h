@@ -2249,12 +2249,20 @@ struct HashTableConstIteratorAdapter {
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableConstIteratorAdapter operator++(int) {
+    HashTableConstIteratorAdapter copy = *this;
+    ++*this;
+    return copy;
+  }
   HashTableConstIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableConstIteratorAdapter operator--(int) {
+    HashTableConstIteratorAdapter copy = *this;
+    --*this;
+    return copy;
+  }
   typename HashTableType::const_iterator impl_;
 };
 

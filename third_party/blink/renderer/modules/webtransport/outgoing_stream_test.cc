@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -168,7 +169,7 @@ TEST(OutgoingStreamTest, WriteArrayBufferView) {
 }
 
 bool IsAllNulls(base::span<const uint8_t> data) {
-  return std::all_of(data.begin(), data.end(), [](uint8_t c) { return !c; });
+  return base::ranges::all_of(data, [](uint8_t c) { return !c; });
 }
 
 TEST(OutgoingStreamTest, AsyncWrite) {

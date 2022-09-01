@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/native_io/native_io_file_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/files/file.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -53,11 +53,9 @@ bool IsValidNativeIOName(const String& name) {
     return false;
 
   if (name.Is8Bit()) {
-    return std::all_of(name.Span8().begin(), name.Span8().end(),
-                       &IsValidNativeIONameCharacter);
+    return base::ranges::all_of(name.Span8(), &IsValidNativeIONameCharacter);
   }
-  return std::all_of(name.Span16().begin(), name.Span16().end(),
-                     &IsValidNativeIONameCharacter);
+  return base::ranges::all_of(name.Span16(), &IsValidNativeIONameCharacter);
 }
 
 void ThrowStorageAccessError(ExceptionState& exception_state) {

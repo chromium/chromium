@@ -5,7 +5,6 @@
 
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 
-#include <algorithm>
 #include <array>
 #include <iterator>
 
@@ -23,7 +22,7 @@ namespace blink {
 namespace {
 
 static constexpr size_t kMaxFeaturesPerTrial = {{max_features_per_trial}};
-static constexpr struct {
+static constexpr struct TrialToFeature {
   const char* trial_name;
   unsigned feature_count;
   std::array<OriginTrialFeature, kMaxFeaturesPerTrial> features;
@@ -38,9 +37,8 @@ static constexpr struct {
 } // namespace
 
 bool origin_trials::IsTrialValid(base::StringPiece trial_name) {
-  return std::any_of(
-      std::begin(kTrialToFeaturesMap), std::end(kTrialToFeaturesMap),
-      [&](const auto& entry) { return entry.trial_name == trial_name; });
+  return base::Contains(kTrialToFeaturesMap, trial_name,
+                        &TrialToFeature::trial_name);
 }
 
 bool origin_trials::IsTrialEnabledForInsecureContext(base::StringPiece trial_name) {
