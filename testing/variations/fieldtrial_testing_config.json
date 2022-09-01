@@ -11279,5 +11279,20 @@
                 }
             ]
         }
+    ],
+    "ZeroCopyTabCaptureExperiment": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ZeroCopyTabCapture"
+                    ]
+                }
+            ]
+        }
     ]
 }
