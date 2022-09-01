@@ -84,6 +84,7 @@ void LensSidePanelController::OpenWithURL(
   }
 
   side_panel_url_params_ = std::make_unique<content::OpenURLParams>(params);
+  side_panel_view_->SetContentAndNewTabButtonVisible(false, false);
   MaybeLoadURLWithParams();
 }
 
@@ -185,9 +186,29 @@ void LensSidePanelController::OnViewBoundsChanged(views::View* observed_view) {
   MaybeLoadURLWithParams();
 }
 
-void LensSidePanelController::LoadProgressChanged(double progress) {
-  bool is_content_visible = progress == 1.0;
-  side_panel_view_->SetContentVisible(is_content_visible);
+void LensSidePanelController::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  auto last_committed_url =
+      side_panel_view_->GetWebContents()->GetLastCommittedURL();
+
+  // Since Lens Web redirects to the actual UI using HTML redirection, this
+  // method gets fired twice. This check ensures we only show the user the
+  // rendered page and not the redirect. It also ensures we immediately render
+  // any page that is not lens.google.com
+  // TODO(243935799): Cleanup this check once Lens Web no longer redirects
+  if (lens::ShouldPageBeVisible(last_committed_url))
+    side_panel_view_->SetContentAndNewTabButtonVisible(
+        true, lens::IsValidLensResultUrl(last_committed_url));
+}
+
+// Catches case where Chrome errors. I.e. no internet connection
+// TODO(243935799): Cleanup this listener once Lens Web no longer redirects
+void LensSidePanelController::PrimaryPageChanged(content::Page& page) {
+  auto last_committed_url =
+      side_panel_view_->GetWebContents()->GetLastCommittedURL();
+
+  if (page.GetMainDocument().IsErrorDocument())
+    side_panel_view_->SetContentAndNewTabButtonVisible(
+        true, lens::IsValidLensResultUrl(last_committed_url));
 }
 
 }  // namespace lens

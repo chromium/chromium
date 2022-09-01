@@ -36,15 +36,15 @@ class LensSidePanelView : public views::FlexLayoutView {
   // views::FlexLayoutView:
   void OnThemeChanged() override;
 
-  void SetContentVisible(bool visible);
+  // Shows / hides the lens results and the loading view to avoid showing
+  // loading artifacts. If the visible bool is false, show loading view else
+  // show lens results view. Also enables/disables the new tab button.
+  void SetContentAndNewTabButtonVisible(bool visible,
+                                        bool enable_new_tab_button);
 
  private:
   void CreateAndInstallHeader(base::RepeatingClosure close_callback,
                               base::RepeatingClosure launch_callback);
-
-  // Validates side panel URL and updates enabled/disabled
-  // state of the launch button.
-  void UpdateLaunchButtonState();
 
   raw_ptr<views::ImageView> branding_;
   raw_ptr<views::Separator> separator_;

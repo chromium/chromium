@@ -34,7 +34,9 @@ class LensSidePanelController : public content::WebContentsObserver,
   LensSidePanelController& operator=(const LensSidePanelController&) = delete;
   ~LensSidePanelController() override;
 
-  void LoadProgressChanged(double progress) override;
+  // content::WebContentsObserver:
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;

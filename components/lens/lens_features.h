@@ -62,6 +62,9 @@ extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
 // Enables the side panel for Lens features on Chrome where supported.
 extern const base::FeatureParam<bool> kEnableSidePanelForLens;
 
+// Enable Lens HTML redirect fix.
+extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
+
 // Enables footer for the unified side panel
 extern const base::Feature kLensUnifiedSidePanelFooter;
 
@@ -107,6 +110,9 @@ extern int GetMaxPixelsForImageSearch();
 
 // The URL for the Lens home page.
 extern std::string GetHomepageURLForLens();
+
+// Returns whether to apply fix for HTML redirects.
+extern bool GetEnableLensHtmlRedirectFix();
 
 // Returns whether Lens fullscreen search is enabled.
 extern bool IsLensFullscreenSearchEnabled();

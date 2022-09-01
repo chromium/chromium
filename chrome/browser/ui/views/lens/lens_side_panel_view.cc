@@ -186,15 +186,12 @@ void LensSidePanelView::CreateAndInstallHeader(
   AddChildView(std::move(header));
 }
 
-void LensSidePanelView::UpdateLaunchButtonState() {
-  auto last_committed_url = web_view_->GetWebContents()->GetLastCommittedURL();
-  launch_button_->SetEnabled(lens::IsValidLensResultUrl(last_committed_url));
-}
-
-void LensSidePanelView::SetContentVisible(bool visible) {
+void LensSidePanelView::SetContentAndNewTabButtonVisible(
+    bool visible,
+    bool enable_new_tab_button) {
   web_view_->SetVisible(visible);
   loading_indicator_web_view_->SetVisible(!visible);
-  LensSidePanelView::UpdateLaunchButtonState();
+  launch_button_->SetEnabled(enable_new_tab_button);
 }
 
 LensSidePanelView::~LensSidePanelView() = default;

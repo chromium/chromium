@@ -49,6 +49,9 @@ const base::FeatureParam<bool> kEnableSidePanelForLens{
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
 
+constexpr base::FeatureParam<bool> kEnableLensHtmlRedirectFix{
+    &kLensStandalone, "lens-html-redirect-fix", true};
+
 constexpr base::FeatureParam<int> kMaxPixelsForRegionSearch{
     &kLensImageCompression, "region-search-dimensions-max-pixels", 1000};
 
@@ -120,6 +123,10 @@ int GetMaxPixelsForImageSearch() {
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
+}
+
+bool GetEnableLensHtmlRedirectFix() {
+  return kEnableLensHtmlRedirectFix.Get();
 }
 
 bool UseRegionSearchMenuItemAltText1() {

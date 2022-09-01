@@ -25,8 +25,21 @@ namespace lens {
 void OpenLensSidePanel(Browser* browser,
                        const content::OpenURLParams& url_params);
 
-// Check if the lens URL is valid.
+// Check if the lens URL is a valid results page. This is done by checking if
+// the URL has a payload parameter.
 bool IsValidLensResultUrl(const GURL& url);
+
+// Returns true if the given URL corresponds to any Lens webpage. This is done
+// by checking if the given URL and lens::features::kHomepageURLForLens have
+// matching domains
+bool IsLensUrl(const GURL& url);
+
+// Checks to see if the page corresponding to the current URL should be visible
+// to the user. The page should be visible if
+//   - The page is the Lens Results page
+//   - The page does not correspond to the Lens domain
+//   - lens::features::kEnableLensHtmlRedirectFix is set to false
+bool ShouldPageBeVisible(const GURL& url);
 
 // Creates URL for opening a lens result in a new tab
 // with appropriate entry point parameters

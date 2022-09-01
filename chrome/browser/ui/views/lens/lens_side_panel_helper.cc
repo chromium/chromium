@@ -30,6 +30,16 @@ bool IsValidLensResultUrl(const GURL& url) {
   return net::GetValueForKeyInQuery(url, kPayloadQueryParameter, &payload);
 }
 
+bool IsLensUrl(const GURL& url) {
+  return !url.is_empty() &&
+         url.host() == GURL(lens::features::GetHomepageURLForLens()).host();
+}
+
+bool ShouldPageBeVisible(const GURL& url) {
+  return lens::IsValidLensResultUrl(url) || !lens::IsLensUrl(url) ||
+         !lens::features::GetEnableLensHtmlRedirectFix();
+}
+
 // We need to create a new URL with the specified query parameters while
 // also keeping the payload parameter in the original URL.
 GURL CreateURLForNewTab(const GURL& original_url) {
