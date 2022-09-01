@@ -32,7 +32,7 @@ class ExtensionApiTestWithManagementPolicy
       const ExtensionApiTestWithManagementPolicy&) = delete;
 
   ~ExtensionApiTestWithManagementPolicy() override;
-  void SetUpInProcessBrowserTestFixture() override;
+  void SetUp() override;
   void SetUpOnMainThread() override;
 
  protected:

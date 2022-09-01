@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -35,13 +36,12 @@
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
 namespace {
-
-constexpr const char kWebstoreDomain[] = "cws.com";
 
 std::unique_ptr<net::ClientCertStore> CreateNullCertStore() {
   return nullptr;
@@ -103,6 +103,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrTest, HttpAuth) {
       "test_http_auth.html", embedded_test_server()->GetURL("/auth-basic")));
 }
 
+constexpr char kWebstoreAppBaseURL[] = "https://chrome.google.com/";
+constexpr char kWebstorePath[] = "/webstore/mock_store.html";
+
 class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
  public:
   BackgroundXhrWebstoreTest() = default;
@@ -113,20 +116,31 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
 
   ~BackgroundXhrWebstoreTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
-    // TODO(devlin): For some reason, trying to fetch an HTTPS url in this test
-    // fails (even when using an HTTPS EmbeddedTestServer). For this reason, we
-    // need to fake the webstore URLs as http versions.
-    command_line->AppendSwitchASCII(
-        ::switches::kAppsGalleryURL,
-        base::StringPrintf("http://%s", kWebstoreDomain));
+  void SetUp() override {
+    UseHttpsTestServer();
+    // Add the extensions directory to the test server as it has a /webstore/
+    // directory to serve files from, which the webstore hosted app requires as
+    // part of the URL it is associated with.
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/extensions");
+    ExtensionApiTestWithManagementPolicy::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Note: we need to start the embedded test server here specifically as it
+    // needs to come after SetUp has been run in the superclass, but before we
+    // get the host port pair from it below in this function.
     ASSERT_TRUE(embedded_test_server()->Start());
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    // Ignore cert errors so the EmbeddedTestServer can serve up https URLs
+    // without needing to define a cert for each.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // Add a host resolver rule to map all outgoing requests to the test server.
+    // This allows us to use "real" hostnames and standard ports in URLs (i.e.,
+    // without having to inject the port number into all URLs).
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP * " + embedded_test_server()->host_port_pair().ToString());
   }
 
   std::string ExecuteFetch(const Extension* extension, const GURL& url) {
@@ -187,18 +201,16 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
 IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRToWebstore) {
   const Extension* extension = LoadXhrExtension("<all_urls>");
 
-  GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
-  GURL webstore_url_to_fetch = embedded_test_server()->GetURL(
-      webstore_launch_url.host(), "/simple.html");
+  GURL webstore_url_to_fetch = GURL(kWebstoreAppBaseURL).Resolve(kWebstorePath);
 
   EXPECT_EQ("ERROR: TypeError: Failed to fetch",
             ExecuteFetch(extension, webstore_url_to_fetch));
 
-  // Sanity check: the extension should be able to fetch google.com.
-  GURL google_url =
-      embedded_test_server()->GetURL("google.com", "/simple.html");
+  // Sanity check: the extension should be able to fetch the page if it's not on
+  // the webstore.
+  GURL google_url = GURL("https://google.com").Resolve(kWebstorePath);
   EXPECT_THAT(ExecuteFetch(extension, google_url),
-              ::testing::HasSubstr("<head><title>OK</title></head>"));
+              ::testing::HasSubstr("<body>blank</body>"));
 }
 
 // Extensions should not be able to XHR to the webstore regardless of policy.
@@ -211,18 +223,16 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRToWebstorePolicy) {
 
   const Extension* extension = LoadXhrExtension("<all_urls>");
 
-  GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
-  GURL webstore_url_to_fetch = embedded_test_server()->GetURL(
-      webstore_launch_url.host(), "/simple.html");
+  GURL webstore_url_to_fetch = GURL(kWebstoreAppBaseURL).Resolve(kWebstorePath);
 
   EXPECT_EQ("ERROR: TypeError: Failed to fetch",
             ExecuteFetch(extension, webstore_url_to_fetch));
 
-  // Sanity check: the extension should be able to fetch google.com.
-  GURL google_url =
-      embedded_test_server()->GetURL("google.com", "/simple.html");
+  // Sanity check: the extension should be able to fetch the page if it's not on
+  // the webstore.
+  GURL google_url = GURL("https://google.com").Resolve(kWebstorePath);
   EXPECT_THAT(ExecuteFetch(extension, google_url),
-              ::testing::HasSubstr("<head><title>OK</title></head>"));
+              ::testing::HasSubstr("<body>blank</body>"));
 }
 
 // Extensions should not be able to bypass same-origin despite declaring
@@ -359,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateIndividualXHR) {
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRAnyPortPermission) {
-  const Extension* extension = LoadXhrExtension("http://example.com:*/*");
+  const Extension* extension = LoadXhrExtension("https://example.com:*/*");
 
   GURL permitted_url_to_fetch =
       embedded_test_server()->GetURL("example.com", "/simple.html");
@@ -371,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRAnyPortPermission) {
 IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest,
                        XHRPortSpecificPermissionAllow) {
   const Extension* extension = LoadXhrExtension(
-      "http://example.com:" +
+      "https://example.com:" +
       base::NumberToString(embedded_test_server()->port()) + "/*");
 
   GURL permitted_url_to_fetch =
@@ -384,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest,
 IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest,
                        XHRPortSpecificPermissionBlock) {
   const Extension* extension = LoadXhrExtension(
-      "http://example.com:" +
+      "https://example.com:" +
       base::NumberToString(embedded_test_server()->port() + 1) + "/*");
 
   GURL not_permitted_url_to_fetch =

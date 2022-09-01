@@ -14,8 +14,7 @@ ExtensionApiTestWithManagementPolicy::ExtensionApiTestWithManagementPolicy(
 ExtensionApiTestWithManagementPolicy::~ExtensionApiTestWithManagementPolicy() =
     default;
 
-void ExtensionApiTestWithManagementPolicy::SetUpInProcessBrowserTestFixture() {
-  extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+void ExtensionApiTestWithManagementPolicy::SetUp() {
   embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
       &ExtensionApiTestWithManagementPolicy::MonitorRequestHandler,
       base::Unretained(this)));
@@ -25,6 +24,7 @@ void ExtensionApiTestWithManagementPolicy::SetUpInProcessBrowserTestFixture() {
   policy_provider_.SetAutoRefresh();
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &policy_provider_);
+  extensions::ExtensionApiTest::SetUp();
 }
 
 void ExtensionApiTestWithManagementPolicy::SetUpOnMainThread() {
