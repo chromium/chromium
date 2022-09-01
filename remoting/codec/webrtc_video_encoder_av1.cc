@@ -179,6 +179,12 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   DCHECK_EQ(error, AOM_CODEC_OK)
       << "Failed to set AV1E_SET_MAX_REFERENCE_FRAMES";
 
+  // Suggested by the AOM team to decrease encode time per frame. Setting this
+  // value to 2 decreased per-frame encode time by ~1ms at 3840x2160 with no
+  // noticeable loss of quality.
+  error = aom_codec_control(codec.get(), AV1E_SET_CDF_UPDATE_MODE, 2);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_CDF_UPDATE_MODE";
+
   codec_ = std::move(codec);
   return true;
 }
