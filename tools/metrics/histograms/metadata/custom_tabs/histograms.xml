@@ -361,6 +361,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.ResizeType" enum="CustomTabsResizeType"
+    expires_after="2022-12-15">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    When a Partial Custom Tab has been resized by the user log if it is an
+    expansion or a minimization of the tab.
+  </summary>
+</histogram>
+
 <histogram
     name="CustomTabs.RetainableSessions.TimeBetweenLaunch{IdentifierType}"
     units="seconds" expires_after="2022-11-03">

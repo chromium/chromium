@@ -62,6 +62,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -727,6 +728,56 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         verify(mDragHandlebar).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void invokeResizeCallbackExpansion() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        verifyWindowFlagsSet();
+
+        assertEquals(
+                "mAttributeResults should have exactly 1 element.", 1, mAttributeResults.size());
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        int expected = PartialCustomTabHeightStrategy.ResizeType.EXPANSION;
+        HistogramDelta histogramExpansion = new HistogramDelta("CustomTabs.ResizeType", expected);
+
+        // Drag to the top.
+        assertTabIsFullHeight(dragTab(handleStrategy, 1500, 1000, 0));
+
+        // invokeResizeCallback() should have been called and ResizeType.EXPANSION logged once.
+        assertEquals(
+                "ResizeType.EXPANSION should be recorded once.", 1, histogramExpansion.getDelta());
+    }
+
+    @Test
+    public void invokeResizeCallbackMinimization() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        verifyWindowFlagsSet();
+
+        assertEquals(
+                "mAttributeResults should have exactly 1 element.", 1, mAttributeResults.size());
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        // Drag to the top so it can be minimized in the next step.
+        assertTabIsFullHeight(dragTab(handleStrategy, 1500, 1000, 0));
+
+        int expected = PartialCustomTabHeightStrategy.ResizeType.MINIMIZATION;
+        HistogramDelta histogramMinimization =
+                new HistogramDelta("CustomTabs.ResizeType", expected);
+
+        // Drag down enough -> slide to the initial position.
+        assertTabIsAtInitialPos(dragTab(handleStrategy, 50, 650, 1300));
+
+        // invokeResizeCallback() should have been called and ResizeType.MINIMIZATION logged once.
+        assertEquals("ResizeType.MINIMIZATION should be recorded once.", 1,
+                histogramMinimization.getDelta());
     }
 
     private void verifyWindowFlagsSet() {

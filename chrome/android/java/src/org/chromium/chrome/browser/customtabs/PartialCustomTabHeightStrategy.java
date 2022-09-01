@@ -50,6 +50,7 @@ import org.chromium.base.Consumer;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -149,6 +150,19 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // Method to invoke to animate the tab. Animates by altering top y position by default,
     // but using height for the close animation.
     private Consumer<Integer> mTabAnimator = this::updateWindowPos;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // This should be kept in sync with the definition |CustomTabsResizeType|
+    // in tools/metrics/histograms/enums.xml.
+    @IntDef({ResizeType.EXPANSION, ResizeType.MINIMIZATION, ResizeType.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface ResizeType {
+        int EXPANSION = 0;
+        int MINIMIZATION = 1;
+        int COUNT = 2;
+    }
 
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -743,6 +757,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             mFinishRunnable.run();
             return;
         }
+
+        int draggingEndY = mActivity.getWindow().getAttributes().y;
+        if (mDraggingStartY >= 0 && mDraggingStartY != draggingEndY) {
+            RecordHistogram.recordEnumeratedHistogram("CustomTabs.ResizeType",
+                    mDraggingStartY < draggingEndY ? ResizeType.MINIMIZATION : ResizeType.EXPANSION,
+                    ResizeType.COUNT);
+        }
+
         hideSpinnerView();
         if (mWindowAboveNavbar) {
             Window window = mActivity.getWindow();
