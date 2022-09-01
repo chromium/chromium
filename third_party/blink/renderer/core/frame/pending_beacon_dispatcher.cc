@@ -25,9 +25,8 @@ namespace {
 constexpr base::TimeDelta kBeaconTimeoutInterval = base::Milliseconds(100);
 
 struct ReverseBeaconTimeoutSorter {
-  constexpr bool operator()(
-      const Member<PendingBeaconDispatcher::PendingBeacon>& lhs,
-      const Member<PendingBeaconDispatcher::PendingBeacon>& rhs) {
+  bool operator()(const Member<PendingBeaconDispatcher::PendingBeacon>& lhs,
+                  const Member<PendingBeaconDispatcher::PendingBeacon>& rhs) {
     // Negative timeout is not accepted.
     DCHECK(!lhs->GetBackgroundTimeout().is_negative());
     DCHECK(!rhs->GetBackgroundTimeout().is_negative());
