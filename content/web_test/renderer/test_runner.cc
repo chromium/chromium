@@ -3270,6 +3270,7 @@ void TestRunner::FinishTest() {
   // Clean out the lifecycle if needed before capturing the web tree
   // dump and pixels from the compositor.
   auto* web_frame = main_frame->GetWebFrame();
+  web_frame->FrameWidget()->PrepareForFinalLifecyclUpdateForTesting();
   web_frame->FrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);
 

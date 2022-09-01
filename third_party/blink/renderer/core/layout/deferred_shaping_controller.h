@@ -36,6 +36,7 @@ enum class ReshapeReason {
   kLastResort,
   kPrinting,
   kScrollingApi,
+  kTesting,
 };
 
 // DeferredShapingController class manages states of the Deferred Shaping

@@ -215,6 +215,10 @@ class WebFrameWidget : public WebWidget {
   // `FrameWidgetTestHelper::CreateTestWebFrameWidget()`.
   virtual FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() = 0;
 
+  // This should be called for the local root frame before calling the final
+  // UpdateAllLifecyclePhases() just before dumping pixels.
+  virtual void PrepareForFinalLifecyclUpdateForTesting() = 0;
+
  private:
   // This is a private virtual method so we don't expose cc::LayerTreeHost
   // outside of this class. Friend classes may be added in order to access it.

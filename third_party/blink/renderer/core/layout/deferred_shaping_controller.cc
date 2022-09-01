@@ -154,6 +154,9 @@ void DeferredShapingController::ReshapeAllDeferred(ReshapeReason reason) {
       reason_string = "scrolling APIs";
       feature = WebFeature::kDeferredShaping2ReshapedByScrolling;
       break;
+    case ReshapeReason::kTesting:
+      reason_string = "a test";
+      break;
   }
   if (feature != WebFeature::kMaxValue) {
     UseCounter::Count(*document_, feature);
