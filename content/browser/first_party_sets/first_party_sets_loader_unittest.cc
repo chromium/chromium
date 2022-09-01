@@ -95,7 +95,7 @@ TEST_F(FirstPartySetsLoaderTest, ParsesComponent) {
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
   const std::string input =
-      "{\"owner\": \"https://example.test\",\"members\": "
+      "{\"primary\": \"https://example.test\",\"associatedSites\": "
       "[\"https://aaaa.test\",],}";
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
@@ -115,10 +115,10 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
   const std::string input =
-      "{\"owner\": \"https://example.test\",\"members\": "
-      "[\"https://member1.test\"]}\n"
-      "{\"owner\": \"https://foo.test\",\"members\": "
-      "[\"https://member2.test\"]}";
+      "{\"primary\": \"https://example.test\",\"associatedSites\": "
+      "[\"https://associatedsite1.test\"]}\n"
+      "{\"primary\": \"https://foo.test\",\"associatedSites\": "
+      "[\"https://associatedsite2.test\"]}";
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
@@ -130,7 +130,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
@@ -138,7 +138,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -146,12 +146,13 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
 
 TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
   std::string input =
-      R"({"owner": "https://example.test", "members": ["https://member1.test"]}
-{"owner": "https://foo.test", "members": ["https://member2.test"]})";
+      R"({"primary": "https://example.test", "associatedSites": ["https://associatedsite1.test"]}
+{"primary": "https://foo.test", "associatedSites": ["https://associatedsite2.test"]})";
 
-  std::string input2 = R"({ "owner": "https://example2.test", "members":)"
-                       R"( ["https://member1.test"]}
-{"owner": "https://foo2.test", "members": ["https://member2.test"]})";
+  std::string input2 =
+      R"({ "primary": "https://example2.test", "associatedSites":)"
+      R"( ["https://associatedsite1.test"]}
+{"primary": "https://foo2.test", "associatedSites": ["https://associatedsite2.test"]})";
 
   SetComponentSets(loader(), input);
   SetComponentSets(loader(), input2);
@@ -165,7 +166,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
@@ -173,7 +174,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -181,8 +182,8 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
   const std::string input =
-      R"({"owner": "https://example.test", "members": ["https://example.test"]}
-{"owner": "https://foo.test", "members": ["https://member2.test"]})";
+      R"({"primary": "https://example.test", "associatedSites": ["https://example.test"]}
+{"primary": "https://foo.test", "associatedSites": ["https://associatedsite2.test"]})";
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
@@ -193,9 +194,9 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
   const std::string input =
-      R"({"owner": "https://example.test", "members":)"
-      R"( ["https://example.test", "https://member1.test"]}
-{"owner": "https://foo.test", "members": ["https://member2.test"]})";
+      R"({"primary": "https://example.test", "associatedSites":)"
+      R"( ["https://example.test", "https://associatedsite1.test"]}
+{"primary": "https://foo.test", "associatedSites": ["https://associatedsite2.test"]})";
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
@@ -205,10 +206,10 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
 
 TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
   const std::string input =
-      R"({"owner": "https://example.test", "members":)"
-      R"( ["https://member1.test", "https://member2.test",)"
-      R"( "https://member1.test"]}
-{"owner": "https://foo.test", "members": ["https://member3.test"]})";
+      R"({"primary": "https://example.test", "associatedSites":)"
+      R"( ["https://associatedsite1.test", "https://associatedsite2.test",)"
+      R"( "https://associatedsite1.test"]}
+{"primary": "https://foo.test", "associatedSites": ["https://associatedsite3.test"]})";
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
@@ -226,7 +227,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_TooSmall) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
-  loader().SetManuallySpecifiedSet("https://example.test,member1");
+  loader().SetManuallySpecifiedSet("https://example.test,associatedsite1");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -234,7 +235,8 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotHTTPS) {
-  loader().SetManuallySpecifiedSet("https://example.test,http://member1.test");
+  loader().SetManuallySpecifiedSet(
+      "https://example.test,http://associatedsite1.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -244,7 +246,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotHTTPS) {
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Invalid_RegisteredDomain_Owner) {
   loader().SetManuallySpecifiedSet(
-      "https://www.example.test..,https://www.member.test");
+      "https://www.example.test..,https://www.associatedsite.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -254,7 +256,7 @@ TEST_F(FirstPartySetsLoaderTest,
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Invalid_RegisteredDomain_Member) {
   loader().SetManuallySpecifiedSet(
-      "https://www.example.test,https://www.member.test..");
+      "https://www.example.test,https://www.associatedsite.test..");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -262,7 +264,8 @@ TEST_F(FirstPartySetsLoaderTest,
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
-  loader().SetManuallySpecifiedSet("https://example.test,https://member.test");
+  loader().SetManuallySpecifiedSet(
+      "https://example.test,https://associatedsite.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -272,7 +275,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member.test"),
+                  Pair(SerializesTo("https://associatedsite.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -281,7 +284,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Valid_SingleMember_RegisteredDomain) {
   loader().SetManuallySpecifiedSet(
-      "https://www.example.test,https://www.member.test");
+      "https://www.example.test,https://www.associatedsite.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -291,7 +294,7 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member.test"),
+                  Pair(SerializesTo("https://associatedsite.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -299,7 +302,8 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
   loader().SetManuallySpecifiedSet(
-      "https://example.test,https://member1.test,https://member2.test");
+      "https://example.test,https://associatedsite1.test,https://"
+      "associatedsite2.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -309,11 +313,11 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 1)))));
@@ -330,7 +334,7 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
   loader().SetManuallySpecifiedSet(
-      "https://example.test,https://example.test,https://member1.test");
+      "https://example.test,https://example.test,https://associatedsite1.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -340,7 +344,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -348,9 +352,9 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
   loader().SetManuallySpecifiedSet(R"(https://example.test,
-https://member1.test,
-https://member2.test,
-https://member1.test)");
+https://associatedsite1.test,
+https://associatedsite2.test,
+https://associatedsite1.test)");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
@@ -360,23 +364,25 @@ https://member1.test)");
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 1)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
-  const std::string input = R"({"owner": "https://example.test", "members": )"
-                            R"(["https://member2.test", "https://member3.test"]}
-{"owner": "https://bar.test", "members": ["https://member4.test"]})";
+  const std::string input =
+      R"({"primary": "https://example.test", "associatedSites": )"
+      R"(["https://associatedsite2.test", "https://associatedsite3.test"]}
+{"primary": "https://bar.test", "associatedSites": ["https://associatedsite4.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
-      "https://example.test,https://member1.test,https://member2.test");
+      "https://example.test,https://associatedsite1.test,https://"
+      "associatedsite2.test");
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -384,11 +390,11 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 1)),
@@ -396,7 +402,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member4.test"),
+                  Pair(SerializesTo("https://associatedsite4.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -404,12 +410,14 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesOwnerMember) {
-  const std::string input = R"({"owner": "https://foo.test", "members": )"
-                            R"(["https://member1.test", "https://example.test"]}
-{"owner": "https://bar.test", "members": ["https://member2.test"]})";
+  const std::string input =
+      R"({"primary": "https://foo.test", "associatedSites": )"
+      R"(["https://associatedsite1.test", "https://example.test"]}
+{"primary": "https://bar.test", "associatedSites": ["https://associatedsite2.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
-      "https://example.test,https://member1.test,https://member3.test");
+      "https://example.test,https://associatedsite1.test,https://"
+      "associatedsite3.test");
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -417,11 +425,11 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://member3.test"),
+                  Pair(SerializesTo("https://associatedsite3.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 1)),
@@ -429,7 +437,7 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -437,11 +445,13 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberOwner) {
-  const std::string input = R"({"owner": "https://foo.test", "members": )"
-                            R"(["https://member1.test", "https://member2.test"]}
-{"owner": "https://member3.test", "members": ["https://member4.test"]})";
+  const std::string input =
+      R"({"primary": "https://foo.test", "associatedSites": )"
+      R"(["https://associatedsite1.test", "https://associatedsite2.test"]}
+{"primary": "https://associatedsite3.test", "associatedSites": ["https://associatedsite4.test"]})";
   SetComponentSets(loader(), input);
-  loader().SetManuallySpecifiedSet("https://example.test,https://member3.test");
+  loader().SetManuallySpecifiedSet(
+      "https://example.test,https://associatedsite3.test");
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -449,7 +459,7 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member3.test"),
+                  Pair(SerializesTo("https://associatedsite3.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
@@ -457,11 +467,11 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kAssociated, 1)))));
@@ -469,12 +479,14 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberMember) {
-  const std::string input = R"({"owner": "https://foo.test", "members": )"
-                            R"(["https://member2.test", "https://member3.test"]}
-{"owner": "https://bar.test", "members": ["https://member4.test"]})";
+  const std::string input =
+      R"({"primary": "https://foo.test", "associatedSites": )"
+      R"(["https://associatedsite2.test", "https://associatedsite3.test"]}
+{"primary": "https://bar.test", "associatedSites": ["https://associatedsite4.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
-      "https://example.test,https://member1.test,https://member2.test");
+      "https://example.test,https://associatedsite1.test,https://"
+      "associatedsite2.test");
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -482,11 +494,11 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://member2.test"),
+                  Pair(SerializesTo("https://associatedsite2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 1)),
@@ -494,7 +506,7 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member3.test"),
+                  Pair(SerializesTo("https://associatedsite3.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
                            net::SiteType::kAssociated, 1)),
@@ -502,7 +514,7 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member4.test"),
+                  Pair(SerializesTo("https://associatedsite4.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
                            net::SiteType::kAssociated, 0)))));
@@ -511,9 +523,10 @@ TEST_F(FirstPartySetsLoaderTest,
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_PrunesInducedSingletons) {
   const std::string input =
-      R"({"owner": "https://foo.test", "members": ["https://member1.test"]})";
+      R"({"primary": "https://foo.test", "associatedSites": ["https://associatedsite1.test"]})";
   SetComponentSets(loader(), input);
-  loader().SetManuallySpecifiedSet("https://example.test,https://member1.test");
+  loader().SetManuallySpecifiedSet(
+      "https://example.test,https://associatedsite1.test");
 
   // If we just erased entries that overlapped with the manually-supplied
   // set, https://foo.test would be left as a singleton set. But since we
@@ -525,7 +538,7 @@ TEST_F(FirstPartySetsLoaderTest,
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://member1.test"),
+                  Pair(SerializesTo("https://associatedsite1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
                            net::SiteType::kAssociated, 0)))));

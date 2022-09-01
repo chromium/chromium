@@ -84,8 +84,8 @@ class CONTENT_EXPORT FirstPartySetParser {
   // Returns a serialized JSON-encoded string representation of the input. This
   // function does not check or have any special handling for the content of
   // `sets`, e.g. opaque origins are just serialized as "null".
-  // The owner -> owner entry is removed from the serialized representation for
-  // brevity.
+  // The primary -> primary entry is removed from the serialized representation
+  // for brevity.
   static std::string SerializeFirstPartySets(const SetsMap& sets);
 
   // Parses two lists of First-Party Sets from `policy` using the "replacements"

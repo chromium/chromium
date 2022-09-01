@@ -18868,14 +18868,14 @@
           "FirstPartySetsOverrides": {
             "replacements": [
               {
-                "owner": "https://owner1.test",
-                "members": ["https://member1.test"]
+                "primary": "https://primary1.test",
+                "associatedSites": ["https://associate1.test"]
               }
              ],
              "additions": [
               {
-                "owner": "https://owner1.test",
-                "members": ["https://member2.test"]
+                "primary": "https://primary1.test",
+                "associatedSites": ["https://associate2.test"]
               }
              ]
           }
@@ -18893,14 +18893,14 @@
           "FirstPartySetsOverrides": {
             "replacements": [
               {
-                "owner": "https://owner1.test",
-                "members": ["https://member1.test"]
+                "primary": "https://primary1.test",
+                "associatedSites": ["https://associate1.test"]
               }
              ],
              "additions": [
               {
-                "owner": "https://owner2.test",
-                "members": ["https://member2.test"]
+                "primary": "https://primary2.test",
+                "associatedSites": ["https://associate2.test"]
               }
              ]
           }
@@ -18910,14 +18910,14 @@
             "value": {
               "replacements": [
                 {
-                  "owner": "https://owner1.test",
-                  "members": ["https://member1.test"]
+                  "primary": "https://primary1.test",
+                  "associatedSites": ["https://associate1.test"]
                 }
               ],
               "additions": [
                 {
-                  "owner": "https://owner2.test",
-                  "members": ["https://member2.test"]
+                  "primary": "https://primary2.test",
+                  "associatedSites": ["https://associate2.test"]
                 }
               ]
             },

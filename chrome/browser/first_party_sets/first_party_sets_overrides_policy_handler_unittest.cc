@@ -100,8 +100,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
       {
         "replacements": [
           {
-            "owner": "https://owner.test",
-            "members": ["https://member.test"],
+            "primary": "https://primary.test",
+            "associatedSites": ["https://associatedsite.test"],
             "unknown": "field"
           }
         ],
@@ -126,8 +126,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
         "replacements": [],
         "additions": [
           {
-            "owner": "https://owner.test",
-            "members": ["https://member.test"],
+            "primary": "https://primary.test",
+            "associatedSites": ["https://associatedsite.test"],
             "unknown": "field"
           }
         ]
@@ -191,13 +191,13 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
-       CheckPolicySettings_SchemaValidator_RejectsMissingOwner) {
+       CheckPolicySettings_SchemaValidator_RejectsMissingPrimary) {
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
         "replacements": [
           {
-            "members": ["member.test"]
+            "associatedSites": ["associatedsite.test"]
           }
         ],
         "additions": []
@@ -209,19 +209,19 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_EQ(
       errors.GetErrors(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
-      u"error: Missing or invalid required property: owner");
+      u"error: Missing or invalid required property: primary");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
-       CheckPolicySettings_SchemaValidator_RejectsWrongTypeOwner) {
+       CheckPolicySettings_SchemaValidator_RejectsWrongTypePrimary) {
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
         "replacements": [],
         "additions": [
           {
-            "owner": 123,
-            "members": ["member.test"]
+            "primary": 123,
+            "associatedSites": ["associatedsite.test"]
           }
         ]
       }
@@ -230,19 +230,19 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
-            u"Error at FirstPartySetsOverrides.additions[0].owner: Schema "
+            u"Error at FirstPartySetsOverrides.additions[0].primary: Schema "
             u"validation error: Policy type mismatch: expected: \"string\", "
             u"actual: \"integer\".");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
-       CheckPolicySettings_SchemaValidator_RejectsMissingMembers) {
+       CheckPolicySettings_SchemaValidator_RejectsMissingAssociatedSites) {
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
         "replacements": [
           {
-            "owner": "owner.test"
+            "primary": "primary.test"
           }
         ],
         "additions": []
@@ -254,19 +254,19 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_EQ(
       errors.GetErrors(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
-      u"error: Missing or invalid required property: members");
+      u"error: Missing or invalid required property: associatedSites");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
-       CheckPolicySettings_SchemaValidator_RejectsWrongTypeMembers) {
+       CheckPolicySettings_SchemaValidator_RejectsWrongTypeAssociatedSites) {
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
         "replacements": [],
         "additions": [
           {
-            "owner": "owner.test",
-            "members": 123
+            "primary": "primary.test",
+            "associatedSites": 123
           }
         ]
       }
@@ -275,21 +275,22 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
-            u"Error at FirstPartySetsOverrides.additions[0].members: "
+            u"Error at FirstPartySetsOverrides.additions[0].associatedSites: "
             u"Schema validation error: Policy type mismatch: expected: "
             u"\"list\", actual: \"integer\".");
 }
 
-TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
-       CheckPolicySettings_SchemaValidator_RejectsWrongTypeMembersElement) {
+TEST_F(
+    FirstPartySetsOverridesPolicyHandlerTest,
+    CheckPolicySettings_SchemaValidator_RejectsWrongTypeAssociatedSitesElement) {
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
         "replacements": [],
         "additions": [
           {
-            "owner": "owner.test",
-            "members": ["member1", 123, "member2"]
+            "primary": "primary.test",
+            "associatedSites": ["associatedsite1", 123, "associatedsite2"]
           }
         ]
       }
@@ -298,7 +299,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
-            u"Error at FirstPartySetsOverrides.additions[0].members[1]: Schema "
+            u"Error at "
+            u"FirstPartySetsOverrides.additions[0].associatedSites[1]: Schema "
             u"validation error: Policy type mismatch: expected: \"string\", "
             u"actual: \"integer\".");
 }
@@ -310,14 +312,14 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
       {
         "replacements": [
           {
-            "owner": "https://owner1.test",
-            "members": ["https://member1.test"]
+            "primary": "https://primary1.test",
+            "associatedSites": ["https://associatedsite1.test"]
           }
         ],
         "additions": [
           {
-            "owner": "https://owner2.test",
-            "members": ["https://member2.test"]
+            "primary": "https://primary2.test",
+            "associatedSites": ["https://associatedsite2.test"]
           }
         ]
       }
@@ -335,15 +337,15 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
         "unknown0": "field0",
         "replacements": [
           {
-            "owner": "https://owner1.test",
-            "members": ["https://member1.test"],
+            "primary": "https://primary1.test",
+            "associatedSites": ["https://associatedsite1.test"],
             "unknown1": "field1"
           }
         ],
         "additions": [
           {
-            "owner": "https://owner2.test",
-            "members": ["https://member2.test"],
+            "primary": "https://primary2.test",
+            "associatedSites": ["https://associatedsite2.test"],
             "unknown2": "field2"
           }
         ],
@@ -359,14 +361,14 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
-       CheckPolicySettings_Handler_RejectsInvalidOriginOwner) {
+       CheckPolicySettings_Handler_RejectsInvalidOriginPrimary) {
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
         "replacements": [
           {
-            "owner": "http://owner.test",
-            "members": ["https://member.test"]
+            "primary": "http://primary.test",
+            "associatedSites": ["https://associatedsite.test"]
           }
         ],
         "additions": []
@@ -382,15 +384,15 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
-       CheckPolicySettings_Handler_RejectsInvalidOriginMember) {
+       CheckPolicySettings_Handler_RejectsInvalidOriginAssociatedSite) {
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
         "replacements": [],
         "additions": [
           {
-            "owner": "https://owner.test",
-            "members": ["https://member1.test", ""]
+            "primary": "https://primary.test",
+            "associatedSites": ["https://associatedsite1.test", ""]
           }
         ]
       }
@@ -410,8 +412,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
               {
                 "replacements": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": []
+                    "primary": "https://primary1.test",
+                    "associatedSites": []
                   }
                 ],
                 "additions": []
@@ -423,7 +425,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.replacements[0]: Schema "
             u"validation error: This set doesn't contain any sites in its "
-            u"members list.");
+            u"associatedSites list.");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
@@ -434,12 +436,12 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
                 "replacements": [],
                 "additions": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   },
                   {
-                    "owner": "https://owner2.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   }]
               }
             )";
@@ -459,14 +461,14 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
               {
                 "replacements": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   }
                 ],
                 "additions": [
                   {
-                    "owner": "https://owner2.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   }]
               }
             )";
@@ -486,14 +488,14 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
               {
                 "replacements": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": ["https://owner1.test"]
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://primary1.test"]
                   }
                 ],
                 "additions": [
                   {
-                    "owner": "https://owner2.test",
-                    "members": ["https://member2.test"]
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://associatedsite2.test"]
                   }]
               }
             )";
@@ -513,14 +515,14 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
               {
                 "replacements": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   }
                 ],
                 "additions": [
                   {
-                    "owner": "https://owner2.test",
-                    "members": ["https://owner2.test"]
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://primary2.test"]
                   }]
               }
             )";
@@ -540,8 +542,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
               {
                 "additions": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   }]
               }
             )";
@@ -558,8 +560,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
               {
                 "replacements": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   }
                 ]
               }
@@ -578,14 +580,14 @@ TEST_F(
               {
                 "replacements": [
                   {
-                    "owner": "https://owner1.test",
-                    "members": ["https://member1.test"]
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"]
                   }
                 ],
                 "additions": [
                   {
-                    "owner": "https://owner2.test",
-                    "members": ["https://member2.test"]
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://associatedsite2.test"]
                   }]
               }
             )";

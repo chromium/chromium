@@ -69,8 +69,8 @@ absl::optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
   return site;
 }
 
-const char kFirstPartySetOwnerField[] = "owner";
-const char kFirstPartySetMembersField[] = "members";
+const char kFirstPartySetPrimaryField[] = "primary";
+const char kFirstPartySetAssociatedSitesField[] = "associatedSites";
 const char kCCTLDsField[] = "ccTLDs";
 const char kFirstPartySetPolicyReplacementsField[] = "replacements";
 const char kFirstPartySetPolicyAdditionsField[] = "additions";
@@ -170,8 +170,8 @@ base::expected<Aliases, ParseError> ParseCctlds(
 // Component Updater or from enterprise policy, so this does not check
 // assertions or versions. It rejects sets which are non-disjoint with
 // previously-encountered sets (i.e. sets which have non-empty intersections
-// with `elements`), and singleton sets (i.e. sets must have an owner and at
-// least one valid member).
+// with `elements`), and singleton sets (i.e. sets must have a primary and at
+// least one valid associated site).
 //
 // Uses `elements` to check disjointness of sets; augments `elements` to include
 // the elements of the set that was parsed.
@@ -187,9 +187,9 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
 
   const base::Value::Dict& set_declaration = value.GetDict();
 
-  // Confirm that the set has an owner, and the owner is a string.
+  // Confirm that the set has a primary, and the primary is a string.
   const base::Value* primary_item =
-      set_declaration.Find(kFirstPartySetOwnerField);
+      set_declaration.Find(kFirstPartySetPrimaryField);
   if (!primary_item)
     return base::unexpected(ParseError::kInvalidType);
 
@@ -205,18 +205,19 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
           {{primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
                                              absl::nullopt)}});
 
-  // Confirm that the members field is present, and is an array of strings.
-  const base::Value::List* maybe_members_list =
-      set_declaration.FindList(kFirstPartySetMembersField);
-  if (!maybe_members_list)
+  // Confirm that the associatedSites field is present, and is an array of
+  // strings.
+  const base::Value::List* maybe_associated_sites_list =
+      set_declaration.FindList(kFirstPartySetAssociatedSitesField);
+  if (!maybe_associated_sites_list)
     return base::unexpected(ParseError::kInvalidType);
 
-  if (maybe_members_list->empty())
+  if (maybe_associated_sites_list->empty())
     return base::unexpected(ParseError::kSingletonSet);
 
-  // Add each member to our mapping (after validating).
+  // Add each associated site to our mapping (after validating).
   uint32_t index = 0;
-  for (const auto& item : *maybe_members_list) {
+  for (const auto& item : *maybe_associated_sites_list) {
     base::expected<net::SchemefulSite, ParseError> site_or_error =
         ParseSiteAndValidate(item, set_entries, elements);
     if (!site_or_error.has_value()) {
@@ -320,42 +321,43 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
     return {};
 
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> map;
-  base::flat_set<net::SchemefulSite> owner_set;
-  base::flat_set<net::SchemefulSite> member_set;
+  base::flat_set<net::SchemefulSite> primary_set;
+  base::flat_set<net::SchemefulSite> associated_site_set;
   for (const auto item : value_deserialized->DictItems()) {
     if (!item.second.is_string())
       return {};
-    const absl::optional<net::SchemefulSite> maybe_member =
+    const absl::optional<net::SchemefulSite> maybe_associated_site =
         Canonicalize(item.first, true /* emit_errors */);
-    const absl::optional<net::SchemefulSite> maybe_owner =
+    const absl::optional<net::SchemefulSite> maybe_primary =
         Canonicalize(item.second.GetString(), true /* emit_errors */);
-    if (!maybe_member.has_value() || !maybe_owner.has_value())
+    if (!maybe_associated_site.has_value() || !maybe_primary.has_value())
       return {};
 
-    // Skip the owner entry here and add it later explicitly to prevent the
+    // Skip the primary entry here and add it later explicitly to prevent the
     // singleton sets.
-    if (*maybe_member == *maybe_owner) {
+    if (*maybe_associated_site == *maybe_primary) {
       continue;
     }
-    if (!owner_set.contains(maybe_owner)) {
-      map.emplace_back(*maybe_owner, net::FirstPartySetEntry(
-                                         *maybe_owner, net::SiteType::kPrimary,
-                                         absl::nullopt));
+    if (!primary_set.contains(maybe_primary)) {
+      map.emplace_back(
+          *maybe_primary,
+          net::FirstPartySetEntry(*maybe_primary, net::SiteType::kPrimary,
+                                  absl::nullopt));
     }
     // Check disjointness. Note that we are relying on the JSON Parser to
     // eliminate the possibility of a site being used as a key more than once,
     // so we don't have to check for that explicitly.
-    if (owner_set.contains(*maybe_member) ||
-        member_set.contains(*maybe_owner)) {
+    if (primary_set.contains(*maybe_associated_site) ||
+        associated_site_set.contains(*maybe_primary)) {
       return {};
     }
-    owner_set.insert(*maybe_owner);
-    member_set.insert(*maybe_member);
+    primary_set.insert(*maybe_primary);
+    associated_site_set.insert(*maybe_associated_site);
     // TODO(https://crbug.com/1219656): preserve ordering information when
     // persisting set info.
     map.emplace_back(
-        std::move(*maybe_member),
-        net::FirstPartySetEntry(std::move(*maybe_owner),
+        std::move(*maybe_associated_site),
+        net::FirstPartySetEntry(std::move(*maybe_primary),
                                 net::SiteType::kAssociated, absl::nullopt));
   }
   return map;
@@ -365,10 +367,11 @@ std::string FirstPartySetParser::SerializeFirstPartySets(
     const FirstPartySetParser::SetsMap& sets) {
   base::DictionaryValue dict;
   for (const auto& it : sets) {
-    std::string maybe_member = it.first.Serialize();
-    std::string owner = it.second.primary().Serialize();
-    if (maybe_member != owner) {
-      dict.SetKey(std::move(maybe_member), base::Value(std::move(owner)));
+    std::string maybe_associated_site = it.first.Serialize();
+    std::string primary = it.second.primary().Serialize();
+    if (maybe_associated_site != primary) {
+      dict.SetKey(std::move(maybe_associated_site),
+                  base::Value(std::move(primary)));
     }
   }
   std::string dict_serialized;

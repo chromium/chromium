@@ -32219,10 +32219,10 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
             'items': {
               'type': 'object',
               'properties': {
-                'owner': {
+                'primary': {
                   'type': 'string'
                 },
-                'members': {
+                'associatedSites': {
                   'type': 'array',
                   'items': {
                     'type': 'string'
@@ -32245,8 +32245,8 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
                 }
               },
               'required': [
-                'owner',
-                'members'
+                'primary',
+                'associatedSites'
               ]
             }
           },
@@ -32255,10 +32255,10 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
             'items': {
               'type': 'object',
               'properties': {
-                'owner': {
+                'primary': {
                   'type': 'string'
                 },
-                'members': {
+                'associatedSites': {
                   'type': 'array',
                   'items': {
                     'type': 'string'
@@ -32281,8 +32281,8 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
                 }
               },
               'required': [
-                'owner',
-                'members'
+                'primary',
+                'associatedSites'
               ]
             }
           }
@@ -32292,32 +32292,32 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
       'example_value': {
         'replacements': [
           {
-            "owner": "https://owner1.test",
-            "members": [
-              "https://member1.test"
+            "primary": "https://primary1.test",
+            "associatedSites": [
+              "https://associate1.test"
             ],
             "serviceSites": [
-              "https://owner1-content.test"
+              "https://associate1-content.test"
             ],
             "ccTLDs": {
-              "https://owner1.test": [
-                "https://owner1.co.uk"
+              "https://associate1.test": [
+                "https://associate1.co.uk"
               ]
             }
           }
         ],
         'additions': [
           {
-            "owner": "https://owner2.test",
-            "members": [
-              "https://member2.test"
+            "primary": "https://primary2.test",
+            "associatedSites": [
+              "https://associate2.test"
             ],
             "serviceSites": [
-              "https://owner2-content.test"
+              "https://associate2-content.test"
             ],
             "ccTLDs": {
-              "https://member2.test": [
-                "https://member2.com"
+              "https://associate2.test": [
+                "https://associate2.com"
               ]
             }
           }

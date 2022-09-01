@@ -261,10 +261,10 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
 
  private:
   std::string GetComponentContents() const {
-    return "{\"owner\": \"https://a.test\", \"members\": [ "
-           "\"https://b.test\", \"https://member1.test\"]}\n"
-           "{\"owner\": \"https://c.test\", \"members\": [ "
-           "\"https://d.test\", \"https://member2.test\"]}";
+    return "{\"primary\": \"https://a.test\", \"associatedSites\": [ "
+           "\"https://b.test\", \"https://associatedsite1.test\"]}\n"
+           "{\"primary\": \"https://c.test\", \"associatedSites\": [ "
+           "\"https://d.test\", \"https://associatedsite2.test\"]}";
   }
 
   base::test::ScopedFeatureList feature_list_;

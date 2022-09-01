@@ -34,7 +34,7 @@ std::string ParseErrorToString(
     case content::FirstPartySetsHandler::ParseError::kInvalidOrigin:
       return "This set contains an invalid origin.";
     case content::FirstPartySetsHandler::ParseError::kSingletonSet:
-      return "This set doesn't contain any sites in its members list.";
+      return "This set doesn't contain any sites in its associatedSites list.";
     case content::FirstPartySetsHandler::ParseError::kNonDisjointSets:
       return "This set contains a domain that also exists in another "
              "First-Party Set.";
