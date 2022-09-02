@@ -99,6 +99,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
   using RemoveAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
+  using ListAuthFactorsCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::ListAuthFactorsReply>;
   using GetRecoveryRequestCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetRecoveryRequestReply>;
   using GetAuthSessionStatusCallback =

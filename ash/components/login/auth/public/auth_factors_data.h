@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -18,6 +21,8 @@ namespace ash {
 class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorsData {
  public:
   explicit AuthFactorsData(std::vector<cryptohome::KeyDefinition> keys);
+  explicit AuthFactorsData(
+      std::vector<cryptohome::AuthFactor> configured_factors);
 
   // Empty constructor is needed so that UserContext can be created.
   AuthFactorsData();
@@ -28,6 +33,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorsData {
   ~AuthFactorsData();
 
   AuthFactorsData& operator=(const AuthFactorsData&);
+
+  // Legacy Key-based API:
 
   // Returns metadata for the Password key, so that it can be identified for
   // further operations.
@@ -44,8 +51,19 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorsData {
   // further operations.
   const cryptohome::KeyDefinition* FindPinKey() const;
 
+  const cryptohome::AuthFactor* FindPasswordFactor(
+      const cryptohome::KeyLabel& label) const;
+  const cryptohome::AuthFactor* FindOnlinePasswordFactor() const;
+  const cryptohome::AuthFactor* FindKioskFactor() const;
+  const cryptohome::AuthFactor* FindPinFactor() const;
+
  private:
+  const cryptohome::AuthFactor* FindFactorByType(
+      cryptohome::AuthFactorType type) const;
+
   std::vector<cryptohome::KeyDefinition> keys_;
+  std::vector<cryptohome::AuthFactor> configured_factors_;
+  cryptohome::AuthFactorsSet supported_factors_;
 };
 
 }  // namespace ash

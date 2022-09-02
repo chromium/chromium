@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -19,14 +20,24 @@ enum class AuthFactorType {
   // only Chrome can do that based on UserType.
   // This type can be returned when retrieving data from cryptohome,
   // but should not be used in any data passed from chrome to cryptohome.
+  // This factor type is not included in `AuthFactorsSet`.
   kUnknownLegacy,
+
+  // This is a synthetic factor, there is no actual key associated with this
+  // factor, it is only used as indicator of specific authentication mode.
+  // As such it can never be returned by cryptohome, and is not included in
+  // `AuthFactorsSet`.
+  kLegacyFingerprint,
+
   kPassword,
   kPin,
   kRecovery,
   kSmartCard,
   kKiosk,
-  kLegacyFingerprint
 };
+
+using AuthFactorsSet = base::
+    EnumSet<AuthFactorType, AuthFactorType::kPassword, AuthFactorType::kKiosk>;
 
 // Reference to a particular AuthFactor.
 // While `label` uniquely identifies factor across all factor types,

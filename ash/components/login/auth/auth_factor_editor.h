@@ -79,10 +79,20 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorEditor {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::AddCredentialsReply> reply);
 
+  void OnAddAuthFactor(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::AddAuthFactorReply> reply);
+
   void OnUpdateCredential(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::UpdateCredentialReply> reply);
+
+  void OnUpdateAuthFactor(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::UpdateAuthFactorReply> reply);
 
   void OnRecoveryFactorAdded(
       std::unique_ptr<UserContext> context,

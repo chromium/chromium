@@ -107,6 +107,9 @@ template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     ReplyToCryptohomeError(const absl::optional<RemoveAuthFactorReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<UpdateAuthFactorReply>&);
+template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<GetAuthSessionStatusReply>&);
 
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(

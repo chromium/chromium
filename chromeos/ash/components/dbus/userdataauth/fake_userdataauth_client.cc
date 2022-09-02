@@ -122,7 +122,7 @@ FunctorWithReturnType<ReturnType, OverloadedFunctor<Functors...>> Overload(
   return {{std::move(functors)...}};
 }
 
-absl::optional<cryptohome::KeyData> AuthFactorToKeyData(
+absl::optional<cryptohome::KeyData> FakeAuthFactorToKeyData(
     std::string label,
     const FakeAuthFactor& factor) {
   return absl::visit(
@@ -151,8 +151,45 @@ absl::optional<cryptohome::KeyData> AuthFactorToKeyData(
       factor);
 }
 
+absl::optional<user_data_auth::AuthFactor> FakeAuthFactorToAuthFactor(
+    std::string label,
+    const FakeAuthFactor& factor) {
+  return absl::visit(
+      Overload<absl::optional<user_data_auth::AuthFactor>>(
+          [&](const PasswordFactor& password) {
+            user_data_auth::AuthFactor result;
+            result.set_label(std::move(label));
+            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+            result.mutable_password_metadata();
+            return result;
+          },
+          [&](const PinFactor& pin) {
+            user_data_auth::AuthFactor result;
+            result.set_label(std::move(label));
+            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+            result.mutable_pin_metadata()->set_auth_locked(pin.locked);
+            return result;
+          },
+          [&](const RecoveryFactor&) {
+            user_data_auth::AuthFactor result;
+            result.set_label(std::move(label));
+            result.set_type(
+                user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+            result.mutable_cryptohome_recovery_metadata();
+            return result;
+          },
+          [&](const KioskFactor& kiosk) {
+            user_data_auth::AuthFactor result;
+            result.set_label(std::move(label));
+            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
+            result.mutable_kiosk_metadata();
+            return result;
+          }),
+      factor);
+}
+
 // Turns a cryptohome::Key into a pair of label and FakeAuthFactor.
-std::pair<std::string, FakeAuthFactor> KeyToAuthFactor(
+std::pair<std::string, FakeAuthFactor> KeyToFakeAuthFactor(
     const cryptohome::Key& key,
     bool save_secret) {
   const cryptohome::KeyData& data = key.data();
@@ -175,6 +212,41 @@ std::pair<std::string, FakeAuthFactor> KeyToAuthFactor(
       return {label, PasswordFactor{.password = secret}};
     case cryptohome::KeyData::KEY_TYPE_KIOSK:
       return {label, KioskFactor{}};
+  }
+}
+
+// Turns AuthFactor+AuthInput into a pair of label and FakeAuthFactor.
+std::pair<std::string, FakeAuthFactor> AuthFactorWithInputToFakeAuthFactor(
+    const user_data_auth::AuthFactor& factor,
+    const user_data_auth::AuthInput& input,
+    bool save_secret) {
+  const std::string& label = factor.label();
+  CHECK_NE(label, "") << "Key label must not be empty string";
+
+  absl::optional<std::string> secret = absl::nullopt;
+  if (save_secret) {
+    if (factor.type() == user_data_auth::AUTH_FACTOR_TYPE_PASSWORD) {
+      secret = input.password_input().secret();
+    } else if (factor.type() == user_data_auth::AUTH_FACTOR_TYPE_PIN) {
+      secret = input.pin_input().secret();
+    }
+  }
+
+  switch (factor.type()) {
+    case user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED:
+      LOG(FATAL) << "Chrome should never send Unspecified auth factor.";
+      __builtin_unreachable();
+    case user_data_auth::AUTH_FACTOR_TYPE_PIN:
+      return {label, PinFactor{.pin = secret, .locked = false}};
+    case user_data_auth::AUTH_FACTOR_TYPE_PASSWORD:
+      return {label, PasswordFactor{.password = secret}};
+    case user_data_auth::AUTH_FACTOR_TYPE_KIOSK:
+      return {label, KioskFactor{}};
+    case user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY:
+      return {label, RecoveryFactor{}};
+    default:
+      NOTREACHED();
+      __builtin_unreachable();
   }
 }
 
@@ -331,7 +403,7 @@ void FakeUserDataAuthClient::TestApi::AddKey(
   CHECK(user_it != std::end(client_->users_)) << "User doesn't exist";
   UserCryptohomeState& user_state = user_it->second;
   const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
-      KeyToAuthFactor(key, TestApi::Get()->enable_auth_check_));
+      KeyToFakeAuthFactor(key, TestApi::Get()->enable_auth_check_));
   CHECK(was_inserted) << "Factor already exists";
 }
 
@@ -457,7 +529,7 @@ void FakeUserDataAuthClient::Mount(
     CHECK_EQ(1, create_req.keys().size())
         << "UserDataAuth::Mount called with `create` that does not contain "
            "precisely one key";
-    user_state.auth_factors.insert(KeyToAuthFactor(
+    user_state.auth_factors.insert(KeyToFakeAuthFactor(
         create_req.keys()[0], TestApi::Get()->enable_auth_check_));
   }
 
@@ -550,7 +622,7 @@ void FakeUserDataAuthClient::GetKeyData(
     const FakeAuthFactor& factor = factors_it->second;
 
     absl::optional<cryptohome::KeyData> key_data =
-        AuthFactorToKeyData(label, factor);
+        FakeAuthFactorToKeyData(label, factor);
     if (key_data.has_value()) {
       reply.mutable_key_data()->Add(std::move(*key_data));
     } else {
@@ -616,7 +688,7 @@ void FakeUserDataAuthClient::AddKey(
   UserCryptohomeState& user_state = user_it->second;
 
   auto [new_label, new_factor] =
-      KeyToAuthFactor(new_key, TestApi::Get()->enable_auth_check_);
+      KeyToFakeAuthFactor(new_key, TestApi::Get()->enable_auth_check_);
   CHECK(clobber_if_exists || !user_state.auth_factors.contains(new_label))
       << "Key exists, will not clobber: " << new_label;
   user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
@@ -687,7 +759,7 @@ void FakeUserDataAuthClient::MigrateKey(
     new_key.mutable_data()->set_label(matched_factor_label);
   new_key.set_secret(request.secret());
   const auto [new_label, new_factor] =
-      KeyToAuthFactor(new_key, TestApi::Get()->enable_auth_check_);
+      KeyToFakeAuthFactor(new_key, TestApi::Get()->enable_auth_check_);
   DCHECK_EQ(new_label, matched_factor_label);
   user_state.auth_factors[matched_factor_label] = new_factor;
 }
@@ -759,6 +831,7 @@ void FakeUserDataAuthClient::GetAccountDiskUsage(
   reply.set_size(100 * 1024 * 1024);
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
+
 void FakeUserDataAuthClient::StartAuthSession(
     const ::user_data_auth::StartAuthSessionRequest& request,
     StartAuthSessionCallback callback) {
@@ -793,25 +866,33 @@ void FakeUserDataAuthClient::StartAuthSession(
     const UserCryptohomeState& user_state = user_it->second;
     for (const auto& [label, factor] : user_state.auth_factors) {
       absl::optional<cryptohome::KeyData> key_data =
-          AuthFactorToKeyData(label, factor);
+          FakeAuthFactorToKeyData(label, factor);
       if (key_data) {
         reply.mutable_key_label_data()->insert({label, std::move(*key_data)});
       } else {
         LOG(WARNING) << "Ignoring auth factor incompatible with legacy API: "
                      << label;
       }
+      absl::optional<user_data_auth::AuthFactor> auth_factor =
+          FakeAuthFactorToAuthFactor(label, factor);
+      if (key_data) {
+        *reply.add_auth_factors() = *auth_factor;
+      } else {
+        LOG(WARNING)
+            << "Ignoring auth factor incompatible with AuthFactor API: "
+            << label;
+      }
     }
   }
 
+  const std::string& account_id = request.account_id().account_id();
+  // See device_local_account.h
+  const bool is_kiosk =
+      base::EndsWith(account_id, "kiosk-apps.device-local.localhost");
   // TODO(crbug.com/1334538): Some tests expect that kiosk or gaia keys exist
   // for existing users, but don't set those keys up. Until those tests are
   // fixed, we explicitly add keys here.
   if (user_exists) {
-    const std::string& account_id = request.account_id().account_id();
-    // See device_local_account.h
-    const bool is_kiosk =
-        base::EndsWith(account_id, "kiosk-apps.device-local.localhost");
-
     if (is_kiosk) {
       // See kCryptohomePublicMountLabel.
       std::string kiosk_label = "publicmount";
@@ -833,6 +914,53 @@ void FakeUserDataAuthClient::StartAuthSession(
       LOG_IF(ERROR, was_inserted)
           << "Listing gaia key even though it was not set up";
     }
+  }
+}
+
+void FakeUserDataAuthClient::ListAuthFactors(
+    const ::user_data_auth::ListAuthFactorsRequest& request,
+    ListAuthFactorsCallback callback) {
+  ::user_data_auth::ListAuthFactorsReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  if (cryptohome_error_ !=
+      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(cryptohome_error_);
+    return;
+  }
+
+  const auto user_it = users_.find(request.account_id());
+  const bool user_exists = user_it != std::end(users_);
+  if (!user_exists) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    return;
+  }
+
+  const UserCryptohomeState& user_state = user_it->second;
+  for (const auto& [label, factor] : user_state.auth_factors) {
+    absl::optional<user_data_auth::AuthFactor> auth_factor =
+        FakeAuthFactorToAuthFactor(label, factor);
+    if (auth_factor) {
+      *reply.add_configured_auth_factors() = *auth_factor;
+    } else {
+      LOG(WARNING) << "Ignoring auth factor incompatible with AuthFactor API: "
+                   << label;
+    }
+  }
+
+  const std::string& account_id = request.account_id().account_id();
+  // See device_local_account.h
+  const bool is_kiosk =
+      base::EndsWith(account_id, "kiosk-apps.device-local.localhost");
+
+  if (is_kiosk) {
+    reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
+  } else {
+    reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+    reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+    reply.add_supported_auth_factors(
+        user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
   }
 }
 
@@ -1092,8 +1220,25 @@ void FakeUserDataAuthClient::AddAuthFactor(
   ::user_data_auth::AddAuthFactorReply reply;
 
   auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
-  GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+  auto* session =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
   reply.set_error(error);
+  if (session == nullptr) {
+    ReturnProtobufMethodCallback(reply, std::move(callback));
+    return;
+  }
+
+  auto user_it = users_.find(session->account);
+  CHECK(user_it != std::end(users_))
+      << "User associated with session does not exist";
+  UserCryptohomeState& user_state = user_it->second;
+
+  auto [new_label, new_factor] = AuthFactorWithInputToFakeAuthFactor(
+      request.auth_factor(), request.auth_input(),
+      TestApi::Get()->enable_auth_check_);
+  CHECK(!user_state.auth_factors.contains(new_label))
+      << "Key exists, will not clobber: " << new_label;
+  user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
 
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
@@ -1113,6 +1258,7 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   } else if (auth_session->second.authenticated) {
     LOG(WARNING) << "AuthSession is already authenticated";
   } else {
+    // TODO(b/241259026): Check if key is present and if secret matches.
     auth_session->second.authenticated = true;
   }
   ReturnProtobufMethodCallback(reply, std::move(callback));
@@ -1124,8 +1270,26 @@ void FakeUserDataAuthClient::UpdateAuthFactor(
   ::user_data_auth::UpdateAuthFactorReply reply;
 
   auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
-  GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+  auto* session =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
   reply.set_error(error);
+  if (session == nullptr) {
+    ReturnProtobufMethodCallback(reply, std::move(callback));
+    return;
+  }
+
+  auto user_it = users_.find(session->account);
+  DCHECK(user_it != std::end(users_));
+  UserCryptohomeState& user_state = user_it->second;
+
+  // Update the fake auth factor according to the new secret.
+  auto [new_label, new_factor] = AuthFactorWithInputToFakeAuthFactor(
+      request.auth_factor(), request.auth_input(),
+      TestApi::Get()->enable_auth_check_);
+  CHECK_EQ(new_label, request.auth_factor_label());
+  CHECK(user_state.auth_factors.contains(new_label))
+      << "Key does not exist: " << new_label;
+  user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
 
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
@@ -1136,8 +1300,24 @@ void FakeUserDataAuthClient::RemoveAuthFactor(
   ::user_data_auth::RemoveAuthFactorReply reply;
 
   auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
-  GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+  auto* session =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
   reply.set_error(error);
+  if (session == nullptr) {
+    ReturnProtobufMethodCallback(reply, std::move(callback));
+    return;
+  }
+  auto user_it = users_.find(session->account);
+  DCHECK(user_it != std::end(users_));
+  UserCryptohomeState& user_state = user_it->second;
+
+  const std::string& label = request.auth_factor_label();
+  DCHECK(!label.empty());
+  bool erased = user_state.auth_factors.erase(label) > 0;
+
+  if (!erased)
+    reply.set_error(
+        ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
 
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }

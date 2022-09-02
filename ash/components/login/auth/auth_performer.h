@@ -133,6 +133,11 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::AuthenticateAuthSessionReply> reply);
 
+  void OnAuthenticateAuthFactor(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
+
   void OnGetAuthSessionStatus(
       std::unique_ptr<UserContext> context,
       AuthSessionStatusCallback callback,
