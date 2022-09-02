@@ -378,7 +378,7 @@ TEST_F(DialogTest, ActualBoundsMatchPreferredBounds) {
   gfx::Size preferred_size(root_view->GetPreferredSize());
   EXPECT_FALSE(preferred_size.IsEmpty());
   root_view->SizeToPreferredSize();
-  root_view->Layout();
+  RunScheduledLayout(root_view);
   EXPECT_EQ(preferred_size, root_view->size());
 }
 

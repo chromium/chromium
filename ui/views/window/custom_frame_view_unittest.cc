@@ -156,7 +156,9 @@ TEST_F(CustomFrameViewTest, MaximizeRevealsRestoreButton) {
   ASSERT_TRUE(maximize_button()->GetVisible());
 
   widget()->Maximize();
-  custom_frame_view()->Layout();
+  // Just calling Maximize() doesn't invlidate the layout immediately.
+  custom_frame_view()->InvalidateLayout();
+  RunScheduledLayout(custom_frame_view());
 
 #if BUILDFLAG(IS_MAC)
   // Restore buttons do not exist on Mac. The maximize button is instead a kind
@@ -209,7 +211,9 @@ TEST_F(CustomFrameViewTest, LargerEdgeButtonsWhenMaximized) {
   gfx::Rect minimize_button_initial_bounds = minimize_button()->bounds();
 
   widget()->Maximize();
-  custom_frame_view()->Layout();
+  // Just calling Maximize() doesn't invlidate the layout immediately.
+  custom_frame_view()->InvalidateLayout();
+  RunScheduledLayout(custom_frame_view());
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, "Maximize" should not alter the frame. Only fullscreen does that.

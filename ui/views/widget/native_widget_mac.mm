@@ -43,7 +43,7 @@
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/widget/widget_aura_utils.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/native_frame_view.h"
+#include "ui/views/window/native_frame_view_mac.h"
 
 using remote_cocoa::mojom::WindowVisibilityState;
 
@@ -267,7 +267,7 @@ void NativeWidgetMac::OnWidgetInitDone() {
 
 std::unique_ptr<NonClientFrameView>
 NativeWidgetMac::CreateNonClientFrameView() {
-  return std::make_unique<NativeFrameView>(GetWidget());
+  return std::make_unique<NativeFrameViewMac>(GetWidget());
 }
 
 bool NativeWidgetMac::ShouldUseNativeFrame() const {

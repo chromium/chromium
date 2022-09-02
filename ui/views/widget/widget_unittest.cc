@@ -1637,7 +1637,8 @@ TEST_F(DesktopWidgetTest, TestViewWidthAfterMinimizingWidget) {
   non_client_view->SetFrameView(
       std::make_unique<MinimumSizeFrameView>(widget.get()));
   // Setting the frame view doesn't do a layout, so force one.
-  non_client_view->Layout();
+  non_client_view->InvalidateLayout();
+  RunScheduledLayout(non_client_view);
   widget->Show();
   EXPECT_NE(0, non_client_view->frame_view()->width());
   widget->Minimize();

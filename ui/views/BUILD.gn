@@ -609,6 +609,7 @@ component("views") {
       "event_monitor_mac.h",
       "widget/native_widget_mac.h",
       "widget/widget_utils_mac.h",
+      "window/native_frame_view_mac.h",
     ]
     sources += [
       "accessibility/ax_virtual_view_mac.mm",
@@ -637,6 +638,7 @@ component("views") {
       "views_touch_selection_controller_factory_mac.cc",
       "widget/native_widget_mac.mm",
       "widget/widget_utils_mac.mm",
+      "window/native_frame_view_mac.mm",
     ]
     public_deps += [ "//components/remote_cocoa/common:mojo" ]
     deps += [

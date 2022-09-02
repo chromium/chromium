@@ -862,7 +862,7 @@ TEST_F(RootViewTest, AnnounceTextTest) {
   const std::u16string kText = u"Text";
   root_view->AnnounceText(kText);
   EXPECT_EQ(2U, root_view->children().size());
-  root_view->Layout();
+  RunScheduledLayout(root_view);
   EXPECT_FALSE(root_view->children()[0]->size().IsEmpty());
   EXPECT_TRUE(root_view->children()[1]->size().IsEmpty());
   View* const hidden_view = root_view->children()[1];
