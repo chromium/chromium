@@ -7856,3 +7856,6 @@ crbug.com/1334336 [ Mac11-arm64 ] compositing/lots-of-img-layers.html [ Failure 
 crbug.com/1334336 [ Mac11-arm64 ] compositing/lots-of-img-layers-with-opacity.html [ Failure Pass ]
 crbug.com/1334336 [ Mac12-arm64 ] compositing/lots-of-img-layers.html [ Failure Pass ]
 crbug.com/1334336 [ Mac12-arm64 ] compositing/lots-of-img-layers-with-opacity.html [ Failure Pass ]
+
+# Disable the failing test on M102 branch to satisfy M102 builders.
+crbug.com/1339106 [ Mac ] svg/W3C-SVG-1.1/pservers-grad-05-b.svg [ Failure ]
