@@ -9640,6 +9640,25 @@
             ]
         }
     ],
+    "TailoredSecurityIntegrationDesktopNotice": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220902",
+                    "enable_features": [
+                        "TailoredSecurityDesktopNotice"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThemeProviderColorProviderRedirection": [
         {
             "platforms": [
