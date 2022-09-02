@@ -7033,9 +7033,6 @@ void RenderFrameHostImpl::CapturePaintPreviewOfSubframe(
           DisallowActivationReasonId::kCapturePaintPreview))
     return;
   // This should only be called on a subframe.
-  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
-  // and so is_main_frame should not be used to identify all embedded frames.
-  // Follow up to confirm correctness.
   if (IsOutermostMainFrame()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_SUBFRAME_CAPTURE_ON_MAIN_FRAME);
