@@ -4,13 +4,19 @@
 
 #include "chrome/browser/ash/power/smart_charging/smart_charging_ukm_logger.h"
 
-#include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
+#include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ash {
 namespace power {
+
+namespace {
+
+using UserChargingEvent = power_manager::UserChargingEvent;
+
+}  // namespace
 
 void SmartChargingUkmLogger::LogEvent(
     const UserChargingEvent& user_charging_event) const {
@@ -26,14 +32,14 @@ void SmartChargingUkmLogger::LogEvent(
     ukm_smart_charging.SetBatteryPercentage(features.battery_percentage());
   }
 
-  if (features.has_time_since_last_charge()) {
+  if (features.has_time_since_last_charge_minutes()) {
     ukm_smart_charging.SetTimeSinceLastCharge(
-        features.time_since_last_charge());
+        features.time_since_last_charge_minutes());
   }
 
-  if (features.has_duration_of_last_charge()) {
+  if (features.has_duration_of_last_charge_minutes()) {
     ukm_smart_charging.SetDurationOfLastCharge(
-        features.duration_of_last_charge());
+        features.duration_of_last_charge_minutes());
   }
 
   if (features.has_battery_percentage_of_last_charge()) {
@@ -46,8 +52,8 @@ void SmartChargingUkmLogger::LogEvent(
         features.battery_percentage_before_last_charge());
   }
 
-  if (features.has_time_of_the_day()) {
-    ukm_smart_charging.SetTimeOfTheDay(features.time_of_the_day());
+  if (features.has_time_of_the_day_minutes()) {
+    ukm_smart_charging.SetTimeOfTheDay(features.time_of_the_day_minutes());
   }
 
   if (features.has_day_of_week()) {
@@ -62,9 +68,9 @@ void SmartChargingUkmLogger::LogEvent(
     ukm_smart_charging.SetMonth(features.month());
   }
 
-  if (features.has_timezone_difference_from_last_charge()) {
+  if (features.has_timezone_difference_from_last_charge_hours()) {
     ukm_smart_charging.SetTimezoneDifferenceFromLastCharge(
-        features.timezone_difference_from_last_charge());
+        features.timezone_difference_from_last_charge_hours());
   }
 
   if (features.has_device_type()) {
@@ -94,14 +100,14 @@ void SmartChargingUkmLogger::LogEvent(
         features.num_recent_stylus_events());
   }
 
-  if (features.has_duration_recent_video_playing()) {
+  if (features.has_duration_recent_video_playing_minutes()) {
     ukm_smart_charging.SetDurationRecentVideoPlaying(
-        features.duration_recent_video_playing());
+        features.duration_recent_video_playing_minutes());
   }
 
-  if (features.has_duration_recent_audio_playing()) {
+  if (features.has_duration_recent_audio_playing_minutes()) {
     ukm_smart_charging.SetDurationRecentAudioPlaying(
-        features.duration_recent_audio_playing());
+        features.duration_recent_audio_playing_minutes());
   }
 
   if (features.has_screen_brightness_percent()) {
@@ -109,8 +115,8 @@ void SmartChargingUkmLogger::LogEvent(
         features.screen_brightness_percent());
   }
 
-  if (features.has_voltage()) {
-    ukm_smart_charging.SetVoltage(features.voltage());
+  if (features.has_voltage_mv()) {
+    ukm_smart_charging.SetVoltage(features.voltage_mv());
   }
 
   if (features.has_halt_from_last_charge()) {

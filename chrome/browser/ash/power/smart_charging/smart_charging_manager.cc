@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -32,6 +33,12 @@ namespace ash {
 namespace power {
 
 namespace {
+
+using PastEvent = power_manager::PastChargingEvents::Event;
+using PastChargingEvents = power_manager::PastChargingEvents;
+using EventReason = power_manager::UserChargingEvent::Event::Reason;
+using UserChargingEvent = power_manager::UserChargingEvent;
+
 constexpr int kBucketSize = 15;
 
 // Interval at which data should be logged.
@@ -386,7 +393,7 @@ void SmartChargingManager::PopulateUserChargingEventProto(
     features.set_screen_brightness_percent(
         static_cast<int>(screen_brightness_percent_.value()));
 
-  features.set_duration_recent_video_playing(
+  features.set_duration_recent_video_playing_minutes(
       ukm::GetExponentialBucketMinForUserTiming(
           DurationRecentVideoPlaying().InMinutes()));
 
@@ -395,7 +402,7 @@ void SmartChargingManager::PopulateUserChargingEventProto(
   base::Time::Exploded now_exploded;
   now.LocalExplode(&now_exploded);
 
-  features.set_time_of_the_day(ukm::GetLinearBucketMin(
+  features.set_time_of_the_day_minutes(ukm::GetLinearBucketMin(
       static_cast<int64_t>(now_exploded.hour * 60 + now_exploded.minute),
       kBucketSize));
   features.set_day_of_week(static_cast<UserChargingEvent::Features::DayOfWeek>(
@@ -433,17 +440,18 @@ void SmartChargingManager::PopulateUserChargingEventProto(
 
   if (!last_charge_plugged_in.has_time() || !last_charge_unplugged.has_time())
     return;
-  features.set_time_since_last_charge(ukm::GetExponentialBucketMinForCounts1000(
-      now.ToDeltaSinceWindowsEpoch().InMinutes() -
-      last_charge_unplugged.time()));
-  features.set_duration_of_last_charge(
+  features.set_time_since_last_charge_minutes(
+      ukm::GetExponentialBucketMinForCounts1000(
+          now.ToDeltaSinceWindowsEpoch().InMinutes() -
+          last_charge_unplugged.time()));
+  features.set_duration_of_last_charge_minutes(
       ukm::GetExponentialBucketMinForCounts1000(last_charge_unplugged.time() -
                                                 last_charge_plugged_in.time()));
   features.set_battery_percentage_before_last_charge(
       last_charge_plugged_in.battery_percent());
   features.set_battery_percentage_of_last_charge(
       last_charge_unplugged.battery_percent());
-  features.set_timezone_difference_from_last_charge(
+  features.set_timezone_difference_from_last_charge_hours(
       (now.UTCMidnight() - now.LocalMidnight()).InHours() -
       last_charge_unplugged.timezone());
 }
@@ -472,7 +480,7 @@ void SmartChargingManager::LogEvent(const EventReason& reason) {
 }
 
 void SmartChargingManager::OnTimerFired() {
-  LogEvent(UserChargingEvent_Event::PERIODIC_LOG);
+  LogEvent(power_manager::UserChargingEvent_Event::PERIODIC_LOG);
 }
 
 void SmartChargingManager::OnReceiveScreenBrightnessPercent(

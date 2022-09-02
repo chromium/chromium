@@ -60,6 +60,7 @@ proto_library("power_manager_proto") {
     "//third_party/cros_system_api/dbus/power_manager/suspend.proto",
     "//third_party/cros_system_api/dbus/power_manager/switch_states.proto",
     "//third_party/cros_system_api/dbus/power_manager/thermal.proto",
+    "//third_party/cros_system_api/dbus/power_manager/user_charging_event.proto",
   ]
 
   proto_out_dir = "chromeos/dbus/power_manager"

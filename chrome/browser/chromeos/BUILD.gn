@@ -79,7 +79,6 @@ source_set("chromeos") {
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
     ":user_activity_event_proto",
-    ":user_charging_event_proto",
     "../ash/guest_os:guest_os_diagnostics_mojom",
     "//apps",
     "//ash",
@@ -3785,10 +3784,6 @@ proto_library("attestation_proto") {
 
 proto_library("screen_brightness_event_proto") {
   sources = [ "../ash/power/ml/screen_brightness_event.proto" ]
-}
-
-proto_library("user_charging_event_proto") {
-  sources = [ "../ash/power/smart_charging/user_charging_event.proto" ]
 }
 
 proto_library("user_activity_event_proto") {

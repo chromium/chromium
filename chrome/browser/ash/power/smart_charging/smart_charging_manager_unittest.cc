@@ -9,15 +9,20 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {
 namespace power {
 namespace {
+
+using PastEvent = power_manager::PastChargingEvents::Event;
+using EventReason = power_manager::UserChargingEvent::Event::Reason;
+using UserChargingEvent = power_manager::UserChargingEvent;
+
 PastEvent CreateEvent(int time,
                       int battery_percent,
                       int timezone,
@@ -506,8 +511,8 @@ TEST_F(SmartChargingManagerTest, LastChargeRelatedFeatures) {
   const auto features = GetUserChargingEvent().features();
 
   EXPECT_TRUE(features.halt_from_last_charge());
-  EXPECT_EQ(features.time_since_last_charge(), 38);
-  EXPECT_EQ(features.duration_of_last_charge(), 58);
+  EXPECT_EQ(features.time_since_last_charge_minutes(), 38);
+  EXPECT_EQ(features.duration_of_last_charge_minutes(), 58);
   EXPECT_EQ(features.battery_percentage_before_last_charge(), 23);
   EXPECT_EQ(features.battery_percentage_of_last_charge(), 80);
 }

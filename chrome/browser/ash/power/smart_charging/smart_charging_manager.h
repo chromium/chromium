@@ -13,9 +13,9 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/ash/power/smart_charging/smart_charging_ukm_logger.h"
-#include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,9 +29,6 @@ namespace power {
 namespace ml {
 class RecentEventsCounter;
 }  // namespace ml
-
-using PastEvent = PastChargingEvents::Event;
-using EventReason = UserChargingEvent::Event::Reason;
 
 // SmartChargingManager logs battery percentage and other features related to
 // user charging events. It is currently used to log data and will be
@@ -88,10 +85,10 @@ class SmartChargingManager : public ui::UserActivityObserver,
   friend class SmartChargingManagerTest;
 
   // Populates the UserChargingEvent proto for logging/inference.
-  void PopulateUserChargingEventProto(UserChargingEvent* proto);
+  void PopulateUserChargingEventProto(power_manager::UserChargingEvent* proto);
 
   // Log the event.
-  void LogEvent(const EventReason& reason);
+  void LogEvent(const power_manager::UserChargingEvent::Event::Reason& reason);
 
   // Called when the periodic timer triggers.
   void OnTimerFired();
@@ -115,16 +112,20 @@ class SmartChargingManager : public ui::UserActivityObserver,
   void MaybeSaveToDisk(const base::FilePath& profile_path);
 
   // Calls after saving from disk completes.
-  void OnLoadProtoFromDiskComplete(std::unique_ptr<PastChargingEvents> proto);
+  void OnLoadProtoFromDiskComplete(
+      std::unique_ptr<power_manager::PastChargingEvents> proto);
 
   // Adds a past events given it's reason to |past_events_|.
-  void AddPastEvent(const EventReason& reason);
+  void AddPastEvent(
+      const power_manager::UserChargingEvent::Event::Reason& reason);
 
   // Updates and deletes events.
   void UpdatePastEvents();
 
   // Gets the "plug in" and "unplug" events of the last charge.
-  std::tuple<PastEvent, PastEvent> GetLastChargeEvents();
+  std::tuple<power_manager::PastChargingEvents::Event,
+             power_manager::PastChargingEvents::Event>
+  GetLastChargeEvents();
 
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
@@ -168,8 +169,8 @@ class SmartChargingManager : public ui::UserActivityObserver,
 
   // TODO(crbug.com/1028853): This is for testing only. Need to remove when ukm
   // logger is available.
-  UserChargingEvent user_charging_event_for_test_;
-  std::vector<PastEvent> past_events_;
+  power_manager::UserChargingEvent user_charging_event_for_test_;
+  std::vector<power_manager::PastChargingEvents::Event> past_events_;
 
   absl::optional<double> battery_percent_;
   absl::optional<double> screen_brightness_percent_;
