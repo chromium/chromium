@@ -99,12 +99,11 @@ UserMediaClient::UserMediaClient(
                   WrapWeakPersistent(this)),
               std::move(task_runner))),
       media_devices_dispatcher_(frame->DomWindow()) {
-  if (frame_) {
-    // WrapWeakPersistent is safe because the |frame_| owns UserMediaClient.
-    frame_->SetIsCapturingMediaCallback(WTF::BindRepeating(
-        [](UserMediaClient* client) { return client && client->IsCapturing(); },
-        WrapWeakPersistent(this)));
-  }
+  DCHECK(frame_);
+  // WrapWeakPersistent is safe because the |frame_| owns UserMediaClient.
+  frame_->SetIsCapturingMediaCallback(WTF::BindRepeating(
+      [](UserMediaClient* client) { return client && client->IsCapturing(); },
+      WrapWeakPersistent(this)));
 }
 
 UserMediaClient::UserMediaClient(
