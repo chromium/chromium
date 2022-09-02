@@ -95,6 +95,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 #include "chrome/browser/android/signin/signin_bridge.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
@@ -689,6 +690,12 @@ bool ChromeAutofillClient::IsFastCheckoutSupported() {
 
   if (!GetPersonalDataManager()->IsAutofillProfileEnabled() ||
       !GetPersonalDataManager()->IsAutofillCreditCardEnabled()) {
+    return false;
+  }
+
+  // Not supported on CCTs.
+  auto* tab_android = TabAndroid::FromWebContents(web_contents());
+  if (tab_android && tab_android->IsCustomTab()) {
     return false;
   }
 
