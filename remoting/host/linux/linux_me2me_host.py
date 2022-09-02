@@ -51,18 +51,10 @@ HOST_EXTRA_PARAMS_ENV_VAR = "CHROME_REMOTE_DESKTOP_HOST_EXTRA_PARAMS"
 # list of sizes in this environment variable.
 DEFAULT_SIZES_ENV_VAR = "CHROME_REMOTE_DESKTOP_DEFAULT_DESKTOP_SIZES"
 
-# By default, this script launches Xvfb as the virtual X display. When this
-# environment variable is set, the script will instead launch an instance of
-# Xorg using the dummy display driver and void input device. In order for this
-# to work, both the dummy display driver and void input device need to be
-# installed:
-#
-#     sudo apt-get install xserver-xorg-video-dummy
-#     sudo apt-get install xserver-xorg-input-void
-#
-# TODO(rkjnsn): Add xserver-xorg-video-dummy and xserver-xorg-input-void as
-# package dependencies at the same time we switch the default to Xorg
-USE_XORG_ENV_VAR = "CHROME_REMOTE_DESKTOP_USE_XORG"
+# By default, this script launches Xorg as the virtual X display, using the
+# dummy display driver and void input device. When this environment variable is
+# set, the script will instead launch Xvfb.
+USE_XVFB_ENV_VAR = "CHROME_REMOTE_DESKTOP_USE_XVFB"
 
 # The amount of video RAM the dummy driver should claim to have, which limits
 # the maximum possible resolution.
@@ -1156,10 +1148,10 @@ class XDesktop(Desktop):
     if self.ssh_auth_sockname:
       self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
 
-    if USE_XORG_ENV_VAR in os.environ:
-      self._launch_xorg(display, x_auth_file, extra_x_args)
-    else:
+    if USE_XVFB_ENV_VAR in os.environ:
       self._launch_xvfb(display, x_auth_file, extra_x_args)
+    else:
+      self._launch_xorg(display, x_auth_file, extra_x_args)
 
     # The remoting host expects the server to use "evdev" keycodes, but Xvfb
     # starts configured to use the "base" ruleset, resulting in XKB configuring
@@ -1185,7 +1177,7 @@ class XDesktop(Desktop):
                 str(height), "0", "0", "0"]
         subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
-        output_name = "DUMMY0" if USE_XORG_ENV_VAR in os.environ else "screen"
+        output_name = "screen" if USE_XVFB_ENV_VAR in os.environ else "DUMMY0"
         args = ["xrandr", "--addmode", output_name, label]
         subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
@@ -1206,7 +1198,7 @@ class XDesktop(Desktop):
     subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL)
 
-    if USE_XORG_ENV_VAR not in os.environ:
+    if USE_XVFB_ENV_VAR in os.environ:
       # Monitor for any automatic resolution changes from the desktop
       # environment. This is needed only for Xvfb sessions because Xvfb sets
       # the first mode to be the maximum supported resolution, and some
