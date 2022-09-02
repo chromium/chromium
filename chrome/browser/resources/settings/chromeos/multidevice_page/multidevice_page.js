@@ -716,13 +716,7 @@ class SettingsMultidevicePageElement extends
     if (!this.showPhonePermissionSetupDialog_) {
       return false;
     }
-    if (this.pageContentData.isPhoneHubPermissionsDialogSupported) {
-      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
-          PhoneHubPermissionsSetupFlowScreens.INTRO,
-          PhoneHubPermissionsSetupAction.SHOWN);
-      return true;
-    }
-    return false;
+    return this.pageContentData.isPhoneHubPermissionsDialogSupported;
   }
 
   /** @private */

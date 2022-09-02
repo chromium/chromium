@@ -334,6 +334,9 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         'settings.onFeatureSetupConnectionStatusChanged',
         this.onFeatureSetupConnectionStatusChanged_.bind(this));
     this.$.dialog.showModal();
+    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+        PhoneHubPermissionsSetupFlowScreens.INTRO,
+        PhoneHubPermissionsSetupAction.SHOWN);
   }
 
   /**
@@ -658,7 +661,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
   /** @private */
   nextPage_() {
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
-        this.setupScreen_, PhoneHubPermissionsSetupAction.NEXT_OR_TRY_AGAIN);
+        this.getCurrentScreen_(),
+        PhoneHubPermissionsSetupAction.NEXT_OR_TRY_AGAIN);
     switch (this.flowState_) {
       case SetupFlowStatus.INTRO:
         this.logSetupModeMetrics_();
