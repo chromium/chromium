@@ -413,7 +413,6 @@ TEST_F(AccessCodeCastSinkServiceTest, SinkDoesntExistForPrefs) {
 
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -525,7 +524,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
 
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -562,10 +560,9 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
 
   // Now all the expiration timers should be completed and the devices should be
   // removed.
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
-          .size());
+          .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().size());
 }
@@ -628,7 +625,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
 
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -662,10 +658,9 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
 
   // The expiration should still not be triggered yet
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
-          .size());
+          .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().size());
 }
@@ -699,7 +694,6 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -780,7 +774,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestSetExpirationTimer) {
 
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -799,7 +792,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestSetExpirationTimer) {
 
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -913,7 +905,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeEnabledPref) {
                   ->IsRunning());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -928,7 +919,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeEnabledPref) {
                   .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -1019,7 +1009,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworkWithRouteActive) {
   // pref service.
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -1085,7 +1074,6 @@ TEST_F(AccessCodeCastSinkServiceTest,
   // service.
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -1173,7 +1161,6 @@ TEST_F(AccessCodeCastSinkServiceTest,
   // service.
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -1232,7 +1219,6 @@ TEST_F(AccessCodeCastSinkServiceTest,
   // pref service.
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_FALSE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
@@ -1254,7 +1240,6 @@ TEST_F(AccessCodeCastSinkServiceTest,
   // service.
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
-          ->GetDict()
           .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());

@@ -191,11 +191,11 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDeviceAddedTimeDict) {
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink2.id());
 
-  EXPECT_FALSE(pref_updater()->GetDeviceAddedTimeDict()->GetDict().empty());
+  EXPECT_FALSE(pref_updater()->GetDeviceAddedTimeDict().empty());
 
   pref_updater()->ClearDeviceAddedTimeDict();
 
-  EXPECT_TRUE(pref_updater()->GetDeviceAddedTimeDict()->GetDict().empty());
+  EXPECT_TRUE(pref_updater()->GetDeviceAddedTimeDict().empty());
 }
 
 }  // namespace media_router
