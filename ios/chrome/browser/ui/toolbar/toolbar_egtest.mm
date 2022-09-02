@@ -323,7 +323,8 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 }
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
-- (void)testTypeJavaScriptIntoOmnibox {
+// TODO(crbug.com/1359286): Disabled due to flakiness. Re-enabled when fixed.
+- (void)DISABLED_testTypeJavaScriptIntoOmnibox {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:alert('Hello');\n"];
