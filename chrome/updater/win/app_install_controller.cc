@@ -877,7 +877,11 @@ void AppInstallControllerImpl::DoExit() {
 }
 
 BOOL AppInstallControllerImpl::PreTranslateMessage(MSG* msg) {
-  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  if (const auto ui_thread_id = GetUIThreadID(); ui_thread_id != 0) {
+    DCHECK_EQ(ui_thread_id, GetCurrentThreadId());
+  } else {
+    VLOG(1) << "Can't find a thread id for the message: " << msg->message;
+  }
   if (msg->message == InstallProgressObserverIPC::WM_PROGRESS_WINDOW_IPC) {
     install_progress_observer_ipc_->Invoke(msg->wParam, msg->lParam);
     return true;
