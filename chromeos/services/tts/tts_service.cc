@@ -39,10 +39,11 @@ void TtsService::BindPlaybackTtsStream(
   media::AudioParameters params;
 
   if (desired_audio_parameters) {
-    params = media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_MONO, desired_audio_parameters->sample_rate,
-        desired_audio_parameters->buffer_size);
+    params =
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Mono(),
+                               desired_audio_parameters->sample_rate,
+                               desired_audio_parameters->buffer_size);
 
     if (!params.IsValid()) {
       // Returning early disconnects the remote.
@@ -50,9 +51,10 @@ void TtsService::BindPlaybackTtsStream(
     }
   } else {
     // The client did not specify parameters; use defaults.
-    params = media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate, kDefaultBufferSize);
+    params =
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Mono(),
+                               kDefaultSampleRate, kDefaultBufferSize);
   }
   DCHECK(params.IsValid());
   playback_tts_stream_ = std::make_unique<PlaybackTtsStream>(

@@ -48,7 +48,7 @@ GoogleTtsStream::GoogleTtsStream(
       tts_player_(
           std::move(factory),
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_MONO,
+                                 media::ChannelLayoutConfig::Mono(),
                                  kDefaultSampleRate,
                                  kDefaultBufferSize)) {
   bool loaded = libchrometts_.Load(kLibchromettsPath);
