@@ -13,6 +13,8 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/gpu/vk/GrVkMemoryAllocator.h"
+#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 
 namespace gpu {
 
