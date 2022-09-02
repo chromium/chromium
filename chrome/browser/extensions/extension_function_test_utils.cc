@@ -42,7 +42,7 @@ class TestFunctionDispatcherDelegate
     return browser_->extension_window_controller();
   }
 
-  WebContents* GetAssociatedWebContents() const override { return NULL; }
+  WebContents* GetAssociatedWebContents() const override { return nullptr; }
 
   raw_ptr<Browser> browser_;
 };

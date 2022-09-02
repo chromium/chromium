@@ -36,7 +36,7 @@ void EventRouterForwarder::BroadcastEventToRenderers(
     const GURL& event_url,
     bool dispatch_to_off_the_record_profiles) {
   HandleEvent(std::string(), histogram_value, event_name, std::move(event_args),
-              0, true, event_url, dispatch_to_off_the_record_profiles);
+              nullptr, true, event_url, dispatch_to_off_the_record_profiles);
 }
 
 void EventRouterForwarder::DispatchEventToRenderers(
@@ -77,7 +77,7 @@ void EventRouterForwarder::HandleEvent(
     return;
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = NULL;
+  Profile* profile = nullptr;
   if (profile_ptr) {
     if (!profile_manager->IsValidProfile(profile_ptr))
       return;

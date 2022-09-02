@@ -52,7 +52,7 @@ class MockExtensionErrorUI : public ExtensionErrorUI {
 // only ever have one (since this is a single-profile test), and this avoids
 // the need for any kind of accessor to the ErrorController from
 // ExtensionService.
-MockExtensionErrorUI* g_error_ui = NULL;
+MockExtensionErrorUI* g_error_ui = nullptr;
 
 MockExtensionErrorUI::MockExtensionErrorUI(ExtensionErrorUI::Delegate* delegate)
     : delegate_(delegate) {
@@ -62,7 +62,7 @@ MockExtensionErrorUI::MockExtensionErrorUI(ExtensionErrorUI::Delegate* delegate)
 }
 
 MockExtensionErrorUI::~MockExtensionErrorUI() {
-  g_error_ui = NULL;
+  g_error_ui = nullptr;
 }
 
 void MockExtensionErrorUI::CloseUI() {

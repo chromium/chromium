@@ -197,7 +197,7 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
       value->Append("tcp-connect:*.example.com:80");
       value->Append("udp-bind::8080");
       value->Append("udp-send-to::8888");
-      ASSERT_TRUE(permission->FromValue(value.get(), NULL, NULL));
+      ASSERT_TRUE(permission->FromValue(value.get(), nullptr, nullptr));
     }
     api_perm_set1_.insert(std::move(permission));
 
@@ -412,7 +412,7 @@ class ExtensionPrefsAcknowledgment : public ExtensionPrefsTest {
       std::string name = "test" + base::NumberToString(i);
       extensions_.push_back(prefs_.AddExtension(name));
     }
-    EXPECT_EQ(NULL,
+    EXPECT_EQ(nullptr,
               prefs()->GetInstalledExtensionInfo(not_installed_id_).get());
 
     ExtensionList::const_iterator iter;

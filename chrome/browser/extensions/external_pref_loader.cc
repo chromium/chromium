@@ -268,7 +268,7 @@ ExternalPrefLoader::ExtractExtensionPrefs(base::ValueDeserializer* deserializer,
                                           const base::FilePath& path) {
   std::string error_msg;
   std::unique_ptr<base::Value> extensions =
-      deserializer->Deserialize(NULL, &error_msg);
+      deserializer->Deserialize(nullptr, &error_msg);
   if (!extensions) {
     LOG(WARNING) << "Unable to deserialize json data: " << error_msg
                  << " in file " << path.value() << ".";
@@ -321,7 +321,7 @@ void ExternalPrefLoader::LoadOnFileThread() {
 
 void ExternalPrefLoader::ReadExternalExtensionPrefFile(
     base::DictionaryValue* prefs) {
-  CHECK(NULL != prefs);
+  CHECK(nullptr != prefs);
 
   base::FilePath json_file = base_path_.Append(kExternalExtensionJson);
 
@@ -358,7 +358,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
 
 void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
     base::DictionaryValue* prefs) {
-  CHECK(NULL != prefs);
+  CHECK(nullptr != prefs);
 
   // First list the potential .json candidates.
   std::set<base::FilePath> candidates =

@@ -84,14 +84,14 @@ namespace extensions {
 scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
     ExtensionService* frontend) {
   return new CrxInstaller(frontend->AsWeakPtr(),
-                          std::unique_ptr<ExtensionInstallPrompt>(), NULL);
+                          std::unique_ptr<ExtensionInstallPrompt>(), nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
     ExtensionService* frontend,
     std::unique_ptr<ExtensionInstallPrompt> client) {
-  return new CrxInstaller(frontend->AsWeakPtr(), std::move(client), NULL);
+  return new CrxInstaller(frontend->AsWeakPtr(), std::move(client), nullptr);
 }
 
 // static
@@ -1121,7 +1121,7 @@ void CrxInstaller::NotifyCrxInstallComplete(
   // on the extension.
   content::NotificationService::current()->Notify(
       NOTIFICATION_CRX_INSTALLER_DONE, content::Source<CrxInstaller>(this),
-      content::Details<const Extension>(success ? extension() : NULL));
+      content::Details<const Extension>(success ? extension() : nullptr));
 
   InstallTrackerFactory::GetForBrowserContext(profile())
       ->OnFinishCrxInstall(success ? extension()->id() : expected_id_, success);

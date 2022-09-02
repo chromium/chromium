@@ -191,7 +191,7 @@ void ExternalInstallMenuAlert::ShowBubbleView(Browser* browser) {
 }
 
 GlobalErrorBubbleViewBase* ExternalInstallMenuAlert::GetBubbleView() {
-  return NULL;
+  return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -405,7 +405,7 @@ void ExternalInstallError::ShowDialog(Browser* browser) {
   DCHECK(install_ui_.get());
   DCHECK(prompt_.get());
   DCHECK(browser);
-  content::WebContents* web_contents = NULL;
+  content::WebContents* web_contents = nullptr;
   web_contents = browser->tab_strip_model()->GetActiveWebContents();
   manager_->DidChangeInstallAlertVisibility(this, true);
   ExtensionInstallPrompt::GetDefaultShowDialogCallback().Run(

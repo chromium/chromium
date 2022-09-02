@@ -170,7 +170,7 @@ void LocalExtensionCache::PutExtension(const std::string& id,
 
   CacheMap::iterator it = FindExtension(cached_extensions_, id, expected_hash);
   if (it != cached_extensions_.end() &&
-      NewerOrSame(it, version, expected_hash, NULL)) {
+      NewerOrSame(it, version, expected_hash, nullptr)) {
     LOG(WARNING) << "Cache contains newer or the same version "
                  << it->second.version << " for extension " << id << " version "
                  << version;

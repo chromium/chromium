@@ -24,7 +24,7 @@ WebstoreInstallWithPrompt::WebstoreInstallWithPrompt(
       show_post_install_ui_(true),
       dummy_web_contents_(
           WebContents::Create(WebContents::CreateParams(profile))),
-      parent_window_(NULL) {
+      parent_window_(nullptr) {
   set_install_source(WebstoreInstaller::INSTALL_SOURCE_OTHER);
 }
 

@@ -133,9 +133,9 @@ class AppApiTest : public extensions::ExtensionApiTest {
     // Opening tabs with window.open should keep the page in the opener's
     // process.
     ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
-    OpenWindow(tab1, base_url.Resolve("path1/empty.html"), true, true, NULL);
+    OpenWindow(tab1, base_url.Resolve("path1/empty.html"), true, true, nullptr);
     LOG(INFO) << "WindowOpenHelper 1.";
-    OpenWindow(tab2, base_url.Resolve("path2/empty.html"), true, true, NULL);
+    OpenWindow(tab2, base_url.Resolve("path2/empty.html"), true, true, nullptr);
     LOG(INFO) << "End of test.";
     UnloadExtension(extension->id());
   }
@@ -224,14 +224,14 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
 
   // Now let's do the same using window.open. The same should happen.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
-  OpenWindow(tab, base_url.Resolve("path1/empty.html"), true, true, NULL);
-  OpenWindow(tab, base_url.Resolve("path2/empty.html"), true, true, NULL);
+  OpenWindow(tab, base_url.Resolve("path1/empty.html"), true, true, nullptr);
+  OpenWindow(tab, base_url.Resolve("path2/empty.html"), true, true, nullptr);
   // TODO(creis): This should open in a new process (i.e., false for the last
   // argument), but we temporarily avoid swapping processes away from a hosted
   // app if it has an opener, because some OAuth providers make script calls
   // between non-app popups and non-app iframes in the app process.
   // See crbug.com/59285.
-  OpenWindow(tab, base_url.Resolve("path3/empty.html"), true, true, NULL);
+  OpenWindow(tab, base_url.Resolve("path3/empty.html"), true, true, nullptr);
 
   // Now let's have these pages navigate, into or out of the extension web
   // extent. They should switch processes.

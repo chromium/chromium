@@ -153,7 +153,7 @@ bool TestExtensionSystem::is_ready() const {
 }
 
 ContentVerifier* TestExtensionSystem::content_verifier() {
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<ExtensionSet> TestExtensionSystem::GetDependentExtensions(

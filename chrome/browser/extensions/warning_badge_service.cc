@@ -91,7 +91,7 @@ void ErrorBadge::ShowBubbleView(Browser* browser) {
 }
 
 GlobalErrorBubbleViewBase* ErrorBadge::GetBubbleView() {
-  return NULL;
+  return nullptr;
 }
 
 // static

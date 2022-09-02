@@ -50,7 +50,7 @@ bool HasBadge(Profile* profile) {
   GlobalErrorService* service =
       GlobalErrorServiceFactory::GetForProfile(profile);
   return service->GetGlobalErrorByMenuItemCommandID(IDC_EXTENSION_ERRORS) !=
-         NULL;
+         nullptr;
 }
 
 const char ext1_id[] = "extension1";

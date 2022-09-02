@@ -175,7 +175,7 @@ class UpdateInstallGateTest : public testing::Test {
   void MakeExtensionListenForOnUpdateAvailable(
       const std::string& extension_id) {
     const char kOnUpdateAvailableEvent[] = "runtime.onUpdateAvailable";
-    event_router_->AddEventListener(kOnUpdateAvailableEvent, NULL,
+    event_router_->AddEventListener(kOnUpdateAvailableEvent, nullptr,
                                     extension_id);
   }
 

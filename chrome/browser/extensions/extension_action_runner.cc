@@ -97,9 +97,9 @@ ExtensionActionRunner::~ExtensionActionRunner() {
 ExtensionActionRunner* ExtensionActionRunner::GetForWebContents(
     content::WebContents* web_contents) {
   if (!web_contents)
-    return NULL;
+    return nullptr;
   TabHelper* tab_helper = TabHelper::FromWebContents(web_contents);
-  return tab_helper ? tab_helper->extension_action_runner() : NULL;
+  return tab_helper ? tab_helper->extension_action_runner() : nullptr;
 }
 
 ExtensionAction::ShowAction ExtensionActionRunner::RunAction(

@@ -84,9 +84,9 @@ class ExtensionDisabledGlobalErrorTest
     size_t size_before = extension_registry()->enabled_extensions().size();
     const Extension* extension = InstallExtension(path_v1_, 1);
     if (!extension)
-      return NULL;
+      return nullptr;
     if (extension_registry()->enabled_extensions().size() != size_before + 1)
-      return NULL;
+      return nullptr;
     return extension;
   }
 
@@ -98,12 +98,12 @@ class ExtensionDisabledGlobalErrorTest
       int expected_change) {
     size_t size_before = extension_registry()->enabled_extensions().size();
     if (UpdateExtension(extension->id(), crx_path, expected_change))
-      return NULL;
+      return nullptr;
     content::RunAllTasksUntilIdle();
     EXPECT_EQ(size_before + expected_change,
               extension_registry()->enabled_extensions().size());
     if (extension_registry()->disabled_extensions().size() != 1u)
-      return NULL;
+      return nullptr;
 
     return extension_registry()->disabled_extensions().begin()->get();
   }
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
   extensions::ExtensionSyncData sync_data =
       sync_service->CreateSyncData(*extension);
   UninstallExtension(extension_id);
-  extension = NULL;
+  extension = nullptr;
 
   // Install extension v1.
   InstallIncreasingPermissionExtensionV1();

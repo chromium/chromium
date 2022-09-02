@@ -603,8 +603,8 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   EXPECT_EQ(0U, controller->action_click_count());
   EXPECT_EQ(1U, controller->dismiss_click_count());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != NULL);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != nullptr);
 
   // Do it again, but now press different button (Disable).
   bubble.set_action_on_show(
@@ -626,8 +626,8 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   EXPECT_EQ(0U, controller->link_click_count());
   EXPECT_EQ(1U, controller->action_click_count());
   EXPECT_EQ(0U, controller->dismiss_click_count());
-  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId2) != NULL);
+  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId1) != nullptr);
+  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId2) != nullptr);
 
   // Re-enable the extensions (disabled by the action button above).
   service_->EnableExtension(kId1);
@@ -1071,9 +1071,9 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   EXPECT_EQ(1U, controller->dismiss_click_count());
   // No extension should have become disabled.
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != nullptr);
   // Only extension 2 should have been acknowledged.
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
   EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
@@ -1094,9 +1094,9 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   EXPECT_EQ(0U, controller->action_click_count());
   EXPECT_EQ(0U, controller->dismiss_click_count());
   // No extension should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != nullptr);
   // Only extension 2 should have been acknowledged.
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
   EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
@@ -1119,9 +1119,9 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   EXPECT_EQ(1U, controller->action_click_count());
   EXPECT_EQ(0U, controller->dismiss_click_count());
   // Only extension 2 should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != nullptr);
+  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId2) != nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != nullptr);
 
   // No extension should have been acknowledged (it got disabled).
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
@@ -1129,15 +1129,12 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
 
   // Clean up after ourselves.
-  service_->UninstallExtension(kId1,
-                               extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId2,
-                               extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId3,
-                               extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
+  service_->UninstallExtension(kId1, extensions::UNINSTALL_REASON_FOR_TESTING,
+                               nullptr);
+  service_->UninstallExtension(kId2, extensions::UNINSTALL_REASON_FOR_TESTING,
+                               nullptr);
+  service_->UninstallExtension(kId3, extensions::UNINSTALL_REASON_FOR_TESTING,
+                               nullptr);
 }
 
 // Tests that a bubble outliving the associated browser object doesn't crash.

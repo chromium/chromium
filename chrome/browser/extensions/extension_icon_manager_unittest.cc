@@ -122,8 +122,8 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
 
   JSONFileValueDeserializer deserializer(manifest_path);
   std::unique_ptr<base::DictionaryValue> manifest =
-      base::DictionaryValue::From(deserializer.Deserialize(NULL, NULL));
-  ASSERT_TRUE(manifest.get() != NULL);
+      base::DictionaryValue::From(deserializer.Deserialize(nullptr, nullptr));
+  ASSERT_TRUE(manifest.get() != nullptr);
 
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
@@ -165,8 +165,8 @@ TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
 
   JSONFileValueDeserializer deserializer(manifest_path);
   std::unique_ptr<base::DictionaryValue> manifest =
-      base::DictionaryValue::From(deserializer.Deserialize(NULL, NULL));
-  ASSERT_TRUE(manifest.get() != NULL);
+      base::DictionaryValue::From(deserializer.Deserialize(nullptr, nullptr));
+  ASSERT_TRUE(manifest.get() != nullptr);
 
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(

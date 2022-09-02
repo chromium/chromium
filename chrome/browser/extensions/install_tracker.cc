@@ -48,7 +48,7 @@ const ActiveInstallData* InstallTracker::GetActiveInstall(
     const std::string& extension_id) const {
   auto install_data = active_installs_.find(extension_id);
   if (install_data == active_installs_.end())
-    return NULL;
+    return nullptr;
   else
     return &(install_data->second);
 }

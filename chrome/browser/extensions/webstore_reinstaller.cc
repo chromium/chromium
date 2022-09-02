@@ -42,7 +42,7 @@ void WebstoreReinstaller::BeginReinstall() {
 }
 
 bool WebstoreReinstaller::CheckRequestorAlive() const {
-  return web_contents() != NULL;
+  return web_contents() != nullptr;
 }
 
 std::unique_ptr<ExtensionInstallPrompt::Prompt>
@@ -83,9 +83,7 @@ void WebstoreReinstaller::OnInstallPromptDone(
   }
 
   if (!ExtensionSystem::Get(profile())->extension_service()->UninstallExtension(
-          id(),
-          UNINSTALL_REASON_REINSTALL,
-          NULL)) {
+          id(), UNINSTALL_REASON_REINSTALL, nullptr)) {
     // Run the callback now, because AbortInstall() doesn't do it.
     RunCallback(
         false, kCouldNotUninstallExtension, webstore_install::OTHER_ERROR);

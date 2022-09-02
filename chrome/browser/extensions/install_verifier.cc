@@ -341,7 +341,7 @@ void InstallVerifier::MaybeBootstrapSelf() {
   bool needs_bootstrap = false;
 
   ExtensionIdSet extension_ids = GetExtensionsToVerify();
-  if (signature_.get() == NULL && ShouldFetchSignature()) {
+  if (signature_.get() == nullptr && ShouldFetchSignature()) {
     needs_bootstrap = true;
   } else {
     for (auto iter = extension_ids.begin(); iter != extension_ids.end();
@@ -374,7 +374,7 @@ void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
              ++iter) {
           int disable_reasons = prefs_->GetDisableReasons((*iter)->id());
           if (disable_reasons & disable_reason::DISABLE_NOT_VERIFIED &&
-              !MustRemainDisabled(iter->get(), NULL, NULL)) {
+              !MustRemainDisabled(iter->get(), nullptr, nullptr)) {
             prefs_->RemoveDisableReason((*iter)->id(),
                                         disable_reason::DISABLE_NOT_VERIFIED);
           }
@@ -455,7 +455,7 @@ void InstallVerifier::SaveToPrefs() {
 
   if (!signature_.get() || signature_->ids.empty()) {
     DVLOG(1) << "SaveToPrefs - saving NULL";
-    prefs_->SetInstallSignature(NULL);
+    prefs_->SetInstallSignature(nullptr);
   } else {
     base::DictionaryValue pref;
     signature_->ToValue(&pref);

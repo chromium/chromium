@@ -5,7 +5,7 @@
 #include "chrome/browser/extensions/mock_extension_special_storage_policy.h"
 
 MockExtensionSpecialStoragePolicy::MockExtensionSpecialStoragePolicy()
-    : ExtensionSpecialStoragePolicy(NULL) {}
+    : ExtensionSpecialStoragePolicy(nullptr) {}
 
 bool MockExtensionSpecialStoragePolicy::IsStorageProtected(const GURL& origin) {
   return protected_.find(origin) != protected_.end();

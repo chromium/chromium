@@ -14,7 +14,7 @@ TestExtensionService::~TestExtensionService() {}
 extensions::PendingExtensionManager*
 TestExtensionService::pending_extension_manager() {
   ADD_FAILURE();
-  return NULL;
+  return nullptr;
 }
 
 extensions::CorruptedExtensionReinstaller*
@@ -34,7 +34,7 @@ bool TestExtensionService::UpdateExtension(
 const Extension* TestExtensionService::GetPendingExtensionUpdate(
     const std::string& id) const {
   ADD_FAILURE();
-  return NULL;
+  return nullptr;
 }
 
 bool TestExtensionService::FinishDelayedInstallationIfReady(

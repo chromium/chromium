@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_TRUE(theme);
   std::string theme_id = theme->id();
   VerifyThemeInfoBarAndUndoInstall();
-  ASSERT_EQ(NULL, GetTheme());
+  ASSERT_EQ(nullptr, GetTheme());
 
   // Set the same theme twice and undo to verify we go back to default theme.
   ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 0, browser()));
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_TRUE(theme);
   ASSERT_EQ(theme_id, theme->id());
   VerifyThemeInfoBarAndUndoInstall();
-  ASSERT_EQ(NULL, GetTheme());
+  ASSERT_EQ(nullptr, GetTheme());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,

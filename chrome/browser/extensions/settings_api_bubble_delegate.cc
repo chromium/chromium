@@ -112,7 +112,7 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
   const Extension* extension =
       registry()->GetExtensionById(extension_id_, ExtensionRegistry::ENABLED);
   const SettingsOverrides* settings =
-      extension ? SettingsOverrides::Get(extension) : NULL;
+      extension ? SettingsOverrides::Get(extension) : nullptr;
   if (!extension || !settings) {
     NOTREACHED();
     return std::u16string();

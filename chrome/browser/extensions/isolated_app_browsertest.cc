@@ -127,7 +127,7 @@ class IsolatedAppTest : public ExtensionBrowserTest {
       if (installed_app && installed_app->is_app())
         return installed_app;
     }
-    return NULL;
+    return nullptr;
   }
 
  private:

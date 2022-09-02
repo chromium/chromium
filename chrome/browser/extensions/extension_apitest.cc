@@ -86,8 +86,8 @@ void ExtensionApiTest::SetUpOnMainThread() {
 
 void ExtensionApiTest::TearDownOnMainThread() {
   ExtensionBrowserTest::TearDownOnMainThread();
-  TestGetConfigFunction::set_test_config_state(NULL);
-  test_config_.reset(NULL);
+  TestGetConfigFunction::set_test_config_state(nullptr);
+  test_config_.reset();
 }
 
 bool ExtensionApiTest::RunExtensionTest(const char* extension_name) {
@@ -193,7 +193,7 @@ bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
 const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
 
-  const Extension* result = NULL;
+  const Extension* result = nullptr;
   for (const scoped_refptr<const Extension>& extension :
        registry->enabled_extensions()) {
     // Ignore any component extensions. They are automatically loaded into all
@@ -201,12 +201,12 @@ const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
     if (extension->location() == mojom::ManifestLocation::kComponent)
       continue;
 
-    if (result != NULL) {
+    if (result != nullptr) {
       // TODO(yoz): this is misleading; it counts component extensions.
       message_ = base::StringPrintf(
           "Expected only one extension to be present.  Found %u.",
           static_cast<unsigned>(registry->enabled_extensions().size()));
-      return NULL;
+      return nullptr;
     }
 
     result = extension.get();
@@ -214,7 +214,7 @@ const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
 
   if (!result) {
     message_ = "extension pointer is NULL.";
-    return NULL;
+    return nullptr;
   }
   return result;
 }

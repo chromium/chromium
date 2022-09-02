@@ -261,8 +261,8 @@ void ChromeAppSorting::EnsureValidOrdinals(
     // There is no page ordinal yet.
     if (suggested_page.IsValid()) {
       page_ordinal = suggested_page;
-    } else if (!GetDefaultOrdinals(extension_id, &page_ordinal, NULL) ||
-        !page_ordinal.IsValid()) {
+    } else if (!GetDefaultOrdinals(extension_id, &page_ordinal, nullptr) ||
+               !page_ordinal.IsValid()) {
       // If the extension is a default, then set |page_ordinal| to what the
       // default mandates. Otherwise, use the next natural app page.
       page_ordinal = GetNaturalAppPageOrdinal();
@@ -274,7 +274,7 @@ void ChromeAppSorting::EnsureValidOrdinals(
   syncer::StringOrdinal app_launch_ordinal = GetAppLaunchOrdinal(extension_id);
   if (!app_launch_ordinal.IsValid()) {
     // If using default app launcher ordinal, make sure there is no collision.
-    if (GetDefaultOrdinals(extension_id, NULL, &app_launch_ordinal) &&
+    if (GetDefaultOrdinals(extension_id, nullptr, &app_launch_ordinal) &&
         app_launch_ordinal.IsValid())
       app_launch_ordinal = ResolveCollision(page_ordinal, app_launch_ordinal);
     else

@@ -459,7 +459,7 @@ void ExtensionManagement::Refresh() {
     default_settings_->installation_mode = INSTALLATION_BLOCKED;
   }
 
-  const base::DictionaryValue* subdict = NULL;
+  const base::DictionaryValue* subdict = nullptr;
   if (dict_pref &&
       dict_pref->GetDictionary(schema_constants::kWildcard, &subdict)) {
     if (!default_settings_->Parse(
@@ -469,7 +469,7 @@ void ExtensionManagement::Refresh() {
     }
 
     // Settings from new preference have higher priority over legacy ones.
-    const base::ListValue* list_value = NULL;
+    const base::ListValue* list_value = nullptr;
     if (subdict->GetList(schema_constants::kInstallSources, &list_value))
       install_sources_pref = list_value;
     if (subdict->GetList(schema_constants::kAllowedTypes, &list_value))

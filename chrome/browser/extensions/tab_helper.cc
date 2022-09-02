@@ -380,7 +380,7 @@ void TabHelper::OnContentScriptsExecuting(
 
 const Extension* TabHelper::GetExtension(const ExtensionId& extension_app_id) {
   if (extension_app_id.empty())
-    return NULL;
+    return nullptr;
 
   content::BrowserContext* context = web_contents()->GetBrowserContext();
   return ExtensionRegistry::Get(context)->enabled_extensions().GetByID(

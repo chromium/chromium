@@ -151,7 +151,7 @@ bool ExtensionSpecialStoragePolicy::IsStorageSessionOnly(const GURL& origin) {
 bool ExtensionSpecialStoragePolicy::HasSessionOnlyOrigins() {
   if (!cookie_settings_)
     return false;
-  if (cookie_settings_->GetDefaultCookieSetting(NULL) ==
+  if (cookie_settings_->GetDefaultCookieSetting(nullptr) ==
       CONTENT_SETTING_SESSION_ONLY)
     return true;
   for (const ContentSettingPatternSource& entry :

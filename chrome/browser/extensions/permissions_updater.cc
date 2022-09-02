@@ -633,7 +633,7 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
 
   PermissionsManager::UpdateReason reason;
   events::HistogramValue histogram_value = events::UNKNOWN;
-  const char* event_name = NULL;
+  const char* event_name = nullptr;
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   if (event_type == REMOVED) {

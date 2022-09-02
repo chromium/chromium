@@ -271,7 +271,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
 
     UsbDevicePermission permission(
         PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
-    ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
+    ASSERT_TRUE(permission.FromValue(permission_list.get(), nullptr, nullptr));
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
     ASSERT_EQ(1U, messages.size());
@@ -286,7 +286,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
 
     UsbDevicePermission permission(
         PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
-    ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
+    ASSERT_TRUE(permission.FromValue(permission_list.get(), nullptr, nullptr));
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
     ASSERT_EQ(1U, messages.size());
@@ -301,7 +301,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
 
     UsbDevicePermission permission(
         PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
-    ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
+    ASSERT_TRUE(permission.FromValue(permission_list.get(), nullptr, nullptr));
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
     ASSERT_EQ(1U, messages.size());
@@ -336,7 +336,7 @@ TEST_F(USBDevicePermissionMessagesTest, MultipleDevice) {
 
   UsbDevicePermission permission(
       PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kUsbDevice));
-  ASSERT_TRUE(permission.FromValue(permission_list.get(), NULL, NULL));
+  ASSERT_TRUE(permission.FromValue(permission_list.get(), nullptr, nullptr));
 
   PermissionMessages messages = GetMessages(permission.GetPermissions());
   ASSERT_EQ(1U, messages.size());

@@ -188,7 +188,7 @@ bool IsAppLaunchable(const std::string& extension_id,
 bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
                                     content::BrowserContext* context) {
   return ExtensionRegistry::Get(context)->GetExtensionById(
-      extension_id, ExtensionRegistry::ENABLED) != NULL;
+             extension_id, ExtensionRegistry::ENABLED) != nullptr;
 }
 
 bool ShouldSync(const Extension* extension,

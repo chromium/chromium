@@ -274,7 +274,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   base::DictionaryValue expected;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
-  base::Value* value = NULL;
+  base::Value* value = nullptr;
   ExtensionInstallForceListPolicyHandler handler;
 
   // Start with the policy being missing. This shouldn't affect the pref.
@@ -383,7 +383,7 @@ TEST(ExtensionURLPatternListPolicyHandlerTest, ApplyPolicySettings) {
   base::ListValue list;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
-  base::Value* value = NULL;
+  base::Value* value = nullptr;
   ExtensionURLPatternListPolicyHandler handler(
       policy::key::kExtensionInstallSources, kTestPref);
 
@@ -486,7 +486,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, ApplyPolicySettings) {
                  policy::POLICY_SOURCE_CLOUD, policy_result->Clone(), nullptr);
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   handler.ApplyPolicySettings(policy_map, &prefs);
-  base::Value* value = NULL;
+  base::Value* value = nullptr;
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
   EXPECT_EQ(*policy_result, *value);
 }

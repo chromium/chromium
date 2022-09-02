@@ -45,7 +45,7 @@ namespace {
 const char kSharedExtensionsDir[] = "/var/cache/shared_extensions";
 
 // Shared install dir overrider for tests only.
-static const base::FilePath* g_shared_install_dir_override = NULL;
+static const base::FilePath* g_shared_install_dir_override = nullptr;
 
 // This helper class lives on UI thread only. Main purpose of this class is to
 // track shared installation in progress between multiple profiles.
@@ -132,7 +132,7 @@ ExtensionAssetsManagerChromeOS::ExtensionAssetsManagerChromeOS() { }
 ExtensionAssetsManagerChromeOS::~ExtensionAssetsManagerChromeOS() {
   if (g_shared_install_dir_override) {
     delete g_shared_install_dir_override;
-    g_shared_install_dir_override = NULL;
+    g_shared_install_dir_override = nullptr;
   }
 }
 

@@ -37,7 +37,7 @@ ExtensionApiUnittest::RunFunctionAndReturnDictionary(
     ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
-  base::DictionaryValue* dict = NULL;
+  base::DictionaryValue* dict = nullptr;
 
   if (value && !value->GetAsDictionary(&dict))
     delete value;
