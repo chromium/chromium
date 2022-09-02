@@ -208,8 +208,15 @@ public class AccessibilityNodeInfoUtils {
         if (info.isSelected()) {
             prefix += "selected, ";
         }
-        return String.format("%srowIndex=%s, rowSpan=%s, colIndex=%s, colSpan=%s]", prefix,
-                info.getRowIndex(), info.getRowSpan(), info.getColumnIndex(), info.getColumnSpan());
+        // Only include row/col span if not equal to 1, the default value.
+        if (info.getRowSpan() != 1) {
+            prefix += String.format("rowSpan=%s, ", info.getRowSpan());
+        }
+        if (info.getColumnSpan() != 1) {
+            prefix += String.format("colSpan=%s, ", info.getColumnSpan());
+        }
+        return String.format(
+                "%srowIndex=%s, colIndex=%s]", prefix, info.getRowIndex(), info.getColumnIndex());
     }
 
     private static String toString(AccessibilityNodeInfoCompat.RangeInfoCompat info) {

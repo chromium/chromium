@@ -1,12 +1,12 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='article' name='This is an ARIA article 1.'
 ++android.view.View role_description='article' name='This is an ARIA article 2.'
-++android.widget.ListView role_description='list box' clickable collection state_description='2 items' item_count=2 row_count=2
-++++android.view.View clickable collection_item focusable name='Item 1' state_description='in list, item 1 of 2'
-++++android.view.View clickable collection_item focusable name='Item 2' state_description='in list, item 2 of 2' item_index=1 row_index=1
-++android.widget.ListView role_description='list box' clickable collection state_description='2 items' item_count=2 row_count=2
-++++android.view.View clickable collection_item focusable name='Item 1' state_description='in list, item 1 of 2'
-++++android.view.View clickable collection_item focusable name='Item 2' state_description='in list, item 2 of 2' item_index=1 row_index=1
+++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2 column_count=1
+++++android.view.View clickable collection_item focusable name='Item 1' row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='Item 2' item_index=1 row_index=1 row_span=1 column_span=1
+++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2 column_count=1
+++++android.view.View clickable collection_item focusable name='Item 1' row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='Item 2' item_index=1 row_index=1 row_span=1 column_span=1
 ++android.view.View
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable state_description='Not checked. In group, option 3 of 2' item_index=2 row_index=2
 ++++android.widget.TextView name='1'

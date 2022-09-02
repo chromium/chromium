@@ -12,8 +12,8 @@ android.webkit.WebView focusable focused scrollable
 ++++android.widget.GridView role_description='table' collection row_count=1 column_count=1
 ++++++android.view.View
 ++++++++android.view.View collection_item name='Always expose editable tables as tables.' row_span=1 column_span=1
-++++android.widget.ListView collection item_count=1 row_count=1
-++++++android.view.View collection_item
+++++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++++android.view.View collection_item row_span=1 column_span=1
 ++++++++android.view.View name='1. '
 ++++++++android.widget.TextView name='Editable list item.'
 ++android.widget.TextView name='Non-editable paragraph.'

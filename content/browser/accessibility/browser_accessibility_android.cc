@@ -795,18 +795,6 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetRadioButtonStateDescription());
   }
 
-  // For list boxes, use state description to communicate child item count. We
-  // will not communicate this in the case that the listbox is also
-  // multiselectable and has some items selected, since the same info would be
-  // communicated as "x of y selected".
-  if (GetRole() == ax::mojom::Role::kListBox &&
-      (!IsMultiselectable() || !GetSelectedItemCount()))
-    state_descs.push_back(GetListBoxStateDescription());
-
-  // For list box items, use state description to communicate index of item.
-  if (GetRole() == ax::mojom::Role::kListBoxOption)
-    state_descs.push_back(GetListBoxItemStateDescription());
-
   // For nodes with non-trivial aria-current values, communicate state.
   if (HasAriaCurrent())
     state_descs.push_back(GetAriaCurrentStateDescription());
@@ -862,44 +850,6 @@ std::u16string BrowserAccessibilityAndroid::GetCheckboxStateDescription()
   content::ContentClient* content_client = content::GetContentClient();
 
   return content_client->GetLocalizedString(IDS_AX_CHECKBOX_PARTIALLY_CHECKED);
-}
-
-std::u16string BrowserAccessibilityAndroid::GetListBoxStateDescription() const {
-  content::ContentClient* content_client = content::GetContentClient();
-
-  // For empty list boxes, we will return an empty string.
-  int item_count = GetItemCount();
-  if (!item_count)
-    return std::u16string();
-
-  // Otherwise, we will communicate "x items" as the state description.
-  return base::ReplaceStringPlaceholders(
-      content_client->GetLocalizedString(IDS_AX_LIST_BOX_STATE_DESCRIPTION),
-      base::NumberToString16(item_count), nullptr);
-}
-
-std::u16string BrowserAccessibilityAndroid::GetListBoxItemStateDescription()
-    const {
-  content::ContentClient* content_client = content::GetContentClient();
-
-  BrowserAccessibilityAndroid* parent =
-      static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
-
-  // If we cannot find the parent collection, escape with an empty string.
-  if (!parent)
-    return std::u16string();
-
-  // For list box items, we will communicate "in list, item x of y". We add
-  // one (1) to our index to offset from counting at 0.
-  int item_index = GetItemIndex() + 1;
-  int item_count = parent->GetItemCount();
-
-  return base::ReplaceStringPlaceholders(
-      content_client->GetLocalizedString(
-          IDS_AX_LIST_BOX_ITEM_STATE_DESCRIPTION),
-      std::vector<std::u16string>({base::NumberToString16(item_index),
-                                   base::NumberToString16(item_count)}),
-      nullptr);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
@@ -1592,9 +1542,19 @@ int BrowserAccessibilityAndroid::RowCount() const {
 }
 
 int BrowserAccessibilityAndroid::ColumnCount() const {
-  if (IsCollection())
-    return node()->GetTableColCount().value_or(0);
-  return 0;
+  if (!IsCollection())
+    return 0;
+
+  // For <ol> and <ul> elements on Android (e.g. role kList), the AX
+  // code will consider these 0 columns, but on Android they are 1.
+  int ax_cols = node()->GetTableColCount().value_or(0);
+  if (GetRole() == ax::mojom::Role::kList ||
+      GetRole() == ax::mojom::Role::kListBox) {
+    DCHECK_EQ(ax_cols, 0);
+    ax_cols = 1;
+  }
+
+  return ax_cols;
 }
 
 int BrowserAccessibilityAndroid::RowIndex() const {
@@ -1605,7 +1565,16 @@ int BrowserAccessibilityAndroid::RowIndex() const {
 }
 
 int BrowserAccessibilityAndroid::RowSpan() const {
-  return node()->GetTableCellRowSpan().value_or(0);
+  // For <ol> and <ul> elements on Android (e.g. role kListItem), the AX
+  // code will consider these 0 span, but on Android they are 1.
+  int ax_row_span = node()->GetTableCellRowSpan().value_or(0);
+  if (GetRole() == ax::mojom::Role::kListItem ||
+      GetRole() == ax::mojom::Role::kListBoxOption) {
+    DCHECK_EQ(ax_row_span, 0);
+    ax_row_span = 1;
+  }
+
+  return ax_row_span;
 }
 
 int BrowserAccessibilityAndroid::ColumnIndex() const {
@@ -1613,7 +1582,16 @@ int BrowserAccessibilityAndroid::ColumnIndex() const {
 }
 
 int BrowserAccessibilityAndroid::ColumnSpan() const {
-  return node()->GetTableCellColSpan().value_or(0);
+  // For <ol> and <ul> elements on Android (e.g. role kListItem), the AX
+  // code will consider these 0 span, but on Android they are 1.
+  int ax_col_span = node()->GetTableCellColSpan().value_or(0);
+  if (GetRole() == ax::mojom::Role::kListItem ||
+      GetRole() == ax::mojom::Role::kListBoxOption) {
+    DCHECK_EQ(ax_col_span, 0);
+    ax_col_span = 1;
+  }
+
+  return ax_col_span;
 }
 
 float BrowserAccessibilityAndroid::RangeMin() const {

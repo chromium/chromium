@@ -2,9 +2,9 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View
 ++android.view.View
 ++android.view.View
-++android.widget.ListView role_description='list box' clickable collection
-++android.widget.ListView role_description='list box' clickable collection
-++android.widget.ListView role_description='list box' clickable collection
+++android.widget.ListView role_description='list box' clickable collection column_count=1
+++android.widget.ListView role_description='list box' clickable collection column_count=1
+++android.widget.ListView role_description='list box' clickable collection column_count=1
 ++android.view.View role_description='menu'
 ++android.view.View role_description='menu'
 ++android.view.View role_description='menu'

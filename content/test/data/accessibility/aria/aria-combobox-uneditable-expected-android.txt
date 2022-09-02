@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused scrollable
 ++android.widget.TextView name='Choose a fruit, with text content'
 ++android.widget.Spinner clickable collapsed focusable name='Apple' hint='Choose a fruit, with text content'
-++android.widget.ListView role_description='list box' clickable collection state_description='3 items' item_count=3 row_count=3
-++++android.view.View clickable collection_item focusable selected name='Apple' state_description='in list, item 1 of 3'
-++++android.view.View clickable collection_item focusable name='Banana' state_description='in list, item 2 of 3' item_index=1 row_index=1
-++++android.view.View clickable collection_item focusable name='Cherry' state_description='in list, item 3 of 3' item_index=2 row_index=2
+++android.widget.ListView role_description='list box' clickable collection item_count=3 row_count=3 column_count=1
+++++android.view.View clickable collection_item focusable selected name='Apple' row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='Banana' item_index=1 row_index=1 row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='Cherry' item_index=2 row_index=2 row_span=1 column_span=1
