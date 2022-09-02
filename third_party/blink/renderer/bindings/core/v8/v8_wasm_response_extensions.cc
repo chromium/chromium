@@ -13,6 +13,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -281,8 +282,8 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     {
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
       v8::Local<v8::Value> v8_exception =
-          ToV8(exception, script_state_->GetContext()->Global(),
-               script_state_->GetIsolate());
+          ToV8Traits<DOMException>::ToV8(script_state_, exception)
+              .ToLocalChecked();
       streaming_->Abort(v8_exception);
     }
   }
