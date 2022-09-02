@@ -5019,6 +5019,42 @@
             ]
         }
     ],
+    "HeapProfilingSubprocess": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledInBrowserAndGPU",
+                    "params": {
+                        "nonstable-probability": "1",
+                        "stable-probability": "1",
+                        "supported-processes": "browser;gpu"
+                    },
+                    "enable_features": [
+                        "HeapProfilerReporting"
+                    ]
+                },
+                {
+                    "name": "EnabledInGPU",
+                    "params": {
+                        "nonstable-probability": "1",
+                        "sampling-rate": "1000000",
+                        "stable-probability": "1",
+                        "supported-processes": "gpu"
+                    },
+                    "enable_features": [
+                        "HeapProfilerReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "HelpAppLauncherSearch": [
         {
             "platforms": [
