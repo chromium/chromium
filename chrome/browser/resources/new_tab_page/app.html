@@ -290,7 +290,9 @@
   <template is="dom-if" if="[[lazyRender_]]">
     <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
       <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
-          hidden$="[[!oneGoogleBarLoaded_]]">
+          hidden$="[[!oneGoogleBarLoaded_]]"
+          allow="camera [[oneGoogleBarIframeOrigin_]];
+                display-capture [[oneGoogleBarIframeOrigin_]]">
       </ntp-iframe>
     </template>
   </template>

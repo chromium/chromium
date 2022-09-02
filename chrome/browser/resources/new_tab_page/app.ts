@@ -60,6 +60,7 @@ export enum NtpElement {
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
+const OGB_IFRAME_ORIGIN = 'chrome-untrusted://new-tab-page';
 
 function recordClick(element: NtpElement) {
   chrome.metricsPrivate.recordEnumerationValue(
@@ -93,6 +94,11 @@ export class AppElement extends PolymerElement {
 
   static get properties() {
     return {
+      oneGoogleBarIframeOrigin_: {
+        type: String,
+        value: OGB_IFRAME_ORIGIN,
+      },
+
       oneGoogleBarIframePath_: {
         type: String,
         value: () => {
@@ -100,7 +106,7 @@ export class AppElement extends PolymerElement {
           params.set(
               'paramsencoded',
               btoa(window.location.search.replace(/^[?]/, '&')));
-          return `chrome-untrusted://new-tab-page/one-google-bar?${params}`;
+          return `${OGB_IFRAME_ORIGIN}/one-google-bar?${params}`;
         },
       },
 
