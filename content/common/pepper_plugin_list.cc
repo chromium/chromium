@@ -7,9 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +27,29 @@ namespace {
 
 // The maximum number of plugins allowed to be registered from command line.
 const size_t kMaxPluginsToRegisterFromCommandLine = 64;
+
+// Returns true if the plugin can be registered from the command line.
+bool IsAllowedFromCommandLine(const ContentPluginInfo& plugin) {
+  // TODO(crbug.com/1134683): Empty the allowlist.
+  static constexpr auto kMimeTypeAllowlist =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "application/x-blink-deprecated-test-plugin",
+          "application/x-blink-test-plugin",
+          "application/x-ppapi-tests",
+      });
+
+  bool allowed = true;
+
+  DCHECK_GE(plugin.mime_types.size(), 1u);
+  for (const auto& mime_type : plugin.mime_types) {
+    if (!kMimeTypeAllowlist.contains(mime_type.mime_type)) {
+      allowed = false;
+      DVLOG(1) << "MIME type not allowed: " << mime_type.mime_type;
+    }
+  }
+
+  return allowed;
+}
 
 // Appends any plugins from the command line to the given vector.
 void ComputePluginsFromCommandLine(std::vector<ContentPluginInfo>* plugins) {
@@ -121,7 +147,8 @@ void ComputePluginsFromCommandLine(std::vector<ContentPluginInfo>* plugins) {
     // Command-line plugins get full permissions.
     plugin.permissions = ppapi::PERMISSION_ALL_BITS;
 
-    plugins->push_back(plugin);
+    if (IsAllowedFromCommandLine(plugin))
+      plugins->push_back(plugin);
   }
 }
 
