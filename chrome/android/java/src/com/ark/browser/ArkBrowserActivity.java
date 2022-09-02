@@ -34,10 +34,11 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
-import org.chromium.chrome.browser.content.ContentUtils;
+import com.ark.browser.core.utils.ContentUtils;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import com.ark.browser.core.utils.NavigationPredictorBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -53,6 +54,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
+
 public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     private static final String TAG = "BrowserActivity";
@@ -60,7 +63,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     private ArkCompositorViewHolder mViewHolder;
     private ProgressBar mProgressBar;
     private EditText mUrlBar;
-    private ViewGroup mContentContainer;
 
     @Override
     public boolean shouldStartGpuProcess() {
@@ -69,6 +71,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     @Override
     public void onPauseWithNative() {
+        NavigationPredictorBridge.onPause();
         super.onPauseWithNative();
     }
 
@@ -94,6 +97,12 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 MultiWindowUtils.getInstance().isInMultiWindowMode(this));
 
         ChromeSessionState.setDarkModeState(false, false);
+
+        if (isWarmOnResume()) {
+            NavigationPredictorBridge.onActivityWarmResumed();
+        } else {
+            NavigationPredictorBridge.onColdStart();
+        }
     }
 
     @Override
@@ -188,7 +197,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
 
         mViewHolder = findViewById(R.id.compositor_view_holder);
-        mContentContainer = (ViewGroup) findViewById(android.R.id.content);
         mProgressBar = findViewById(R.id.progress_bar);
         mProgressBar.setMax(100);
 
@@ -479,12 +487,13 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         } else {
             host = tab.getUrl().getHost();
             title = "选择浏览器标识:" + host;
-            index = UserAgentManager.getUserAgentIndexByUrl(host);
+            index = UserAgentManager.getUserAgentIndexByUrl(host) + 1;
             String[] names = UserAgentManager.getUserAgentNames();
-            names[0] = "默认UA";
             items = new String[names.length + 1];
+            items[0] = "默认UA";
             System.arraycopy(names, 0, items, 1, names.length);
         }
+        ArkLogger.e(ArkBrowserActivity.class, "showUserAgentSelector index=" + index + " items=" + Arrays.toString(items));
         AlertDialog selector = new AlertDialog.Builder(ArkBrowserActivity.this)
                 .setTitle(title)
                 .setSingleChoiceItems(items, index, (dialog, which) -> {

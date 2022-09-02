@@ -9,16 +9,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelperJni;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**

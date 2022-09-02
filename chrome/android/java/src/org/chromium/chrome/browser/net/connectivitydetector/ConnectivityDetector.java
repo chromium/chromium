@@ -22,7 +22,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.content.ContentUtils;
+import com.ark.browser.core.utils.ContentUtils;
 import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;

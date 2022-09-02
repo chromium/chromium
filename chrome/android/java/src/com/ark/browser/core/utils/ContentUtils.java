@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.content;
+package com.ark.browser.core.utils;
 
 import com.ark.browser.core.UserAgentManager;
 

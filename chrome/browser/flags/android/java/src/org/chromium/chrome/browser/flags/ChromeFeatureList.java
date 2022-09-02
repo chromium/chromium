@@ -502,7 +502,6 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_SYNC_IMMEDIATELY_IN_FRE = "EnableSyncImmediatelyInFRE";
     public static final String SYNC_TRUSTED_VAULT_PASSPHRASE_RECOVERY =
             "SyncTrustedVaultPassphraseRecovery";
-    public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_GROUPS_ANDROID = "TabGroupsAndroid";
     public static final String TAB_GROUPS_UI_IMPROVEMENTS_ANDROID =
             "TabGroupsUiImprovementsAndroid";

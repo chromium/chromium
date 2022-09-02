@@ -19,7 +19,6 @@ import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -31,6 +30,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleRegistry;
+
+import com.ark.browser.core.utils.NavigationPredictorBridge;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
@@ -67,7 +68,6 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -86,13 +86,11 @@ import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -114,17 +112,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
-import org.chromium.chrome.browser.tasks.EngagementTimeUtil;
-import org.chromium.chrome.browser.tasks.JourneyManager;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -191,8 +184,6 @@ public class ChromeTabbedActivity extends ChromeActivity
     private static final String TAB_COUNT_ON_RETURN = "Tabs.TabCountOnStartScreenShown";
 
     private @Nullable MultiInstanceManager mMultiInstanceManager;
-
-    private UndoBarController mUndoBarPopupController;
 
     private LayoutManagerChrome mLayoutManager;
 
@@ -513,32 +504,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         return mLayoutManager != null;
     }
 
-    private void initializeToolbarManager() {
-        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initializeToolbarManager")) {
-            mUndoBarPopupController.initialize();
-
-            OnClickListener tabSwitcherClickHandler = v -> {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
-                    Profile profile = mTabModelProfileSupplier.get();
-                    if (profile != null) {
-                        TrackerFactory.getTrackerForProfile(profile).notifyEvent(
-                                EventConstants.TAB_SWITCHER_BUTTON_CLICKED);
-                    }
-                }
-
-                if (getFullscreenManager().getPersistentFullscreenMode()) {
-                    return;
-                }
-
-                if (isInOverviewMode()) {
-                    hideOverview();
-                } else {
-                    showOverview();
-                }
-            };
-        }
-    }
-
     private void maybeCreateIncognitoTabSnapshotController() {
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.maybeCreateIncognitoTabSnapshotController")) {
@@ -563,18 +528,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         }
     }
 
-    private void initJourneyManager() {
-        assert mLayoutManager != null;
-
-        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initJourneyManager")) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_ENGAGEMENT_REPORTING_ANDROID)) {
-                // The lifecycle of this object is managed by the lifecycle dispatcher.
-                new JourneyManager(getTabModelSelector(), getLifecycleDispatcher(), mLayoutManager,
-                        new EngagementTimeUtil());
-            }
-        }
-    }
-
     @Override
     public void onNewIntent(Intent intent) {
 
@@ -593,16 +546,11 @@ public class ChromeTabbedActivity extends ChromeActivity
 
             // All this initialization can be expensive so it's split into multiple tasks.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    mCallbackController.makeCancelable(this::initializeToolbarManager));
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                     mCallbackController.makeCancelable(
                             this::maybeCreateIncognitoTabSnapshotController));
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                     mCallbackController.makeCancelable(
                             this::onAccessibilityTabSwitcherModeChanged));
-
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    mCallbackController.makeCancelable(this::initJourneyManager));
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                     mCallbackController.makeCancelable(this::finishNativeInitialization));
             ChromeAccessibilityUtil.get().addObserver(this);
@@ -676,11 +624,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         // showing a glimpse of the tab selector during start up.
         if (!mPendingInitialTabCreation) {
             setInitialOverviewState();
-        }
-
-        if (ConditionalTabStripUtils.getOptOutIndicator()) {
-            ConditionalTabStripUtils.updateFeatureExpiration(
-                    mInactivityTracker.getLastBackgroundedTimeMs());
         }
 
         resetSavedInstanceState();
@@ -1145,9 +1088,6 @@ public class ChromeTabbedActivity extends ChromeActivity
             return false;
         };
 
-        mUndoBarPopupController = new UndoBarController(this, mTabModelSelector,
-                this::getSnackbarManager, mLayoutStateProviderSupplier, dialogVisibilitySupplier);
-
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
         TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
@@ -1607,11 +1547,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         if (mHistoricalTabModelObserver != null) mHistoricalTabModelObserver.destroy();
 
         if (mTabModelObserver != null) mTabModelObserver.destroy();
-
-        if (mUndoBarPopupController != null) {
-            mUndoBarPopupController.destroy();
-            mUndoBarPopupController = null;
-        }
 
         if (mAppIndexingUtil != null) {
             mAppIndexingUtil.destroy();

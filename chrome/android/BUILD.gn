@@ -2322,6 +2322,11 @@ if (android_64bit_target_cpu) {
 
 generate_jni("chrome_jni_headers") {
   sources = [
+    "java/src/com/ark/browser/core/utils/ContentUtils.java",
+    "java/src/com/ark/browser/core/utils/NavigationPredictorBridge.java",
+    "java/src/com/ark/browser/core/utils/PolicyAuditor.java",
+    "java/src/com/ark/browser/core/utils/TabPrinter.java",
+
     # Files under a feature's public/ dir are included in chrome_java's source
     # files, so include these files in chrome_jni_headers.
     "java/src/org/chromium/chrome/browser/AppHooks.java",
@@ -2363,7 +2368,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",
     "java/src/org/chromium/chrome/browser/compositor/scene_layer/StaticTabSceneLayer.java",
     "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabListSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/content/ContentUtils.java",
     "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHelper.java",
     "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContext.java",
     "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManager.java",
@@ -2415,7 +2419,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
     "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
     "java/src/org/chromium/chrome/browser/mojo/ChromeInterfaceRegistrar.java",
-    "java/src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridge.java",
     "java/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProvider.java",
     "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
@@ -2430,7 +2433,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/offlinepages/downloads/OfflinePageDownloadBridge.java",
     "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskScheduler.java",
-    "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",
     "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",
@@ -2445,8 +2447,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/permissions/NotificationBlockedDialog.java",
     "java/src/org/chromium/chrome/browser/permissions/PermissionSettingsBridge.java",
     "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
-    "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
-    "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
     "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
     "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
     "java/src/org/chromium/chrome/browser/resources/ResourceMapper.java",

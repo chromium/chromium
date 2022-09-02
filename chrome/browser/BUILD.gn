@@ -2958,7 +2958,6 @@ static_library("browser") {
       "optimization_guide/android/optimization_guide_bridge.h",
       "optimization_guide/android/optimization_guide_tab_url_provider_android.cc",
       "optimization_guide/android/optimization_guide_tab_url_provider_android.h",
-      "page_info/about_this_site_controller_android.cc",
       "password_check/android/password_check_bridge.cc",
       "password_check/android/password_check_bridge.h",
       "password_check/android/password_check_manager.cc",

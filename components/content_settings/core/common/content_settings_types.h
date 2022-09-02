@@ -282,8 +282,6 @@ enum class ContentSettingsType : int32_t {
   FEDERATED_IDENTITY_API,
 
   NUM_TYPES,
-
-  USER_AGENT,
 };
 
 struct ContentSettingsTypeHash {

@@ -1,4 +1,0 @@
-monorail {
-  component: "UI>Browser>Mobile>TabSwitcher>Grid"
-}
-team_email: "memex-team@google.com"

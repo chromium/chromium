@@ -13,7 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
-import org.chromium.chrome.browser.content.ContentUtils;
+import com.ark.browser.core.utils.ContentUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.view.ContentView;

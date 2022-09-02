@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
-import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 
 import java.util.ArrayList;
@@ -109,9 +108,6 @@ public class ChromeCachedFlags {
                 new ArrayList<CachedFieldTrialParameter>() {
                     {
                         add(ChimeFeatures.ALWAYS_REGISTER);
-                        add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT);
-                        add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD);
-                        add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS);
                         add(OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);

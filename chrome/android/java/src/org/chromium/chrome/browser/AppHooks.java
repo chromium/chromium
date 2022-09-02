@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
-import org.chromium.chrome.browser.policy.PolicyAuditor;
+import com.ark.browser.core.utils.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;

@@ -4117,17 +4117,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: UserStatus.NON_USER, UserStatus.TAB_STRIP_NOT_SHOWN, UserStatus.TAB_STRIP_SHOWN, UserStatus.TAB_STRIP_SHOWN_AND_DISMISSED, UserStatus.TAB_STRIP_PERMANENTLY_HIDDEN"
-        errorLine1="                UMA_USER_STATUS_RESULT, userStatus, UserStatus.NUM_ENTRIES);"
-        errorLine2="                                                               ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ConditionalTabStripUtils.java"
-            line="166"
-            column="64"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ProbeResult.NO_INTERNET, ProbeResult.SERVER_ERROR, ProbeResult.NOT_VALIDATED, ProbeResult.VALIDATED_WITH_NO_CONTENT, ProbeResult.VALIDATED_WITH_OK_BUT_ZERO_CONTENT_LENGTH, ProbeResult.VALIDATED_WITH_OK_BUT_NO_CONTENT_LENGTH"
         errorLine1="                                    result, ProbeResult.RESULT_COUNT);"
         errorLine2="                                                        ~~~~~~~~~~~~">

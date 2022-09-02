@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.PictureInPicture;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
-import org.chromium.chrome.browser.policy.PolicyAuditor;
+import com.ark.browser.core.utils.PolicyAuditor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;

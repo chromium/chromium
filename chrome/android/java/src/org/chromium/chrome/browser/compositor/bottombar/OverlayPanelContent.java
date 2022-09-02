@@ -18,7 +18,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.WebContentsFactory;
-import org.chromium.chrome.browser.content.ContentUtils;
+import com.ark.browser.core.utils.ContentUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;

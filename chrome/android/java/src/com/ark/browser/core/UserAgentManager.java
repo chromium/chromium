@@ -4,10 +4,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.PrefsHelper;
 
-import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -115,6 +115,7 @@ public class UserAgentManager {
     }
 
     public static int getUserAgentIndexByUrl(String host) {
+        long start = System.currentTimeMillis();
         Integer index = HOST_UA_MAPPING.get(host);
         if (index == null) {
             if ("default".equals(host)) {
@@ -128,6 +129,8 @@ public class UserAgentManager {
             }
             HOST_UA_MAPPING.put(host, index);
         }
+        ArkLogger.d(UserAgentManager.class, "getUserAgentIndexByUrl deltaTime="
+                + (System.currentTimeMillis() - start) + " host=" + host + " index=" + index);
         return index;
     }
 
