@@ -486,7 +486,6 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   EXPECT_TRUE(uma_log.has_system_profile());
   EXPECT_EQ(0, uma_log.user_action_event_size());
   EXPECT_EQ(0, uma_log.omnibox_event_size());
-  EXPECT_EQ(0, uma_log.perf_data_size());
   CheckForNonStabilityHistograms(uma_log);
 
   // As there wasn't an unclean shutdown, no browser crash samples should have
@@ -623,7 +622,6 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   EXPECT_TRUE(uma_log.has_system_profile());
   EXPECT_EQ(0, uma_log.user_action_event_size());
   EXPECT_EQ(0, uma_log.omnibox_event_size());
-  EXPECT_EQ(0, uma_log.perf_data_size());
   CheckForNonStabilityHistograms(uma_log);
 
   EXPECT_EQ(kCrashedVersion, uma_log.system_profile().app_version());

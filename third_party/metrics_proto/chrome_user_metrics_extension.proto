@@ -12,12 +12,10 @@ option java_outer_classname = "ChromeUserMetricsExtensionProtos";
 package metrics;
 
 import "cast_logs.proto";
-import "cast_assistant_logs.proto";
 import "chrome_os_app_list_launch_event.proto";
 import "custom_tab_session.proto";
 import "histogram_event.proto";
 import "omnibox_event.proto";
-import "perf_data.proto";
 import "printer_event.proto";
 import "reporting_info.proto";
 import "sampled_profile.proto";
@@ -151,23 +149,13 @@ message ChromeUserMetricsExtension {
   repeated PrinterEventProto printer_event = 16;
   repeated ChromeOSAppListLaunchEventProto chrome_os_app_list_launch_event = 20;
 
-  repeated StructuredEventProto deprecated_structured_event = 22
-      [deprecated = true];
-
   optional StructuredDataProto structured_data = 23;
-
-  // Deprecated: use |sampled_profile| instead.
-  repeated PerfDataProto perf_data = 8 [deprecated = true];
 
   // A list of all collected sample-based profiles since the last UMA upload.
   repeated SampledProfile sampled_profile = 11;
 
   // Additional data related with Cast-enabled devices.
   optional CastLogsProto cast_logs = 12;
-
-  // Additional data related with CastAssistant devices.
-  // Appears in gfstmp/cast_assistant logs only.
-  optional CastAssistantLogsProto cast_assistant_logs = 14;
 
   // The ReportingInfo message sent in the X-Chrome-UMA-ReportingInfo header.
   // Copied in by the receiving server.
