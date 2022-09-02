@@ -25,7 +25,8 @@ import UIKit
 ///      layoutGuide.constrainedFrame = CGRect(x: 10, y: 20, width: 30, height: 40)
 ///
 ///  The layout guide can then be used as an anchor to place elements related to its position.
-class FrameLayoutGuide: UILayoutGuide {
+@objc
+public class FrameLayoutGuide: UILayoutGuide {
   /// MARK: Public
 
   /// Called when the layout guide's owning view moved to a new window (or was removed from its
@@ -33,10 +34,10 @@ class FrameLayoutGuide: UILayoutGuide {
   ///
   /// The layout guide is passed as argument to the closure. Use it to avoid retaining the layout
   /// guide in the closure, otherwise the layout guide will leak and never get deinitialized.
-  @objc var onDidMoveToWindow: ((UILayoutGuide) -> Void)?
+  @objc public var onDidMoveToWindow: ((UILayoutGuide) -> Void)?
 
   /// The frame to force on this layout guide.
-  @objc var constrainedFrame: CGRect {
+  @objc public var constrainedFrame: CGRect {
     get {
       constrainedFrameView.frame
     }
@@ -49,7 +50,7 @@ class FrameLayoutGuide: UILayoutGuide {
 
   /// When `owningView` changes, remove `constrainedFrameView` from the old to the new view, then
   /// reset the constraints anchoring the layout guide on `constrainedFrameView`.
-  override var owningView: UIView? {
+  override open var owningView: UIView? {
     willSet {
       constrainedFrameView.removeFromSuperview()
     }
@@ -74,7 +75,8 @@ class FrameLayoutGuide: UILayoutGuide {
   /// guide will anchor itself on that view.
   private let constrainedFrameView: UIView
 
-  override init() {
+  @objc
+  public override init() {
     constrainedFrameView = UIView()
     constrainedFrameView.backgroundColor = .clear
     constrainedFrameView.isUserInteractionEnabled = false

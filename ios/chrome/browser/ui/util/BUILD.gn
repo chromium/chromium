@@ -78,25 +78,11 @@ source_set("util") {
 }
 
 swift_source_set("util_swift") {
-  bridge_header = "util_swift_bridge.h"
   sources = [
     "UIView+WindowCoordinates.swift",
     "UIView+WindowObserving.swift",
     "frame_layout_guide.swift",
     "layout_guide_center.swift",
-  ]
-  deps = [ ":crbug_1316061" ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-# TODO(crbug.com/1316061): This target is just a pretext to force swiftc to
-# import the `util_swift_bridge.h` bridging header, and transitively,
-# UIKit/UIKit.h.
-source_set("crbug_1316061") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "crbug_1316061_view.h",
-    "crbug_1316061_view.mm",
   ]
   frameworks = [ "UIKit.framework" ]
 }

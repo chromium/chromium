@@ -25,6 +25,7 @@ import UIKit
 ///  Even though `myView`'s frame itself was not modified in `parentView`, the closure is called, as
 ///  actually, `myView` moved transitively in its window.
 ///
+@objc
 extension UIView {
   /// MARK: Public
 
@@ -32,7 +33,7 @@ extension UIView {
   ///
   /// The view is passed as argument to the closure. Use it to avoid retaining the view in the
   /// closure, otherwise the view will leak and never get deinitialized.
-  @objc var cr_onWindowCoordinatesChanged: ((UIView) -> Void)? {
+  @objc public var cr_onWindowCoordinatesChanged: ((UIView) -> Void)? {
     get {
       objc_getAssociatedObject(self, &UIView.OnWindowCoordinatesChangedKey) as? (UIView) -> Void
     }
