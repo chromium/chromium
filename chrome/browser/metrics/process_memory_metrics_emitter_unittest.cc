@@ -334,7 +334,7 @@ void PopulateRendererMetrics(GlobalMemoryDumpPtr& global_dump,
                        metrics_mb_or_count["SharedMemoryFootprint"] * 1024,
                        metrics_mb_or_count["PrivateSwapFootprint"] * 1024
 #else
-      metrics_mb_or_count["SharedMemoryFootprint"] * 1024
+                       metrics_mb_or_count["SharedMemoryFootprint"] * 1024
 #endif
       );
   pmd->os_dump = std::move(os_dump);
@@ -920,6 +920,13 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   MetricMap expected_metrics = GetExpectedRendererMetrics();
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid201);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
+
+  constexpr uint64_t kMiB = 1024 * 1024;
+  SetAllocatorDumpMetric(global_dump->process_dumps[0], "cc/tile_memory",
+                         "size", 12 * kMiB);
+  SetAllocatorDumpMetric(global_dump->process_dumps[1], "cc/tile_memory",
+                         "size", 22 * kMiB);
+
   global_dump->aggregated_metrics->native_library_resident_kb =
       kNativeLibraryResidentMemoryFootprint;
   global_dump->aggregated_metrics->native_library_not_resident_ordered_kb =
@@ -977,6 +984,9 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectUniqueSample("Memory.Total.ResidentSet",
                                 2 * kTestRendererResidentSet, 1);
 #endif
+
+  histograms.ExpectUniqueSample("Memory.Total.TileMemory", 12 + 22, 1);
+
   histograms.ExpectUniqueSample(
       "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
       kNativeLibraryResidentMemoryFootprint, 1);

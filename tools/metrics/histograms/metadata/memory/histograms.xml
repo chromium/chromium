@@ -2756,6 +2756,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Total.TileMemory" units="MB" expires_after="2023-02-12">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    Total (GPU) memory used for tiles, across all consumers.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Utility.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: useful diagnostic metric for changes in

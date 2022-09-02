@@ -178,6 +178,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"canvas/ResourceProvider/SkSurface", "CanvasResourceProvider.SkSurface",
      MetricSize::kSmall, kSize, EmitTo::kCountsInUkmOnly,
      &Memory_Experimental::SetCanvasResourceProvider_SkSurface},
+    {"cc/tile_memory", "TileMemory", MetricSize::kSmall, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
     {"components/download", "DownloadService", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetDownloadService},
@@ -1128,6 +1130,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
   uint32_t renderer_malloc_total_kb = 0;
   uint32_t shared_footprint_total_kb = 0;
   uint32_t resident_set_total_kb = 0;
+  uint64_t tiles_total_memory = 0;
   bool emit_metrics_for_all_processes = pid_scope_ == base::kNullProcessId;
 
   TabFootprintAggregator per_tab_metrics;
@@ -1220,6 +1223,18 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       case memory_instrumentation::mojom::ProcessType::OTHER:
         break;
     }
+
+    if (emit_metrics_for_all_processes) {
+      // cc/ has clients in all process types. Careful though about
+      // double-counting: in the GPU process a lot of the memory is allocated on
+      // behalf of other process types, so the size vs effective_size
+      // distinction matters there.
+      //
+      // Not using effective size as tiles are not shared across processes, but
+      // they are shared with the GPU process (under a different name), and we
+      // don't want to count these partially if priority is not set right.
+      tiles_total_memory += pmd.GetMetric("cc/tile_memory", kSize).value_or(0);
+    }
   }
 
   if (emit_metrics_for_all_processes) {
@@ -1272,6 +1287,9 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
                                   renderer_malloc_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.SharedMemoryFootprint",
                                   shared_footprint_total_kb / kKiB);
+
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB("Memory.Total.TileMemory",
+                                   tiles_total_memory / kMiB);
 
     Memory_Experimental(ukm::UkmRecorder::GetNewSourceID())
         .SetTotal2_PrivateMemoryFootprint(private_footprint_total_kb / kKiB)

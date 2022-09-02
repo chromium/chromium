@@ -8086,6 +8086,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Sqlite" label="Only counting memory used by Sqlite databases."/>
   <suffix name="TabRestore"
       label="Only counting memory used by tab restore page states."/>
+  <suffix name="TileMemory" label="GPU memory used for tiles."/>
   <suffix name="UI" label="Only counting memory used by Android UI bitmaps."/>
   <suffix name="WebCache"
       label="Only counting memory used by all resources in Blink Web Cache."/>
