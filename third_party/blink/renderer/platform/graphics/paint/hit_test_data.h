@@ -13,6 +13,9 @@
 namespace blink {
 
 struct PLATFORM_EXPORT HitTestData {
+  USING_FAST_MALLOC(HitTestData);
+
+ public:
   Vector<TouchActionRect> touch_action_rects;
   Vector<gfx::Rect> wheel_event_rects;
 

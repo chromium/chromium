@@ -22,6 +22,8 @@ struct PLATFORM_EXPORT PaintedSelectionBound {
   // Whether this bound is hidden (clipped out/occluded) within the painted
   // content of the layer (as opposed to being outside of the layer's bounds).
   bool hidden;
+
+  DISALLOW_NEW();
 };
 
 }  // namespace blink

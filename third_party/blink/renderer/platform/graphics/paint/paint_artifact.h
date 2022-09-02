@@ -77,6 +77,7 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   struct ClientDebugInfo {
     String name;
     DOMNodeId owner_node_id;
+    DISALLOW_NEW();
   };
 
   using DebugInfo = HashMap<DisplayItemClientId, ClientDebugInfo>;

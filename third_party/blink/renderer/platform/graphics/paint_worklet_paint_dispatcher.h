@@ -31,6 +31,8 @@ namespace blink {
 // single renderer process share one PaintWorkletPaintDispatcher on the
 // compositor side.
 class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
+  USING_FAST_MALLOC(PaintWorkletPaintDispatcher);
+
  public:
   static std::unique_ptr<PlatformPaintWorkletLayerPainter>
   CreateCompositorThreadPainter(

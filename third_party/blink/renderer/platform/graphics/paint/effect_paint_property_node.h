@@ -80,6 +80,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     bool is_running_opacity_animation_on_compositor = false;
     bool is_running_filter_animation_on_compositor = false;
     bool is_running_backdrop_filter_animation_on_compositor = false;
+    STACK_ALLOCATED();
   };
 
   struct BackdropFilterInfo {
@@ -88,11 +89,16 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     // The compositor element id for any masks that are applied to elements that
     // also have backdrop-filters applied.
     CompositorElementId mask_element_id;
+
+    USING_FAST_MALLOC(BackdropFilterInfo);
   };
 
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
+    DISALLOW_NEW();
+
+   public:
     // The local transform space serves two purposes:
     // 1. Assign a depth mapping for 3D depth sorting against other paint chunks
     //    and effects under the same parent.

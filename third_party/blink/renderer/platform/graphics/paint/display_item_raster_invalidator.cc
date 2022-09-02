@@ -15,6 +15,7 @@ void DisplayItemRasterInvalidator::Generate() {
     // Union of visual rects of all new display items of the client.
     gfx::Rect new_visual_rect;
     PaintInvalidationReason reason = PaintInvalidationReason::kNone;
+    DISALLOW_NEW();
   };
   HashMap<DisplayItemClientId, OldAndNewDisplayItems> clients_to_invalidate;
 

@@ -81,6 +81,9 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
+    DISALLOW_NEW();
+
+   public:
     State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
               local_transform_space,
           const gfx::RectF& layout_clip_rect,
@@ -136,7 +139,9 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
 
   // The empty AnimationState struct is to meet the requirement of
   // ObjectPaintProperties.
-  struct AnimationState {};
+  struct AnimationState {
+    STACK_ALLOCATED();
+  };
   PaintPropertyChangeType Update(const ClipPaintPropertyNodeOrAlias& parent,
                                  State&& state,
                                  const AnimationState& = AnimationState()) {

@@ -204,6 +204,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     TransformationMatrix from_plane_root;
     const TransformPaintPropertyNode* plane_root = nullptr;
     bool has_animation = false;
+    USING_FAST_MALLOC(PlaneRootTransform);
   };
   std::unique_ptr<PlaneRootTransform> plane_root_transform_;
 
@@ -212,6 +213,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     TransformationMatrix projection_from_screen;
     bool projection_from_screen_is_valid = false;
     bool has_animation = false;
+    USING_FAST_MALLOC(ScreenTransform);
   };
   std::unique_ptr<ScreenTransform> screen_transform_;
 

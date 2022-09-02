@@ -83,6 +83,8 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
     CompositorElementId element_id_;
     // This is lazily created for non-composited scrollbar.
     mutable sk_sp<const PaintRecord> record_;
+
+    USING_FAST_MALLOC(Data);
   };
   // This is to make ScrollbarDisplayItem not bigger than other DisplayItems,
   // so that we can store different types of DisplayItems in DisplayItemList

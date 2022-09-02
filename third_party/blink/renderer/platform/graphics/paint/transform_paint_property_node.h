@@ -151,6 +151,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
           : matrix(m), origin(o) {}
       TransformationMatrix matrix;
       gfx::Point3F origin;
+      USING_FAST_MALLOC(MatrixAndOrigin);
     };
     gfx::Vector2dF translation_2d_;
     std::unique_ptr<MatrixAndOrigin> matrix_and_origin_;
@@ -159,12 +160,16 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   struct AnimationState {
     AnimationState() {}
     bool is_running_animation_on_compositor = false;
+    STACK_ALLOCATED();
   };
 
   // For the purpose of computing the translation offset caused by CSS
   // `anchor-scroll`, this structure stores the range of the scroll containers
   // (both ends inclusive) whose scroll offsets are accumulated.
   struct AnchorScrollContainersData {
+    USING_FAST_MALLOC(AnchorScrollContainersData);
+
+   public:
     scoped_refptr<const TransformPaintPropertyNode> inner_most_scroll_container;
     scoped_refptr<const TransformPaintPropertyNode> outer_most_scroll_container;
     gfx::Vector2d accumulated_scroll_origin;
@@ -188,12 +193,19 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
+    DISALLOW_NEW();
+
+   public:
     TransformAndOrigin transform_and_origin;
     scoped_refptr<const ScrollPaintPropertyNode> scroll;
     scoped_refptr<const TransformPaintPropertyNode>
         scroll_translation_for_fixed;
+
     // Use bitfield packing instead of separate bools to save space.
     struct Flags {
+      DISALLOW_NEW();
+
+     public:
       bool flattens_inherited_transform : 1;
       bool in_subtree_of_page_scale : 1;
       bool animation_is_axis_aligned : 1;
@@ -202,6 +214,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
       bool is_frame_paint_offset_translation : 1;
       bool is_for_svg_child : 1;
     } flags = {false, true, false, false, false, false};
+
     BackfaceVisibility backface_visibility = BackfaceVisibility::kInherited;
     unsigned rendering_context_id = 0;
     CompositingReasons direct_compositing_reasons = CompositingReason::kNone;

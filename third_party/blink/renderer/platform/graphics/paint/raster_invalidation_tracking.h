@@ -61,8 +61,9 @@ struct RasterUnderInvalidation {
 };
 
 class PLATFORM_EXPORT RasterInvalidationTracking {
- public:
+  USING_FAST_MALLOC(RasterInvalidationTracking);
 
+ public:
   // When RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() and
   // SimulateRasterUnderInvalidation(true) is called, all changed pixels will
   // be reported as raster under-invalidations. Used to visually test raster

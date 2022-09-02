@@ -28,6 +28,9 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
   GeometryMapperClipCache& operator=(const GeometryMapperClipCache&) = delete;
 
   struct ClipAndTransform {
+    DISALLOW_NEW();
+
+   public:
     const ClipPaintPropertyNode* ancestor_clip;
     const TransformPaintPropertyNode* ancestor_transform;
     OverlayScrollbarClipBehavior clip_behavior;
@@ -54,6 +57,9 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
   }
 
   struct ClipCacheEntry {
+    DISALLOW_NEW();
+
+   public:
     const ClipAndTransform clip_and_transform;
     // The clip visual rect of the associated clip node in the space of
     // |clip_and_transform|.

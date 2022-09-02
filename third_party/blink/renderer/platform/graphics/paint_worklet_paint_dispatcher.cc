@@ -21,21 +21,6 @@
 
 namespace blink {
 
-namespace {
-class AutoSignal {
- public:
-  explicit AutoSignal(base::WaitableEvent* event) : event_(event) {
-    DCHECK(event);
-  }
-  AutoSignal(const AutoSignal&) = delete;
-  AutoSignal& operator=(const AutoSignal&) = delete;
-  ~AutoSignal() { event_->Signal(); }
-
- private:
-  base::WaitableEvent* event_;
-};
-}  // namespace
-
 // static
 std::unique_ptr<PlatformPaintWorkletLayerPainter>
 PaintWorkletPaintDispatcher::CreateCompositorThreadPainter(

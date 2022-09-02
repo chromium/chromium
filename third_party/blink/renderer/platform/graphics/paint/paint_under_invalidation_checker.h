@@ -20,6 +20,8 @@ struct PaintChunk;
 // it lets the client paint instead of using the cache, and this class checks
 // whether the painting is the same as the cache.
 class PaintUnderInvalidationChecker {
+  USING_FAST_MALLOC(PaintUnderInvalidationChecker);
+
  public:
   explicit PaintUnderInvalidationChecker(PaintController& paint_controller);
   ~PaintUnderInvalidationChecker();

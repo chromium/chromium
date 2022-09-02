@@ -188,6 +188,9 @@ class PLATFORM_EXPORT DisplayItem {
     const wtf_size_t fragment;
 
     struct HashKey {
+      DISALLOW_NEW();
+
+     public:
       HashKey() = default;
       explicit HashKey(const DisplayItem::Id& id)
           : client_id(id.client_id), type(id.type), fragment(id.fragment) {}

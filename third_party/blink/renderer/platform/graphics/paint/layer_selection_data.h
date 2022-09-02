@@ -23,6 +23,7 @@ struct PLATFORM_EXPORT LayerSelectionData {
   absl::optional<PaintedSelectionBound> start;
   absl::optional<PaintedSelectionBound> end;
   bool any_selection_was_painted = false;
+  USING_FAST_MALLOC(LayerSelectionData);
 };
 
 }  // namespace blink

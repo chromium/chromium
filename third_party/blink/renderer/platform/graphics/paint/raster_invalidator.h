@@ -63,6 +63,9 @@ class PLATFORM_EXPORT RasterInvalidator {
   friend class RasterInvalidatorTest;
 
   struct PaintChunkInfo {
+    DISALLOW_NEW();
+
+   public:
     PaintChunkInfo(const RasterInvalidator& invalidator,
                    const ChunkToLayerMapper& mapper,
                    const PaintChunkIterator& chunk_it)

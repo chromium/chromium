@@ -33,7 +33,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 //
 #define DISALLOW_NEW()                                                        \
  public:                                                                      \
-  using IsDisallowNewMarker = int;                                            \
+  using IsDisallowNewMarker [[maybe_unused]] = int;                           \
   void* operator new(size_t, NotNullTag, void* location) { return location; } \
   void* operator new(size_t, void* location) { return location; }             \
                                                                               \

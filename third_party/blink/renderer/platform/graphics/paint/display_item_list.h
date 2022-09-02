@@ -21,6 +21,8 @@ class JSONArray;
 
 // A container for a list of display items of various types.
 class PLATFORM_EXPORT DisplayItemList {
+  DISALLOW_NEW();
+
  public:
   DisplayItemList() = default;
   ~DisplayItemList();
@@ -88,6 +90,7 @@ class PLATFORM_EXPORT DisplayItemList {
 
   struct ItemSlot {
     alignas(kAlignment) uint8_t data[kMaxItemSize];
+    DISALLOW_NEW();
   };
   using ItemVector = Vector<ItemSlot>;
 

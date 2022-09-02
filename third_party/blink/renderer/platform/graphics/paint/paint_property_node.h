@@ -289,6 +289,8 @@ class PaintPropertyNode
 
 template <typename NodeType>
 class PropertyTreePrinter {
+  STACK_ALLOCATED();
+
  public:
   void AddNode(const NodeType* node) {
     if (node)
