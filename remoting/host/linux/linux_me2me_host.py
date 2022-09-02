@@ -77,14 +77,6 @@ XORG_DUMMY_VIDEO_RAM = 1048576 # KiB
 # defaults can be overridden in ~/.profile.
 DEFAULT_SIZES = "1600x1200,3840x2560"
 
-# Xorg's dummy driver only supports switching between preconfigured sizes. To
-# make resize-to-fit somewhat useful, include several common resolutions by
-# default.
-DEFAULT_SIZES_XORG = ("1600x1200,1600x900,1440x900,1366x768,1360x768,1280x1024,"
-                      "1280x800,1280x768,1280x720,1152x864,1024x768,1024x600,"
-                      "800x600,1680x1050,1920x1080,1920x1200,2560x1440,"
-                      "2560x1600,3840x2160,3840x2560")
-
 # Decides number of monitors and their resolution that should be run for the
 # wayland session.
 WAYLAND_DESKTOP_SIZES_ENV = "CHROME_REMOTE_DESKTOP_WAYLAND_DESKTOP_SIZES"
@@ -2110,10 +2102,7 @@ def main():
     # message if they go searching.
     syslog.syslog(syslog.LOG_WARNING | syslog.LOG_DAEMON, gdm_message)
 
-  if USE_XORG_ENV_VAR in os.environ:
-    default_sizes = DEFAULT_SIZES_XORG
-  else:
-    default_sizes = DEFAULT_SIZES
+  default_sizes = DEFAULT_SIZES
 
   # Collate the list of sizes that XRANDR should support.
   if not options.size:
