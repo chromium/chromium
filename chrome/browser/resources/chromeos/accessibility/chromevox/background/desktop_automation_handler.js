@@ -450,6 +450,28 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     this.shouldIgnoreDocumentSelectionFromAction_ = val;
   }
 
+  /** @override */
+  onNativeNextOrPreviousCharacter() {
+    if (this.textEditHandler) {
+      this.textEditHandler.injectInferredIntents([{
+        command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+        textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER,
+      }]);
+    }
+  }
+
+  /** @override */
+  onNativeNextOrPreviousWord(isNext) {
+    if (this.textEditHandler) {
+      this.textEditHandler.injectInferredIntents([{
+        command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+        textBoundary: isNext ?
+            chrome.automation.IntentTextBoundaryType.WORD_END :
+            chrome.automation.IntentTextBoundaryType.WORD_START,
+      }]);
+    }
+  }
+
   /**
    * Provides all feedback once a change event in a text field fires.
    * @param {!ChromeVoxEvent} evt

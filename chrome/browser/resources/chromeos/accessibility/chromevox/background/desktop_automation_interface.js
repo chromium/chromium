@@ -17,6 +17,15 @@ export class DesktopAutomationInterface extends BaseAutomationHandler {
    * @param {boolean} val
    */
   ignoreDocumentSelectionFromAction(val) {}
+
+  /** Handles native commands to move to the next or previous character. */
+  onNativeNextOrPreviousCharacter() {}
+
+  /**
+   * Handles native commands to move to the next or previous word.
+   * @param {boolean} isNext
+   */
+  onNativeNextOrPreviousWord(isNext) {}
 }
 
 /**

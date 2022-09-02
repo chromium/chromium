@@ -446,14 +446,7 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
       case 'nativeNextCharacter':
       case 'nativePreviousCharacter':
-        if (DesktopAutomationInterface.instance.textEditHandler) {
-          DesktopAutomationInterface.instance.textEditHandler
-              .injectInferredIntents([{
-                command: chrome.automation.IntentCommandType.MOVE_SELECTION,
-                textBoundary:
-                    chrome.automation.IntentTextBoundaryType.CHARACTER,
-              }]);
-        }
+        DesktopAutomationInterface.instance.onNativeNextOrPreviousCharacter();
         return true;
       case 'nextWord':
         didNavigate = true;
@@ -468,15 +461,8 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
       case 'nativeNextWord':
       case 'nativePreviousWord':
-        if (DesktopAutomationInterface.instance.textEditHandler) {
-          DesktopAutomationInterface.instance.textEditHandler
-              .injectInferredIntents([{
-                command: chrome.automation.IntentCommandType.MOVE_SELECTION,
-                textBoundary: command === 'nativeNextWord' ?
-                    chrome.automation.IntentTextBoundaryType.WORD_END :
-                    chrome.automation.IntentTextBoundaryType.WORD_START,
-              }]);
-        }
+        DesktopAutomationInterface.instance.onNativeNextOrPreviousWord(
+            command === 'nativeNextWord');
         return true;
       case 'forward':
       case 'nextLine':
