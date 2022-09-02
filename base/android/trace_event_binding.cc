@@ -87,14 +87,19 @@ static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
   return *enabled;
 }
 
-static void JNI_TraceEvent_InitViewHierarchyDump(JNIEnv* env) {
+static void JNI_TraceEvent_InitViewHierarchyDump(
+    JNIEnv* env,
+    jlong id,
+    const JavaParamRef<jobject>& obj) {
   SCOPED_UMA_HISTOGRAM_TIMER("Tracing.ViewHierarchyDump.DumpDuration");
-  TRACE_EVENT_INSTANT(
+  TRACE_EVENT(
       kAndroidViewHierarchyTraceCategory, kAndroidViewHierarchyEventName,
-      perfetto::Track::Global(0), [&](perfetto::EventContext ctx) {
+      perfetto::TerminatingFlow::ProcessScoped(static_cast<uint64_t>(id)),
+      [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* dump = event->set_android_view_dump();
-        Java_TraceEvent_dumpViewHierarchy(env, reinterpret_cast<jlong>(dump));
+        Java_TraceEvent_dumpViewHierarchy(env, reinterpret_cast<jlong>(dump),
+                                          obj);
       });
 }
 
@@ -146,7 +151,10 @@ static void JNI_TraceEvent_SetupATraceStartupTrace(
 static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
   return false;
 }
-static void JNI_TraceEvent_InitViewHierarchyDump(JNIEnv* env) {
+static void JNI_TraceEvent_InitViewHierarchyDump(
+    JNIEnv* env,
+    jint id,
+    const JavaParamRef<jobject>& obj) {
   DCHECK(false);
   // This code should not be reached when base tracing is disabled. Calling
   // dumpViewHierarchy to avoid "unused function" warning.
@@ -249,11 +257,22 @@ static void JNI_TraceEvent_Begin(JNIEnv* env,
 
 static void JNI_TraceEvent_End(JNIEnv* env,
                                const JavaParamRef<jstring>& jname,
-                               const JavaParamRef<jstring>& jarg) {
+                               const JavaParamRef<jstring>& jarg,
+                               jlong jflow) {
   TraceEventDataConverter converter(env, jname, jarg);
-  if (converter.arg_name()) {
+  bool has_arg = converter.arg_name();
+  bool has_flow = jflow != 0;
+  if (has_arg && has_flow) {
+    TRACE_EVENT_END(internal::kJavaTraceCategory,
+                    perfetto::Flow::ProcessScoped(static_cast<uint64_t>(jflow)),
+                    converter.arg_name(), converter.arg());
+  } else if (has_arg) {
     TRACE_EVENT_END(internal::kJavaTraceCategory, converter.arg_name(),
                     converter.arg());
+  } else if (has_flow) {
+    TRACE_EVENT_END(
+        internal::kJavaTraceCategory,
+        perfetto::Flow::ProcessScoped(static_cast<uint64_t>(jflow)));
   } else {
     TRACE_EVENT_END(internal::kJavaTraceCategory);
   }

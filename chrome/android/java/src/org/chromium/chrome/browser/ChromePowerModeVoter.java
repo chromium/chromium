@@ -64,6 +64,7 @@ public class ChromePowerModeVoter
         TraceEvent.instant("ChromePowerModeVoter.onDraw");
         if (!LibraryLoader.getInstance().isInitialized()) return;
         ChromePowerModeVoterJni.get().onViewTreeDraw();
+        TraceEvent.snapshotViewHierarchy();
     }
 
     public Runnable getTouchEventCallback() {
