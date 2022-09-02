@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
-import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 
@@ -41,7 +40,6 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
     private IncognitoCustomTabHost mIncognitoTabHost;
 
     private final IncognitoTabHostRegistry mIncognitoTabHostRegistry;
-
     private final IncognitoCctProfileManager mIncognitoCctProfileManager;
 
     @Inject
@@ -86,10 +84,14 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
             mIncognitoTabHostRegistry.register(mIncognitoTabHost);
         }
 
+        maybeCreateIncognitoTabSnapshotController();
+    }
+
+    private void maybeCreateIncognitoTabSnapshotController() {
         if (!CommandLine.getInstance().hasSwitch(
                     ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
-            // Disable taking screenshots and seeing snapshots in recents.
-            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+            new IncognitoCustomTabSnapshotController(
+                    mActivity.getWindow(), () -> mIntentDataProvider.isIncognito());
         }
     }
 
