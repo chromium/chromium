@@ -412,7 +412,6 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       LOG_IF(FATAL, !overlay_plane_candidate.color.has_value())
           << "Solid color quads must have color set.";
     }
-    CHECK(!overlay_plane_candidate.gpu_fence_id);
 
     if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
       CHECK(access);

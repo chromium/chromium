@@ -131,9 +131,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // an overlay.
   bool overlay_handled = false;
 
-  // Gpu fence to wait for before overlay is ready for display.
-  unsigned gpu_fence_id = 0;
-
   // The total area in square pixels of damage for this candidate's quad. This
   // is an estimate when 'EstimateOccludedDamage' function is used.
   float damage_area_estimate = 0.f;
