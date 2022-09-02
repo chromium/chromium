@@ -28,6 +28,8 @@
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
 #include "components/version_info/channel.h"
 
+namespace heap_profiling {
+
 namespace {
 
 using ProfilingEnabled = HeapProfilerController::ProfilingEnabled;
@@ -93,8 +95,8 @@ std::string ProcessHistogramName(base::StringPiece base_name,
 
 ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
                                              ProcessType process_type) {
-  heap_profiling::HeapProfilerParameters params =
-      heap_profiling::GetHeapProfilerParametersForProcess(process_type);
+  HeapProfilerParameters params =
+      GetHeapProfilerParametersForProcess(process_type);
   if (!params.is_supported)
     return ProfilingEnabled::kDisabled;
   const double probability = (channel == version_info::Channel::STABLE)
@@ -196,8 +198,8 @@ void HeapProfilerController::StartIfEnabled() {
   }
   if (!profiling_enabled)
     return;
-  heap_profiling::HeapProfilerParameters profiler_params =
-      heap_profiling::GetHeapProfilerParametersForProcess(process_type_);
+  HeapProfilerParameters profiler_params =
+      GetHeapProfilerParametersForProcess(process_type_);
   if (profiler_params.sampling_rate_bytes > 0) {
     base::SamplingHeapProfiler::Get()->SetSamplingInterval(
         profiler_params.sampling_rate_bytes);
@@ -244,6 +246,7 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params,
 void HeapProfilerController::RetrieveAndSendSnapshot(
     ProcessType process_type,
     base::TimeDelta time_since_profiler_creation) {
+  using Sample = base::SamplingHeapProfiler::Sample;
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
   constexpr char kSamplesPerSnapshotHistogramName[] =
@@ -265,12 +268,11 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
       time_since_profiler_creation);
   metrics::CallStackProfileBuilder profile_builder(params);
 
-  heap_profiling::SampleMap merged_samples =
-      heap_profiling::MergeSamples(samples);
+  SampleMap merged_samples = MergeSamples(samples);
 
   for (auto& pair : merged_samples) {
     const Sample& sample = pair.first;
-    const heap_profiling::SampleValue& value = pair.second;
+    const SampleValue& value = pair.second;
 
     std::vector<base::Frame> frames;
     frames.reserve(sample.stack.size());
@@ -288,3 +290,5 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
 
   profile_builder.OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
 }
+
+}  // namespace heap_profiling

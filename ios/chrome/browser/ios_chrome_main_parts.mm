@@ -269,8 +269,9 @@ void IOSChromeMainParts::PreCreateThreads() {
     if (malloc_intercepted) {
       // Start heap profiling as early as possible so it can start recording
       // memory allocations. Requires the allocator shim to be enabled.
-      heap_profiler_controller_ = std::make_unique<HeapProfilerController>(
-          channel, metrics::CallStackProfileParams::Process::kBrowser);
+      heap_profiler_controller_ =
+          std::make_unique<heap_profiling::HeapProfilerController>(
+              channel, metrics::CallStackProfileParams::Process::kBrowser);
       heap_profiler_controller_->StartIfEnabled();
     }
   }

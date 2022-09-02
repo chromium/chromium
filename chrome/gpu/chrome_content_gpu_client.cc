@@ -72,6 +72,7 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
           switches::kInProcessGPU)) {
     // The HeapProfilerController should have been created in
     // ChromeMainDelegate::PostEarlyInitialization.
+    using HeapProfilerController = heap_profiling::HeapProfilerController;
     DCHECK_NE(HeapProfilerController::GetProfilingEnabled(),
               HeapProfilerController::ProfilingEnabled::kNoController);
     if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||

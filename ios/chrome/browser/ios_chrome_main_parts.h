@@ -12,8 +12,11 @@
 #import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
 #include "ios/web/public/init/web_main_parts.h"
 
-class ApplicationContextImpl;
+namespace heap_profiling {
 class HeapProfilerController;
+}
+
+class ApplicationContextImpl;
 class PrefService;
 class IOSThreadProfiler;
 
@@ -64,7 +67,8 @@ class IOSChromeMainParts : public web::WebMainParts {
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Manages heap (memory) profiling. Requires the allocator shim to be enabled.
-  std::unique_ptr<HeapProfilerController> heap_profiler_controller_;
+  std::unique_ptr<heap_profiling::HeapProfilerController>
+      heap_profiler_controller_;
 #endif
 };
 

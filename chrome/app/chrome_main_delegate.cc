@@ -832,9 +832,10 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 
   // Start heap profiling as early as possible so it can start recording
   // memory allocations.
-  heap_profiler_controller_ = std::make_unique<HeapProfilerController>(
-      channel,
-      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
+  heap_profiler_controller_ =
+      std::make_unique<heap_profiling::HeapProfilerController>(
+          channel,
+          GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
   heap_profiler_controller_->StartIfEnabled();
 
   if (is_browser_process) {

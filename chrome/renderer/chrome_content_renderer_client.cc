@@ -513,6 +513,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
+    using HeapProfilerController = heap_profiling::HeapProfilerController;
     // The HeapProfilerController should have been created in
     // ChromeMainDelegate::PostEarlyInitialization.
     DCHECK_NE(HeapProfilerController::GetProfilingEnabled(),

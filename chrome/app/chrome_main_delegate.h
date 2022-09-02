@@ -24,13 +24,16 @@ namespace chromeos {
 class LacrosService;
 }
 
+namespace heap_profiling {
+class HeapProfilerController;
+}
+
 namespace tracing {
 class TracingSamplerProfiler;
 }
 
 class ChromeContentBrowserClient;
 class ChromeContentUtilityClient;
-class HeapProfilerController;
 
 // Chrome implementation of ContentMainDelegate.
 class ChromeMainDelegate : public content::ContentMainDelegate {
@@ -94,7 +97,8 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
   // The controller schedules UMA heap profiles collections and forwarding down
   // the reporting pipeline.
-  std::unique_ptr<HeapProfilerController> heap_profiler_controller_;
+  std::unique_ptr<heap_profiling::HeapProfilerController>
+      heap_profiler_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::LacrosService> lacros_service_;
