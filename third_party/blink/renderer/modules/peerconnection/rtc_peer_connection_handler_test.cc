@@ -917,7 +917,7 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   blink::AllowStatsForTesting(webrtc::RTCTestStats::kType);
 
   rtc::scoped_refptr<webrtc::RTCStatsReport> report =
-      webrtc::RTCStatsReport::Create();
+      webrtc::RTCStatsReport::Create(42);
 
   report->AddStats(std::unique_ptr<const webrtc::RTCStats>(
       new webrtc::RTCTestStats("RTCUndefinedStats", 1000)));
