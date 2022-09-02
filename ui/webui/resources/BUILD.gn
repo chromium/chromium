@@ -253,7 +253,6 @@ generate_definitions_js_files = [
   "js/cr/event_target.m.js",
   "js/cr.m.js",
   "js/cr/ui.m.js",
-  "js/cr/ui/focus_outline_manager.js",
   "js/cr/ui/focus_row.js",
   "js/cr/ui/keyboard_shortcut_list.js",
   "js/event_tracker.m.js",
@@ -316,8 +315,9 @@ ts_library("library") {
   in_files = cr_elements_files + [
                "js/assert_ts.ts",
                "js/custom_element.ts",
-               "js/cr/ui/focus_grid.ts",
                "js/cr/ui/drag_wrapper.ts",
+               "js/cr/ui/focus_grid.ts",
+               "js/cr/ui/focus_outline_manager.ts",
                "js/cr/ui/store_ts.ts",
              ]
 
