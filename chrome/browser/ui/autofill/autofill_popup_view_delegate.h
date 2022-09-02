@@ -31,7 +31,7 @@ class AutofillPopupViewDelegate {
   // whether to defer that.
   virtual void Hide(PopupHidingReason reason) = 0;
 
-  // Called whent the popup view was destroyed.
+  // Called when the popup view was destroyed.
   virtual void ViewDestroyed() = 0;
 
   // The user cleared the current selection, e.g. by moving the mouse cursor
