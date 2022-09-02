@@ -464,6 +464,8 @@ void ArcMetricsService::ReportBootProgress(
     return;
   }
   boot_type_ = boot_type;
+  for (auto& obs : boot_type_observers_)
+    obs.OnBootTypeRetrieved(boot_type);
 
   if (IsArcVmEnabled()) {
     // For VM builds, do not call into session_manager since we don't use it
@@ -911,6 +913,16 @@ void ArcMetricsService::RemoveUserInteractionObserver(
     UserInteractionObserver* obs) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   user_interaction_observers_.RemoveObserver(obs);
+}
+
+void ArcMetricsService::AddBootTypeObserver(BootTypeObserver* obs) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  boot_type_observers_.AddObserver(obs);
+}
+
+void ArcMetricsService::RemoveBootTypeObserver(BootTypeObserver* obs) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  boot_type_observers_.RemoveObserver(obs);
 }
 
 absl::optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(

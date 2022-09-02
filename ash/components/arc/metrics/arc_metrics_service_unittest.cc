@@ -409,6 +409,24 @@ TEST_F(ArcMetricsServiceTest, UserInteractionObserver) {
   service()->RemoveUserInteractionObserver(&observer);
 }
 
+TEST_F(ArcMetricsServiceTest, BootTypeObserver) {
+  class Observer : public ArcMetricsService::BootTypeObserver {
+   public:
+    void OnBootTypeRetrieved(mojom::BootType type) override {
+      this->type = type;
+    }
+    absl::optional<mojom::BootType> type;
+  } observer;
+
+  service()->AddBootTypeObserver(&observer);
+
+  service()->ReportBootProgress({}, mojom::BootType::FIRST_BOOT_AFTER_UPDATE);
+  ASSERT_TRUE(observer.type);
+  EXPECT_EQ(mojom::BootType::FIRST_BOOT_AFTER_UPDATE, *observer.type);
+
+  service()->RemoveBootTypeObserver(&observer);
+}
+
 class ArcVmArcMetricsServiceTest
     : public ArcMetricsServiceTest,
       public testing::WithParamInterface<

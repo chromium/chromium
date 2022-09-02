@@ -78,6 +78,11 @@ class ArcMetricsService : public KeyedService,
     virtual void OnUserInteraction(UserInteractionType type) = 0;
   };
 
+  class BootTypeObserver : public base::CheckedObserver {
+   public:
+    virtual void OnBootTypeRetrieved(mojom::BootType type) = 0;
+  };
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcMetricsService* GetForBrowserContext(
@@ -193,6 +198,9 @@ class ArcMetricsService : public KeyedService,
 
   void AddUserInteractionObserver(UserInteractionObserver* obs);
   void RemoveUserInteractionObserver(UserInteractionObserver* obs);
+
+  void AddBootTypeObserver(BootTypeObserver* obs);
+  void RemoveBootTypeObserver(BootTypeObserver* obs);
 
   // Finds the boot_progress_arc_upgraded event, removes it from |events|, and
   // returns the event time. If the boot_progress_arc_upgraded event is not
@@ -361,6 +369,7 @@ class ArcMetricsService : public KeyedService,
 
   base::ObserverList<AppKillObserver> app_kill_observers_;
   base::ObserverList<UserInteractionObserver> user_interaction_observers_;
+  base::ObserverList<BootTypeObserver> boot_type_observers_;
 
   PrefService* prefs_ = nullptr;
   std::unique_ptr<ArcMetricsAnr> metrics_anr_;
