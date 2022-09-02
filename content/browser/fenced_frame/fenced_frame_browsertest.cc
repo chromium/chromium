@@ -1537,6 +1537,42 @@ IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest,
   EXPECT_EQ(outer_ff_subframe->GetProcess(), inner_ff_rfh->GetProcess());
 }
 
+// Tests that error pages inside fenced frames are process-isolated from the
+// embedding page.
+IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest, ErrorPage) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/title2.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Loading the fenced frame should fail due to the absence of a
+  // "Supports-Loading-Mode" header.
+  RenderFrameHostImpl* ff_rfh = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(
+          primary_main_frame_host(), fenced_frame_url, net::ERR_ABORTED));
+  ASSERT_NE(ff_rfh, nullptr);
+  EXPECT_TRUE(ff_rfh->IsErrorDocument());
+
+  const SiteInfo& ff_site_info = ff_rfh->GetSiteInstance()->GetSiteInfo();
+  EXPECT_TRUE(ff_site_info.is_error_page());
+  EXPECT_TRUE(ff_site_info.is_fenced());
+
+  EXPECT_NE(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
+
+  // Create another fenced frame that loads an error page.
+  RenderFrameHostImpl* ff_rfh_2 = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_test_helper().CreateFencedFrame(
+          primary_main_frame_host(), fenced_frame_url, net::ERR_ABORTED));
+  ASSERT_NE(ff_rfh_2, nullptr);
+  // Both fenced frame error pages should share a process.
+  EXPECT_EQ(ff_rfh_2->GetProcess(), ff_rfh->GetProcess());
+}
+
 namespace {
 
 enum class FrameTypeWithOrigin {

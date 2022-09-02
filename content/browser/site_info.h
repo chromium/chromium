@@ -45,10 +45,13 @@ class CONTENT_EXPORT SiteInfo {
   // Helper to create a SiteInfo that will be used for an error page.  This is
   // used only when error page isolation is enabled.  Note that when site
   // isolation for guests is enabled, an error page SiteInfo may also be
-  // associated with a guest.
+  // associated with a guest. Similarly, when process isolation for fenced
+  // frames is enabled, error pages inside fenced frames will be isolated from
+  // embedders.
   static SiteInfo CreateForErrorPage(
       const StoragePartitionConfig storage_partition_config,
-      bool is_guest);
+      bool is_guest,
+      bool is_fenced);
 
   // Helper to create a SiteInfo for default SiteInstances.  Default
   // SiteInstances are used for non-isolated sites on platforms without strict
