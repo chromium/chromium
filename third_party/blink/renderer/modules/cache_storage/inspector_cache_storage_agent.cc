@@ -121,7 +121,8 @@ ProtocolResponse AssertCacheStorage(
   if (it == caches->end()) {
     mojo::Remote<mojom::blink::CacheStorage> cache_storage_remote;
     context->GetBrowserInterfaceBroker().GetInterface(
-        cache_storage_remote.BindNewPipeAndPassReceiver());
+        cache_storage_remote.BindNewPipeAndPassReceiver(
+            frames->Root()->GetTaskRunner(TaskType::kFileReading)));
     *result = cache_storage_remote.get();
     caches->Set(security_origin, std::move(cache_storage_remote));
   } else {
@@ -439,10 +440,11 @@ class GetCacheKeysForRequestData {
 class CachedResponseFileReaderLoaderClient final
     : private FileReaderLoaderClient {
  public:
-  static void Load(scoped_refptr<BlobDataHandle> blob,
+  static void Load(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                   scoped_refptr<BlobDataHandle> blob,
                    std::unique_ptr<RequestCachedResponseCallback> callback) {
-    new CachedResponseFileReaderLoaderClient(std::move(blob),
-                                             std::move(callback));
+    new CachedResponseFileReaderLoaderClient(
+        std::move(task_runner), std::move(blob), std::move(callback));
   }
 
   CachedResponseFileReaderLoaderClient(
@@ -476,14 +478,13 @@ class CachedResponseFileReaderLoaderClient final
 
  private:
   CachedResponseFileReaderLoaderClient(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<BlobDataHandle>&& blob,
       std::unique_ptr<RequestCachedResponseCallback>&& callback)
-      // TODO(hajimehoshi): Use a per-ExecutionContext task runner of
-      // TaskType::kFileReading
       : loader_(std::make_unique<FileReaderLoader>(
             FileReaderLoader::kReadByClient,
             static_cast<FileReaderLoaderClient*>(this),
-            ThreadScheduler::Current()->DeprecatedDefaultTaskRunner())),
+            std::move(task_runner))),
         callback_(std::move(callback)),
         data_(SharedBuffer::Create()) {
     loader_->Start(std::move(blob));
@@ -731,6 +732,7 @@ void InspectorCacheStorageAgent::requestCachedResponse(
     request->headers.insert(header->getName(), header->getValue());
   }
 
+  auto task_runner = frames_->Root()->GetTaskRunner(TaskType::kFileReading);
   auto multi_query_options = mojom::blink::MultiCacheQueryOptions::New();
   multi_query_options->query_options = mojom::blink::CacheQueryOptions::New();
   multi_query_options->cache_name = cache_name;
@@ -741,6 +743,7 @@ void InspectorCacheStorageAgent::requestCachedResponse(
       trace_id,
       WTF::Bind(
           [](std::unique_ptr<RequestCachedResponseCallback> callback,
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              mojom::blink::MatchResultPtr result) {
             if (result->is_status()) {
               callback->sendFailure(ProtocolResponse::ServerError(
@@ -757,9 +760,10 @@ void InspectorCacheStorageAgent::requestCachedResponse(
                 return;
               }
               CachedResponseFileReaderLoaderClient::Load(
+                  std::move(task_runner),
                   std::move(result->get_response()->blob), std::move(callback));
             }
           },
-          std::move(callback)));
+          std::move(callback), std::move(task_runner)));
 }
 }  // namespace blink
