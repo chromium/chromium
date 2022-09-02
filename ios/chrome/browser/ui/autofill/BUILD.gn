@@ -55,7 +55,6 @@ source_set("autofill") {
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/third_party/material_components_ios",
     "//ios/web/common",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ui/base",
   ]
