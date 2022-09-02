@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -190,11 +191,9 @@ void ArcReadHandler::RemoveAppRestoreData(int32_t window_id) {
 void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
                                             int32_t restore_window_id) {
   // Go through `arc_window_candidates_`.
-  auto window_it =
-      std::find_if(arc_window_candidates_.begin(), arc_window_candidates_.end(),
-                   [task_id](aura::Window* window) {
-                     return window->GetProperty(kWindowIdKey) == task_id;
-                   });
+  auto window_it = base::ranges::find(
+      arc_window_candidates_, task_id,
+      [](aura::Window* window) { return window->GetProperty(kWindowIdKey); });
   if (window_it == arc_window_candidates_.end())
     return;
 

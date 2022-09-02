@@ -5,13 +5,14 @@
 #include "components/history/core/browser/top_sites_impl.h"
 
 #include <stdint.h>
-#include <algorithm>
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -169,13 +170,6 @@ void TopSitesImpl::GetMostVisitedURLs(GetMostVisitedURLsCallback callback) {
     filtered_urls = thread_safe_cache_;
   }
   std::move(callback).Run(filtered_urls);
-}
-
-static bool Contains(const MostVisitedURLList& urls, const GURL& url) {
-  return std::find_if(urls.begin(), urls.end(),
-                      [&url](const MostVisitedURL& item) {
-                        return item.url == url;
-                      }) != urls.end();
 }
 
 void TopSitesImpl::SyncWithHistory() {
@@ -435,7 +429,8 @@ bool TopSitesImpl::AddPrepopulatedPages(MostVisitedURLList* urls) const {
   for (const auto& prepopulated_page : prepopulated_pages_) {
     if (urls->size() >= kTopSitesNumber)
       break;
-    if (!Contains(*urls, prepopulated_page.most_visited.url)) {
+    if (!base::Contains(*urls, prepopulated_page.most_visited.url,
+                        &MostVisitedURL::url)) {
       urls->push_back(prepopulated_page.most_visited);
       added = true;
     }

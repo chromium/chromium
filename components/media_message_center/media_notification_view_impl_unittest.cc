@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -178,10 +179,9 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
 
   views::Button* GetButtonForAction(MediaSessionAction action) const {
     auto buttons = view()->get_buttons_for_testing();
-    const auto i = std::find_if(
-        buttons.begin(), buttons.end(), [action](const views::View* v) {
-          return views::Button::AsButton(v)->tag() == static_cast<int>(action);
-        });
+    const auto i = base::ranges::find(
+        buttons, static_cast<int>(action),
+        [](const views::View* v) { return views::Button::AsButton(v)->tag(); });
     return (i == buttons.end()) ? nullptr : views::Button::AsButton(*i);
   }
 

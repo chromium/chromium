@@ -5,6 +5,7 @@
 #include "components/ui_devtools/views/dom_agent_aura.h"
 
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "components/ui_devtools/views/widget_element.h"
 #include "components/ui_devtools/views/window_element.h"
 #include "ui/aura/env.h"
@@ -52,9 +53,7 @@ void DOMAgentAura::OnWindowDestroying(aura::Window* window) {
 
   if (element_root() && !element_root()->is_updating()) {
     const auto& children = element_root()->children();
-    auto iter = std::find_if(
-        children.begin(), children.end(),
-        [window](UIElement* e) { return WindowElement::From(e) == window; });
+    auto iter = base::ranges::find(children, window, &WindowElement::From);
     if (iter != children.end()) {
       UIElement* child_element = *iter;
       element_root()->RemoveChild(child_element);

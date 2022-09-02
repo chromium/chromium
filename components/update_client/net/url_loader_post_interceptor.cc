@@ -5,6 +5,7 @@
 #include "components/update_client/net/url_loader_post_interceptor.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -164,10 +165,7 @@ void URLLoaderPostInterceptor::InitializeWithInterceptor() {
           replacements.ClearQuery();
           url = url.ReplaceComponents(replacements);
         }
-        auto it = std::find_if(
-            filtered_urls_.begin(), filtered_urls_.end(),
-            [url](const GURL& filtered_url) { return filtered_url == url; });
-        if (it == filtered_urls_.end())
+        if (!base::Contains(filtered_urls_, url))
           return;
 
         std::string request_body = network::GetUploadData(request);
@@ -217,10 +215,7 @@ URLLoaderPostInterceptor::RequestHandler(
     replacements.ClearQuery();
     url = url.ReplaceComponents(replacements);
   }
-  auto it = std::find_if(
-      filtered_urls_.begin(), filtered_urls_.end(),
-      [url](const GURL& filtered_url) { return filtered_url == url; });
-  if (it == filtered_urls_.end())
+  if (!base::Contains(filtered_urls_, url))
     return nullptr;
 
   std::string request_body = request.content;

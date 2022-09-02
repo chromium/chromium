@@ -6,18 +6,19 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <memory>
 #include <utility>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -97,9 +98,8 @@ bool IsValidBrand(const std::string& brand) {
   if (!brand.empty() && brand.size() != kMaxBrandSize)
     return false;
 
-  return std::find_if_not(brand.begin(), brand.end(), [](char ch) {
-           return base::IsAsciiAlpha(ch);
-         }) == brand.end();
+  return base::ranges::find_if_not(brand, &base::IsAsciiAlpha<char>) ==
+         brand.end();
 }
 
 // Helper function.
@@ -109,19 +109,10 @@ bool IsValidInstallerAttributePart(const std::string& part,
                                    const std::string& special_chars,
                                    size_t min_length,
                                    size_t max_length) {
-  if (part.size() < min_length || part.size() > max_length)
-    return false;
-
-  return std::find_if_not(part.begin(), part.end(), [&special_chars](char ch) {
-           if (base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch))
-             return true;
-
-           for (auto c : special_chars) {
-             if (c == ch)
-               return true;
-           }
-
-           return false;
+  return part.size() >= min_length && part.size() <= max_length &&
+         base::ranges::find_if_not(part, [&special_chars](char ch) {
+           return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) ||
+                  base::Contains(special_chars, ch);
          }) == part.end();
 }
 

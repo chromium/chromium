@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/metrics.h"
@@ -210,8 +211,7 @@ void CustomLinksManagerImpl::RemoveCustomLinksForPreinstalledApps() {
 
 std::vector<CustomLinksManager::Link>::iterator
 CustomLinksManagerImpl::FindLinkWithUrl(const GURL& url) {
-  return std::find_if(current_links_.begin(), current_links_.end(),
-                      [&url](const Link& link) { return link.url == url; });
+  return base::ranges::find(current_links_, url, &Link::url);
 }
 
 base::CallbackListSubscription

@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/thread_pool.h"
@@ -258,10 +259,8 @@ void RenameOldStoreFiles(const ListInfos& list_infos,
 
     const base::FilePath old_store_path = base_path.AppendASCII(old_name);
     // Is the old filename also being used for a valid V4Store?
-    auto it = std::find_if(
-        std::begin(list_infos), std::end(list_infos),
-        [&old_name](ListInfo const& li) { return li.filename() == old_name; });
-    bool old_filename_in_use = list_infos.end() != it;
+    bool old_filename_in_use =
+        base::Contains(list_infos, old_name, &ListInfo::filename);
     base::UmaHistogramBoolean("SafeBrowsing.V4Store.OldFileNameInUse" +
                                   GetUmaSuffixForStore(old_store_path),
                               old_filename_in_use);
@@ -398,18 +397,14 @@ void V4LocalDatabaseManager::CancelCheck(Client* client) {
   DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(enabled_);
 
-  auto pending_it = std::find_if(
-      std::begin(pending_checks_), std::end(pending_checks_),
-      [client](const PendingCheck* check) { return check->client == client; });
+  auto pending_it =
+      base::ranges::find(pending_checks_, client, &PendingCheck::client);
   if (pending_it != pending_checks_.end()) {
     pending_checks_.erase(pending_it);
   }
 
   auto queued_it =
-      std::find_if(std::begin(queued_checks_), std::end(queued_checks_),
-                   [&client](const std::unique_ptr<PendingCheck>& check) {
-                     return check->client == client;
-                   });
+      base::ranges::find(queued_checks_, client, &PendingCheck::client);
   if (queued_it != queued_checks_.end()) {
     queued_checks_.erase(queued_it);
   }
@@ -797,8 +792,7 @@ void V4LocalDatabaseManager::GetSeverestThreatTypeAndMetadata(
     ThreatSeverity severity = GetThreatSeverity(fhi.list_id);
     SBThreatType threat_type = GetSBThreatTypeForList(fhi.list_id);
 
-    const auto& it =
-        std::find(full_hashes.begin(), full_hashes.end(), fhi.full_hash);
+    const auto& it = base::ranges::find(full_hashes, fhi.full_hash);
     DCHECK(it != full_hashes.end());
     (*full_hash_threat_types)[it - full_hashes.begin()] = threat_type;
 
@@ -826,9 +820,7 @@ std::unique_ptr<StoreStateMap> V4LocalDatabaseManager::GetStoreStateMap() {
 // Returns the SBThreatType corresponding to a given SafeBrowsing list.
 SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
     const ListIdentifier& list_id) {
-  auto it = std::find_if(
-      std::begin(list_infos_), std::end(list_infos_),
-      [&list_id](ListInfo const& li) { return li.list_id() == list_id; });
+  auto it = base::ranges::find(list_infos_, list_id, &ListInfo::list_id);
   DCHECK(list_infos_.end() != it);
   DCHECK_NE(SB_THREAT_TYPE_SAFE, it->sb_threat_type());
   DCHECK_NE(SB_THREAT_TYPE_UNUSED, it->sb_threat_type());

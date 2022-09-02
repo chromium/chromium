@@ -4,8 +4,7 @@
 
 #include "components/session_manager/core/session_manager.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -76,10 +75,7 @@ void SessionManager::SessionStarted() {
 
 bool SessionManager::HasSessionForAccountId(
     const AccountId& user_account_id) const {
-  return std::find_if(sessions_.begin(), sessions_.end(),
-                      [user_account_id](const Session& session) {
-                        return session.user_account_id == user_account_id;
-                      }) != sessions_.end();
+  return base::Contains(sessions_, user_account_id, &Session::user_account_id);
 }
 
 bool SessionManager::IsInSecondaryLoginScreen() const {

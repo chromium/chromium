@@ -4,8 +4,7 @@
 
 #include "components/invalidation/impl/fake_ack_handler.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/invalidation/public/ack_handle.h"
 #include "components/invalidation/public/invalidation.h"
@@ -43,31 +42,27 @@ void FakeAckHandler::RegisterUnsentInvalidation(Invalidation* invalidation) {
 }
 
 bool FakeAckHandler::IsUnacked(const Invalidation& invalidation) const {
-  AckHandleMatcher matcher(invalidation.ack_handle());
-  auto it = std::find_if(unacked_invalidations_.begin(),
-                         unacked_invalidations_.end(), matcher);
-  return it != unacked_invalidations_.end();
+  return base::ranges::find_if(unacked_invalidations_,
+                               AckHandleMatcher(invalidation.ack_handle())) !=
+         unacked_invalidations_.end();
 }
 
 bool FakeAckHandler::IsAcknowledged(const Invalidation& invalidation) const {
-  AckHandleMatcher matcher(invalidation.ack_handle());
-  auto it = std::find_if(acked_invalidations_.begin(),
-                         acked_invalidations_.end(), matcher);
-  return it != acked_invalidations_.end();
+  return base::ranges::find_if(acked_invalidations_,
+                               AckHandleMatcher(invalidation.ack_handle())) !=
+         acked_invalidations_.end();
 }
 
 bool FakeAckHandler::IsDropped(const Invalidation& invalidation) const {
-  AckHandleMatcher matcher(invalidation.ack_handle());
-  auto it = std::find_if(dropped_invalidations_.begin(),
-                         dropped_invalidations_.end(), matcher);
-  return it != dropped_invalidations_.end();
+  return base::ranges::find_if(dropped_invalidations_,
+                               AckHandleMatcher(invalidation.ack_handle())) !=
+         dropped_invalidations_.end();
 }
 
 bool FakeAckHandler::IsUnsent(const Invalidation& invalidation) const {
-  AckHandleMatcher matcher(invalidation.ack_handle());
-  auto it1 = std::find_if(unsent_invalidations_.begin(),
-                          unsent_invalidations_.end(), matcher);
-  return it1 != unsent_invalidations_.end();
+  return base::ranges::find_if(unsent_invalidations_,
+                               AckHandleMatcher(invalidation.ack_handle())) !=
+         unsent_invalidations_.end();
 }
 
 bool FakeAckHandler::AllInvalidationsAccountedFor() const {
@@ -75,9 +70,8 @@ bool FakeAckHandler::AllInvalidationsAccountedFor() const {
 }
 
 void FakeAckHandler::Acknowledge(const Topic& topic, const AckHandle& handle) {
-  AckHandleMatcher matcher(handle);
-  auto it = std::find_if(unacked_invalidations_.begin(),
-                         unacked_invalidations_.end(), matcher);
+  auto it =
+      base::ranges::find_if(unacked_invalidations_, AckHandleMatcher(handle));
   if (it != unacked_invalidations_.end()) {
     acked_invalidations_.push_back(*it);
     unacked_invalidations_.erase(it);
@@ -90,9 +84,8 @@ void FakeAckHandler::Acknowledge(const Topic& topic, const AckHandle& handle) {
 }
 
 void FakeAckHandler::Drop(const Topic& topic, const AckHandle& handle) {
-  AckHandleMatcher matcher(handle);
-  auto it = std::find_if(unacked_invalidations_.begin(),
-                         unacked_invalidations_.end(), matcher);
+  auto it =
+      base::ranges::find_if(unacked_invalidations_, AckHandleMatcher(handle));
   if (it != unacked_invalidations_.end()) {
     dropped_invalidations_.push_back(*it);
     unacked_invalidations_.erase(it);

@@ -5,6 +5,7 @@
 #include "components/app_restore/arc_save_handler.h"
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -46,11 +47,9 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
 
       // Go through `arc_window_candidates_`. If the window for `session_id` has
       // been created, call OnAppLaunched to save the window info.
-      auto window_it = std::find_if(
-          arc_window_candidates_.begin(), arc_window_candidates_.end(),
-          [session_id](aura::Window* window) {
-            return window->GetProperty(app_restore::kGhostWindowSessionIdKey) ==
-                   session_id;
+      auto window_it = base::ranges::find(
+          arc_window_candidates_, session_id, [](aura::Window* window) {
+            return window->GetProperty(app_restore::kGhostWindowSessionIdKey);
           });
       if (window_it != arc_window_candidates_.end()) {
         app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
@@ -195,10 +194,9 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
 
   // Go through |arc_window_candidates_|. If the window for |task_id| has been
   // created, call OnAppLaunched to save the window info.
-  auto window_it = std::find_if(
-      arc_window_candidates_.begin(), arc_window_candidates_.end(),
-      [task_id](aura::Window* window) {
-        return window->GetProperty(app_restore::kWindowIdKey) == task_id;
+  auto window_it = base::ranges::find(
+      arc_window_candidates_, task_id, [](aura::Window* window) {
+        return window->GetProperty(app_restore::kWindowIdKey);
       });
   if (window_it != arc_window_candidates_.end()) {
     app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(*window_it);

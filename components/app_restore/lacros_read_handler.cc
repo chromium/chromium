@@ -5,6 +5,7 @@
 #include "components/app_restore/lacros_read_handler.h"
 
 #include "ash/constants/app_types.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_read_handler.h"
@@ -60,11 +61,9 @@ void LacrosReadHandler::OnAppWindowAdded(const std::string& app_id,
                                          const std::string& lacros_window_id) {
   lacros_window_id_to_app_id_[lacros_window_id] = app_id;
 
-  auto window_it =
-      std::find_if(window_candidates_.begin(), window_candidates_.end(),
-                   [lacros_window_id](aura::Window* window) {
-                     return GetLacrosWindowId(window) == lacros_window_id;
-                   });
+  auto window_it = base::ranges::find(
+      window_candidates_, lacros_window_id,
+      [](aura::Window* window) { return GetLacrosWindowId(window); });
   if (window_it == window_candidates_.end())
     return;
 

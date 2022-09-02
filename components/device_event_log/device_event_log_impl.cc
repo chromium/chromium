@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -467,14 +468,9 @@ void DeviceEventLogImpl::ClearAll() {
 }
 
 void DeviceEventLogImpl::Clear(const base::Time& begin, const base::Time& end) {
-  auto begin_it = std::find_if(
-      entries_.begin(), entries_.end(),
-      [begin](const LogEntry& entry) { return entry.time >= begin; });
-  auto end_rev_it =
-      std::find_if(entries_.rbegin(), entries_.rend(),
-                   [end](const LogEntry& entry) { return entry.time <= end; });
-
-  entries_.erase(begin_it, end_rev_it.base());
+  entries_.erase(
+      base::ranges::lower_bound(entries_, begin, {}, &LogEntry::time),
+      base::ranges::upper_bound(entries_, end, {}, &LogEntry::time));
 }
 
 int DeviceEventLogImpl::GetCountByLevelForTesting(LogLevel level) {

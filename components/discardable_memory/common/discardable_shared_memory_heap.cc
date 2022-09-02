@@ -4,7 +4,6 @@
 
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,6 +16,7 @@
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 
@@ -570,11 +570,11 @@ DiscardableSharedMemoryHeap::CreateMemoryAllocatorDump(
     return dump;
   }
 
-  auto it =
-      std::find_if(memory_segments_.begin(), memory_segments_.end(),
-                   [span](const std::unique_ptr<ScopedMemorySegment>& segment) {
-                     return segment->ContainsSpan(span);
-                   });
+  auto it = base::ranges::find_if(
+      memory_segments_,
+      [span](const std::unique_ptr<ScopedMemorySegment>& segment) {
+        return segment->ContainsSpan(span);
+      });
   DCHECK(it != memory_segments_.end());
   return (*it)->CreateMemoryAllocatorDump(span, block_size_, name, pmd);
 }

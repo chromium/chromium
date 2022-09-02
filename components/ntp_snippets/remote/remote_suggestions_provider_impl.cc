@@ -4,7 +4,6 @@
 
 #include "components/ntp_snippets/remote/remote_suggestions_provider_impl.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -17,6 +16,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -1126,13 +1126,8 @@ void RemoteSuggestionsProviderImpl::
 void RemoteSuggestionsProviderImpl::DismissSuggestionFromCategoryContent(
     CategoryContent* content,
     const std::string& id_within_category) {
-  auto id_predicate = [&id_within_category](
-                          const std::unique_ptr<RemoteSuggestion>& suggestion) {
-    return suggestion->id() == id_within_category;
-  };
-
-  auto it = std::find_if(content->suggestions.begin(),
-                         content->suggestions.end(), id_predicate);
+  auto it = base::ranges::find(content->suggestions, id_within_category,
+                               &RemoteSuggestion::id);
   if (it != content->suggestions.end()) {
     (*it)->set_dismissed(true);
     database_->SaveSnippet(**it);
@@ -1140,8 +1135,8 @@ void RemoteSuggestionsProviderImpl::DismissSuggestionFromCategoryContent(
     content->suggestions.erase(it);
   } else {
     // Check the archive.
-    auto archive_it = std::find_if(content->archived.begin(),
-                                   content->archived.end(), id_predicate);
+    auto archive_it = base::ranges::find(content->archived, id_within_category,
+                                         &RemoteSuggestion::id);
     if (archive_it != content->archived.end()) {
       (*archive_it)->set_dismissed(true);
     }
@@ -1505,34 +1500,22 @@ void RemoteSuggestionsProviderImpl::UpdateAllCategoryStatus(
   }
 }
 
-namespace {
-
-template <typename T>
-typename T::const_iterator FindSuggestionInContainer(
-    const T& container,
-    const std::string& id_within_category) {
-  return std::find_if(container.begin(), container.end(),
-                      [&id_within_category](
-                          const std::unique_ptr<RemoteSuggestion>& suggestion) {
-                        return suggestion->id() == id_within_category;
-                      });
-}
-
-}  // namespace
-
 const RemoteSuggestion*
 RemoteSuggestionsProviderImpl::CategoryContent::FindSuggestion(
     const std::string& id_within_category) const {
   // Search for the suggestion in current and archived suggestions.
-  auto it = FindSuggestionInContainer(suggestions, id_within_category);
+  auto it = base::ranges::find(suggestions, id_within_category,
+                               &RemoteSuggestion::id);
   if (it != suggestions.end()) {
     return it->get();
   }
-  auto archived_it = FindSuggestionInContainer(archived, id_within_category);
+  auto archived_it =
+      base::ranges::find(archived, id_within_category, &RemoteSuggestion::id);
   if (archived_it != archived.end()) {
     return archived_it->get();
   }
-  auto dismissed_it = FindSuggestionInContainer(dismissed, id_within_category);
+  auto dismissed_it =
+      base::ranges::find(dismissed, id_within_category, &RemoteSuggestion::id);
   if (dismissed_it != dismissed.end()) {
     return dismissed_it->get();
   }

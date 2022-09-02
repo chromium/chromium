@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -394,8 +395,8 @@ void PaymentRequestSpec::UpdateSelectedShippingOption(bool after_update) {
   // As per the spec, the selected shipping option should initially be the last
   // one in the array that has its selected field set to true. If none are
   // selected by the merchant, |selected_shipping_option_| stays nullptr.
-  auto selected_shipping_option_it = std::find_if(
-      details_->shipping_options->rbegin(), details_->shipping_options->rend(),
+  auto selected_shipping_option_it = base::ranges::find_if(
+      base::Reversed(*details_->shipping_options),
       [](const payments::mojom::PaymentShippingOptionPtr& element) {
         return element->selected;
       });

@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -171,11 +172,8 @@ void QueryClustersState::UpdateUniqueRawLabels(
     // Warning: N^2 algorithm below. If this ends up scaling poorly, it can be
     // optimized by adding a map that tracks which labels have been seen
     // already.
-    auto it = std::find_if(raw_label_counts_so_far_.begin(),
-                           raw_label_counts_so_far_.end(),
-                           [&raw_label_value](const LabelCount& label_count) {
-                             return label_count.first == raw_label_value;
-                           });
+    auto it = base::ranges::find(raw_label_counts_so_far_, raw_label_value,
+                                 &LabelCount::first);
     if (it == raw_label_counts_so_far_.end()) {
       it = raw_label_counts_so_far_.insert(it,
                                            std::make_pair(raw_label_value, 0));

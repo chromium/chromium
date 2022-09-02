@@ -4,11 +4,11 @@
 
 #include "components/offline_pages/core/prefetch/tasks/download_archives_task.h"
 
-#include <algorithm>
 #include <set>
 
 #include "base/guid.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_page_feature.h"
@@ -32,10 +32,8 @@ const int64_t kLargeArchiveSize =
 const PrefetchItem* FindPrefetchItemByOfflineId(
     const std::set<PrefetchItem>& items,
     int64_t offline_id) {
-  auto found_it = std::find_if(items.begin(), items.end(),
-                               [&offline_id](const PrefetchItem& i) -> bool {
-                                 return i.offline_id == offline_id;
-                               });
+  auto found_it =
+      base::ranges::find(items, offline_id, &PrefetchItem::offline_id);
   if (found_it != items.end())
     return &(*found_it);
   return nullptr;

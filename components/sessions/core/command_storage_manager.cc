@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -88,11 +89,8 @@ void CommandStorageManager::AppendRebuildCommands(
 }
 
 void CommandStorageManager::EraseCommand(SessionCommand* old_command) {
-  auto it = std::find_if(
-      pending_commands_.begin(), pending_commands_.end(),
-      [old_command](const std::unique_ptr<SessionCommand>& command_ptr) {
-        return command_ptr.get() == old_command;
-      });
+  auto it = base::ranges::find(pending_commands_, old_command,
+                               &std::unique_ptr<SessionCommand>::get);
   CHECK(it != pending_commands_.end());
   pending_commands_.erase(it);
   DCHECK_GT(commands_since_reset_, 0);
@@ -102,11 +100,8 @@ void CommandStorageManager::EraseCommand(SessionCommand* old_command) {
 void CommandStorageManager::SwapCommand(
     SessionCommand* old_command,
     std::unique_ptr<SessionCommand> new_command) {
-  auto it = std::find_if(
-      pending_commands_.begin(), pending_commands_.end(),
-      [old_command](const std::unique_ptr<SessionCommand>& command_ptr) {
-        return command_ptr.get() == old_command;
-      });
+  auto it = base::ranges::find(pending_commands_, old_command,
+                               &std::unique_ptr<SessionCommand>::get);
   CHECK(it != pending_commands_.end());
   *it = std::move(new_command);
 }

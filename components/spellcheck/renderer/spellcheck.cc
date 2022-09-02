@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -465,10 +467,8 @@ void SpellCheck::PerformSpellCheck(SpellcheckRequest* param) {
   DCHECK(param);
 
   if (languages_.empty() ||
-      std::find_if(languages_.begin(), languages_.end(),
-                   [](std::unique_ptr<SpellcheckLanguage>& language) {
-                     return !language->IsEnabled();
-                   }) != languages_.end()) {
+      base::ranges::find_if_not(languages_, &SpellcheckLanguage::IsEnabled) !=
+          languages_.end()) {
     param->completion()->DidCancelCheckingText();
   } else {
     WebVector<blink::WebTextCheckingResult> results;
@@ -622,8 +622,7 @@ void SpellCheck::NotifyDictionaryObservers(
 }
 
 bool SpellCheck::IsWordInSupportedScript(const std::u16string& word) const {
-  return std::find_if(languages_.begin(), languages_.end(),
-                      [word](const auto& language) {
-                        return language->IsTextInSameScript(word);
-                      }) != languages_.end();
+  return base::ranges::find_if(languages_, [word](const auto& language) {
+           return language->IsTextInSameScript(word);
+         }) != languages_.end();
 }

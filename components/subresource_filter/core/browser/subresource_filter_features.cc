@@ -4,7 +4,6 @@
 
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
-#include <algorithm>
 #include <map>
 #include <ostream>
 #include <sstream>
@@ -15,6 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -43,11 +43,10 @@ class CommaSeparatedStrings {
   CommaSeparatedStrings& operator=(const CommaSeparatedStrings&) = delete;
 
   bool CaseInsensitiveContains(base::StringPiece lowercase_key) const {
-    const auto predicate = [lowercase_key](base::StringPiece element) {
-      return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
-    };
-    return std::find_if(pieces_.begin(), pieces_.end(), predicate) !=
-           pieces_.end();
+    return base::ranges::find_if(pieces_, [lowercase_key](
+                                              base::StringPiece element) {
+             return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
+           }) != pieces_.end();
   }
 
  private:

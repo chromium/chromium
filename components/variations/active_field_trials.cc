@@ -8,7 +8,9 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -85,22 +87,20 @@ bool HasSyntheticTrial(const std::string& trial_name) {
   variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
   std::string trial_hash =
       base::StringPrintf("%x", variations::HashName(trial_name));
-  auto it = std::find_if(synthetic_trials.begin(), synthetic_trials.end(),
-                         [trial_hash](const auto& trial) {
-                           return base::StartsWith(
-                               trial, trial_hash, base::CompareCase::SENSITIVE);
-                         });
-  return it != synthetic_trials.end();
+  return base::ranges::find_if(
+             synthetic_trials, [trial_hash](const auto& trial) {
+               return base::StartsWith(trial, trial_hash,
+                                       base::CompareCase::SENSITIVE);
+             }) != synthetic_trials.end();
 }
 
 bool IsInSyntheticTrialGroup(const std::string& trial_name,
                              const std::string& trial_group) {
   std::vector<std::string> synthetic_trials;
   GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-  std::string expected_entry =
-      base::StringPrintf("%x-%x", HashName(trial_name), HashName(trial_group));
-  return std::find(synthetic_trials.begin(), synthetic_trials.end(),
-                   expected_entry) != synthetic_trials.end();
+  return base::Contains(
+      synthetic_trials,
+      base::StringPrintf("%x-%x", HashName(trial_name), HashName(trial_group)));
 }
 
 void SetSeedVersion(const std::string& seed_version) {

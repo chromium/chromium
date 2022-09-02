@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -242,8 +242,7 @@ void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!pending_providers_.empty()) {
-    auto item = std::find_if(aggregated_items_.begin(), aggregated_items_.end(),
-                             [id](const OfflineItem& p) { return p.id == id; });
+    auto item = base::ranges::find(aggregated_items_, id, &OfflineItem::id);
     if (item != aggregated_items_.end())
       aggregated_items_.erase(item);
   }

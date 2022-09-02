@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
@@ -138,10 +139,7 @@ void FilterCategories(FetchedCategoriesVector* categories,
   }
   Category exclusive = exclusive_category.value();
   auto category_it =
-      std::find_if(categories->begin(), categories->end(),
-                   [&exclusive](const FetchedCategory& c) -> bool {
-                     return c.category == exclusive;
-                   });
+      base::ranges::find(*categories, exclusive, &FetchedCategory::category);
   if (category_it == categories->end()) {
     categories->clear();
     return;

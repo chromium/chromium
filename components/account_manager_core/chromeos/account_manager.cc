@@ -4,7 +4,6 @@
 
 #include "components/account_manager_core/chromeos/account_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
@@ -797,12 +797,9 @@ void AccountManager::DeletePendingTokenRevocationRequest(
     GaiaTokenRevocationRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = std::find_if(
-      pending_token_revocation_requests_.begin(),
-      pending_token_revocation_requests_.end(),
-      [&request](
-          const std::unique_ptr<GaiaTokenRevocationRequest>& pending_request)
-          -> bool { return pending_request.get() == request; });
+  auto it =
+      base::ranges::find(pending_token_revocation_requests_, request,
+                         &std::unique_ptr<GaiaTokenRevocationRequest>::get);
 
   if (it != pending_token_revocation_requests_.end()) {
     pending_token_revocation_requests_.erase(it);

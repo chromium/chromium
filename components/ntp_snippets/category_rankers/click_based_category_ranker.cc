@@ -4,12 +4,13 @@
 
 #include "components/ntp_snippets/category_rankers/click_based_category_ranker.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -132,12 +133,8 @@ void ClickBasedCategoryRanker::ClearHistory(base::Time begin, base::Time end) {
 
   std::vector<Category> added_categories;
   for (const RankedCategory& old_category : old_categories) {
-    auto it =
-        std::find_if(ordered_categories_.begin(), ordered_categories_.end(),
-                     [old_category](const RankedCategory& other) {
-                       return other.category == old_category.category;
-                     });
-    if (it == ordered_categories_.end()) {
+    if (!base::Contains(ordered_categories_, old_category.category,
+                        &RankedCategory::category)) {
       added_categories.push_back(old_category.category);
     }
   }
@@ -397,10 +394,8 @@ void ClickBasedCategoryRanker::StoreOrderToPrefs(
 
 std::vector<ClickBasedCategoryRanker::RankedCategory>::iterator
 ClickBasedCategoryRanker::FindCategory(Category category) {
-  return std::find_if(ordered_categories_.begin(), ordered_categories_.end(),
-                      [category](const RankedCategory& ranked_category) {
-                        return category == ranked_category.category;
-                      });
+  return base::ranges::find(ordered_categories_, category,
+                            &RankedCategory::category);
 }
 
 bool ClickBasedCategoryRanker::ContainsCategory(Category category) const {

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -279,12 +280,11 @@ SubresourceFilterSafeBrowsingActivationThrottle::
   if (navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS()) {
     const auto& decreasing_configs =
         GetEnabledConfigurations()->configs_by_decreasing_priority();
-    const auto selected_config_itr =
-        std::find_if(decreasing_configs.begin(), decreasing_configs.end(),
-                     [matched_list, this](const Configuration& config) {
-                       return DoesRootFrameURLSatisfyActivationConditions(
-                           config.activation_conditions, matched_list);
-                     });
+    const auto selected_config_itr = base::ranges::find_if(
+        decreasing_configs, [matched_list, this](const Configuration& config) {
+          return DoesRootFrameURLSatisfyActivationConditions(
+              config.activation_conditions, matched_list);
+        });
     if (selected_config_itr != decreasing_configs.end()) {
       selected_config = *selected_config_itr;
       matched = true;

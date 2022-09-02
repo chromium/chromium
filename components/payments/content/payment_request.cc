@@ -211,14 +211,11 @@ void PaymentRequest::Init(
   GURL android_pay_url(methods::kAndroidPay);
   GURL google_play_billing_url(methods::kGooglePlayBilling);
   // Looking for payment methods that are NOT google-related payment methods.
-  auto non_google_it =
-      std::find_if(spec_->url_payment_method_identifiers().begin(),
-                   spec_->url_payment_method_identifiers().end(),
-                   [google_pay_url, android_pay_url,
-                    google_play_billing_url](const GURL& url) {
-                     return url != google_pay_url && url != android_pay_url &&
-                            url != google_play_billing_url;
-                   });
+  auto non_google_it = base::ranges::find_if(
+      spec_->url_payment_method_identifiers(), [&](const GURL& url) {
+        return url != google_pay_url && url != android_pay_url &&
+               url != google_play_billing_url;
+      });
   std::vector<JourneyLogger::PaymentMethodCategory> method_categories;
   if (base::Contains(spec_->url_payment_method_identifiers(), google_pay_url) ||
       base::Contains(spec_->url_payment_method_identifiers(),

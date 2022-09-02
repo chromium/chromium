@@ -4,8 +4,6 @@
 
 #include "components/desks_storage/core/desk_sync_bridge.h"
 
-#include <algorithm>
-
 #include "ash/public/cpp/desk_template.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -1415,13 +1413,10 @@ void DeskSyncBridge::UploadLocalOnlyData(
 }
 
 bool DeskSyncBridge::HasUserTemplateWithName(const std::u16string& name) {
-  return std::find_if(
-             desk_template_entries_.begin(), desk_template_entries_.end(),
-             [&name](
-                 const std::pair<base::GUID,
-                                 std::unique_ptr<ash::DeskTemplate>>& entry) {
-               return entry.second->template_name() == name;
-             }) != desk_template_entries_.end();
+  return base::Contains(desk_template_entries_, name,
+                        [](const DeskEntries::value_type& entry) {
+                          return entry.second->template_name();
+                        });
 }
 
 bool DeskSyncBridge::HasUuid(const base::GUID& uuid) const {

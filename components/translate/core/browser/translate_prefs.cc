@@ -386,8 +386,7 @@ void TranslatePrefs::RemoveFromLanguageList(base::StringPiece input_language) {
   GetUserSelectedLanguageList(&user_selected_languages);
 
   // Remove the language from the list.
-  const auto& it = std::find(user_selected_languages.begin(),
-                             user_selected_languages.end(), chrome_language);
+  const auto& it = base::ranges::find(user_selected_languages, chrome_language);
   if (it != user_selected_languages.end()) {
 
     user_selected_languages.erase(it);
@@ -423,7 +422,7 @@ void TranslatePrefs::RearrangeLanguage(
   std::vector<std::string> languages;
   GetUserSelectedLanguageList(&languages);
 
-  auto pos = std::find(languages.begin(), languages.end(), language);
+  auto pos = base::ranges::find(languages, language);
   if (pos == languages.end())
     return;
 
@@ -1044,9 +1043,8 @@ void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
   ListPrefUpdate update(prefs_, pref_id);
   base::Value::List& never_prompt_list = update->GetList();
 
-  auto value_to_erase = std::find_if(
-      never_prompt_list.begin(), never_prompt_list.end(),
-      [value](const base::Value& value_in_list) {
+  auto value_to_erase = base::ranges::find_if(
+      never_prompt_list, [value](const base::Value& value_in_list) {
         return value_in_list.is_string() && value_in_list.GetString() == value;
       });
   if (value_to_erase != never_prompt_list.end())

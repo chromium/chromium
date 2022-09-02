@@ -4,7 +4,6 @@
 
 #include "components/favicon/core/favicon_handler.h"
 
-#include <algorithm>
 #include <cmath>
 #include <utility>
 #include <vector>
@@ -17,6 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/favicon/core/core_favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
@@ -31,16 +31,6 @@ namespace {
 
 const int kLargestIconSize = 192;
 
-// Return true if |bitmap_result| is expired.
-bool IsExpired(const favicon_base::FaviconRawBitmapResult& bitmap_result) {
-  return bitmap_result.expired;
-}
-
-// Return true if |bitmap_result| is valid.
-bool IsValid(const favicon_base::FaviconRawBitmapResult& bitmap_result) {
-  return bitmap_result.is_valid();
-}
-
 // Returns true if |bitmap_results| is non-empty and:
 // - At least one of the bitmaps in |bitmap_results| is expired
 // OR
@@ -53,8 +43,9 @@ bool HasExpiredOrIncompleteResult(
     return false;
 
   // Check if at least one of the bitmaps is expired.
-  auto it =
-      std::find_if(bitmap_results.begin(), bitmap_results.end(), IsExpired);
+  auto it = base::ranges::find_if(
+      bitmap_results,
+      [](const auto& bitmap_result) { return bitmap_result.expired; });
   if (it != bitmap_results.end())
     return true;
 
@@ -86,8 +77,9 @@ bool HasExpiredOrIncompleteResult(
 // Returns true if at least one of |bitmap_results| is valid.
 bool HasValidResult(
     const std::vector<favicon_base::FaviconRawBitmapResult>& bitmap_results) {
-  return std::find_if(bitmap_results.begin(), bitmap_results.end(), IsValid) !=
-         bitmap_results.end();
+  return base::ranges::find_if(bitmap_results, [](const auto& bitmap_result) {
+           return bitmap_result.is_valid();
+         }) != bitmap_results.end();
 }
 
 std::vector<int> GetDesiredPixelSizes(

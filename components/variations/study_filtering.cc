@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/variations/variations_seed_processor.h"
 
@@ -27,10 +28,9 @@ base::Time ConvertStudyDateToBaseTime(int64_t date_time) {
 template <typename Collection>
 bool ContainsStringIgnoreCaseASCII(const Collection& collection,
                                    const std::string& value) {
-  return std::find_if(std::begin(collection), std::end(collection),
-                      [&value](const std::string& s) -> bool {
-                        return base::EqualsCaseInsensitiveASCII(s, value);
-                      }) != std::end(collection);
+  return base::ranges::find_if(collection, [&value](const std::string& s) {
+           return base::EqualsCaseInsensitiveASCII(s, value);
+         }) != std::end(collection);
 }
 
 }  // namespace

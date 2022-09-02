@@ -4,10 +4,9 @@
 
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/ranges/algorithm.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -46,10 +45,8 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
 void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                              SegmentInfoCallback callback) {
   auto result =
-      std::find_if(segment_infos_.begin(), segment_infos_.end(),
-                   [segment_id](std::pair<SegmentId, proto::SegmentInfo> pair) {
-                     return pair.first == segment_id;
-                   });
+      base::ranges::find(segment_infos_, segment_id,
+                         &std::pair<SegmentId, proto::SegmentInfo>::first);
 
   std::move(callback).Run(result == segment_infos_.end()
                               ? absl::nullopt

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/default_clock.h"
@@ -22,18 +23,6 @@ const char kSuspiciousSiteTriggerQuotaParam[] = "suspicious_site_trigger_quota";
 namespace {
 const size_t kUnlimitedTriggerQuota = std::numeric_limits<size_t>::max();
 constexpr base::TimeDelta kOneDayTimeDelta = base::Days(1);
-
-// Predicate used to search |trigger_type_and_quota_list_| by trigger type.
-class TriggerTypeIs {
- public:
-  explicit TriggerTypeIs(const TriggerType type) : type_(type) {}
-  bool operator()(const TriggerTypeAndQuotaItem& trigger_type_and_quota) {
-    return type_ == trigger_type_and_quota.first;
-  }
-
- private:
-  TriggerType type_;
-};
 
 void ParseTriggerTypeAndQuotaParam(
     std::vector<TriggerTypeAndQuotaItem>* trigger_type_and_quota_list) {
@@ -56,9 +45,8 @@ bool TryFindQuotaForTrigger(
     const TriggerType trigger_type,
     const std::vector<TriggerTypeAndQuotaItem>& trigger_quota_list,
     size_t* out_quota) {
-  const auto& trigger_quota_iter =
-      std::find_if(trigger_quota_list.begin(), trigger_quota_list.end(),
-                   TriggerTypeIs(trigger_type));
+  const auto& trigger_quota_iter = base::ranges::find(
+      trigger_quota_list, trigger_type, &TriggerTypeAndQuotaItem::first);
   if (trigger_quota_iter != trigger_quota_list.end()) {
     *out_quota = trigger_quota_iter->second;
     return true;

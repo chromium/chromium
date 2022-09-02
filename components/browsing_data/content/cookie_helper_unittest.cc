@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -99,9 +100,8 @@ class CookieHelperTest : public testing::Test {
 
     // For each cookie, look for a matching expectation.
     for (const auto& cookie : cookie_list_) {
-      CookieMatcher matcher(cookie);
-      auto match = std::find_if(cookie_expectations_.begin(),
-                                cookie_expectations_.end(), matcher);
+      auto match =
+          base::ranges::find_if(cookie_expectations_, CookieMatcher(cookie));
       if (match != cookie_expectations_.end())
         match->matched_ = true;
     }

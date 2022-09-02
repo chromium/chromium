@@ -4,6 +4,8 @@
 
 #include "components/desks_storage/core/desk_template_util.h"
 
+#include "base/ranges/algorithm.h"
+
 namespace desks_storage {
 
 namespace desk_template_util {
@@ -13,8 +15,8 @@ ash::DeskTemplate* FindOtherEntryWithName(
     const base::GUID& uuid,
     const base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>&
         entries) {
-  auto iter = std::find_if(
-      entries.begin(), entries.end(),
+  auto iter = base::ranges::find_if(
+      entries,
       [name, uuid](const std::pair<base::GUID,
                                    std::unique_ptr<ash::DeskTemplate>>& entry) {
         // Name duplication is allowed if one of the templates is an admin

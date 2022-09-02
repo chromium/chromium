@@ -11,6 +11,7 @@
 
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "components/cdm/common/cdm_messages_android.h"
 #include "content/public/browser/android/android_overlay_provider.h"
@@ -145,12 +146,11 @@ static SupportedCodecs GetSupportedCodecs(
       (supported_codecs & media::EME_CODEC_VP9_PROFILE0)) {
     std::vector<media::CodecProfileLevel> profiles;
     media::MediaCodecUtil::AddSupportedCodecProfileLevels(&profiles);
-    auto iter =
-        std::find_if(profiles.begin(), profiles.end(),
-                     [](const media::CodecProfileLevel& profile) {
-                       return profile.codec == media::VideoCodec::kVP9 &&
-                              profile.profile == media::VP9PROFILE_PROFILE2;
-                     });
+    auto iter = base::ranges::find_if(
+        profiles, [](const media::CodecProfileLevel& profile) {
+          return profile.codec == media::VideoCodec::kVP9 &&
+                 profile.profile == media::VP9PROFILE_PROFILE2;
+        });
     if (iter != profiles.end()) {
       supported_codecs |= media::EME_CODEC_VP9_PROFILE2;
     }
@@ -160,12 +160,11 @@ static SupportedCodecs GetSupportedCodecs(
       (supported_codecs & media::EME_CODEC_HEVC_PROFILE_MAIN)) {
     std::vector<media::CodecProfileLevel> profiles;
     media::MediaCodecUtil::AddSupportedCodecProfileLevels(&profiles);
-    auto iter =
-        std::find_if(profiles.begin(), profiles.end(),
-                     [](const media::CodecProfileLevel& profile) {
-                       return profile.codec == media::VideoCodec::kHEVC &&
-                              profile.profile == media::HEVCPROFILE_MAIN10;
-                     });
+    auto iter = base::ranges::find_if(
+        profiles, [](const media::CodecProfileLevel& profile) {
+          return profile.codec == media::VideoCodec::kHEVC &&
+                 profile.profile == media::HEVCPROFILE_MAIN10;
+        });
     if (iter != profiles.end()) {
       supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
     }

@@ -4,13 +4,13 @@
 
 #include "components/user_manager/fake_user_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/user_manager/user_names.h"
@@ -100,10 +100,8 @@ const user_manager::User* FakeUserManager::AddPublicAccountUser(
 }
 
 void FakeUserManager::RemoveUserFromList(const AccountId& account_id) {
-  const UserList::iterator it = std::find_if(
-      users_.begin(), users_.end(), [&account_id](const User* user) {
-        return user->GetAccountId() == account_id;
-      });
+  const UserList::iterator it =
+      base::ranges::find(users_, account_id, &User::GetAccountId);
   if (it != users_.end()) {
     if (primary_user_ == *it)
       primary_user_ = nullptr;

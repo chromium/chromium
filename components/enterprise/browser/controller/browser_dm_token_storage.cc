@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -15,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -178,9 +180,9 @@ void BrowserDMTokenStorage::InitIfNeeded() {
   }
 
   // checks if client ID includes an illegal character
-  if (std::find_if(client_id_.begin(), client_id_.end(), [](char ch) {
-    return ch == ' ' || !base::IsAsciiPrintable(ch);
-  }) != client_id_.end()) {
+  if (base::ranges::find_if(client_id_, [](char ch) {
+        return ch == ' ' || !base::IsAsciiPrintable(ch);
+      }) != client_id_.end()) {
     SYSLOG(ERROR)
         << "Chrome browser cloud management client ID should not"
            " contain a space, new line, or any nonprintable character.";

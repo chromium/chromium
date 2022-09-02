@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -133,13 +134,9 @@ void PolicyErrorMap::AddError(const std::string& policy,
 bool PolicyErrorMap::HasError(const std::string& policy) {
   if (IsReady()) {
     CheckReadyAndConvert();
-    return map_.find(policy) != map_.end();
-  } else {
-    return std::find_if(pending_.begin(), pending_.end(),
-                        [policy](const auto& error) {
-                          return error->policy_name() == policy;
-                        }) != pending_.end();
+    return base::Contains(map_, policy);
   }
+  return base::Contains(pending_, policy, &PendingError::policy_name);
 }
 
 std::u16string PolicyErrorMap::GetErrors(const std::string& policy) {
