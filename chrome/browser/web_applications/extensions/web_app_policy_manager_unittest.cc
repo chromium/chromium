@@ -415,6 +415,13 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                             url, install_source);
   }
 
+  void MakeInstalledAppPlaceholder(const GURL& url) {
+    test::AddInstallUrlAndPlaceholderData(
+        profile()->GetPrefs(), &sync_bridge(),
+        GenerateAppId(/*manifest_id=*/absl::nullopt, url), url,
+        ExternalInstallSource::kExternalPolicy, /*is_placeholder=*/true);
+  }
+
   void AwaitPolicyManagerAppsSynchronized() {
     base::RunLoop loop;
     policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
@@ -958,7 +965,7 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
 }
 
 // Tests that we correctly reinstall a placeholder app.
-TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderApp) {
+TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppSuccess) {
   if (ShouldSkipPWASpecificTest())
     return;
   base::Value list(base::Value::Type::LIST);
@@ -974,6 +981,7 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderApp) {
       externally_managed_app_manager().install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
+  MakeInstalledAppPlaceholder(GURL(kWindowedUrl));
   policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
   base::RunLoop().RunUntilIdle();
 
@@ -983,6 +991,31 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderApp) {
   reinstall_options.wait_for_windows_closed = true;
   expected_options_list.push_back(std::move(reinstall_options));
 
+  EXPECT_EQ(expected_options_list, install_options_list);
+}
+
+TEST_P(WebAppPolicyManagerTest, DoNotReinstallIfNotPlaceholder) {
+  if (ShouldSkipPWASpecificTest())
+    return;
+  base::Value list(base::Value::Type::LIST);
+  list.Append(GetWindowedItem());
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<ExternalInstallOptions> expected_options_list;
+  expected_options_list.push_back(GetWindowedInstallOptions());
+
+  const auto& install_options_list =
+      externally_managed_app_manager().install_requests();
+  EXPECT_EQ(expected_options_list, install_options_list);
+
+  // By default, the app being installed is not a placeholder app.
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
+  base::RunLoop().RunUntilIdle();
+
+  // No other options are added to list as the app is currently not
+  // installed as a placeholder app.
   EXPECT_EQ(expected_options_list, install_options_list);
 }
 
@@ -1004,6 +1037,7 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
       externally_managed_app_manager().install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
+  MakeInstalledAppPlaceholder(GURL(kWindowedUrl));
   policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
   base::RunLoop().RunUntilIdle();
 

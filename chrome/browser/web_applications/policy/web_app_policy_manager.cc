@@ -127,7 +127,12 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
                      return entry.FindKey(kUrlKey)->GetString() == url.spec();
                    });
 
-  if (it == web_apps_list.end())
+  bool is_placeholder_url =
+      app_registrar_
+          ->LookupPlaceholderAppId(GURL(url.spec()), WebAppManagement::kPolicy)
+          .has_value();
+
+  if (it == web_apps_list.end() || !is_placeholder_url)
     return;
 
   ExternalInstallOptions install_options = ParseInstallPolicyEntry(*it);
@@ -268,7 +273,6 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
         install_options.force_reinstall = true;
       }
     }
-
     install_options_list.push_back(std::move(install_options));
   }
 
