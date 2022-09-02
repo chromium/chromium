@@ -39,7 +39,7 @@ struct ASH_PUBLIC_EXPORT AcceleratorInfo {
   ash::mojom::AcceleratorState state = ash::mojom::AcceleratorState::kEnabled;
 };
 
-using AcceleratorAction = uint32_t;
+using AcceleratorActionId = uint32_t;
 
 // The public-facing interface for shortcut providers, this should be
 // implemented by sources, e.g. Browser, Ash, that want their shortcuts to be
@@ -48,7 +48,7 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
  public:
   using AcceleratorsUpdatedCallback = base::RepeatingCallback<void(
       ash::mojom::AcceleratorSource,
-      std::multimap<AcceleratorAction, AcceleratorInfo>)>;
+      std::multimap<AcceleratorActionId, AcceleratorInfo>)>;
 
   explicit AcceleratorConfiguration(ash::mojom::AcceleratorSource source);
   virtual ~AcceleratorConfiguration();
@@ -60,7 +60,7 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
 
   // Get the accelerators for a single action.
   virtual const std::vector<AcceleratorInfo>& GetConfigForAction(
-      AcceleratorAction actionId) = 0;
+      AcceleratorActionId action_id) = 0;
 
   // Whether this source of shortcuts can be modified. If this returns false
   // then any of the Add/Remove/Replace class will DCHECK. The two Restore
@@ -69,30 +69,31 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
 
   // Add a new user defined accelerator.
   virtual AcceleratorConfigResult AddUserAccelerator(
-      AcceleratorAction action,
+      AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) = 0;
 
   // Remove a shortcut. This will delete a user-defined shortcut, or
   // mark a default one disabled.
   virtual AcceleratorConfigResult RemoveAccelerator(
-      AcceleratorAction action,
+      AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) = 0;
 
   // Atomic version of Remove then Add.
   virtual AcceleratorConfigResult ReplaceAccelerator(
-      AcceleratorAction action,
+      AcceleratorActionId action_id,
       const ui::Accelerator& old_acc,
       const ui::Accelerator& new_acc) = 0;
 
   // Restore the defaults for the given action.
-  virtual AcceleratorConfigResult RestoreDefault(AcceleratorAction action) = 0;
+  virtual AcceleratorConfigResult RestoreDefault(
+      AcceleratorActionId action_id) = 0;
 
   // Restore all defaults.
   virtual AcceleratorConfigResult RestoreAllDefaults() = 0;
 
  protected:
   void NotifyAcceleratorsUpdated(
-      const std::multimap<AcceleratorAction, AcceleratorInfo>& accelerators);
+      const std::multimap<AcceleratorActionId, AcceleratorInfo>& accelerators);
 
  private:
   // The source of the accelerators. Derived classes are responsible for only

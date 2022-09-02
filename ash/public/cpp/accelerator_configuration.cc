@@ -30,7 +30,7 @@ void AcceleratorConfiguration::RemoveAcceleratorsUpdatedCallback(
 }
 
 void AcceleratorConfiguration::NotifyAcceleratorsUpdated(
-    const std::multimap<AcceleratorAction, AcceleratorInfo>& accelerators) {
+    const std::multimap<AcceleratorActionId, AcceleratorInfo>& accelerators) {
   for (auto& cb : callbacks_) {
     cb.Run(source_, accelerators);
   }

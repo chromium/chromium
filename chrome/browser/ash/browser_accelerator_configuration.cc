@@ -16,7 +16,7 @@ BrowserAcceleratorConfiguration::~BrowserAcceleratorConfiguration() = default;
 
 const std::vector<AcceleratorInfo>&
 BrowserAcceleratorConfiguration::GetConfigForAction(
-    AcceleratorAction actionId) {
+    AcceleratorActionId action_id) {
   // TODO(jimmyxgong): Implement stub.
   return accelerator_infos_;
 }
@@ -26,21 +26,21 @@ bool BrowserAcceleratorConfiguration::IsMutable() const {
 }
 
 AcceleratorConfigResult BrowserAcceleratorConfiguration::AddUserAccelerator(
-    AcceleratorAction action,
+    AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
   // TODO(jimmyxgong): Implement stub.
   return AcceleratorConfigResult::kSuccess;
 }
 
 AcceleratorConfigResult BrowserAcceleratorConfiguration::RemoveAccelerator(
-    AcceleratorAction action,
+    AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
   // TODO(jimmyxgong): Implement stub.
   return AcceleratorConfigResult::kSuccess;
 }
 
 AcceleratorConfigResult BrowserAcceleratorConfiguration::ReplaceAccelerator(
-    AcceleratorAction action,
+    AcceleratorActionId action_id,
     const ui::Accelerator& old_acc,
     const ui::Accelerator& new_acc) {
   // TODO(jimmyxgong): Implement stub.
@@ -48,7 +48,7 @@ AcceleratorConfigResult BrowserAcceleratorConfiguration::ReplaceAccelerator(
 }
 
 AcceleratorConfigResult BrowserAcceleratorConfiguration::RestoreDefault(
-    AcceleratorAction action) {
+    AcceleratorActionId action_id) {
   // TODO(jimmyxgong): Implement stub.
   return AcceleratorConfigResult::kSuccess;
 }

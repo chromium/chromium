@@ -17,7 +17,7 @@ AshAcceleratorConfiguration::~AshAcceleratorConfiguration() = default;
 
 // TODO(jimmyxgong): Implement all functions below as these are only stubs.
 const std::vector<AcceleratorInfo>&
-AshAcceleratorConfiguration::GetConfigForAction(AcceleratorAction actionId) {
+AshAcceleratorConfiguration::GetConfigForAction(AcceleratorActionId action_id) {
   return accelerator_infos_;
 }
 
@@ -26,26 +26,26 @@ bool AshAcceleratorConfiguration::IsMutable() const {
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
-    AcceleratorAction action,
+    AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
   return AcceleratorConfigResult::kActionLocked;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
-    AcceleratorAction action,
+    AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
   return AcceleratorConfigResult::kActionLocked;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::ReplaceAccelerator(
-    AcceleratorAction action,
+    AcceleratorActionId action_id,
     const ui::Accelerator& old_acc,
     const ui::Accelerator& new_acc) {
   return AcceleratorConfigResult::kActionLocked;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
-    AcceleratorAction action) {
+    AcceleratorActionId action_id) {
   return AcceleratorConfigResult::kActionLocked;
 }
 
