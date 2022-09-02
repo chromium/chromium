@@ -498,6 +498,7 @@ shared_library("desktop_shell") {
     ":libweston_desktop",
     ":shared",
     ":weston_desktop_shell_protocol",
+    "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:input_method_protocol",
   ]
 
