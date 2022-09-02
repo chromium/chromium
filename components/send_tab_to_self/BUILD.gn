@@ -61,7 +61,10 @@ static_library("send_tab_to_self") {
 if (is_android) {
   java_cpp_enum("java_enum_srcjar") {
     visibility = [ ":*" ]
-    sources = [ "entry_point_display_reason.h" ]
+    sources = [
+      "entry_point_display_reason.h",
+      "metrics_util.h",
+    ]
   }
 
   android_library("send_tab_to_self_java") {

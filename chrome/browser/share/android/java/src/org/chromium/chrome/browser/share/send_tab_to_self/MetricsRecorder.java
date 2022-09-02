@@ -12,8 +12,8 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("send_tab_to_self")
 class MetricsRecorder {
-    public static void recordDeviceClickedInShareSheet() {
-        MetricsRecorderJni.get().recordDeviceClickedInShareSheet();
+    public static void recordSendingEvent(@SendingEvent int sendingEvent) {
+        MetricsRecorderJni.get().recordSendingEvent(sendingEvent);
     }
 
     public static void recordNotificationShown() {
@@ -34,7 +34,7 @@ class MetricsRecorder {
 
     @NativeMethods
     interface Natives {
-        void recordDeviceClickedInShareSheet();
+        void recordSendingEvent(int sendingEvent);
         void recordNotificationShown();
         void recordNotificationOpened();
         void recordNotificationDismissed();

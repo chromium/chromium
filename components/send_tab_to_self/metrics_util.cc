@@ -11,16 +11,6 @@ namespace send_tab_to_self {
 
 namespace {
 
-// State of the send tab to self option in the UI.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ClickResult {
-  // kShowItem = 0,
-  kClickItem = 1,
-  // kShowDeviceList = 2,
-  kMaxValue = kClickItem,
-};
-
 // Status of received STTS notifications.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -30,7 +20,7 @@ enum class NotificationStatus {
   kDismissed = 1,
   kOpened = 2,
   kTimedOut = 3,
-  kSent = 4,
+  // kSent = 4,
   kDismissReasonUnknown = 5,
   kThrottled = 6,
   kMaxValue = kThrottled,
@@ -57,14 +47,11 @@ std::string GetEntryPointHistogramString(ShareEntryPoint entry_point) {
 
 }  // namespace
 
-void RecordDeviceClicked(ShareEntryPoint entry_point) {
-  // TODO(crbug.com/956722): Only kClickItem is used today, so we should replace
-  // this with a histogram which doesn't use the ClickResult enum.
+void RecordSendingEvent(ShareEntryPoint entry_point, SendingEvent event) {
   base::UmaHistogramEnumeration(
       base::StrCat({"SendTabToSelf.", GetEntryPointHistogramString(entry_point),
                     ".ClickResult"}),
-      ClickResult::kClickItem);
-  RecordNotificationSent();
+      event);
 }
 
 void RecordNotificationShown() {
@@ -85,11 +72,6 @@ void RecordNotificationOpened() {
 void RecordNotificationTimedOut() {
   base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
                                 NotificationStatus::kTimedOut);
-}
-
-void RecordNotificationSent() {
-  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
-                                NotificationStatus::kSent);
 }
 
 void RecordNotificationDismissReasonUnknown() {
