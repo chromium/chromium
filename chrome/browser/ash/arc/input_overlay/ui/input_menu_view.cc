@@ -220,11 +220,11 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
                           gfx::Font::Weight::MEDIUM),
             /*line_height=*/kHeaderMinHeight));
 
-    auto* alpha_label =
-        header_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
+    auto* alpha_label = header_view->AddChildView(
+        ash::login_views_utils::CreateThemedBubbleLabel(
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
-            /*view_defining_max_width=*/nullptr, /*color=*/
-            arc::GetCrOSColor(cros_styles::ColorName::kTextColorSelection),
+            /*view_defining_max_width=*/nullptr,
+            /*enabled_color_type=*/cros_tokens::kColorSelection,
             gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
                           gfx::Font::Weight::MEDIUM)));
@@ -232,9 +232,8 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     alpha_label->SetPreferredSize(gfx::Size(
         alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
         kAlphaHeight));
-    alpha_label->SetBackground(views::CreateRoundedRectBackground(
-        arc::GetCrOSColor(cros_styles::ColorName::kHighlightColor),
-        kAlphaCornerRadius));
+    alpha_label->SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kHighlightColor, kAlphaCornerRadius));
 
     game_control_toggle_ =
         header_view->AddChildView(std::make_unique<views::ToggleButton>(

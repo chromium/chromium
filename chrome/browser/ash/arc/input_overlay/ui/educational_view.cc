@@ -7,8 +7,7 @@
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
@@ -20,7 +19,6 @@
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
@@ -140,8 +138,8 @@ void EducationalView::Init(const gfx::Size& parent_size) {
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  SetBackground(views::CreateRoundedRectBackground(
-      GetDialogBackgroundBaseColor(), kDialogCornerRadius));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      ash::kColorAshDialogBackgroundColor, kDialogCornerRadius));
 
   const int parent_width = parent_size.width();
   {
@@ -197,7 +195,8 @@ void EducationalView::Init(const gfx::Size& parent_size) {
     auto* alpha_label = container_view->AddChildView(
         ash::login_views_utils::CreateThemedBubbleLabel(
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
-            /*view_defining_max_width=*/nullptr, /*enabled_color_type=*/
+            /*view_defining_max_width=*/nullptr,
+            /*enabled_color_type=*/
             ash::features::IsDarkLightModeEnabled()
                 ? cros_tokens::kColorSelection
                 : cros_tokens::kColorSelectionLight,
@@ -209,9 +208,8 @@ void EducationalView::Init(const gfx::Size& parent_size) {
     alpha_label->SetPreferredSize(gfx::Size(
         alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
         kAlphaHeight));
-    alpha_label->SetBackground(views::CreateRoundedRectBackground(
-        arc::GetCrOSColor(cros_styles::ColorName::kHighlightColor),
-        kAlphaCornerRadius));
+    alpha_label->SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kHighlightColor, kAlphaCornerRadius));
     alpha_label->SetProperty(views::kMarginsKey,
                              gfx::Insets::TLBR(0, kAlphaLeftMargin, 0, 0));
     container_view->SetProperty(

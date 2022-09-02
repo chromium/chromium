@@ -394,6 +394,10 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
 void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
+  const bool use_dark_color =
+      features::IsDarkLightModeEnabled()
+          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 
   AddShieldAndBaseColors(mixer, key);
   AddControlsColors(mixer, key);
@@ -465,6 +469,10 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
   mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {kColorAshInkDrop};
   mixer[ui::kColorAshSystemUIMenuSeparator] = {kColorAshSeparatorColor};
+
+  mixer[kColorAshDialogBackgroundColor] =
+      use_dark_color ? ui::ColorTransform(SkColorSetRGB(0x32, 0x33, 0x36))
+                     : ui::ColorTransform(SK_ColorWHITE);
 }
 
 }  // namespace ash

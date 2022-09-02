@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_COMPAT_MODE_ARC_SPLASH_SCREEN_DIALOG_VIEW_H_
 #define ASH_COMPONENTS_ARC_COMPAT_MODE_ARC_SPLASH_SCREEN_DIALOG_VIEW_H_
 
+#include "ash/style/ash_color_id.h"
 #include "base/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -60,6 +61,7 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
   // views::ViewObserver:
   void OnViewIsDeleting(View* observed_view) override;
@@ -79,6 +81,8 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
 
   base::OnceClosure close_callback_;
   views::MdTextButton* close_button_ = nullptr;
+
+  const ui::ColorId background_color_id_ = ash::kColorAshDialogBackgroundColor;
 
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       anchor_highlight_observations_{this};

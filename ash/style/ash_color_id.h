@@ -106,7 +106,9 @@ namespace ash {
   E_CPONLY(kColorAshSuggestionChipViewTextView) \
   E_CPONLY(kColorAshAssistantQueryHighConfidenceLabel) \
   E_CPONLY(kColorAshAssistantQueryLowConfidenceLabel) \
-  E_CPONLY(kColorAshAssistantTextColorPrimary)
+  E_CPONLY(kColorAshAssistantTextColorPrimary) \
+  /* Color for dialog background in arc */ \
+  E_CPONLY(kColorAshDialogBackgroundColor)
 
 #include "ui/color/color_id_macros.inc"
 

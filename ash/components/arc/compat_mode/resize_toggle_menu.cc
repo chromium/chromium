@@ -16,6 +16,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
@@ -127,21 +128,22 @@ gfx::Size ResizeToggleMenu::MenuButtonView::CalculatePreferredSize() const {
 void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   if (!GetWidget())
     return;
-
   const auto* color_provider = GetColorProvider();
 
+  const ui::ColorId selection_color_id = cros_tokens::kColorSelection;
+
   const auto icon_color =
-      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kIconColorSelection)
+      is_selected_ ? color_provider->GetColor(selection_color_id)
                    : color_provider->GetColor(ui::kColorLabelForeground);
   icon_view_->SetImage(gfx::CreateVectorIcon(icon_, icon_color));
 
   const auto text_color =
-      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kTextColorSelection)
+      is_selected_ ? color_provider->GetColor(selection_color_id)
                    : color_provider->GetColor(ui::kColorLabelForeground);
   title_->SetEnabledColor(text_color);
 
   const auto background_color =
-      is_selected_ ? GetCrOSColor(cros_styles::ColorName::kHighlightColor)
+      is_selected_ ? color_provider->GetColor(cros_tokens::kHighlightColor)
                    : SK_ColorTRANSPARENT;
   background()->SetNativeControlColor(background_color);
 

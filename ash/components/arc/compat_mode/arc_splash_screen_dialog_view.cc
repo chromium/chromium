@@ -44,6 +44,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -140,7 +141,6 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     views::View* anchor,
     bool is_for_unresizable)
     : anchor_(anchor), close_callback_(std::move(close_callback)) {
-  const auto background_color = GetDialogBackgroundBaseColor();
   // Setup delegate.
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -155,7 +155,6 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   SetCancelCallback(
       base::BindOnce(&ArcSplashScreenDialogView::OnCloseButtonClicked,
                      weak_ptr_factory_.GetWeakPtr()));
-  set_color(background_color);
   set_adjust_if_offscreen(false);
   set_close_on_deactivate(false);
 
@@ -172,13 +171,11 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
                                    /*adjust_height_for_width=*/true));
 
   constexpr gfx::Size kLogoImageSize(152, 126);
-  AddChildView(
-      views::Builder<views::ImageView>()  // Logo
-          .SetImage(gfx::ImageSkiaOperations::ExtractSubset(
-              gfx::CreateVectorIcon(kCompatModeSplashscreenIcon,
-                                    kLogoImageSize.width(), background_color),
-              gfx::Rect(kLogoImageSize)))
-          .Build());
+  AddChildView(views::Builder<views::ImageView>()  // Logo
+                   .SetImage(ui::ImageModel::FromVectorIcon(
+                       kCompatModeSplashscreenIcon, background_color_id_,
+                       kLogoImageSize.width()))
+                   .Build());
   AddChildView(views::Builder<views::Label>()  // Header
                    .SetText(l10n_util::GetStringUTF16(
                        IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE))
@@ -253,6 +250,11 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   auto* const frame = GetBubbleFrameView();
   if (frame)
     frame->SetCornerRadius(kCornerRadius);
+}
+
+void ArcSplashScreenDialogView::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  set_color(GetColorProvider()->GetColor(background_color_id_));
 }
 
 void ArcSplashScreenDialogView::OnViewIsDeleting(View* observed_view) {

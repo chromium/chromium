@@ -2474,6 +2474,7 @@ if (!is_android) {
         "//chromeos/constants",
         "//chromeos/ui/frame",
         "//components/account_manager_core:test_support",
+        "//ui/chromeos/styles:cros_tokens_color_mappings",
       ]
       sources += [
         "../browser/browser_process_platform_part_chromeos_browsertest.cc",
