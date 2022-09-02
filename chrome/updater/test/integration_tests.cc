@@ -365,7 +365,13 @@ TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
   Uninstall();
 }
 
-TEST_F(IntegrationTest, OverinstallBroken) {
+// TODO(crbug.com/1359334): Flaky on Win10.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
+#else
+#define MAYBE_OverinstallBroken OverinstallBroken
+#endif
+TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   SetupRealUpdaterLowerVersion();
   WaitForUpdaterExit();
   DeleteUpdaterDirectory();
@@ -758,7 +764,12 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
 // TODO(crbug.com/1341471) - this may be slightly flaky as the typelib errors
 // showing up on Windows (which resulted in disabling SelfUpdateFromOldReal) are
 // being investigated. This test is simpler than SelfUpdateFromOldReal.
-TEST_F(IntegrationTest, InstallUninstallLowerVersion) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InstallUninstallLowerVersion DISABLED_InstallUninstallLowerVersion
+#else
+#define MAYBE_InstallUninstallLowerVersion InstallUninstallLowerVersion
+#endif
+TEST_F(IntegrationTest, MAYBE_InstallUninstallLowerVersion) {
   SetupRealUpdaterLowerVersion();
   ExpectVersionNotActive(kUpdaterVersion);
   Uninstall();
