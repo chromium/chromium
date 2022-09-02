@@ -2,46 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-// #import 'chrome://resources/mojo/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js';
-// #import 'chrome://resources/mojo/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js';
-// #import 'chrome://resources/mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js';
+import 'chrome://resources/mojo/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js';
+import 'chrome://resources/mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js';
 
-cr.define('multidevice_setup', function() {
-  /** @interface */
-  /* #export */ class MojoInterfaceProvider {
-    /**
-     * @return {!ash.multideviceSetup.mojom.MultiDeviceSetupRemote}
-     */
-    getMojoServiceRemote() {}
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
+/** @interface */
+export class MojoInterfaceProvider {
+  /**
+   * @return {!ash.multideviceSetup.mojom.MultiDeviceSetupRemote}
+   */
+  getMojoServiceRemote() {}
+}
+
+/** @implements {MojoInterfaceProvider} */
+export class MojoInterfaceProviderImpl {
+  constructor() {
+    /** @private {?ash.multideviceSetup.mojom.MultiDeviceSetupRemote} */
+    this.remote_ = null;
   }
 
-  /** @implements {multidevice_setup.MojoInterfaceProvider} */
-  /* #export */ class MojoInterfaceProviderImpl {
-    constructor() {
-      /** @private {?ash.multideviceSetup.mojom.MultiDeviceSetupRemote} */
-      this.remote_ = null;
+  /** @override */
+  getMojoServiceRemote() {
+    if (!this.remote_) {
+      this.remote_ = ash.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
     }
 
-    /** @override */
-    getMojoServiceRemote() {
-      if (!this.remote_) {
-        this.remote_ = ash.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
-      }
-
-      return this.remote_;
-    }
+    return this.remote_;
   }
+}
 
-  cr.addSingletonGetter(MojoInterfaceProviderImpl);
-
-  // #cr_define_end
-  return {
-    MojoInterfaceProvider: MojoInterfaceProvider,
-    MojoInterfaceProviderImpl: MojoInterfaceProviderImpl,
-  };
-});
+addSingletonGetter(MojoInterfaceProviderImpl);

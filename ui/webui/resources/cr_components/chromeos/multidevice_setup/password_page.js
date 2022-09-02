@@ -2,7 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './multidevice_setup_shared_css.js';
+import './ui_page.js';
+import '../../../cr_elements/cr_input/cr_input.js';
+import '../../../js/cr.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BrowserProxy, BrowserProxyImpl} from './multidevice_setup_browser_proxy.js';
+import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'password-page',
 
   behaviors: [
@@ -89,7 +100,7 @@ Polymer({
     },
   },
 
-  /** @private {?multidevice_setup.BrowserProxy} */
+  /** @private {?BrowserProxy} */
   browserProxy_: null,
 
   clearPasswordTextInput() {
@@ -102,7 +113,7 @@ Polymer({
 
   /** @override */
   created() {
-    this.browserProxy_ = multidevice_setup.BrowserProxyImpl.getInstance();
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
   },
 
   /** @override */

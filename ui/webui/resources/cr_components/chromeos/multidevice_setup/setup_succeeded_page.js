@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './multidevice_setup_shared_css.js';
+import './ui_page.js';
+import '../../../js/cr.m.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BrowserProxy, BrowserProxyImpl} from './multidevice_setup_browser_proxy.js';
+import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
+
 /**
  * @type {string}
  */
@@ -27,6 +37,7 @@ const SRC_SET_URL_2_DARK =
     'chrome://resources/cr_components/chromeos/multidevice_setup/all_set_2x_dark.svg';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'setup-succeeded-page',
 
   properties: {
@@ -48,12 +59,12 @@ Polymer({
 
   behaviors: [UiPageContainerBehavior],
 
-  /** @private {?multidevice_setup.BrowserProxy} */
+  /** @private {?BrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = multidevice_setup.BrowserProxyImpl.getInstance();
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
   },
 
   /** @private */

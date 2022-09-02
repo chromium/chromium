@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './multidevice_setup_shared_css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * DOM Element containing (page-dependent) navigation buttons for the
  * MultiDevice Setup WebUI.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'button-bar',
 
   properties: {

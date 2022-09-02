@@ -2,6 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './icons.js';
+import './mojo_api.js';
+import './multidevice_setup_shared_css.js';
+import './ui_page.js';
+import '../../../js/cr.m.js';
+import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {WebUIListenerBehavior} from '../../../js/web_ui_listener_behavior.m.js';
+
+import {MultiDeviceSetupDelegate} from './multidevice_setup_delegate.js';
+import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
+
 /**
  * The multidevice setup animation for light mode.
  * @type {string}
@@ -15,6 +32,7 @@ const MULTIDEVICE_ANIMATION_DARK_URL = 'multidevice_setup_dark.json';
 const MULTIDEVICE_ANIMATION_LIGHT_URL = 'multidevice_setup_light.json';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'start-setup-page',
 
   properties: {
@@ -60,7 +78,7 @@ Polymer({
 
     /**
      * Delegate object which performs differently in OOBE vs. non-OOBE mode.
-     * @type {!multidevice_setup.MultiDeviceSetupDelegate}
+     * @type {!MultiDeviceSetupDelegate}
      */
     delegate: Object,
 
@@ -128,7 +146,7 @@ Polymer({
   },
 
   /**
-   * @param {!multidevice_setup.MultiDeviceSetupDelegate} delegate
+   * @param {!MultiDeviceSetupDelegate} delegate
    * @return {string} The cancel button text ID, dependent on OOBE vs. non-OOBE.
    * @private
    */
