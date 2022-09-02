@@ -21,7 +21,18 @@
   const testRunner = new systemExtensionsTest.mojom.TestRunnerRemote;
   testRunner.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
 
-  setup({
+  // Simulating an event before the service worker is installed, fails because
+  // the service worker is not considered registered yet. We have to wait for
+  // the service worker to be fully registered before we try to simulate events.
+  const activatePromise = new Promise(resolve => {
+    let wrapper = function(event) {
+      globalThis.removeEventListener('activate', wrapper);
+      resolve(event);
+    };
+    globalThis.addEventListener('activate', wrapper);
+  });
+
+  promise_setup(() => activatePromise, {
     // The default output formats test results into an HTML table, but for
     // the System Extensions, we output the test results to the console.
     'output': false,

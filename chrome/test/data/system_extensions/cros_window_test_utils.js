@@ -6,7 +6,9 @@
 // test interface.
 // TODO(b/242264794): Remove once all tests use ApiBrowserTest.
 if (typeof systemExtensionsTest !== 'undefined') {
-  importScripts('cros_window_management_test_helper.test-mojom-lite.js');
+  importScripts(
+      'keyboard_codes.mojom-lite.js', 'event_constants.mojom-lite.js',
+      'cros_window_management_test_helper.test-mojom-lite.js')
 
   globalThis.testHelper =
       new systemExtensionsTest.mojom.CrosWindowManagementTestHelperRemote;

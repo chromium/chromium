@@ -4,6 +4,9 @@
 
 module system_extensions_test.mojom;
 
+import "ui/events/mojom/keyboard_codes.mojom";
+import "ui/events/mojom/event_constants.mojom";
+
 // Interface that allows tests to perform browser-side actions on behalf of
 // them e.g. get the size of the shelf, open new windows, etc.
 interface CrosWindowManagementTestHelper {
@@ -13,4 +16,15 @@ interface CrosWindowManagementTestHelper {
 
   // Returns the height of the shelf.
   GetShelfHeight() => (int32 shelf_height);
+
+  // Simulates a key with `keyboard_code` and `modifiers` being pressed.
+  // `modifiers` is a bitmask of event and keyboard event flags in
+  // `events_contants.mojom`.
+  SimulatePressKey(ui.mojom.KeyboardCode keyboard_code,
+                   int32 modifiers) => ();
+  // Simulates a key with `keyboard_code` and `modifiers` being pressed.
+  // `modifiers` is a bitmask of event and keyboard event flags in
+  // `events_contants.mojom`.
+  SimulateReleaseKey(ui.mojom.KeyboardCode keyboard_code,
+                     int32 modifiers) => ();
 };

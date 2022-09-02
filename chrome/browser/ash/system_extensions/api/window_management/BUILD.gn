@@ -69,5 +69,8 @@ mojom("test_helper") {
   testonly = true
   sources = [ "cros_window_management_test_helper.test-mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/events/mojom",
+  ]
 }

@@ -177,6 +177,27 @@ class CrosWindowManagementTestHelper
 
     std::move(callback).Run(shelf_bounds.height());
   }
+
+  void SimulatePressKey(ui::mojom::KeyboardCode keyboard_code,
+                        int32_t modifiers,
+                        SimulatePressKeyCallback callback) override {
+    ui::test::EventGenerator generator(
+        ash::Shell::Get()->GetPrimaryRootWindow());
+    generator.PressKey(static_cast<ui::KeyboardCode>(keyboard_code), modifiers);
+
+    std::move(callback).Run();
+  }
+
+  void SimulateReleaseKey(ui::mojom::KeyboardCode keyboard_code,
+                          int32_t modifiers,
+                          SimulateReleaseKeyCallback callback) override {
+    ui::test::EventGenerator generator(
+        ash::Shell::Get()->GetPrimaryRootWindow());
+    generator.ReleaseKey(static_cast<ui::KeyboardCode>(keyboard_code),
+                         modifiers);
+
+    std::move(callback).Run();
+  }
 };
 
 class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
@@ -190,7 +211,9 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
             .additional_gen_files =
                 {"gen/chrome/browser/ash/system_extensions/api/"
                  "window_management/"
-                 "cros_window_management_test_helper.test-mojom-lite.js"},
+                 "cros_window_management_test_helper.test-mojom-lite.js",
+                 "gen/ui/events/mojom/keyboard_codes.mojom-lite.js",
+                 "gen/ui/events/mojom/event_constants.mojom-lite.js"},
         }) {
     AddRendererInterface(base::BindLambdaForTesting(
         [](mojo::PendingReceiver<
@@ -536,22 +559,6 @@ IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
             sw_console_observer.WaitAndGetNextConsoleMessage());
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, AcceleratorEvent) {
-  InstallAndStartExtension();
-
-  auto observer = GetConsoleObserver();
-  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.PressKey(ui::KeyboardCode::VKEY_A,
-                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-
-  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
-  const auto& dict = result.GetDict();
-
-  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
-  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
-  EXPECT_FALSE(*dict.FindBool("repeat"));
-}
-
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, CloseEvent) {
   InstallAndStartExtension();
 
@@ -588,79 +595,28 @@ IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, CloseEvent) {
   EXPECT_EQ(result, target_id);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, AcceleratorEvent) {
+  RunTest("accelerator_event.js");
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        AcceleratorEvent_Repeat) {
-  InstallAndStartExtension();
-
-  auto observer = GetConsoleObserver();
-  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.PressKey(ui::KeyboardCode::VKEY_A,
-                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_IS_REPEAT);
-
-  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
-  const auto& dict = result.GetDict();
-
-  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
-  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
-  EXPECT_TRUE(*dict.FindBool("repeat"));
+  RunTest("accelerator_event_repeat.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        AcceleratorEvent_NoEvent) {
-  InstallAndStartExtension();
-
-  auto observer = GetConsoleObserver();
-  // The following key presses shouldn't generate events.
-  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_SHIFT_DOWN);
-  generator.PressKey(ui::KeyboardCode::VKEY_SHIFT, ui::EF_SHIFT_DOWN);
-  generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
-
-  // Should generate an event.
-  generator.PressKey(ui::KeyboardCode::VKEY_A,
-                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-
-  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
-  const auto& dict = result.GetDict();
-
-  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
-  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
-  EXPECT_FALSE(*dict.FindBool("repeat"));
+  RunTest("accelerator_event_no_event.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, AcceleratorEvent_Shift) {
-  InstallAndStartExtension();
-
-  auto observer = GetConsoleObserver();
-  // Shift shouldn't appear as a key.
-  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.PressKey(ui::KeyboardCode::VKEY_A,
-                     ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
-
-  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
-  const auto& dict = result.GetDict();
-
-  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
-  EXPECT_EQ("Alt A", *dict.FindString("name"));
-  EXPECT_FALSE(*dict.FindBool("repeat"));
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       AcceleratorEvent_Shift) {
+  RunTest("accelerator_event_shift.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
                        AcceleratorEvent_ReleaseKey) {
-  InstallAndStartExtension();
-
-  auto observer = GetConsoleObserver();
-  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
-  generator.ReleaseKey(ui::KeyboardCode::VKEY_A,
-                       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-
-  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
-  const auto& dict = result.GetDict();
-
-  EXPECT_EQ("acceleratorup", *dict.FindString("type"));
-  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
-  EXPECT_FALSE(*dict.FindBool("repeat"));
+  RunTest("accelerator_event_release_key.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
