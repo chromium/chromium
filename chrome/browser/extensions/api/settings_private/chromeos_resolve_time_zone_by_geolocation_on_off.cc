@@ -55,10 +55,9 @@ GeneratedResolveTimezoneByGeolocationOnOff::GetPrefObject() const {
 
   pref_object->key = pref_name_;
   pref_object->type = settings_api::PREF_TYPE_BOOLEAN;
-  pref_object->value =
-      std::make_unique<base::Value>(g_browser_process->platform_part()
-                                        ->GetTimezoneResolverManager()
-                                        ->TimeZoneResolverShouldBeRunning());
+  pref_object->value = base::Value(g_browser_process->platform_part()
+                                       ->GetTimezoneResolverManager()
+                                       ->TimeZoneResolverShouldBeRunning());
 
   UpdateTimeZonePrefControlledBy(pref_object.get());
 

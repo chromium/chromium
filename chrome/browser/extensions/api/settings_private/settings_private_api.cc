@@ -35,7 +35,7 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
   DCHECK(delegate);
 
   settings_private::SetPrefResult result =
-      delegate->SetPref(parameters->name, parameters->value.get());
+      delegate->SetPref(parameters->name, &*parameters->value);
   switch (result) {
     case settings_private::SetPrefResult::SUCCESS:
       return RespondNow(OneArgument(base::Value(true)));

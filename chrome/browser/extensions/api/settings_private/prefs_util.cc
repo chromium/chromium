@@ -953,7 +953,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
   }
   pref_object->key = name;
   pref_object->type = GetType(name, value->type());
-  pref_object->value = base::Value::ToUniquePtrValue(value->Clone());
+  pref_object->value = value->Clone();
 #endif
 
   return pref_object;
@@ -984,8 +984,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref_object = std::make_unique<settings_api::PrefObject>();
     pref_object->key = pref->name();
     pref_object->type = GetType(name, pref->GetType());
-    pref_object->value =
-        base::Value::ToUniquePtrValue(pref->GetValue()->Clone());
+    pref_object->value = pref->GetValue()->Clone();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1036,8 +1035,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
         settings_api::ControlledBy::CONTROLLED_BY_USER_POLICY;
     pref_object->enforcement =
         settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
-    pref_object->recommended_value =
-        base::Value::ToUniquePtrValue(recommended->Clone());
+    pref_object->recommended_value = recommended->Clone();
     return pref_object;
   }
 
@@ -1059,7 +1057,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref_object->controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    pref_object->value = std::make_unique<base::Value>(
+    pref_object->value = base::Value(
         GetRestrictedCrosSettingValueForChildUser(profile_, name)->Clone());
     return pref_object;
   }

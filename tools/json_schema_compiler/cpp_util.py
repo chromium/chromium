@@ -110,7 +110,8 @@ def ShouldUseAbslOptional(type_):
   fields are gradually migrated away from using std::unique_ptr.
   """
 
-  if type_.property_type in (PropertyType.BOOLEAN,
+  if type_.property_type in (PropertyType.ANY,
+                             PropertyType.BOOLEAN,
                              PropertyType.DOUBLE,
                              PropertyType.INTEGER,
                              PropertyType.STRING):

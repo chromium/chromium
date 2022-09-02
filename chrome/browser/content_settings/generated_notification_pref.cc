@@ -128,16 +128,16 @@ GeneratedNotificationPref::GetPrefObject() const {
       notification_content_setting != ContentSetting::CONTENT_SETTING_BLOCK;
 
   if (notification_content_setting_enabled && quieter_pref_enabled) {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
+    pref_object->value =
+        base::Value(static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
   } else if (notification_content_setting_enabled) {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(NotificationSetting::ASK));
+    pref_object->value =
+        base::Value(static_cast<int>(NotificationSetting::ASK));
   } else {
     DCHECK_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
               notification_content_setting);
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(NotificationSetting::BLOCK));
+    pref_object->value =
+        base::Value(static_cast<int>(NotificationSetting::BLOCK));
   }
 
   ApplyNotificationManagementState(profile_, pref_object.get());
@@ -203,10 +203,9 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
         pref_object, static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
 
     if (quieter_ui_recommended) {
-      pref_object->recommended_value =
-          std::make_unique<base::Value>(static_cast<int>(
-              quieter_ui_recommended_on ? NotificationSetting::QUIETER_MESSAGING
-                                        : NotificationSetting::ASK));
+      pref_object->recommended_value = base::Value(static_cast<int>(
+          quieter_ui_recommended_on ? NotificationSetting::QUIETER_MESSAGING
+                                    : NotificationSetting::ASK));
     }
     return;
   }

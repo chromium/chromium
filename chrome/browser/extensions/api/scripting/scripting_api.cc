@@ -711,8 +711,7 @@ void ScriptingExecuteScriptFunction::OnScriptExecuted(
     if (!result.error.empty())
       continue;
     api::scripting::InjectionResult injection_result;
-    injection_result.result =
-        base::Value::ToUniquePtrValue(std::move(result.value));
+    injection_result.result = std::move(result.value);
     injection_result.frame_id = result.frame_id;
     if (result.document_id)
       injection_result.document_id = result.document_id.ToString();

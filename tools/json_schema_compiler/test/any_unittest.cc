@@ -36,7 +36,7 @@ TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
     std::unique_ptr<test::api::any::OptionalAny::Params> params(
         test::api::any::OptionalAny::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_FALSE(params->any_name.get());
+    EXPECT_FALSE(params->any_name);
   }
   {
     base::Value::List params_value;

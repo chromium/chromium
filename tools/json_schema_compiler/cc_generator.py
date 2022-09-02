@@ -1009,7 +1009,7 @@ class _Generator(object):
       if is_ptr: # Non-serializable functions are just represented as dicts.
         c.Append('%(dst_var)s = std::make_unique<base::DictionaryValue>();')
     elif underlying_type.property_type == PropertyType.ANY:
-      c.Append('%(dst_var)s = %(src_var)s.CreateDeepCopy();')
+      c.Append('%(dst_var)s = %(src_var)s.Clone();')
     elif underlying_type.property_type == PropertyType.ARRAY:
       # util_cc_helper deals with optional and required arrays
       (c.Sblock('if (!%(src_var)s.is_list()) {')

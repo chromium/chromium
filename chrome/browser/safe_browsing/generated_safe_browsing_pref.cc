@@ -96,14 +96,14 @@ GeneratedSafeBrowsingPref::GetPrefObject() const {
       profile_->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced);
 
   if (safe_browsing_enhanced_enabled && safe_browsing_enabled) {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(SafeBrowsingSetting::ENHANCED));
+    pref_object->value =
+        base::Value(static_cast<int>(SafeBrowsingSetting::ENHANCED));
   } else if (safe_browsing_enabled) {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(SafeBrowsingSetting::STANDARD));
+    pref_object->value =
+        base::Value(static_cast<int>(SafeBrowsingSetting::STANDARD));
   } else {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(SafeBrowsingSetting::DISABLED));
+    pref_object->value =
+        base::Value(static_cast<int>(SafeBrowsingSetting::DISABLED));
   }
 
   ApplySafeBrowsingManagementState(profile_, pref_object.get());
@@ -166,14 +166,14 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
     pref_object->enforcement =
         settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
     if (enhanced_recommended_on) {
-      pref_object->recommended_value = std::make_unique<base::Value>(
-          static_cast<int>(SafeBrowsingSetting::ENHANCED));
+      pref_object->recommended_value =
+          base::Value(static_cast<int>(SafeBrowsingSetting::ENHANCED));
     } else if (enabled_recommended_on) {
-      pref_object->recommended_value = std::make_unique<base::Value>(
-          static_cast<int>(SafeBrowsingSetting::STANDARD));
+      pref_object->recommended_value =
+          base::Value(static_cast<int>(SafeBrowsingSetting::STANDARD));
     } else {
-      pref_object->recommended_value = std::make_unique<base::Value>(
-          static_cast<int>(SafeBrowsingSetting::DISABLED));
+      pref_object->recommended_value =
+          base::Value(static_cast<int>(SafeBrowsingSetting::DISABLED));
     }
   }
 

@@ -55,7 +55,7 @@ GeneratedResolveTimezoneByGeolocationMethodShort::GetPrefObject() const {
 
   pref_object->key = pref_name_;
   pref_object->type = settings_api::PREF_TYPE_NUMBER;
-  pref_object->value = std::make_unique<base::Value>(static_cast<int>(
+  pref_object->value = base::Value(static_cast<int>(
       g_browser_process->platform_part()
           ->GetTimezoneResolverManager()
           ->GetEffectiveUserTimeZoneResolveMethod(profile_->GetPrefs(), true)));
