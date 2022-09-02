@@ -2,88 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia)
 
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/browser_switch_resources.h",
-    "grit/browser_switch_resources_map.cc",
-    "grit/browser_switch_resources_map.h",
-    "browser_switch_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "app.ts",
-    "app.html.ts",
-    "browser_switch_proxy.ts",
-    "internals/browser_switch_internals_proxy.ts",
-    "internals/app.ts",
-    "internals/app.html.ts",
-  ]
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-  ]
-  extra_deps = [
-    ":copy_internals",
-    ":copy_main",
-    ":html_wrapper_files",
-  ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "browser_switch"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
+  static_files = [
     "browser_switch.html",
     "internals/browser_switch_internals.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-}
-
-copy("copy_main") {
-  sources = [
+  web_component_files = [
     "app.ts",
-    "browser_switch_proxy.ts",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-copy("copy_internals") {
-  sources = [
     "internals/app.ts",
+  ]
+  non_web_component_files = [
+    "browser_switch_proxy.ts",
     "internals/browser_switch_internals_proxy.ts",
   ]
-  outputs = [ "$target_gen_dir/internals/{{source_file_part}}" ]
-}
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = [
-    "app.html",
-    "internals/app.html",
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
 }

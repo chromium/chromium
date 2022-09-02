@@ -2,64 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-tsc_folder = "tsc"
-
-grit("resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/browsing_topics_internals_resources.h",
-    "grit/browsing_topics_internals_resources_map.cc",
-    "grit/browsing_topics_internals_resources_map.h",
-    "browsing_topics_internals_resources.pak",
-  ]
-
-  output_dir = "$root_gen_dir/chrome"
-}
-
-copy("copy_mojo") {
-  deps = [ "//components/browsing_topics/mojom:mojo_bindings_webui_js" ]
-  mojom_folder = "$root_gen_dir/mojom-webui/components/browsing_topics/mojom/"
-  sources = [ "$mojom_folder/browsing_topics_internals.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-copy("copy_ts") {
-  sources = [ "browsing_topics_internals.ts" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir"
-  out_dir = "$target_gen_dir/$tsc_folder"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browsing_topics_internals.ts",
-    "browsing_topics_internals.mojom-webui.js",
-  ]
-  deps = [ "//ui/webui/resources:library" ]
-  extra_deps = [
-    ":copy_mojo",
-    ":copy_ts",
-  ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "browsing_topics_internals"
-  out_grd = "$target_gen_dir/resources.grd"
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  input_files = [
+
+  static_files = [
     "browsing_topics_internals.html",
     "browsing_topics_internals.css",
   ]
-  input_files_base_dir = rebase_path(".", "//")
+  non_web_component_files = [ "browsing_topics_internals.ts" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/components/browsing_topics/mojom/browsing_topics_internals.mojom-webui.js" ]
+  mojo_files_deps =
+      [ "//components/browsing_topics/mojom:mojo_bindings_webui_js" ]
+
+  ts_deps = [ "//ui/webui/resources:library" ]
 }
