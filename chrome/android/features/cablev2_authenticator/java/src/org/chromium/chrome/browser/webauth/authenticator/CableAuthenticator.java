@@ -266,8 +266,9 @@ class CableAuthenticator {
                     }
                     break;
                 case Fido2Api.NOT_ALLOWED_ERR:
-                    if (error.second.equals(
-                                "Request doesn't have a valid list of allowed credentials.")) {
+                    if (error.second != null
+                            && error.second.equals(
+                                    "Request doesn't have a valid list of allowed credentials.")) {
                         ctapStatus = CTAP2_ERR_NO_CREDENTIALS;
                     } else {
                         ctapStatus = CTAP2_ERR_OPERATION_DENIED;
