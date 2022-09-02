@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/libcast_socket_service.h"
 #include "components/cast_channel/logger.h"
@@ -91,12 +92,10 @@ CastSocket* CastSocketServiceImpl::GetSocket(int channel_id) const {
 CastSocket* CastSocketServiceImpl::GetSocket(
     const net::IPEndPoint& ip_endpoint) const {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  auto it = std::find_if(
-      sockets_.begin(), sockets_.end(),
-      [&ip_endpoint](
-          const std::pair<const int, std::unique_ptr<CastSocket>>& pair) {
-        return pair.second->ip_endpoint() == ip_endpoint;
-      });
+  auto it = base::ranges::find(sockets_, ip_endpoint,
+                               [](const Sockets::value_type& pair) {
+                                 return pair.second->ip_endpoint();
+                               });
   return it == sockets_.end() ? nullptr : it->second.get();
 }
 

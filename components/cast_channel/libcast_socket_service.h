@@ -68,6 +68,8 @@ class LibcastSocketService final
   friend class CastSocketService;
   friend class LibcastSocketServiceTest;
 
+  using Sockets = std::map<int, std::unique_ptr<CastSocketWrapper>>;
+
   struct ConnectTimer {
     ConnectTimer(std::unique_ptr<base::CancelableOnceClosure> callback,
                  std::unique_ptr<base::OneShotTimer> timer);
@@ -113,7 +115,7 @@ class LibcastSocketService final
   openscreen::cast::SenderSocketFactory socket_factory_;
   std::unique_ptr<openscreen::TlsConnectionFactory> tls_factory_;
 
-  std::map<int, std::unique_ptr<CastSocketWrapper>> sockets_;
+  Sockets sockets_;
   std::map<openscreen::IPEndpoint, int> socket_endpoints_;
 
   // Data for pending connections.

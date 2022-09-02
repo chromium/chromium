@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "components/cast_channel/cast_message_util.h"
@@ -514,11 +516,8 @@ bool CastMessageHandler::PendingRequests::AddAppAvailabilityRequest(
           base::Unretained(this), request_id));
 
   // Look for a request with the given app ID.
-  bool found = std::find_if(pending_app_availability_requests_.begin(),
-                            pending_app_availability_requests_.end(),
-                            [&app_id](const auto& old_request) {
-                              return old_request->app_id == app_id;
-                            }) != pending_app_availability_requests_.end();
+  bool found = base::Contains(pending_app_availability_requests_, app_id,
+                              &GetAppAvailabilityRequest::app_id);
   pending_app_availability_requests_.emplace_back(std::move(request));
   return !found;
 }
@@ -574,11 +573,8 @@ void CastMessageHandler::PendingRequests::HandlePendingRequest(
     const base::Value::Dict& response) {
   // Look up an app availability request by its |request_id|.
   auto app_availability_it =
-      std::find_if(pending_app_availability_requests_.begin(),
-                   pending_app_availability_requests_.end(),
-                   [request_id](const auto& request_ptr) {
-                     return request_ptr->request_id == request_id;
-                   });
+      base::ranges::find(pending_app_availability_requests_, request_id,
+                         &GetAppAvailabilityRequest::request_id);
   // If we found a request, process and remove all requests with the same
   // |app_id|, which will of course include the one we just found.
   if (app_availability_it != pending_app_availability_requests_.end()) {
@@ -623,11 +619,8 @@ void CastMessageHandler::PendingRequests::AppAvailabilityTimedOut(
     int request_id) {
   DVLOG(1) << __func__ << ", request_id: " << request_id;
 
-  auto it = std::find_if(pending_app_availability_requests_.begin(),
-                         pending_app_availability_requests_.end(),
-                         [&request_id](const auto& request) {
-                           return request->request_id == request_id;
-                         });
+  auto it = base::ranges::find(pending_app_availability_requests_, request_id,
+                               &GetAppAvailabilityRequest::request_id);
 
   CHECK(it != pending_app_availability_requests_.end());
   std::move((*it)->callback)

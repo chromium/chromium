@@ -115,6 +115,8 @@ class CastSocketServiceImpl : public CastSocketService {
   friend class CastSocketServiceTest;
   friend class MockCastSocketService;
 
+  using Sockets = std::map<int, std::unique_ptr<CastSocket>>;
+
   CastSocketServiceImpl();
 
   // Adds |socket| to |sockets_| and returns raw pointer of |socket|. Takes
@@ -125,7 +127,7 @@ class CastSocketServiceImpl : public CastSocketService {
   static int last_channel_id_;
 
   // The collection of CastSocket keyed by channel_id.
-  std::map<int, std::unique_ptr<CastSocket>> sockets_;
+  Sockets sockets_;
 
   // List of socket observers.
   base::ObserverList<CastSocket::Observer>::Unchecked observers_;
