@@ -25,11 +25,6 @@ def test_stale_element_reference(session, stale_element, as_frame):
     assert_error(response, "stale element reference")
 
 
-def test_no_user_prompt(session):
-    response = get_computed_label(session, "foo")
-    assert_error(response, "no such alert")
-
-
 @pytest.mark.parametrize("html,tag,label", [
     ("<button>ok</button>", "button", "ok"),
     ("<button aria-labelledby=\"one two\"></button><div id=one>ok</div><div id=two>go</div>", "button", "ok go"),
@@ -37,7 +32,7 @@ def test_no_user_prompt(session):
     ("<label><input> foo</label>", "input", "foo"),
     ("<label for=b>foo<label><input id=b>", "input", "foo")])
 def test_get_computed_label(session, inline, html, tag, label):
-    session.url = inline("{0}".format(tag))
+    session.url = inline(html)
     element = session.find.css(tag, all=False)
     result = get_computed_label(session, element.id)
     assert_success(result, label)

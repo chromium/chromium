@@ -267677,15 +267677,15 @@
      ],
      "parsing": {
       "color-computed-expected.txt": [
-       "93d1203d1b8280b9be45be04b2242771a60bdf05",
+       "8a49339eb9d9dd50bfaceef1475858ad01287ad1",
        []
       ],
       "color-contrast-computed-expected.txt": [
-       "242a2c6625f189802bdf5bf1d258a580eec7ea0b",
+       "b419ec4f531d9f27d980cb4f576e473cccd62d6c",
        []
       ],
       "color-contrast-valid-expected.txt": [
-       "74fffce2be1a9c0692ec38ce4fc8d244f15182c2",
+       "95de7e5b3209f5d6a1973ad64a4ad018a5188455",
        []
       ],
       "color-mix-computed-expected.txt": [
@@ -267701,7 +267701,7 @@
        []
       ],
       "color-valid-expected.txt": [
-       "c49de7e65720a9f9a0f87dd16c71a67a28ab41ed",
+       "6a5bf04d55f7ba2b4355756b6d0af07ad9d76f54",
        []
       ],
       "relative-color-computed-expected.txt": [
@@ -346115,7 +346115,7 @@
      []
     ],
     "video-encoder-utils.js": [
-     "58f0ce83f3748b4efe7825c4632eab7ac1f0277a",
+     "892393394ec49a3ff0eca0d3ca1c1971f42d5aba",
      []
     ],
     "videoFrame-construction.crossOriginIsolated.https.any.js.headers": [
@@ -567367,7 +567367,7 @@
      ]
     ],
     "video-encoder.https.any.js": [
-     "791b910ee40f4213ce868fbe277af3b46ca06b3c",
+     "063be1ef0fd40bd3674715ebaa67f6ea2fed3f26",
      [
       "webcodecs/video-encoder.https.any.html",
       {
@@ -567457,7 +567457,7 @@
      ]
     ],
     "videoDecoder-codec-specific.https.any.js": [
-     "fab0b24220dc9be9f34186c851dc20fd21ee1c57",
+     "d74fff886a954d1f1e6ec624eca05f8e2e4ab921",
      [
       "webcodecs/videoDecoder-codec-specific.https.any.html?av1",
       {
@@ -607377,7 +607377,7 @@
      },
      "get_computed_label": {
       "get.py": [
-       "d10ccf7f24b36eb784bf09e4e10f3a8d094102c3",
+       "12aa82eb4e460daf2248bca2a0072e7cdde43574",
        [
         null,
         {}
@@ -607386,7 +607386,7 @@
      },
      "get_computed_role": {
       "get.py": [
-       "bc4be6efd658fce26771aca8f047d91c75e766be",
+       "d242f7383223b38d5059f683951ee626a9352a72",
        [
         null,
         {}
