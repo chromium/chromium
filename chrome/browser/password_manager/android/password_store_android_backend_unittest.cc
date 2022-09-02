@@ -275,7 +275,6 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
   EnableSyncForTestAccount();
   backend().OnSyncServiceInitialized(sync_service());
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins(ExpectSyncingAccount(kTestAccount)))
       .WillOnce(Return(kJobId));
@@ -396,7 +395,6 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAutofillableLogins).WillOnce(Return(kJobId));
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
@@ -411,7 +409,6 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLoginsForAccount) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   absl::optional<std::string> account = "mytestemail@gmail.com";
@@ -428,13 +425,13 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
   DisableSyncFeature();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  const JobId kJobId{13388};
+  const JobId kRemoveLoginJobId{13388};
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
 
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), RemoveLogin(form, ExpectLocalAccount()))
-      .WillOnce(Return(kJobId));
+      .WillOnce(Return(kRemoveLoginJobId));
   backend().RemoveLoginAsync(form, mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
@@ -442,7 +439,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
       PasswordStoreChange(PasswordStoreChange::REMOVE, form));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
-  consumer().OnLoginsChanged(kJobId, expected_changes);
+  consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
 }
 
@@ -550,12 +547,12 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
   EnableSyncForTestAccount();
   backend().OnSyncServiceInitialized(sync_service());
 
-  const JobId kJobId{13388};
+  const JobId kAddLoginJobId{13388};
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), AddLogin(form, ExpectSyncingAccount(kTestAccount)))
-      .WillOnce(Return(kJobId));
+      .WillOnce(Return(kAddLoginJobId));
   backend().AddLoginAsync(form, mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
@@ -563,7 +560,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
       PasswordStoreChange(PasswordStoreChange::ADD, form));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
-  consumer().OnLoginsChanged(kJobId, expected_changes);
+  consumer().OnLoginsChanged(kAddLoginJobId, expected_changes);
   RunUntilIdle();
 }
 
@@ -571,12 +568,12 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
   DisableSyncFeature();
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  const JobId kJobId{13388};
+  const JobId kUpdateLoginJobId{13388};
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), UpdateLogin(form, ExpectLocalAccount()))
-      .WillOnce(Return(kJobId));
+      .WillOnce(Return(kUpdateLoginJobId));
   backend().UpdateLoginAsync(form, mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
@@ -584,7 +581,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
       PasswordStoreChange(PasswordStoreChange::UPDATE, form));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
-  consumer().OnLoginsChanged(kJobId, expected_changes);
+  consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
   RunUntilIdle();
 }
 
@@ -596,7 +593,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
                         base::RepeatingClosure(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -639,7 +635,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
                         base::RepeatingClosure(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -722,7 +717,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
                         base::RepeatingClosure(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -769,7 +763,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
   ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
   ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -802,7 +795,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
   ASSERT_TRUE(transient_error.IsTransientError());
   SetSyncAuthError(transient_error);
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -835,7 +827,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
   ASSERT_TRUE(persistent_error.IsPersistentError());
   SetSyncAuthError(persistent_error);
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -869,7 +860,6 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordsAliveStatusOnApiNotConnected) {
   ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
   ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -914,7 +904,6 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordsUptimeOnApiNotConnected) {
 
   task_environment_.FastForwardBy(expected_uptime);
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -949,7 +938,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   task_environment_.FastForwardBy(expected_uptime);
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -985,7 +973,6 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordsUptimeOnReconnectionTimedOut) {
 
   task_environment_.FastForwardBy(expected_uptime);
 
-  const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
