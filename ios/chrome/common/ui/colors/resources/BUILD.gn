@@ -36,8 +36,10 @@ group("resources") {
     ":mdc_secondary_ink_color",
     ":orange_500_color",
     ":pink_400_color",
+    ":pink_500_color",
     ":placeholder_image_tint_color",
     ":primary_background_color",
+    ":purple_500_color",
     ":purple_600_color",
     ":red_500_color",
     ":red_600_color",
@@ -163,6 +165,10 @@ colorset("red_600_color") {
   sources = [ "red_600_color.colorset/Contents.json" ]
 }
 
+colorset("purple_500_color") {
+  sources = [ "purple_500_color.colorset/Contents.json" ]
+}
+
 colorset("purple_600_color") {
   sources = [ "purple_600_color.colorset/Contents.json" ]
 }
@@ -213,6 +219,10 @@ colorset("table_view_row_highlight_color") {
 
 colorset("pink_400_color") {
   sources = [ "pink_400_color.colorset/Contents.json" ]
+}
+
+colorset("pink_500_color") {
+  sources = [ "pink_500_color.colorset/Contents.json" ]
 }
 
 colorset("tertiary_background_color") {
