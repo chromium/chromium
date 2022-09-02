@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -19,7 +20,7 @@ FakeSampler::FakeSampler() = default;
 FakeSampler::~FakeSampler() = default;
 
 void FakeSampler::MaybeCollect(OptionalMetricCallback cb) {
-  num_calls_++;
+  ++num_calls_;
   std::move(cb).Run(metric_data_);
 }
 
@@ -29,6 +30,20 @@ void FakeSampler::SetMetricData(absl::optional<MetricData> metric_data) {
 
 int FakeSampler::GetNumCollectCalls() const {
   return num_calls_;
+}
+
+FakeDelayedSampler::FakeDelayedSampler() = default;
+
+FakeDelayedSampler::~FakeDelayedSampler() = default;
+
+void FakeDelayedSampler::MaybeCollect(OptionalMetricCallback cb) {
+  ++num_calls_;
+  cb_ = std::move(cb);
+}
+
+void FakeDelayedSampler::RunCallback() {
+  DCHECK(cb_);
+  std::move(cb_).Run(metric_data_);
 }
 
 FakeMetricEventObserver::FakeMetricEventObserver() = default;

@@ -16,6 +16,8 @@ static_library("metrics_data_collection") {
     "metric_report_queue.h",
     "metric_reporting_controller.cc",
     "metric_reporting_controller.h",
+    "multi_samplers_collector.cc",
+    "multi_samplers_collector.h",
     "reporting_settings.h",
     "sampler.h",
     "telemetry_sampler_pool_base.h",
@@ -59,6 +61,7 @@ source_set("unit_tests") {
     "metric_rate_controller_unittest.cc",
     "metric_report_queue_unittest.cc",
     "metric_reporting_controller_unittest.cc",
+    "multi_samplers_collector_unittest.cc",
   ]
   deps = [
     ":metrics_data_collection",

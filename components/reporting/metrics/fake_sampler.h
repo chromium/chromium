@@ -27,10 +27,27 @@ class FakeSampler : public Sampler {
 
   int GetNumCollectCalls() const;
 
- private:
+ protected:
   absl::optional<MetricData> metric_data_;
 
   int num_calls_ = 0;
+};
+
+class FakeDelayedSampler : public FakeSampler {
+ public:
+  FakeDelayedSampler();
+
+  FakeDelayedSampler(const FakeDelayedSampler& other) = delete;
+  FakeDelayedSampler& operator=(const FakeDelayedSampler& other) = delete;
+
+  ~FakeDelayedSampler() override;
+
+  void MaybeCollect(OptionalMetricCallback cb) override;
+
+  void RunCallback();
+
+ private:
+  OptionalMetricCallback cb_;
 };
 
 class FakeMetricEventObserver : public MetricEventObserver {
