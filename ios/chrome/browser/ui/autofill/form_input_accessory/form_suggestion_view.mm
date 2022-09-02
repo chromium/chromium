@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/form_suggestion_view.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
 
-#include "base/check.h"
-#include "base/i18n/rtl.h"
-#include "base/mac/foundation_util.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "base/check.h"
+#import "base/i18n/rtl.h"
+#import "base/mac/foundation_util.h"
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
-#import "ios/chrome/browser/autofill/form_suggestion_label.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_label.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/util_swift.h"
-#include "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

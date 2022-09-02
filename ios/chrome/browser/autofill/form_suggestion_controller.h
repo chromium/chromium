@@ -10,7 +10,6 @@
 
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
-#import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 namespace autofill {

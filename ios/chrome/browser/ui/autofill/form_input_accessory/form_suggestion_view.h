@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_FORM_SUGGESTION_VIEW_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_FORM_SUGGESTION_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_SUGGESTION_VIEW_H_
+#define IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_SUGGESTION_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
@@ -26,7 +26,7 @@
 @end
 
 // A scrollable view for displaying user-selectable autofill form suggestions.
-@interface FormSuggestionView : UIScrollView<UIInputViewAudioFeedback>
+@interface FormSuggestionView : UIScrollView <UIInputViewAudioFeedback>
 
 // The delegate for FormSuggestionView events.
 @property(nonatomic, weak) id<FormSuggestionViewDelegate>
@@ -57,4 +57,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_SUGGESTION_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_SUGGESTION_VIEW_H_

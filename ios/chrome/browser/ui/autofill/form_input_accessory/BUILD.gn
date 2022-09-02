@@ -14,6 +14,10 @@ source_set("form_input_accessory") {
     "form_input_accessory_mediator.mm",
     "form_input_accessory_view_controller.h",
     "form_input_accessory_view_controller.mm",
+    "form_suggestion_label.h",
+    "form_suggestion_label.mm",
+    "form_suggestion_view.h",
+    "form_suggestion_view.mm",
   ]
   deps = [
     "//base",
@@ -27,6 +31,7 @@ source_set("form_input_accessory") {
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser:utils",
     "//ios/chrome/browser/autofill:autofill",
     "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/autofill/manual_fill",
@@ -49,6 +54,7 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:util_swift",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/util",
