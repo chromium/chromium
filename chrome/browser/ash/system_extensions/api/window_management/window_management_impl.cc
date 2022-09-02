@@ -26,6 +26,51 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+namespace {
+blink::mojom::CrosWindowInfoPtr CrosWindowInfo(
+    const base::UnguessableToken& id,
+    apps::InstanceRegistry& registry) {
+  auto window = blink::mojom::CrosWindowInfo::New();
+  registry.ForOneInstance(id, [&window](const apps::InstanceUpdate& update) {
+    aura::Window* target = update.Window()->GetToplevelWindow();
+    views::Widget* widget =
+        views::Widget::GetTopLevelWidgetForNativeView(target);
+    if (!target || !widget) {
+      return;
+    }
+
+    window->id = update.InstanceId();
+    window->title =
+        base::UTF16ToUTF8(widget->widget_delegate()->GetWindowTitle());
+    window->app_id = update.AppId();
+    window->bounds = target->bounds();
+
+    // Set window state (states are mutually exclusive)
+    if (widget->IsFullscreen()) {
+      window->window_state = blink::mojom::WindowState::kFullscreen;
+    } else if (widget->IsMaximized()) {
+      window->window_state = blink::mojom::WindowState::kMaximized;
+    } else if (widget->IsMinimized()) {
+      window->window_state = blink::mojom::WindowState::kMinimized;
+    } else {
+      window->window_state = blink::mojom::WindowState::kNormal;
+    }
+    // Instance registry references the activatable component of a window
+    // which itself does not have focus but contains the child focusable. To
+    // detect focus on the window, we assert that the focused window has our
+    // activatable as its top level parent
+    window->is_focused = target == aura::client::GetFocusClient(target)
+                                       ->GetFocusedWindow()
+                                       ->GetToplevelWindow();
+    window->visibility_state = widget->IsVisible()
+                                   ? blink::mojom::VisibilityState::kShown
+                                   : blink::mojom::VisibilityState::kHidden;
+  });
+
+  return window;
+}
+}  // namespace
+
 namespace ash {
 
 WindowManagementImpl::WindowManagementImpl(
@@ -43,7 +88,12 @@ void WindowManagementImpl::DispatchStartEvent() {
 
 void WindowManagementImpl::DispatchWindowClosedEvent(
     const base::UnguessableToken& id) {
-  observer_->DispatchWindowClosedEvent(std::move(id));
+  // When dispatching close event, the update instance in the instance registry
+  // corresponding to the `id` no longer exists. We cannot use instance registry
+  // to create the CroswindowInfoPtr so we create one manually.
+  auto crosWindowInfoPtr = blink::mojom::CrosWindowInfo::New();
+  crosWindowInfoPtr->id = id;
+  observer_->DispatchWindowClosedEvent(std::move(crosWindowInfoPtr));
 }
 
 void WindowManagementImpl::DispatchAcceleratorEvent(
@@ -62,43 +112,11 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->InstanceRegistry().ForEachInstance(
-      [&windows](const apps::InstanceUpdate& update) {
-        auto window = blink::mojom::CrosWindowInfo::New();
-        aura::Window* target = update.Window()->GetToplevelWindow();
-        views::Widget* widget =
-            views::Widget::GetTopLevelWidgetForNativeView(target);
-        if (!target || !widget) {
-          return;
-        }
-        window->id = update.InstanceId();
-        window->title =
-            base::UTF16ToUTF8(widget->widget_delegate()->GetWindowTitle());
-        window->app_id = update.AppId();
-        window->bounds = target->bounds();
-
-        // Set window state (states are mutually exclusive)
-        if (widget->IsFullscreen()) {
-          window->window_state = blink::mojom::WindowState::kFullscreen;
-        } else if (widget->IsMaximized()) {
-          window->window_state = blink::mojom::WindowState::kMaximized;
-        } else if (widget->IsMinimized()) {
-          window->window_state = blink::mojom::WindowState::kMinimized;
-        } else {
-          window->window_state = blink::mojom::WindowState::kNormal;
-        }
-        // Instance registry references the activatable component of a window
-        // which itself does not have focus but contains the child focusable. To
-        // detect focus on the window, we assert that the focused window has our
-        // activatable as its top level parent
-        window->is_focused = target == aura::client::GetFocusClient(target)
-                                           ->GetFocusedWindow()
-                                           ->GetToplevelWindow();
-        window->visibility_state = widget->IsVisible()
-                                       ? blink::mojom::VisibilityState::kShown
-                                       : blink::mojom::VisibilityState::kHidden;
-        windows.push_back(std::move(window));
-      });
+  auto& instance_registry = proxy->InstanceRegistry();
+  instance_registry.ForEachInstance([&windows, &instance_registry](
+                                        const apps::InstanceUpdate& update) {
+    windows.push_back(CrosWindowInfo(update.InstanceId(), instance_registry));
+  });
   std::move(callback).Run(std::move(windows));
 }
 
