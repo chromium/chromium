@@ -135,7 +135,7 @@ class NetworkTrafficAnnotationTools():
 
     if stderr_text:
       print("Could not run '%s' to get the list of changed files "
-            "beacuse: %s" % (" ".join(args), stderr_text))
+            "because: %s" % (" ".join(args), stderr_text))
       os.chdir(original_path)
       return None
 

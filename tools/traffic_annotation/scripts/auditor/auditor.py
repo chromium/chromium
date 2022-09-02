@@ -7,6 +7,7 @@ import argparse
 import copy
 import datetime
 import difflib
+import json
 import logging
 import os
 import platform
@@ -1601,6 +1602,7 @@ class AuditorUI:
                test_only: bool = False,
                error_limit: int = 0,
                annotations_file: Optional[Path] = None,
+               errors_file: Optional[Path] = None,
                skip_compdb: bool = False):
     self.build_path = build_path
     # Convert backslashes to slashes on Windows.
@@ -1609,6 +1611,7 @@ class AuditorUI:
     self.test_only = test_only
     self.error_limit = error_limit
     self.annotations_file = annotations_file
+    self.errors_file = errors_file
     self.skip_compdb = skip_compdb
 
     # Exposed for testing.
@@ -1656,6 +1659,10 @@ class AuditorUI:
       else:
         logger.warning("Not updating {} due to errors in annotations.".format(
             Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
+
+    if self.errors_file is not None:
+      self.errors_file.write_text(json.dumps(list(map(str, errors))),
+                                  encoding="utf-8")
 
     # Postprocess errors and dump to stdout.
     if errors:
@@ -1707,6 +1714,10 @@ if __name__ == "__main__":
                            type=Path,
                            help="Optional path to a TSV output file with all"
                            " annotations.")
+  args_parser.add_argument("--errors-file",
+                           type=Path,
+                           help="Optional path to a JSON output file with "
+                           "errors.")
   args_parser.add_argument(
       "--skip-compdb",
       help="Assume compile_commands exists in the build-path, and is "
@@ -1729,7 +1740,7 @@ if __name__ == "__main__":
         "TrafficAnnotations' component and CC nicolaso@chromium.org.")
   auditor_ui = AuditorUI(build_path, args.path_filters, args.no_filtering,
                          args.test_only, args.limit, args.annotations_file,
-                         args.skip_compdb)
+                         args.errors_file, args.skip_compdb)
 
   try:
     sys.exit(auditor_ui.main())

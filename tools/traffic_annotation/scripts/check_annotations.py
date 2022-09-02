@@ -84,16 +84,17 @@ class NetworkTrafficAnnotationChecker():
 
     return file_paths
 
-  def CheckFiles(self, complete_run, limit, use_python_auditor):
+  def CheckFiles(self, complete_run, limit, errors_file, use_python_auditor):
     """Passes all given files to traffic_annotation_auditor to be checked for
     possible violations of network traffic annotation rules.
 
     Args:
       complete_run: bool Flag requesting to run test on all relevant files.
-      use_python_auditor: bool If True, test auditor.py instead of
-        t_a_auditor.exe.
       limit: int The upper threshold for number of errors and warnings. Use 0
           for unlimited.
+      errors_file: str Path to a file to write errors to.
+      use_python_auditor: bool If True, test auditor.py instead of
+        t_a_auditor.exe.
 
     Returns:
       int Exit code of the network traffic annotation auditor.
@@ -108,8 +109,10 @@ class NetworkTrafficAnnotationChecker():
     if file_paths is None:
       return 0
 
-    args = ["--test-only", "--limit=%i" % limit, "--error-resilient"] + \
-           file_paths
+    args = ["--test-only", "--limit=%i" % limit, "--error-resilient"]
+    if errors_file:
+      args += ["--errors-file", errors_file]
+    args += file_paths
 
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
         args, use_python_auditor)
@@ -143,11 +146,15 @@ def main():
       '--complete', action='store_true',
       help='Run the test on the complete repository. Otherwise only the '
            'modified files are tested.')
+  parser.add_argument('--errors-file',
+                      type=str,
+                      help='Optional path to a JSON output file with errors.')
 
   args = parser.parse_args()
   checker = NetworkTrafficAnnotationChecker(args.build_path)
   exit_code = checker.CheckFiles(args.complete,
                                  args.limit,
+                                 args.errors_file,
                                  use_python_auditor=USE_PYTHON_AUDITOR)
 
   return exit_code
