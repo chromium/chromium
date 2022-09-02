@@ -13,8 +13,8 @@ namespace blink {
 
 class LocalDOMWindow;
 
-// Interface exposing advanced per-screen information.
-// https://github.com/webscreens/window-placement
+// Interface exposing additional per-screen information.
+// https://w3c.github.io/window-placement/
 class MODULES_EXPORT ScreenDetailed final : public Screen {
   DEFINE_WRAPPERTYPEINFO();
 

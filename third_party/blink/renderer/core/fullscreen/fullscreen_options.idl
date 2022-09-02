@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/dtapuska/fullscreen
+// https://fullscreen.spec.whatwg.org/
 
 enum FullscreenNavigationUI {
   "auto",
@@ -13,6 +13,7 @@ enum FullscreenNavigationUI {
 dictionary FullscreenOptions {
   FullscreenNavigationUI navigationUI = "auto";
 
-  // https://github.com/webscreens/window-placement
+  // Specifies a screen for element fullscreen requests.
+  // https://w3c.github.io/window-placement/
   [RuntimeEnabled=WindowPlacement] Screen screen;
 };

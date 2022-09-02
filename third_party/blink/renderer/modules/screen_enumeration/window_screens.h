@@ -20,8 +20,8 @@ class ScriptPromiseResolver;
 class ScriptState;
 class ScreenDetails;
 
-// Supplements LocalDOMWindow with a Screens interface.
-// https://github.com/webscreens/window-placement
+// Supplements LocalDOMWindow with a ScreenDetails interface.
+// https://w3c.github.io/window-placement/
 class WindowScreens final : public GarbageCollected<WindowScreens>,
                             public ExecutionContextLifecycleObserver,
                             public Supplement<LocalDOMWindow> {

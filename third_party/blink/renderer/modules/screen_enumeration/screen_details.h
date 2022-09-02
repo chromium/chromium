@@ -19,7 +19,7 @@ class LocalDOMWindow;
 class ScreenDetailed;
 
 // Interface exposing multi-screen information.
-// https://github.com/webscreens/window-placement
+// https://w3c.github.io/window-placement/
 class MODULES_EXPORT ScreenDetails final
     : public EventTargetWithInlineData,
       public ExecutionContextLifecycleObserver {
