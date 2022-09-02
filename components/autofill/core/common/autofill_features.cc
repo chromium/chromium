@@ -330,22 +330,6 @@ const base::Feature kAutofillExtractAllDatalists{
 const base::Feature kAutofillTypeSpecificPopupWidth{
     "AutofillTypeSpecificPopupWidth", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, the Autofill popup ignores second clicks for a certain period
-// (kAutofillIgnoreEarlyClicksOnPopupDuration) after the Autofill popup was
-// shown. This is to prevent double clicks accidentally accepting suggestions.
-// TODO(crbug/1279268): Remove once launched.
-const base::Feature kAutofillIgnoreEarlyClicksOnPopup{
-    "AutofillIgnoreEarlyClicksOnPopup", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// The duration for which clicks on the just-shown Autofill popup should be
-// ignored if AutofillIgnoreEarlyClicksOnPopup is enabled.
-// TODO(crbug/1279268): Remove once launched. Consider also removing
-// AutofillPopupItemView::mouse_observed_outside_of_item_.
-const base::FeatureParam<base::TimeDelta>
-    kAutofillIgnoreEarlyClicksOnPopupDuration{
-        &kAutofillIgnoreEarlyClicksOnPopup, "duration",
-        base::Milliseconds(500)};
-
 // When enabled, HTML autocomplete values that do not map to any known type, but
 // look reasonable (e.g. contain "address") are simply ignored. Without the
 // feature, Autofill is disabled on such fields.

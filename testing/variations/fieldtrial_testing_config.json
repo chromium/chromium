@@ -1287,28 +1287,6 @@
             ]
         }
     ],
-    "AutofillIgnoreEarlyClicksOnPopup": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220625",
-                    "params": {
-                        "duration": "500ms"
-                    },
-                    "enable_features": [
-                        "AutofillIgnoreEarlyClicksOnPopup"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillKeyboardAccessory": [
         {
             "platforms": [

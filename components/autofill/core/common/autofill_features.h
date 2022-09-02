@@ -128,10 +128,6 @@ extern const base::Feature kAutofillRefillModifiedCreditCardExpirationDates;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillTypeSpecificPopupWidth;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillIgnoreEarlyClicksOnPopup;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<base::TimeDelta>
-    kAutofillIgnoreEarlyClicksOnPopupDuration;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillIgnoreUnmappableAutocompleteValues;
 COMPONENT_EXPORT(AUTOFILL)

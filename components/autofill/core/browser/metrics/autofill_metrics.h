@@ -1055,15 +1055,6 @@ class AutofillMetrics {
     bool cvc_ = false;
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SuggestionClickResult {
-    kAccepted = 0,
-    kIgnored = 1,
-    kAcceptedAfterIgnored = 2,
-    kMaxValue = kAcceptedAfterIgnored
-  };
-
   // Utility to log URL keyed form interaction events.
   class FormInteractionsUkmLogger {
    public:
@@ -1550,10 +1541,6 @@ class AutofillMetrics {
   // Log the number of Autofill address suggestions presented to the user when
   // filling a form.
   static void LogAddressSuggestionsCount(size_t num_suggestions);
-
-  // Log whether a click was handled, ignored, or the followup of an ignored
-  // click.
-  static void LogSuggestionClick(SuggestionClickResult value);
 
   // Log the index of the selected Autofill suggestion in the popup.
   static void LogAutofillSuggestionAcceptedIndex(int index,

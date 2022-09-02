@@ -76,6 +76,11 @@ using views::BubbleBorder;
 
 namespace {
 
+// The duration for which clicks on the just-shown Autofill popup should be
+// ignored.
+constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
+    base::Milliseconds(500);
+
 // By spec, dropdowns should always have a width which is a multiple of 12.
 constexpr int kAutofillPopupWidthMultiple = 12;
 constexpr int kAutofillPopupMinWidth = kAutofillPopupWidthMultiple * 16;
@@ -428,10 +433,6 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
   bool mouse_observed_outside_item_bounds_ = false;
 
-  // TODO(crbug/1279268): Remove when AutofillIgnoreEarlyClicksOnPopup is
-  // launched.
-  bool clicked_too_early_ = false;
-
   const int frontend_id_;
 
   // All the labels inside this view.
@@ -683,20 +684,10 @@ void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
 
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillIgnoreEarlyClicksOnPopup) &&
-      popup_view()->time_delta_since_popup_shown() <=
-          features::kAutofillIgnoreEarlyClicksOnPopupDuration.Get()) {
-    clicked_too_early_ = true;
-    AutofillMetrics::LogSuggestionClick(
-        AutofillMetrics::SuggestionClickResult::kIgnored);
+  if (popup_view()->time_delta_since_popup_shown() <=
+      kIgnoreEarlyClicksOnPopupDuration) {
     return;
   }
-
-  AutofillMetrics::LogSuggestionClick(
-      !clicked_too_early_
-          ? AutofillMetrics::SuggestionClickResult::kAccepted
-          : AutofillMetrics::SuggestionClickResult::kAcceptedAfterIgnored);
 
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
