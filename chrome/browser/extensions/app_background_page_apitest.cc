@@ -499,14 +499,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenTwoPagesWithManifest) {
   UnloadExtension(extension->id());
 }
 
-// TODO(https://crbug.com/1124033): Fails on LaCrOS bot.
-// TODO(https://crbug.com/1186442): Fails on linux-ozone-rel bot.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_OpenPopupFromBGPage DISABLED_OpenPopupFromBGPage
-#else
-#define MAYBE_OpenPopupFromBGPage OpenPopupFromBGPage
-#endif
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenPopupFromBGPage) {
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenPopupFromBGPage) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
