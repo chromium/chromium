@@ -542,7 +542,7 @@ void CookieStore::OnSetCanonicalCookieResult(ScriptPromiseResolver* resolver,
   if (!backend_success) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        "An unknown error occured while writing the cookie."));
+        "An unknown error occurred while writing the cookie."));
     return;
   }
   resolver->Resolve();
