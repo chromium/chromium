@@ -3618,8 +3618,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
              /*has_selection=*/false);
 
   print_view_manager->WaitOnScanning();
-  ASSERT_TRUE(print_view_manager->preview_allowed().has_value());
-  ASSERT_EQ(print_view_manager->preview_allowed().value(),
+  ASSERT_EQ(print_view_manager->preview_allowed(),
             content_analysis_allows_print());
 }
 

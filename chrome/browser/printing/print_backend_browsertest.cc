@@ -637,8 +637,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
   EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
 
   absl::optional<mojom::ResultCode> result = RenderPageAndWait();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -656,8 +655,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedDocument) {
   EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
 
   absl::optional<mojom::ResultCode> result = RenderDocumentAndWait();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
@@ -678,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
 #else
   absl::optional<mojom::ResultCode> result = RenderDocumentAndWait();
 #endif
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 
   EXPECT_EQ(DocumentDoneAndWait(), mojom::ResultCode::kSuccess);
 }
