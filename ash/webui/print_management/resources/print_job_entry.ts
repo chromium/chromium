@@ -153,7 +153,7 @@ const PrintJobEntryElementBase =
     mixinBehaviors([FocusRowBehavior], I18nMixin(PolymerElement)) as
     {new (): PolymerElement & I18nMixinInterface};
 
-class PrintJobEntryElement extends PrintJobEntryElementBase {
+export class PrintJobEntryElement extends PrintJobEntryElementBase {
   static get is() {
     return 'print-job-entry';
   }
@@ -253,6 +253,11 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
     this.mojoInterfaceProvider_ = getMetadataProvider();
 
     this.addEventListener('click', () => this.onClick_());
+  }
+
+  // Return private property this.fileIconClass for usage in browser tests.
+  getFileIconClass(): string {
+    return this.fileIconClass_;
   }
 
   /**
@@ -537,6 +542,12 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
         assertNotReached();
         return loadTimeData.getString('unknownPrinterErrorStopped');
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-job-entry': PrintJobEntryElement;
   }
 }
 

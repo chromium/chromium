@@ -234,7 +234,6 @@ if (include_js_tests) {
         "chromeos/diagnostics/diagnostics_browsertest.js",
         "chromeos/firmware_update/firmware_update_browsertest.js",
         "chromeos/os_feedback_ui/os_feedback_browsertest.js",
-        "chromeos/print_management/print_management_browsertest.js",
         "chromeos/scanning/scanning_app_browsertest.js",
         "chromeos/shimless_rma/shimless_rma_browsertest.js",
         "nearby_share/nearby_browsertest.js",
@@ -266,6 +265,7 @@ if (include_js_tests) {
         "chromeos/parent_access/parent_access_browsertest.js",
         "chromeos/personalization_app/personalization_app_component_browsertest.js",
         "chromeos/personalization_app/personalization_app_controller_browsertest.js",
+        "chromeos/print_management/print_management_browsertest.js",
         "chromeos/shortcut_customization/shortcut_customization_browsertest.js",
       ]
     }
@@ -580,6 +580,7 @@ generate_grd("build_grd") {
       "chromeos/cloud_upload:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
       "chromeos/personalization_app:build_grdp",
+      "chromeos/print_management:build_grdp",
       "chromeos/shortcut_customization:build_grdp",
       "//ui/file_manager:build_tests_gen_grdp",
       "//ui/file_manager:build_tests_grdp",
@@ -588,6 +589,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/personalization_app/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
+      "$target_gen_dir/chromeos/print_management/resources.grdp",
       "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",

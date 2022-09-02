@@ -59,12 +59,12 @@ function comparePrintJobsChronologically(
 
 const PrintManagementElementBase = I18nMixin(PolymerElement);
 
-interface PrintManagementElement {
+export interface PrintManagementElement {
   $: {deleteIcon: IronIconElement};
 }
 
-class PrintManagementElement extends PrintManagementElementBase implements
-    PrintJobsObserverInterface {
+export class PrintManagementElement extends PrintManagementElementBase
+    implements PrintJobsObserverInterface {
   static get is() {
     return 'print-management';
   }
