@@ -44,7 +44,7 @@ class ActionAPIInteractiveUITest : public ExtensionApiTest {
   // `extension`, and waits for a corresponding test success notification.
   void RunScriptTest(const std::string& script, const Extension& extension) {
     ResultCatcher result_catcher;
-    browsertest_util::BackgroundScriptExecutor::ExecuteScript(
+    browsertest_util::BackgroundScriptExecutor::ExecuteScriptAsync(
         profile(), extension.id(), script);
     EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
   }

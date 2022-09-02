@@ -85,6 +85,18 @@ class TestSendMessageFunction : public ExtensionFunction {
   ResponseValue response_;
 };
 
+class TestSendScriptResultFunction : public TestExtensionFunction {
+ public:
+  TestSendScriptResultFunction();
+  DECLARE_EXTENSION_FUNCTION("test.sendScriptResult", UNKNOWN)
+
+ private:
+  ~TestSendScriptResultFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class TestGetConfigFunction : public TestExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("test.getConfig", UNKNOWN)
