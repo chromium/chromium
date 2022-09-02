@@ -232,7 +232,8 @@ try_.orchestrator_builder(
     name = "linux-rel",
     compilator = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    check_for_flakiness = True,
+    # Disabling due to crbug.com/1359208
+    # check_for_flakiness = True,
     mirrors = [
         "ci/Linux Builder",
         "ci/Linux Tests",
@@ -707,7 +708,8 @@ try_.gpu.optional_tests_builder(
 try_.orchestrator_builder(
     name = "linux-rel-inverse-fyi",
     compilator = "linux-rel-compilator",
-    check_for_flakiness = True,
+    # Disabling due to crbug.com/1359208
+    # check_for_flakiness = True,
     mirrors = [
         "ci/Linux Builder",
         "ci/Linux Tests",
