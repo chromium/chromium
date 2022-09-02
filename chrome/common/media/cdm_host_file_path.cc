@@ -44,38 +44,35 @@ void AddCdmHostFilePaths(
 
 #if BUILDFLAG(IS_WIN)
 
-  static const base::FilePath::CharType* const kUnversionedFiles[] = {
-      chrome::kBrowserProcessExecutableName};
+  // Signature files and kBrowserResourcesDll are typically in a
+  // separate versioned directory, but may be the same directory as
+  // kBrowserProcessExecutableName (e.g. for a local build of Chrome).
+  // DIR_ASSETS sorts this out for us.
+  base::FilePath chrome_assets_dir;
+  CHECK(base::PathService::Get(base::DIR_ASSETS, &chrome_assets_dir));
 
-  static const base::FilePath::CharType* const kVersionedFiles[] = {
-    chrome::kBrowserResourcesDll
-  };
+  // Find where kBrowserProcessExecutableName is installed. Signature file is
+  // in the assets directory.
+  base::FilePath chrome_exe;
+  CHECK(base::PathService::Get(base::FILE_EXE, &chrome_exe));
+  DCHECK(base::FilePath::CompareEqualIgnoreCase(
+      chrome::kBrowserProcessExecutableName, chrome_exe.BaseName().value()))
+      << "Filename returned by FILE_EXE '" << chrome_exe.BaseName().value()
+      << "' does not match kBrowserProcessExecutableName '"
+      << chrome::kBrowserProcessExecutableName << "'.";
+  const auto chrome_exe_sig = GetSigFilePath(
+      chrome_assets_dir.Append(chrome::kBrowserProcessExecutableName));
+  DVLOG(2) << __func__ << ":" << chrome_exe.value() << ", signature file "
+           << chrome_exe_sig.value();
+  cdm_host_file_paths->emplace_back(chrome_exe, chrome_exe_sig);
 
-  // Find where chrome.exe is installed.
-  base::FilePath chrome_exe_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &chrome_exe_dir))
-    NOTREACHED();
-  base::FilePath version_dir(chrome_exe_dir.AppendASCII(CHROME_VERSION_STRING));
-
-  cdm_host_file_paths->reserve(std::size(kUnversionedFiles) +
-                               std::size(kVersionedFiles));
-
-  // Signature files are always in the version directory.
-  for (size_t i = 0; i < std::size(kUnversionedFiles); ++i) {
-    base::FilePath file_path = chrome_exe_dir.Append(kUnversionedFiles[i]);
-    base::FilePath sig_path =
-        GetSigFilePath(version_dir.Append(kUnversionedFiles[i]));
-    DVLOG(2) << __func__ << ": unversioned file " << i << " at "
-             << file_path.value() << ", signature file " << sig_path.value();
-    cdm_host_file_paths->emplace_back(file_path, sig_path);
-  }
-
-  for (size_t i = 0; i < std::size(kVersionedFiles); ++i) {
-    base::FilePath file_path = version_dir.Append(kVersionedFiles[i]);
-    DVLOG(2) << __func__ << ": versioned file " << i << " at "
-             << file_path.value();
-    cdm_host_file_paths->emplace_back(file_path, GetSigFilePath(file_path));
-  }
+  // kBrowserResourcesDll and it's signature file are in the assets directory.
+  const auto chrome_dll =
+      chrome_assets_dir.Append(chrome::kBrowserResourcesDll);
+  const auto chrome_dll_sig = GetSigFilePath(chrome_dll);
+  DVLOG(2) << __func__ << ":" << chrome_dll.value() << ", signature file "
+           << chrome_dll_sig.value();
+  cdm_host_file_paths->emplace_back(chrome_dll, chrome_dll_sig);
 
 #elif BUILDFLAG(IS_MAC)
 
