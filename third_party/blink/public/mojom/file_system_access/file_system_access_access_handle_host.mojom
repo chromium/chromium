@@ -25,5 +25,6 @@ interface FileSystemAccessAccessHandleHost {
   // corresponding file descriptor. This may allow it to observe writes from
   // other renderers to the same (origin-scoped) file, so no cross-origin data
   // would be leaked.
+  [Sync]
   Close() => ();
 };

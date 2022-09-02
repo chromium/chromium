@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_error_or.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
@@ -33,13 +35,39 @@ FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
 }
 
 void FileSystemSyncAccessHandle::Trace(Visitor* visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScriptWrappable::Trace(visitor);
   visitor->Trace(file_delegate_);
   visitor->Trace(access_handle_remote_);
   visitor->Trace(queued_close_resolver_);
 }
 
-ScriptPromise FileSystemSyncAccessHandle::close(ScriptState* script_state) {
+ScriptValue FileSystemSyncAccessHandle::close(ScriptState* script_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface)) {
+    CloseSync(script_state);
+    return ScriptValue::From(script_state, ToV8UndefinedGenerator());
+  } else {
+    return ScriptValue::From(script_state, CloseAsync(script_state));
+  }
+}
+
+void FileSystemSyncAccessHandle::CloseSync(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_closed_ || !access_handle_remote_.is_bound()) {
+    // close() is idempotent.
+    return;
+  }
+
+  DCHECK(file_delegate_->IsValid()) << "file delgate invalidated before close";
+
+  is_closed_ = true;
+  file_delegate_->Close();
+  access_handle_remote_->Close();
+}
+
+ScriptPromise FileSystemSyncAccessHandle::CloseAsync(
+    ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
 
@@ -80,7 +108,7 @@ void FileSystemSyncAccessHandle::DispatchQueuedClose() {
   DCHECK(file_delegate_->IsValid())
       << "file I/O operation queued after file closed";
 
-  file_delegate_->Close(WTF::Bind(
+  file_delegate_->CloseAsync(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
          FileSystemSyncAccessHandle* access_handle) {
         ScriptState* script_state = resolver->GetScriptState();
@@ -95,29 +123,58 @@ void FileSystemSyncAccessHandle::DispatchQueuedClose() {
       WrapPersistent(resolver), WrapPersistent(this)));
 }
 
-ScriptPromise FileSystemSyncAccessHandle::flush(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptValue FileSystemSyncAccessHandle::flush(ScriptState* script_state,
+                                              ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface)) {
+    FlushSync(script_state, exception_state);
+    return ScriptValue::From(script_state, ToV8UndefinedGenerator());
+  } else {
+    return ScriptValue::From(script_state, FlushAsync(script_state));
+  }
+}
+
+void FileSystemSyncAccessHandle::FlushSync(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The file was already closed");
-    return ScriptPromise();
+    return;
+  }
+
+  DCHECK(file_delegate_->IsValid()) << "file delgate invalidated before flush";
+
+  bool success = file_delegate()->Flush();
+  if (!success) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "flush failed");
+  }
+}
+
+ScriptPromise FileSystemSyncAccessHandle::FlushAsync(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  if (is_closed_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+        "The file was already closed"));
+    return result;
   }
 
   if (!EnterOperation()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Another I/O operation is in progress on the same file");
-    return ScriptPromise();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+        "Another I/O operation is in progress on the same file"));
+    return result;
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
 
   DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
 
-  file_delegate()->Flush(WTF::Bind(WTF::Bind(
+  file_delegate()->FlushAsync(WTF::Bind(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
          FileSystemSyncAccessHandle* access_handle, bool success) {
         ScriptState* script_state = resolver->GetScriptState();
@@ -139,29 +196,63 @@ ScriptPromise FileSystemSyncAccessHandle::flush(
   return result;
 }
 
-ScriptPromise FileSystemSyncAccessHandle::getSize(
+ScriptValue FileSystemSyncAccessHandle::getSize(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface)) {
+    return ScriptValue::From(script_state,
+                             GetSizeSync(script_state, exception_state));
+  } else {
+    return ScriptValue::From(script_state, GetSizeAsync(script_state));
+  }
+}
+
+uint64_t FileSystemSyncAccessHandle::GetSizeSync(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The file was already closed");
-    return ScriptPromise();
+    return 0;
+  }
+
+  DCHECK(file_delegate_->IsValid())
+      << "file delgate invalidated before getSize";
+
+  base::FileErrorOr<int64_t> error_or_length = file_delegate()->GetLength();
+  if (error_or_length.is_error()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "getSize failed");
+    return 0;
+  }
+  return base::as_unsigned(error_or_length.value());
+}
+
+ScriptPromise FileSystemSyncAccessHandle::GetSizeAsync(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  if (is_closed_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+        "The file was already closed"));
+    return result;
   }
 
   if (!EnterOperation()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Another I/O operation is in progress on the same file");
-    return ScriptPromise();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+        "Another I/O operation is in progress on the same file"));
+    return result;
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
 
   DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
 
-  file_delegate()->GetLength(WTF::Bind(
+  file_delegate()->GetLengthAsync(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
          FileSystemSyncAccessHandle* access_handle,
          base::FileErrorOr<int64_t> error_or_length) {
@@ -184,35 +275,86 @@ ScriptPromise FileSystemSyncAccessHandle::getSize(
   return result;
 }
 
-ScriptPromise FileSystemSyncAccessHandle::truncate(
+ScriptValue FileSystemSyncAccessHandle::truncate(
     ScriptState* script_state,
     uint64_t size,
     ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface)) {
+    TruncateSync(script_state, size, exception_state);
+    return ScriptValue::From(script_state, ToV8UndefinedGenerator());
+  } else {
+    return ScriptValue::From(script_state, TruncateAsync(script_state, size));
+  }
+}
+
+void FileSystemSyncAccessHandle::TruncateSync(ScriptState* script_state,
+                                              uint64_t size,
+                                              ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The file was already closed");
-    return ScriptPromise();
+    return;
+  }
+
+  DCHECK(file_delegate_->IsValid())
+      << "file delgate invalidated before truncate";
+
+  if (!base::CheckedNumeric<int64_t>(size).IsValid() ||
+      !base::CheckedNumeric<uint64_t>(size).IsValid()) {
+    exception_state.ThrowTypeError("Cannot truncate file to given length");
+    return;
+  }
+
+  base::FileErrorOr<bool> result = file_delegate()->SetLength(size);
+  if (!result.is_error())
+    return;
+
+  base::File::Error file_error = result.error();
+  if (file_error == base::File::FILE_ERROR_NO_SPACE) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kQuotaExceededError,
+                                      "No space available for this operation");
+    return;
+  }
+  if (file_error != base::File::FILE_OK) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "truncate failed");
+    return;
+  }
+}
+
+ScriptPromise FileSystemSyncAccessHandle::TruncateAsync(
+    ScriptState* script_state,
+    uint64_t size) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  if (is_closed_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+        "The file was already closed"));
+    return result;
+  }
+
+  if (!base::CheckedNumeric<int64_t>(size).IsValid() ||
+      !base::CheckedNumeric<uint64_t>(size).IsValid()) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "Cannot truncate file to given length"));
+    return result;
   }
 
   if (!EnterOperation()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Another I/O operation is in progress on the same file");
-    return ScriptPromise();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+        "Another I/O operation is in progress on the same file"));
+    return result;
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
 
   DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
 
-  if (!base::CheckedNumeric<int64_t>(size).IsValid()) {
-    exception_state.ThrowTypeError("Cannot truncate file to given length");
-    return result;
-  }
-
-  file_delegate()->SetLength(
+  file_delegate()->SetLengthAsync(
       size,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
@@ -248,13 +390,28 @@ uint64_t FileSystemSyncAccessHandle::read(
     MaybeShared<DOMArrayBufferView> buffer,
     FileSystemReadWriteOptions* options,
     ExceptionState& exception_state) {
-  OperationScope scope(this);
-  if (!scope.entered_operation()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "There is a pending operation on the access handle");
-    return 0;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface)) {
+    return DoRead(buffer, options, exception_state);
+  } else {
+    // TODO(crbug.com/1338340): OperationScope is only used for async methods.
+    // Remove once we migrate all methods to be sync.
+    OperationScope scope(this);
+    if (!scope.entered_operation()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "There is a pending operation on the access handle");
+      return 0;
+    }
+    return DoRead(buffer, options, exception_state);
   }
+}
+
+uint64_t FileSystemSyncAccessHandle::DoRead(
+    MaybeShared<DOMArrayBufferView> buffer,
+    FileSystemReadWriteOptions* options,
+    ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!file_delegate()->IsValid() || is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -285,13 +442,28 @@ uint64_t FileSystemSyncAccessHandle::write(
     MaybeShared<DOMArrayBufferView> buffer,
     FileSystemReadWriteOptions* options,
     ExceptionState& exception_state) {
-  OperationScope scope(this);
-  if (!scope.entered_operation()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "There is a pending operation on the access handle");
-    return 0;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface)) {
+    return DoWrite(buffer, options, exception_state);
+  } else {
+    // TODO(crbug.com/1338340): OperationScope is only used for async methods.
+    // Remove once we migrate all methods to be sync.
+    OperationScope scope(this);
+    if (!scope.entered_operation()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "There is a pending operation on the access handle");
+      return 0;
+    }
+    return DoWrite(buffer, options, exception_state);
   }
+}
+
+uint64_t FileSystemSyncAccessHandle::DoWrite(
+    MaybeShared<DOMArrayBufferView> buffer,
+    FileSystemReadWriteOptions* options,
+    ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!file_delegate()->IsValid() || is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
@@ -47,30 +48,49 @@ class FileSystemAccessFileDelegate
   virtual base::FileErrorOr<int> Write(int64_t offset,
                                        const base::span<uint8_t> data) = 0;
 
+  // Returns the current size of this file, or a file error on failure.
+  virtual base::FileErrorOr<int64_t> GetLength() = 0;
+
   // Asynchronously get the size of the file. Returns the current size of this
   // file, or a file error on failure.
-  virtual void GetLength(
+  virtual void GetLengthAsync(
       base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) = 0;
+
+  // Tuncates the file to the given length. `length` cannot be negative.
+  // If `length` is greater than the current size of the file, the file is
+  // extended with zeros.
+  virtual base::FileErrorOr<bool> SetLength(int64_t length) = 0;
 
   // Asynchronously truncates the file to the given length. `length` cannot be
   // negative. If `length` is greater than the current size of the file, the
   // file is extended with zeros.
-  virtual void SetLength(
+  virtual void SetLengthAsync(
       int64_t length,
       base::OnceCallback<void(base::File::Error)> callback) = 0;
 
+  // Instructs the filesystem to flush the file to disk.
+  virtual bool Flush() = 0;
+
   // Asynchronously instructs the filesystem to flush the file to disk.
-  virtual void Flush(base::OnceCallback<void(bool)> callback) = 0;
+  virtual void FlushAsync(base::OnceCallback<void(bool)> callback) = 0;
+
+  // Close the file. Destroying this object will close the file automatically.
+  virtual void Close() = 0;
 
   // Asynchronously close the file. Destroying this object will close the file
   // automatically.
-  virtual void Close(base::OnceClosure callback) = 0;
+  virtual void CloseAsync(base::OnceClosure callback) = 0;
 
   // Returns `true` if the file handle wrapped by this object is valid.
   virtual bool IsValid() const = 0;
 
   // GarbageCollected
   virtual void Trace(Visitor* visitor) const {}
+
+ protected:
+  // Every subclass method that runs on the main thread should
+  // DCHECK_CALLED_ON_VALID_SEQUENCE with this checker.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

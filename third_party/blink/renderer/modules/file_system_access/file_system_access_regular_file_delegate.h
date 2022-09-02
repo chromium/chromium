@@ -65,15 +65,17 @@ class FileSystemAccessRegularFileDelegate final
                               base::span<uint8_t> data) override;
   base::FileErrorOr<int> Write(int64_t offset,
                                const base::span<uint8_t> data) override;
-
-  void GetLength(
+  base::FileErrorOr<int64_t> GetLength() override;
+  void GetLengthAsync(
       base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) override;
-  void SetLength(int64_t new_length,
-                 base::OnceCallback<void(base::File::Error)> callback) override;
-
-  void Flush(base::OnceCallback<void(bool)> callback) override;
-  void Close(base::OnceClosure callback) override;
-
+  base::FileErrorOr<bool> SetLength(int64_t new_length) override;
+  void SetLengthAsync(
+      int64_t new_length,
+      base::OnceCallback<void(base::File::Error)> callback) override;
+  bool Flush() override;
+  void FlushAsync(base::OnceCallback<void(bool)> callback) override;
+  void Close() override;
+  void CloseAsync(base::OnceClosure callback) override;
   bool IsValid() const override { return backing_file_.IsValid(); }
 
  private:

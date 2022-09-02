@@ -38,7 +38,7 @@ interface FileUtilitiesHost {
   //
   // By the same reasoning above (renderers on most OSes can call ftruncate()
   // directly), this call returns unsanitized base::File::Error information.
-  [EnableIf=is_mac]
+  [EnableIf=is_mac, Sync]
   SetLength(mojo_base.mojom.File backing_file, int64 length) =>
   (mojo_base.mojom.File backing_file, bool result);
 };

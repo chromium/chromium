@@ -37,7 +37,8 @@ interface FileSystemAccessFileDelegateHost {
   // Returns the `length` of the associated file and a file error, which is
   // `base::File::Error::FILE_OK` if the operation completed successfully.
   // The returned length of the file will never be more than the max int64.
-  GetLength() => (mojo_base.mojom.FileError error, uint64 length);
+  [Sync]
+  GetLength() => (mojo_base.mojom.FileError error, int64 length);
 
   // Truncates a file to `length`. If `length` is larger than the file size, the
   // file will be extended with null bytes. Ideally `length` would be a uint64,
@@ -45,5 +46,6 @@ interface FileSystemAccessFileDelegateHost {
   // FileSystemAccessFileDelegateHostImpl will report a bad message if `length`
   // is negative. Returns a file error, which is `base::File::Error::FILE_OK` if
   // the operation completed successfully.
+  [Sync]
   SetLength(int64 length) => (mojo_base.mojom.FileError error);
 };
