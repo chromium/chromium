@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 22
+// Next MinVersion: 23
 
 module arc.mojom;
 
@@ -79,6 +79,7 @@ struct KeyEventData {
   // in <linux/input-event-codes.h>.
   [MinVersion=16] uint32 scan_code;
   [MinVersion=20] bool is_alt_gr_down;
+  [MinVersion=23] bool is_repeat;
 };
 
 // Deprecated method IDs: 1, 4, 5, 6

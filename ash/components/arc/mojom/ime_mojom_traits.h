@@ -135,6 +135,9 @@ struct StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr> {
   static bool is_alt_gr_down(const KeyEventUniquePtr& key_event) {
     return key_event->IsAltGrDown();
   }
+  static bool is_repeat(const KeyEventUniquePtr& key_event) {
+    return key_event->is_repeat();
+  }
 
   static bool Read(arc::mojom::KeyEventDataDataView data,
                    KeyEventUniquePtr* out);

@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/mojom/ime_mojom_traits.h"
 
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -34,6 +35,8 @@ bool StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr>::Read(
     flags |= ui::EF_CAPS_LOCK_ON;
   if (data.is_alt_gr_down())
     flags |= ui::EF_ALTGR_DOWN;
+  if (data.is_repeat())
+    flags |= ui::EF_IS_REPEAT;
 
   ui::KeyboardCode key_code;
   ui::DomKey dom_key;
