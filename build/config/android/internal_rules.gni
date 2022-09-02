@@ -88,6 +88,10 @@ java_library_patterns = [
 java_target_patterns = java_library_patterns + java_resource_patterns
 
 _r8_path = "//third_party/r8/lib/r8.jar"
+# This duplication is intentional, so we avoid updating the r8.jar used by
+# dexing unless necessary, since each update invalidates all incremental dexing
+# and unnecessarily slows down all bots.
+_d8_path = "//third_party/r8/d8/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _desugar_jdk_libs_json = "//third_party/r8/desugar_jdk_libs.json"
 _desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.1.5.jar"
@@ -1606,7 +1610,7 @@ if (enable_java_templates) {
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
         inputs = [
-          _r8_path,
+          _d8_path,
           _custom_d8_path,
         ]
         if (defined(invoker.inputs)) {

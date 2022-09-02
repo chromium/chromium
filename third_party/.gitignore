@@ -222,6 +222,7 @@
 /qemu-mac-x64
 /quic_trace/src
 /r8/lib
+/r8/d8/lib
 /re2/src
 /requests/src
 /robolectric/lib/
