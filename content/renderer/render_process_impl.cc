@@ -127,6 +127,9 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
                        "--wasm-staging");
 
+  SetV8FlagIfFeature(features::kJavaScriptExperimentalSharedMemory,
+                     "--shared-string-table --harmony-struct");
+
   SetV8FlagIfFeature(features::kV8VmFuture, "--future");
   SetV8FlagIfNotFeature(features::kV8VmFuture, "--no-future");
 

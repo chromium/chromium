@@ -1077,6 +1077,10 @@ const base::Feature kVideoPlaybackQuality{"VideoPlaybackQuality",
 const base::Feature kV8VmFuture{"V8VmFuture",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables experimental JavaScript shared memory features.
+const base::Feature kJavaScriptExperimentalSharedMemory{
+    "JavaScriptExperimentalSharedMemory", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable window controls overlays for desktop PWAs
 const base::Feature kWebAppWindowControlsOverlay{
     "WebAppWindowControlsOverlay", base::FEATURE_ENABLED_BY_DEFAULT};

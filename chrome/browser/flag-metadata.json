@@ -2442,6 +2442,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-javascript-experimental-shared-memory",
+    "owners": [ "syg", "dinfuehr", "pthier" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-javascript-harmony",
     "owners": [ "adamk", "hablich" ],
     // This flag is used by web developers to test upcoming javascript features.
