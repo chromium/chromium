@@ -16,8 +16,11 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
-class Browser;
+namespace ui {
 class ColorChangeHandler;
+}  // namespace ui
+
+class Browser;
 class TabStripPageHandler;
 class TabStripUIEmbedder;
 
@@ -74,7 +77,7 @@ class TabStripUI : public ui::MojoWebUIController,
 
   std::unique_ptr<TabStripPageHandler> page_handler_;
 
-  std::unique_ptr<ColorChangeHandler> color_provider_handler_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   mojo::Receiver<tab_strip::mojom::PageHandlerFactory> page_factory_receiver_{
       this};

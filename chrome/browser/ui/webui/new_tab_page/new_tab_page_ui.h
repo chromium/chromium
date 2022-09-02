@@ -47,8 +47,11 @@ class WebContents;
 class WebUI;
 }  // namespace content
 
-class ChromeCustomizeThemesHandler;
+namespace ui {
 class ColorChangeHandler;
+}  // namespace ui
+
+class ChromeCustomizeThemesHandler;
 #if !defined(OFFICIAL_BUILD)
 class FooHandler;
 #endif
@@ -218,7 +221,7 @@ class NewTabPageUI
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;
   std::unique_ptr<ChromeCustomizeThemesHandler> customize_themes_handler_;
-  std::unique_ptr<ColorChangeHandler> color_provider_handler_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
       customize_themes_factory_receiver_;
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;

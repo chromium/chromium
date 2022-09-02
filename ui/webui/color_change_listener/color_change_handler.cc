@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/resource_path.h"
-#include "ui/resources/grit/webui_generated_resources.h"
+
+namespace ui {
 
 ColorChangeHandler::ColorChangeHandler(
     content::WebContents* web_contents,
@@ -26,3 +27,5 @@ void ColorChangeHandler::OnColorProviderChanged() {
   if (page_)
     page_->OnColorProviderChanged();
 }
+
+}  // namespace ui
