@@ -99,7 +99,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       suggested_path_, &file_type_info, 0, base::FilePath::StringType(),
-      owning_window, NULL);
+      owning_window, nullptr);
 }
 
 DownloadFilePicker::~DownloadFilePicker() {

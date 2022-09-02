@@ -127,7 +127,7 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
     content::NotificationService::current()->Notify(
         extensions::NOTIFICATION_CRX_INSTALLER_DONE,
         content::Source<extensions::MockCrxInstaller>(mock_installer_.get()),
-        content::Details<const extensions::Extension>(NULL));
+        content::Details<const extensions::Extension>(nullptr));
   }
 
  protected:

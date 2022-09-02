@@ -277,7 +277,7 @@ void FileSelectHelper::OnListDone(int error) {
   std::unique_ptr<ActiveDirectoryEnumeration> entry =
       std::move(directory_enumeration_);
   if (error) {
-    FileSelectionCanceled(NULL);
+    FileSelectionCanceled(nullptr);
     return;
   }
 
@@ -743,7 +743,7 @@ void FileSelectHelper::RunFileChooserOnUIThread(
 #if BUILDFLAG(IS_ANDROID)
       &accept_types);
 #else
-      NULL);
+      nullptr);
 #endif
 
   select_file_types_.reset();

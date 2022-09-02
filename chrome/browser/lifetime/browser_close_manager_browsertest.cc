@@ -1094,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
     if (!base::PathExists(path))
       ASSERT_TRUE(base::CreateDirectory(path));
     other_profile =
-        Profile::CreateProfile(path, NULL, Profile::CREATE_MODE_SYNCHRONOUS);
+        Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
   }
   Profile* other_profile_ptr = other_profile.get();
   profile_manager->RegisterTestingProfile(std::move(other_profile), true);

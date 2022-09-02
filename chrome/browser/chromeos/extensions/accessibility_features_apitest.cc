@@ -100,7 +100,7 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
       return ash::prefs::kDockedMagnifierEnabled;
     if (feature == "dictation")
       return ash::prefs::kAccessibilityDictationEnabled;
-    return NULL;
+    return nullptr;
   }
 
   // Initializes preferences before running the test extension.

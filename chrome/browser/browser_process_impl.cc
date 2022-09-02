@@ -392,7 +392,7 @@ BrowserProcessImpl::~BrowserProcessImpl() {
   KeepAliveRegistry::GetInstance()->RemoveObserver(this);
 #endif
 
-  g_browser_process = NULL;
+  g_browser_process = nullptr;
 }
 
 #if !BUILDFLAG(IS_ANDROID)

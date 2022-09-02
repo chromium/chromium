@@ -13,7 +13,7 @@ namespace chromeos {
 MTPWatcherManager::MTPWatcherManager(
     DeviceMediaAsyncFileUtil* device_media_async_file_util)
     : device_media_async_file_util_(device_media_async_file_util) {
-  DCHECK(device_media_async_file_util != NULL);
+  DCHECK(device_media_async_file_util != nullptr);
 }
 
 MTPWatcherManager::~MTPWatcherManager() {

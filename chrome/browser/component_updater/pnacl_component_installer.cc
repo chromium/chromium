@@ -97,11 +97,11 @@ void OverrideDirPnaclComponent(const base::FilePath& base_path) {
 base::DictionaryValue* ReadJSONManifest(const base::FilePath& manifest_path) {
   JSONFileValueDeserializer deserializer(manifest_path);
   std::string error;
-  std::unique_ptr<base::Value> root = deserializer.Deserialize(NULL, &error);
+  std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
   if (!root.get())
-    return NULL;
+    return nullptr;
   if (!root->is_dict())
-    return NULL;
+    return nullptr;
   return static_cast<base::DictionaryValue*>(root.release());
 }
 
@@ -110,7 +110,7 @@ base::DictionaryValue* ReadPnaclManifest(const base::FilePath& unpack_path) {
   base::FilePath manifest_path =
       GetPlatformDir(unpack_path).AppendASCII("pnacl_public_pnacl_json");
   if (!base::PathExists(manifest_path))
-    return NULL;
+    return nullptr;
   return ReadJSONManifest(manifest_path);
 }
 
@@ -215,7 +215,7 @@ bool PnaclComponentInstallerPolicy::VerifyInstallation(
     const base::FilePath& install_dir) const {
   std::unique_ptr<base::DictionaryValue> pnacl_manifest(
       ReadPnaclManifest(install_dir));
-  if (pnacl_manifest == NULL) {
+  if (pnacl_manifest == nullptr) {
     LOG(WARNING) << "Failed to read pnacl manifest.";
     return false;
   }

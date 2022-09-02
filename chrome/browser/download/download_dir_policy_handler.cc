@@ -35,7 +35,7 @@ DownloadDirPolicyHandler::~DownloadDirPolicyHandler() {}
 bool DownloadDirPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  const base::Value* value = NULL;
+  const base::Value* value = nullptr;
   if (!CheckAndGetValue(policies, errors, &value))
     return false;
 

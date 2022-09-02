@@ -32,7 +32,7 @@ namespace default_app_order {
 namespace {
 
 // The single ExternalLoader instance.
-ExternalLoader* loader_instance = NULL;
+ExternalLoader* loader_instance = nullptr;
 
 // Names used in JSON file.
 const char kOemAppsFolderAttr[] = "oem_apps_folder";
@@ -47,16 +47,16 @@ const char kImportDefaultOrderAttr[] = "import_default_order";
 std::unique_ptr<base::ListValue> ReadExternalOrdinalFile(
     const base::FilePath& path) {
   if (!base::PathExists(path))
-    return NULL;
+    return nullptr;
 
   JSONFileValueDeserializer deserializer(path);
   std::string error_msg;
   std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(NULL, &error_msg);
+      deserializer.Deserialize(nullptr, &error_msg);
   if (!value) {
     LOG(WARNING) << "Unable to deserialize default app ordinals json data:"
                  << error_msg << ", file=" << path.value();
-    return NULL;
+    return nullptr;
   }
 
   std::unique_ptr<base::ListValue> ordinal_list_value =
@@ -225,7 +225,7 @@ ExternalLoader::ExternalLoader(bool async)
 ExternalLoader::~ExternalLoader() {
   DCHECK(loaded_.IsSignaled());
   DCHECK_EQ(loader_instance, this);
-  loader_instance = NULL;
+  loader_instance = nullptr;
 }
 
 const std::vector<std::string>& ExternalLoader::GetAppIds() {

@@ -171,7 +171,7 @@ class UsersPrivateApiTest : public ExtensionApiTest {
 };
 
 // static
-TestDelegate* UsersPrivateApiTest::s_test_delegate_ = NULL;
+TestDelegate* UsersPrivateApiTest::s_test_delegate_ = nullptr;
 
 class LoginStatusTestConfig {
  public:

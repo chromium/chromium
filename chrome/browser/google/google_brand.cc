@@ -27,7 +27,7 @@
 
 namespace {
 
-const char* g_brand_for_testing = NULL;
+const char* g_brand_for_testing = nullptr;
 
 }  // namespace
 
@@ -158,12 +158,12 @@ bool IsEnterprise(const std::string& brand) {
 // BrandForTesting ------------------------------------------------------------
 
 BrandForTesting::BrandForTesting(const std::string& brand) : brand_(brand) {
-  DCHECK(g_brand_for_testing == NULL);
+  DCHECK(g_brand_for_testing == nullptr);
   g_brand_for_testing = brand_.c_str();
 }
 
 BrandForTesting::~BrandForTesting() {
-  g_brand_for_testing = NULL;
+  g_brand_for_testing = nullptr;
 }
 
 

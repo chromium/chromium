@@ -208,7 +208,7 @@ void DeviceLocalAccountExternalPolicyLoaderTest::SetUp() {
   profile_ = std::make_unique<TestingProfile>();
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   cache_dir_ = temp_dir_.GetPath().Append(kCacheDir);
-  ASSERT_TRUE(base::CreateDirectoryAndGetError(cache_dir_, NULL));
+  ASSERT_TRUE(base::CreateDirectoryAndGetError(cache_dir_, nullptr));
   TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
       test_shared_loader_factory_);
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_));

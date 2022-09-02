@@ -133,7 +133,7 @@ DownloadItemModelData* DownloadItemModelData::GetOrCreate(
     DownloadItem* download) {
   DownloadItemModelData* data =
       static_cast<DownloadItemModelData*>(download->GetUserData(kKey));
-  if (data == NULL) {
+  if (data == nullptr) {
     data = new DownloadItemModelData();
     data->should_show_in_shelf_ = !download->IsTransient();
     download->SetUserData(kKey, base::WrapUnique(data));

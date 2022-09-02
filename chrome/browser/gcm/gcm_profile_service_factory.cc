@@ -95,7 +95,7 @@ GCMProfileService* GCMProfileServiceFactory::GetForProfile(
     content::BrowserContext* profile) {
   // GCM is not supported in incognito mode.
   if (profile->IsOffTheRecord())
-    return NULL;
+    return nullptr;
 
   return static_cast<GCMProfileService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

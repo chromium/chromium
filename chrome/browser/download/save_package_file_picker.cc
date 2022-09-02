@@ -113,7 +113,7 @@ void AddCompleteFileTypeInfo(
 // error pages (failed DNS lookups, SSL errors, etc), which shouldn't affect
 // functionality.
 bool IsErrorPage(content::WebContents* web_contents) {
-  if (web_contents->GetController().GetActiveEntry() == NULL)
+  if (web_contents->GetController().GetActiveEntry() == nullptr)
     return false;
   return web_contents->GetController().GetLastCommittedEntry()->GetPageType() ==
          content::PAGE_TYPE_ERROR;
@@ -240,11 +240,11 @@ SavePackageFilePicker::SavePackageFilePicker(
         ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
-        platform_util::GetTopLevel(web_contents->GetNativeView()), NULL);
+        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
   } else {
     // Just use 'suggested_path_copy' instead of opening the dialog prompt.
     // Go through FileSelected() for consistency.
-    FileSelected(suggested_path_copy, file_type_index, NULL);
+    FileSelected(suggested_path_copy, file_type_index, nullptr);
   }
 }
 

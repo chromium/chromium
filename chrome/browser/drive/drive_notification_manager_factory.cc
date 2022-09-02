@@ -41,11 +41,11 @@ DriveNotificationManager*
 DriveNotificationManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   if (!syncer::IsSyncAllowedByFlag())
-    return NULL;
+    return nullptr;
   if (!GetInvalidationService(Profile::FromBrowserContext(context))) {
     // Do not create a DriveNotificationManager for |context|s that do not
     // support invalidation.
-    return NULL;
+    return nullptr;
   }
 
   return static_cast<DriveNotificationManager*>(

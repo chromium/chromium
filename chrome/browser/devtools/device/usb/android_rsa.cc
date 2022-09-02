@@ -251,7 +251,7 @@ std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
   r[kRSANumWords * 2] = 1;
 
   uint32_t* rr;
-  BnDiv(r, n, NULL, &rr);
+  BnDiv(r, n, nullptr, &rr);
 
   for (size_t i = 0; i < kRSANumWords; ++i) {
     pkey.n[i] = n[i];

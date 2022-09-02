@@ -18,7 +18,7 @@ InstanceIDProfileService* InstanceIDProfileServiceFactory::GetForProfile(
     content::BrowserContext* profile) {
   // Instance ID is not supported in incognito mode.
   if (profile->IsOffTheRecord())
-    return NULL;
+    return nullptr;
 
   return static_cast<InstanceIDProfileService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

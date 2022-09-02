@@ -4,7 +4,7 @@
 
 #include "chrome/browser/browser_process.h"
 
-BrowserProcess* g_browser_process = NULL;
+BrowserProcess* g_browser_process = nullptr;
 
 BrowserProcess::BrowserProcess() {}
 

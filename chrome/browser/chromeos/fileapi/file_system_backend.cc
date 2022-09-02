@@ -208,22 +208,22 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
 
 storage::FileSystemQuotaUtil* FileSystemBackend::GetQuotaUtil() {
   // No quota support.
-  return NULL;
+  return nullptr;
 }
 
 const storage::UpdateObserverList* FileSystemBackend::GetUpdateObservers(
     storage::FileSystemType type) const {
-  return NULL;
+  return nullptr;
 }
 
 const storage::ChangeObserverList* FileSystemBackend::GetChangeObservers(
     storage::FileSystemType type) const {
-  return NULL;
+  return nullptr;
 }
 
 const storage::AccessObserverList* FileSystemBackend::GetAccessObservers(
     storage::FileSystemType type) const {
-  return NULL;
+  return nullptr;
 }
 
 bool FileSystemBackend::IsAccessAllowed(
@@ -315,7 +315,7 @@ storage::AsyncFileUtil* FileSystemBackend::GetAsyncFileUtil(
     default:
       NOTREACHED();
   }
-  return NULL;
+  return nullptr;
 }
 
 storage::WatcherManager* FileSystemBackend::GetWatcherManager(
@@ -331,7 +331,7 @@ storage::WatcherManager* FileSystemBackend::GetWatcherManager(
     return arc_documents_provider_delegate_->GetWatcherManager(type);
 
   // TODO(mtomasz): Add support for other backends.
-  return NULL;
+  return nullptr;
 }
 
 storage::CopyOrMoveFileValidatorFactory*
@@ -340,7 +340,7 @@ FileSystemBackend::GetCopyOrMoveFileValidatorFactory(
     base::File::Error* error_code) {
   DCHECK(error_code);
   *error_code = base::File::FILE_OK;
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<storage::FileSystemOperation>
@@ -352,7 +352,7 @@ FileSystemBackend::CreateFileSystemOperation(
 
   if (!IsAccessAllowed(url)) {
     *error_code = base::File::FILE_ERROR_SECURITY;
-    return NULL;
+    return nullptr;
   }
 
   if (url.type() == storage::kFileSystemTypeDeviceMediaAsFileStorage) {

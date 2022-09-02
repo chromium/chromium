@@ -89,7 +89,7 @@ void ExpandEnvironmentVariables(std::string* arg) {
   static re2::LazyRE2 re = {
       "\\$\\{([a-zA-Z_][a-zA-Z_0-9]*)\\}|\\$([a-zA-Z_][a-zA-Z_0-9]*)"};
   std::string out;
-  re2::StringPiece submatch[3] = {0};
+  re2::StringPiece submatch[3] = {nullptr};
   size_t start = 0;
   bool matched = false;
   while (re->Match(*arg, start, arg->size(), re2::RE2::Anchor::UNANCHORED,
@@ -101,7 +101,7 @@ void ExpandEnvironmentVariables(std::string* arg) {
     } else {
       std::string var_name((submatch[1].empty() ? submatch[2] : submatch[1]));
       const char* var_value = getenv(var_name.c_str());
-      if (var_value != NULL)
+      if (var_value != nullptr)
         out.append(var_value);
     }
     start = submatch[0].end() - arg->data();

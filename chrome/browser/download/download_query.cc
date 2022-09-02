@@ -303,16 +303,16 @@ bool DownloadQuery::MatchesQuery(const std::vector<std::u16string>& query_terms,
 
   for (auto it = query_terms.begin(); it != query_terms.end(); ++it) {
     std::u16string term = base::i18n::ToLower(*it);
-    if (!base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, original_url_raw, NULL, NULL) &&
+    if (!base::i18n::StringSearchIgnoringCaseAndAccents(term, original_url_raw,
+                                                        nullptr, nullptr) &&
         !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, original_url_formatted, NULL, NULL) &&
-        !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, url_raw, NULL, NULL) &&
-        !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, url_formatted, NULL, NULL) &&
-        !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, path, NULL, NULL)) {
+            term, original_url_formatted, nullptr, nullptr) &&
+        !base::i18n::StringSearchIgnoringCaseAndAccents(term, url_raw, nullptr,
+                                                        nullptr) &&
+        !base::i18n::StringSearchIgnoringCaseAndAccents(term, url_formatted,
+                                                        nullptr, nullptr) &&
+        !base::i18n::StringSearchIgnoringCaseAndAccents(term, path, nullptr,
+                                                        nullptr)) {
       return false;
     }
   }

@@ -48,7 +48,7 @@ const int64_t kOneKilobyte = 1024;
 const int64_t kOneMegabyte = 1024 * kOneKilobyte;
 
 class InstallTypeTest;
-InstallTypeTest* g_install_type = 0;
+InstallTypeTest* g_install_type = nullptr;
 
 // Check that the disk space in the volume where the user data directory
 // normally lives is not dangerously low.

@@ -429,7 +429,7 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
       DLOG(ERROR) << "Failed to initialize from initial preferences.";
     }
 
-    base::DictionaryValue* extensions = 0;
+    base::DictionaryValue* extensions = nullptr;
     if (initial_prefs->GetExtensionsBlock(&extensions)) {
       DVLOG(1) << "Extensions block found in initial preferences";
       extensions::ExtensionUpdater::UpdateImmediatelyForFirstRun();

@@ -81,7 +81,7 @@ ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
     // The Chrome OS login and Chrome OS guest profiles do not have GAIA
     // credentials and do not support invalidation.
-    return NULL;
+    return nullptr;
   }
 #endif
   return static_cast<ProfileInvalidationProvider*>(

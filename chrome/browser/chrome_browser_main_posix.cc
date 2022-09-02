@@ -150,7 +150,7 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   struct sigaction action;
   memset(&action, 0, sizeof(action));
   action.sa_handler = SIGCHLDHandler;
-  CHECK_EQ(0, sigaction(SIGCHLD, &action, NULL));
+  CHECK_EQ(0, sigaction(SIGCHLD, &action, nullptr));
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

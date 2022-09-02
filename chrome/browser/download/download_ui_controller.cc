@@ -97,7 +97,7 @@ void DownloadShelfUIControllerDelegate::OnNewDownloadReady(
       web_contents = inspected;
   }
   Browser* browser =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : NULL;
+      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
 
   // As a last resort, use the last active browser for this profile. Not ideal,
   // but better than not showing the download at all.

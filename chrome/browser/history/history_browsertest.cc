@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, DISABLED_HistorySearchXSS) {
   // Should a race condition ever trigger, it won't result in flakiness.
   int num = ui_test_utils::FindInPage(
       browser()->tab_strip_model()->GetActiveWebContents(), u"<img", true, true,
-      NULL, NULL);
+      nullptr, nullptr);
   EXPECT_GT(num, 0);
   EXPECT_EQ(u"History",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());

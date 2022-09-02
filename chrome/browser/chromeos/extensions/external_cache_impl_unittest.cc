@@ -104,7 +104,7 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
   void CreateFile(const base::FilePath& file) {
-    EXPECT_EQ(base::WriteFile(file, NULL, 0), 0);
+    EXPECT_EQ(base::WriteFile(file, nullptr, 0), 0);
   }
 
   base::FilePath GetExtensionFile(const base::FilePath& dir,
@@ -167,7 +167,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   EXPECT_EQ(provided_prefs()->DictSize(), 2ul);
 
   // File in cache from Webstore.
-  const base::DictionaryValue* entry1 = NULL;
+  const base::DictionaryValue* entry1 = nullptr;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId1, &entry1));
   EXPECT_EQ(
       entry1->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -181,7 +181,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
       Optional(true));
 
   // File in cache not from Webstore.
-  const base::DictionaryValue* entry3 = NULL;
+  const base::DictionaryValue* entry3 = nullptr;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId3, &entry3));
   EXPECT_EQ(
       entry3->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -209,7 +209,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(provided_prefs()->DictSize(), 3ul);
 
-  const base::DictionaryValue* entry2 = NULL;
+  const base::DictionaryValue* entry2 = nullptr;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId2, &entry2));
   EXPECT_EQ(
       entry2->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -241,7 +241,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(provided_prefs()->DictSize(), 4ul);
 
-  const base::DictionaryValue* entry4 = NULL;
+  const base::DictionaryValue* entry4 = nullptr;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId4, &entry4));
   EXPECT_EQ(
       entry4->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -303,7 +303,7 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
   // prefs once the download of the .crx has finished. Extensions that are
   // provided as external crx path directly should also be visible in the
   // provided prefs directly.
-  const base::DictionaryValue* entry1 = NULL;
+  const base::DictionaryValue* entry1 = nullptr;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId1, &entry1));
   EXPECT_EQ(
       entry1->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
