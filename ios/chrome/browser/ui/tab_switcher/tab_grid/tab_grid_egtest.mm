@@ -1428,7 +1428,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that the scrim view is always shown when the search bar is empty in the
 // search mode.
-- (void)testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
+// TODO(crbug.com/1359271): Disabled due to flakiness. Re-enabled when fixed.
+- (void)DISABLED_testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
 
