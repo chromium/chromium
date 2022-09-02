@@ -13,9 +13,17 @@ MediaFoundationServiceBroker::MediaFoundationServiceBroker(
     mojo::PendingReceiver<mojom::MediaFoundationServiceBroker> receiver,
     base::OnceClosure ensure_sandboxed_cb)
     : receiver_(this, std::move(receiver)),
+      gpu_info_observer_(this),
       ensure_sandboxed_cb_(std::move(ensure_sandboxed_cb)) {}
 
 MediaFoundationServiceBroker::~MediaFoundationServiceBroker() = default;
+
+void MediaFoundationServiceBroker::UpdateGpuInfo(
+    const gpu::GPUInfo& gpu_info,
+    UpdateGpuInfoCallback callback) {
+  OnGpuInfoUpdate(gpu_info);
+  std::move(callback).Run(gpu_info_observer_.BindNewPipeAndPassRemote());
+}
 
 void MediaFoundationServiceBroker::GetService(
     const base::FilePath& cdm_path,
@@ -32,6 +40,14 @@ void MediaFoundationServiceBroker::GetService(
 
   media_foundation_service_ =
       std::make_unique<MediaFoundationService>(std::move(service_receiver));
+}
+
+void MediaFoundationServiceBroker::OnGpuInfoUpdate(
+    const gpu::GPUInfo& gpu_info) {
+  // When the MediaFoundationService crashes, the GPUInfo will be available in
+  // the crash report.
+  DVLOG(1) << __func__;
+  gpu::SetKeysForCrashLogging(gpu_info);
 }
 
 }  // namespace media
