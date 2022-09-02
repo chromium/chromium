@@ -52,6 +52,9 @@ NSString* const kWidgetKitHostSearchWidget = @"search-widget";
 NSString* const kWidgetKitHostQuickActionsWidget = @"quick-actions-widget";
 // Host used to identify Dino Game (small) widget.
 NSString* const kWidgetKitHostDinoGameWidget = @"dino-game-widget";
+// Host used to identify the Lockscreen Launcher widget.
+NSString* const kWidgetKitHostLockscreenLauncherWidget =
+    @"lockscreen-launcher-widget";
 // Path for search action.
 NSString* const kWidgetKitActionSearch = @"/search";
 // Path for incognito action.
@@ -117,7 +120,11 @@ enum class WidgetKitExtensionAction {
   ACTION_QUICK_ACTIONS_INCOGNITO = 3,
   ACTION_QUICK_ACTIONS_VOICE_SEARCH = 4,
   ACTION_QUICK_ACTIONS_QR_READER = 5,
-  kMaxValue = ACTION_QUICK_ACTIONS_QR_READER,
+  ACTION_LOCKSCREEN_LAUNCHER_SEARCH = 6,
+  ACTION_LOCKSCREEN_LAUNCHER_INCOGNITO = 7,
+  ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH = 8,
+  ACTION_LOCKSCREEN_LAUNCHER_GAME = 9,
+  kMaxValue = ACTION_LOCKSCREEN_LAUNCHER_GAME,
 };
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
@@ -204,7 +211,13 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     } else if ([completeURL.path isEqual:kWidgetKitActionQRReader]) {
       command = app_group::kChromeAppGroupQRScannerCommand;
     } else if ([completeURL.path isEqual:kWidgetKitActionGame]) {
-      LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
+      if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
+      } else if ([sourceWidget
+                     isEqualToString:kWidgetKitHostLockscreenLauncherWidget]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_GAME);
+      }
 
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 
@@ -585,6 +598,30 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         break;
     }
   }
+  if ([secureSourceApp
+          isEqualToString:kWidgetKitHostLockscreenLauncherWidget]) {
+    switch (action) {
+      case ACTION_NEW_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_SEARCH);
+        break;
+
+      case ACTION_NEW_INCOGNITO_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_INCOGNITO);
+        break;
+
+      case ACTION_NEW_VOICE_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH);
+        break;
+
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
   return params;
 }
 
