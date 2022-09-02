@@ -125,7 +125,7 @@ struct PA_DEBUGKV_ALIGN DebugKv {
   char k[8] = {};  // Not necessarily 0-terminated.
   uint64_t v = 0;
 
-  DebugKv(const char* key, size_t value) {
+  DebugKv(const char* key, uint64_t value) : v(value) {
     // Fill with ' ', so that the stack dump is nicer to read.  Not using
     // memset() on purpose, this header is included from *many* places.
     for (int index = 0; index < 8; index++) {
@@ -137,7 +137,6 @@ struct PA_DEBUGKV_ALIGN DebugKv {
       if (key[index] == '\0')
         break;
     }
-    v = value;
   }
 };
 
