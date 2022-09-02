@@ -43,7 +43,7 @@ typedef std::map<pid_t, Process> ProcessMap;
 ProcessMap GetProcesses() {
   ProcessMap map;
 
-  base::ProcessIterator process_iter(NULL);
+  base::ProcessIterator process_iter(nullptr);
   while (const ProcessEntry* process_entry = process_iter.NextProcessEntry()) {
     Process process;
     process.pid = process_entry->pid();

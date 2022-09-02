@@ -172,7 +172,7 @@ class MediaEngagementAutoplayBrowserTest
     cmd.AppendArgPath(input_path);
     cmd.AppendArgPath(output_path);
     base::Process process = base::LaunchProcess(cmd, base::LaunchOptions());
-    EXPECT_TRUE(process.WaitForExit(0));
+    EXPECT_TRUE(process.WaitForExit(nullptr));
 
     // Load the preloaded list.
     EXPECT_TRUE(

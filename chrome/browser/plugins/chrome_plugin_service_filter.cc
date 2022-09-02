@@ -184,6 +184,6 @@ ChromePluginServiceFilter::GetProcess(
     int render_process_id) const {
   auto it = plugin_details_.find(render_process_id);
   if (it == plugin_details_.end())
-    return NULL;
+    return nullptr;
   return &it->second;
 }

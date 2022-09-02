@@ -526,7 +526,7 @@ class ProfileManagerCrOSBrowserTest : public ProfileManagerBrowserTest {
 IN_PROC_BROWSER_TEST_P(ProfileManagerCrOSBrowserTest, GetLastUsedProfile) {
   // Make sure that last used profile is correct.
   Profile* last_used_profile = ProfileManager::GetLastUsedProfile();
-  EXPECT_TRUE(last_used_profile != NULL);
+  EXPECT_TRUE(last_used_profile != nullptr);
 
   base::FilePath profile_path;
   base::PathService::Get(chrome::DIR_USER_DATA, &profile_path);

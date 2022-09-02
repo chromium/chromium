@@ -306,7 +306,7 @@ class ProfilePrefStoreManagerTest : public testing::Test,
 
   void ExpectStringValueEquals(const std::string& name,
                                const std::string& expected) {
-    const base::Value* value = NULL;
+    const base::Value* value = nullptr;
     if (!pref_store_->GetValue(name, &value)) {
       ADD_FAILURE() << name << " is not a defined value.";
     } else if (!value->is_string()) {
@@ -380,7 +380,7 @@ TEST_F(ProfilePrefStoreManagerTest, ProtectValues) {
   // If preference tracking is supported, the tampered value of kProtectedAtomic
   // will be discarded at load time, leaving this preference undefined.
   EXPECT_NE(ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
-            pref_store_->GetValue(kProtectedAtomic, NULL));
+            pref_store_->GetValue(kProtectedAtomic, nullptr));
   VerifyResetRecorded(
       ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking);
 
@@ -447,7 +447,7 @@ TEST_F(ProfilePrefStoreManagerTest, UnprotectedToProtected) {
   ReplaceStringInPrefs(kBarfoo, kFoobar);
   LoadExistingPrefs();
   EXPECT_NE(ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
-            pref_store_->GetValue(kUnprotectedPref, NULL));
+            pref_store_->GetValue(kUnprotectedPref, nullptr));
   VerifyResetRecorded(
       ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking);
 }
@@ -508,7 +508,7 @@ TEST_F(ProfilePrefStoreManagerTest, UnprotectedToProtectedWithoutTrust) {
   // If preference tracking is supported, kUnprotectedPref will have been
   // discarded because new values are not accepted without a valid super MAC.
   EXPECT_NE(ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
-            pref_store_->GetValue(kUnprotectedPref, NULL));
+            pref_store_->GetValue(kUnprotectedPref, nullptr));
   VerifyResetRecorded(
       ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking);
 }

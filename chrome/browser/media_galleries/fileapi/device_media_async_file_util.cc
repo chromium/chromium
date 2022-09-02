@@ -744,5 +744,5 @@ void DeviceMediaAsyncFileUtil::OnDidDeleteDirectory(StatusCallback callback) {
 }
 
 bool DeviceMediaAsyncFileUtil::validate_media_files() const {
-  return media_path_filter_wrapper_.get() != NULL;
+  return media_path_filter_wrapper_.get() != nullptr;
 }

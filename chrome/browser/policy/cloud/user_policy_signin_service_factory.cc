@@ -29,7 +29,7 @@ namespace policy {
 namespace {
 
 // Used only for testing.
-DeviceManagementService* g_device_management_service = NULL;
+DeviceManagementService* g_device_management_service = nullptr;
 
 }  // namespace
 

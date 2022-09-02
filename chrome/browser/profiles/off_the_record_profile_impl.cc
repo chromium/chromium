@@ -480,7 +480,7 @@ OffTheRecordProfileImpl::GetPlatformNotificationService() {
 content::PushMessagingService*
 OffTheRecordProfileImpl::GetPushMessagingService() {
   // TODO(johnme): Support push messaging in incognito if possible.
-  return NULL;
+  return nullptr;
 }
 
 content::StorageNotificationService*

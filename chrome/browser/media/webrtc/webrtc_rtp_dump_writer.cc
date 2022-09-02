@@ -207,8 +207,8 @@ class WebRtcRtpDumpWriter::FileWorker {
 
     output->resize(output->size() - stream_.avail_out);
 
-    stream_.next_in = NULL;
-    stream_.next_out = NULL;
+    stream_.next_in = nullptr;
+    stream_.next_out = nullptr;
     stream_.avail_out = 0;
     return true;
   }
@@ -220,7 +220,7 @@ class WebRtcRtpDumpWriter::FileWorker {
     std::vector<uint8_t> output_buffer;
     output_buffer.resize(kMinimumGzipOutputBufferSize);
 
-    stream_.next_in = NULL;
+    stream_.next_in = nullptr;
     stream_.avail_in = 0;
     stream_.next_out = &output_buffer[0];
     stream_.avail_out = output_buffer.size();

@@ -1015,8 +1015,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURL) {
   EnsureTabFinishedRestoring(tab);
 
   // See if content is as expected.
-  EXPECT_GT(ui_test_utils::FindInPage(tab, u"webkit", true, false, NULL, NULL),
-            0);
+  EXPECT_GT(
+      ui_test_utils::FindInPage(tab, u"webkit", true, false, nullptr, nullptr),
+      0);
 }
 
 // https://crbug.com/667932: Flakiness on linux_chromium_asan_rel_ng bot.
@@ -1057,8 +1058,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURLOnBack) {
 
   // Go back, and see if content is as expected.
   GoBack(browser());
-  EXPECT_GT(ui_test_utils::FindInPage(tab, u"webkit", true, false, NULL, NULL),
-            0);
+  EXPECT_GT(
+      ui_test_utils::FindInPage(tab, u"webkit", true, false, nullptr, nullptr),
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_RestoreOnStartup) {

@@ -338,7 +338,7 @@ std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::Deserialize(
   syncer::SyncChangeList dummy;
   TestTemplateURLServiceClient client;
   return TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
-      &client, NULL, SearchTermsData(), NULL, sync_data, &dummy);
+      &client, nullptr, SearchTermsData(), nullptr, sync_data, &dummy);
 }
 
 std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::CopyTemplateURL(
@@ -1069,7 +1069,7 @@ TEST_F(TemplateURLServiceSyncTest, DuplicateEncodingsRemoved) {
 
   // The entry should have been added, with duplicate encodings removed.
   TemplateURL* keyword = model()->GetTemplateURLForKeyword(u"keyword");
-  ASSERT_FALSE(keyword == NULL);
+  ASSERT_FALSE(keyword == nullptr);
   EXPECT_EQ(4U, keyword->input_encodings().size());
 
   // We should also have gotten a corresponding UPDATE pushed upstream.
@@ -1996,7 +1996,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(NULL));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
 
   // Merge with an initial list containing a prepopulated engine with a wrong
   // URL.
@@ -2021,7 +2021,7 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
                                     CreateAndPassSyncErrorFactory());
 
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(NULL));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
   std::unique_ptr<TemplateURL> sync_turl = CopyTemplateURL(
       default_turl.get(), "http://wrong.url.com?q={searchTerms}", "default");
 
@@ -2040,7 +2040,7 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(NULL));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
 
   TemplateURLData data = *default_turl;
   data.SetURL("http://old.wrong.url.com?q={searchTerms}");
@@ -2071,7 +2071,7 @@ TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(NULL));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
 
   TemplateURLData data(*default_turl);
   data.safe_for_autoreplace = false;
@@ -2483,7 +2483,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeNonEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(NULL));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
 
   TemplateURLData data(*default_turl);
   data.safe_for_autoreplace = true;  // Can be replaced with built-in values.

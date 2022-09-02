@@ -37,24 +37,24 @@ DeviceLocalAccountPolicyBroker* GetBroker(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
   if (ash::ProfileHelper::IsSigninProfile(profile))
-    return NULL;
+    return nullptr;
 
   if (!user_manager::UserManager::IsInitialized()) {
     // Bail out in unit tests that don't have a UserManager.
-    return NULL;
+    return nullptr;
   }
 
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
-    return NULL;
+    return nullptr;
 
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyService* service =
       connector->GetDeviceLocalAccountPolicyService();
   if (!service)
-    return NULL;
+    return nullptr;
 
   return service->GetBrokerForUser(user->GetAccountId().GetUserEmail());
 }

@@ -70,7 +70,7 @@ SpellcheckService::SpellCheckerBinder& GetSpellCheckerBinderOverride() {
 // transition.
 // An event used by browser tests to receive status events from this class and
 // its derived classes.
-base::WaitableEvent* g_status_event = NULL;
+base::WaitableEvent* g_status_event = nullptr;
 SpellcheckService::EventType g_status_type =
     SpellcheckService::BDICT_NOTINITIALIZED;
 

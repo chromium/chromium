@@ -112,7 +112,7 @@ void NotifierStateTracker::SetNotifierEnabled(
   DCHECK_NE(message_center::NotifierType::WEB_PAGE, notifier_id.type);
 
   bool add_new_item = false;
-  const char* pref_name = NULL;
+  const char* pref_name = nullptr;
   base::Value id;
   switch (notifier_id.type) {
     case message_center::NotifierType::APPLICATION:
@@ -128,7 +128,7 @@ void NotifierStateTracker::SetNotifierEnabled(
     default:
       NOTREACHED();
   }
-  DCHECK(pref_name != NULL);
+  DCHECK(pref_name != nullptr);
 
   ListPrefUpdate update(profile_->GetPrefs(), pref_name);
   base::Value::List& update_list = update->GetList();

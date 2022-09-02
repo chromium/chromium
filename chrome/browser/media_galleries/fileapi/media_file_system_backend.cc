@@ -253,12 +253,12 @@ storage::AsyncFileUtil* MediaFileSystemBackend::GetAsyncFileUtil(
     default:
       NOTREACHED();
   }
-  return NULL;
+  return nullptr;
 }
 
 storage::WatcherManager* MediaFileSystemBackend::GetWatcherManager(
     storage::FileSystemType type) {
-  return NULL;
+  return nullptr;
 }
 
 storage::CopyOrMoveFileValidatorFactory*
@@ -272,13 +272,13 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
     case storage::kFileSystemTypeDeviceMedia:
       if (!media_copy_or_move_file_validator_factory_) {
         *error_code = base::File::FILE_ERROR_SECURITY;
-        return NULL;
+        return nullptr;
       }
       return media_copy_or_move_file_validator_factory_.get();
     default:
       NOTREACHED();
   }
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<storage::FileSystemOperation>
@@ -344,20 +344,20 @@ MediaFileSystemBackend::CreateFileStreamWriter(
 
 storage::FileSystemQuotaUtil* MediaFileSystemBackend::GetQuotaUtil() {
   // No quota support.
-  return NULL;
+  return nullptr;
 }
 
 const storage::UpdateObserverList* MediaFileSystemBackend::GetUpdateObservers(
     storage::FileSystemType type) const {
-  return NULL;
+  return nullptr;
 }
 
 const storage::ChangeObserverList* MediaFileSystemBackend::GetChangeObservers(
     storage::FileSystemType type) const {
-  return NULL;
+  return nullptr;
 }
 
 const storage::AccessObserverList* MediaFileSystemBackend::GetAccessObservers(
     storage::FileSystemType type) const {
-  return NULL;
+  return nullptr;
 }

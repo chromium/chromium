@@ -158,7 +158,7 @@ void PluginObserver::BlockedOutdatedPlugin(
     const std::string& identifier) {
   PluginFinder* finder = PluginFinder::GetInstance();
   // Find plugin to update.
-  PluginInstaller* installer = NULL;
+  PluginInstaller* installer = nullptr;
   std::unique_ptr<PluginMetadata> plugin;
   if (finder->FindPluginWithIdentifier(identifier, &installer, &plugin)) {
     auto plugin_placeholder = std::make_unique<PluginPlaceholderHost>(

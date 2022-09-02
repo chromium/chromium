@@ -255,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
     // Here we prime all the threads with a ChromeStarter that will wait for
     // our signal to launch its chrome process.
     for (size_t i = 0; i < kNbThreads; ++i) {
-      ASSERT_NE(static_cast<ChromeStarter*>(NULL), chrome_starters_[i].get());
+      ASSERT_NE(static_cast<ChromeStarter*>(nullptr),
+                chrome_starters_[i].get());
       chrome_starters_[i]->Reset();
 
       ASSERT_TRUE(chrome_starter_threads_[i]->IsRunning());

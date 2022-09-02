@@ -49,7 +49,7 @@ class IncognitoModePolicyHandlerTest
   }
 
   void VerifyValues(IncognitoModePrefs::Availability availability) {
-    const base::Value* value = NULL;
+    const base::Value* value = nullptr;
     EXPECT_TRUE(store_->GetValue(prefs::kIncognitoModeAvailability, &value));
     EXPECT_EQ(base::Value(static_cast<int>(availability)), *value);
   }
@@ -82,7 +82,7 @@ TEST_F(IncognitoModePolicyHandlerTest,
 TEST_F(IncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndNoIncognitoAvailability) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN, kIncognitoModeAvailabilityNotSet);
-  const base::Value* value = NULL;
+  const base::Value* value = nullptr;
   EXPECT_FALSE(store_->GetValue(prefs::kIncognitoModeAvailability, &value));
 }
 

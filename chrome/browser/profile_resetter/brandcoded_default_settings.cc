@@ -18,7 +18,7 @@ BrandcodedDefaultSettings::BrandcodedDefaultSettings(const std::string& prefs) {
   if (!prefs.empty()) {
     JSONStringValueDeserializer json(prefs);
     std::string error;
-    std::unique_ptr<base::Value> root(json.Deserialize(NULL, &error));
+    std::unique_ptr<base::Value> root(json.Deserialize(nullptr, &error));
     if (!root.get()) {
       VLOG(1) << "Failed to parse brandcode prefs file: " << error;
       return;
@@ -67,7 +67,7 @@ absl::optional<bool> BrandcodedDefaultSettings::GetShowHomeButton() const {
 bool BrandcodedDefaultSettings::GetExtensions(
     std::vector<std::string>* extension_ids) const {
   DCHECK(extension_ids);
-  base::DictionaryValue* extensions = NULL;
+  base::DictionaryValue* extensions = nullptr;
   if (master_dictionary_ &&
       master_dictionary_->GetDictionary(
           installer::initial_preferences::kExtensionsBlock, &extensions)) {

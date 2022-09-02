@@ -58,7 +58,8 @@ std::string GenerateColorLine(chrome_colors::ColorInfo color_info) {
   subst.push_back(base::NumberToString(SkColorGetG(color_info.color)));
   subst.push_back(base::NumberToString(SkColorGetB(color_info.color)));
   subst.push_back(base::NumberToString(color_info.label_id));
-  return base::ReplaceStringPlaceholders(kColorInfoLineTemplate, subst, NULL);
+  return base::ReplaceStringPlaceholders(kColorInfoLineTemplate, subst,
+                                         nullptr);
 }
 
 // Generates 'generated_colors_info.h' that contains selected colors from
@@ -76,7 +77,7 @@ void GenerateColorsInfoFile(std::string output_dir) {
   subst.push_back(base::JoinString(updated_color_info, ",\n"));
   subst.push_back(base::NumberToString(colors_num));
   std::string output =
-      base::ReplaceStringPlaceholders(kFileContentTemplate, subst, NULL);
+      base::ReplaceStringPlaceholders(kFileContentTemplate, subst, nullptr);
 
   base::FilePath output_path = base::FilePath::FromUTF8Unsafe(output_dir);
   base::FilePath directory = output_path.DirName();

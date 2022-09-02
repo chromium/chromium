@@ -379,14 +379,14 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
       installed_by_default ? Extension::WAS_INSTALLED_BY_DEFAULT
                            : Extension::NO_FLAGS,
       &error);
-  EXPECT_TRUE(extension.get() != NULL) << error;
+  EXPECT_TRUE(extension.get() != nullptr) << error;
   return extension;
 }
 
 void ReplaceString(std::string* str,
                    const std::string& placeholder,
                    const std::string& substitution) {
-  ASSERT_NE(static_cast<std::string*>(NULL), str);
+  ASSERT_NE(static_cast<std::string*>(nullptr), str);
   size_t placeholder_pos = str->find(placeholder);
   ASSERT_NE(std::string::npos, placeholder_pos);
   str->replace(placeholder_pos, placeholder.size(), substitution);
@@ -406,7 +406,7 @@ TEST_F(ProfileResetterTest, ResetDefaultSearchEngineNonOrganic) {
   TemplateURLService* model =
       TemplateURLServiceFactory::GetForProfile(profile());
   const TemplateURL* default_engine = model->GetDefaultSearchProvider();
-  ASSERT_NE(static_cast<TemplateURL*>(NULL), default_engine);
+  ASSERT_NE(static_cast<TemplateURL*>(nullptr), default_engine);
   EXPECT_EQ(u"first", default_engine->short_name());
   EXPECT_EQ(u"firstkey", default_engine->keyword());
   EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", default_engine->url());
@@ -475,7 +475,8 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
       continue;
     }
     ContentSetting default_setting =
-        host_content_settings_map->GetDefaultContentSetting(content_type, NULL);
+        host_content_settings_map->GetDefaultContentSetting(content_type,
+                                                            nullptr);
     default_settings[content_type] = default_setting;
     ContentSetting wildcard_setting = default_setting == CONTENT_SETTING_BLOCK
                                           ? CONTENT_SETTING_ALLOW
@@ -506,7 +507,7 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
       continue;
     ContentSetting default_setting =
         host_content_settings_map->GetDefaultContentSetting(content_type,
-                                                              NULL);
+                                                            nullptr);
     EXPECT_TRUE(default_settings.count(content_type));
     EXPECT_EQ(default_settings[content_type], default_setting);
     ContentSetting site_setting = host_content_settings_map->GetContentSetting(

@@ -39,7 +39,7 @@ KeyedService* UserCloudPolicyInvalidatorFactory::BuildServiceInstanceFor(
   CloudPolicyManager* policy_manager = profile->GetUserCloudPolicyManager();
 #endif
   if (!policy_manager)
-    return NULL;
+    return nullptr;
 
   return new UserCloudPolicyInvalidator(profile, policy_manager);
 }

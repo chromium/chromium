@@ -46,8 +46,8 @@ class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    content::SpeechRecognitionManager::SetManagerForTesting(NULL);
-    fake_speech_recognition_manager_->SetDelegate(NULL);
+    content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
+    fake_speech_recognition_manager_->SetDelegate(nullptr);
     InProcessBrowserTest::TearDown();
   }
 

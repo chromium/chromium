@@ -68,7 +68,7 @@ WebContents* FindFirstDevToolsContents() {
     if (url.SchemeIs(content::kChromeDevToolsScheme))
       return contents;
   }
-  return NULL;
+  return nullptr;
 }
 
 // TODO(rvargas) crbug.com/417532: Remove this code.
@@ -152,11 +152,11 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
   void TestProcessOverflow() {
     int tab_count = 1;
     int host_count = 1;
-    WebContents* tab1 = NULL;
-    WebContents* tab2 = NULL;
-    content::RenderProcessHost* rph1 = NULL;
-    content::RenderProcessHost* rph2 = NULL;
-    content::RenderProcessHost* rph3 = NULL;
+    WebContents* tab1 = nullptr;
+    WebContents* tab2 = nullptr;
+    content::RenderProcessHost* rph1 = nullptr;
+    content::RenderProcessHost* rph2 = nullptr;
+    content::RenderProcessHost* rph3 = nullptr;
 
     const extensions::Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("options_page"));

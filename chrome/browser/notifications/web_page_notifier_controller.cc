@@ -84,7 +84,8 @@ void WebPageNotifierController::SetNotifierEnabled(
   // TODO(mukai): fix this.
   ContentSetting default_setting =
       HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS, NULL);
+          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
+                                     nullptr);
 
   DCHECK(default_setting == CONTENT_SETTING_ALLOW ||
          default_setting == CONTENT_SETTING_BLOCK ||

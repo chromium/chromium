@@ -1130,7 +1130,7 @@ TEST_F(SpellcheckCustomDictionaryTest, MAYBE_RecordSizeStatsCorrectly) {
 
   HistogramBase* histogram =
       StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != NULL);
+  ASSERT_TRUE(histogram != nullptr);
   std::unique_ptr<HistogramSamples> baseline = histogram->SnapshotSamples();
 
   // Load the dictionary which should be empty.
@@ -1141,7 +1141,7 @@ TEST_F(SpellcheckCustomDictionaryTest, MAYBE_RecordSizeStatsCorrectly) {
   // We expect there to be an entry with 0.
   histogram =
       StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != NULL);
+  ASSERT_TRUE(histogram != nullptr);
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
 
   samples->Subtract(*baseline);
@@ -1158,7 +1158,7 @@ TEST_F(SpellcheckCustomDictionaryTest, MAYBE_RecordSizeStatsCorrectly) {
 
   histogram =
       StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != NULL);
+  ASSERT_TRUE(histogram != nullptr);
   std::unique_ptr<HistogramSamples> samples2 = histogram->SnapshotSamples();
 
   samples2->Subtract(*baseline);

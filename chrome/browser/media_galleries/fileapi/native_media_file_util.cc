@@ -535,7 +535,7 @@ void NativeMediaFileUtil::Core::GetFileInfoOnTaskRunnerThread(
   DCHECK(IsOnTaskRunnerThread(context.get()));
   base::File::Info file_info;
   base::File::Error error =
-      GetFileInfoSync(context.get(), url, &file_info, NULL);
+      GetFileInfoSync(context.get(), url, &file_info, nullptr);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error, file_info));
 }
