@@ -20,8 +20,8 @@ static_assert(sizeof(void*) == 8, "");
 static_assert(sizeof(void*) != 8, "");
 #endif  // defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL)
 
-// PCScan supports 64 bits only.
-#if defined(PA_HAS_64_BITS_POINTERS)
+// PCScan supports 64 bits only and is disabled outside Chromium.
+#if defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(STARSCAN)
 #define PA_ALLOW_PCSCAN
 #endif
 
@@ -56,7 +56,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif  // defined(PA_HAS_64_BITS_POINTERS) &&
         // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(STARSCAN)
 // Use card table to avoid races for PCScan configuration without safepoints.
 // The card table provides the guaranteee that for a marked card the underling
 // super-page is fully initialized.

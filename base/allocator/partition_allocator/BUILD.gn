@@ -157,34 +157,43 @@ component("partition_alloc") {
     "reverse_bytes.h",
     "spinning_mutex.cc",
     "spinning_mutex.h",
-    "starscan/logging.h",
-    "starscan/metadata_allocator.cc",
-    "starscan/metadata_allocator.h",
-    "starscan/pcscan.cc",
-    "starscan/pcscan.h",
-    "starscan/pcscan_internal.cc",
-    "starscan/pcscan_internal.h",
-    "starscan/pcscan_scheduling.cc",
-    "starscan/pcscan_scheduling.h",
-    "starscan/raceful_worklist.h",
-    "starscan/scan_loop.h",
-    "starscan/snapshot.cc",
-    "starscan/snapshot.h",
-    "starscan/stack/stack.cc",
-    "starscan/stack/stack.h",
-    "starscan/starscan_fwd.h",
-    "starscan/state_bitmap.h",
-    "starscan/stats_collector.cc",
-    "starscan/stats_collector.h",
-    "starscan/stats_reporter.h",
-    "starscan/write_protector.cc",
-    "starscan/write_protector.h",
     "tagging.cc",
     "tagging.h",
     "thread_cache.cc",
     "thread_cache.h",
     "yield_processor.h",
   ]
+
+  # Add *Scan sources if building inside Chromium. Currently,
+  # we see no need to add a more dedicated buildflag for this, as
+  # we don't anticipate Chromium-external usage of *Scan.
+  if (build_with_chromium) {
+    sources += [
+      "starscan/logging.h",
+      "starscan/metadata_allocator.cc",
+      "starscan/metadata_allocator.h",
+      "starscan/pcscan.cc",
+      "starscan/pcscan.h",
+      "starscan/pcscan_internal.cc",
+      "starscan/pcscan_internal.h",
+      "starscan/pcscan_scheduling.cc",
+      "starscan/pcscan_scheduling.h",
+      "starscan/raceful_worklist.h",
+      "starscan/scan_loop.h",
+      "starscan/snapshot.cc",
+      "starscan/snapshot.h",
+      "starscan/stack/stack.cc",
+      "starscan/stack/stack.h",
+      "starscan/starscan_fwd.h",
+      "starscan/state_bitmap.h",
+      "starscan/stats_collector.cc",
+      "starscan/stats_collector.h",
+      "starscan/stats_reporter.h",
+      "starscan/write_protector.cc",
+      "starscan/write_protector.h",
+    ]
+  }
+
   defines = []
   if (is_win) {
     sources += [
@@ -355,6 +364,9 @@ buildflag_header("partition_alloc_buildflags") {
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
+
+    # *Scan is currently only used by Chromium.
+    "STARSCAN=$build_with_chromium",
   ]
 }
 

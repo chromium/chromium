@@ -24,9 +24,12 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(STARSCAN)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#endif  // BUILDFLAG(STARSCAN)
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -790,13 +793,13 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     PA_CHECK(!flags.allow_aligned_alloc || !flags.extras_offset);
 
     flags.quarantine_mode =
-#if defined(PA_ALLOW_PCSCAN)
+#if BUILDFLAG(STARSCAN)
         (opts.quarantine == PartitionOptions::Quarantine::kDisallowed
              ? QuarantineMode::kAlwaysDisabled
              : QuarantineMode::kDisabledByDefault);
 #else
         QuarantineMode::kAlwaysDisabled;
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // BUILDFLAG(STARSCAN)
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
@@ -1136,12 +1139,14 @@ template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   {
     ::partition_alloc::internal::ScopedGuard guard{lock_};
+#if BUILDFLAG(STARSCAN)
     // Avoid purging if there is PCScan task currently scheduled. Since pcscan
     // takes snapshot of all allocated pages, decommitting pages here (even
     // under the lock) is racy.
     // TODO(bikineev): Consider rescheduling the purging after PCScan.
     if (PCScan::IsInProgress())
       return;
+#endif  // BUILDFLAG(STARSCAN)
 
     if (flags & PurgeFlags::kDecommitEmptySlotSpans)
       DecommitEmptySlotSpans();

@@ -33,9 +33,12 @@
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(STARSCAN)
+#include "base/allocator/partition_allocator/starscan/state_bitmap.h"
+#endif  // BUILDFLAG(STARSCAN)
 
 namespace partition_alloc::internal {
 
@@ -713,6 +716,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
       (is_direct_mapped()
            ? 0
            : ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize());
+#if BUILDFLAG(STARSCAN)
   PA_DCHECK(SuperPageStateBitmapAddr(super_page) == state_bitmap);
   const size_t state_bitmap_reservation_size =
       root->IsQuarantineAllowed() ? ReservedStateBitmapSize() : 0;
@@ -722,6 +726,10 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   PA_DCHECK(state_bitmap_size_to_commit % SystemPageSize() == 0);
   PA_DCHECK(state_bitmap_size_to_commit <= state_bitmap_reservation_size);
   uintptr_t payload = state_bitmap + state_bitmap_reservation_size;
+#else
+  uintptr_t payload = state_bitmap;
+#endif  // BUILDFLAG(STARSCAN)
+
   root->next_partition_page = payload;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
   PA_DCHECK(payload ==
@@ -809,6 +817,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   // sure to register the super-page after it has been fully initialized.
   // Otherwise, the concurrent scanner may try to access |extent->root| which
   // could be not initialized yet.
+#if BUILDFLAG(STARSCAN)
   if (root->IsQuarantineEnabled()) {
     {
       ScopedSyscallTimer timer{root};
@@ -818,6 +827,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
     }
     PCScan::RegisterNewSuperPage(root, super_page);
   }
+#endif  // BUILDFLAG(STARSCAN)
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   // Commit the pages for freeslot bitmap.
