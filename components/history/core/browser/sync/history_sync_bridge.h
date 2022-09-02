@@ -55,6 +55,9 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  syncer::ConflictResolution ResolveConflict(
+      const std::string& storage_key,
+      const syncer::EntityData& remote_data) const override;
 
   // HistoryBackendObserver:
   void OnURLVisited(HistoryBackend* history_backend,

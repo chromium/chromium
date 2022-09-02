@@ -14,6 +14,7 @@
 #include "components/history/core/browser/sync/visit_id_remapper.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/sync/base/page_transition_conversion.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -599,6 +600,32 @@ std::string HistorySyncBridge::GetStorageKey(
   const sync_pb::HistorySpecifics& history = entity_data.specifics.history();
   return HistorySyncMetadataDatabase::StorageKeyFromMicrosSinceWindowsEpoch(
       history.visit_time_windows_epoch_micros());
+}
+
+syncer::ConflictResolution HistorySyncBridge::ResolveConflict(
+    const std::string& storage_key,
+    const syncer::EntityData& remote_data) const {
+  // Real conflicts can't happen for this data type, since every client only
+  // ever updates its own entities. There's one specific edge case that gets
+  // detected as a conflict:
+  // - An entity gets committed. After successful commit, the entity metadata
+  //   gets untracked.
+  // - The entity gets changed, and thus is pending commit again, but...
+  // - ...before the commit actually happens, a GetUpdates happens which returns
+  //   the reflection from the first commit. Because the entity metadata was
+  //   cleared, the processor can't detect that this is a reflection (see
+  //   ProcessorEntity::IsVersionAlreadyKnown()), so this gets flagged as a
+  //   conflict.
+  // In this case, the default resolution of using the remote data would cancel
+  // the pending commit (and thus cause a change to be lost), so use the local
+  // data here.
+  // For extra safety, make sure that the entity's originator is actually this
+  // device. This should always be true in practice.
+  if (remote_data.specifics.history().originator_cache_guid() ==
+      GetLocalCacheGuid()) {
+    return syncer::ConflictResolution::kUseLocal;
+  }
+  return ModelTypeSyncBridge::ResolveConflict(storage_key, remote_data);
 }
 
 void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,

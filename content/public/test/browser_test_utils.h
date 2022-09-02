@@ -152,6 +152,12 @@ void NavigateToURLBlockUntilNavigationsComplete(
     const GURL& url,
     int number_of_navigations,
     bool ignore_uncommitted_navigations = true);
+// Same, but allows specifying the full LoadURLParams instead of just the URL.
+void NavigateToURLBlockUntilNavigationsComplete(
+    WebContents* web_contents,
+    const NavigationController::LoadURLParams& params,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations = true);
 
 // Perform a renderer-initiated navigation of |window| to |url|, blocking
 // until the navigation finishes.  The navigation is done by assigning

@@ -718,19 +718,30 @@ void NavigateToURLBlockUntilNavigationsComplete(
     const GURL& url,
     int number_of_navigations,
     bool ignore_uncommitted_navigations) {
+  // This mimics behavior of Shell::LoadURL...
+  NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+
+  NavigateToURLBlockUntilNavigationsComplete(web_contents, params,
+                                             number_of_navigations,
+                                             ignore_uncommitted_navigations);
+}
+
+void NavigateToURLBlockUntilNavigationsComplete(
+    WebContents* web_contents,
+    const NavigationController::LoadURLParams& params,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations) {
   // Prepare for the navigation.
   WaitForLoadStop(web_contents);
   TestNavigationObserver same_tab_observer(
       web_contents, number_of_navigations,
       MessageLoopRunner::QuitMode::IMMEDIATE,
       /*ignore_uncommitted_navigations=*/ignore_uncommitted_navigations);
-  if (!blink::IsRendererDebugURL(url) && number_of_navigations == 1)
-    same_tab_observer.set_expected_initial_url(url);
+  if (!blink::IsRendererDebugURL(params.url) && number_of_navigations == 1)
+    same_tab_observer.set_expected_initial_url(params.url);
 
-  // This mimics behavior of Shell::LoadURL...
-  NavigationController::LoadURLParams params(url);
-  params.transition_type = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   web_contents->GetController().LoadURLWithParams(params);
   web_contents->GetOutermostWebContents()->Focus();
 
