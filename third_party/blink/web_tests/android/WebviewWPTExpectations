@@ -786,7 +786,6 @@ crbug.com/1050754 external/wpt/css/css-backgrounds/parsing/background-position-c
 crbug.com/1050754 external/wpt/css/css-backgrounds/parsing/background-position-x-computed.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-backgrounds/parsing/background-position-x-valid.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-backgrounds/parsing/background-position-y-computed.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/css/css-backgrounds/parsing/background-position-y-valid.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-backgrounds/parsing/border-shorthand.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-backgrounds/parsing/border-width-computed.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-box/animation/margin-bottom-composition.html [ Failure Pass ]
