@@ -37,7 +37,6 @@ class ApplicationDragAndDropHost;
 class AppListMainView;
 class AppsContainerView;
 class AssistantPageView;
-class ExpandArrowView;
 class SearchBoxView;
 class SearchResultPageView;
 
@@ -151,8 +150,6 @@ class ASH_EXPORT ContentsView : public views::View,
 
   AppListView* app_list_view() const { return app_list_view_; }
 
-  ExpandArrowView* expand_arrow_view() const { return expand_arrow_view_; }
-
   AppListViewState target_view_state() const { return target_view_state_; }
 
   // Returns the pagination model for the ContentsView.
@@ -221,19 +218,6 @@ class ASH_EXPORT ContentsView : public views::View,
                                 AppListState current_state,
                                 AppListState target_state);
 
-  // Updates the expand arrow's behavior based on AppListViewState.
-  void UpdateExpandArrowBehavior(AppListViewState target_state);
-
-  // Updates the expand arrow visibility depending on the selected app list page
-  // and the app list view state.
-  // `target_state` - the target selected app list page.
-  // `target_app_list_view_state` - the target app list view state.
-  // `transition_duration` - the opacity transition duration. Should be set to
-  //     zero if the opacity transition should not be animated.
-  void UpdateExpandArrowOpacity(AppListState target_state,
-                                AppListViewState target_app_list_state,
-                                base::TimeDelta transition_duration);
-
   // Updates search box visibility based on the current state.
   void UpdateSearchBoxVisibility(AppListState current_state);
 
@@ -279,9 +263,6 @@ class ASH_EXPORT ContentsView : public views::View,
   AppListView* const app_list_view_;
 
   AppListViewState target_view_state_ = AppListViewState::kPeeking;
-
-  // Owned by the views hierarchy.
-  ExpandArrowView* expand_arrow_view_ = nullptr;
 
   // Maps State onto |view_model_| indices.
   std::map<AppListState, int> state_to_view_;

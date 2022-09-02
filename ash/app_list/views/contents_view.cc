@@ -14,7 +14,6 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/assistant/assistant_page_view.h"
-#include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
@@ -124,9 +123,6 @@ void ContentsView::Init() {
   search_result_page_view->InitializeContainers(
       view_delegate, GetAppListMainView(), GetSearchBoxView());
 
-  expand_arrow_view_ =
-      AddChildView(std::make_unique<ExpandArrowView>(this, app_list_view_));
-
   search_result_page_view_ = AddLauncherPage(std::move(search_result_page_view),
                                              AppListState::kStateSearchResults);
 
@@ -208,17 +204,12 @@ void ContentsView::OnAppListViewTargetStateChanged(
   target_view_state_ = target_state;
   if (target_state == AppListViewState::kClosed) {
     CancelDrag();
-    expand_arrow_view_->MaybeEnableHintingAnimation(false);
     return;
   }
-  UpdateExpandArrowBehavior(target_state);
 }
 
 void ContentsView::OnTabletModeChanged(bool started) {
   apps_container_view_->OnTabletModeChanged(started);
-
-  UpdateExpandArrowOpacity(GetActiveState(), target_view_state(),
-                           kPageTransitionDuration);
 }
 
 void ContentsView::SetActiveState(AppListState state) {
@@ -307,9 +298,6 @@ void ContentsView::SetActiveStateInternal(int page_index, bool animate) {
   }
   pagination_model_.SelectPage(page_index, should_animate);
   ActivePageChanged();
-  UpdateExpandArrowOpacity(
-      GetActiveState(), target_view_state(),
-      should_animate ? kPageTransitionDuration : base::TimeDelta());
 
   if (!should_animate)
     Layout();
@@ -442,53 +430,6 @@ void ContentsView::UpdateSearchBoxAnimation(double progress,
   search_box->layer()->SetClipRect(search_box->GetContentsBounds());
   search_box->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
       gfx::Tween::FloatValueBetween(progress, current_radius, target_radius)));
-}
-
-void ContentsView::UpdateExpandArrowBehavior(AppListViewState target_state) {
-  const bool expand_arrow_enabled = target_state == AppListViewState::kPeeking;
-  // The expand arrow is only focusable and has InkDropMode on in peeking
-  // state.
-  expand_arrow_view_->SetFocusBehavior(
-      expand_arrow_enabled ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
-  views::InkDrop::Get(expand_arrow_view_)
-      ->SetMode(expand_arrow_enabled ? views::InkDropHost::InkDropMode::ON
-                                     : views::InkDropHost::InkDropMode::OFF);
-
-  // Allow ChromeVox to focus the expand arrow only when peeking launcher.
-  expand_arrow_view_->GetViewAccessibility().OverrideIsIgnored(
-      !expand_arrow_enabled);
-  expand_arrow_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
-                                               true);
-
-  expand_arrow_view_->MaybeEnableHintingAnimation(expand_arrow_enabled);
-}
-
-void ContentsView::UpdateExpandArrowOpacity(
-    AppListState target_state,
-    AppListViewState target_app_list_view_state,
-    base::TimeDelta transition_duration) {
-  const bool target_visibility =
-      target_state == AppListState::kStateApps &&
-      target_app_list_view_state != AppListViewState::kClosed &&
-      !app_list_view_->is_side_shelf() && !app_list_view_->is_tablet_mode();
-
-  float target_opacity = target_visibility ? 1.0f : 0.0f;
-
-  ui::Layer* const layer = expand_arrow_view_->layer();
-  if (transition_duration.is_zero()) {
-    layer->SetOpacity(target_opacity);
-    return;
-  }
-
-  if (target_opacity == layer->GetTargetOpacity())
-    return;
-
-  ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
-  animation.SetTransitionDuration(transition_duration);
-  animation.SetTweenType(gfx::Tween::EASE_IN);
-  animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer->SetOpacity(target_opacity);
 }
 
 void ContentsView::UpdateSearchBoxVisibility(AppListState current_state) {
@@ -627,14 +568,6 @@ void ContentsView::Layout() {
   if (rect.IsEmpty())
     return;
 
-  // Layout expand arrow.
-  gfx::Rect arrow_rect(GetContentsBounds());
-  const gfx::Size arrow_size(expand_arrow_view_->GetPreferredSize());
-  arrow_rect.set_height(arrow_size.height());
-  arrow_rect.ClampToCenteredSize(arrow_size);
-  expand_arrow_view_->SetBoundsRect(arrow_rect);
-  expand_arrow_view_->SchedulePaint();
-
   if (pagination_model_.has_transition())
     return;
 
@@ -704,9 +637,6 @@ void ContentsView::UpdateYPositionAndOpacity() {
                                ? pagination_model_.transition().target_page
                                : pagination_model_.selected_page();
   const AppListState current_state = GetStateForPageIndex(current_page);
-  UpdateExpandArrowOpacity(current_state, target_view_state(),
-                           base::TimeDelta());
-  expand_arrow_view_->SchedulePaint();
 
   SearchBoxView* search_box = GetSearchBoxView();
   const gfx::Rect search_box_bounds = GetSearchBoxBounds(current_state);
@@ -763,12 +693,6 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
   // Fade in or out the contents view, the search box.
   const bool closing = target_view_state == AppListViewState::kClosed;
   animate_opacity(duration, GetSearchBoxView(), !closing /*target_visibility*/);
-
-  // Fade in or out the expand arrow. Speed up the animation when closing the
-  // app list to match the animation duration used for search box - see
-  // `animate_opacity()`.
-  UpdateExpandArrowOpacity(target_page, target_view_state,
-                           duration / (closing ? 2 : 1));
 
   // Animates layer's vertical position (using transform animation).
   // |layer| - The layer to transform.
@@ -864,15 +788,6 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
 
   last_target_view_state_ = target_view_state;
   target_page_for_last_view_state_update_ = target_page;
-
-  // Schedule expand arrow repaint to ensure the view picks up the new target
-  // state.
-  if (target_view_state != AppListViewState::kClosed)
-    expand_arrow_view()->SchedulePaint();
-  animate_transform(
-      duration,
-      expand_arrow_view()->CalculateOffsetFromCurrentAppListProgress(progress),
-      expand_arrow_view()->layer());
 }
 
 std::unique_ptr<ui::ScopedLayerAnimationSettings>

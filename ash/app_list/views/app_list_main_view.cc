@@ -21,7 +21,6 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -167,17 +166,12 @@ void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
   // result traversal is handled in |HandleKeyEvent|
   AppListPage* page =
       contents_view_->GetPageView(contents_view_->GetActivePageIndex());
-  views::View* arrow_view = contents_view_->expand_arrow_view();
   views::View* next_view = nullptr;
 
-  if (event->key_code() == ui::VKEY_UP) {
-    if (arrow_view && arrow_view->IsFocusable())
-      next_view = arrow_view;
-    else
-      next_view = page->GetLastFocusableView();
-  } else {
+  if (event->key_code() == ui::VKEY_UP)
+    next_view = page->GetLastFocusableView();
+  else
     next_view = page->GetFirstFocusableView();
-  }
 
   if (next_view)
     next_view->RequestFocus();

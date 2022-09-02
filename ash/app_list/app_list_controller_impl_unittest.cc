@@ -21,7 +21,6 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
@@ -632,51 +631,6 @@ TEST_F(AppListControllerImplTest,
 
   // Expect that the virtual keyboard is invisible when the launcher shows.
   EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
-}
-
-// Tests that full screen apps list opens when user touches on or near the
-// expand view arrow. (see https://crbug.com/906858)
-TEST_F(AppListControllerImplTest,
-       EnterFullScreenModeAfterTappingNearExpandArrow) {
-  // The bounds for the tap target of the expand arrow button, taken from
-  // expand_arrow_view.cc |kTapTargetWidth| and |kTapTargetHeight|.
-  constexpr int tapping_width = 156;
-  constexpr int tapping_height = 72;
-
-  ShowAppListNow(AppListViewState::kPeeking);
-  ASSERT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
-
-  // Get in screen bounds of arrow
-  gfx::Rect expand_arrow = GetAppListView()
-                               ->app_list_main_view()
-                               ->contents_view()
-                               ->expand_arrow_view()
-                               ->GetBoundsInScreen();
-  const int horizontal_padding = (tapping_width - expand_arrow.width()) / 2;
-  const int vertical_padding = (tapping_height - expand_arrow.height()) / 2;
-  expand_arrow.Inset(gfx::Insets::VH(-vertical_padding, -horizontal_padding));
-
-  // Tap expand arrow icon and check that full screen apps view is entered.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(expand_arrow.CenterPoint());
-  ASSERT_EQ(AppListViewState::kFullscreenAllApps,
-            GetAppListView()->app_list_state());
-
-  // Hide the AppListView. Wait until animation is finished
-  DismissAppListNow();
-  base::RunLoop().RunUntilIdle();
-
-  // Re-enter peeking mode and test that tapping on one of the bounds of the
-  // tap target for the expand arrow icon still brings up full app list
-  // view.
-  ShowAppListNow(AppListViewState::kPeeking);
-  ASSERT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
-
-  event_generator->GestureTapAt(gfx::Point(expand_arrow.top_right().x() - 1,
-                                           expand_arrow.top_right().y() + 1));
-
-  ASSERT_EQ(AppListViewState::kFullscreenAllApps,
-            GetAppListView()->app_list_state());
 }
 
 // Regression test for https://crbug.com/1073548

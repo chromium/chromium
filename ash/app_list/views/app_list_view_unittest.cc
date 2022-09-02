@@ -23,7 +23,6 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
@@ -742,7 +741,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     suggestions_container_ = contents_view()
                                  ->apps_container_view()
                                  ->suggestion_chip_container_view_for_test();
-    expand_arrow_view_ = contents_view()->expand_arrow_view();
 
     // Add suggestion apps, a folder with apps and other app list items.
     const int kSuggestionAppNum = 3;
@@ -1081,8 +1079,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     return view_->GetWidget()->GetFocusManager()->GetFocusedView();
   }
 
-  ExpandArrowView* expand_arrow_view() { return expand_arrow_view_; }
-
  protected:
   bool is_rtl_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1094,7 +1090,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   // Owned by view hierarchy. May be null for ProductivityLauncher, which does
   // not use suggestion chips.
   SearchResultContainerView* suggestions_container_ = nullptr;
-  ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by view hierarchy.
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
@@ -1134,7 +1129,6 @@ TEST_P(AppListViewPeekingFocusTest, LinearFocusTraversalInPeekingState) {
   forward_view_list.push_back(search_box_view()->search_box());
   for (auto* v : GetAllSuggestions())
     forward_view_list.push_back(v);
-  forward_view_list.push_back(expand_arrow_view());
   forward_view_list.push_back(search_box_view()->search_box());
   std::vector<views::View*> backward_view_list = forward_view_list;
   std::reverse(backward_view_list.begin(), backward_view_list.end());
@@ -1372,7 +1366,6 @@ TEST_P(AppListViewPeekingFocusTest, VerticalFocusTraversalInPeekingState) {
   forward_view_list.push_back(search_box_view()->search_box());
   const std::vector<views::View*> suggestions = GetAllSuggestions();
   forward_view_list.push_back(suggestions[0]);
-  forward_view_list.push_back(expand_arrow_view());
   forward_view_list.push_back(search_box_view()->search_box());
 
   // Test traversal triggered by down.
@@ -1380,7 +1373,6 @@ TEST_P(AppListViewPeekingFocusTest, VerticalFocusTraversalInPeekingState) {
 
   std::vector<views::View*> backward_view_list;
   backward_view_list.push_back(search_box_view()->search_box());
-  backward_view_list.push_back(expand_arrow_view());
   backward_view_list.push_back(suggestions.back());
   backward_view_list.push_back(search_box_view()->search_box());
 
@@ -1807,10 +1799,10 @@ TEST_F(AppListViewFocusTest, HittingEnterWhenFocusOnSearchBox) {
 
 // Tests that search box becomes focused when it is activated.
 TEST_F(AppListViewFocusTest, SetFocusOnSearchboxWhenActivated) {
-  Show();
+  app_list_view()->Show(AppListViewState::kFullscreenAllApps,
+                        /*is_side_shelf=*/false);
 
   // Press tab several times to move focus out of the search box.
-  SimulateKeyPress(ui::VKEY_TAB, false);
   SimulateKeyPress(ui::VKEY_TAB, false);
   SimulateKeyPress(ui::VKEY_TAB, false);
   EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
@@ -2280,26 +2272,6 @@ TEST_F(AppListViewPeekingTest, AppsGridViewVisibilityOnReopening) {
   Show();
   view_->SetState(ash::AppListViewState::kFullscreenAllApps);
   EXPECT_TRUE(IsViewVisibleOnScreen(apps_grid_view()));
-}
-
-TEST_F(AppListViewPeekingTest, AppsGridViewExpandHintingOnReopening) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  Initialize(false /*is_tablet_mode*/);
-
-  Show();
-  view_->SetState(ash::AppListViewState::kPeeking);
-  EXPECT_TRUE(
-      contents_view()->expand_arrow_view()->IsHintingAnimationRunningForTest());
-
-  view_->SetState(ash::AppListViewState::kClosed);
-  EXPECT_FALSE(
-      contents_view()->expand_arrow_view()->IsHintingAnimationRunningForTest());
-
-  Show();
-  view_->SetState(ash::AppListViewState::kPeeking);
-  EXPECT_TRUE(
-      contents_view()->expand_arrow_view()->IsHintingAnimationRunningForTest());
 }
 
 // Tests that going into a folder view, then setting the AppListState to PEEKING
@@ -2832,92 +2804,6 @@ TEST_F(AppListViewPeekingTest, ClickOutsideEmbeddedAssistantUIToPeeking) {
   view_->OnMouseEvent(&mouse_release);
   EXPECT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
 }
-
-// Tests that expand arrow is not visible when showing embedded Assistant UI.
-// ProductivityLauncher does not have an expand arrow.
-TEST_F(AppListViewPeekingTest, ExpandArrowNotVisibleInEmbeddedAssistantUI) {
-  Initialize(false /*is_tablet_mode*/);
-  Show();
-
-  // Set search_box_view active.
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE);
-  view_->GetWidget()->OnKeyEvent(&key_event);
-
-  contents_view()->ShowEmbeddedAssistantUI(true);
-  EXPECT_TRUE(contents_view()->IsShowingEmbeddedAssistantUI());
-  EXPECT_EQ(0.0f,
-            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-}
-
-// Tests the expand arrow view opacity updates correctly when transitioning
-// between various app list view states. ProductivityLauncher does not have an
-// expand arrow.
-TEST_F(AppListViewPeekingTest, ExpandArrowViewVisibilityTest) {
-  Initialize(false /*is_tablet_mode*/);
-  Show();
-
-  view_->SetState(ash::AppListViewState::kClosed);
-  // Expand arrow should not be visible when  app list view state is closed.
-  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 0.0f);
-  // Expand arrow view should be visible for peeking launcher.
-  view_->SetState(ash::AppListViewState::kPeeking);
-  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
-
-  // Expand arrow view should not be visible for half launcher when showing
-  // embedded assistant.
-  contents_view()->ShowEmbeddedAssistantUI(true);
-  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 0.0f);
-  // Expand arrow should become visible when hiding the assistant view.
-  contents_view()->ShowEmbeddedAssistantUI(false);
-  EXPECT_TRUE(contents_view()->expand_arrow_view()->GetVisible());
-  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
-
-  // Typing text in the search box should hide the expand arrow view.
-  SetTextInSearchBox(u"https://youtu.be/dQw4w9WgXcQ");
-  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 0.0f);
-  // Pressing escape should show the expand arrow view again.
-  view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
-}
-
-// Tests the expand arrow view opacity updates correctly when transitioning
-// between various app list view states with app list state animations enabled.
-// ProductivityLauncher does not have an expand arrow.
-TEST_F(AppListViewPeekingTest,
-       ExpandArrowViewVisibilityWithStateAnimationsTest) {
-  Initialize(false /*is_tablet_mode*/);
-  Show();
-
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Expand arrow view should be visible for peeking launcher.
-  EXPECT_EQ(1.0f,
-            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-
-  // Expand arrow view should not be visible for half launcher when showing
-  // embedded assistant.
-  contents_view()->ShowEmbeddedAssistantUI(true);
-  EXPECT_EQ(0.0f,
-            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-
-  // Expand arrow should become visible when hiding the assistant view.
-  contents_view()->ShowEmbeddedAssistantUI(false);
-  EXPECT_TRUE(contents_view()->expand_arrow_view()->GetVisible());
-  EXPECT_EQ(1.0f,
-            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-
-  // Typing text in the search box should hide the expand arrow view.
-  SetTextInSearchBox(u"https://youtu.be/dQw4w9WgXcQ");
-  EXPECT_EQ(0.0f,
-            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-
-  // Pressing escape should show the expand arrow view again.
-  view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  EXPECT_EQ(1.0f,
-            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-}
-
 // Tests that search box is not visible when showing embedded Assistant UI.
 // ProductivityLauncher has tests for this in AppListBubbleViewTest.
 TEST_F(AppListViewPeekingTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
@@ -2930,16 +2816,6 @@ TEST_F(AppListViewPeekingTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
 
   EXPECT_TRUE(contents_view()->IsShowingEmbeddedAssistantUI());
   EXPECT_FALSE(search_box_view()->GetWidget()->IsVisible());
-}
-
-// Tests that the expand arrow cannot be seen when opening the app list with
-// side shelf enabled. ProductivityLauncher does not have an expand arrow.
-TEST_F(AppListViewPeekingTest, ExpandArrowNotVisibleWithSideShelf) {
-  Initialize(false /*is_tablet_mode*/);
-
-  Show(true /*is_side_shelf*/);
-
-  EXPECT_EQ(0.0f, contents_view()->expand_arrow_view()->layer()->opacity());
 }
 
 TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularLandscapeScreen) {
