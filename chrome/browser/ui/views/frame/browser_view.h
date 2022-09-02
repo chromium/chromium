@@ -417,6 +417,8 @@ class BrowserView : public BrowserWindow,
     return window_placement_permission_granted_;
   }
 
+  void set_isolated_web_app_true_for_testing() { is_isolated_web_app_ = true; }
+
   // Update the side panel's horizontal alignment when
   // prefs::kSidePanelHorizontalAlignment is changed from the appearance
   // settings page.
@@ -950,6 +952,9 @@ class BrowserView : public BrowserWindow,
   void SetWindowPlacementPermissionSubscriptionForBorderlessMode(
       content::WebContents* web_contents);
 
+  // Updates whether the web app is an isolated web app.
+  void UpdateIsIsolatedWebApp();
+
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame> frame_ = nullptr;
 
@@ -1199,6 +1204,7 @@ class BrowserView : public BrowserWindow,
   bool should_show_window_controls_overlay_toggle_ = false;
   bool borderless_mode_enabled_ = false;
   bool window_placement_permission_granted_ = false;
+  bool is_isolated_web_app_ = false;
   absl::optional<content::PermissionController::SubscriptionId>
       window_placement_subscription_id_;
 

@@ -203,6 +203,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/command.h"
@@ -1604,6 +1605,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // one subscriber per web contents.
   if (AppUsesBorderlessMode() && !old_contents) {
     SetWindowPlacementPermissionSubscriptionForBorderlessMode(new_contents);
+    UpdateIsIsolatedWebApp();
   }
 }
 
@@ -2153,9 +2155,10 @@ void BrowserView::UpdateBorderlessModeEnabled() {
         status == blink::mojom::PermissionStatus::GRANTED;
   } else {
     // Defaults to the value of borderless_mode_enabled if web contents are
-    // null. This gets overridden when the app is launched and its web contents
+    // null. These get overridden when the app is launched and its web contents
     // are ready.
     window_placement_permission_granted_ = borderless_mode_enabled;
+    is_isolated_web_app_ = borderless_mode_enabled;
   }
 
   if (borderless_mode_enabled == borderless_mode_enabled_)
@@ -2199,13 +2202,26 @@ void BrowserView::SetWindowPlacementPermissionSubscriptionForBorderlessMode(
                               base::Unretained(this)));
 }
 
+void BrowserView::UpdateIsIsolatedWebApp() {
+  auto* web_contents = GetActiveWebContents();
+  DCHECK(web_contents);
+
+  // Last committed URL is null when PWA is opened from chrome://apps.
+  GURL url = web_contents->GetVisibleURL();
+
+  is_isolated_web_app_ =
+      content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+          web_contents->GetPrimaryMainFrame()->GetBrowserContext(), url);
+}
+
 void BrowserView::ToggleWindowControlsOverlayEnabled() {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
   UpdateWindowControlsOverlayEnabled();
 }
 
 bool BrowserView::IsBorderlessModeEnabled() const {
-  return borderless_mode_enabled_ && window_placement_permission_granted_;
+  return borderless_mode_enabled_ && window_placement_permission_granted_ &&
+         is_isolated_web_app_;
 }
 
 bool BrowserView::AppUsesBorderlessMode() const {

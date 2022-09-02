@@ -443,6 +443,7 @@ class WebAppFrameToolbarBrowserTest_Borderless
 
     if (uses_borderless) {
       web_app_info->display_override = {web_app::DisplayMode::kBorderless};
+      web_app_info->is_storage_isolated = true;
     }
 
     web_app::AppId app_id = helper()->InstallAndLaunchCustomWebApp(
@@ -461,6 +462,7 @@ class WebAppFrameToolbarBrowserTest_Borderless
 
     EXPECT_EQ(uses_borderless,
               helper()->browser_view()->AppUsesBorderlessMode());
+    helper()->browser_view()->set_isolated_web_app_true_for_testing();
     return app_id;
   }
 
