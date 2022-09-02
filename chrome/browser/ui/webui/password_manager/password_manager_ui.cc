@@ -11,7 +11,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/password_manager_resources.h"
 #include "chrome/grit/password_manager_resources_map.h"
+#include "components/grit/components_scaled_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -47,4 +49,12 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   auto* source = CreatePasswordsUIHTMLSource(profile);
   ManagedUIHandler::Initialize(web_ui, source);
   content::WebUIDataSource::Add(profile, source);
+}
+
+// static
+base::RefCountedMemory* PasswordManagerUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return static_cast<base::RefCountedMemory*>(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+          IDR_PASSWORD_MANAGER_FAVICON, scale_factor));
 }

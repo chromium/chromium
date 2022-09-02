@@ -1507,6 +1507,9 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
   if (page_url.host_piece() == chrome::kChromeUIHistoryHost)
     return HistoryUI::GetFaviconResourceBytes(scale_factor);
 
+  if (page_url.host_piece() == chrome::kChromeUIPasswordManagerHost)
+    return PasswordManagerUI::GetFaviconResourceBytes(scale_factor);
+
   // Android uses the native download manager.
   if (page_url.host_piece() == chrome::kChromeUIDownloadsHost)
     return DownloadsUI::GetFaviconResourceBytes(scale_factor);
