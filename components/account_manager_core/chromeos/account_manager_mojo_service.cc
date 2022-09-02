@@ -180,10 +180,17 @@ void AccountManagerMojoService::ReportAuthError(
   DCHECK(maybe_error) << "Can't unmarshal error with state: "
                       << mojo_error->state;
 
-  account_manager_->GetAccounts(
-      base::BindOnce(&AccountManagerMojoService::MaybeNotifyAuthErrorObservers,
-                     weak_ptr_factory_.GetWeakPtr(), maybe_account_key.value(),
-                     maybe_error.value()));
+  const GoogleServiceAuthError& error = maybe_error.value();
+  if (error.IsTransientError()) {
+    // Silently ignore transient errors reported by apps to avoid polluting
+    // other apps' error caches with transient errors like
+    // `GoogleServiceAuthError::CONNECTION_FAILED`.
+    return;
+  }
+
+  account_manager_->GetAccounts(base::BindOnce(
+      &AccountManagerMojoService::MaybeNotifyAuthErrorObservers,
+      weak_ptr_factory_.GetWeakPtr(), maybe_account_key.value(), error));
 }
 
 void AccountManagerMojoService::OnTokenUpserted(

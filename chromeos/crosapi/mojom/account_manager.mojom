@@ -266,6 +266,8 @@ interface AccountManager {
   // (or the OS).
   // `account` must be a valid account known to Account Manager.
   // Setting the error `state` as `kNone` resets the error state for `account`.
+  // Note: Transient errors (`GoogleServiceAuthError::IsTransientError()`)
+  // reported through this API will be silently ignored.
   [MinVersion = 9]
   ReportAuthError@8(AccountKey account, GoogleServiceAuthError error);
 };

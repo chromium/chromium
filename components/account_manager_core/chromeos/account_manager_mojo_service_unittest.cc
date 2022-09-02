@@ -694,4 +694,28 @@ TEST_F(AccountManagerMojoServiceTest,
   EXPECT_EQ(error, error_info.second);
 }
 
+TEST_F(AccountManagerMojoServiceTest,
+       ObserversAreNotNotifiedOnTransientAccountErrorUpdates) {
+  // Set up observer.
+  const account_manager::AccountKey kTestAccountKey{
+      kFakeGaiaId, account_manager::AccountType::kGaia};
+  ASSERT_TRUE(InitializeAccountManager());
+  TestAccountManagerObserver observer;
+  observer.Observe(account_manager_async_waiter());
+  ASSERT_EQ(1, GetNumObservers());
+  account_manager()->UpsertAccount(kTestAccountKey, kFakeEmail, kFakeToken);
+  FlushMojoForTesting();
+
+  // Report an error.
+  EXPECT_EQ(0, observer.GetNumAuthErrors());
+  const GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromServiceUnavailable("Service Unavailable");
+  ASSERT_TRUE(error.IsTransientError());
+  ReportAuthError(kTestAccountKey, error);
+  FlushMojoForTesting();
+
+  // Transient errors should not be reported.
+  EXPECT_EQ(0, observer.GetNumAuthErrors());
+}
+
 }  // namespace crosapi
