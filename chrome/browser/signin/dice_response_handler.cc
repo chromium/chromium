@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/dice_response_handler.h"
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -15,12 +14,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/profile_helper.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_client.h"
@@ -35,9 +32,6 @@ const int kDiceTokenFetchTimeoutSeconds = 10;
 // Timeout for locking the account reconcilor when
 // there was OAuth outage in Dice.
 const int kLockAccountReconcilorTimeoutHours = 12;
-
-const base::Feature kSupportOAuthOutageInDice{"SupportOAuthOutageInDice",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
@@ -268,22 +262,20 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     bool no_authorization_code,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
   if (no_authorization_code) {
-    if (base::FeatureList::IsEnabled(kSupportOAuthOutageInDice)) {
-      lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
-      about_signin_internals_->OnRefreshTokenReceived(
-          "Missing authorization code due to OAuth outage in Dice.");
-      if (!timer_) {
-        timer_ = std::make_unique<base::OneShotTimer>();
-        if (task_runner_)
-          timer_->SetTaskRunner(task_runner_);
-      }
-      // If there is already another lock, the timer will be reset and
-      // we'll wait another full timeout.
-      timer_->Start(
-          FROM_HERE, base::Hours(kLockAccountReconcilorTimeoutHours),
-          base::BindOnce(&DiceResponseHandler::OnTimeoutUnlockReconcilor,
-                         base::Unretained(this)));
+    lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
+    about_signin_internals_->OnRefreshTokenReceived(
+        "Missing authorization code due to OAuth outage in Dice.");
+    if (!timer_) {
+      timer_ = std::make_unique<base::OneShotTimer>();
+      if (task_runner_)
+        timer_->SetTaskRunner(task_runner_);
     }
+    // If there is already another lock, the timer will be reset and
+    // we'll wait another full timeout.
+    timer_->Start(
+        FROM_HERE, base::Hours(kLockAccountReconcilorTimeoutHours),
+        base::BindOnce(&DiceResponseHandler::OnTimeoutUnlockReconcilor,
+                       base::Unretained(this)));
     return;
   }
 

@@ -7,14 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,7 +24,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -264,8 +259,6 @@ TEST_F(DiceResponseHandlerTest, Signin) {
 // Checks that the account reconcilor is blocked when where was OAuth
 // outage in Dice, and unblocked after the timeout.
 TEST_F(DiceResponseHandlerTest, SupportOAuthOutageInDice) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kSupportOAuthOutageInDice);
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   dice_params.signin_info->authorization_code.clear();
   dice_params.signin_info->no_authorization_code = true;
@@ -285,8 +278,6 @@ TEST_F(DiceResponseHandlerTest, SupportOAuthOutageInDice) {
 // timeout still restarts.
 TEST_F(DiceResponseHandlerTest, CheckTimersDuringOutageinDice) {
   ASSERT_GT(kLockAccountReconcilorTimeoutHours, 3);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kSupportOAuthOutageInDice);
   // Create params for the first header with no authorization code.
   DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
   dice_params_1.signin_info->authorization_code.clear();
@@ -321,8 +312,6 @@ TEST_F(DiceResponseHandlerTest, CheckTimersDuringOutageinDice) {
 // Check that signin works normally (the token is fetched and added to chrome)
 // on valid headers after getting a no_authorization_code header.
 TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kSupportOAuthOutageInDice);
   // Create params for the header with no authorization code.
   DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
   dice_params_1.signin_info->authorization_code.clear();
